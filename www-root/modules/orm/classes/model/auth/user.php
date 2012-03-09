@@ -18,6 +18,11 @@ class Model_Auth_User extends ORM {
 		'user_tokens' => array('model' => 'user_token'),
 		'roles'       => array('model' => 'role', 'through' => 'roles_users'),
 	);
+        
+        protected $_belongs_to = array(
+            'language' => array('model' => 'language', 
+                                 'foreign_key' => 'language_id'),
+        );
 
 	/**
 	 * Rules for the user model. Because the password is _always_ a hash

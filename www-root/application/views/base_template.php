@@ -1,0 +1,1 @@
+<html><head>	<title><?php echo $title; ?></title></head><body>	<div style="float:left; width: 300px;"><a href="usermanager/logout">Logout</a></div>	<div style="float: left"><?php echo $content; ?></div></body></html>
