@@ -10,3 +10,10 @@ INSERT INTO `languages` (`id`, `name`) VALUES(2, 'fr-fr');
 -- Create default user with login 'admin' and password 'admin'
 INSERT INTO `users` (`id`, `name`, `password`, `email`, `language_id`, `nickname`) VALUES(1, 'admin', 'fc4b8662c3f4e840fb29c671134b03dfe2dcc02456e327e275064f35267445f4', 'admin@admin.com', 1, 'administrator');
 INSERT INTO `roles_users` (`user_id` , `role_id`) VALUES ('1', '1'), ('1', '2');
+
+-- Create default user types
+INSERT INTO `types` (`id`, `name`, `description`) VALUES(1, 'remote service', '');
+INSERT INTO `types` (`id`, `name`, `description`) VALUES(2, 'learner', '');
+INSERT INTO `types` (`id`, `name`, `description`) VALUES(3, 'author', '');
+INSERT INTO `types` (`id`, `name`, `description`) VALUES(4, 'reviewer', '');
+INSERT INTO `types` (`id`, `name`, `description`) VALUES(5, 'superuser', '');

@@ -5,13 +5,13 @@ class Controller_Home extends Controller_Base {
     public function action_index() {
 
         // Create admin test user
-        /*$users = ORM::factory('user');
-          $users->id = 1;
-          $users->username = 'admin';
-          $users->password = 'admin';
-          $users->email = 'admin@admin.com';
-          $users->nickname = 'administrator';
+          /*$users = ORM::factory('user');
+          $users->username = 'testUser222';
+          $users->password = 'a123456789';
+          $users->email = 'user2222@user.com';
+          $users->nickname = 'userok5';
           $users->language_id = 1;
+          $users->type_id = 2;
           $users->create();*/
     }
 

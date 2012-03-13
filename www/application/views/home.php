@@ -17,12 +17,14 @@
 
                         <h5><font color="#000000">3.0</font></h5>
                     </td>
-                    <td bgcolor='#ffffff' align='left'width="60%" valign="top">
+                    <td bgcolor='#ffffff' align='left' valign="top">
                         <?php if(isset($templateData['center'])) echo $templateData['center']; ?>
                     </td>
+                    <?php if(isset($templateData['right'])) { ?>
                     <td width="20%" valign="top">
-                        <?php if(isset($templateData['right'])) echo $templateData['right']; ?>
+                         <?php echo $templateData['right']; ?>
                     </td>
+                    <?php } ?>
                 </tr>
                 <tr>
                     <td colspan="3"><?php if(isset($templateData['error'])) echo $templateData['error']; ?></td>

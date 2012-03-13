@@ -18,7 +18,7 @@ class Controller_Base extends Controller_Template {
             $view->set('templateData', $this->templateData);
             $this->templateData['left'] = $view;
             
-            if($this->IsManager(Auth::instance()->get_user()->roles->find_all())) {
+            if(Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
                 $centerView = View::factory('adminMenu');
                 
                 $centerView->set('templateData', $this->templateData);
@@ -30,21 +30,6 @@ class Controller_Base extends Controller_Template {
         
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
-    }
-    
-    private function IsManager($roles) {
-        $result = false;
-        foreach($roles as $role) {
-            if($role->name == 'admin') {
-                $result = true;
-            }
-            
-            if($role->name == 'author') {
-                $result = true;
-            }
-        }
-        
-        return $result;
     }
 }
 

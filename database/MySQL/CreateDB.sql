@@ -18,7 +18,26 @@ CREATE TABLE IF NOT EXISTS `languages` (
   `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create Types table
+CREATE TABLE IF NOT EXISTS `types` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+  `name` VARCHAR( 20 ) NOT NULL ,
+  `description` VARCHAR( 200 ) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create Groups table
+CREATE TABLE IF NOT EXISTS `groups` (
+`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`name` VARCHAR( 100 ) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create UsersGroups table
+CREATE TABLE IF NOT EXISTS `usersGroups` (
+`group_id` INT NOT NULL ,
+`user_id` INT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Create Auth Kohana tables and extend with OL addtional property language
 CREATE TABLE IF NOT EXISTS `roles` (
@@ -72,3 +91,7 @@ ALTER TABLE `user_tokens`
 
 ALTER TABLE `users`
   ADD CONSTRAINT `languages_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `languages` (`id`);
+  
+ALTER TABLE `usersGroups`
+  ADD CONSTRAINT `usersGroups_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `usersGroups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`);
