@@ -1,0 +1,178 @@
+Changelog for LEAP ORM
+
+2012-03-08
+* Fixed a bug in Base_DB_ORM_Model::hash_code() per matesko's request (Issue #25).
+* Fixed a bug in Base_DB_ORM_Model::load() per matesko's request (Issue #25).
+
+2012-03-05
+* Models can now generate HTML form labels and controls using field data.
+
+2012-02-22
+* Added all function to Base_DB_SQL_Select Builder, Base_DB_SQL_Select_Proxy, and Base_DB_ORM_Select_Proxy.
+* Added prepare_wildcard($expr) to expression classes.
+* DB_ORM now adds table prefix to wildcard to avoid problems when joining.
+* Updated inline documentation.
+
+2012-02-10
+* Changed the method signature to Base_DB_SQL_Expression_Interface::prepare_operator() and updated implementing classes.
+* Updated some inline documentation.
+
+2012-02-09
+* Fixed the missing parentheses in Base_DB_ORM_Field_Double.
+* Redid the quote function in connection classes.
+
+2012-02-07
+* Fixed a bug in how Oracle escapes strings per ekarlso's request (Issue #18).
+* Improved how strings are escaped.
+* Renamed Base_DB_Connection::escape_string($string) to Base_DB_Connection::quote($string, $like = FALSE).
+* Commented out code in schema.php files so that API guide can be generated per nyunyu95's request (Issue #21).
+* Cleaned-up close function in connection classes.
+* Implemented ArrayAccess and SeekableIterator interfaces in Base_CSV.
+* Added Base_CSV::as_array().
+* Made the Double field's metadata 'max_digits' and 'max_decimals' optional.
+* Fixed some minor styling.
+* Updated some inline documentation.
+
+2012-01-28
+* Fixed limit bug in Oracle statements per ekarlso's request (Issue #17).
+* Adding a new datatime field adaptor (Issue #16).
+
+2012-01-23
+* Added a page function to builder/proxy classes per ekarlso's request (Issue #14).
+* Fixed limit bug in Oracle statements per ekarlso's request (Issue #15).
+* Fixed some minor styling.
+
+2012-01-20
+* Adding limit and offset support for Oracle delete/update statements.
+* Adding database config files with reserved keywords.
+* Adding logic to xquery the reserved keywords.
+* Minor style updates.
+
+2012-01-19
+* Adding limit and offset support for Oracle select statements per ekarlso's request (Issue #13).
+* Now allows array configs to be used with Base_DB_SQL_Expression.
+
+2012-01-18
+* Added support to use just 'database' key without a host in the Oracle connection configuration settings per ekarlso's request (Issue #12).
+* The host property in the Base_DB_DataSource now defaults to an empty string rather than to localhost per ekarlso's request (Issue #12).
+* Reworked the Base_DB_SQL_Expression class.
+* Added XML config files for MySQL and SQLite so that the Base_DB_SQL_Tokenizer can detect keywords.
+* Modified the way XML files are loaded so that XML can be stored in more places than just in an xml folder.
+* Updated README.md.
+
+2012-01-17
+* Added logic to remove the semicolons in Oracle SQL statements per ekarlso's request (Issue #11).
+* Changed how semicolons are removed in the expression classes.
+
+2012-01-12
+* Fixed some styling in Base_CSV.
+
+2012-01-11
+* Adding the ability to export a result set as a CSV.
+
+2012-01-10
+* Updated copyright notice.
+
+2012-01-06
+* Major rewrite of SQL tokenizer.
+* Fixed logic for Base_DB_Drizzle_Connection_Standard::get_last_insert_id().
+* Made change to logic in Base_DB_ResultSet::seek($position).
+* Fixed Base_DB_SQL_Operator::UNION_ALL.
+* Minor edits to inline documentation.
+
+2012-01-03
+* Removed unneeded Base_DB_SQL_Tokenizer_Interface.
+* Minor edit in change log.
+
+2012-01-01
+* Added a missing parentheses in Base_DB_Drizzle_Connection_Standard and added missing $this in get_last_insert_id().
+* Minor edits to inline documentation.
+
+2011-12-31
+* Started to rework schema classes.
+* Adding a new plugin for Drizzle.
+* Fixed class name captilization in Base_DB_MsSQL_Update_Builder and DB_MsSQL_Update_Builder.
+* Fixed a copy/paste bug in Base_DB_SQLite_Expression::prepare_identifier($expr).
+* Updated inline documentation.
+
+2011-12-30
+* Change metadata 'type' to 'class' in Base_DB_ORM_Field_Adaptor_Object.
+* Remove deprecated metadata 'candidate_key' and 'foreign_key' in relation classes.
+* Added a new unit test for DB_ResultSet.
+* Made some minor edits to the inline documentation.
+
+2011-12-26
+* Added the ability to extend builder classes.
+* Updated unit tests and added a new unit test.
+
+2011-12-22
+* Refactored Base_DB_DataSource and DB_DataSourceTest.
+
+2011-12-18
+* Refactored order_by functions in builder/proxy classes.
+* Added missing doccomments in unit tests.
+* Fixed inline documentation.
+
+2011-12-17
+* Added logic for establishing persistent connections (Issue #8).
+* Minor edits to __get and __set in adaptor classes.
+* Added 3 new adaptor classes: number, object, and uom.
+* Added a new UOM config for adaptor.
+* Removed an unneeded property in Base_DB_ORM_Field.
+* Moved Base_DB_ORM_Alias to Base_DB_ORM_Field_Alias and DB_ORM_Alias to DB_ORM_Field_Alias.
+* Modified how options are handled in Base_DB_ORM_Relation_HasMany.
+
+2011-12-14
+* Added a missing instance variable: $model.
+* Alphabetized some instance variables in proxy classes.
+* Made it possible to pass a primary_key to DB_ORM::model without wrapping it in an array.
+* Fixed some variables in DB_DataSourceTest.
+* Changed query($limit = NULL) to query($type = 'array') in Base_DB_SQL_Select_Proxy.
+
+2011-12-13
+* Made improvements to how strings are escaped per Isaiah's request (Issue #7).
+* Modified the constructor to all builder classes.
+* Changed the 'profiling' setting to FALSE in config/database.php.
+* Added query caching to all connections.
+* Changed functions in Base_DB_DataSource to properties.
+* Changed fetch_all() to as_array() in Base_DB_ResultSet.
+
+2011-12-12
+* Addressed the loading of field schema over and over again with class serialization in DB_Connection per Crystal's request (Issue #1).
+* Added MySQLi driver classes for MariaDB.
+* Changed $cached_types to $cached_objects in Base_DB_Connection.
+
+2011-12-11
+* Removed is_null() in Base_DB_DataSource::__construct().
+* Added unit test for DB_DataSource.
+* Added unit test for DB_Toolkit.
+* Added logic to increment/decrement size in Base_DB_ResultSet::offsetSet() and Base_DB_ResultSet::offsetUnset().
+* Standardized some code in accordance with Kohana's Conventions and Coding Style.
+	- Replaced all { } with {}.
+	- Standandized type casts.
+	- Added space around !.
+* Changed connection classes from std to standard.
+* Added MySQLi driver classes for MySQL.
+* Updated README.md.
+
+2011-12-10
+* Converted indentation to tabs per Isaiah's request (Issue #2).
+* Changed a comma to a semicolon in config/database.php
+
+2011-12-09
+* Alphabetized some class functions.
+* Redefined Base_DB_Connection_Pool::get_connection() to allow for all config types.
+* Renamed $name to $id in Base_DB_Connection_Pool.
+* Renamed get_name() to get_id() in Base_DB_DataSource.
+* Removed config/leap.php and added driver declaration in config/database.php.
+* Added Base_DB_DataSource::get_driver().
+* Removed translator files.
+* Updated inline documentation.
+
+2011-12-08
+* Added a field adaptor for XML data.
+* Fixed "_GREATER_THAN_OR_EQUAL_TO_" constant.
+* Added an extra parameter to DB_ORM::model.
+* Improved algorithm in DB_ORM_Model::load.
+* Added DB_ResultSet::get.
+* Expanded the functionality of DB_SQL_Select_Builder::group_by.

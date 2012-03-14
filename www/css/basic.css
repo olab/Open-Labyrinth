@@ -1,0 +1,99 @@
+
+/* Layout Stylesheet */
+
+p {  font-family: Arial, Helvetica, sans-serif;  font-size: 80%;font-style: normal; font-weight: normal; color: #000000}
+h1 {  font-family: Arial, Helvetica, sans-serif; font-size: 262.5%; font-weight: bold; color: #000000}
+h2 {  font-family: Arial, Helvetica, sans-serif; font-size: 187.5%; font-weight: bold; color: #000000}
+h3 {  font-family: Arial, Helvetica, sans-serif; font-size: 150%; font-weight: bold; color: #000000}
+h4 {  font-family: Arial, Helvetica, sans-serif; font-size: 125%; font-weight: bold; color: #000000}
+h5 {  font-family: Arial, Helvetica, sans-serif; font-size: 60%; color: #000000} 
+li {  font-family: Arial, Helvetica, sans-serif; font-size: 60%; color: #000000}
+
+a:link{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;  text-decoration:none}
+a:visited{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;  text-decoration:none}
+a:hover{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111;}
+a:active{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;}
+
+body {
+ margin:20px;
+ background:#eeeeee;
+ color: #ffffff;
+ text-align:center;
+ padding:0;
+ }
+
+#outer {
+ text-align:left;
+ border:1px solid #ffffff;
+ width:100%;
+ margin:auto;
+ }
+
+#hdr {
+ height:relative;
+ background:#ffffff;
+ color: #ffffff;
+ border:solid #ffffff;
+ border-width:1px 0 1px 0;
+ }
+
+#bar {
+ height:25px;
+ background:#ffffff;
+ color: #ffffff;
+ border:solid #ffffff;  
+ border-width:1px 0 1px 0;
+ }
+
+#bodyblock {
+ position:relative;
+ background: #ffffff;
+ color: #ffffff;
+ padding:0;
+ }
+
+#l-col {
+ float:left;
+ background:#ffffff;
+ color: #ffffff;
+ width:145px;
+border:#ffffff;
+ border-width:0 0px 0 0;
+ }
+
+#cont {
+ width:75%;
+ background:#ffffff;
+ color: #333333;
+ border:10px solid #ffffff;
+ border-width:8 8 8 8px;
+ text-align:left;
+ }
+
+ #trace {
+ height:30px;
+ background:#ffffff;
+ color: #ffffff;
+ border:#ffffff;
+ border-width:1px 0 0 0;
+ margin:0;
+ }
+ 
+#ftr {
+ height:30px;
+ background:#ffffff;
+ color: #ffffff;
+ border:#ffffff;
+ border-width:1px 0 0 0;
+ margin:0;
+ padding-bottom:20px;
+ }
+ 
+ div.scroll {
+height: 95%;
+width: 95%;
+overflow: auto;
+border: 1px solid #666666;
+background-color: #cccccc;
+padding: 8px;
+}
