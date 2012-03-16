@@ -11,7 +11,7 @@
                 <tr>
                     <td valign="top" width="20%">
                         <a href="<?php echo URL::base(); ?>"><img src="<?php echo URL::base(); ?>images/openlabyrinth-logo.jpg" alt="Labyrinth Identity" border="0" width="150" height="150"></a>
-                        <h5> <font color="#000000">OpenLabyrinth is an open source educational pathway authoring and delivery system</font></h5>
+                        <h5> <font color="#000000"><?php echo __('OpenLabyrinth is an open source educational pathway authoring and delivery system'); ?></font></h5>
                         <?php if(isset($templateData['left'])) echo $templateData['left']; ?>
                         <hr />
 

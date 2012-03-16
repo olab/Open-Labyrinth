@@ -1,4 +1,4 @@
-<table width="100%" height="100%">
+<table width="100%" height="100%" cellpadding='6'>
     <tr>
         <td valign="top" bgcolor="#bbbbcb">
             <h4>Edit group</h4>
@@ -13,7 +13,7 @@
                                         <td align="left"><input type="text" name="groupname" size="50" value="<?php echo $templateData['group']->name; ?>"></td></tr>
 
                                     <tr><td align="left"><p>&nbsp;</p></td><td align="left">
-                                            <input type="submit" name="UpdateGroupSubmit" value="submit"></td></tr>
+                                            <input type="submit" name="UpdateGroupSubmit" value="<?php echo __('submit'); ?>"></td></tr>
                                 </table>
                             </form>
                             <p><strong>Members</strong></p>
@@ -24,7 +24,7 @@
                                     <option value="<?php echo $user->id; ?>"><?php echo $user->nickname; ?> (<?php echo $user->username; ?>)</option>
                                     <?php } ?>
                                 </select>
-                                <input type="submit" name="AddUserToGroupSubmit" value="submit">
+                                <input type="submit" name="AddUserToGroupSubmit" value="<?php echo __('submit'); ?>">
                                 <?php } ?>
                             </form>
                             

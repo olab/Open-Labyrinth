@@ -1,10 +1,10 @@
-<table width="100%" height="100%">
+<table width="100%" height="100%" cellpadding='6'>
     <tr>
         <td valign="top" bgcolor="#bbbbcb">
-            <h4>Users</h4>
+            <h4><?php echo __('Users'); ?></h4>
             <table width="100%" cellpadding="6">
                 <tr bgcolor="#ffffff"><td>
-                        <p><strong>users</strong>:&nbsp;<?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>&nbsp;registered users&nbsp;[<a href=<?php echo URL::base() . 'usermanager/addUser' ?>>add user</a>]</p>
+                        <p><strong><?php echo __('Users'); ?></strong>:&nbsp;<?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>&nbsp;<?php echo __('registered users'); ?>&nbsp;[<a href=<?php echo URL::base() . 'usermanager/addUser' ?>><?php echo __('add').' '.__('user'); ?></a>]</p>
                         <table width="100%" cellpadding="2">
                             <?php
                             if (isset($templateData['users'])) {

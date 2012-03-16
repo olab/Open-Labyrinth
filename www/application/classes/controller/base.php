@@ -27,6 +27,7 @@ class Controller_Base extends Controller_Template {
             $this->templateData['left'] = View::factory('login');
         }
         
+        $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
     }
 }

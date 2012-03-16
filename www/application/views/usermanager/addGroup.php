@@ -1,4 +1,4 @@
-<table width="100%" height="100%">
+<table width="100%" height="100%" cellpadding='6'>
     <tr>
         <td valign="top" bgcolor="#bbbbcb">
             <h4>Create group</h4>
@@ -10,7 +10,7 @@
                         <td align="left"><input type="text" name="groupname" size="50" value=""></td></tr>
 
                     <tr><td align="left"><p>&nbsp;</p></td><td align="left">
-                            <input type="submit" name="AddGroupSubmit" value="submit"></td></tr>
+                            <input type="submit" name="AddGroupSubmit" value="<?php echo __('submit'); ?>"></td></tr>
                 </table>
             </form>
                     </td></tr>
