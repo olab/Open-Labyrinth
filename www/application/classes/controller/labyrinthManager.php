@@ -21,8 +21,11 @@ class Controller_LabyrinthManager extends Controller_Base {
         $addManualView = View::factory('labyrinth/addManual');
         $addManualView->set('templateData', $this->templateData);
         
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+        
         $this->templateData['center'] = $addManualView;
-        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu');
+        $this->templateData['left'] = $leftView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
@@ -90,6 +93,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             }
             
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
             
             $globalView = View::factory('labyrinth/global');
             $globalView->set('templateData', $this->templateData);
@@ -145,6 +149,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             }
             
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
             
             $keysView = View::factory('labyrinth/keys');
             $keysView->set('templateData', $this->templateData);

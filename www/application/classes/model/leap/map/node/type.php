@@ -40,6 +40,17 @@ class Model_Leap_Map_Node_Type extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
+    
+    public function getTypeByName($name) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            return DB_ORM::model('map_node_type', array((int)$result[0]['id']));
+        }
+        
+        return NULL;
+    }
 }
 
 ?>

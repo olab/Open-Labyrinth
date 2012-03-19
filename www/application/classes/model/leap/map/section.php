@@ -57,7 +57,6 @@ class Model_Leap_Map_Section extends DB_ORM_Model {
     public function getAllSections() {
         $result = array();
         $ids = $this->getAllSectionsId();
-        
         foreach($ids as $id) {
             $result[] = DB_ORM::model('map_section', array($id));
         }

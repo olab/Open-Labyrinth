@@ -40,6 +40,22 @@ class Model_Leap_Map_Node_Priority extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
+    
+    public function getAllPriorities() {
+        $builder = DB_SQL::select('default')->from($this->table());
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $priorities = array();
+            foreach($result as $record) {
+                $priorities[] = DB_ORM::model('map_node_priority', array((int)$record['id']));
+            }
+            
+            return $priorities;
+        }
+        
+        return NULL;
+    }
 }
 
 ?>

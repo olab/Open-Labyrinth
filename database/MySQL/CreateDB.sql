@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `maps` (
   `source_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 --
 -- Dumping data for table `maps`
@@ -153,6 +153,101 @@ INSERT INTO `map_contributor_roles` (`id`, `name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `map_counters`
+--
+
+CREATE TABLE IF NOT EXISTS `map_counters` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) DEFAULT NULL,
+  `name` varchar(200) DEFAULT NULL,
+  `description` text,
+  `start_value` int(11) NOT NULL DEFAULT '0',
+  `icon_id` int(11) DEFAULT NULL,
+  `prefix` varchar(20) DEFAULT NULL,
+  `suffix` varchar(20) DEFAULT NULL,
+  `visible` tinyint(1) DEFAULT '0',
+  `out_of` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+
+--
+-- Dumping data for table `map_counters`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_counter_rules`
+--
+
+CREATE TABLE IF NOT EXISTS `map_counter_rules` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `counter_id` int(11) NOT NULL,
+  `relation_id` int(11) NOT NULL,
+  `value` int(11) NOT NULL,
+  `function` varchar(50) DEFAULT NULL,
+  `redirect_node_id` int(11) DEFAULT NULL,
+  `message` varchar(500) DEFAULT NULL,
+  `counter` int(11) DEFAULT NULL,
+  `counter_value` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+
+--
+-- Dumping data for table `map_counter_rules`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_counter_rule_relations`
+--
+
+CREATE TABLE IF NOT EXISTS `map_counter_rule_relations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(70) NOT NULL,
+  `value` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `map_counter_rule_relations`
+--
+
+INSERT INTO `map_counter_rule_relations` (`id`, `title`, `value`) VALUES
+(1, 'equal to', 'eq'),
+(2, 'not equal to', 'neq'),
+(3, 'less than or equal to', 'leq'),
+(4, 'less than', 'lt'),
+(5, 'greater that oe qual to', 'geq'),
+(6, 'greater than', 'qt');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_elements`
+--
+
+CREATE TABLE IF NOT EXISTS `map_elements` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `mime` varchar(20) DEFAULT NULL,
+  `name` varchar(200) NOT NULL,
+  `path` varchar(300) NOT NULL,
+  `args` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `map_elements`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `map_keys`
 --
 
@@ -178,26 +273,70 @@ CREATE TABLE IF NOT EXISTS `map_keys` (
 CREATE TABLE IF NOT EXISTS `map_nodes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `map_id` int(11) NOT NULL,
-  `title` varchar(200) NOT NULL,
-  `text` text NOT NULL,
-  `content` text NOT NULL,
-  `type_id` int(11) NOT NULL,
-  `probability` tinyint(1) NOT NULL,
-  `conditional` varchar(500) NOT NULL,
-  `conditional_message` varchar(1000) NOT NULL,
-  `info` varchar(1000) NOT NULL,
-  `link_style_id` int(11) NOT NULL,
-  `priority_id` int(11) NOT NULL,
-  `kfp` tinyint(1) NOT NULL,
-  `undo` tinyint(1) NOT NULL,
-  `x` double NOT NULL,
-  `y` double NOT NULL,
-  `rgb` varchar(8) NOT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `text` text,
+  `content` text,
+  `type_id` int(11) DEFAULT NULL,
+  `probability` tinyint(1) DEFAULT NULL,
+  `conditional` varchar(500) DEFAULT NULL,
+  `conditional_message` varchar(1000) DEFAULT NULL,
+  `info` varchar(1000) DEFAULT NULL,
+  `link_style_id` int(11) DEFAULT NULL,
+  `link_type_id` int(11) DEFAULT '1',
+  `priority_id` int(11) DEFAULT NULL,
+  `kfp` tinyint(1) DEFAULT NULL,
+  `undo` tinyint(1) DEFAULT NULL,
+  `end` tinyint(1) DEFAULT NULL,
+  `x` double DEFAULT NULL,
+  `y` double DEFAULT NULL,
+  `rgb` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `map_nodes`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_node_counters`
+--
+
+CREATE TABLE IF NOT EXISTS `map_node_counters` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` int(11) NOT NULL,
+  `counter_id` int(11) NOT NULL,
+  `function` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+
+--
+-- Dumping data for table `map_node_counters`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_node_links`
+--
+
+CREATE TABLE IF NOT EXISTS `map_node_links` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `node_id_1` int(11) unsigned NOT NULL,
+  `node_id_2` int(11) NOT NULL,
+  `image_id` int(11) DEFAULT NULL,
+  `text` varchar(500) DEFAULT NULL,
+  `order` int(11) DEFAULT '1',
+  `probability` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
+
+--
+-- Dumping data for table `map_node_links`
 --
 
 
@@ -227,6 +366,28 @@ INSERT INTO `map_node_link_stylies` (`id`, `name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `map_node_link_types`
+--
+
+CREATE TABLE IF NOT EXISTS `map_node_link_types` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `map_node_link_types`
+--
+
+INSERT INTO `map_node_link_types` (`id`, `name`, `description`) VALUES
+(1, 'ordered', ''),
+(2, 'random order', ''),
+(3, 'random select one *', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `map_node_priorities`
 --
 
@@ -245,6 +406,44 @@ INSERT INTO `map_node_priorities` (`id`, `name`, `description`) VALUES
 (1, 'normal (default)', ''),
 (2, 'must avoid', ''),
 (3, 'must visit', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_node_sections`
+--
+
+CREATE TABLE IF NOT EXISTS `map_node_sections` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `map_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `map_node_sections`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_node_section_nodes`
+--
+
+CREATE TABLE IF NOT EXISTS `map_node_section_nodes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `section_id` int(11) NOT NULL,
+  `node_id` int(11) NOT NULL,
+  `order` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `section_id` (`section_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+
+--
+-- Dumping data for table `map_node_section_nodes`
+--
+
 
 -- --------------------------------------------------------
 
@@ -395,7 +594,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`,`email`),
   KEY `fk_language_id` (`language_id`),
   KEY `fk_type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `users`

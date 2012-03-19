@@ -204,6 +204,22 @@ class Model_Leap_Map extends DB_ORM_Model {
         return NULL;
     }
     
+    public function getAllEnabledMap() {
+        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $maps = array();
+            foreach($result as $record) {
+                $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            }
+            
+            return $maps;
+        }
+        
+        return NULL;
+    }
+    
     public function createMap($values) {
         $this->name = Arr::get($values, 'title', 'empty_title');
         $this->author_id = Arr::get($values, 'author', 1);
@@ -218,7 +234,10 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         $this->save();
         
-        return $this->getMapByName($this->name);
+        $map = $this->getMapByName($this->name);
+        DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+        
+        return $map;
     }
     
     public function disableMap($id) {
@@ -244,6 +263,16 @@ class Model_Leap_Map extends DB_ORM_Model {
         $this->section_id = Arr::get($values, 'section', 1);
         
         $this->save();
+    }
+    
+    public function updateSection($mapId, $value) {
+        $this->id = $mapId;
+        $this->load();
+        
+        if($this) {
+            $this->section_id = Arr::get($value, 'sectionview', $this->section_id);
+            $this->save();
+        }
     }
 }
 

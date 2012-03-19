@@ -3,7 +3,7 @@
 class Controller_OpenLabyrinth extends Controller_Base {
     
     public function action_index() {
-        $maps = DB_ORM::model('map')->getAllMap();
+        $maps = DB_ORM::model('map')->getAllEnabledMap();
         $this->templateData['maps'] = $maps;
         
         $openView = View::factory('labyrinth/open');

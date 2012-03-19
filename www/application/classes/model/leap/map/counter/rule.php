@@ -1,0 +1,125 @@
+<?php defined('SYSPATH') or die('No direct script access.');
+
+/**
+ * Model for map_counter_rules table in database 
+ */
+class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->fields = array(
+            'id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+            )),
+            
+            'counter_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'relation_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'value' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'function' => new DB_ORM_Field_String($this, array(
+                'max_length' => 50,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+            
+            'redirect_node_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'message' => new DB_ORM_Field_String($this, array(
+                'max_length' => 500,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+            
+            'counter' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'counter_value' => new DB_ORM_Field_String($this, array(
+                'max_length' => 50,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+        );
+        
+        $this->relations = array(
+            'counter' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('counter_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_counter',
+            )),
+            
+            'relation' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('id'),
+                'parent_key' => array('relation_id'),
+                'child_model' => 'map_counter_relation',
+            )),
+            
+            'redirect_node' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('redirect_node_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_node',
+            )),
+        );
+    }
+
+    public static function data_source() {
+        return 'default';
+    }
+
+    public static function table() {
+        return 'map_counter_rules';
+    }
+
+    public static function primary_key() {
+        return array('id');
+    }
+    
+    
+    public function getRulesByCounterId($counterId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('counter_id', '=', $counterId);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $rules = array();
+            foreach($result as $record) {
+                $rules[] = DB_ORM::model('map_counter_rule', array((int)$record['id']));
+            }
+            
+            return $rules;
+        }
+        
+        return NULL;
+    }
+    
+    public function addRule($counterId, $values) {
+        $this->counter_id = $counterId;
+        $this->relation_id = Arr::get($values, 'relation', 1);
+        $this->value = Arr::get($values, 'rulevalue', 0);
+        $this->function = 'redir';                                              // In current version
+        $this->redirect_node_id = Arr::get($values, 'node', 0);
+        
+        $this->save();
+        
+        DB_ORM::model('map_node_counter')->addNodeCounter($this->redirect_node_id, $this->counter_id, Arr::get($values, 'ctrval', '=0'));
+    }
+}
+
+?>

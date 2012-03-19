@@ -40,6 +40,22 @@ class Model_Leap_Map_Node_Link_Style extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
+    
+    public function getAllLinkStyles() {
+        $builder = DB_SQL::select('default')->from($this->table());
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $linkStyles = array();
+            foreach($result as $record) {
+                $linkStyles[] = DB_ORM::model('map_node_link_style', array((int)$record['id']));
+            }
+            
+            return $linkStyles;
+        }
+        
+        return NULL;
+    }
 }
 
 ?>
