@@ -204,8 +204,11 @@ class Model_Leap_Map extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllEnabledMap() {
-        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1);
+    public function getAllEnabledAndOpenMap() {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('enabled', '=', 1, 'AND')
+                ->where('security_id', '=', 1);
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -271,6 +274,16 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         if($this) {
             $this->section_id = Arr::get($value, 'sectionview', $this->section_id);
+            $this->save();
+        }
+    }
+    
+    public function updateFeedback($mapId, $feedback) {
+        if($feedback != NULL) {
+            $this->id = $mapId;
+            $this->load();
+            
+            $this->feedback = $feedback;
             $this->save();
         }
     }

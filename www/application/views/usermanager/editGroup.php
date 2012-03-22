@@ -31,7 +31,7 @@
                             <?php if(isset($templateData['members'])) { ?>
                                 <?php foreach($templateData['members'] as $member) { ?>
                                     <p><?php echo $member->nickname.'('.$member->username.')';?>[
-                                        <a href=<?php echo URL::base().'usermanager/removeMemenber/'.$member->id.'/'.$templateData['group']->id; ?>>remove</a>]</p>
+                                        <a href=<?php echo URL::base().'usermanager/removeMember/'.$member->id.'/'.$templateData['group']->id; ?>>remove</a>]</p>
                                 <?php } ?>
                             <?php } ?>
                         </td>

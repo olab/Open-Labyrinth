@@ -10,7 +10,11 @@ class Auth_Leap extends Auth {
 
             $user = DB_ORM::model('user');
             $user->getUserByName($username);
-
+            
+            if(is_string($password)) {
+                $password = $this->hash($password);
+            }
+            
             if ($user->password === $password) {
 
                 // "Remember me" commented: OL does not use this function
@@ -41,7 +45,7 @@ class Auth_Leap extends Auth {
         if (!$user)
             return FALSE;
 
-        return ($user->password === $password);
+        return ($user->password === $this->hash($password));
     }
 
     public function password($user) {

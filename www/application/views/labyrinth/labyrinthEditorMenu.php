@@ -10,14 +10,14 @@
     - <a href="<?php echo URL::base().'linkManager/index/'.$templateData['map']->id; ?>"><?php echo __('links'); ?></a><br>
     - <a href="<?php echo URL::base().'counterManager/index/'.$templateData['map']->id; ?>"><?php echo __('counters'); ?></a><br>
     - <a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>"><?php echo __('counter grid'); ?></a><br>
-    - <a href=""><?php echo __('questions'); ?></a><br>
-    - <a href=""><?php echo __('chats'); ?></a><br>
-    - <a href=""><?php echo __('files'); ?></a><br>
-    - <a href=""><?php echo __('users'); ?></a><br>
-    - <a href=""><?php echo __('avatars'); ?></a><br>
+    - <a href="<?php echo URL::base().'questionManager/index/'.$templateData['map']->id; ?>"><?php echo __('questions'); ?></a><br>
+    - <a href="<?php echo URL::base().'chatManager/index/'.$templateData['map']->id; ?>"><?php echo __('chats'); ?></a><br>
+    - <a href="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>"><?php echo __('files'); ?></a><br>
+    - <a href="<?php echo URL::base().'mapUserManager/index/'.$templateData['map']->id; ?>"><?php echo __('users'); ?></a><br>
+    - <a href="<?php echo URL::base().'avatarManager/index/'.$templateData['map']->id; ?>"><?php echo __('avatars'); ?></a><br>
     - <a href=""><?php echo __('elements'); ?></a><br>
     - <a href=""><?php echo __('clusters'); ?></a><br>
-    - <a href=""><?php echo __('feedback'); ?></a><br>
+    - <a href="<?php echo URL::base().'feedbackManager/index/'.$templateData['map']->id; ?>"><?php echo __('feedback'); ?></a><br>
     - <a href=""><?php echo __('sessions'); ?></a><br>
     - <a href="" target="_blank"><?php echo __('visual editor'); ?></a>
 </p>

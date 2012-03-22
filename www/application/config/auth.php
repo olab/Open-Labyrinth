@@ -4,7 +4,7 @@ return array(
 
 	'driver'       => 'leap',
 	'hash_method'  => 'sha256',
-	'hash_key'     => NULL,
+	'hash_key'     => '1, 3, 4, 6, 9, 13, 17, 20, 25, 30, 32, 40, 61',
 	'lifetime'     => 1209600,
 	'session_type' => Session::$default,
 	'session_key'  => 'auth_user',

@@ -173,6 +173,20 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
     
+    public function action_previewCounter() {
+        $mapId = $this->request->param('id', NULL);
+        $counterId = $this->request->param('id2', NULL);
+        if($counterId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+            $this->templateData['counter'] = DB_ORM::model('map_counter', array((int)$counterId));
+            
+            $this->template = View::factory('labyrinth/counter/preview');
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+    
 }
 
 ?>

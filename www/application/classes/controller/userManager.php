@@ -132,7 +132,7 @@ class Controller_UserManager extends Controller_Base {
         Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$this->request->param('id', 0));
     }
     
-    public function action_removeMemenber() {
+    public function action_removeMember() {
         $userId = $this->request->param('id', 0);
         $groupId = $this->request->param('id2', 0);
         

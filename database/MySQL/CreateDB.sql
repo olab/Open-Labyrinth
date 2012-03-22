@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `groups`
@@ -91,10 +91,85 @@ CREATE TABLE IF NOT EXISTS `maps` (
   `source_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
 --
 -- Dumping data for table `maps`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_avatars`
+--
+
+CREATE TABLE IF NOT EXISTS `map_avatars` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `skin_1` varchar(6) DEFAULT NULL,
+  `skin_2` varchar(6) DEFAULT NULL,
+  `cloth` varchar(6) DEFAULT NULL,
+  `nose` varchar(2) DEFAULT NULL,
+  `hair` varchar(2) DEFAULT NULL,
+  `environment` varchar(2) DEFAULT NULL,
+  `accessory_1` varchar(2) DEFAULT NULL,
+  `bkd` varchar(6) DEFAULT NULL,
+  `sex` varchar(2) DEFAULT NULL,
+  `mouth` varchar(2) DEFAULT NULL,
+  `outfit` varchar(2) DEFAULT NULL,
+  `bubble` varchar(2) DEFAULT NULL,
+  `bubble_text` varchar(100) DEFAULT NULL,
+  `accessory_2` varchar(2) DEFAULT NULL,
+  `accessory_3` varchar(2) DEFAULT NULL,
+  `age` varchar(2) DEFAULT NULL,
+  `eyes` varchar(2) DEFAULT NULL,
+  `weather` varchar(2) DEFAULT NULL,
+  `hair_color` varchar(6) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `map_avatars`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_chats`
+--
+
+CREATE TABLE IF NOT EXISTS `map_chats` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `counter_id` int(11) NOT NULL,
+  `stem` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
+
+--
+-- Dumping data for table `map_chats`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_chat_elements`
+--
+
+CREATE TABLE IF NOT EXISTS `map_chat_elements` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `chat_id` int(11) NOT NULL,
+  `question` text NOT NULL,
+  `response` text NOT NULL,
+  `function` varchar(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=76 ;
+
+--
+-- Dumping data for table `map_chat_elements`
 --
 
 
@@ -111,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `map_contributors` (
   `name` varchar(200) NOT NULL,
   `organization` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `map_contributors`
@@ -129,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `map_contributor_roles` (
   `name` varchar(100) NOT NULL,
   `description` varchar(700) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
 
 --
 -- Dumping data for table `map_contributor_roles`
@@ -168,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `map_counters` (
   `visible` tinyint(1) DEFAULT '0',
   `out_of` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `map_counters`
@@ -192,7 +267,7 @@ CREATE TABLE IF NOT EXISTS `map_counter_rules` (
   `counter` int(11) DEFAULT NULL,
   `counter_value` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `map_counter_rules`
@@ -210,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `map_counter_rule_relations` (
   `title` varchar(70) NOT NULL,
   `value` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Dumping data for table `map_counter_rule_relations`
@@ -233,17 +308,94 @@ INSERT INTO `map_counter_rule_relations` (`id`, `title`, `value`) VALUES
 CREATE TABLE IF NOT EXISTS `map_elements` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `map_id` int(11) NOT NULL,
-  `mime` varchar(20) DEFAULT NULL,
+  `mime` varchar(500) DEFAULT NULL,
   `name` varchar(200) NOT NULL,
   `path` varchar(300) NOT NULL,
   `args` varchar(100) DEFAULT NULL,
+  `width` int(11) DEFAULT NULL,
+  `width_type` varchar(2) NOT NULL DEFAULT 'px',
+  `height` int(11) DEFAULT NULL,
+  `height_type` varchar(2) NOT NULL DEFAULT 'px',
+  `h_align` varchar(20) DEFAULT NULL,
+  `v_align` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=30 ;
 
 --
 -- Dumping data for table `map_elements`
 --
 
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_feedback_operators`
+--
+
+CREATE TABLE IF NOT EXISTS `map_feedback_operators` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `value` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `map_feedback_operators`
+--
+
+INSERT INTO `map_feedback_operators` (`id`, `title`, `value`) VALUES
+(1, 'equal to', 'eq'),
+(2, 'not equal to', 'neq'),
+(3, 'less than equal to', 'leq'),
+(4, 'less than', 'lt'),
+(5, 'greater than or equal to', 'geq'),
+(6, 'greater than', 'qt');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_feedback_rules`
+--
+
+CREATE TABLE IF NOT EXISTS `map_feedback_rules` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `rule_type_id` int(11) NOT NULL,
+  `value` int(11) DEFAULT NULL,
+  `operator_id` int(11) DEFAULT NULL,
+  `message` text,
+  `counter_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+
+--
+-- Dumping data for table `map_feedback_rules`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_feedback_types`
+--
+
+CREATE TABLE IF NOT EXISTS `map_feedback_types` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+--
+-- Dumping data for table `map_feedback_types`
+--
+
+INSERT INTO `map_feedback_types` (`id`, `name`, `description`) VALUES
+(1, 'time taken', NULL),
+(2, 'counter value', NULL),
+(3, 'node visit', NULL),
+(4, 'must visit', NULL),
+(5, 'must avoid', NULL);
 
 -- --------------------------------------------------------
 
@@ -257,7 +409,7 @@ CREATE TABLE IF NOT EXISTS `map_keys` (
   `key` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `key` (`key`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `map_keys`
@@ -291,7 +443,7 @@ CREATE TABLE IF NOT EXISTS `map_nodes` (
   `y` double DEFAULT NULL,
   `rgb` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
 
 --
 -- Dumping data for table `map_nodes`
@@ -310,7 +462,7 @@ CREATE TABLE IF NOT EXISTS `map_node_counters` (
   `counter_id` int(11) NOT NULL,
   `function` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `map_node_counters`
@@ -333,7 +485,7 @@ CREATE TABLE IF NOT EXISTS `map_node_links` (
   `order` int(11) DEFAULT '1',
   `probability` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
 
 --
 -- Dumping data for table `map_node_links`
@@ -351,7 +503,7 @@ CREATE TABLE IF NOT EXISTS `map_node_link_stylies` (
   `name` varchar(70) NOT NULL,
   `description` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `map_node_link_stylies`
@@ -374,7 +526,7 @@ CREATE TABLE IF NOT EXISTS `map_node_link_types` (
   `name` varchar(50) NOT NULL,
   `description` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `map_node_link_types`
@@ -396,7 +548,7 @@ CREATE TABLE IF NOT EXISTS `map_node_priorities` (
   `name` varchar(70) NOT NULL,
   `description` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `map_node_priorities`
@@ -418,7 +570,7 @@ CREATE TABLE IF NOT EXISTS `map_node_sections` (
   `name` varchar(50) NOT NULL,
   `map_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Dumping data for table `map_node_sections`
@@ -438,7 +590,7 @@ CREATE TABLE IF NOT EXISTS `map_node_section_nodes` (
   `order` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `section_id` (`section_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 --
 -- Dumping data for table `map_node_section_nodes`
@@ -456,7 +608,7 @@ CREATE TABLE IF NOT EXISTS `map_node_types` (
   `name` varchar(70) NOT NULL,
   `description` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `map_node_types`
@@ -469,6 +621,79 @@ INSERT INTO `map_node_types` (`id`, `name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `map_questions`
+--
+
+CREATE TABLE IF NOT EXISTS `map_questions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `map_id` int(11) NOT NULL,
+  `stem` varchar(500) DEFAULT NULL,
+  `entry_type_id` int(11) NOT NULL,
+  `width` int(11) NOT NULL DEFAULT '0',
+  `height` int(11) NOT NULL DEFAULT '0',
+  `feedback` varchar(1000) DEFAULT NULL,
+  `show_answer` tinyint(1) NOT NULL DEFAULT '1',
+  `counter_id` int(11) DEFAULT NULL,
+  `num_tries` int(11) NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=26 ;
+
+--
+-- Dumping data for table `map_questions`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_question_responses`
+--
+
+CREATE TABLE IF NOT EXISTS `map_question_responses` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `question_id` int(11) NOT NULL,
+  `response` varchar(250) DEFAULT NULL,
+  `feedback` text,
+  `is_correct` tinyint(1) DEFAULT NULL,
+  `score` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+
+--
+-- Dumping data for table `map_question_responses`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `map_question_types`
+--
+
+CREATE TABLE IF NOT EXISTS `map_question_types` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(70) DEFAULT NULL,
+  `value` varchar(20) DEFAULT NULL,
+  `template_name` varchar(200) NOT NULL,
+  `template_args` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+
+--
+-- Dumping data for table `map_question_types`
+--
+
+INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES
+(1, 'single line text entry - not assessd', 'text', 'text', NULL),
+(2, 'multi-line text entry - not assessed', 'area', 'area', NULL),
+(3, 'multiple choice - two options', 'mcq2', 'response', '2'),
+(4, 'multiple choice - three options', 'mcq3', 'response', '3'),
+(5, 'multiple choice - five options', 'mcq5', 'response', '5'),
+(6, 'multiple choice - nine options', 'mcq9', 'response', '9');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `map_sections`
 --
 
@@ -477,7 +702,7 @@ CREATE TABLE IF NOT EXISTS `map_sections` (
   `name` varchar(100) NOT NULL,
   `description` varchar(700) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `map_sections`
@@ -499,7 +724,7 @@ CREATE TABLE IF NOT EXISTS `map_securities` (
   `name` varchar(100) NOT NULL,
   `description` varchar(700) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `map_securities`
@@ -522,7 +747,7 @@ CREATE TABLE IF NOT EXISTS `map_skins` (
   `name` varchar(100) NOT NULL,
   `path` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `map_skins`
@@ -545,7 +770,7 @@ CREATE TABLE IF NOT EXISTS `map_types` (
   `name` varchar(100) NOT NULL,
   `description` varchar(700) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `map_types`
@@ -569,7 +794,7 @@ CREATE TABLE IF NOT EXISTS `map_users` (
   `map_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `map_users`
@@ -585,7 +810,7 @@ CREATE TABLE IF NOT EXISTS `map_users` (
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(40) NOT NULL,
-  `password` varchar(100) NOT NULL,
+  `password` varchar(800) NOT NULL,
   `email` varchar(250) NOT NULL,
   `nickname` varchar(120) NOT NULL,
   `language_id` int(11) NOT NULL,
@@ -594,14 +819,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`,`email`),
   KEY `fk_language_id` (`language_id`),
   KEY `fk_type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `nickname`, `language_id`, `type_id`) VALUES
-(1, 'admin', 'admin', 'admin@admin.com', 'administrator', 1, 4);
+(1, 'admin', 'bf7bdf17dad6154e88bf66b9768174a47658e84baa1036c3f6f0cbeae5be1db7', 'admin@admin.com', 'administrator', 1, 4);
 
 -- --------------------------------------------------------
 
@@ -616,7 +841,7 @@ CREATE TABLE IF NOT EXISTS `user_groups` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `group_id` (`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `user_groups`

@@ -14,7 +14,7 @@
                                                 <p>
                                                     <?php echo $counter->name; ?> 
                                                     [<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">edit</a> 
-                                                    - <a href="counterpreview.asp?cid=1">preview</a> 
+                                                    - <a href="<?php echo URL::base().'counterManager/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">preview</a> 
                                                     - <a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id.'/'.$counter->id; ?>">grid</a>  
                                                     - <a href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">delete</a>]
                                                 </p>
@@ -22,7 +22,7 @@
                                         <?php } ?>
                                         <hr>
                                         <p><a href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">add counter</a></p>
-                                        <p><a href="countergrid.asp?mapid=1">counter grid</a></p>
+                                        <p><a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>">counter grid</a></p>
                                     </td>
                                 </tr>
                             </table>

@@ -63,6 +63,20 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return NULL;
     }
     
+    public function getAllUsersIds($mapId) {
+        $users = $this->getAllUsers($mapId);
+        if($users != NULL) {
+            $ids = array();
+            foreach($users as $user) {
+                $ids[] = $user->id;
+            }
+            
+            return $ids;
+        }
+        
+        return NULL;
+    }
+    
     public function checkUser($users, $userId) {
         if(count($users) > 0) {
             foreach($users as $record) {
@@ -75,6 +89,19 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         }
         
         return FALSE;
+    }
+    
+    public function deleteByUserId($mapId, $userId) {
+        $builder = DB_ORM::delete('map_user')->where('map_id', '=', $mapId, 'AND')->where('user_id', '=', $userId);
+        $builder->execute();
+    }
+    
+    public function addUser($mapId, $userId) {
+        if($mapId != NULL and $userId != NULL) {
+            $this->map_id = $mapId;
+            $this->user_id = $userId;
+            $this->save();
+        }
     }
 }
 

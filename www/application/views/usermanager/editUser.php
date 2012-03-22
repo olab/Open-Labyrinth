@@ -9,7 +9,7 @@
                             <table>
                                 <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><p><?php echo $templateData['user']->username; ?>&nbsp;<a href=<?php echo URL::base().'usermanager/deleteUser/'.$templateData['user']->id; ?>>[<?php echo __('delete'); ?>]</a></p></td></tr>
 
-                                <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value="<?php echo $templateData['user']->password; ?>"></td></tr>
+                                <tr><td align="left"><p><?php echo __('new password'); ?></p></td><td align="left"><p><input type="password" name="upw" size="20" value=""> <font color="red">*</font> password will be changed if value is not empty</p></td></tr>
                                 <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input type="text" name="uname" size="50" value="<?php echo $templateData['user']->nickname; ?>"></td></tr>
                                 <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input type="text" name="uemail" size="50" value="<?php echo $templateData['user']->email; ?>"></td></tr>
 
@@ -25,7 +25,7 @@
                                         </select>
                                     </td></tr>
 
-                                <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" value="1">] [francais <input type="radio" name="langID" value="2">] </p></td></tr>
+                                <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" value="1" <?php if($templateData['user']->language_id == 1) echo 'checked=""'; ?>>] [francais <input type="radio" name="langID" value="2" <?php if($templateData['user']->language_id == 2) echo 'checked=""'; ?>>] </p></td></tr>
 
                                 <tr><td align="left"><p>&nbsp;</p></td><td align="left"><input type="submit" name="EditUserSubmit" value="<?php echo __('submit'); ?>"></td></tr>
                             </table>

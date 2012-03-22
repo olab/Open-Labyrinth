@@ -20,7 +20,7 @@ class Model_Leap_User extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             'password' => new DB_ORM_Field_String($this, array(
-                'max_length' => 100,
+                'max_length' => 800,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -115,7 +115,7 @@ class Model_Leap_User extends DB_ORM_Model {
     
     public function createUser($username, $password, $nickname, $email, $typeId, $languageId) {
         $this->username = $username;
-        $this->password = $password;
+        $this->password = Auth::instance()->hash($password);
         $this->email = $email;
         $this->nickname = $nickname;
         $this->language_id = $languageId;
@@ -128,7 +128,10 @@ class Model_Leap_User extends DB_ORM_Model {
         $this->id = $id;
         $this->load();
         
-        $this->password = $password;
+        if($password != '') {
+            $this->password = Auth::instance()->hash($password);
+        }
+        
         $this->email = $email;
         $this->nickname = $nickname;
         $this->language_id = $languageId;
@@ -154,6 +157,36 @@ class Model_Leap_User extends DB_ORM_Model {
             foreach($qResult as $record) {
                 $result[] = DB_ORM::model('user', array((int)$record['id']));
             }
+            return $result;
+        }
+        
+        return NULL;
+    }
+    
+    public function getUsersByTypeName($typeName, $ids = NULL) {
+        $users = array();
+        if($ids != NULL) {
+            $builder = DB_SQL::select('default')
+                    ->from($this->table())
+                    ->where('id', 'NOT IN', $ids);
+            $result = $builder->query();
+            if($result->is_loaded()) {
+                foreach($result as $record) {
+                    $users[] = DB_ORM::model('user', array((int)$record['id']));
+                }
+            }
+        } else {
+            $users = $this->getAllUsers();
+        }
+        
+        if($users != NULL and count($users) > 0) {
+            $result = array();
+            foreach($users as $user) {
+                if($user->type->name == $typeName) {
+                    $result[] = $user;
+                }
+            }
+            
             return $result;
         }
         
