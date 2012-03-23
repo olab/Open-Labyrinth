@@ -100,7 +100,7 @@ class Controller_ChatManager extends Controller_Base {
         
         if($mapId != NULL and $chatId != NULL) {
             DB_ORM::model('map_chat', array((int)$chatId))->delete();
-            DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
+            //DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
             Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());

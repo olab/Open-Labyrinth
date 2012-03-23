@@ -32,6 +32,7 @@
                                                             <?php } ?>
                                                         </select>
                                                     </td>
+                                                    <td><p><a href="<?php echo URL::base().'labyrinthManager/deleteContributor/'.$templateData['map']->id.'/'.$contributor->id; ?>">[delete]</a></p></td>
                                                 </tr>
                                                 <?php } ?>
                                                 <tr>

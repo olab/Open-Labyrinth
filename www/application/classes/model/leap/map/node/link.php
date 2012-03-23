@@ -190,6 +190,55 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
             }
         }
     }
+    
+    public function getLinksByMap($mapId) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('map_id', '=', $mapId);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $links = array();
+            foreach($result as $record) {
+                $links[] = DB_ORM::model('map_node_link', array((int)$record['id']));
+            }
+            
+            return $links;
+        }
+        
+        return NULL;
+    }
+    
+    public function getLinkByNodeIDs($nodeA, $nodeB) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('node_id_1', '=', $nodeA, 'AND')
+                ->where('node_id_2', '=', $nodeB);
+        
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            return DB_ORM::model('map_node_link', array((int)$result[0]['id']));
+        }
+        
+        return NULL;
+    }
+    
+    public function deleteLinks($nodeId) {
+        $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_1', '=', $nodeId);
+        $builder->execute();
+        
+        $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_2', '=', $nodeId);
+        $builder->execute();
+    }
+    
+    public function deleteLinkByNodeIds($nodeA, $nodeB) {
+        $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_1', '=', $nodeA, 'AND')->where('node_id_2', '=', $nodeB);
+        $builder->execute();
+        
+        $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_2', '=', $nodeA, 'AND')->where('node_id_1', '=', $nodeB);
+        $builder->execute();
+    }
 }
 
 ?>

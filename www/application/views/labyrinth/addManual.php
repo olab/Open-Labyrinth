@@ -25,7 +25,7 @@
                                     <td align="left"><p>
                                             <label>
                                                 <select name="type">
-                                                    <option value="" selected="selected"><?php echo __('select'); ?></option>
+                                                    <option value="1" selected="selected"><?php echo __('select'); ?></option>
                                                     <?php if(isset($templateData['types'])) { ?>
                                                         <?php foreach($templateData['types'] as $type) { ?>
                                                             <option value=<?php echo $type->id; ?>><?php echo $type->name; ?></option>
@@ -41,7 +41,7 @@
                                     <td align="left"><p>
                                             <label>
                                                 <select name="skin">
-                                                    <option value="" selected="selected"><?php echo __('select'); ?></option>
+                                                    <option value="1" selected="selected"><?php echo __('select'); ?></option>
                                                     <?php if(isset($templateData['skins'])) { ?>
                                                         <?php foreach($templateData['skins'] as $skin) { ?>
                                                             <option value=<?php echo $skin->id; ?>><?php echo $skin->name; ?></option>

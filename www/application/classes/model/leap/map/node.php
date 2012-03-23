@@ -284,8 +284,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
     
-    public function setRootNode($nodeId) {
-        $rootNode = $this->getRootNode();
+    public function setRootNode($mapId, $nodeId) {
+        $rootNode = $this->getRootNodeByMap($mapId);
         if($rootNode != NULL) {
             $rootNode->type_id = DB_ORM::model('map_node_type')->getTypeByName('child')->id;
             $rootNode->save();
@@ -407,6 +407,49 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
         
         return NULL;
+    }
+    
+    public function getNodeById($nodeId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $nodeId);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            return DB_ORM::model('map_node', array((int)$result[0]['id']));
+        }
+        
+        return NULL;
+    }
+    
+    public function getRootNodeByMap($mapId) {
+        $typeId = DB_ORM::model('map_node_type')->getTypeByName('root')->id;
+        if($typeId != NULL) {
+            $builder = DB_SQL::select('default')
+                    ->from($this->table())
+                    ->where('type_id', '=', $typeId, 'AND')
+                    ->where('map_id', '=', $mapId);
+            $result = $builder->query();
+
+            if($result->is_loaded()) {
+                return DB_ORM::model('map_node', array((int)$result[0]['id']));
+            }
+        }
+        
+        return NULL;
+    }
+    
+    public function deleteNode($nodeId) {
+        $this->id = $nodeId;
+        $this->load();
+        
+        if($this->is_loaded()) {
+            if(count($this->links) > 0) {
+                foreach($this->links as $link) {
+                    $link->delete();
+                }
+            }
+        }
+        
+        $this->delete();
     }
 }
 

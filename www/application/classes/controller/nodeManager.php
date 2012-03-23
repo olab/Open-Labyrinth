@@ -114,7 +114,7 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = $this->request->param('id2', NULL);
         
         if($mapId != NULL and $nodeId != NULL) {
-            DB_ORM::model('map_node')->setRootNode($nodeId);
+            DB_ORM::model('map_node')->setRootNode($mapId, $nodeId);
             Request::initial()->redirect(URL::base().'nodeManager/editNode/'.$nodeId);
         } else {
             Request::initial()->redirect(URL::base());

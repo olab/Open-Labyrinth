@@ -19,7 +19,7 @@
     - <a href=""><?php echo __('clusters'); ?></a><br>
     - <a href="<?php echo URL::base().'feedbackManager/index/'.$templateData['map']->id; ?>"><?php echo __('feedback'); ?></a><br>
     - <a href=""><?php echo __('sessions'); ?></a><br>
-    - <a href="" target="_blank"><?php echo __('visual editor'); ?></a>
+    - <a href="<?php echo URL::base().'visualManager/index/'.$templateData['map']->id; ?>" target="_blank"><?php echo __('visual editor'); ?></a>
 </p>
 
 <p><a href="" onClick="window.open('/openlabyrinth/devnotes.asp?mapid=', 'notes', 'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=500, height=400'); return false"><img src='<?php echo URL::base(); ?>images/notes.gif' border='0' alt='author notes'></a></p>

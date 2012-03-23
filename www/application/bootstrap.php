@@ -117,3 +117,9 @@ Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)))'
 		'controller' => 'home',
 		'action'     => 'index',
 	));
+
+Route::set('visual', 'visualManager/index/mapview.asp(/<id>)')
+        ->defaults(array(
+            'controller' => 'visualManager',
+            'action' => 'update',
+        ));

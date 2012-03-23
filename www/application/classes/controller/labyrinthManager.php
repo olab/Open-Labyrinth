@@ -117,6 +117,17 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
     
+    public function action_deleteContributor() {
+        $mapId = $this->request->param('id', NULL);
+        $contId = $this->request->param('id2', NULL);
+        if($mapId != NULL and $contId != NULL) {
+            DB_ORM::model('map_contributor', array((int)$contId))->delete();
+            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+    
     public function action_saveGlobal() {
         $mapId = $this->request->param('id', NULL);
         if($_POST) {

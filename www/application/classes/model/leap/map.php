@@ -234,6 +234,7 @@ class Model_Leap_Map extends DB_ORM_Model {
         $this->delta_time = Arr::get($values, 'delta_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
+        $this->language_id = 1;
         
         $this->save();
         
