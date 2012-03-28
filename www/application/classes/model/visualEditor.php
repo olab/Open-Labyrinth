@@ -59,7 +59,7 @@ class Model_VisualEditor extends Model {
         if($emap != '') {    
             $emap = str_replace('<m', 'm', $emap);
             $emap = str_replace('}>', '}---', $emap);
-            
+
             $enStart = strpos($emap, '--nodes');
             $enEnd = strpos($emap, '--links');
             $emapNodes = substr($emap, 0, $enEnd);

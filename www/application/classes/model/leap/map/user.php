@@ -47,6 +47,17 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return array('id');
     }
     
+    public function checkUserById($mapId, $userId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId, 'AND')->where('user_id', '=', $userId);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            return TRUE;
+        }
+        
+        return FALSE;
+    }
+    
     public function getAllUsers($mapId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();

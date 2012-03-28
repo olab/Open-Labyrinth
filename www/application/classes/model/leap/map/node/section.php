@@ -95,6 +95,22 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         $builder = DB_SQL::delete('default')->from($tableName::table())->where('section_id', '=', $sectionId);
         $builder->execute();
     }
+    
+    public function getSectionsByMapId($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $sections = array();
+            foreach($result as $record) {
+                $sections[] = DB_ORM::model('map_node_section', array((int)$record['id']));
+            }
+            
+            return $sections;
+        }
+        
+        return NULL;
+    }
 }
 
 ?>

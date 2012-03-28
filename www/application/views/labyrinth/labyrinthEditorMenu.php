@@ -1,5 +1,5 @@
 <?php if(isset($templateData['map'])) { ?>
-<p><a href="" target="_blank"><?php echo __('preview'); ?></a></p>
+<p><a href="<?php echo URL::base().'renderLabyrinth/index/'.$templateData['map']->id; ?>" target="_blank"><?php echo __('preview'); ?></a></p>
 
 <p><a href="<?php echo URL::base().'labyrinthManager/editMap/'.$templateData['map']->id; ?>"><?php echo __('editor'); ?></a><br><br>
 

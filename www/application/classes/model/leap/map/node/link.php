@@ -72,11 +72,11 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                 'parent_model' => 'map_node',
             )),
             
-            /*'image' => new DB_ORM_Relation_HasOne($this, array(
-                'child_key' => array('image_id'),
-                'parent_key' => array('id'),
+            'image' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('id'),
+                'parent_key' => array('image_id'),
                 'child_model' => 'map_element',
-            )),*/
+            )),
         );
     }
 

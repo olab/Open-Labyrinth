@@ -23,11 +23,11 @@ class Controller_VisualManager extends Controller_Base {
     }
     
     public function action_update() {
-        $mapId = Arr::get($_GET, 'mapid', NULL);
+        $mapId = $this->request->param('id', NULL);
         $emap = Arr::get($_POST, 'emap', NULL);
         $elink = Arr::get($_POST, 'elink', NULL);
         $enode = Arr::get($_POST, 'enode', NULL);
-        
+
         $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
         
         Model::factory('visualEditor')->update($mapId, $emap, $enode, $elink);

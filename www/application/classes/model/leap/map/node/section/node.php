@@ -93,6 +93,7 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
                                 ->where('node_id', '=', $nodeId);
         $builder->execute();
     }
+    
 }
 
 ?>
