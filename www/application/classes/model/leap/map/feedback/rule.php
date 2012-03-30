@@ -85,6 +85,22 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         return array('id');
     }
     
+    public function getRulesByMap($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $rules = array();
+            foreach($result as $record) {
+                $rules[] = DB_ORM::model('map_feedback_rule', array((int)$record['id']));
+            }
+            
+            return $rules;
+        }
+        
+        return NULL;
+    }
+    
     public function getAllRules() {
         $builder = DB_SQL::select('default')->from($this->table());
         $result = $builder->query();

@@ -37,6 +37,27 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
         );
+        
+        $this->relations = array(
+            'user' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('user_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'user',
+            )),
+            
+            'traces' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('session_id'),
+                'child_model' => 'user_sessionTrace',
+                'parent_key' => array('id'),
+                'options' => array(array('order_by', array('date_stamp', 'ASC')), ),
+            )),
+            
+            'map' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('map_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map',
+            )),
+        );
     }
 
     public static function data_source() {
@@ -59,6 +80,22 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 ->column('user_ip', $userIp);
         
         return $builder->execute();
+    }
+    
+    public function getAllSessionByMap($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('start_time', 'DESC');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $sessions = array();
+            foreach($result as $record) {
+                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
+            }
+            
+            return $sessions;
+        }
+        
+        return NULL;
     }
 }
 

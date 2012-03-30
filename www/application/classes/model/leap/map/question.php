@@ -88,6 +88,12 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'child_model' => 'map_question_response',
                 'parent_key' => array('id'),
             )),
+            
+            'user_responses' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('question_id'),
+                'child_model' => 'user_response',
+                'parent_key' => array('id'),
+            )),
         );
     }
 

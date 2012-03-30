@@ -131,6 +131,45 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         return NULL;
     }
     
+    public function getAllMediaFiles($mapId) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('map_id', '=', $mapId)
+                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'application/x-shockwave-flash'));
+        
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+            }
+            
+            return $elements;
+        }
+        
+        return NULL;
+    }
+    
+    public function getAllMediaFilesNotInIds($ids) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('id', 'NOT IN', $ids, 'AND')
+                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'application/x-shockwave-flash'));
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+            }
+            
+            return $elements;
+        }
+        
+        return NULL;
+    }
+    
     public function getAllFilesByMap($mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())

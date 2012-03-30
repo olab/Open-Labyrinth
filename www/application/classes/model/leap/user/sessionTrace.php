@@ -70,6 +70,14 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 'nullable' => FALSE,
             )),
         );
+        
+        $this->relations = array(
+            'node' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('node_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_node',
+            )),
+        );
     }
 
     public static function data_source() {
@@ -160,6 +168,62 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 ->where('map_id', '=', $mapId, 'AND')
                 ->where('node_id', '=', $nodeId);
         $builder->execute();
+    }
+    
+    public function getTraceBySessionID($sessionId) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('session_id', '=', $sessionId)
+                ->order_by('id', 'ASC');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $traces = array();
+            foreach($result as $record) {
+                $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
+            }
+            
+            return $traces;
+        }
+        
+        return NULL;
+    }
+    
+    public function getCountersValues($sessionId) {
+        $traces = $this->getTraceBySessionID($sessionId);
+        
+        if($traces != NULL and count($traces) > 0) {
+            $result = array();
+            $i = 0;
+            foreach($traces as $trace) {
+                if($trace->counters != '') {
+                    $counters = DB_ORM::model('map_counter')->getCountersByMap($trace->map_id);
+                    if($counters != NULL and count($counters) > 0) {
+                        $currentCountersState = $trace->counters;
+                        $j = 0;
+                        foreach($counters as $counter) {
+                            $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+                            $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+                            $e = strpos($tmp, ']') + 1;
+                            $tmp = substr($tmp, 0, $e - 1);
+                            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+                            $result[$counter->name][0] = $counter->name;
+                            $result[$counter->name][2] = $counter->id;
+                            if (is_numeric($tmp)) {
+                                $thisCounter = (int) $tmp;
+                                $result[$counter->name][1][] = $thisCounter;
+                            }
+                            $j++;
+                        }
+                    }
+                }
+                $i++;
+            }
+            
+            return $result;
+        }
+        
+        return NULL;
     }
 }
 

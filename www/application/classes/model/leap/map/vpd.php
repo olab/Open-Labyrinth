@@ -1,0 +1,111 @@
+<?php defined('SYSPATH') or die('No direct script access.');
+
+/**
+ * Model for map_vpds table in database 
+ */
+class Model_Leap_Map_Vpd extends DB_ORM_Model {
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->fields = array(
+            'id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+            )),
+            
+            'map_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+            )),
+            
+            'vpd_type_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+            )),
+        );
+        
+        $this->relations = array(
+            'map' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('map_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map',
+            )),
+            
+            'type' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('vpd_type_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_vpd_type',
+            )),
+            
+            'elements' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('vpd_id'),
+                'child_model' => 'map_vpd_element',
+                'parent_key' => array('id'),
+            )),
+        );
+    }
+
+    public static function data_source() {
+        return 'default';
+    }
+
+    public static function table() {
+        return 'map_vpds';
+    }
+
+    public static function primary_key() {
+        return array('id');
+    }
+    
+    public function getAllVpdByMap($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('vpd_type_id', 'ASC');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $vpds = array();
+            foreach($result as $record) {
+                $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
+            }
+            
+            return $vpds;
+        }
+        
+        return NULL;
+    }
+    
+    public function getVpdNotInArrayIDs($ids) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $vpds = array();
+            foreach($result as $record) {
+                $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
+            }
+            
+            return $vpds;
+        }
+        
+        return NULL;
+    }
+    
+    public function createNewElement($mapId, $typeName, $values) {
+        $typeId = DB_ORM::model('map_vpd_type')->getTypeIdByName($typeName);
+        
+        if($typeId != NULL) {
+            var_dump($typeId);
+            $builder = DB_ORM::insert('map_vpd')
+                    ->column('map_id', $mapId)
+                    ->column('vpd_type_id', (int)$typeId);
+            $id = $builder->execute();
+            
+            DB_ORM::model('map_vpd_element')->saveElementValues($id, $values);
+        }
+    }
+}
+
+?>
