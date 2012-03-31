@@ -2,7 +2,7 @@
     <table width="100%" height="100%" cellpadding='6'>
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Open Labyrinths') . ' (' . count($templateData['maps']) . ')'; ?></h4>
+                <h4><?php echo __('Labyrinths I am Authoring ') . ' (' . count($templateData['maps']) . ')'; ?></h4>
                 <table width="100%" cellpadding="0">
                     <tr bgcolor="#ffffff"><td>
                             <table width="100%">

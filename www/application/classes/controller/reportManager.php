@@ -54,7 +54,27 @@ class Controller_ReportManager extends Controller_Base {
     public function action_summaryReport() {
         $mapId = $this->request->param('id', NULL);
         if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));            
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));  
+            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
+            
+            if(count($this->templateData['sessions']) > 0) {
+                $minClicks = count($this->templateData['sessions'][0]->traces);
+                foreach($this->templateData['sessions'] as $session) {
+                    if($minClicks > count($session->traces)) {
+                        $minClicks = count($session->traces);
+                    }
+                }
+            }
+            
+            if(count($this->templateData['sessions']) > 0) {
+                foreach($this->templateData['sessions'] as $session) {
+                    $this->templateData['counters'][] = DB_ORM::model('user_sessionTrace')->getCountersValues($session->id);
+                }
+            }
+            
+            $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
+            $this->templateData['minClicks'] = $minClicks;
+            
             $summaryView = View::factory('labyrinth/report/summary');
             $summaryView->set('templateData', $this->templateData);
             

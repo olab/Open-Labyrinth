@@ -22,9 +22,25 @@ class Controller_Base extends Controller_Template {
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
                 $this->templateData['right'] = View::factory('document');
+            } else {
+                $centerView = View::factory('userMenu');
+                
+                $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledAndOpenMap());
+                
+                $centerView->set('templateData', $this->templateData);
+                $this->templateData['center'] = $centerView;
+                $this->templateData['right'] = View::factory('document');
             }
         } else {
             $this->templateData['left'] = View::factory('login');
+            
+            $centerView = View::factory('userMenu');
+                
+            $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledAndOpenMap());
+                
+            $centerView->set('templateData', $this->templateData);
+            $this->templateData['center'] = $centerView;
+            $this->templateData['right'] = View::factory('document');
         }
         
         $this->templateData['title'] = 'OpenLabyrinth';

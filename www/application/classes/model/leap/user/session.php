@@ -97,6 +97,42 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         
         return NULL;
     }
+    
+    public function getAllSessionByUser($userId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('user_id', '=', $userId)->order_by('start_time', 'DESC');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $sessions = array();
+            foreach($result as $record) {
+                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
+            }
+            
+            return $sessions;
+        }
+        
+        return NULL;
+    }
+    
+    public function getSessionByUserMapIDs($userId, $mapId) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('user_id', '=', $userId, 'AND')
+                ->where('map_id', '=', $mapId)
+                ->order_by('start_time', 'DESC');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $sessions = array();
+            foreach($result as $record) {
+                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
+            }
+            
+            return $sessions;
+        }
+        
+        return NULL;
+    }
 }
 
 ?>
