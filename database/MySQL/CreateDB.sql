@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `maps` (
   KEY `skin_id` (`skin_id`),
   KEY `section_id` (`section_id`),
   KEY `language_id` (`language_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `maps`
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `map_collectionMaps` (
   PRIMARY KEY (`id`),
   KEY `collection_id` (`collection_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_collectionMaps`
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `map_collections` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_collections`
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `map_counters` (
   `out_of` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_counters`
@@ -363,7 +363,7 @@ CREATE TABLE IF NOT EXISTS `map_dams` (
   `name` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_dams`
@@ -386,7 +386,7 @@ CREATE TABLE IF NOT EXISTS `map_dam_elements` (
   PRIMARY KEY (`id`),
   KEY `dam_id` (`dam_id`),
   KEY `element_id` (`element_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_dam_elements`
@@ -414,7 +414,7 @@ CREATE TABLE IF NOT EXISTS `map_elements` (
   `v_align` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_elements`
@@ -462,7 +462,7 @@ CREATE TABLE IF NOT EXISTS `map_feedback_rules` (
   `counter_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_feedback_rules`
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `map_nodes` (
   `rgb` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=26 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_nodes`
@@ -561,7 +561,7 @@ CREATE TABLE IF NOT EXISTS `map_node_counters` (
   `function` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `node_id` (`node_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_node_counters`
@@ -587,7 +587,7 @@ CREATE TABLE IF NOT EXISTS `map_node_links` (
   KEY `map_id` (`map_id`),
   KEY `node_id_1` (`node_id_1`),
   KEY `node_id_2` (`node_id_2`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_node_links`
@@ -725,6 +725,35 @@ INSERT INTO `map_node_types` (`id`, `name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `map_presentations`
+--
+
+CREATE TABLE IF NOT EXISTS `map_presentations` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(1000) DEFAULT NULL,
+  `header` varchar(3000) DEFAULT NULL,
+  `footer` varchar(3000) DEFAULT NULL,
+  `style` varchar(50) DEFAULT NULL,
+  `access` int(11) DEFAULT NULL,
+  `login` int(11) DEFAULT NULL,
+  `order` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `start_date` bigint(20) DEFAULT NULL,
+  `start_time` bigint(20) DEFAULT NULL,
+  `end_date` bigint(20) DEFAULT NULL,
+  `end_time` bigint(20) DEFAULT NULL,
+  `tries` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `map_presentations`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `map_questions`
 --
 
@@ -741,7 +770,7 @@ CREATE TABLE IF NOT EXISTS `map_questions` (
   `num_tries` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_questions`
@@ -763,7 +792,7 @@ CREATE TABLE IF NOT EXISTS `map_question_responses` (
   `score` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `question_id` (`question_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_question_responses`
@@ -922,7 +951,7 @@ CREATE TABLE IF NOT EXISTS `map_vpds` (
   PRIMARY KEY (`id`),
   KEY `vpd_type_id` (`vpd_type_id`),
   KEY `vpd_type_id_2` (`vpd_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=38 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_vpds`
@@ -942,7 +971,7 @@ CREATE TABLE IF NOT EXISTS `map_vpd_elements` (
   `value` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `vpd_id` (`vpd_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=205 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_vpd_elements`
@@ -995,7 +1024,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`,`email`),
   KEY `fk_language_id` (`language_id`),
   KEY `fk_type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `users`
@@ -1040,7 +1069,7 @@ CREATE TABLE IF NOT EXISTS `user_responses` (
   PRIMARY KEY (`id`),
   KEY `session_id` (`session_id`),
   KEY `question_id` (`question_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `user_responses`
@@ -1063,7 +1092,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   UNIQUE KEY `id` (`id`),
   KEY `user_id` (`user_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=116 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `user_sessions`
@@ -1094,7 +1123,7 @@ CREATE TABLE IF NOT EXISTS `user_sessiontraces` (
   KEY `map_id` (`map_id`),
   KEY `node_id` (`node_id`),
   KEY `session_id_2` (`session_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=170 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `user_sessiontraces`
@@ -1163,8 +1192,8 @@ ALTER TABLE `map_chat_elements`
 -- Constraints for table `map_collectionMaps`
 --
 ALTER TABLE `map_collectionMaps`
-  ADD CONSTRAINT `map_collectionmaps_ibfk_2` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `map_collectionmaps_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `map_collections` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `map_collectionmaps_ibfk_1` FOREIGN KEY (`collection_id`) REFERENCES `map_collections` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `map_collectionmaps_ibfk_2` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `map_contributors`
