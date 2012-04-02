@@ -26,6 +26,7 @@ class Controller_Base extends Controller_Template {
                 $centerView = View::factory('userMenu');
                 
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledAndOpenMap());
+                $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId(Auth::instance()->get_user()->id));
                 
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
@@ -37,7 +38,7 @@ class Controller_Base extends Controller_Template {
             $centerView = View::factory('userMenu');
                 
             $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledAndOpenMap());
-                
+            
             $centerView->set('templateData', $this->templateData);
             $this->templateData['center'] = $centerView;
             $this->templateData['right'] = View::factory('document');

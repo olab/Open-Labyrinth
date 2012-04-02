@@ -27,6 +27,14 @@ class Model_Leap_User_Group extends DB_ORM_Model {
                 'unsigned' => TRUE,
             )),
         );
+        
+        $this->relations = array(
+            'user' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('user_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'user',
+            )),
+        );
     }
     
     public static function data_source() {

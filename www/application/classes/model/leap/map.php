@@ -377,6 +377,16 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         return NULL;
     }
+    
+    public function updateMapSecurity($mapId, $securityId) {
+        $this->id = $mapId;
+        $this->load();
+        
+        if($this->is_loaded()) {
+            $this->security_id = $securityId;
+            $this->save();
+        }
+    }
 }
 
 ?>
