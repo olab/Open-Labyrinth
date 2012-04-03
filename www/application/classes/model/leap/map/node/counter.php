@@ -169,7 +169,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         }
     }
     
-    public function updateNodeCounters($values, $counterId = NULL) {
+    public function updateNodeCounters($values, $counterId = NULL, $mapId = NULL) {
         $counters = DB_ORM::model('map_node_counter')->getAllNodeCounters();
         if(count($counters) > 0) {
             foreach($counters as $counter) {
@@ -184,6 +184,26 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                     $counter->function = Arr::get($values, $inputName, $counter->function);
                     $counter->save();
                 }
+            }
+        } else {
+            if($mapId != NULL) {
+                $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
+                $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+                if(count($counters) > 0) {
+                    foreach($counters as $counter) {
+                        if(count($nodes) > 0) {
+                            foreach($nodes as $node) {
+                                $newMapCounter = DB_ORM::model('map_node_counter');
+                                $newMapCounter->counter_id = $counter->id;
+                                $newMapCounter->node_id = $node->id;
+                                
+                                $newMapCounter->save();
+                            }
+                        }
+                    }
+                }
+                
+                $this->updateNodeCounters($values, $counterId);
             }
         }
     }

@@ -32,8 +32,8 @@
         <td nowrap=""><a href="<?php echo URL::base(); ?>presentationManager"><img src="<?php echo URL::base(); ?>images/presentl.jpg" border="0" alt="OLPresentations"></a></td>
         <td nowrap=""><p><a href="<?php echo URL::base(); ?>presentationManager"><strong><?php echo __('presentations'); ?></strong></a></p></td>
         <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td nowrap=""><a href="remoteservices.asp"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt="OLRemote"></a></td>
-        <td nowrap=""><p><a href="remoteservices.asp"><strong><?php echo __('remote services'); ?></strong></a></p></td>
+        <td nowrap=""><a href="<?php echo URL::base(); ?>remoteServiceManager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt="OLRemote"></a></td>
+        <td nowrap=""><p><a href="<?php echo URL::base(); ?>remoteServiceManager"><strong><?php echo __('remote services'); ?></strong></a></p></td>
     </tr>
 
     <tr>

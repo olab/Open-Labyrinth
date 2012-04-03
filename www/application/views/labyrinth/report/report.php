@@ -192,9 +192,12 @@ function getRandomColor(){
                            <?php } ?>
                            <?php } ?>
                            </categories>
-                           <?php if(count($templateData['counters']) > 0) { //rsort($templateData['counters']); ?>
+                           <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                            <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php $v[$counter[0]] = getRandomColor(); echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
+                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
+                                    <?php } ?>
                                     <?php if(count($counter[1]) > 0) { ?>
                                         <?php for($i = count($counter[1]) - 1; $i >= 0; $i--) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
@@ -214,6 +217,9 @@ function getRandomColor(){
                            <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                                 <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
+                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
+                                    <?php } ?>
                                     <?php if(count($counter[1]) > 0) { ?>
                                         <?php for($i = count($counter[1]) - 1; $i >= 0; $i--) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />

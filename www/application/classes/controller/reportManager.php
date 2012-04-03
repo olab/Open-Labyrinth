@@ -34,7 +34,13 @@ class Controller_ReportManager extends Controller_Base {
                         $this->templateData['responses'][$question->id] = $response;
                     }
                 }
-                
+            }
+            
+            $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
+            if($allCounters != NULL and count($allCounters) > 0) {
+                foreach($allCounters as $counter) { 
+                    $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
+                }
             }
             
             $this->templateData['feedbacks'] = Model::factory('labyrinth')->getMainFeedback($this->templateData['session'], $this->templateData['counters'], $this->templateData['session']->map_id);

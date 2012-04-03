@@ -22,11 +22,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     if ($data['node']->link_style->name == 'type in text') {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['display'];
-                        $data['alinkfil'] = substr($result['alinkfil'], 0, strlen($result['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['alinknod'], 0, strlen($result['alinknod']) - 2);
+                        $data['links'] = $result['links']['display'];
+                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                     } else {
-                        $data['links'] = $this->generateLinks($data['node'], $data['node_links']);
+                        $result = $this->generateLinks($data['node'], $data['node_links']);
+                        $data['links'] = $result['links'];
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
@@ -54,6 +55,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
         $editOn = $this->request->param('id3', NULL);
+        
         if ($mapId != NULL) {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
@@ -68,17 +70,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $data = Model::factory('labyrinth')->execute($node->id);
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
+                    //echo Debug::vars($data['redirect']);
                     if ($data['redirect'] != NULL) {
                         Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $data['redirect']);
                     }
 
                     if ($data['node']->link_style->name == 'type in text') {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['display'];
-                        $data['alinkfil'] = substr($result['alinkfil'], 0, strlen($result['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['alinknod'], 0, strlen($result['alinknod']) - 2);
+                        $data['links'] = $result['links']['display'];
+                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                     } else {
-                        $data['links'] = $this->generateLinks($data['node'], $data['node_links']);
+                        $result = $this->generateLinks($data['node'], $data['node_links']);
+                        $data['links'] = $result['links'];
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
@@ -178,33 +182,179 @@ class Controller_RenderLabyrinth extends Controller_Template {
             echo Model::factory('labyrinth')->question($sessionId, $questionId, $optionNumber);
         }
     }
+    
+    public function action_remote() {
+        $mapId = $this->request->param('id', NULL);
+        $mode = $this->request->param('id2', NULL);
+        
+        $this->auto_render = false;
+        
+        if($mapId != NULL and $mode != NULL) {
+            switch($mode) {
+                case 'u':
+                    $username = $this->request->param('id3', NULL);
+                    $password = $this->request->param('id4', NULL);
+                    $nodeId = $this->request->param('id5', NULL);
+                    if($this->checkRemoteUser($username, $password)) {
+                        if($nodeId != NULL) {
+                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($nodeId, $mapId);
+                        } else { 
+                            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($rootNode->id, $mapId);
+                        }
+                    } else {
+                        echo '<?xml version="1.0" encoding=UTF-8?><labyrinth>Not a valid service: no registration for this username and password</labyrinth>';
+                    }
+                    break;
+                case 'i':
+                    if($this->checkRemoteIP($mapId)) {
+                        $nodeId = $this->request->param('id3', NULL);
+                        if($nodeId != NULL) {
+                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($nodeId, $mapId);
+                        } else {
+                            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($rootNode->id, $mapId);
+                        }
+                    } else {
+                        echo '<?xml version="1.0" encoding=UTF-8?><labyrinth>Not a valid service: no registration for this IP ('.getenv('REMOTE_ADDR').')</labyrinth>';
+                    }
+                    break;
+            }
+        } else {
+            echo '';
+        }
+    }
+    
+    private function remote_go($nodeId, $mapId) {
+        if ($mapId != NULL) {
+            $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
+
+            if ($node != NULL) {
+                $data = Model::factory('labyrinth')->execute($node->id);
+                if ($data) {
+                    $data['navigation'] = $this->generateNavigation($data['sections']);
+
+                    if ($data['node']->link_style->name == 'type in text') {
+                        $result = $this->generateLinks($data['node'], $data['node_links']);
+                        $data['links'] = $result['links']['display'];
+                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                    } else {
+                        $result = $this->generateLinks($data['node'], $data['node_links']);
+                        $data['links'] = $result['links'];
+                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                    }
+
+                    $data['node_text'] = $this->parseText($data['node_text']);
+
+                    $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+
+                    if($data) {
+                        $data['links'] = str_replace('Array', '', $data['links']);
+                        $data['trace_links'] = '<a href="#" onclick="toggle_visibility('."'track'".');"><p class="style2"><strong>Review your pathway</strong></p></a><div id="track" style="display:none">'.$data['trace_links'].'</div>';
+                        $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+                        $out  = "<labyrinth>";
+                        $out .= "<mnodetitle>".urlencode($data['node_title'])."</mnodetitle>";
+                        $out .= "<javascripttime></javascripttime>";
+                        $out .= "<mapname>".urlencode($data['map']->name)."</mapname>";
+                        $out .= "<mapid>".urlencode($data['map']->id)."</mapid>";
+                        $out .= "<mnodeid>".urlencode($data['node']->id)."</mnodeid>";
+                        $out .= "<timestring></timestring>";
+                        $out .= "<message>".urlencode($data['node_text'])."</message>";
+                        $out .= "<colourbar></colourbar>";
+                        $out .= "<linker>".urlencode($data['links'])."</linker>";
+                        $out .= "<links>".urlencode($data['remote_links'])."</links>";
+                        $out .= "<counters>".$data['remoteCounters']."</counters>";
+                        $out .= "<tracestring>".urlencode($data['trace_links'])."</tracestring>";
+                        $out .= "<rootnode>".urlencode($rootNode->id)."</rootnode>";
+                        $out .= "<infolink>".urlencode($data['node']->info)."</infolink>";
+                        $out .= "<usermode></usermode>";
+                        $out .= "<dam></dam>";
+                        $out .= "<mysession>".urlencode(Session::instance()->get('session_id'))."</mysession>";
+                        $out .= "<counterstring>".urlencode($data['counters'])."</counterstring>";
+                        $out .= "<navme></navme>";
+                        $out .= "<maptype>".urlencode($data['map']->type->name)."</maptype>";
+                        $out .= "<remoteredir></remoteredir>";
+                        $out .= "</labyrinth>";
+                        
+                        return $out;
+                    }
+                    
+                } else {
+                    return '';
+                }
+            } else {
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+    
+    private function checkRemoteUser($username, $password) {
+        $user = DB_ORM::model('user')->getUserByName($username);
+        if($user) {
+            if($user->password == Auth::instance()->hash($password) and $user->type->name == 'remote service') {
+                return TRUE;
+            }
+        }
+        
+        return FALSE;
+    }
+    
+    private function checkRemoteIP($mapId) {
+        if(($id = DB_ORM::model('remoteService')->checkService(getenv('REMOTE_ADDR'))) != FALSE) {
+            if(DB_ORM::model('remoteMap')->checkMap($id, $mapId)) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+    
+    private function generateRemoteLinks($links) {
+        if(count($links) > 0) {
+            $result = '';
+            foreach($links as $link) {
+                $result .= $link->node_id_2.','.$link->text.';';
+            }
+            
+            return $result;
+        }
+        
+        return '';
+    }
 
     private function generateLinks($node, $links) {
         $result = NULL;
+        $result['links'] = '';
         if (is_array($links) and count($links) > 0) {
-
+            $result['remote_links'] = '';
+            $result['links'] = '';
             foreach ($links as $link) {
                 $title = $link->node_2->title;
-                if ($link->text != '') {
+                if ($link->text != '' and $link->text != ' ') {
                     $title = $link->text;
+                    
                 }
+
                 switch ($node->link_style->name) {
                     case 'text (default)':
-                        $result .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
+                        $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
                         break;
                     case 'dropdown':
-                        $result .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
+                        $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
                         break;
                     case 'dropdown + confidence':
-                        $result .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
+                        $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
                         break;
                     case 'type in text':
-                        if (isset($result['alinkfil'])) {
-                            $result['alinkfil'] .= '"' . strtolower($title) . '", ';
-                            $result['alinknod'] .= $link->node_id_2 . ', ';
+                        if (isset($result['links']['alinkfil'])) {
+                            $result['links']['alinkfil'] .= '"' . strtolower($title) . '", ';
+                            $result['links']['alinknod'] .= $link->node_id_2 . ', ';
                         } else {
-                            $result['alinkfil'] = '"' . strtolower($title) . '", ';
-                            $result['alinknod'] = $link->node_id_2 . ', ';
+                            $result['links']['alinkfil'] = '"' . strtolower($title) . '", ';
+                            $result['links']['alinknod'] = $link->node_id_2 . ', ';
                         }
                         break;
                 }
@@ -212,38 +362,36 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             switch ($node->link_style->name) {
                 case 'dropdown':
-                    $result .= '<select name="links">' . $result . '</select>';
+                    $result['links'] .= '<select name="links">' . $result . '</select>';
                     break;
                 case 'dropdown + confidence':
-                    $result .= '<form method="post" action="mnode.asp"><select name="&chr(34)&"id"&chr(34)&">' . $result . '</select>';
-                    $result .= '<select name="conf">';
-                    $result .= '<option value="">select how confident you are ...</option>';
-                    $result .= '<option value="4">I am very confident</option>';
-                    $result .= '<option value="3">I am quite confident</option>';
-                    $result .= '<option value="2">I am quite unconfident</option>';
-                    $result .= '<option value="1">I am very unconfident</option>';
-                    $result .= '</select><input type="submit" name="submit" value="go" /></form>';
+                    $result['links'] .= '<form method="post" action="mnode.asp"><select name="&chr(34)&"id"&chr(34)&">' . $result . '</select>';
+                    $result['links'] .= '<select name="conf">';
+                    $result['links'] .= '<option value="">select how confident you are ...</option>';
+                    $result['links'] .= '<option value="4">I am very confident</option>';
+                    $result['links'] .= '<option value="3">I am quite confident</option>';
+                    $result['links'] .= '<option value="2">I am quite unconfident</option>';
+                    $result['links'] .= '<option value="1">I am very unconfident</option>';
+                    $result['links'] .= '</select><input type="submit" name="submit" value="go" /></form>';
                     break;
                 case 'type in text':
-                    $result['display'] = '<form action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '" name="form2"><input name="filler" type="text" size="25" value="" onKeyUp="javascript:Populate(this.form);"><input type="hidden" name="id" value="' . $node->id . '" /><input type="submit" name="submit" value="go" /></form>';
+                    $result['links']['display'] = '<form action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '" name="form2"><input name="filler" type="text" size="25" value="" onKeyUp="javascript:Populate(this.form);"><input type="hidden" name="id" value="' . $node->id . '" /><input type="submit" name="submit" value="go" /></form>';
                     break;
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                var_dump('COOL');
-                $result['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
             } else if ($node->end) {
-                var_dump('COOL');
-                $result .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
             }
-
+            
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
                 return $result;
             } else if ($node->end) {
-                $result .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
                 return $result;
             }
 

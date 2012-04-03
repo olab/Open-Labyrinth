@@ -132,15 +132,17 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     }
     
     public function getCountTracks($sessionId, $nodeIDs) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('node_id', 'IN', $nodeIDs);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            return count($result);
-        }
+        if(count($nodeIDs) > 0) {
+			$builder = DB_SQL::select('default')
+					->from($this->table())
+					->where('session_id', '=', $sessionId, 'AND')
+					->where('node_id', 'IN', $nodeIDs);
+			$result = $builder->query();
+			
+			if($result->is_loaded()) {
+				return count($result);
+			}
+		}
         
         return NULL;
     }

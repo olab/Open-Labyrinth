@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `maps` (
   KEY `skin_id` (`skin_id`),
   KEY `section_id` (`section_id`),
   KEY `language_id` (`language_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `maps`
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `map_counters` (
   `out_of` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `map_counters`
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `map_nodes` (
   `rgb` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `map_nodes`
@@ -561,7 +561,7 @@ CREATE TABLE IF NOT EXISTS `map_node_counters` (
   `function` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `node_id` (`node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `map_node_counters`
@@ -587,7 +587,7 @@ CREATE TABLE IF NOT EXISTS `map_node_links` (
   KEY `map_id` (`map_id`),
   KEY `node_id_1` (`node_id_1`),
   KEY `node_id_2` (`node_id_2`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `map_node_links`
@@ -1048,6 +1048,45 @@ INSERT INTO `map_vpd_types` (`id`, `name`, `label`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `remoteMaps`
+--
+
+CREATE TABLE IF NOT EXISTS `remoteMaps` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `service_id` int(10) unsigned NOT NULL,
+  `map_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_id` (`service_id`),
+  KEY `map_id` (`map_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `remoteMaps`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `remoteServices`
+--
+
+CREATE TABLE IF NOT EXISTS `remoteServices` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `type` varchar(1) NOT NULL,
+  `ip` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+
+--
+-- Dumping data for table `remoteServices`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -1063,7 +1102,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`,`email`),
   KEY `fk_language_id` (`language_id`),
   KEY `fk_type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `users`
@@ -1131,7 +1170,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   UNIQUE KEY `id` (`id`),
   KEY `user_id` (`user_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
 --
 -- Dumping data for table `user_sessions`
@@ -1162,7 +1201,7 @@ CREATE TABLE IF NOT EXISTS `user_sessiontraces` (
   KEY `map_id` (`map_id`),
   KEY `node_id` (`node_id`),
   KEY `session_id_2` (`session_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=43 ;
 
 --
 -- Dumping data for table `user_sessiontraces`

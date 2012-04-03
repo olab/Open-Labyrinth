@@ -60,9 +60,11 @@ class Model_Labyrinth extends Model {
             if ($c != NULL) {
                 $result['counters'] = $c['counterString'];
                 $result['redirect'] = $c['redirect'];
+                $result['remoteCounters'] = $c['remote'];
             } else {
                 $result['counters'] = '';
                 $result['redirect'] = NULL;
+                $result['remoteCounters'] = '';
             }
 
             $result['traces'] = $this->getReviewLinks($sessionId);
@@ -204,6 +206,7 @@ class Model_Labyrinth extends Model {
                 $updateCounter = '';
                 $oldCounter = '';
                 $counterString = '';
+                $remoteCounterString = '';
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($node->map_id);
                 $redirect = NULL;
                 foreach ($counters as $counter) {
@@ -230,19 +233,8 @@ class Model_Labyrinth extends Model {
                         if (is_numeric($tmp)) {
                             $thisCounter = (int) $tmp;
                         }
-
-                        $n = DB_ORM::model('map_node_counter')->getNodeCounter($node->id, $counter->id);
-                        if ($n != NULL and $n->function != '') {
-                            if ($n->function[0] == '=') {
-                                $thisCounter = (int) substr($n->function, 1, strlen($n->function));
-                            } else if ($n->function[0] == '-') {
-                                $thisCounter -= (int) substr($n->function, 1, strlen($n->function));
-                            } else if ($n->function[0] == '+') {
-                                $thisCounter += (int) substr($n->function, 1, strlen($n->function));
-                            }
-                        }
                     }
-
+                    
                     $counterFunction = '';
                     if (count($node->counters) > 0) {
                         foreach ($node->counters as $nodeCounter) {
@@ -272,6 +264,7 @@ class Model_Labyrinth extends Model {
                     if ($counter->visible) {
                         $popup = '<a href="#" onclick="window.open("' . URL::base() . 'renderLabyrinth/", "Counter", ' . "'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350);" . ' return false;">';
                         $counterString .= '<p>' . $popup . $label . '</a>(' . $thisCounter . ') ' . $func . '</p>';
+                        $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$thisCounter.'"></counter>';
                     }
 
                     $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
@@ -321,7 +314,7 @@ class Model_Labyrinth extends Model {
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
-                return array('counterString' => $counterString, 'redirect' => $redirect);
+                return array('counterString' => $counterString, 'redirect' => $redirect, 'remote' => $remoteCounterString);
             }
 
             return '';

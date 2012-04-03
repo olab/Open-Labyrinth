@@ -202,11 +202,11 @@ abstract class Base_DB_SQLite_Expression implements DB_SQL_Expression_Interface 
 			$expr = strtoupper($expr);
 			if ($group == 'COMPARISON') {
 				switch ($expr) {
-					case DB_SQL_Operator::_REGEX:
+					case DB_SQL_Operator::_REGEX_:
 					case 'REGEXP':
 						return 'REGEXP';
 					break;
-					case DB_SQL_Operator::_NOT_REGEX:
+					case DB_SQL_Operator::_NOT_REGEX_:
 					case 'NOT REGEXP':
 						return 'NOT REGEXP';
 					break;

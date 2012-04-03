@@ -22,5 +22,5 @@
     - <a href="<?php echo URL::base().'visualManager/index/'.$templateData['map']->id; ?>" target="_blank"><?php echo __('visual editor'); ?></a>
 </p>
 
-<p><a href="" onClick="window.open('/openlabyrinth/devnotes.asp?mapid=', 'notes', 'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=500, height=400'); return false"><img src='<?php echo URL::base(); ?>images/notes.gif' border='0' alt='author notes'></a></p>
+<p><a href="" onClick="window.open('#', 'notes', 'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=500, height=400'); return false"><img src='<?php echo URL::base(); ?>images/notes.gif' border='0' alt='author notes'></a></p>
 <?php } ?>

@@ -162,10 +162,10 @@ class Controller_CounterManager extends Controller_Base {
         $counterId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL) {
             if($counterId != NULL) {
-                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int)$counterId);
+                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int)$counterId, (int)$mapId);
                 Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId.'/'.$counterId);
             } else {
-                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST);
+                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int)$mapId);
                 Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
             }
         } else {

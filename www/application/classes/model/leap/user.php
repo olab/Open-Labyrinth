@@ -84,6 +84,8 @@ class Model_Leap_User extends DB_ORM_Model {
         if ($result->is_loaded()) {
             $this->id = $result[0]['id'];
             $this->load();
+            
+            return $this;
         }
     }
 
