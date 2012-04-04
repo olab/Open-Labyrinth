@@ -5,7 +5,7 @@
                 <h4><?php echo __('edit nodes of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h4>
                 <table width="100%" cellpadding="3">
                     <tr bgcolor="#ffffff"><td align="left">
-                            <p><br>[<a href="<?php echo URL::base().'nodeManager/addNode/'.$templateData['map']->id; ?>">add a node</a>]&nbsp;[<a href="<?php echo URL::base().'nodeManager/sections/'.$templateData['map']->id; ?>">sections</a>]&nbsp;[<a href="<?php echo URL::base().'nodeManager/grid/'.$templateData['map']->id; ?>">nodegrid</a>]</p>
+                            <p><br>[<a href="<?php echo URL::base().'nodeManager/addNode/'.$templateData['map']->id; ?>"><?php echo __('add a node'); ?></a>]&nbsp;[<a href="<?php echo URL::base().'nodeManager/sections/'.$templateData['map']->id; ?>">sections</a>]&nbsp;[<a href="<?php echo URL::base().'nodeManager/grid/'.$templateData['map']->id; ?>">nodegrid</a>]</p>
                             <table border="0" width="50%" cellpadding="3">
                                 <tr><td colspan="3"><hr></td></tr>
                                 <?php if(isset($templateData['nodes'])) { ?>

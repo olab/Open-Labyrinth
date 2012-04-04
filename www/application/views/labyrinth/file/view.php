@@ -8,7 +8,6 @@
                     <tr bgcolor="#ffffff">
                         <td>
                             <p>Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></p><table border="0" width="100%" cellpadding="1">
-
                             </table>
                             <table>
                                 <?php if(isset($templateData['files']) and count($templateData['files']) > 0) { ?>
@@ -80,18 +79,16 @@
                                 
                             </table>
 
-                            <p>upload a file to Labyrinth "<?php echo $templateData['map']->name; ?>"</p>
+                            <p><?php echo __('upload a file to Labyrinth'); ?> "<?php echo $templateData['map']->name; ?>"</p>
 
                             <form method="POST" enctype="multipart/form-data" action="<?php echo URL::base().'fileManager/uploadFile/'.$templateData['map']->id; ?>">
-                                <table border="0" width="20%">
-                                    <input type="hidden" name="mapid" value="6">
-                                </table><table width="100%" border="0" cellspacing="6">
+                                <table width="100%" border="0" cellspacing="6">
                                     <tr>
-                                        <td nowrap=""><p>select file to upload</p></td>
+                                        <td nowrap=""><p><?php echo __('select file to upload'); ?></p></td>
                                         <td align="center">
                                             <input type="FILE" size="50" name="filename"></td>
                                         <td>
-                                            <input type="submit" name="Submit" value="submit">
+                                            <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                                         </td>
                                     </tr>
                                 </table>
@@ -105,5 +102,3 @@
         </tr>
     </table>
 <?php } ?>
-
-

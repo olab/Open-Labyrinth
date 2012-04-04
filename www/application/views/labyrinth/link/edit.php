@@ -2,7 +2,7 @@
     <table width="100%" height="100%" cellpadding='6'>
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
-                <h4>edit links of node&nbsp; <a href="editmnode.asp?id=44"><?php echo $templateData['node']->id; ?>: <?php echo $templateData['node']->title; ?></a> </h4>
+                <h4><?php echo __('edit links of node'); ?>&nbsp; <a href="editmnode.asp?id=44"><?php echo $templateData['node']->id; ?>: <?php echo $templateData['node']->title; ?></a> </h4>
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff">
                         <td align="left">
@@ -16,7 +16,7 @@
                             </form>
                             <hr>
                             <?php } ?>
-                            <p><strong>linked to:</strong></p>
+                            <p><strong><?php echo __('linked to'); ?>:</strong></p>
                             <?php if($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
                             <form method="post" action="<?php echo URL::base().'linkManager/updateOrder/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>">
                             <?php } ?>
@@ -26,13 +26,13 @@
                                         <tr>
                                             <td valign="top"><p><?php echo $link->node_2->title; ?> (<?php echo $link->node_2->id; ?>)</p></td>
                                             <td valign="top"><p>
-                                                    <a href="<?php echo URL::base().'linkManager/editLink/'.$templateData['map']->id.'/'.$templateData['node']->id.'/'.$link->id; ?>">[edit link]</a>
+                                                    <a href="<?php echo URL::base().'linkManager/editLink/'.$templateData['map']->id.'/'.$templateData['node']->id.'/'.$link->id; ?>">[<?php echo __('edit link'); ?>]</a>
                                                 </p>
                                             </td>
                                             <td valign="top">
-                                                <p><a href="<?php echo URL::base().'linkManager/deleteLink/'.$templateData['map']->id.'/'.$templateData['node']->id.'/'.$link->id; ?>">[delete link]</a></p>
+                                                <p><a href="<?php echo URL::base().'linkManager/deleteLink/'.$templateData['map']->id.'/'.$templateData['node']->id.'/'.$link->id; ?>">[<?php echo __('delete link'); ?>]</a></p>
                                             </td>
-                                            <td valign="top"><p><a href="counterlinks.asp?id1=44&amp;id2=45&amp;mapid=12">[edit counters]</a></p></td>
+                                            <td valign="top"><p></p></td>
                                             <?php if($templateData['node']->link_type->name == 'ordered') { ?>
                                                 <td valign="top">
                                                     <select name="order_<?php echo $link->id; ?>">
@@ -42,13 +42,12 @@
                                                     </select></td>
                                             <?php } else if($templateData['node']->link_type->name == 'random select one *') { ?>
                                                 <td valign="top">
-                                                    <p><input type="text" size="5" name="weight_<?php echo $link->id; ?>" value="<?php echo $link->probability; ?>">&nbsp;weighting</p>
+                                                    <p><input type="text" size="5" name="weight_<?php echo $link->id; ?>" value="<?php echo $link->probability; ?>">&nbsp;<?php echo __('weighting'); ?></p>
                                                 </td>
                                             <?php } ?> 
                                         </tr>
                                     <?php } ?>
                                 <?php } ?>
-                                
                             </table>
                             <?php if($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
                             <input type="submit" name="Submit" value="update"></form>
@@ -56,13 +55,13 @@
                             <?php if(isset($templateData['linkStylies'])) { ?>
                             <hr>
                             <form id="form2" name="formx" method="post" action="<?php echo URL::base().'linkManager/updateLinkStyle/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>">
-                                <p><strong>link presentation style</strong></p>
+                                <p><strong><?php echo __('link presentation style'); ?></strong></p>
                                 <?php if(count($templateData['linkStylies']) > 0) { ?> 
                                 <p>
                                     <?php foreach($templateData['linkStylies'] as $style) { ?>
                                         <input type="radio" name="linkstyle" value="<?php echo $style->id; ?>" <?php if($style->id == $templateData['node']->link_style_id) echo 'checked=""'; ?>><?php echo $style->name; ?> | 
                                     <?php } ?>
-                                    <input type="submit" name="Submit" value="update"></p>
+                                    <input type="submit" name="Submit" value="<?php echo __('update'); ?>"></p>
                                 <?php } ?>
                             </form>
                             <?php } ?>
@@ -72,10 +71,10 @@
                             <?php } else { ?>
                             <form id="form3" name="form1" method="post" action="<?php echo URL::base().'linkManager/addLink/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>">
                             <?php } ?>    
-                                <p><strong>add link</strong></p>
+                                <p><strong><?php echo __('add link'); ?></strong></p>
 
                                 <table width="100%">
-                                    <tr><td><p>node</p></td>
+                                    <tr><td><p><?php echo __('node'); ?></p></td>
                                         <td>
                                             <?php if(isset($templateData['link_nodes']) and count($templateData['link_nodes']) > 0) { ?>
                                             <select name="linkmnodeid">
@@ -88,7 +87,7 @@
                                             <?php } ?>
                                         </td>
                                     </tr>
-                                    <tr><td><p>link image</p></td><td>
+                                    <tr><td><p><?php echo __('link image'); ?></p></td><td>
                                             <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
                                             <select name="linkImage">
                                                 <option value="0" <?php if(isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option>
@@ -102,9 +101,9 @@
                                             </select>
                                             <?php } ?>
                                             </td></tr>
-                                    <tr><td><p>link label</p></td><td><input type="text" name="linkLabel" size="40" value="<?php if(isset($templateData['editLink'])) echo $templateData['editLink']->text; ?>"></td></tr>
-                                    <tr><td><p>direction</p></td><td><p><input type="radio" name="linkDirection" value="1" checked="">one way : <input type="radio" name="linkDirection" value="2">both ways</p></td></tr>
-                                    <tr><td><p></p></td><td><input type="submit" name="Submit" value="update"></td></tr>
+                                    <tr><td><p><?php echo __('link label'); ?></p></td><td><input type="text" name="linkLabel" size="40" value="<?php if(isset($templateData['editLink'])) echo $templateData['editLink']->text; ?>"></td></tr>
+                                    <tr><td><p>direction</p></td><td><p><input type="radio" name="linkDirection" value="1" checked=""><?php echo __('one way'); ?>: <input type="radio" name="linkDirection" value="2"><?php echo __('both ways'); ?></p></td></tr>
+                                    <tr><td><p></p></td><td><input type="submit" name="Submit" value="<?php echo __('update'); ?>"></td></tr>
                                 </table>
                             </form>
                             <br>

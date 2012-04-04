@@ -9,8 +9,8 @@
                             <?php foreach($templateData['vpds'] as $vpd) { ?>
                                 <p>
                                     <strong><img src="<?php echo URL::base(); ?>images/OL_element_wee.gif" alt="elements" align="absmiddle" border="0">&nbsp;<?php echo $vpd->type->label; ?> (<?php echo $vpd->id; ?>)</strong> 
-                                    - <a href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>">edit</a> 
-                                    - <a href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>">delete</a>
+                                    - <a href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('edit'); ?></a> 
+                                    - <a href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('delete'); ?></a>
                                     <br>
                                     <?php if(count($vpd->elements) > 0) { ?>
                                         <?php foreach($vpd->elements as $element) { ?>
@@ -22,7 +22,7 @@
                             <?php } ?>
                             <?php } ?>
                             <hr>
-                            <p><a href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>">add a new data element</a></p>
+                            <p><a href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><?php echo __('add a new data element'); ?></a></p>
                         </td></tr>
                 </table>
             </td>

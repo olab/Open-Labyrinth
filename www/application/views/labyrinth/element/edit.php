@@ -9,7 +9,6 @@
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
                 <h4><?php echo __('edit data element to labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                
                 <form action="<?php echo URL::base(); ?>elementManager/updateElement/<?php echo $templateData['map']->id; ?><?php echo '/'.$templateData['vpd']->id; ?>" method="post">
                     <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
                         <tr><td align="left"><p>Type: <?php echo $templateData['vpd']->type->label; ?></p></td><td align="left"><p>ID: <?php echo $templateData['vpd']->id; ?></p></td></tr>
@@ -240,7 +239,6 @@
                                     break;
                             }
                             ?>
-
                         </td>
                         </tr>
                     </table>

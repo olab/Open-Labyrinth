@@ -13,13 +13,13 @@
                             <?php } ?>
                                 <table border="0" width="100%" cellpadding="1">
                                     <tr><td><p>stem:</p></td><td><p><textarea cols="50" rows="3" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea></p></td></tr>
-                                    <tr><td><p>width:</p></td><td><p>
+                                    <tr><td><p><?php echo __('width'); ?>:</p></td><td><p>
                                                 <select name="qwidth">
                                                     <?php for($i = 10; $i <= 60; $i += 10) { ?>
                                                         <option value="<?php echo $i; ?>" <?php if(isset($templateData['question']) and $templateData['question']->width == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
                                                     <?php } ?>
                                                 </select></p></td></tr>
-                                    <tr><td><p>feedback:</p></td><td><p><textarea cols="60" rows="3" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></p></td></tr>
+                                    <tr><td><p><?php echo __('feedback'); ?>:</p></td><td><p><textarea cols="60" rows="3" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></p></td></tr>
                                     <tr><td colspan="2"><input type="submit" name="Submit" value="submit"></td></tr>
                                 </table>
                             </form>

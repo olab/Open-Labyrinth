@@ -33,9 +33,6 @@
                 </tr>
             </table>
         </center>
-
-        <span id="skype_highlighting_settings" display="none" autoextractnumbers="1"></span>
-        <object id="skype_plugin_object" location.href="http://localhost:8081/openlabyrinth/presentation.asp?pid=1" location.hostname="localhost" style="position: absolute; visibility: hidden; left: -100px; top: -100px; " width="0" height="0" type="application/x-vnd.skype.click2call.chrome.5.7.0"></object>
     </body>
 </html>
 <?php } ?>

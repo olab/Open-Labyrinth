@@ -9,7 +9,7 @@
                         <table>
                             <form method="POST" action="<?php echo URL::base(); ?>collectionManager/updateName/<?php echo $templateData['collection']->id; ?>">
                             <tr><td>
-                                    <p>colection name</p></td>
+                                    <p><?php echo __('colection name'); ?></p></td>
                                 <td><input type="text" name="colname" value="<?php echo $templateData['collection']->name; ?>">
                                     <input type="submit" value="submit">
                                 </td></tr>
@@ -19,7 +19,7 @@
                                     <?php foreach($templateData['collection']->maps as $mp) { ?>
                                     <p>
                                         <a href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map->id; ?>"><?php echo $mp->map->name; ?></a> 
-                                        - [<a href="<?php echo URL::base(); ?>collectionManager/deleteMap/<?php echo $templateData['collection']->id; ?>/<?php echo $mp->map->id; ?>">delete</a>]</p>
+                                        - [<a href="<?php echo URL::base(); ?>collectionManager/deleteMap/<?php echo $templateData['collection']->id; ?>/<?php echo $mp->map->id; ?>"><?php echo __('delete'); ?></a>]</p>
                                     <?php } ?>
                                     <?php } ?>
                                     <p></p><form method="POST" action="<?php echo URL::base(); ?>collectionManager/addMap/<?php echo $templateData['collection']->id; ?>">
@@ -30,7 +30,7 @@
                                             <?php } ?>
                                             <?php } ?>
                                            </select>
-                                        <input type="submit" value="submit">
+                                        <input type="submit" value="<?php echo __('submit'); ?>">
                                     </form><p></p>
                                 </td></tr>
                         </table>

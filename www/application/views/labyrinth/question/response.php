@@ -11,7 +11,6 @@
                             <?php } else { ?>
                             <form method="POST" action="<?php echo URL::base().'questionManager/saveNewQuestion/'.$templateData['map']->id.'/'.$templateData['questionType']; ?>">
                             <?php } ?>
-                                <p><?php if(isset($templateData['question']->responses)) var_dump($templateData['question']->responses[0]->response); ?></P>
                                 <table border="0" width="100%" cellpadding="1">
                                     <tr><td><p>stem:</p></td><td><p><textarea cols="50" rows="3" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea></p></td></tr>
                                     <tr><td colspan="2"><hr></td></tr>
@@ -24,7 +23,7 @@
                                                 <td>
                                                     <p>response: <input type="text" name="qresp<?php echo $i; ?>t" size="50" 
                                                                         value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->response; ?>"></p>
-                                                    <p>feedback: <input type="text" name="qfeed<?php echo $i; ?>" size="50" 
+                                                    <p><?php echo __('feedback'); ?>: <input type="text" name="qfeed<?php echo $i; ?>" size="50" 
                                                                         value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->feedback; ?>"></p>
                                                     <p>[<input type="radio" name="qresp<?php echo $i ?>y" value="1" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 1) echo 'checked=""'; ?>> correct] 
                                                         [<input type="radio" name="qresp<?php echo $i ?>y" value="0" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 0) echo 'checked=""'; ?>> incorrect] 
@@ -54,7 +53,7 @@
                                                     <?php } ?>
                                                 </select>
                                             </p></td></tr>
-                                    <tr><td><p>feedback:</p></td><td><p><textarea cols="60" rows="3" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></p></td></tr>
+                                    <tr><td><p><?php echo __('feedback'); ?>:</p></td><td><p><textarea cols="60" rows="3" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></p></td></tr>
                                     <tr><td colspan="2"><input type="submit" name="Submit" value="submit"></td></tr>
                                 </table>
                             </form>

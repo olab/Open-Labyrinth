@@ -9,7 +9,6 @@
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
                 <h4><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h4>
-
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff"><td>
                             <table border="0" width="100%" cellpadding="1">
@@ -31,7 +30,7 @@
                                         <p>add question 
                                             <?php if(isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
                                             <select onchange="jumpMenu('parent',this,0)" name="qt">
-                                                <option value="">select ...</option>
+                                                <option value=""><?php echo __('select'); ?> ...</option>
                                                 <?php foreach($templateData['question_types'] as $type) { ?>
                                                     <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
                                                 <?php } ?>

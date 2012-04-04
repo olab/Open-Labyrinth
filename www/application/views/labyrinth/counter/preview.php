@@ -11,12 +11,12 @@
                 <td bgcolor="#FFFFFF" valign="top">
                     <h4><?php echo $templateData['counter']->name; ?></h4>
                 </td>
-                <td bgcolor="#FFFFFF" align="center" valign="top"><p>current value</p><p><font size="30"><strong><?php echo $templateData['counter']->start_value; ?></strong></font></td>
+                <td bgcolor="#FFFFFF" align="center" valign="top"><p><?php echo __('current value'); ?></p><p><font size="30"><strong><?php echo $templateData['counter']->start_value; ?></strong></font></td>
             </tr>
             <tr>
                 <td colspan="3" bgcolor="#FFFFFF" align="center" valign="top">
                     <p>
-                        <a href="<?php echo URL::base().'counterManager/index/'.$templateData['map']->id; ?>">counters</a>
+                        <a href="<?php echo URL::base().'counterManager/index/'.$templateData['map']->id; ?>"><?php echo __('counters'); ?></a>
                     </p>
                 </td>
             </tr>

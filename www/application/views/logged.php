@@ -10,5 +10,5 @@
 <hr />
 
 <p><?php echo __('logged in as'); ?>&nbsp;<?php if(isset($templateData['username'])) echo $templateData['username']; ?>
-    <br /><a href="changepassword.asp"><?php echo __('change password'); ?></a>
+    <br /><a href="<?php echo URL::base(); ?>home/changePassword"><?php echo __('change password'); ?></a>
     <br /><a href="<?php echo URL::base(); ?>home/logout"><?php echo __('logout'); ?></a></p>

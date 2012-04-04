@@ -13,16 +13,16 @@
                                             <?php foreach($templateData['counters'] as $counter) { ?>
                                                 <p>
                                                     <?php echo $counter->name; ?> 
-                                                    [<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">edit</a> 
-                                                    - <a href="<?php echo URL::base().'counterManager/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">preview</a> 
+                                                    [<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('edit'); ?></a> 
+                                                    - <a href="<?php echo URL::base().'counterManager/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('preview'); ?></a> 
                                                     - <a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id.'/'.$counter->id; ?>">grid</a>  
-                                                    - <a href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">delete</a>]
+                                                    - <a href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('delete'); ?></a>]
                                                 </p>
                                             <?php } ?>
                                         <?php } ?>
                                         <hr>
-                                        <p><a href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">add counter</a></p>
-                                        <p><a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>">counter grid</a></p>
+                                        <p><a href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>"><?php echo __('add counter'); ?></a></p>
+                                        <p><a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>"><?php echo __('counter grid'); ?></a></p>
                                     </td>
                                 </tr>
                             </table>

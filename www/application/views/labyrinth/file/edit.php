@@ -35,15 +35,14 @@
         }
     }
     ?>
-
     <table width="100%" height="100%" cellpadding="6">
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
                 <h4><?php echo __('edit file: "') . $templateData['file']->name . '"'; ?></h4>
                 <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>">
                     <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                        <tr align="left"><td><p>preview</p></td><td><?php echo $preview; ?></td></tr>
-                        <tr align="left"><td><p>path</p></td><td><p><?php echo $templateData['file']->path; ?></p></td></tr>
+                        <tr align="left"><td><p><?php echo __('preview'); ?></p></td><td><?php echo $preview; ?></td></tr>
+                        <tr align="left"><td><p><?php echo __('chemin'); ?>path</p></td><td><p><?php echo $templateData['file']->path; ?></p></td></tr>
                         <tr align="left"><td><p>ID</p></td><td><p><?php echo $templateData['file']->id; ?></p></td></tr>
                         <tr align="left"><td><p>MIME</p></td><td>
                                 <select name="mrelmime" size="1">
@@ -80,29 +79,28 @@
                                     <option value="application/vnd.ms-excel" <?php if ($templateData['file']->mime == 'application/vnd.ms-excel') echo 'selected=""'; ?>>xls:application/vnd.ms-excel</option>
                                     <option value="application/vnd.ms-excel" <?php if ($templateData['file']->mime == 'application/vnd.ms-excel') echo 'selected=""'; ?>>xlsx:application/vnd.ms-excel</option>
                                     <option value="application/zip" <?php if ($templateData['file']->mime == 'application/zip') echo 'selected=""'; ?>>zip:application/zip</option></select></td></tr>
-                        <tr align="left"><td><p>title</p></td><td><input type="text" name="mrelname" size="40" value="<?php echo $templateData['file']->name; ?>"></td></tr>
-                        <tr align="left"><td><p>properties</p></td><td>
-
+                        <tr align="left"><td><p><?php echo __('title'); ?></p></td><td><input type="text" name="mrelname" size="40" value="<?php echo $templateData['file']->name; ?>"></td></tr>
+                        <tr align="left"><td><p><?php echo __('properties'); ?></p></td><td>
                                 <table>
                                     <tr>
-                                        <td><p>height: <input type="text" name="h" size="4" value="<?php if ($templateData['file']->height > 0) echo $templateData['file']->height; ?>">
+                                        <td><p><?php echo __('height'); ?>: <input type="text" name="h" size="4" value="<?php if ($templateData['file']->height > 0) echo $templateData['file']->height; ?>">
                                                 <select name="hv">
                                                     <option <?php if ($templateData['file']->height_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
                                                     <option <?php if ($templateData['file']->height_type == '%') echo 'selected=""'; ?> value="%">percent</option></select></p></td>
-                                        <td><p>width: <input type="text" name="w" size="4" value="<?php if ($templateData['file']->width > 0) echo $templateData['file']->width; ?>">
+                                        <td><p><?php echo __('width'); ?>: <input type="text" name="w" size="4" value="<?php if ($templateData['file']->width > 0) echo $templateData['file']->width; ?>">
                                                 <select name="wv">
                                                     <option <?php if ($templateData['file']->width_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
                                                     <option value="%" <?php if ($templateData['file']->width_type == '%') echo 'selected=""'; ?>>percent</option>
                                                 </select></p></td>
                                     </tr>
                                     <tr>
-                                        <td><p>horizontal align: <select name="a">
+                                        <td><p><?php echo __('horizontal align'); ?>: <select name="a">
                                                     <option <?php if ($templateData['file']->h_align == '') echo 'selected=""'; ?> value="">none</option>
                                                     <option <?php if ($templateData['file']->h_align == 'left') echo 'selected=""'; ?> value="left">left</option>
                                                     <option <?php if ($templateData['file']->h_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
                                                     <option <?php if ($templateData['file']->h_align == 'right') echo 'selected=""'; ?> value="right">right</option>
                                                 </select></p></td>
-                                        <td><p>vertical align: <select name="v">
+                                        <td><p><?php echo __('vertical align'); ?>: <select name="v">
                                                     <option <?php if ($templateData['file']->v_align == '') echo 'selected=""'; ?> value="">none</option>
                                                     <option <?php if ($templateData['file']->v_align == 'top') echo 'selected=""'; ?> value="top">top</option>
                                                     <option <?php if ($templateData['file']->v_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
@@ -110,10 +108,9 @@
                                                 </select></p></td>
                                     </tr>
                                 </table>
-
                             </td></tr>
                         <tr align="left"><td><p>&nbsp;</p></td><td>
-                                <input type="submit" name="Submit" value="submit">
+                                <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                             </td></tr>
                     </table>
                 </form>  

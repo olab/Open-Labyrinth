@@ -1,10 +1,9 @@
 <table width="100%" bgcolor="#ffffff">
     <tr>
         <td>
-            <h4>remote services</h4>
-            <p>these are XML connectors to allow you to run Labyrinths remotely in other systems or contexts. Each service is mapped to a single server IP address and can have Labyrinths mapped to it. There are two service calls:</p>
-            <p>- remote.asp - this will list the available Labyrinths registered to this service</p>
-            <p>- mnode.asp?id=1176&amp;mode=remote - change x to the starting node in a Labyrinth, mode should always be set to remote</p>
+            <h4><?php echo __('remote services'); ?></h4>
+            <p><?php echo __('these are XML connectors to allow you to run Labyrinths remotely in other systems or contexts. Each service is mapped to a single server IP address and can have Labyrinths mapped to it. There are two service calls'); ?>:</p>
+            <p>- <?php echo __('renderLabyrinth/remote - this will list the available Labyrinths registered to this service'); ?></p>
             <hr>
             <?php if(isset($templateData['services']) and count($templateData['services']) > 0) { ?>
             <?php foreach($templateData['services'] as $service) { ?>

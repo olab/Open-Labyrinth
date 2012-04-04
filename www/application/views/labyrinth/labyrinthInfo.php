@@ -5,11 +5,11 @@
                 <h4><?php echo __('Labyrinth information') . ' "' . $templateData['map']->name . '"'; ?></h4>
                 <table width="100%" border="0" cellspacing="0" cellpadding="4" bgcolor="#ffffff">
                     <tr>
-                        <td width="33%" align="right"><p>title</p></td>
+                        <td width="33%" align="right"><p><?php echo __('title'); ?></p></td>
                         <td width="50%" align="left"><p><?php echo $templateData['map']->name; ?>&nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>authors</p></td>
+                        <td align="right"><p><?php echo __('authors'); ?></p></td>
                         <td align="left"><p>
                                 <?php if(count($templateData['map']->authors) > 0) { ?>
                                 <?php foreach($templateData['map']->authors as $author) { ?>
@@ -19,19 +19,19 @@
                                 &nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>keywords</p></td>
+                        <td align="right"><p><?php echo __('keywords'); ?></p></td>
                         <td align="left"><p><?php echo $templateData['map']->keywords; ?>&nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>Labyrinth type</p></td>
+                        <td align="right"><p><?php echo __('Labyrinth type'); ?></p></td>
                         <td align="left"><p><?php echo $templateData['map']->type->name; ?>&nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>security</p></td>
+                        <td align="right"><p><?php echo __('security'); ?></p></td>
                         <td align="left"><p><?php echo $templateData['map']->security->name; ?>&nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>number of nodes</p></td>
+                        <td align="right"><p><?php echo __('number of nodes'); ?></p></td>
                         <td align="left"><p>
                                 <?php 
                                 if(count($templateData['map']->nodes) > 0) { 
@@ -43,7 +43,7 @@
                                 &nbsp;</p></td>
                     </tr>
                     <tr>
-                        <td align="right"><p>number of links</p></td>
+                        <td align="right"><p><?php echo __('number of links'); ?></p></td>
                         <td align="left"><p>0&nbsp;</p></td>
                     </tr>
                 </table>

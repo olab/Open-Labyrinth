@@ -1,15 +1,15 @@
 <?php if(isset($templateData['service'])) { ?>
 <table width="100%" bgcolor="#ffffff"><tr><td>
-            <h4>Edit&nbsp;remote services "<?php echo $templateData['service']->name; ?>"</h4>
+            <h4>Edit remote services "<?php echo $templateData['service']->name; ?>"</h4>
             <form id="form1" name="form1" method="post" action="<?php echo URL::base(); ?>remoteServiceManager/updateService/<?php echo $templateData['service']->id; ?>">
                 <table width="100%" border="0" cellspacing="0" cellpadding="4">
                     <tr>
-                        <td width="33%" align="right"><p>service name:</p></td>
+                        <td width="33%" align="right"><p><?php echo __('service name'); ?>:</p></td>
                         <td width="50%">
                             <input name="ServiceName" type="text" id="ServiceName" size="40" value="<?php echo $templateData['service']->name; ?>"></td>
                     </tr>
                     <tr>
-                        <td width="33%" align="right"><p>service user ID:</p></td>
+                        <td width="33%" align="right"><p><?php echo __('service user ID'); ?>:</p></td>
                         <td width="50%">
                             <select name="ServiceNameUserId">
                                 <option value="">undefined</option>
@@ -38,12 +38,12 @@
                     </tr>
                     <tr>
                         <td><p>&nbsp;</p></td>
-                        <td><input type="submit" name="Submit" value="submit"></td>
+                        <td><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></td>
                     </tr>
 
                 </table>
             </form>
             <hr>
-            <p><a href="<?php echo URL::base(); ?>remoteServiceManager">remote services</a></p>
+            <p><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('remote services'); ?></a></p>
         </td></tr></table>
 <?php } ?>

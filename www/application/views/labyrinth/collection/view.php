@@ -16,7 +16,7 @@
                 <table width="100%" cellpadding="0">
                     <tr bgcolor="#ffffff"><td>
                             <?php foreach($templateData['collections'] as $collection) { ?>
-                            <p><a href="#" onclick="toggle_visibility('<?php echo $collection->id; ?>');"><strong><?php echo $collection->name; ?></strong> (<?php echo $collection->id; ?>)</a> - [<a href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>">edit</a>]</p>
+                            <p><a href="#" onclick="toggle_visibility('<?php echo $collection->id; ?>');"><strong><?php echo $collection->name; ?></strong> (<?php echo $collection->id; ?>)</a> - [<a href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><?php echo __('edit'); ?></a>]</p>
                             <div id="<?php echo $collection->id; ?>" style="display:none">
                                 <?php if(count($collection->maps) > 0) { ?>
                                 <table width="100%">
@@ -38,5 +38,3 @@
             </td>
         </tr>
     </table>
-
-

@@ -35,7 +35,7 @@
                                         </table>
                                         <?php } ?>
                                         <hr>
-                                        <p>add a node section:</p>
+                                        <p><?php echo __('add a node section'); ?>:</p>
                                         <form action="<?php echo URL::base().'nodeManager/addNodeSection/'.$templateData['map']->id; ?>" method="post">
                                             <input type="text" name="sectionname" size="20">
                                             <input type="submit" value="add a node section">
@@ -49,7 +49,7 @@
                                             <?php foreach($templateData['sections'] as $section) { ?>
                                                 <?php echo $section->name; ?> <input type="radio" name="sectionview" value="<?php echo $section->id; ?>" <?php if($templateData['map']->section->id == $section->id) echo 'checked=""'; ?>> |
                                             <?php } ?>
-                                                <input type="submit" value="update">
+                                                <input type="submit" value="<?php echo __('update'); ?>">
                                             <?php } ?>
                                             </p>
                                         </form>

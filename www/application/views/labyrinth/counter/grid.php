@@ -27,7 +27,7 @@
                                             </tr>
                                         <?php } ?>
                                     <?php } ?>
-                                    <tr><td colspan="1"><input type="submit" name="Submit" value="submit"></td></tr>
+                                    <tr><td colspan="1"><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></td></tr>
                                 </table>
                             </form>
                         </td></tr>

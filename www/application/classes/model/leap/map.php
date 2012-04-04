@@ -301,6 +301,21 @@ class Model_Leap_Map extends DB_ORM_Model {
         return $map;
     }
     
+    public function createVUEMap($title, $authorId) {
+        $builder = DB_ORM::insert('map')
+                ->column('name', $title)
+                ->column('enabled', 1)
+                ->column('abstract', 'VUE upload')
+                ->column('author_id', $authorId)
+                ->column('type_id', 3)
+                ->column('security_id', 3)
+                ->column('skin_id', 1)
+                ->column('section_id', 2)
+                ->column('language_id', 1);
+        
+        return $builder->execute();
+    }
+    
     public function disableMap($id) {
         $this->id = $id;
         $this->load();

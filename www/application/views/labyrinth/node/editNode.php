@@ -30,29 +30,26 @@
                                         <td width="40%" align="right"><p>title</p></td>
                                         <td width="40%"><p><textarea name="mnodetitle" cols="60" rows="2"><?php echo $templateData['node']->title; ?></textarea></p></td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>node content</p></td>
+                                        <td align="right"><p><?php echo __('node content'); ?></p></td>
                                         <td><p>
                                                 <textarea name="mnodetext" cols='60' rows='10' <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>><?php echo $templateData['node']->text; ?></textarea>
                                             </p>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td align="right"><p><img src="<?php echo URL::base(); ?>images/info_blak.gif">supporting information</p></td>
+                                        <td align="right"><p><img src="<?php echo URL::base(); ?>images/info_blak.gif"><?php echo __('supporting information'); ?></p></td>
                                         <td><textarea name="mnodeinfo" cols='60' rows='10' <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>><?php echo $templateData['node']->info; ?></textarea></td>
                                     </tr>
-
                                     <tr>
                                         <td><p>&nbsp;</p></td>
-                                        <td><p><input type="submit" name="Submit" value="submit"></p></td>
+                                        <td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td>
                                     </tr>
-                                    
                                     <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                                     <?php foreach($templateData['counters'] as $counter) { ?>
                                     <tr>
                                         <td align="right">
-                                            <p>counter function for: "<?php echo $counter->name; ?>"</p>
+                                            <p><?php echo __('counter function for'); ?>: "<?php echo $counter->name; ?>"</p>
                                         </td>
                                         <td>
                                             <hr>
@@ -62,32 +59,28 @@
                                     </tr>
                                     <?php } ?>
                                     <?php } ?>
-                                    
                                     <tr>
-                                        <td align="right"><p>exit Node Probability</p></td>
-                                        <td><hr><p>[&nbsp;on&nbsp;<input name="mnodeprobability" type="radio" value="1" <?php if ($templateData['node']->probability) echo 'checked=""'; ?>>&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;off&nbsp;<input name="mnodeprobability" type="radio" value="0" <?php if (!$templateData['node']->probability) echo 'checked=""'; ?>>&nbsp;]</p><hr></td>
+                                        <td align="right"><p><?php echo __('exit Node Probability'); ?></p></td>
+                                        <td><hr><p>[&nbsp;<?php echo __('on'); ?>&nbsp;<input name="mnodeprobability" type="radio" value="1" <?php if ($templateData['node']->probability) echo 'checked=""'; ?>>&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;<?php echo __('off'); ?>&nbsp;<input name="mnodeprobability" type="radio" value="0" <?php if (!$templateData['node']->probability) echo 'checked=""'; ?>>&nbsp;]</p><hr></td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>node conditional</p></td>
-                                        <td><p>[<?php echo $templateData['node']->conditional; ?>] - [message:<?php echo $templateData['node']->conditional_message; ?>&nbsp;<i></i>] - [<a href="<?php echo URL::base().'nodeManager/editConditional/'.$templateData['node']->id; ?>">click to reset</a>]</p><hr></td>
+                                        <td align="right"><p><?php echo __('node conditional'); ?></p></td>
+                                        <td><p>[<?php echo $templateData['node']->conditional; ?>] - [message:<?php echo $templateData['node']->conditional_message; ?>&nbsp;<i></i>] - [<a href="<?php echo URL::base().'nodeManager/editConditional/'.$templateData['node']->id; ?>"><?php echo __('click to reset'); ?></a>]</p><hr></td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>link function style</p></td>
+                                        <td align="right"><p><?php echo __('link function style'); ?></p></td>
                                         <td><p>
                                                 <?php if (isset($templateData['linkStyles'])) { ?>
                                                     <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                                                        <input type="radio" name="linkstyle" value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'checked=""'; ?>><?php echo $linkStyle->name; ?> |
+                                                        <input type="radio" name="linkstyle" value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'checked=""'; ?>><?php echo __($linkStyle->name); ?> |
                                                     <?php } ?>
                                                 <?php } ?>
                                             </p>
                                             <hr>
                                         </td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>node priority</p></td>
+                                        <td align="right"><p><?php echo __('node priority'); ?></p></td>
                                         <td><p>
                                                 <?php if (isset($templateData['priorities'])) { ?>
                                                     <?php foreach ($templateData['priorities'] as $priority) { ?>
@@ -96,32 +89,25 @@
                                                 <?php } ?>
                                             </p><hr></td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>root node</p></td>
+                                        <td align="right"><p><?php echo __('root node'); ?></p></td>
                                         <td><p>
-                                                <a href="<?php echo URL::base().'nodeManager/setRootNode/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>">click to set this node as root</a></p>
+                                                <a href="<?php echo URL::base().'nodeManager/setRootNode/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>"><?php echo __('click to set this node as root'); ?></a></p>
                                             <hr></td>
                                     </tr>
-
                                     <tr>
-                                        <td align="right"><p>enable undo links</p></td>
-                                        <td><p>[&nbsp;on&nbsp;<input name="mnodeUndo" type="radio" value="1" <?php if ($templateData['node']->undo) echo 'checked=""'; ?>>&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;off&nbsp;<input name="mnodeUndo" type="radio" value="0" <?php if (!$templateData['node']->undo) echo 'checked=""'; ?>>&nbsp;]
+                                        <td align="right"><p><?php echo __('enable undo links'); ?></p></td>
+                                        <td><p>[&nbsp;<?php echo __('on'); ?>&nbsp;<input name="mnodeUndo" type="radio" value="1" <?php if ($templateData['node']->undo) echo 'checked=""'; ?>>&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;<?php echo __('off'); ?>&nbsp;<input name="mnodeUndo" type="radio" value="0" <?php if (!$templateData['node']->undo) echo 'checked=""'; ?>>&nbsp;]
                                             </p><hr></td>
                                     </tr>
-
-
                                     <tr>
-                                        <td align="right"><p>link to end and report from this node</p></td>
-                                        <td><p><input type="radio" name="ender" value="0" <?php if (!$templateData['node']->end) echo 'checked=""'; ?>>off (default) | <input type="radio" name="ender" value="1" <?php if ($templateData['node']->end) echo 'checked=""'; ?>>on</p><hr></td>
+                                        <td align="right"><p><?php echo __('link to end and report from this node'); ?></p></td>
+                                        <td><p><input type="radio" name="ender" value="0" <?php if (!$templateData['node']->end) echo 'checked=""'; ?>><?php echo __('off'); ?> (<?php echo __('default'); ?>) | <input type="radio" name="ender" value="1" <?php if ($templateData['node']->end) echo 'checked=""'; ?>><?php echo __('on'); ?></p><hr></td>
                                     </tr>
-
-
                                     <tr>
                                         <td><p>&nbsp;</p></td>
-                                        <td><p><input type="submit" name="Submit" value="submit"></p></td>
+                                        <td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td>
                                     </tr>
-
                                 </table>
                             </form>
                             <br>
@@ -132,4 +118,3 @@
         </tr>
     </table>
 <?php } ?>
-

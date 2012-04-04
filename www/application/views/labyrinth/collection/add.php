@@ -8,9 +8,9 @@
                         <table>
                             <form method="POST" action="<?php echo URL::base(); ?>collectionManager/saveNewCollection">
                             <tr><td>
-                                    <p>colection name</p></td>
+                                    <p><?php echo __('colection name'); ?></p></td>
                                 <td><input type="text" name="colname" value="">
-                                    <input type="submit" value="submit">
+                                    <input type="submit" value="<?php echo __('submit'); ?>">
                                 </td></tr>
                             </form>
                         </table>

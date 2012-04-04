@@ -451,6 +451,24 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         
         $this->delete();
     }
+    
+    public function createVUENode($mapId, $title, $text, $x, $y, $rgb) {
+        $this->map_id = $mapId;
+        $this->title = $title;
+        $this->text = $text;
+        $this->type_id = 2;
+        $this->x = $x;
+        $this->y = $y;
+        $this->rgb = $rgb;
+        $this->info = '';
+        $this->probability = FALSE;
+        $this->link_style_id = 1;
+        $this->priority_id = 1;
+        $this->undo = FALSE;
+        $this->end = FALSE;
+        
+        $this->save();
+    }
 }
 
 ?>

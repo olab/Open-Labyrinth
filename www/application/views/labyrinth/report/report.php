@@ -15,7 +15,7 @@ function getRandomColor(){
                 <h4><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h4>
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff" align="left"><td align="left">
-                            <p>user:&nbsp;<?php echo $templateData['session']->user->nickname; ?><br>
+                            <p><?php echo __('user'); ?>:&nbsp;<?php echo $templateData['session']->user->nickname; ?><br>
                                 session:&nbsp;<?php echo $templateData['session']->id; ?><br>
                                 Labyrinth:&nbsp;<?php echo $templateData['session']->map->name; ?> (<?php echo $templateData['session']->map->id; ?>)<br>
                                 start time:&nbsp;<?php echo date('Y.m.d H:i:s', $templateData['session']->start_time); ?><br>
@@ -33,7 +33,7 @@ function getRandomColor(){
                                 }
                                 ?>
                                 <br>
-                                <?php echo count($templateData['session']->traces); ?>&nbsp;nodes visited altogether of which&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;required nodes and&nbsp;
+                                <?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
                                 <?php if(count($templateData['session']->traces) > 0) {
                                     $nodesIDs = array();
                                     foreach($templateData['session']->traces as $val) {
@@ -44,43 +44,43 @@ function getRandomColor(){
                                         echo count($templateData['nodes']) - count($nodesIDs);
                                     }
                                 }
-                                ?>&nbsp;avoid nodes visited</p>
+                                ?>&nbsp;<?php echo __('avoid nodes visited'); ?></p>
 
                             <hr>
-                            <p>general feedback: <?php if(isset($templateData['feedbacks']['general'])) echo $templateData['feedbacks']['general']; ?></p>
+                            <p><?php echo __('general feedback'); ?>: <?php if(isset($templateData['feedbacks']['general'])) echo $templateData['feedbacks']['general']; ?></p>
                             <?php if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
-                            <p> feedback for time taken:<br/>
+                            <p><?php echo __('feedback for time taken'); ?>:<br/>
                                 <?php foreach($templateData['feedbacks']['timeTaken'] as $msg) { echo $msg.'<br/>'; } ?>
                             </p>
                             <?php } ?>
                             
                             <?php if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
-                            <p> feedback for nodes visit:<br/>
+                            <p><?php echo __('feedback for nodes visit'); ?>:<br/>
                                 <?php foreach($templateData['feedbacks']['nodeVisit'] as $msg) { echo $msg.'<br/>'; } ?>
                             </p>
                             <?php } ?>
                             
                             <?php if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
-                            <p> feedback for must visit:<br/>
+                            <p><?php echo __('feedback for must visit'); ?>:<br/>
                                 <?php foreach($templateData['feedbacks']['mustVisit'] as $msg) { echo $msg.'<br/>'; } ?>
                             </p>
                             <?php } ?>
                             
                             <?php if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
-                            <p> feedback for must avoid:<br/>
+                            <p><?php echo __('feedback for must avoid'); ?>:<br/>
                                 <?php foreach($templateData['feedbacks']['mustAvoid'] as $msg) { echo $msg.'<br/>'; } ?>
                             </p>
                             <?php } ?>
                             
                             <?php if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
-                            <p> feedback for counters:<br/>
+                            <p><?php echo __('feedback for counters'); ?>:<br/>
                                 <?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?>
                             </p>
                             <?php } ?>
                             <hr>
 
                             <hr>
-                            <p><strong>Questions</strong></p>
+                            <p><strong><?php echo __('Questions'); ?></strong></p>
                             <table border="1" cellpadding="4" width="100%">
                                 <tr>
                                     <td><p>ID</p></td>
@@ -88,7 +88,7 @@ function getRandomColor(){
                                     <td><p>stem</p></td>
                                     <td><p>response</p></td>
                                     <td><p>correct</p></td>
-                                    <td><p>feedback</p></td>
+                                    <td><p><?php echo __('feedback'); ?></p></td>
                                 </tr>
                                 <?php if($templateData['questions'] != NULL) { ?>
                                     <?php foreach($templateData['questions'] as $question) { ?>
@@ -127,8 +127,8 @@ function getRandomColor(){
                             <table border="0" width="100%" cellpadding="4" cellspacing="2">
                                 <tr>
                                     <td><p>node</p></td>
-                                    <td><p>time elapsed (in seconds)</p></td>
-                                    <td><p>time spent on node</p></td>
+                                    <td><p><?php echo __('time elapsed (in seconds)'); ?></p></td>
+                                    <td><p><?php echo __('time spent on node'); ?></p></td>
                                 </tr>
                                 <?php if (count($templateData['session']->traces) > 0) {
                                     $flag = true; ?>

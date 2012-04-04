@@ -56,7 +56,7 @@
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <input type="submit" name="Submit" value="submit">
+                                            <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                                         </td>
                                     </tr>
                                 </table>
@@ -68,5 +68,3 @@
         </tr>
     </table>
 <?php } ?>
-
-

@@ -23,12 +23,12 @@
                                             <table width="80%" align="center">
                                                 <tr>
                                                     <td><p><?php echo $i; ?>:</p></td>
-                                                    <td align="right"><p>question:</p><p>response:</p><p>counter:</p></td>
+                                                    <td align="right"><p><?php echo __('question'); ?>:</p><p><?php echo __('response'); ?>:</p><p><?php echo __('counter'); ?>:</p></td>
                                                     <td>
                                                         <p>
                                                             <input type="text" name="question<?php echo $i; ?>" size="48" value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->question; ?>"><br>
                                                             <input type="text" name="response<?php echo $i; ?>" size="48" value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->response; ?>"><br>
-                                                            <input type="text" name="counter<?php echo $i; ?>" size="10" value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->function; ?>">&nbsp;type +, - or = an integer - e.g. '+1' or '=32'
+                                                            <input type="text" name="counter<?php echo $i; ?>" size="10" value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->function; ?>">&nbsp;<?php echo __('type +, - or = an integer - e.g. +1 or =32'); ?>
                                                         </p>
                                                     </td>
                                                     <td align="left"><p><a href="<?php echo URL::base().'chatManager/removeEditChatQuestion/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/'.$templateData['question_count'].'/'.$i; ?>">Remove</a></p></td>
@@ -62,7 +62,7 @@
                                     </tr>
                                     <tr>
                                         <td align="center">
-                                            <input type="submit" name="Submit" value="submit">
+                                            <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                                         </td>
                                     </tr>
                                 </table>
@@ -74,5 +74,3 @@
         </tr>
     </table>
 <?php } ?>
-
-
