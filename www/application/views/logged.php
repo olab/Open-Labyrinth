@@ -1,6 +1,6 @@
 <hr />
 
-<form action="search.asp" method="POST">
+<form action="#" method="POST">
     <p><input type="text" name="searchterm" size="10" />
         <input id="SeachSubmit" type="submit" value="Search" /><br />
         <?php echo __('title'); ?>:<input name="scope" type="radio" value="t" checked />&nbsp;&nbsp;<?php echo __('all'); ?>:<input name="scope" type="radio" value="a" />

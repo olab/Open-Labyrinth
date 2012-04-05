@@ -23,7 +23,7 @@
                 </p>
                 <hr/>
                 <form method="POST" action="<?php echo URL::base().'avatarManager/updateAvatar/'.$templateData['map']->id.'/'.$templateData['avatar']->id; ?>" name="avatar_form">
-                    <table width="100%" border="0" cellspacing="0" cellpadding="6">
+					<table width="100%" border="0" cellspacing="0" cellpadding="6">
                         <tr bgcolor="#FFFFFF">
                             <td><p>Sex</p></td><td>
                                 <select name="avsex" size="1" onchange="OnChange();">

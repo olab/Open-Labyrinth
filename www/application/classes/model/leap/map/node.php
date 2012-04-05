@@ -26,13 +26,15 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'text' => new DB_ORM_Field_Text($this, array(
-                'nullable' => TRUE,
+            'text' => new DB_ORM_Field_String($this, array(
+                'max_length' => 4000,
+                'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
-            'content' => new DB_ORM_Field_Text($this, array(
-                'nullable' => TRUE,
+            'content' => new DB_ORM_Field_String($this, array(
+                'max_length' => 4000,
+                'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
@@ -222,6 +224,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->priority_id = Arr::get($values, 'priority', 1);
             $this->undo = Arr::get($values, 'mnodeUndo', FALSE);
             $this->end = Arr::get($values, 'ender', FALSE);
+			$this->type_id = 2; // Child type id
             
             $this->save();
             

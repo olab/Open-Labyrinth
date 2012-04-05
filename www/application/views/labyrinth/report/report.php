@@ -190,6 +190,7 @@ function getRandomColor(){
                            <?php foreach($templateData['session']->traces as $trace) { ?>
                            <c n='<?php echo $trace->node_id; ?>' />
                            <?php } ?>
+						   <c n='<?php echo $templateData['session']->traces[0]->node_id; ?>' />
                            <?php } ?>
                            </categories>
                            <?php if(count($templateData['counters']) > 0) { ?>
@@ -199,9 +200,10 @@ function getRandomColor(){
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if(count($counter[1]) > 0) { ?>
-                                        <?php for($i = count($counter[1]) - 1; $i >= 0; $i--) { ?>
+                                        <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
+					<s v='<?php echo $counter[1][0]; ?>' />	
                                     <?php } ?>
                            </dataset>
                            <?php } ?>
@@ -212,6 +214,7 @@ function getRandomColor(){
                            <?php foreach($templateData['session']->traces as $trace) { ?>
                            <c n='<?php echo $trace->node_id; ?>' />
                            <?php } ?>
+						   <c n='<?php echo $templateData['session']->traces[0]->node_id; ?>' />
                            <?php } ?>
                            </categories>
                            <?php if(count($templateData['counters']) > 0) { ?>
@@ -221,9 +224,10 @@ function getRandomColor(){
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if(count($counter[1]) > 0) { ?>
-                                        <?php for($i = count($counter[1]) - 1; $i >= 0; $i--) { ?>
+                                        <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
+					<s v='<?php echo $counter[1][0]; ?>' />
                                     <?php } ?>
                                 </dataset>
                            <?php } ?>
@@ -236,4 +240,3 @@ function getRandomColor(){
     </tr>
     </table>
 <?php } ?>
-

@@ -129,28 +129,21 @@ function getRandomColor() {
                                        <c n='<?php echo $session->id; ?>' />
                                        <?php } ?>
                                        </categories>
-                                       <?php 
-                                        $valuesC = array();
-                                        foreach($templateData['sessions'] as $session) {
-                                            foreach($templateData['counters'] as $vC) {
-                                                foreach($vC as $v) {
-                                                    if($v[2] == $counter->id) {
-                                                        $valuesC[$session->id] = $v;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                       ?>
-                                       
-                                       <?php foreach($templateData['sessions'] as $session) { ?>
-                                       <dataset seriesName='session <?php echo $session->id; ?>' color='<?php $c = getRandomColor(); echo $c; ?>' anchorBorderColor='<?php echo $c; ?>'>
-                                            <?php if(isset($valuesC[$session->id]) and count($valuesC[$session->id][1]) > 0) { ?>
-                                            <?php for($i = count($valuesC[$session->id][1]) - 1; $i >= 0; $i--) { ?>
-                                                <s v='<?php echo $valuesC[$session->id][1][$i]; ?>' />
-                                            <?php } ?>
-                                            <?php } ?>
-                                       </dataset>
-                                       <?php } ?>
+									   <?php foreach($templateData['sessions'] as $session) { ?>
+									   <dataset seriesName='session <?php echo $session->id; ?>' color='<?php $c = getRandomColor(); echo $c; ?>' anchorBorderColor='<?php echo $c; ?>'>
+										    <?php if(isset($templateData['startValueCounters'])) { ?>
+											<s v='<?php echo $templateData['startValueCounters'][$counter->id]; ?>' />
+											<?php } ?>
+											<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0)  { ?>
+												<?php if(count($templateData['counters'][$counter->name][1]) > 0) { ?>
+												<?php for($i = 1; $i < count($templateData['counters'][$counter->name][1]); $i++) { ?>
+												<s v='<?php echo $templateData['counters'][$counter->name][1][$i]; ?>' />
+												<?php } ?>
+												<s v='<?php echo $templateData['counters'][$counter->name][1][0]; ?>' />
+												<?php } ?>
+											<?php } ?>
+									   </dataset>
+									   <?php } ?>
                                        </graph>">
                                 <param name="movie" value="<?php echo URL::base(); ?>documents/FC_2_3_MSLine.swf">
                                 <param name="quality" value="high"><param name="bgcolor" value="#FFFFFF">
@@ -160,28 +153,21 @@ function getRandomColor() {
                                        <c n='<?php echo $session->id; ?>' />
                                        <?php } ?>
                                        </categories>
-                                       <?php 
-                                        $valuesC = array();
-                                        foreach($templateData['sessions'] as $session) {
-                                            foreach($templateData['counters'] as $vC) {
-                                                foreach($vC as $v) {
-                                                    if($v[2] == $counter->id) {
-                                                        $valuesC[$session->id] = $v;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                       ?>
-                                       
-                                       <?php foreach($templateData['sessions'] as $session) { ?>
-                                       <dataset seriesName='session <?php echo $session->id; ?>' color='<?php $c = getRandomColor(); echo $c; ?>' anchorBorderColor='<?php echo $c; ?>'>
-                                            <?php if(isset($valuesC[$session->id]) and count($valuesC[$session->id][1]) > 0) { ?>
-                                            <?php for($i = count($valuesC[$session->id][1]) - 1; $i >= 0; $i--) { ?>
-                                                <s v='<?php echo $valuesC[$session->id][1][$i]; ?>' />
-                                            <?php } ?>
-                                            <?php } ?>
-                                       </dataset>
-                                       <?php } ?>
+										<?php foreach($templateData['sessions'] as $session) { ?>
+									   <dataset seriesName='session <?php echo $session->id; ?>' color='<?php $c = getRandomColor(); echo $c; ?>' anchorBorderColor='<?php echo $c; ?>'>
+											<?php if(isset($templateData['startValueCounters'])) { ?>
+											<s v='<?php echo $templateData['startValueCounters'][$counter->id]; ?>' />
+											<?php } ?>
+											<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0)  { ?>
+												<?php if(count($templateData['counters'][$counter->name][1]) > 0) { ?>
+												<?php for($i = 1; $i < count($templateData['counters'][$counter->name][1]); $i++) { ?>
+												<s v='<?php echo $templateData['counters'][$counter->name][1][$i]; ?>' />
+												<?php } ?>
+												<s v='<?php echo $templateData['counters'][$counter->name][1][0]; ?>' />
+												<?php } ?>
+											<?php } ?>
+									   </dataset>
+									   <?php } ?>
                                        </graph>" quality="high" bgcolor="#FFFFFF" name="Line" align="" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                             </object>
                             <?php } ?>

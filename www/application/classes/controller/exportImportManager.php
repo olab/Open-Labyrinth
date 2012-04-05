@@ -96,17 +96,18 @@ class Controller_ExportImportManager extends Controller_Base {
                     $text = str_replace(".", ".amp;", $text);
                     $text = str_replace("<", ".lt;", $text);
                     $text = str_replace('"', ".quot;", $text);
+					$text = str_replace('&nbsp;', ' ', $text);
 
                     $mnbody = '';
                     while (strlen($text) > 70) {
-                        $a = subtr($text, 0, 70);
-                        $text = str_replace(a, "", $text);
+                        $a = substr($text, 0, 70);
+                        $text = str_replace($a, "", $text);
                         $mnbody .= $a;
 
-                        while ((subtr($text, 0, 1) != " ") and (strlen($text) > 1)) {
-                            $h = subtr($text, 0, 1);
+                        while ((substr($text, 0, 1) != " ") and (strlen($text) > 1)) {
+                            $h = substr($text, 0, 1);
                             $mnbody .= $h;
-                            $text = sustr($text, 1, strlen($text));
+                            $text = substr($text, 1, strlen($text));
                         }
                         $mnbody .= ".#xa;" . chr(13) . chr(10);
                     }

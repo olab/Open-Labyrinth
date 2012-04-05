@@ -222,6 +222,26 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         return NULL;
     }
+	
+	public function getAllEnabledOpenVisibleMap() {
+		$builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('enabled', '=', 1, 'AND')
+                ->where('security_id', '=', 1, 'AND')
+				->where('section_id', '=', 2);
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $maps = array();
+            foreach($result as $record) {
+                $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            }
+            
+            return $maps;
+        }
+        
+        return NULL;
+	}
     
     public function getAllEnabledAndAuthoredMap($authorId) {
         $builder = DB_SQL::select('default')
@@ -311,6 +331,19 @@ class Model_Leap_Map extends DB_ORM_Model {
                 ->column('security_id', 3)
                 ->column('skin_id', 1)
                 ->column('section_id', 2)
+				->column('keywords', '')
+				->column('timing', FALSE)
+				->column('delta_time', 0)
+				->column('startScore', 0)
+				->column('threshold', 0)
+				->column('units', '')
+				->column('guid', '')
+				->column('show_bar', FALSE)
+				->column('show_score', FALSE)
+				->column('feedback', '')
+				->column('dev_notes', '')
+				->column('source', '')
+				->column('source_id', 0)
                 ->column('language_id', 1);
         
         return $builder->execute();

@@ -340,8 +340,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 switch ($node->link_style->name) {
                     case 'text (default)':
-                        $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
-                        break;
+						if($link->image_id != 0) {
+							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="'.URL::base().$link->image->path.'"></a></p>';
+						} else {
+							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
+                        }
+						break;
                     case 'dropdown':
                         $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
                         break;
@@ -351,10 +355,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     case 'type in text':
                         if (isset($result['links']['alinkfil'])) {
                             $result['links']['alinkfil'] .= '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] .= $link->node_id_2 . ', ';
+                            $result['links']['alinknod'] .= '"'.$link->node_id_2 . '", ';
                         } else {
                             $result['links']['alinkfil'] = '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] = $link->node_id_2 . ', ';
+                            $result['links']['alinknod'] = '"'.$link->node_id_2 . '", ';
                         }
                         break;
                 }
@@ -362,10 +366,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             switch ($node->link_style->name) {
                 case 'dropdown':
-                    $result['links'] .= '<select name="links">' . $result . '</select>';
+                    $result['links'] = '<select name="links" onchange='.chr(34)."jumpMenu('parent',this,0)".chr(34).' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
                     break;
                 case 'dropdown + confidence':
-                    $result['links'] .= '<form method="post" action="mnode.asp"><select name="&chr(34)&"id"&chr(34)&">' . $result . '</select>';
+                    $result['links'] = '<form method="post" action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '"><select name="id">' . $result['links'] . '</select>';
                     $result['links'] .= '<select name="conf">';
                     $result['links'] .= '<option value="">select how confident you are ...</option>';
                     $result['links'] .= '<option value="4">I am very confident</option>';
@@ -384,7 +388,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if ($node->end) {
                 $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
             }
-            
+
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {

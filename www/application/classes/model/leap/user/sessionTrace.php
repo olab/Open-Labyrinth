@@ -151,7 +151,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('session_id', '=', $sessionId, 'AND')
-                ->where('map_id', '=', $mapId)
+                ->where('map_id', '=', $mapId, 'AND')
                 ->where('node_id', '=', $nodeId)
                 ->limit(1);
         $result = $builder->query();

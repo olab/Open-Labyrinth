@@ -115,7 +115,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('map_id', '=', $mapId)
-                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg'));
+                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'image/png'));
         
         $result = $builder->query();
         

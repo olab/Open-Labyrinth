@@ -63,6 +63,7 @@ class Controller_ReportManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));  
             $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
             
+			$minClicks = 0;
             if(count($this->templateData['sessions']) > 0) {
                 $minClicks = count($this->templateData['sessions'][0]->traces);
                 foreach($this->templateData['sessions'] as $session) {
@@ -71,10 +72,17 @@ class Controller_ReportManager extends Controller_Base {
                     }
                 }
             }
-            
+
             if(count($this->templateData['sessions']) > 0) {
                 foreach($this->templateData['sessions'] as $session) {
-                    $this->templateData['counters'][] = DB_ORM::model('user_sessionTrace')->getCountersValues($session->id);
+                    $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($session->id);
+                }
+            }
+			
+			$allCounters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            if($allCounters != NULL and count($allCounters) > 0) {
+                foreach($allCounters as $counter) { 
+                    $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
                 }
             }
             

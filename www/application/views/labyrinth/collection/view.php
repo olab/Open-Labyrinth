@@ -23,7 +23,7 @@
                                     <?php foreach($collection->maps as $mp) { ?>
                                     <tr bgcolor="#f3f3fa">
                                         <td width="30%"><p><a href="<?php echo URL::base() ?>renderLabyrinth/index/<?php echo $mp->map->id; ?>"><?php echo $mp->map->name; ?></a></p></td>
-                                        <td width="10%"><p><a href=""><img src="<?php echo URL::base(); ?>images/editl.jpg" border="0" alt="edit"></a></p></td>
+                                        <td width="10%"><p><a href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map_id; ?>"><img src="<?php echo URL::base(); ?>images/editl.jpg" border="0" alt="edit"></a></p></td>
                                         <td width="30%"><p></p></td>
                                         <td width="30%"><p><?php echo $mp->map->abstract; ?></p></td>
                                     </tr>

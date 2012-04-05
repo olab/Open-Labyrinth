@@ -215,7 +215,7 @@ class Model_Labyrinth extends Model {
                         $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
                         $oldCounter = $currentCountersState;
                     }
-
+					
                     $label = $counter->name;
                     if ($counter->icon_id != 0) {
                         $label = '<img src="' . URL::base() . $counter->icon->path . '">';
@@ -234,7 +234,7 @@ class Model_Labyrinth extends Model {
                             $thisCounter = (int) $tmp;
                         }
                     }
-                    
+
                     $counterFunction = '';
                     if (count($node->counters) > 0) {
                         foreach ($node->counters as $nodeCounter) {
