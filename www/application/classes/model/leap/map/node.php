@@ -380,6 +380,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             
             $builder = DB_SQL::select('default')
                     ->from($this->table())
+					->where('map_id', '=', $this->map_id, 'AND')
                     ->where('id', 'NOT IN', $ids);
             $result = $builder->query();
             
@@ -395,7 +396,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             return NULL;
         } 
             
-        return $this->getAllNode();
+        return $this->getNodesByMap($this->map_id);
     }
     
     public function getCounter($counterId) {
