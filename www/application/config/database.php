@@ -3,15 +3,15 @@
 $config = array();
 
 $config['default'] = array(
-    'type'          => 'sqlite',     // string (e.g. db2, drizzle, firebird, mariadb, mssql, mysql, oracle, postgresql, or sqlite)
-    'driver'        => 'pdo',  // string (e.g. standard, improved, or pdo)
+    'type'          => 'mysql',     // string (e.g. db2, drizzle, firebird, mariadb, mssql, mysql, oracle, postgresql, or sqlite)
+    'driver'        => 'standard',  // string (e.g. standard, improved, or pdo)
     'connection'    => array(
         'persistent'    => FALSE,       // boolean
-        'hostname'      => '', // string
+        'hostname'      => 'localhost', // string
         'port'          => '',          // string
-        'database'      => 'openlabyrinth.db',          // string
-        'username'      => '',      // string
-        'password'      => '',      // string
+        'database'      => 'openlabyrinth',          // string
+        'username'      => 'ol_user',      // string
+        'password'      => 'ol_user_pass',      // string
     ),
     'caching'       => FALSE,       // boolean
     'charset'       => 'utf8',      // string

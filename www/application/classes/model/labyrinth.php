@@ -443,6 +443,18 @@ class Model_Labyrinth extends Model {
                     }
                 }
             }
+			
+			if ($qResp == NULL) {
+				if (count($question->responses) > 0) {
+					foreach ($question->responses as $resp) {
+                        if ($resp->id == $r) {
+							$qResp = $resp;
+							$r = $resp->response;
+						}
+					}
+				}
+			}
+			
             DB_ORM::model('user_response')->updateResponse($sessionId, $questionId, $r);
 
             if ($question->show_answer) {

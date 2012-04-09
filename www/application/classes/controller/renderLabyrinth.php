@@ -1,6 +1,4 @@
-<?php
-
-defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 
 class Controller_RenderLabyrinth extends Controller_Template {
 
@@ -313,9 +311,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
     
     private function checkRemoteUser($username, $password) {
+        $username = Model::factory('utilites')->deHash($username);
+        $password = Model::factory('utilites')->deHash($password);
+        
         $user = DB_ORM::model('user')->getUserByName($username);
         if($user) {
-            if($user->password == Auth::instance()->hash($password) and $user->type->name == 'remote service') {
+            if($user->password == $password and $user->type->name == 'remote service') {
                 return TRUE;
             }
         }

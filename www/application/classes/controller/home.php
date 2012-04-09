@@ -3,7 +3,6 @@
 class Controller_Home extends Controller_Base {
     
     public function action_index() {
-        
     }
     
     public function action_login() {

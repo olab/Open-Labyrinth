@@ -78,7 +78,7 @@
             //script should: a) update database of the question submitted, b) update screen of the response given, c) update counter if this has been set
 
             var xmlhttp;
-            var labsess = <?php if(isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;;
+            var labsess = <?php if(isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
             var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/"+qqq+"/"+labsess+"/"+qid;
             if (window.XMLHttpRequest)
             {// code for IE7+, Firefox, Chrome, Opera, Safari
