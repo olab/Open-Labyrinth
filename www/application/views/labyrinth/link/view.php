@@ -16,7 +16,7 @@
                                                 <p>
                                                     <a name="1">linked from '<?php echo $node->title; ?>' (<?php echo $node->id; ?>) [</a>
                                                     <a href="<?php echo URL::base().'linkManager/editLinks/'.$templateData['map']->id.'/'.$node->id; ?>">add/edit links</a>],  [
-                                                    <a href="mnode.asp?id=1">preview</a>]
+                                                    <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $node->id; ?>">preview</a>]
                                                 </p>
                                             </td>
                                             <td align="left">
@@ -24,8 +24,8 @@
                                                     <?php foreach($node->links as $link) { ?>
                                                         <p>
                                                             linked to <?php echo $link->node_2->id; ?> ("<?php echo $link->node_2->title; ?>")
-                                                            [<a href="mnode.asp?id=2">preview</a>],
-                                                            [<a href="#2">links</a>]
+                                                            [<a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $link->node_2->id; ?>">preview</a>],
+                                                            [<a href="<?php echo URL::base(); ?>linkManager/editLinks/<?php echo $templateData['map']->id; ?>/<?php echo $link->node_2->id; ?>">links</a>]
                                                         </p>
                                                     <?php  } ?>
                                                 <?php } ?>
