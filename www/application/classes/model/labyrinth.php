@@ -396,7 +396,9 @@ class Model_Labyrinth extends Model {
                                     }
                                 }
                             }
-                        }
+                        } else {
+							return $element->response;
+						}
                     }
                 }
             }
