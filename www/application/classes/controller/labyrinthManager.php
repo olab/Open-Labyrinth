@@ -43,7 +43,7 @@ class Controller_LabyrinthManager extends Controller_Base {
     public function action_editMap() {
         $mapId = $this->request->param('id', NULL);
         if($mapId) {
-            $map = DB_ORM::model('map', $mapId);
+            $map = DB_ORM::model('map', array((int)$mapId));
             if($map != NULL) {
                 if(Auth::instance()->get_user()->type->name != 'superuser') {
                     if(Auth::instance()->get_user()->id != $map->author_id) {
@@ -57,8 +57,11 @@ class Controller_LabyrinthManager extends Controller_Base {
             
             $editorView = View::factory('labyrinth/editor');
             $editorView->set('templateData', $this->templateData);
+			
+			$leftView = View::factory('labyrinth/editorLeftMenu');
+			$leftView->set('templateData', $this->templateData);
             
-            $this->templateData['left'] = View::factory('labyrinth/editorLeftMenu');
+            $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $editorView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
@@ -210,6 +213,30 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+        }
+    }
+    
+    public function action_showDevNotes() {
+        $mapId = $this->request->param('id', NULL);
+        if($mapId != NULL) {
+            $this->template = View::factory('labyrinth/note');
+            $this->template->set('map', DB_ORM::model('map', array((int)$mapId)));
+        } else {
+            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+        }
+    }
+    
+    public function action_updateDevNodes() {
+        $mapId = $this->request->param('id', NULL);
+        if($_POST and $mapId != NULL) {
+            $map = DB_ORM::model('map', array((int)$mapId));
+            if($map != NULL) {
+                $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
+                $map->save();
+            }
+            Request::initial()->redirect(URL::base().'labyrinthManager/showDevNotes/'.$mapId);
+        } else {
+            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
         }
     }
 }
