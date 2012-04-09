@@ -134,12 +134,12 @@ class Model_Leap_Map_Presentation extends DB_ORM_Model {
             $this->access = Arr::get($values, 'access', 1);
             $this->skin_id = Arr::get($values, 'skin', 1);
             $this->tries = Arr::get($values, 'tries', 0);
-            
-            if(($startDate = mktime(0, 0, 0,Arr::get($values, 'startmonth', ''), Arr::get($values, 'startday', ''), Arr::get($values, 'startyear', ''))) != FALSE) {
+
+            if(($startDate = mktime(0, 0, 0,Arr::get($values, 'startmonth', 01), Arr::get($values, 'startday', 01), Arr::get($values, 'startyear', 1990))) != FALSE) {
                 $this->start_date = $startDate;
             }
             
-            if(($endDate = mktime(0, 0, 0,Arr::get($values, 'endmonth', ''), Arr::get($values, 'endday', ''), Arr::get($values, 'endyear', ''))) != FALSE) {
+            if(($endDate = mktime(0, 0, 0,Arr::get($values, 'endmonth', 01), Arr::get($values, 'endday', 01), Arr::get($values, 'endyear', 1990))) != FALSE) {
                 $this->end_date = $endDate;
             }
             
