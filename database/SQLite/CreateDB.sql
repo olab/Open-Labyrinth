@@ -89,6 +89,13 @@ CREATE TABLE map_contributor_roles (
   description  text NOT NULL
 );
 
+CREATE TABLE user_bookmarks (
+  id           integer PRIMARY KEY NOT NULL,
+  session_id  integer NOT NULL,
+  time_stamp integer NOT NULL,
+  node_id  integer NOT NULL
+);
+
 CREATE TABLE map_contributors (
   id            integer PRIMARY KEY NOT NULL,
   map_id        integer NOT NULL,
@@ -661,7 +668,7 @@ CREATE TABLE users (
     ON UPDATE NO ACTION
 );
 
-COMMIT
+/*COMMIT;*/
 
 BEGIN TRANSACTION;
 INSERT INTO languages ("id", "name", "key") VALUES (1, 'EN', 'en-en');

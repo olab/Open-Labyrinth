@@ -3,15 +3,15 @@
 $config = array();
 
 $config['default'] = array(
-    'type'          => 'mssql',     // string (e.g. db2, drizzle, firebird, mariadb, mssql, mysql, oracle, postgresql, or sqlite)
-    'driver'        => 'standard',  // string (e.g. standard, improved, or pdo)
+    'type'          => 'sqlite',     // string (e.g. db2, drizzle, firebird, mariadb, mssql, mysql, oracle, postgresql, or sqlite)
+    'driver'        => 'pdo',  // string (e.g. standard, improved, or pdo)
     'connection'    => array(
         'persistent'    => FALSE,       // boolean
-        'hostname'      => 'ACER-PC\SQLEXPRESS', // string
+        'hostname'      => '', // string
         'port'          => '',          // string
-        'database'      => 'openlabyrinth',          // string
-        'username'      => 'sa',      // string
-        'password'      => '#passfor_sqlsa123',      // string
+        'database'      => 'openlabyrinth.db',          // string
+        'username'      => '',      // string
+        'password'      => '',      // string
     ),
     'caching'       => FALSE,       // boolean
     'charset'       => 'utf8',      // string

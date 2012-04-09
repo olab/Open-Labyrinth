@@ -4,7 +4,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Model_Labyrinth extends Model {
 
-    public function execute($nodeId) {
+    public function execute($nodeId, $bookmark = NULL) {
         $result = array();
 
         $result['userId'] = 0;
@@ -27,9 +27,14 @@ class Model_Labyrinth extends Model {
 
             $result['node_title'] = $node->title;
             $result['node_text'] = $node->text;
-
+				
             $sessionId = NULL;
-            if ($node->type->name == 'root') {
+            if($bookmark != NULL) {
+				$b = DB_ORM::model('user_bookmark', array((int)$bookmark));
+				$sessionId = $b->session_id;
+				Session::instance()->set('session_id', $sessionId);
+                setcookie('OL', $sessionId);
+			} else if ($node->type->name == 'root') {
                 $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);

@@ -161,7 +161,7 @@ class Controller_PresentationManager extends Controller_Base {
             
             $this->template = $renderView;
         } else {
-            Request::initial()->redirect(URL::base() . 'presentationManager');
+            Request::initial()->redirect(URL::base() );
         }
     }
     
@@ -180,6 +180,11 @@ class Controller_PresentationManager extends Controller_Base {
                 if(array_search(Auth::instance()->get_user()->id, $userIDs) === FALSE) {
                     return FALSE;
                 } else {
+					if($presentation->access == 1) {
+						if(Auth::instance()->get_user()->type->name == 'learner') {
+							return FALSE;
+						}
+					}
                     return TRUE;
                 }
             }

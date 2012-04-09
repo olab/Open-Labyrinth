@@ -99,7 +99,6 @@ if ( ! defined('KOHANA_START_MEMORY'))
 }
 
 // Bootstrap the application
-// Test
 require APPPATH.'bootstrap'.EXT;
 
 /**

@@ -111,9 +111,9 @@
         function ajaxBookmark()
         {
             var xmlhttp;
-            var labsess = <?php if(isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;;
-            var thisnode = "<%=mnodeid%>";
-            var URL = "bookmark.asp?s="+labsess+"&n="+thisnode;
+            var labsess = <?php if(isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
+            var thisnode = "<?php if(isset($templateData['node'])) echo $templateData['node']->id; ?>";
+            var URL = "<?php echo URL::base(); ?>renderLabyrinth/addBookmark/"+labsess+"/"+thisnode;
             if (window.XMLHttpRequest)
             {// code for IE7+, Firefox, Chrome, Opera, Safari
                 xmlhttp=new XMLHttpRequest();}
@@ -127,7 +127,7 @@
             xmlhttp.onreadystatechange=function()
             {
             }
-            xmlhttp.open("GET",URL,true);
+            xmlhttp.open("POST",URL,true);
             xmlhttp.send(null);
         }
 

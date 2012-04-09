@@ -28,6 +28,16 @@ class Controller_PlayedLabyrinth extends Controller_Base {
         if($mapId != NULL) {
             $sessions = DB_ORM::model('user_session')->getAllSessionByUser(Auth::instance()->get_user()->id);
             $this->templateData['sessions'] = $sessions;
+			
+			if(count($this->templateData['sessions']) > 0) {
+				foreach($this->templateData['sessions'] as $session) {
+					$bookmark = DB_ORM::model('user_bookmark')->getBookmark($session->id);
+					if($bookmark != NULL) {
+						$this->templateData['bookmarks'][$session->id] = $bookmark;
+					}
+				}
+			}
+			
             $openView = View::factory('labyrinth/sessionMapInfo');
             $openView->set('templateData', $this->templateData);
 

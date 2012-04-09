@@ -55,19 +55,30 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
         $editOn = $this->request->param('id3', NULL);
+		$bookMark = $this->request->param('id4', NULL);
         
         if ($mapId != NULL) {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {
-                    Request::initial()->redirect(URL::base());
-                    return;
+					if($_POST) {
+						$nodeId = Arr::get($_POST, 'id', NULL);
+						if($nodeId == NULL) {
+							Request::initial()->redirect(URL::base());
+							return;
+						}
+					}
+                   
                 }
             }
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
             if ($node != NULL) {
-                $data = Model::factory('labyrinth')->execute($node->id);
+				if($bookMark != NULL) {
+					$data = Model::factory('labyrinth')->execute($node->id, (int)$bookMark);
+				} else {
+					$data = Model::factory('labyrinth')->execute($node->id);
+				}
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
                     //echo Debug::vars($data['redirect']);
@@ -224,6 +235,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
             echo '';
         }
     }
+	
+	public function action_addBookmark() {
+		$sessionId = $this->request->param('id', NULL);
+		$nodeId = $this->request->param('id2', NULL);
+		
+		if($sessionId != NULL and $nodeId != NULL) {
+			DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
+		}
+	}
     
     private function remote_go($nodeId, $mapId) {
         if ($mapId != NULL) {

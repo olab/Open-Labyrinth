@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `groups`
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `maps` (
   KEY `skin_id` (`skin_id`),
   KEY `section_id` (`section_id`),
   KEY `language_id` (`language_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `maps`
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `map_counters` (
   `out_of` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_counters`
@@ -541,7 +541,7 @@ CREATE TABLE IF NOT EXISTS `map_nodes` (
   `rgb` varchar(8) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `map_nodes`
@@ -561,7 +561,7 @@ CREATE TABLE IF NOT EXISTS `map_node_counters` (
   `function` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `node_id` (`node_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_node_counters`
@@ -587,7 +587,7 @@ CREATE TABLE IF NOT EXISTS `map_node_links` (
   KEY `map_id` (`map_id`),
   KEY `node_id_1` (`node_id_1`),
   KEY `node_id_2` (`node_id_2`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `map_node_links`
@@ -742,7 +742,7 @@ CREATE TABLE IF NOT EXISTS `map_presentations` (
   `end_date` bigint(20) DEFAULT NULL,
   `tries` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_presentations`
@@ -763,7 +763,7 @@ CREATE TABLE IF NOT EXISTS `map_presentation_maps` (
   PRIMARY KEY (`id`),
   KEY `presentation_id` (`presentation_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_presentation_maps`
@@ -783,7 +783,7 @@ CREATE TABLE IF NOT EXISTS `map_presentation_users` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `presentation_id` (`presentation_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `map_presentation_users`
@@ -1058,7 +1058,7 @@ CREATE TABLE IF NOT EXISTS `remoteMaps` (
   PRIMARY KEY (`id`),
   KEY `service_id` (`service_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `remoteMaps`
@@ -1077,7 +1077,7 @@ CREATE TABLE IF NOT EXISTS `remoteServices` (
   `type` varchar(1) NOT NULL,
   `ip` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `remoteServices`
@@ -1102,7 +1102,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `username` (`username`,`email`),
   KEY `fk_language_id` (`language_id`),
   KEY `fk_type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `users`
@@ -1110,6 +1110,25 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `nickname`, `language_id`, `type_id`) VALUES
 (1, 'admin', 'bf7bdf17dad6154e88bf66b9768174a47658e84baa1036c3f6f0cbeae5be1db7', 'admin@admin.com', 'administrator', 1, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_bookmarks`
+--
+
+CREATE TABLE IF NOT EXISTS `user_bookmarks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `session_id` int(10) unsigned NOT NULL,
+  `time_stamp` bigint(20) NOT NULL,
+  `node_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `user_bookmarks`
+--
+
 
 -- --------------------------------------------------------
 
@@ -1126,7 +1145,7 @@ CREATE TABLE IF NOT EXISTS `user_groups` (
   KEY `group_id` (`group_id`),
   KEY `user_id_2` (`user_id`),
   KEY `group_id_2` (`group_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `user_groups`
@@ -1170,7 +1189,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   UNIQUE KEY `id` (`id`),
   KEY `user_id` (`user_id`),
   KEY `map_id` (`map_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Dumping data for table `user_sessions`
@@ -1201,7 +1220,7 @@ CREATE TABLE IF NOT EXISTS `user_sessiontraces` (
   KEY `map_id` (`map_id`),
   KEY `node_id` (`node_id`),
   KEY `session_id_2` (`session_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=43 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `user_sessiontraces`
@@ -1357,15 +1376,15 @@ ALTER TABLE `map_node_section_nodes`
 -- Constraints for table `map_presentation_maps`
 --
 ALTER TABLE `map_presentation_maps`
-  ADD CONSTRAINT `map_presentation_maps_ibfk_2` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `map_presentation_maps_ibfk_1` FOREIGN KEY (`presentation_id`) REFERENCES `map_presentations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `map_presentation_maps_ibfk_1` FOREIGN KEY (`presentation_id`) REFERENCES `map_presentations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `map_presentation_maps_ibfk_2` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `map_presentation_users`
 --
 ALTER TABLE `map_presentation_users`
-  ADD CONSTRAINT `map_presentation_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `map_presentation_users_ibfk_1` FOREIGN KEY (`presentation_id`) REFERENCES `map_presentations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `map_presentation_users_ibfk_1` FOREIGN KEY (`presentation_id`) REFERENCES `map_presentations` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `map_presentation_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `map_questions`
