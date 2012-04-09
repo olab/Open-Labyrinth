@@ -62,5 +62,30 @@ class Controller_Home extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
+	
+	public function action_search() {
+		if($_POST) {
+			$scope = Arr::get($_POST, 'scope', NULL);
+			$key = Arr::get($_POST, 'searchterm', NULL);
+			$title = TRUE;
+			if($scope == 'a') {
+				$title = FALSE;
+			}
+			
+			if($key != NULL) {
+				$maps = DB_ORM::model('map')->getSearchMap($key, $title);
+				
+				$view = View::factory('search');
+				$view->set('maps', $maps);
+				$view->set('term', $key);
+				
+				$this->templateData['center'] = $view;
+				unset($this->templateData['right']);
+				$this->template->set('templateData', $this->templateData);
+			}
+		} else {
+			Request::initial()->redirect(URL::base());
+		}
+	}
 }
 ?>

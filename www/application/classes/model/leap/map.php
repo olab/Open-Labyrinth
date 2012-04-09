@@ -435,6 +435,39 @@ class Model_Leap_Map extends DB_ORM_Model {
             $this->save();
         }
     }
+	
+	public function getSearchMap($key, $onlyTitle = TRUE) {
+		$builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1);
+		
+		$result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $maps = array();
+            foreach($result as $record) {
+				$map = DB_ORM::model('map', array((int)$record['id']));
+                if($onlyTitle) {
+					if(strpos($map->name, $key) === FALSE) {
+					} else {
+						$maps[] = $map;
+					}
+					
+				} else {
+					if(strpos($map->name, $key) === FALSE) {
+						if(strpos($map->abstract, $key) === FALSE) {
+						} else {
+							$maps[] = $map;
+						}
+					} else {
+						$maps[] = $map;
+					}
+				}
+            }
+            
+            return $maps;
+        }
+        
+        return NULL;
+	}
 }
 
 ?>
