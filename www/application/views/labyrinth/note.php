@@ -11,7 +11,7 @@
                     <td valign="top">
                         <p>
                             <img src="<?php echo URL::base(); ?>images/notes.gif" border="0" alt="notes" align="absmiddle" />
-                            <strong>author notes for Labyrinth21</strong>
+                            <strong>author notes for Labyrinth "<?php echo $map->name; ?>"</strong>
                         </p>
                         <form action="<?php echo URL::base(); ?>labyrinthManager/updateDevNodes/<?php echo $map->id; ?>" method="POST">
                             <input type="hidden" name="mapid" value="21">
