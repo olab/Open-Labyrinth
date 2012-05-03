@@ -1,12 +1,7 @@
--- Drop database
-DROP DATABASE `openlabyrinth`;
-DROP USER 'ol_user'@'localhost';
+CREATE DATABASE `openlabyrinth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- Create user (username: ol_user; password: ol_user_pass) 
 CREATE USER 'ol_user'@'localhost' IDENTIFIED BY 'ol_user_pass';
-
--- Create database (openlabyrinth)
-CREATE DATABASE `openlabyrinth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- Link user with database
 GRANT ALL PRIVILEGES ON `openlabyrinth` . * TO 'ol_user'@'localhost' WITH GRANT OPTION;

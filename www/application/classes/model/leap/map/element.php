@@ -96,7 +96,24 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->mimes[] = 'application/x-shockw';  
         $this->mimes[] = 'application/x-shockwave-flash'; 
         $this->mimes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+        $this->mimes[] = 'video/x-msvideo';
+	$this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+	$this->mimes[] = 'application/msword';
+	$this->mimes[] = 'application/x-director';
+	$this->mimes[] = 'text/html';
+	$this->mimes[] = 'application/x-msaccess';
+	$this->mimes[] = 'video/quicktime';
+	$this->mimes[] = 'video/x-sgi-movie';
+	$this->mimes[] = 'video/mpeg';
+	$this->mimes[] = 'audio/mpeg';
+	$this->mimes[] = 'application/pdf';
+	$this->mimes[] = 'application/vnd.ms-powerpoint';
+	$this->mimes[] = 'audio/x-pn-realaudio';
+	$this->mimes[] = 'application/rtf';
+	$this->mimes[] = 'text/plain';
+	$this->mimes[] = 'audio/x-wav';
+	$this->mimes[] = 'application/zip';
+        $this->mimes[] = 'application/excel';
     }
 
     public static function data_source() {
@@ -192,6 +209,11 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
     public function uploadFile($mapId, $values) {
         if($values['filename']['size'] < 1024 * 3 * 1024) {
             if(is_uploaded_file($values['filename']['tmp_name'])) {
+                if(file_exists($_SERVER['DOCUMENT_ROOT'].'/files/'.$values['filename']['name'])) {
+                    $name = pathinfo($values['filename']['name'], PATHINFO_FILENAME);
+                    $extension = pathinfo($values['filename']['name'], PATHINFO_EXTENSION);
+                    $values['filename']['name'] = $name.'_'.time().'.'.$extension;
+                }
                 move_uploaded_file($values['filename']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/'.$values['filename']['name']);
                 $fileName = 'files/'.$values['filename']['name'];
                 
