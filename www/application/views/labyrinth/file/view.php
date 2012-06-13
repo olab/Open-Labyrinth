@@ -114,7 +114,7 @@ if (isset($templateData['map'])) { ?>
                                 </table>
                             </form>
                             <hr>
-                            <p>JPEG (.jpg + .jpeg), GIF (.gif), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
+                            <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
                         </td>
                     </tr>
                 </table>

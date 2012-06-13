@@ -108,31 +108,31 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             )),
         );
         
-        $this->mimes[] = 'image/gif';
         $this->mimes[] = 'image/jpg';
         $this->mimes[] = 'image/jpeg';
+        $this->mimes[] = 'image/gif';
         $this->mimes[] = 'image/png';
         $this->mimes[] = 'application/vnd.open';
         $this->mimes[] = 'application/x-shockw';  
         $this->mimes[] = 'application/x-shockwave-flash'; 
         $this->mimes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         $this->mimes[] = 'video/x-msvideo';
-	$this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-	$this->mimes[] = 'application/msword';
-	$this->mimes[] = 'application/x-director';
-	$this->mimes[] = 'text/html';
-	$this->mimes[] = 'application/x-msaccess';
-	$this->mimes[] = 'video/quicktime';
-	$this->mimes[] = 'video/x-sgi-movie';
-	$this->mimes[] = 'video/mpeg';
-	$this->mimes[] = 'audio/mpeg';
-	$this->mimes[] = 'application/pdf';
-	$this->mimes[] = 'application/vnd.ms-powerpoint';
-	$this->mimes[] = 'audio/x-pn-realaudio';
-	$this->mimes[] = 'application/rtf';
-	$this->mimes[] = 'text/plain';
-	$this->mimes[] = 'audio/x-wav';
-	$this->mimes[] = 'application/zip';
+        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+        $this->mimes[] = 'application/msword';
+        $this->mimes[] = 'application/x-director';
+        $this->mimes[] = 'text/html';
+        $this->mimes[] = 'application/x-msaccess';
+        $this->mimes[] = 'video/quicktime';
+        $this->mimes[] = 'video/x-sgi-movie';
+        $this->mimes[] = 'video/mpeg';
+        $this->mimes[] = 'audio/mpeg';
+        $this->mimes[] = 'application/pdf';
+        $this->mimes[] = 'application/vnd.ms-powerpoint';
+        $this->mimes[] = 'audio/x-pn-realaudio';
+        $this->mimes[] = 'application/rtf';
+        $this->mimes[] = 'text/plain';
+        $this->mimes[] = 'audio/x-wav';
+        $this->mimes[] = 'application/zip';
         $this->mimes[] = 'application/excel';
     }
 
@@ -172,7 +172,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('map_id', '=', $mapId)
-                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'application/x-shockwave-flash'));
+                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'image/png', 'application/x-shockwave-flash'));
         
         $result = $builder->query();
         
@@ -192,7 +192,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('id', 'NOT IN', $ids, 'AND')
-                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'application/x-shockwave-flash'));
+                ->where('mime', 'IN', array('image/gif', 'image/jpg', 'image/jpeg', 'image/png', 'application/x-shockwave-flash'));
         $result = $builder->query();
         
         if($result->is_loaded()) {
