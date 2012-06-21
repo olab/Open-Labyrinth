@@ -46,7 +46,7 @@ class Controller_FeedbackManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -56,7 +56,7 @@ class Controller_FeedbackManager extends Controller_Base {
             DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', NULL));
             Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -67,7 +67,7 @@ class Controller_FeedbackManager extends Controller_Base {
             DB_ORM::model('map_feedback_rule')->addRule($mapId, $typeName, $_POST);
             Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -78,7 +78,7 @@ class Controller_FeedbackManager extends Controller_Base {
             DB_ORM::model('map_feedback_rule', array((int)$ruleId))->delete();
             Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

@@ -39,7 +39,7 @@ class Controller_AvatarManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     
@@ -49,7 +49,7 @@ class Controller_AvatarManager extends Controller_Base {
             $avatarId = DB_ORM::model('map_avatar')->addAvatar($mapId);
             Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     
@@ -71,7 +71,7 @@ class Controller_AvatarManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     
@@ -82,7 +82,7 @@ class Controller_AvatarManager extends Controller_Base {
             DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
             Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     
@@ -93,7 +93,7 @@ class Controller_AvatarManager extends Controller_Base {
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
             Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     
@@ -104,7 +104,7 @@ class Controller_AvatarManager extends Controller_Base {
             DB_ORM::model('map_avatar')->duplicateAvatar($avatarId);
             Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect("home");
         }
     }
     

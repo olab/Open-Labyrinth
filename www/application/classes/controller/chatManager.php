@@ -40,7 +40,7 @@ class Controller_ChatManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -69,7 +69,7 @@ class Controller_ChatManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -82,7 +82,7 @@ class Controller_ChatManager extends Controller_Base {
                 Request::initial()->redirect(URL::base().'chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -96,7 +96,7 @@ class Controller_ChatManager extends Controller_Base {
                 Request::initial()->redirect(URL::base().'chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -110,7 +110,7 @@ class Controller_ChatManager extends Controller_Base {
                 Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -123,7 +123,7 @@ class Controller_ChatManager extends Controller_Base {
             //DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
             Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -149,7 +149,7 @@ class Controller_ChatManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -161,7 +161,7 @@ class Controller_ChatManager extends Controller_Base {
         if($mapId != NULL and $chatId != NULL and $chatQuestionCount!= NULL) {
             Request::initial()->redirect(URL::base().'chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -176,7 +176,7 @@ class Controller_ChatManager extends Controller_Base {
             $chatQuestionCount--;
             Request::initial()->redirect(URL::base().'chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -189,7 +189,7 @@ class Controller_ChatManager extends Controller_Base {
             DB_ORM::model('map_chat')->updateChat($chatId, $chatQuestionCount, $_POST);
             Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

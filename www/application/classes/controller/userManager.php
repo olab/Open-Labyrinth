@@ -26,7 +26,7 @@ class Controller_UserManager extends Controller_Base {
         parent::before();
         
         if(Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
         
         unset($this->templateData['right']);

@@ -39,7 +39,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -60,7 +60,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -71,7 +71,7 @@ class Controller_CounterManager extends Controller_Base {
             DB_ORM::model('map_counter')->addCounter($mapId, $_POST);
             Request::initial()->redirect(URL::base().'counterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -97,7 +97,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -108,7 +108,7 @@ class Controller_CounterManager extends Controller_Base {
             DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
             Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -122,7 +122,7 @@ class Controller_CounterManager extends Controller_Base {
             DB_ORM::model('map_node_counter')->deleteNodeCounter($nodeId, $counterId);
             Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -133,7 +133,7 @@ class Controller_CounterManager extends Controller_Base {
             DB_ORM::model('map_counter_rule')->addRule($counterId, $_POST);
             Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -145,7 +145,7 @@ class Controller_CounterManager extends Controller_Base {
             DB_ORM::model('map_counter', array((int)$counterId))->delete();
             Request::initial()->redirect(URL::base().'counterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -173,7 +173,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -189,7 +189,7 @@ class Controller_CounterManager extends Controller_Base {
                 Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -203,7 +203,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->template = View::factory('labyrinth/counter/preview');
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     

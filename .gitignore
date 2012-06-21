@@ -3,3 +3,8 @@ www/applicaiton/logs/2012
 www/applicaiton/logs/2013
 www/applicaiton/logs/2014
 www/export/visual_editor/*.xml
+
+# Swap files (Vim)#
+###################
+
+*~
