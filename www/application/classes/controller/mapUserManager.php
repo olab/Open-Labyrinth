@@ -53,7 +53,7 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map_user')->addUser($mapId, Arr::get($_POST, 'mapuserID', NULL));
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Request::initial()->redirect('mapUserManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -64,7 +64,7 @@ class Controller_MapUserManager extends Controller_Base {
         $userId = $this->request->param('id2', NULL);
         if($mapId != NULL) {
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Request::initial()->redirect('mapUserManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }

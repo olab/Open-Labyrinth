@@ -382,7 +382,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 switch ($node->link_style->name) {
                     case 'text (default)':
 						if($link->image_id != 0) {
-							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="'.URL::base().$link->image->path.'"></a></p>';
+							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="'.$link->image->path.'"></a></p>';
 						} else {
 							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
                         }
@@ -425,18 +425,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="'.'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="'.'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
             }
 
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="'.'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="'.'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
                 return $result;
             }
 
@@ -537,12 +537,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $userBrowser = Controller_RenderLabyrinth::getUserBroswer();
             if (substr($userBrowser, 0, 2) == "ie") {
                 return "<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0'>
-                <param name='movie' value='".URL::base().$swf->path."' />
+                <param name='movie' value='".$swf->path."' />
                 <param name='allowScriptAccess' value='sameDomain' />
                 <param name='quality' value='high' />
                 </object>";
             } else {
-                return "<object type='application/x-shockwave-flash' data='".URL::base().$swf->path."'>
+                return "<object type='application/x-shockwave-flash' data='".$swf->path."'>
                 <param name='allowScriptAccess' value='sameDomain' />
                 <param name='quality' value='high' />
                 </object>";

@@ -53,7 +53,7 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_FILES and $mapId != NULL) {
             DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
+            Request::initial()->redirect('fileManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -64,7 +64,7 @@ class Controller_FileManager extends Controller_Base {
         $fileId = $this->request->param('id2', NULL);
         if($mapId != NULL and $fileId != NULL) {
             DB_ORM::model('map_element')->deleteFile($fileId);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
+            Request::initial()->redirect('fileManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -97,7 +97,7 @@ class Controller_FileManager extends Controller_Base {
         $fileId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $fileId != NULL) {
             DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
+            Request::initial()->redirect('fileManager/index/'.$mapId);
         } else {
              Request::initial()->redirect("home");
         }

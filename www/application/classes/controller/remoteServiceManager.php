@@ -51,7 +51,7 @@ class Controller_RemoteServiceManager extends Controller_Base {
             DB_ORM::model('remoteService')->addNewService($_POST);
         }
         
-        Request::initial()->redirect(URL::base().'remoteServiceManager');
+        Request::initial()->redirect('remoteServiceManager');
     }
     
     public function action_editService() {
@@ -68,7 +68,7 @@ class Controller_RemoteServiceManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'remoteServiceManager');
+            Request::initial()->redirect('remoteServiceManager');
         }
     }
     
@@ -95,7 +95,7 @@ class Controller_RemoteServiceManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'remoteServiceManager');
+            Request::initial()->redirect('remoteServiceManager');
         }
     }
     
@@ -107,9 +107,9 @@ class Controller_RemoteServiceManager extends Controller_Base {
                 DB_ORM::model('remoteMap')->addMap($mapId, $serviceId);
             }
             
-            Request::initial()->redirect(URL::base().'remoteServiceManager/editServiceMap/'.$serviceId);
+            Request::initial()->redirect('remoteServiceManager/editServiceMap/'.$serviceId);
         } else {
-            Request::initial()->redirect(URL::base().'remoteServiceManager');
+            Request::initial()->redirect('remoteServiceManager');
         }
     }
     
@@ -118,9 +118,9 @@ class Controller_RemoteServiceManager extends Controller_Base {
         $mapId = $this->request->param('id2', NULL);
         if($mapId != NULL and $serviceId != NULL) {
             DB_ORM::model('remoteMap', array((int)$mapId))->delete();
-            Request::initial()->redirect(URL::base().'remoteServiceManager/editServiceMap/'.$serviceId);
+            Request::initial()->redirect('remoteServiceManager/editServiceMap/'.$serviceId);
         } else {
-            Request::initial()->redirect(URL::base().'remoteServiceManager');
+            Request::initial()->redirect('remoteServiceManager');
         }
     }
     
@@ -128,9 +128,9 @@ class Controller_RemoteServiceManager extends Controller_Base {
         $serviceId = $this->request->param('id', NULL);
         if($_POST and $serviceId != NULL) {
             DB_ORM::model('remoteService')->updateService($serviceId, $_POST);
-            Request::initial()->redirect(URL::base().'remoteServiceManager/editService/'.$serviceId);
+            Request::initial()->redirect('remoteServiceManager/editService/'.$serviceId);
         } else {
-            Request::initial()->redirect(URL::base().'remoteServiceManager');
+            Request::initial()->redirect('remoteServiceManager');
         }
     }
 

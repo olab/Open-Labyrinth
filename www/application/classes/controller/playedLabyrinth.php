@@ -65,7 +65,7 @@ class Controller_PlayedLabyrinth extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'openLabyrinth');
+            Request::initial()->redirect('openLabyrinth');
         }
     }
 }

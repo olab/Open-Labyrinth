@@ -80,7 +80,7 @@ class Controller_UserManager extends Controller_Base {
             Session::instance()->delete('newUser');
         }
         
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect('usermanager');
     }
     
     public function action_editUser() {
@@ -102,12 +102,12 @@ class Controller_UserManager extends Controller_Base {
                     Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
             
         }
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect('usermanager');
     }
     
     public function action_deleteUser() {
         DB_ORM::model('user', array($this->request->param('id', 0)))->delete();
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect('usermanager');
     }
     
     public function action_addGroup() {
@@ -119,7 +119,7 @@ class Controller_UserManager extends Controller_Base {
         if($_POST) {
             DB_ORM::model('group')->createGroup(Arr::get($_POST, 'groupname', 'empty_name'));
         }
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect('usermanager');
     }
     
     public function action_editGroup() {
@@ -141,7 +141,7 @@ class Controller_UserManager extends Controller_Base {
         if($_POST) {
             DB_ORM::model('user_group')->add($this->request->param('id', 0), Arr::get($_POST, 'userid', NULL));
         }
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$this->request->param('id', 0));
+        Request::initial()->redirect('usermanager/editGroup/'.$this->request->param('id', 0));
     }
     
     public function action_updateGroup() {
@@ -149,7 +149,7 @@ class Controller_UserManager extends Controller_Base {
             DB_ORM::model('group')->updateGroup($this->request->param('id', 0), Arr::get($_POST, 'groupname', 'empty_name'));
         }
         
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$this->request->param('id', 0));
+        Request::initial()->redirect('usermanager/editGroup/'.$this->request->param('id', 0));
     }
     
     public function action_removeMember() {
@@ -157,7 +157,7 @@ class Controller_UserManager extends Controller_Base {
         $groupId = $this->request->param('id2', 0);
         
         DB_ORM::model('user_group')->remove((int)$groupId, (int)$userId);
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$groupId);
+        Request::initial()->redirect('usermanager/editGroup/'.$groupId);
     }
 }
 

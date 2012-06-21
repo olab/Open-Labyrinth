@@ -79,7 +79,7 @@ class Controller_ChatManager extends Controller_Base {
         
         if($mapId != NULL) {
             if($chatQuestionCount != NULL) {
-                Request::initial()->redirect(URL::base().'chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
+                Request::initial()->redirect('chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
             }
         } else {
             Request::initial()->redirect("home");
@@ -93,7 +93,7 @@ class Controller_ChatManager extends Controller_Base {
         if($mapId != NULL) {
             if($chatQuestionCount != NULL) {
                 $chatQuestionCount--;
-                Request::initial()->redirect(URL::base().'chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
+                Request::initial()->redirect('chatManager/addChat/'.$mapId.'/'.$chatQuestionCount);
             }
         } else {
             Request::initial()->redirect("home");
@@ -107,7 +107,7 @@ class Controller_ChatManager extends Controller_Base {
         if($_POST and $mapId != NULL) {
             if($chatQuestionCount != NULL) {
                 DB_ORM::model('map_chat')->addChat($mapId, $chatQuestionCount, $_POST);
-                Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
+                Request::initial()->redirect('chatManager/index/'.$mapId);
             }
         } else {
             Request::initial()->redirect("home");
@@ -121,7 +121,7 @@ class Controller_ChatManager extends Controller_Base {
         if($mapId != NULL and $chatId != NULL) {
             DB_ORM::model('map_chat', array((int)$chatId))->delete();
             //DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
-            Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
+            Request::initial()->redirect('chatManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -159,7 +159,7 @@ class Controller_ChatManager extends Controller_Base {
         $chatQuestionCount = $this->request->param('id3', NULL);
         
         if($mapId != NULL and $chatId != NULL and $chatQuestionCount!= NULL) {
-            Request::initial()->redirect(URL::base().'chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
+            Request::initial()->redirect('chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
         } else {
             Request::initial()->redirect("home");
         }
@@ -174,7 +174,7 @@ class Controller_ChatManager extends Controller_Base {
         if($mapId != NULL and $chatId != NULL and $chatQuestionCount!= NULL and $senderNumber != NULL) {
             DB_ORM::model('map_chat_element')->deleteElemtnsByNumber($chatId, $senderNumber - 1);
             $chatQuestionCount--;
-            Request::initial()->redirect(URL::base().'chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
+            Request::initial()->redirect('chatManager/editChat/'.$mapId.'/'.$chatId.'/'.$chatQuestionCount);
         } else {
             Request::initial()->redirect("home");
         }
@@ -187,7 +187,7 @@ class Controller_ChatManager extends Controller_Base {
         
         if($_POST and $mapId != NULL and $chatId != NULL and $chatQuestionCount!= NULL) {
             DB_ORM::model('map_chat')->updateChat($chatId, $chatQuestionCount, $_POST);
-            Request::initial()->redirect(URL::base().'chatManager/index/'.$mapId);
+            Request::initial()->redirect('chatManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }

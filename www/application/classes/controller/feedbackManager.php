@@ -54,7 +54,7 @@ class Controller_FeedbackManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', NULL));
-            Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
+            Request::initial()->redirect('feedbackManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -65,7 +65,7 @@ class Controller_FeedbackManager extends Controller_Base {
         $typeName = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $typeName != NULL) {
             DB_ORM::model('map_feedback_rule')->addRule($mapId, $typeName, $_POST);
-            Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
+            Request::initial()->redirect('feedbackManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
@@ -76,7 +76,7 @@ class Controller_FeedbackManager extends Controller_Base {
         $ruleId = $this->request->param('id2', NULL);
         if($mapId != NULL and $ruleId != NULL) {
             DB_ORM::model('map_feedback_rule', array((int)$ruleId))->delete();
-            Request::initial()->redirect(URL::base().'feedbackManager/index/'.$mapId);
+            Request::initial()->redirect('feedbackManager/index/'.$mapId);
         } else {
             Request::initial()->redirect("home");
         }
