@@ -39,7 +39,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -60,7 +60,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -69,9 +69,9 @@ class Controller_CounterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map_counter')->addCounter($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'counterManager/index/'.$mapId);
+            Request::initial()->redirect('counterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -97,7 +97,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -106,9 +106,9 @@ class Controller_CounterManager extends Controller_Base {
         $counterId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $counterId != NULL) {
             DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
-            Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
+            Request::initial()->redirect('counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -120,9 +120,9 @@ class Controller_CounterManager extends Controller_Base {
         if($mapId != NULL and $counterId != NULL and $ruleId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_counter_rule', array((int)$ruleId))->delete();
             DB_ORM::model('map_node_counter')->deleteNodeCounter($nodeId, $counterId);
-            Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
+            Request::initial()->redirect('counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -131,9 +131,9 @@ class Controller_CounterManager extends Controller_Base {
         $counterId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $counterId != NULL) {
             DB_ORM::model('map_counter_rule')->addRule($counterId, $_POST);
-            Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
+            Request::initial()->redirect('counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -143,9 +143,9 @@ class Controller_CounterManager extends Controller_Base {
         if($mapId != NULL and $counterId != NULL) {
             DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int)$counterId);
             DB_ORM::model('map_counter', array((int)$counterId))->delete();
-            Request::initial()->redirect(URL::base().'counterManager/index/'.$mapId);
+            Request::initial()->redirect('counterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -173,7 +173,7 @@ class Controller_CounterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -183,13 +183,13 @@ class Controller_CounterManager extends Controller_Base {
         if($_POST and $mapId != NULL) {
             if($counterId != NULL) {
                 DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int)$counterId, (int)$mapId);
-                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId.'/'.$counterId);
+                Request::initial()->redirect('counterManager/grid/'.$mapId.'/'.$counterId);
             } else {
                 DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int)$mapId);
-                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
+                Request::initial()->redirect('counterManager/grid/'.$mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -203,7 +203,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->template = View::factory('labyrinth/counter/preview');
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     

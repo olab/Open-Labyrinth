@@ -41,7 +41,7 @@ class Controller_QuestionManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -71,7 +71,7 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->template->set('templateData', $this->templateData);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -103,7 +103,7 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->template->set('templateData', $this->templateData);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -119,9 +119,9 @@ class Controller_QuestionManager extends Controller_Base {
                 DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
             }
             
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            Request::initial()->redirect('questionManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -136,9 +136,9 @@ class Controller_QuestionManager extends Controller_Base {
                 DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
             }
             
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            Request::initial()->redirect('questionManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -150,9 +150,9 @@ class Controller_QuestionManager extends Controller_Base {
             DB_ORM::model('map_question', array((int)$questionId))->delete();
             DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
             
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            Request::initial()->redirect('questionManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

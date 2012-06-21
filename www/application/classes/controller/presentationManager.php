@@ -39,7 +39,7 @@ class Controller_PresentationManager extends Controller_Base {
             DB_ORM::model('map_presentation')->addPresentation(Auth::instance()->get_user()->id, $_POST);
             Request::initial()->redirect(URL::base() . 'presentationManager');
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 

@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_LabyrinthManager extends Controller_Base {
     
     public function action_index() {
-        Request::initial()->redirect(URL::base());
+        Request::initial()->redirect('home');
     }
     
     public function action_createLabyrinth() {
@@ -54,9 +54,9 @@ class Controller_LabyrinthManager extends Controller_Base {
         if($_POST) {
             $_POST['author'] = Auth::instance()->get_user()->id;
             $map = DB_ORM::model('map')->createMap($_POST);
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$map->id);
+            Request::initial()->redirect('labyrinthManager/editMap/'.$map->id);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -68,7 +68,7 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if(Auth::instance()->get_user()->type->name != 'superuser') {
                     if(Auth::instance()->get_user()->id != $map->author_id) {
                         if(!DB_ORM::model('map_user')->checkUser($map->authors, Auth::instance()->get_user()->id)) {
-                            Request::initial()->redirect(URL::base());
+                            Request::initial()->redirect('home');
                         }
                     }
                 }
@@ -86,7 +86,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -96,7 +96,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             DB_ORM::model('map')->disableMap($mapId);
         }
         
-        Request::initial()->redirect(URL::base());
+        Request::initial()->redirect('home');
     }
     
     public function action_global() {
@@ -126,7 +126,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -134,9 +134,9 @@ class Controller_LabyrinthManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($mapId != NULL) {
             DB_ORM::model('map_contributor')->createContributor($mapId);
-            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/global/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -145,9 +145,9 @@ class Controller_LabyrinthManager extends Controller_Base {
         $contId = $this->request->param('id2', NULL);
         if($mapId != NULL and $contId != NULL) {
             DB_ORM::model('map_contributor', array((int)$contId))->delete();
-            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/global/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -157,12 +157,12 @@ class Controller_LabyrinthManager extends Controller_Base {
             if($mapId != NULL) {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
-                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+                Request::initial()->redirect('labyrinthManager/global/'.$mapId);
             } else {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+                Request::initial()->redirect('labyrinthManager/editMap/'.$mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editMap/'.$mapId);
         }
     }
     
@@ -193,7 +193,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager');
+            Request::initial()->redirect('labyrinthManager');
         }
     }
     
@@ -202,12 +202,12 @@ class Controller_LabyrinthManager extends Controller_Base {
         $countOfKeys = $this->request->param('id2', NULL);
         if($mapId != NULL) {
             if($countOfKeys != NULL) {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId.'/'.$countOfKeys);
+                Request::initial()->redirect('labyrinthManager/editKeys/'.$mapId.'/'.$countOfKeys);
             } else {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId.'/1');
+                Request::initial()->redirect('labyrinthManager/editKeys/'.$mapId.'/1');
             }
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager');
+            Request::initial()->redirect('labyrinthManager');
         }
     }
     
@@ -219,9 +219,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             if($countOfAddKeys != NULL) {
                 DB_ORM::model('map_key')->createKeys($mapId, $_POST, (int)$countOfAddKeys-1);
             }
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editKeys/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editMap/'.$mapId);
         }
     }
     
@@ -230,9 +230,9 @@ class Controller_LabyrinthManager extends Controller_Base {
         $keyId = $this->request->param('id2', NULL);
         if($keyId != NULL) {
             DB_ORM::model('map_key', array($keyId))->delete();
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editKeys/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editKeys/'.$mapId);
         }
     }
     
@@ -242,7 +242,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->template = View::factory('labyrinth/note');
             $this->template->set('map', DB_ORM::model('map', array((int)$mapId)));
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editMap/'.$mapId);
         }
     }
     
@@ -254,9 +254,9 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
                 $map->save();
             }
-            Request::initial()->redirect(URL::base().'labyrinthManager/showDevNotes/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/showDevNotes/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect('labyrinthManager/editMap/'.$mapId);
         }
     }
 }

@@ -29,7 +29,7 @@ class Controller_Home extends Controller_Base {
         if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
             if ($status) {
-                Request::initial()->redirect(URL::base());
+                Request::initial()->redirect("home");
             } else {
                 $this->templateData['error'] = 'Invalid username or password';
                 $this->template->set('templateData', $this->templateData);
@@ -42,7 +42,7 @@ class Controller_Home extends Controller_Base {
             Auth::instance()->logout();
         }
 
-        Request::initial()->redirect(URL::base());
+        Request::initial()->redirect('home');
     }
     
     public function action_changePassword() {
@@ -57,7 +57,7 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -76,10 +76,10 @@ class Controller_Home extends Controller_Base {
                 $user->password = Auth::instance()->hash($newPassword);
                 $user->save();
                 
-                Request::initial()->redirect(URL::base());
+                Request::initial()->redirect("home");
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 	
@@ -104,7 +104,7 @@ class Controller_Home extends Controller_Base {
 				$this->template->set('templateData', $this->templateData);
 			}
 		} else {
-			Request::initial()->redirect(URL::base());
+			Request::initial()->redirect("home");
 		}
 	}
 }

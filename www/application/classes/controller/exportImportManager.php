@@ -38,7 +38,7 @@ class Controller_ExportImportManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -46,9 +46,9 @@ class Controller_ExportImportManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($mapId != NULL) {
             $this->exportVUE($mapId);
-            Request::initial()->redirect(URL::base().'export/OLVue-export-'.$mapId.'.vue');
+            Request::initial()->redirect('export/OLVue-export-'.$mapId.'.vue');
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -71,7 +71,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
         
-        Request::initial()->redirect(URL::base());
+        Request::initial()->redirect("home");
     }
 
     public function exportVUE($mapId) {

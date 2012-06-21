@@ -39,7 +39,7 @@ class Controller_LinkManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -65,7 +65,7 @@ class Controller_LinkManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -74,9 +74,9 @@ class Controller_LinkManager extends Controller_Base {
         $nodeId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_node_link')->addLink($mapId, $nodeId, $_POST);
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -86,9 +86,9 @@ class Controller_LinkManager extends Controller_Base {
         $deleteLinkId = $this->request->param('id3', NULL);
         if($mapId != NULL and $nodeId != NULL and $deleteLinkId != NULL) {
             DB_ORM::model('map_node_link', array((int)$deleteLinkId))->delete();
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -114,7 +114,7 @@ class Controller_LinkManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -124,9 +124,9 @@ class Controller_LinkManager extends Controller_Base {
         $updateLinkId = $this->request->param('id3', NULL);
         if($_POST and $mapId != NULL and $nodeId != NULL and $updateLinkId != NULL) {
             DB_ORM::model('map_node_link')->updateLink($updateLinkId, $_POST);
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -135,9 +135,9 @@ class Controller_LinkManager extends Controller_Base {
         $nodeId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -146,9 +146,9 @@ class Controller_LinkManager extends Controller_Base {
         $nodeId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -163,9 +163,9 @@ class Controller_LinkManager extends Controller_Base {
                 DB_ORM::model('map_node_link')->updateProbability($mapId, $nodeId, $_POST);
             }
             
-            Request::initial()->redirect(URL::base().'linkManager/editLinks/'.$mapId.'/'.$nodeId);
+            Request::initial()->redirect('linkManager/editLinks/'.$mapId.'/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

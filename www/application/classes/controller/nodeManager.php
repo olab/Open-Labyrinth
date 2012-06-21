@@ -39,7 +39,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect('home');
         }
     }
     
@@ -68,7 +68,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+             Request::initial()->redirect('home');
         }
     }
     
@@ -77,9 +77,9 @@ class Controller_NodeManager extends Controller_Base {
         if($_POST and $mapId != NULL) {
             $_POST['map_id'] = $mapId;
             $node = DB_ORM::model('map_node')->createNode($_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/index/'.$mapId);
+            Request::initial()->redirect('nodeManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -110,7 +110,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -120,12 +120,12 @@ class Controller_NodeManager extends Controller_Base {
             $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
             if($node != NULL) {
                 DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
-                Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id); 
+                Request::initial()->redirect('nodeManager/index/'.$node->map_id); 
             } else {
-                Request::initial()->redirect(URL::base());
+                Request::initial()->redirect('home');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -135,9 +135,9 @@ class Controller_NodeManager extends Controller_Base {
         
         if($mapId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_node')->setRootNode($mapId, $nodeId);
-            Request::initial()->redirect(URL::base().'nodeManager/editNode/'.$nodeId);
+            Request::initial()->redirect('nodeManager/editNode/'.$nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -166,7 +166,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -176,12 +176,12 @@ class Controller_NodeManager extends Controller_Base {
         if($nodeId != NULL) {
             if($countOfCondidtionFiled != NULL) {
                 $countOfCondidtionFiled++;
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
+                Request::initial()->redirect('nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect('nodeManager/editConditional/'.$nodeId.'/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -191,12 +191,12 @@ class Controller_NodeManager extends Controller_Base {
         if($nodeId != NULL) {
             if($countOfCondidtionFiled != NULL) {
                 $countOfCondidtionFiled--;
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
+                Request::initial()->redirect('nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect('nodeManager/editConditional/'.$nodeId.'/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -206,12 +206,12 @@ class Controller_NodeManager extends Controller_Base {
         if($nodeId != NULL and $_POST) {
             if($countOfCondidtionFiled != NULL) {
                 DB_ORM::model('map_node')->addCondtional($nodeId, $_POST, $countOfCondidtionFiled);
-                Request::initial()->redirect(URL::base().'nodeManager/editNode/'.$nodeId);
+                Request::initial()->redirect('nodeManager/editNode/'.$nodeId);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect('nodeManager/editConditional/'.$nodeId.'/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -232,7 +232,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -240,9 +240,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map_node')->updateAllNode($_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/grid/'.$mapId);
+            Request::initial()->redirect('nodeManager/grid/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -264,7 +264,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -272,9 +272,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map')->updateSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+            Request::initial()->redirect('nodeManager/sections/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -282,9 +282,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             DB_ORM::model('map_node_section')->createSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+            Request::initial()->redirect('nodeManager/sections/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -307,7 +307,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -316,9 +316,9 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = $this->request->param('id2', NULL);
         if($_POST and $sectionId != NULL and $mapId != NULL) {
             DB_ORM::model('map_node_section')->updateSectionName($sectionId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect('nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -327,9 +327,9 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = $this->request->param('id2', NULL);
         if($sectionId != NULL and $mapId != NULL) {
             DB_ORM::model('map_node_section')->deleteSection((int)$sectionId);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+            Request::initial()->redirect('nodeManager/sections/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -341,9 +341,9 @@ class Controller_NodeManager extends Controller_Base {
             if($nodeId != NULL) {
                 DB_ORM::model('map_node_section_node')->addNode($nodeId, $sectionId);
             }
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect('nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -352,9 +352,9 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = $this->request->param('id2', NULL);
         if($_POST and $sectionId != NULL and $mapId != NULL) {
             DB_ORM::model('map_node_section_node')->updateNodesOrder($sectionId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect('nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
     
@@ -364,9 +364,9 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = $this->request->param('id3', NULL);
         if($sectionId != NULL and $mapId != NULL and $nodeId != NULL) {
             DB_ORM::model('map_node_section_node')->deleteNodeBySection($sectionId, $nodeId);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect('nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect('home');
         }
     }
 }

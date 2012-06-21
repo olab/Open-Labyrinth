@@ -39,7 +39,7 @@ class Controller_ClusterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -59,7 +59,7 @@ class Controller_ClusterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -67,9 +67,9 @@ class Controller_ClusterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($_POST and $mapId != NULL) {
             Db_ORM::model('map_dam')->createDam($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'clusterManager/index/'.$mapId);
+            Request::initial()->redirect('clusterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -79,9 +79,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($damId != NULL and $mapId != NULL) {
             Db_ORM::model('map_dam', array((int)$damId))->delete();
-            Request::initial()->redirect(URL::base().'clusterManager/index/'.$mapId);
+            Request::initial()->redirect('clusterManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -108,7 +108,7 @@ class Controller_ClusterManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -118,9 +118,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->updateDamName($damId, $_POST);
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -130,9 +130,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addElement($damId, $_POST, 'vpd');
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -143,9 +143,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($elementId != NULL and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam_element', array((int)$elementId))->delete();
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -156,9 +156,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($_POST and $elementId != NULL and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam_element')->updateElement($elementId, $_POST);
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -168,9 +168,9 @@ class Controller_ClusterManager extends Controller_Base {
         
         if($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addFile($damId, $_POST, 'mr');
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -180,9 +180,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addDam($damId, $_POST, 'dam');
-            Request::initial()->redirect(URL::base().'clusterManager/editCluster/'.$mapId.'/'.$damId);
+            Request::initial()->redirect('clusterManager/editCluster/'.$mapId.'/'.$damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }
