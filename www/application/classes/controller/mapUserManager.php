@@ -45,7 +45,7 @@ class Controller_MapUserManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -55,7 +55,7 @@ class Controller_MapUserManager extends Controller_Base {
             DB_ORM::model('map_user')->addUser($mapId, Arr::get($_POST, 'mapuserID', NULL));
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -66,7 +66,7 @@ class Controller_MapUserManager extends Controller_Base {
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

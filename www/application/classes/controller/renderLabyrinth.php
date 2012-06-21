@@ -59,13 +59,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $this->template = View::factory('labyrinth/skin/' . $data['map']->skin->path);
                     $this->template->set('templateData', $data);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Request::initial()->redirect("home");
                 }
             } else {
-                Request::initial()->redirect(URL::base());
+                Request::initial()->redirect("home");
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 
@@ -82,7 +82,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 					if($_POST) {
 						$nodeId = Arr::get($_POST, 'id', NULL);
 						if($nodeId == NULL) {
-							Request::initial()->redirect(URL::base());
+							Request::initial()->redirect("home");
 							return;
 						}
 					}
@@ -124,13 +124,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $this->template = View::factory('labyrinth/skin/' . $data['map']->skin->path);
                     $this->template->set('templateData', $data);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Request::initial()->redirect("home");
                 }
             } else {
-                Request::initial()->redirect(URL::base());
+                Request::initial()->redirect("home");
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 
@@ -142,7 +142,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
             Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 
@@ -183,7 +183,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             Model::factory('labyrinth')->review($nodeId);
             Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 

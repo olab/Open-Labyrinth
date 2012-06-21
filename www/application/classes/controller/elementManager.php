@@ -42,7 +42,7 @@ class Controller_ElementManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -72,7 +72,7 @@ class Controller_ElementManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -84,7 +84,7 @@ class Controller_ElementManager extends Controller_Base {
             DB_ORM::model('map_vpd')->createNewElement($mapId, $type, $_POST);
             Request::initial()->redirect(URL::base().'elementManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -96,7 +96,7 @@ class Controller_ElementManager extends Controller_Base {
             DB_ORM::model('map_vpd_element')->saveElementValues($vpdId, $_POST);
             Request::initial()->redirect(URL::base().'elementManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -108,7 +108,7 @@ class Controller_ElementManager extends Controller_Base {
             DB_ORM::model('map_vpd', array((int)$vpdId))->delete();
             Request::initial()->redirect(URL::base().'elementManager/index/'.$mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -136,7 +136,7 @@ class Controller_ElementManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }

@@ -48,9 +48,9 @@ class Controller_CollectionManager extends Controller_Base {
             $newCollection = DB_ORM::model('map_collection');
             $newCollection->name = Arr::get($_POST, 'colname', '');
             $newCollection->save();
-            Request::initial()->redirect(URL::base().'collectionManager');
+            Request::initial()->redirect('collectionManager');
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -67,7 +67,7 @@ class Controller_CollectionManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -80,9 +80,9 @@ class Controller_CollectionManager extends Controller_Base {
                 $collection->save();
             }
 
-            Request::initial()->redirect(URL::base().'collectionManager/editCollection/'.$collectionId);
+            Request::initial()->redirect('collectionManager/editCollection/'.$collectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -91,9 +91,9 @@ class Controller_CollectionManager extends Controller_Base {
         $mapId = $this->request->param('id2', NULL);
         if($collectionId != NULL) {
             DB_ORM::model('map_collectionMap')->deleteByIDs($collectionId, $mapId);
-            Request::initial()->redirect(URL::base().'collectionManager');
+            Request::initial()->redirect('collectionManager');
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
     
@@ -108,9 +108,9 @@ class Controller_CollectionManager extends Controller_Base {
                 $new->save();
             }
             
-            Request::initial()->redirect(URL::base().'collectionManager/editCollection/'.$collectionId);
+            Request::initial()->redirect('collectionManager/editCollection/'.$collectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect("home");
         }
     }
 }
