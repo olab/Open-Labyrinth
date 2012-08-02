@@ -229,12 +229,12 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
     public function uploadFile($mapId, $values) {
         if($values['filename']['size'] < 1024 * 3 * 1024) {
             if(is_uploaded_file($values['filename']['tmp_name'])) {
-                if(file_exists($_SERVER['DOCUMENT_ROOT'].'/files/'.$values['filename']['name'])) {
+                if(file_exists(DOCROOT.'/files/'.$values['filename']['name'])) {
                     $name = pathinfo($values['filename']['name'], PATHINFO_FILENAME);
                     $extension = pathinfo($values['filename']['name'], PATHINFO_EXTENSION);
                     $values['filename']['name'] = $name.'_'.time().'.'.$extension;
                 }
-                move_uploaded_file($values['filename']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/'.$values['filename']['name']);
+                move_uploaded_file($values['filename']['tmp_name'], DOCROOT.'/files/'.$values['filename']['name']);
                 $fileName = 'files/'.$values['filename']['name'];
                 
                 $mime = File::mime($fileName);
@@ -247,7 +247,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
 
                     $this->save();
                 } else {
-                    unlink($_SERVER['DOCUMENT_ROOT'].'/'.$fileName);
+                    unlink(DOCROOT.'/'.$fileName);
                 }
             }
         }
@@ -257,7 +257,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->id = $fileId;
         $this->load();
         
-        unlink($_SERVER['DOCUMENT_ROOT'].'/'.$this->path);
+        unlink(DOCROOT.'/'.$this->path);
         
         $this->delete();
     }
@@ -266,7 +266,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $totalsize = 0; 
         $totalcount = 0; 
         $dircount = 0; 
-        $path = $_SERVER['DOCUMENT_ROOT'].'/files/';
+        $path = DOCROOT.'/files/';
         if ($handle = opendir($path)) { 
             while (false !== ($file = readdir($handle))) { 
                 $nextpath = $path . '/' . $file; 

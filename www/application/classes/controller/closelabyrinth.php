@@ -21,7 +21,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_CloseLabyrinth extends Controller_Base {
-    
+
     public function action_index() {
         $maps = DB_ORM::model('map')->getAllEnabledAndCloseMap();
         $this->templateData['maps'] = $maps;

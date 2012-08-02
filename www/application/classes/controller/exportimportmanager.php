@@ -65,8 +65,8 @@ class Controller_ExportImportManager extends Controller_Base {
                 if(is_uploaded_file($_FILES['filename']['tmp_name'])) {
                     move_uploaded_file($_FILES['filename']['tmp_name'], $_SERVER['DOCUMENT_ROOT'].'/files/'.$_FILES['filename']['name']);
                     $fileName = 'files/'.$_FILES['filename']['name'];
-                    $this->importVUE($_SERVER['DOCUMENT_ROOT'].'/files/'.$_FILES['filename']['name'], Arr::get($_POST, 'mapname', ''));
-                    unlink($_SERVER['DOCUMENT_ROOT'].'/'.$fileName);
+                    $this->importVUE(DOCROOT.'/files/'.$_FILES['filename']['name'], Arr::get($_POST, 'mapname', ''));
+                    unlink(DOCROOT.'/'.$fileName);
                 }
             }
         }

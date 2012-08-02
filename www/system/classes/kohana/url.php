@@ -80,7 +80,7 @@ class Kohana_URL {
 			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$domain.$port.$base_url;
+			$base_url = $protocol.'://'.$domain.$port.'/';
 		}
 
 		return $base_url;

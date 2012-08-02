@@ -67,8 +67,8 @@ class Model_VisualEditor extends Model {
         }
         
         $xmlBuffer .= '</nodes>'.chr(13).chr(10);
-        
-        $fileName = $_SERVER['DOCUMENT_ROOT'].'/export/visual_editor/mapview_'.$mapId.'.xml';
+
+        $fileName = DOCROOT.'/export/visual_editor/mapview_'.$mapId.'.xml';
         $f = fopen($fileName, 'w') or die("can't create file");
         fwrite($f, $xmlBuffer);
         fclose($f);
