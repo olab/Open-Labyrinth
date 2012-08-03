@@ -556,17 +556,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private static function getAvatarHTML($id) {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
-        if ($avatar) {
-            return '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="300" height="300" id="avatar_' . $avatar->id . '" align="middle">
-                        <param name="allowScriptAccess" value="sameDomain">
-                        <param name="movie" value="' . URL::base() . 'documents/avatar.swf">
-                        <param name="quality" value="high">
-                        <param name="flashVars" value="fSkin=' . $avatar->skin_1 . '&fSkinOut=' . $avatar->skin_2 . '&fBkd=' . $avatar->bkd . '&fCloth=' . $avatar->cloth . '&fNose=' . $avatar->nose . '&fHair=' . $avatar->hair . '&fAccessory1=' . $avatar->accessory_1 . '&fAccessory2=' . $avatar->accessory_2 . '&fAccessory3=' . $avatar->accessory_3 . '&fEnvironment=' . $avatar->environment . '&fOutfit=' . $avatar->outfit . '&fMouth=' . $avatar->mouth . '&fSex=' . $avatar->sex . '&fBubble=' . $avatar->bubble . '&fBubbleText=' . $avatar->bubble_text . '&fAge=' . $avatar->age . '&fEyes=' . $avatar->eyes . '&fWeather=' . $avatar->weather . '&fHairColor=' . $avatar->hair_color . '">
-                        <embed src="' . URL::base() . 'documents/avatar.swf" flashvars="fSkin=' . $avatar->skin_1 . '&fSkinOut=' . $avatar->skin_2 . '&fBkd=' . $avatar->bkd . '&fCloth=' . $avatar->cloth . '&fNose=' . $avatar->nose . '&fHair=' . $avatar->hair . '&fAccessory1=' . $avatar->accessory_1 . '&fAccessory2=' . $avatar->accessory_2 . '&fAccessory3=' . $avatar->accessory_3 . '&fEnvironment=' . $avatar->environment . '&fOutfit=' . $avatar->outfit . '&fMouth=' . $avatar->mouth . '&fSex=' . $avatar->sex . '&fBubble=' . $avatar->bubble . '&fBubbleText=' . $avatar->bubble_text . '&fAge=' . $avatar->age . '&fEyes=' . $avatar->eyes . '&fWeather=' . $avatar->weather . '&fHairColor=' . $avatar->hair_color . '" quality="high" bgcolor="#ffffff" width="300" height="300" name="avatar_' . $avatar->id . '" align="middle" allowscriptaccess="sameDomain" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
-                      </object>';
+        if ($avatar->image != null) {
+            $image = '<img src="'.URL::base().'avatars/'.$avatar->image.'" />';
+        }else{
+            $image = '<img src="'.URL::base().'avatars/default.png" />';
         }
-
-        return '';
+        return $image;
     }
 
     private static function getChatHTML($id) {

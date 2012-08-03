@@ -90,8 +90,24 @@ class Controller_AvatarManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
         if($_POST and $mapId != NULL and $avatarId != NULL) {
+            $upload_dir = DOCROOT.'/avatars/';
+            $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
+            if (!empty($avatarImage)){
+                @unlink($upload_dir.$avatarImage);
+            }
+            $img = $_POST['image_data'];
+            $img = str_replace('data:image/png;base64,', '', $img);
+            $img = str_replace(' ', '+', $img);
+            $data = base64_decode($img);
+            $file = uniqid() . '.png';
+            file_put_contents($upload_dir.$file, $data);
+            $_POST['image_data'] = $file;
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
-            Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
+            if ($_POST['save_exit_value'] == 0){
+                Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
+            }else{
+                Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
+            }
         } else {
              Request::initial()->redirect(URL::base());
         }

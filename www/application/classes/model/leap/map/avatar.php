@@ -59,37 +59,37 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             )),
             
             'nose' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'hair' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'environment' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'accessory_1' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'accessory_2' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'accessory_3' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -101,25 +101,25 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             )),
             
             'sex' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'mouth' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'outfit' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'bubble' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -137,19 +137,19 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             )),
             
             'eyes' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
-            
-            'weather' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2,
+                'max_length' => 20,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
             
             'hair_color' => new DB_ORM_Field_String($this, array(
                 'max_length' => 6,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+
+            'image' => new DB_ORM_Field_String($this, array(
+                'max_length' => 100,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -203,10 +203,10 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $this->skin_2 = Arr::get($values, 'avskin2', $this->skin_2);
             $this->bkd = Arr::get($values, 'avbkd', $this->bkd);
             $this->environment = Arr::get($values, 'avenvironment', $this->environment);
-            $this->weather = Arr::get($values, 'avweather', $this->weather);
             $this->bubble = Arr::get($values, 'avbubble', $this->bubble);
             $this->bubble_text = Arr::get($values, 'avbubbletext', $this->bubble_text);
-            
+            $this->image = Arr::get($values, 'image_data', $this->image);
+
             $this->save();
         }
     }
@@ -226,7 +226,16 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function getAvatarImage($avatarId){
+        $builder = DB_SQL::select('default', array('image'))->from($this->table())->where('id', '=', $avatarId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            return $result[0]['image'];
+        }
+    }
+
     public function duplicateAvatar($avatarId) {
         $this->id = $avatarId;
         $this->load();
