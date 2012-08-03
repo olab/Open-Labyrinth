@@ -88,7 +88,7 @@ if (isset($templateData['map'])) { ?>
                                             <td>
                                                 <p>
                                                     <a href="<?php echo URL::base().$file->path; ?>"><?php echo $file->name; ?></a>
-                                                    <br><?php echo filesize($_SERVER['DOCUMENT_ROOT'].'/'.$file->path) / 1000; ?> kb<br>last modified <?php echo date('d.m.Y H:i:s.', filemtime($_SERVER['DOCUMENT_ROOT'].'/'.$file->path)); ?>
+                                                    <br><?php echo filesize(DOCROOT.'/'.$file->path) / 1000; ?> kb<br>last modified <?php echo date('d.m.Y H:i:s.', filemtime(DOCROOT.'/'.$file->path)); ?>
                                                         <br>[<a href="<?php echo URL::base().'fileManager/editFile/'.$templateData['map']->id.'/'.$file->id; ?>">edit</a>]&nbsp;&nbsp;&nbsp;[<a href="<?php echo URL::base().'fileManager/deleteFile/'.$templateData['map']->id.'/'.$file->id; ?>">delete</a>]
                                                 </p>
                                             </td>

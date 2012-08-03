@@ -259,7 +259,7 @@ tinyMCE.init({
                     <?php } ?>
                     <p><a href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a></p>
                     </div>
-                    <a href="/<%=olpath%>"><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth"  border="0" /></a>
+                    <a href="<?php echo URL::base(); ?>"><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth"  border="0" /></a>
                     <h5>OpenLabyrinth is an open source educational pathway system</h5>
                 </td></tr>
             <tr>

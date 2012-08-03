@@ -142,7 +142,7 @@ class Model_Leap_User extends DB_ORM_Model {
         $this->nickname = $nickname;
         $this->language_id = $languageId;
         $this->type_id = $typeId;
-        
+
         $this->save();
     }
     
