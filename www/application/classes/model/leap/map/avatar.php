@@ -236,7 +236,7 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         }
     }
 
-    public function duplicateAvatar($avatarId) {
+    public function duplicateAvatar($avatarId, $file) {
         $this->id = $avatarId;
         $this->load();
         
@@ -260,9 +260,9 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $duplicateAvatar->bubble_text = $this->bubble_text;
             $duplicateAvatar->age = $this->age;
             $duplicateAvatar->eyes = $this->eyes;
-            $duplicateAvatar->weather = $this->weather;
             $duplicateAvatar->hair_color = $this->hair_color;
-            
+            $duplicateAvatar->image = $file;
+
             $duplicateAvatar->save();
         }
     }
