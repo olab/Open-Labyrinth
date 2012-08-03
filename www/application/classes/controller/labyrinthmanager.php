@@ -21,7 +21,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_LabyrinthManager extends Controller_Base {
-    
+
     public function action_index() {
         Request::initial()->redirect(URL::base());
     }

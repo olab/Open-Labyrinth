@@ -29,20 +29,19 @@ if (isset($templateData['map'])) { ?>
                         <td>
                             <?php if (isset($templateData['avatars']) and count($templateData['avatars']) > 0) { ?>
                                 <table>
-                                    <?php foreach($templateData['avatars'] as $avatar) { ?>
+                                    <?php foreach($templateData['avatars'] as $avatar) {
+                                    if ($avatar->image != null) {
+                                        $image = URL::base().'avatars/'.$avatar->image;
+                                    }else{
+                                        $image = URL::base().'avatars/default.png';
+                                    }
+                                    ?>
                                     <tr>
                                         <td>
                                             <input type="text" size="20" value="[[AV:<?php echo $avatar->id; ?>]]">
                                         </td>
                                         <td align="center" valign="middle">
-                                            <p><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" width="300" height="300" id="avatar_<?php echo $avatar->id; ?>" align="middle">
-                                                    <param name="allowScriptAccess" value="sameDomain">
-                                                    <param name="movie" value="<?php echo URL::base(); ?>documents/avatar.swf">
-                                                    <param name="quality" value="high">
-                                                    <param name="flashVars" value="fSkin=<?php echo $avatar->skin_1; ?>&fSkinOut=<?php echo $avatar->skin_2; ?>&fBkd=<?php echo $avatar->bkd; ?>&fCloth=<?php echo $avatar->cloth; ?>&fNose=<?php echo $avatar->nose; ?>&fHair=<?php echo $avatar->hair; ?>&fAccessory1=<?php echo $avatar->accessory_1; ?>&fAccessory2=<?php echo $avatar->accessory_2; ?>&fAccessory3=<?php echo $avatar->accessory_3; ?>&fEnvironment=<?php echo $avatar->environment; ?>&fOutfit=<?php echo $avatar->outfit; ?>&fMouth=<?php echo $avatar->mouth; ?>&fSex=<?php echo $avatar->sex; ?>&fBubble=<?php echo $avatar->bubble; ?>&fBubbleText=<?php echo $avatar->bubble_text; ?>&fAge=<?php echo $avatar->age; ?>&fEyes=<?php echo $avatar->eyes; ?>&fWeather=<?php echo $avatar->weather; ?>&fHairColor=<?php echo $avatar->hair_color; ?>">
-                                                    <embed src="<?php echo URL::base(); ?>documents/avatar.swf" flashvars="fSkin=<?php echo $avatar->skin_1; ?>&fSkinOut=<?php echo $avatar->skin_2; ?>&fBkd=<?php echo $avatar->bkd; ?>&fCloth=<?php echo $avatar->cloth; ?>&fNose=<?php echo $avatar->nose; ?>&fHair=<?php echo $avatar->hair; ?>&fAccessory1=<?php echo $avatar->accessory_1; ?>&fAccessory2=<?php echo $avatar->accessory_2; ?>&fAccessory3=<?php echo $avatar->accessory_3; ?>&fEnvironment=<?php echo $avatar->environment; ?>&fOutfit=<?php echo $avatar->outfit; ?>&fMouth=<?php echo $avatar->mouth; ?>&fSex=<?php echo $avatar->sex; ?>&fBubble=<?php echo $avatar->bubble; ?>&fBubbleText=<?php echo $avatar->bubble_text; ?>&fAge=<?php echo $avatar->age; ?>&fEyes=<?php echo $avatar->eyes; ?>&fWeather=<?php echo $avatar->weather; ?>&fHairColor=<?php echo $avatar->hair_color; ?>" quality="high" bgcolor="#ffffff" width="300" height="300" name="avatar_<?php echo $avatar->id; ?>" align="middle" allowscriptaccess="sameDomain" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
-                                                </object>
-                                            </p>
+                                            <p><img src="<?php echo $image; ?>" /></p>
                                         </td>
                                         <td>
                                             <p>[<a href="<?php echo URL::base().'avatarManager/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">edit</a>] [<a href="<?php echo URL::base().'avatarManager/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">duplicate</a>] [<a href="<?php echo URL::base().'avatarManager/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">delete</a>]</p></td>

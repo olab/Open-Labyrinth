@@ -30,7 +30,7 @@ if (isset($templateData['map'])) { ?>
                             <table width="100%" border="0">
                                 <tr>
                                     <td width="25%" align="left" nowrap="">
-                                        <p><a href=<?php echo URL::base().'labyrinthManager/global/'.$templateData['map']->id; ?>><img src="<?php echo URL::base(); ?>images/OL_global_wee.gif" alt="global" align="absmiddle" border="0">&nbsp;&nbsp;<strong><?php echo __('global'); ?></strong></a></p>
+                                        <p><a href="<?php echo URL::base().'labyrinthManager/global/'.$templateData['map']->id; ?>"><img src="<?php echo URL::base(); ?>images/OL_global_wee.gif" alt="global" align="absmiddle" border="0">&nbsp;&nbsp;<strong><?php echo __('global'); ?></strong></a></p>
                                         <p><a href="<?php echo URL::base().'nodeManager/index/'.$templateData['map']->id; ?>"><img src="<?php echo URL::base(); ?>images/OL_nodes_wee.gif" alt="nodes" align="absmiddle" border="0">&nbsp;&nbsp;<strong><?php echo __('nodes'); ?></strong></a></p>
                                         <p><a href="<?php echo URL::base().'nodeManager/grid/'.$templateData['map']->id; ?>"><img src="<?php echo URL::base(); ?>images/OL_nodegrid_wee.gif" alt="nodegrid" align="absmiddle" border="0">&nbsp;&nbsp;<strong><?php echo __('nodegrid'); ?></strong></a></p>
                                         <p><a href="<?php echo URL::base().'nodeManager/sections/'.$templateData['map']->id; ?>"><img src="<?php echo URL::base(); ?>images/OL_section_wee.gif" alt="sections" align="absmiddle" border="0">&nbsp;&nbsp;<strong><?php echo __('sections'); ?></strong></a></p>
