@@ -529,7 +529,8 @@ AvatarRender = function() {
     function changeOutfit(value, clothColor){
         var fillCreated = false;
         deleteElement('outfit');
-        deleteFillElement('4outfit');
+        deleteFillElement('35outfit');
+        deleteFillElement('36outfit');
         deleteElement('outfit_fill');
         deleteElement('outfit_trsp');
 

@@ -79,6 +79,11 @@ class Controller_AvatarManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
         if($mapId != NULL and $avatarId != NULL) {
+            $upload_dir = DOCROOT.'/avatars/';
+            $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
+            if (!empty($avatarImage)){
+                @unlink($upload_dir.$avatarImage);
+            }
             DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
             Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
         } else {
@@ -117,7 +122,15 @@ class Controller_AvatarManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
         if($mapId != NULL and $avatarId != NULL) {
-            DB_ORM::model('map_avatar')->duplicateAvatar($avatarId);
+            $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
+            if (!empty($avatarImage)){
+                $upload_dir = DOCROOT.'/avatars/';
+                $file = uniqid() . '.png';
+                copy($upload_dir.$avatarImage, $upload_dir.$file);
+            }else{
+                $file = NULL;
+            }
+            DB_ORM::model('map_avatar')->duplicateAvatar($avatarId, $file);
             Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
         } else {
              Request::initial()->redirect(URL::base());
