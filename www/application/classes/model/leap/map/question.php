@@ -238,8 +238,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('entry_type_id', $type->id)
                 ->column('stem', Arr::get($values, 'qstem', ''))
                 ->column('feedback', Arr::get($values, 'fback', ''))
-                ->column('show_answer', Arr::get($values, 'qshow', 1))
-                ->column('counter_id', Arr::get($values, 'scount', 0))
+                ->column('show_answer', (int)Arr::get($values, 'qshow', 1))
+                ->column('counter_id', (int)Arr::get($values, 'scount', 0))
                 ->column('num_tries',  Arr::get($values, 'numtries', -1));
         $newQuestionId = $builder->execute();
         

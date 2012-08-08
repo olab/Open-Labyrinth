@@ -478,17 +478,9 @@ class Model_Labyrinth extends Model {
             if ($question->show_answer) {
                 if ($question->type->value != 'text' and $question->type->value != 'area') {
                     if ($qResp->is_correct) {
-                        if ($qResp->response != '') {
-                            return '<p><img src="' . URL::base() . 'images/tick.jpg"> correct (' . $qResp->response . ')</p>';
-                        } else {
-                            return '<p><img src="' . URL::base() . 'images/tick.jpg"> ' . $question->feedback . '</p>';
-                        }
+                        return '<p><img src="' . URL::base() . 'images/tick.jpg"> correct (' . $qResp->feedback . ')</p>';
                     } else {
-                        if ($qResp->response != '') {
-                            return '<p><img src="' . URL::base() . 'images/cross.jpg"> incorrect (' . $qResp->response . ')</p>';
-                        } else {
-                            return '<p><img src="' . URL::base() . 'images/cross.jpg"> ' . $question->feedback . '</p>';
-                        }
+                        return '<p><img src="' . URL::base() . 'images/cross.jpg"> incorrect (' . $qResp->feedback . ')</p>';
                     }
                 }
             }
