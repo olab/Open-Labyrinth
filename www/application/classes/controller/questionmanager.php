@@ -131,7 +131,7 @@ class Controller_QuestionManager extends Controller_Base {
         
         if($_POST and $mapId != NULL and $templateType != NULL) {
             $type = DB_ORM::model('map_question_type', array((int)$templateType));
-            
+
             if($type) {
                 DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
             }

@@ -24,6 +24,8 @@
     <head>
         <title><?php if(isset($templateData['title'])) echo $templateData['title']; ?></title>
         <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/basic.css" />
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
     </head>
 
     <body>

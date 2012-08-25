@@ -28,7 +28,7 @@ class Model_VisualEditor extends Model {
         
         $mnX = 60;
         $mnY = 40;
-   
+
         $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
         
         if($nodes != NULL and count($nodes) > 0) {
@@ -47,7 +47,7 @@ class Model_VisualEditor extends Model {
                 $xmlBuffer .= '<node>'.chr(13).chr(10);
                 $xmlBuffer .= '<ID>'.$node->id.'</ID>'.chr(13).chr(10);
                 $xmlBuffer .= '<title><![CDATA['.$node->title.']]></title>'.chr(13).chr(10);
-                $xmlBuffer .= '<body><![CDATA['.$node->text.']]></body>'.chr(13).chr(10);
+                $xmlBuffer .= '<body><![CDATA['.strip_tags($node->text, '<p>').']]></body>'.chr(13).chr(10);
                 $xmlBuffer .= '<x>'.$mnX.'</x>'.chr(13).chr(10);
                 $xmlBuffer .= '<y>'.$mnY.'</y>'.chr(13).chr(10);
                 $xmlBuffer .= '<rgb>'.$node->rgb.'</rgb>'.chr(13).chr(10);

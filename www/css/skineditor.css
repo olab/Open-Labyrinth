@@ -1,0 +1,94 @@
+body {
+    height:100%;
+    overflow: hidden;
+}
+#skinEditor {
+    background: #7895b7;
+    position:fixed;
+    width:100%;
+    height:200px;
+    bottom:0;
+    left:0;
+    opacity:1;
+    color: #000000;
+}
+
+#skinEditor .header {
+    clear:both;
+    width:100%;
+    color:#000;
+    font-size: 30px;
+    text-align: center;
+    height:50px;
+    line-height: 50px;
+    font-weight: bold;
+}
+
+#skinEditor .left {
+    float:left;
+    height: 150px;
+    margin-right:10px;
+    background: #FFFFFF;
+    width:400px;
+    position:relative;
+    left:50%;
+    margin-left:100px;
+}
+
+#skinEditor .right {
+    float: right;
+    height:150px;
+    margin-left:10px;
+    background: #FFFFFF;
+    width:400px;
+    position: relative;
+    right:50%;
+    margin-right: 100px;
+}
+
+#skinEditor .action {
+    padding-left: 10px;
+    width:120px;
+    float:left;
+}
+
+#skinEditor .action p {
+    text-align: left;
+}
+
+#skinEditor .action_control {
+    width:270px;
+    float:left;
+    margin-top:10px;
+}
+
+#skinEditor .editor_action {
+    display: none;
+}
+
+#skinEditor .progress_display {
+    width:100%;
+    display: none;
+}
+
+#skinEditor .progress_display .progress {
+    width: 200px;
+    border:1px solid #CCCCCC;
+    margin:0 auto;
+}
+
+#skinEditor .progress_display .progress .bar {
+    height: 18px;
+    text-align: center;
+    background-color: #62C462;
+}
+
+#skinEditor .progress_display .status {
+    display: none;
+}
+
+#skinEditor .progress_display .status p {
+    margin-bottom:5px;
+    margin-top:0px;
+    text-align: left;
+}

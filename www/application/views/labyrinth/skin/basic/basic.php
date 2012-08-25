@@ -179,6 +179,15 @@
             document.getElementById("ChatQuestion" + ChatElementId).style.color = "grey";
         }
     </script>
+    <?php
+    if ($templateData['skin_path'] != NULL){
+        $doc_file = DOCROOT.'css/skin/'.$templateData['skin_path'].'/default.css';
+        if (file_exists($doc_file)){
+            $css_file = URL::base().'css/skin/'.$templateData['skin_path'].'/default.css';
+            echo '<link rel="stylesheet" type="text/css" href="'.$css_file.'" />';
+        }
+    }
+    ?>
 </head>
 
 <body>
@@ -204,9 +213,9 @@ tinyMCE.init({
 </script>
 <?php } ?>
     <div align="center">
-        <table width="90%" border="0" cellpadding="12" cellspacing="2">
+        <table id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
             <tr>
-                <td width="81%" bgcolor="#FFFFFF" align="left">
+                <td class="centre_td" width="81%" bgcolor="#FFFFFF" align="left">
                     <h4><font color="#000000"><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></font></h4>
                     
                     <?php if(isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
@@ -241,7 +250,7 @@ tinyMCE.init({
                             </td></tr>
                     </table>
                 </td>
-                <td width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center">
+                <td class="centre_td" width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center">
                         <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
 
                     <h5>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?> (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)<br />
@@ -263,7 +272,7 @@ tinyMCE.init({
                     <h5>OpenLabyrinth is an open source educational pathway system</h5>
                 </td></tr>
             <tr>
-                <td bgcolor="#FFFFFF">
+                <td class="centre_td" bgcolor="#FFFFFF">
                     <a href="#" onclick="toggle_visibility('track');"><p class='style2'><strong>Review your pathway</strong></p></a>
                     <div id='track' style='display:none'>
                         <?php if(isset($templateData['trace_links'])) echo $templateData['trace_links']; ?>

@@ -393,7 +393,16 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         $this->save();
     }
-    
+
+    public function updateMapSkin($id, $value) {
+        $this->id = $id;
+        $this->load();
+
+        $this->skin_id = $value;
+
+        $this->save();
+    }
+
     public function updateSection($mapId, $value) {
         $this->id = $mapId;
         $this->load();

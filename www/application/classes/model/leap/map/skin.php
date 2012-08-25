@@ -86,6 +86,26 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         
         return $result;
     }
+
+    public function addSkin($skinName, $skinPath) {
+        $this->name = $skinName;
+        $this->path = $skinPath;
+
+        $this->save();
+        $skin = $this->getMapBySkin($this->name);
+        return $skin;
+    }
+
+    public function getMapBySkin($name){
+        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_skin', array($result[0]['id']));
+        }
+
+        return NULL;
+    }
 }
 
 ?>
