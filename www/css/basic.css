@@ -38,6 +38,8 @@ body {
  color: #ffffff;
  text-align:center;
  padding:0;
+height:100%;
+overflow: hidden;
  }
 
 #outer {
@@ -114,4 +116,149 @@ overflow: auto;
 border: 1px solid #666666;
 background-color: #cccccc;
 padding: 8px;
+}
+
+.wizard_button {
+     background-color: #cdcdcd;
+     border:1px solid #000000;
+     color: #000000;
+     cursor: pointer;
+     display: block;
+     font-size: 16px;
+     font-weight: bold !important;
+     margin-left: 7px;
+     margin-right: 10px;
+     padding: 4px;
+     text-align: center;
+     text-decoration: none !important;
+     width: 280px;
+     line-height:30px;
+}
+
+.wizard_button.li {
+    margin:0;
+    width:260px;
+    height:355px;
+}
+
+.wizard_button.small {
+    width:168px;
+    height: 20px;
+    line-height: 20px;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.wizard_button.width_auto{
+    width:auto;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+.wizard_button:hover {
+    background-color: #60b3df;
+}
+
+.wizard_button.selected {
+    background-color: #60b3df;
+}
+
+.wizard_body {
+    display: table;
+    position: relative;
+    width: 100%;
+    padding-bottom: 65px;
+    color:#000000;
+    overflow: auto;
+ }
+
+.wizard_body ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    overflow: hidden;
+    margin:0;
+    padding: 0;
+}
+
+.wizard_body ul.main {
+    margin-top: 30px;
+}
+
+.wizard_body ul.nodes {
+    width:100%;
+}
+
+.wizard_body ul li {
+    display: inline;
+    margin:2px;
+    float:left;
+}
+
+.wizard_body p.li {
+    text-align: left;
+}
+
+.wizard_footer {
+    display: table;
+    position: absolute;
+    width: 100%;
+    bottom:10px;
+}
+
+.wizard_body .instractions {
+    float:left;
+    border: 1px solid #cdcdcd;
+    background: #efefef;
+    width:195px;
+    margin-right:10px;
+    min-height: 250px;
+}
+
+.wizard_body .instractions p {
+    padding: 10px;
+}
+
+.wizard_body .instractions p.header {
+    margin: 0px;
+    padding: 0px;
+    background: #cccccc;
+    font-weight: bold;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+}
+
+.wizard_body .visual-editor {
+    width: 79%;
+    float:left;
+    background: #cdcdcd;
+    height: 600px;
+}
+
+.wizard_body .node-editor {
+    min-width: 600px;
+    float:left;
+    min-height: 400px;
+}
+
+.wizard_header {
+    background: #d3d3e5;
+    height:40px;
+    padding-top:7px;
+}
+
+.wizard_header ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    overflow: hidden;
+    margin:0;
+    padding: 0;
+}
+
+.wizard_header li {
+    display: inline;
+    margin:2px;
+    float:left;
 }

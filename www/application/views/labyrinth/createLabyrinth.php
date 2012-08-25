@@ -23,10 +23,13 @@
     <tr>
         <td valign="top" bgcolor="#bbbbcb">
             <h4><?php echo __('create Labyrinth'); ?></h4>
-            <p><?php echo __('there are four ways to create a new Labyrinth'); ?></p>
+            <p><?php echo __('there are five ways to create a new Labyrinth'); ?></p>
             <table width="100%" border="0" cellspacing="6" cellpadding="4" bgcolor="#ffffff">
                 <tr align="left">
-                    <td nowrap=""><p><a href=<?php echo URL::base().'labyrinthManager/addManual' ?>><?php echo __('add manually'); ?></a></p></td>
+                    <td nowrap=""><p><a href="<?php echo URL::base().'labyrinthManager/caseWizard' ?>"><?php echo __('Step-by-Step Case Wizard'); ?></a></p></td>
+                </tr>
+                <tr align="left">
+                    <td nowrap=""><p><a href="<?php echo URL::base().'labyrinthManager/addManual' ?>"><?php echo __('add manually'); ?></a></p></td>
                 </tr>
                 <tr align="left">
                     <td nowrap="">

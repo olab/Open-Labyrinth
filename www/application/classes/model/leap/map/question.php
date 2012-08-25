@@ -167,7 +167,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
     public function updateQuestion($questionId, $type, $values) {
         $this->id = $questionId;
         $this->load();
-        
+
         switch($type->value)
         {
             case "text":

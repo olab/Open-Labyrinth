@@ -55,8 +55,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
 
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-
-                    $this->template = View::factory('labyrinth/skin/' . $data['map']->skin->path);
+                    $data['skin_path'] = $data['map']->skin->path;
+                    $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());
@@ -120,8 +120,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['node_text'] = $this->parseText($data['node_text']);
                     }
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+                    $data['skin_path'] = $data['map']->skin->path;
 
-                    $this->template = View::factory('labyrinth/skin/' . $data['map']->skin->path);
+                    $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());
