@@ -124,11 +124,12 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             $this->function = $function;
 
             $this->save();
+            $this->reset();
         } else {
             $this->updateNodeCounter($nodeId, $counterId, $function);
         }
     }
-    
+
     public function deleteNodeCounter($nodeId, $counterId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -203,6 +204,14 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                     $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
                     $counter->function = Arr::get($values, $inputName, $counter->function);
                     $counter->save();
+                }
+                unset($values[$inputName]);
+            }
+
+            foreach($values as $key => $value){
+                if ((strpos($key, 'nc_') !== false) & ($value != NULL)){
+                    $array = explode('_', $key);
+                    $this->addNodeCounter($array[1], $array[2], $value);
                 }
             }
         } else {
