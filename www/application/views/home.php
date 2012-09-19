@@ -50,7 +50,7 @@
                     <?php } ?>
                 </tr>
                 <tr>
-                    <td colspan="3"><?php if(isset($templateData['error'])) echo $templateData['error']; ?></td>
+                    <td style="color:#000000;" colspan="3"><?php if(isset($templateData['error'])) echo $templateData['error']; ?></td>
                 </tr>
             </table>
         </center>
