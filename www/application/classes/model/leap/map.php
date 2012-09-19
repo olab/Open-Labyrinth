@@ -247,8 +247,7 @@ class Model_Leap_Map extends DB_ORM_Model {
 		$builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('enabled', '=', 1, 'AND')
-                ->where('security_id', '=', 1, 'AND')
-				->where('section_id', '=', 2);
+                ->where('security_id', '=', 1);
         $result = $builder->query();
         
         if($result->is_loaded()) {
