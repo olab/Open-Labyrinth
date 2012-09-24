@@ -31,7 +31,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
             if ($rootNode != NULL) {
-                $data = Model::factory('labyrinth')->execute($rootNode->id);
+                $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
                 if ($data['redirect'] != NULL) {
                     Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $data['redirect']);
                 }

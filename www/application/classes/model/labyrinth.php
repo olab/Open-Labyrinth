@@ -22,7 +22,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Model_Labyrinth extends Model {
 
-    public function execute($nodeId, $bookmark = NULL) {
+    public function execute($nodeId, $bookmark = NULL, $isRoot = false) {
         $result = array();
 
         $result['userId'] = 0;
@@ -52,7 +52,7 @@ class Model_Labyrinth extends Model {
 				$sessionId = $b->session_id;
 				Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-			} else if ($node->type->name == 'root') {
+			} else if ($isRoot) {
                 $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
@@ -79,7 +79,7 @@ class Model_Labyrinth extends Model {
                 $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
             }
 
-            $c = $this->counters($sessionId, $node);
+            $c = $this->counters($sessionId, $node, $isRoot);
             if ($c != NULL) {
                 $result['counters'] = $c['counterString'];
                 $result['redirect'] = $c['redirect'];
@@ -222,7 +222,7 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function counters($sessionId, $node) {
+    private function counters($sessionId, $node, $isRoot = false) {
         if ($node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
             if (count($counters) > 0) {
@@ -245,9 +245,9 @@ class Model_Labyrinth extends Model {
                     }
 
                     $thisCounter = 0;
-                    if ($node->type->name == 'root') {
+                    if ($isRoot) {
                         $thisCounter = $counter->start_value;
-                    } else if ($currentCountersState != '') {
+                    } elseif ($currentCountersState != '') {
                         $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
                         $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
                         $e = strpos($tmp, ']') + 1;
@@ -285,7 +285,7 @@ class Model_Labyrinth extends Model {
                     }
 
                     if ($counter->visible) {
-                        $popup = '<a href="#" onclick="window.open("' . URL::base() . 'renderLabyrinth/", "Counter", ' . "'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350);" . ' return false;">';
+                        $popup = '<a href="javascript:void(0)" onclick=\'window.open("' . URL::base() . 'renderLabyrinth/", "Counter", "toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350"); return false;\'>';
                         $counterString .= '<p>' . $popup . $label . '</a>(' . $thisCounter . ') ' . $func . '</p>';
                         $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$thisCounter.'"></counter>';
                     }
