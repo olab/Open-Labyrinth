@@ -26,26 +26,34 @@
             <div style="width:100%; min-height:400px; background:#FFFFFF; position: relative;">
                 <div class="wizard_header">
                     <ul>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$templateData['map']; ?>" class="wizard_button small width_auto selected">Create a new skin</a></li>
-                        <!--<li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadSkin/'; ?>" class="wizard_button small width_auto">Upload a new skin</a></li>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/listSkins/'; ?>" class="wizard_button small width_auto">Select from a list of existing skins</a></li>-->
+                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'createSkin') echo 'selected'; ?>">Create a new skin</a></li>
+                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'listSkins') echo 'selected'; ?>">Select from a list of existing skins</a></li>
+                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'uploadSkin') echo 'selected'; ?>">Upload a new skin</a></li>
                     </ul>
                 </div>
                 <div class="wizard_body">
-                    <?php if ($templateData['result'] == 'done'){ ?>
+                    <?php
+                    if ($templateData['action'] == 'createSkin'){
+                        if ($templateData['result'] == 'done'){
+                    ?>
                     <div style="text-align: center; position: relative; top:100px;">
                         Creating of a new skin is complited successfully. Click "Save & Finish"
                     </div>
                     <?php }else{ ?>
                     <div style="text-align: center; position: relative; top:100px;">
-                        Click <a style="text-decoration: underline;" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createNewSkin/'.$templateData['map']; ?>">here</a> to create new skin
+                        Click <a style="text-decoration: underline;" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createNewSkin/'.$templateData['map']->id; ?>">here</a> to create new skin
                     </div>
-                    <?php } ?>
+                    <?php
+                        }
+                    }else{
+                        echo $templateData['content'];
+                    }
+                    ?>
                 </div>
                 <div class="wizard_footer">
                     <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & Finish</a>
                     <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
-                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editNode/'.$templateData['map']; ?>" style="float:left;" class="wizard_button">Return to step 4.</a>
+                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editNode/'.$templateData['map']->id; ?>" style="float:left;" class="wizard_button">Return to step 4.</a>
                 </div>
             </div>
         </td>

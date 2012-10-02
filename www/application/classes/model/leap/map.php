@@ -255,18 +255,51 @@ class Model_Leap_Map extends DB_ORM_Model {
             foreach($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-            
+
             return $maps;
         }
         
         return NULL;
 	}
-    
+
+    /**
+     * @param $user_id
+     * @return array|null
+     */
+    public function getAllMapsForRegisteredUser($user_id){
+        $builder = DB_SQL::select('default')
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('m.enabled', '=', 1)
+            ->where('m.security_id', '=', 1, 'AND')
+            ->where('m.security_id', '=', 2, 'OR')
+            ->where('mu.user_id', '=', $user_id, 'AND');
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $maps = array();
+            foreach($result as $record) {
+                $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            }
+
+            return $maps;
+        }
+
+        return NULL;
+    }
+
     public function getAllEnabledAndAuthoredMap($authorId) {
         $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('enabled', '=', 1, 'AND')
-                ->where('author_id', '=', $authorId);
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $authorId, 'AND')
+            ->where('mu.user_id', '=', $authorId, 'OR');
         $result = $builder->query();
         
         if($result->is_loaded()) {
