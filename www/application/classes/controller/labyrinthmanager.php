@@ -582,6 +582,51 @@ class Controller_LabyrinthManager extends Controller_Base {
                 }
                 break;
 
+            case 'uploadSkin':
+                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $previewUpload = View::factory('labyrinth/casewizard/skineditor/upload');
+                $previewUpload->set('templateData', $this->templateData);
+                $this->templateData['content'] = $previewUpload;
+                break;
+
+            case 'uploadNewSkin':
+                $mapId = $receivedMapId;
+                if(is_uploaded_file($_FILES['zipSkin']['tmp_name'])) {
+                    $ext = substr(($_FILES['zipSkin']['name']), -3);
+                    $filename = substr(($_FILES['zipSkin']['name']), 0, strlen($_FILES['zipSkin']['name']) - 4);
+                    if ($ext == 'zip'){
+                        $zip = new ZipArchive();
+                        $result = $zip->open($_FILES['zipSkin']['tmp_name']);
+                        if ($result === true){
+                            $zip->extractTo(DOCROOT.'/css/skin/');
+                            $zip->close();
+                        }
+
+                        $skin = DB_ORM::model('map_skin')->addSkin($filename, $filename);
+                        DB_ORM::model('map')->updateMapSkin($mapId, $skin->id);
+                    }
+                }
+                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$mapId.'/'.$skin->id);
+                break;
+
+            case 'listSkins':
+                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $this->templateData['skinList'] = DB_ORM::model('map_skin')->getAllSkins();
+                $this->templateData['skinId'] = $this->request->param('id4', NULL);
+                $previewList = View::factory('labyrinth/casewizard/skineditor/list');
+                $previewList->set('templateData', $this->templateData);
+
+                $this->templateData['content'] = $previewList;
+                break;
+
+            case 'saveSelectedSkin':
+                $mapId = $receivedMapId;
+                if($_POST['skinId'] != 0 and $mapId != NULL) {
+                    DB_ORM::model('map')->updateMapSkin($mapId, $_POST['skinId']);
+                }
+                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$mapId.'/'.$_POST['skinId']);
+                break;
+
             case 'createNewSkin':
                 $createSkin = true;
                 break;
@@ -633,7 +678,8 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
 
             case '5':
-                $this->templateData['map'] = $receivedMapId;
+                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $this->templateData['action'] = $action;
                 $this->templateData['result'] = $this->request->param('id4', NULL);
                 break;
         }
@@ -645,7 +691,8 @@ class Controller_LabyrinthManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         }else{
-            $this->template = View::factory('labyrinth/casewizard/skineditor/view');
+            $this->templateData['action_url'] = URL::base().'labyrinthManager/caseWizard/5/saveSkin/'.$receivedMapId;
+            $this->template = View::factory('labyrinth/skin/create');
             $this->template->set('templateData', $this->templateData);
         }
     }

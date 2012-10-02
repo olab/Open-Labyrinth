@@ -165,7 +165,7 @@
         </div>
     </div>
     <input type="hidden" id="base_path" value="<?php echo URL::base() ?>" />
-    <form id="submit_form" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/saveSkin/'.$templateData['map']; ?>" method="post">
+    <form id="submit_form" action="<?php echo $templateData['action_url']; ?>" method="post">
         <div class="save_button">
             <p>Skin name: <input style="width:100px;" type="text" name="skin_name" value="" /></p>
             <p><input type="button" class="save_submit" name="save" value="Save & Exit" /></p>

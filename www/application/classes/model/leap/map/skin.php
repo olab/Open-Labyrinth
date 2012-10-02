@@ -64,8 +64,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     public function getAllSkinsId() {
         $builder = DB_SQL::select('default')->from($this->table())->column('id');
         $result = $builder->query();
-        
-        
+
         $ids = array();
         if ($result->is_loaded()) {
             foreach ($result as $record) {
@@ -75,7 +74,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
 
         return $ids;
     }
-    
+
     public function getAllSkins() {
         $result = array();
         $ids = $this->getAllSkinsId();
