@@ -62,6 +62,10 @@ if (isset($templateData['map']) and isset($templateData['node'])) { ?>
                                         <td><textarea name="mnodeinfo" cols='60' rows='10' <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>><?php echo $templateData['node']->info; ?></textarea></td>
                                     </tr>
                                     <tr>
+                                        <td align="right"><p><?php echo __('supporting information keyword'); ?></p></td>
+                                        <td><p><input type="text" value="[[INFO:<?php echo $templateData['node']->id; ?>]]" /></p></td>
+                                    </tr>
+                                    <tr>
                                         <td><p>&nbsp;</p></td>
                                         <td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td>
                                     </tr>
