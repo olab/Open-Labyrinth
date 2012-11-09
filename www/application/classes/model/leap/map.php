@@ -242,7 +242,7 @@ class Model_Leap_Map extends DB_ORM_Model {
         
         return NULL;
     }
-	
+
 	public function getAllEnabledOpenVisibleMap() {
 		$builder = DB_SQL::select('default')
                 ->from($this->table())

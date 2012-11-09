@@ -236,10 +236,6 @@ tinyMCE.init({
                     <?php } else { ?>
                             <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
                     <?php } ?>
-                    
-                    <?php if (isset($templateData['node']) and $templateData['node']->info != '' and $templateData['node']->info != ' ') { ?>
-                        <p><a href="#" <?php if (isset($templateData['node'])) { ?> onclick="window.open('<?php echo URL::base(); ?>renderLabyrinth/info/<?php echo $templateData['node']->id; ?>', 'info', 'toolbar=no, directories=no, location=no, status=no, menubat=no, resizable=no, scrollbars=yes, width=500, height=400'); return false;" <?php } ?>><img src="<?php echo URL::base(); ?>images/info_lblu.gif" border="0" alt="info"></a></p>
-                    <?php } ?>
                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr>
                             <td>

@@ -474,7 +474,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public static function parseText($text) {
         $result = $text;
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
 
         foreach ($codes as $code) {
             $regExp = '/[\[' . $code . ':\d\]]+/';
@@ -510,6 +510,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                     case 'DAM':
                                         $replaceString = Controller_RenderLabyrinth::getDamHTML($id);
                                         break;
+                                    case 'INFO':
+                                        $replaceString = Controller_RenderLabyrinth::getInfoHTML($id);
+                                        break;
                                 }
 
                                 $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
@@ -521,6 +524,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return $result;
+    }
+
+    private static function getInfoHTML($id){
+        $info = '<a href="#" onclick="window.open(\''.URL::base().'renderLabyrinth/info/'.$id.'\', \'info\', \'toolbar=no, directories=no, location=no, status=no, menubat=no, resizable=no, scrollbars=yes, width=500, height=400\'); return false;"><img src="'.URL::base().'images/info_lblu.gif" border="0" alt="info"></a>';
+        return $info;
     }
 
     private static function getImageHTML($id) {
