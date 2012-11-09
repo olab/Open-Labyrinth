@@ -60,7 +60,7 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                 <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>">
                     <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
                         <tr align="left"><td><p><?php echo __('preview'); ?></p></td><td><?php echo $preview; ?></td></tr>
-                        <tr align="left"><td><p><?php echo __('chemin'); ?>path</p></td><td><p><?php echo $templateData['file']->path; ?></p></td></tr>
+                        <tr align="left"><td><p><?php echo __('chemin'); ?>path</p></td><td><p><?php echo URL::base().$templateData['file']->path; ?></p></td></tr>
                         <tr align="left"><td><p>ID</p></td><td><p><?php echo $templateData['file']->id; ?></p></td></tr>
                         <tr align="left"><td><p>MIME</p></td><td>
                                 <select name="mrelmime" size="1">
