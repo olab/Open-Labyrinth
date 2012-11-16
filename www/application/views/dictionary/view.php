@@ -50,7 +50,7 @@
                     <td>
                         <form method="POST" action="<?php echo URL::base().'dictionaryManager/addWord'; ?>">
                             <p>
-                                <?php echo __('Add word in dictionary:'); ?>
+                                <?php echo __('Add word to dictionary:'); ?>
                                 <input type="text" name="word" size="50" />
                                 <input type="submit" name="Search" value="<?php echo __('add'); ?>">
                             </p>
@@ -62,7 +62,7 @@
                     <td>
                         <form method="POST" action="<?php echo URL::base().'dictionaryManager/search'; ?>">
                             <p>
-                            <?php echo __('Search word in dictionary (you can enter just the beginning of word):'); ?>
+                            <?php echo __('Search word in dictionary (enter the beginning of a word):'); ?>
                             <input type="text" name="search_value" value="<?php if (isset($_POST['search_value'])){ echo $_POST['search_value'];} ?>" size="50" />
                             <input type="submit" name="Search" value="<?php echo __('search'); ?>">
                             </p>
