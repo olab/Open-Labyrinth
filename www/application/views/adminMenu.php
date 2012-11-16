@@ -64,7 +64,14 @@
 
         <td nowrap=""><a href=<?php echo URL::base() . 'usermanager'; ?>><img src="<?php echo URL::base(); ?>images/usersl.jpg" border="0" alt="OLRemote"></a></td>
         <td><p><a href=<?php echo URL::base() . 'usermanager'; ?>><strong><?php echo __('users'); ?></strong></a></p></td>
-
-
     </tr>
+    <?php if(Auth::instance()->get_user()->type->name == 'superuser'){ ?>
+    <tr>
+        <td nowrap=""><a href="<?php echo URL::base(); ?>dictionaryManager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt=""></a></td>
+        <td nowrap=""><p><a href="<?php echo URL::base(); ?>dictionaryManager"><strong><?php echo __('manage dictionary'); ?></strong></a></p></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td nowrap=""></td>
+        <td nowrap=""></td>
+    </tr>
+    <?php } ?>
 </table>
