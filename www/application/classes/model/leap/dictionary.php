@@ -123,6 +123,9 @@ class Model_Leap_Dictionary extends DB_ORM_Model {
             $db->disconnect();
             fclose($handle);
             unlink($file);
+            return true;
+        }else{
+            return false;
         }
     }
 }

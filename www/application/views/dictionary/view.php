@@ -30,6 +30,9 @@
                         <?php if ($templateData['result'] == 'success'){
                             echo '<p style="color:green">File successfully uploaded to dictionary</p>';
                         } ?>
+                        <?php if ($templateData['result'] == 'error'){
+                        echo '<p style="color:red">Error occurred while loading file</p>';
+                        } ?>
                         <form method="POST" enctype="multipart/form-data" action="<?php echo URL::base().'dictionaryManager/uploadFile'; ?>">
                             <table width="100%" border="0" cellspacing="6">
                                 <tr>

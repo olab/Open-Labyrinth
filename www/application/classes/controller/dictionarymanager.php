@@ -35,8 +35,12 @@ class Controller_DictionaryManager extends Controller_Base {
 
     public function action_uploadFile(){
         if($_FILES) {
-            DB_ORM::model('dictionary')->uploadFile($_FILES);
-            Request::initial()->redirect(URL::base().'dictionaryManager/index/success');
+            $result = DB_ORM::model('dictionary')->uploadFile($_FILES);
+            if ($result){
+                Request::initial()->redirect(URL::base().'dictionaryManager/index/success');
+            }else{
+                Request::initial()->redirect(URL::base().'dictionaryManager/index/error');
+            }
         } else {
             Request::initial()->redirect(URL::base());
         }
