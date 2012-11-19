@@ -31,16 +31,16 @@ if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
                             <?php } else { ?>
                                 <form action="<?php echo URL::base().'counterManager/updateGrid/'.$templateData['map']->id; ?>" method="POST">
                             <?php } ?>
-                                <table border="0" width="50%" cellpadding="1">
+                                <table border="0" cellpadding="1">
                                     <?php if (count($templateData['nodes']) > 0) { ?>
                                         <?php foreach ($templateData['nodes'] as $node) { ?>
                                             <tr>
                                                 <td><p><?php echo $node->title; ?> [<?php echo $node->id; ?>]</p></td>
                                                 <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                                                     <?php foreach($templateData['counters'] as $counter) { ?>
-                                                        <td>
-                                                            <p><?php echo $counter->name; ?> <input type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" 
-                                                                                                    value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"></p>
+                                                        <td style="min-width: 115px; border-bottom: 1px solid #000;">
+                                                            <p style="margin-bottom: 0px;"><?php echo $counter->name; ?> <input type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"></p>
+                                                            <p style="margin-top:0px; text-align: center;"><input type="checkbox" value="1" name="ch_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" <?php if ($c != NULL) {if($c->display == 1) echo 'checked="checked"';}else{echo 'checked="checked"';} ?> /> <?php echo __("appear on node"); ?></p>
                                                         </td>
                                                     <?php } ?>
                                                 <?php } ?>

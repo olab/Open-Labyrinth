@@ -50,6 +50,11 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'display' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
         );
         
         $this->relations = array(
@@ -95,7 +100,23 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function getNodeCountersByMap($map_id) {
+        $builder = DB_SQL::select('default', array('map_node_counters.id', 'map_node_counters.node_id', 'map_node_counters.counter_id', 'map_node_counters.function', 'map_node_counters.display'))->from('map_counters')->join('RIGHT', 'map_node_counters')->on('map_node_counters.counter_id', '=', 'map_counters.id')->where('map_id', '=', $map_id);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $counters = array();
+            foreach($result as $record) {
+                $counters[] = DB_ORM::model('map_node_counter', array((int)$record['id']));
+            }
+
+            return $counters;
+        }
+
+        return NULL;
+    }
+
     public function getNodeCounter($nodeId, $counterId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -110,7 +131,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         return NULL;
     }
     
-    public function addNodeCounter($nodeId, $counterId, $function) {
+    public function addNodeCounter($nodeId, $counterId, $function, $display = 1) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('node_id', '=', $nodeId, 'AND')
@@ -122,11 +143,12 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             $this->node_id = $nodeId; 
             $this->counter_id = $counterId;
             $this->function = $function;
+            $this->display = $display;
 
             $this->save();
             $this->reset();
         } else {
-            $this->updateNodeCounter($nodeId, $counterId, $function);
+            $this->updateNodeCounter($nodeId, $counterId, $function, $display);
         }
     }
 
@@ -155,7 +177,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         }
     }
     
-    public function updateNodeCounter($nodeId, $counterId, $function) {
+    public function updateNodeCounter($nodeId, $counterId, $function, $display = 1) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('node_id', '=', $nodeId, 'AND')
@@ -169,6 +191,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             
             if($this) {
                 $this->function = $function;
+                $this->display = $display;
 
                 $this->save();
             }
@@ -179,30 +202,43 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         $counters = DB_ORM::model('map_counter')->getCountersByMap($map_id);
         if(count($counters) > 0) {
             foreach($counters as $counter) {
-                $function = Arr::get($values, 'cfunc_'.$counter->id, NULL);
+                $function = Arr::get($values, 'cfunc_'.$counter->id);
+                $display = Arr::get($values, 'cfunc_ch_'.$counter->id);
                 $nodeCounter = DB_ORM::model('map_node_counter')->getNodeCounter($nodeId, $counter->id);
                 if($nodeCounter != NULL) {
-                    $this->updateNodeCounter($nodeId, $counter->id, $function);
+                    $this->updateNodeCounter($nodeId, $counter->id, $function, $display);
                 } else {
-                    $this->addNodeCounter($nodeId, $counter->id, $function);
+                    $this->addNodeCounter($nodeId, $counter->id, $function, $display);
                 }
             }
         }
     }
     
     public function updateNodeCounters($values, $counterId = NULL, $mapId = NULL) {
-        $counters = DB_ORM::model('map_node_counter')->getAllNodeCounters();
+        $counters = DB_ORM::model('map_node_counter')->getNodeCountersByMap($mapId);
         if(count($counters) > 0) {
             foreach($counters as $counter) {
                 if($counterId != NULL) {
                     if($counterId == $counter->counter_id) {
                         $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
+                        $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
                         $counter->function = Arr::get($values, $inputName, $counter->function);
+                        if (Arr::get($values, $chName) == NULL){
+                            $counter->display = 0;
+                        }else{
+                            $counter->display = 1;
+                        }
                         $counter->save();
                     }
                 } else {
                     $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
+                    $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
                     $counter->function = Arr::get($values, $inputName, $counter->function);
+                    if (Arr::get($values, $chName) == NULL){
+                        $counter->display = 0;
+                    }else{
+                        $counter->display = 1;
+                    }
                     $counter->save();
                 }
                 unset($values[$inputName]);
@@ -211,7 +247,8 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             foreach($values as $key => $value){
                 if ((strpos($key, 'nc_') !== false) & ($value != NULL)){
                     $array = explode('_', $key);
-                    $this->addNodeCounter($array[1], $array[2], $value);
+                    $display = $values['ch_'.$array[1].'_'.$array[2]];
+                    $this->addNodeCounter($array[1], $array[2], $value, $display);
                 }
             }
         } else {
@@ -225,14 +262,14 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                                 $newMapCounter = DB_ORM::model('map_node_counter');
                                 $newMapCounter->counter_id = $counter->id;
                                 $newMapCounter->node_id = $node->id;
-                                
+                                $newMapCounter->display = 1;
                                 $newMapCounter->save();
                             }
                         }
                     }
                 }
                 
-                $this->updateNodeCounters($values, $counterId);
+                $this->updateNodeCounters($values, $counterId, $mapId);
             }
         }
     }
