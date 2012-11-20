@@ -4,8 +4,10 @@ var color_blur = false;
 
 var current_color_outside = null;
 var current_image_outside = null;
+var current_image_outside_position = null;
 var current_color_centre = null;
 var current_image_centre = null;
+var current_image_centre_position = null;
 
 var current_image_path_outside = null;
 var current_image_path_centre = null;
@@ -47,12 +49,14 @@ jQuery(document).ready(function() {
     jQuery("#outside .upload_radio").click(function() {
         jQuery("#outside .editor_action").css('display', 'none');
         jQuery("#outside .upload_action").css('display', 'block');
-        jQuery("body").css({"background-image": current_image_outside, "background-size": jQuery('#outside .change_size').val() + "%", "background-repeat": jQuery("#outside .change_repeat").val()});
+        jQuery("body").css({"background-image": current_image_outside, "background-size": jQuery('#outside .change_size').val() + "%", "background-repeat": jQuery("#outside .change_repeat").val(), "background-position": current_image_outside_position});
     });
 
     jQuery("#centre .upload_radio").click(function() {
         jQuery("#centre .editor_action").css('display', 'none');
         jQuery("#centre .upload_action").css('display', 'block');
+        jQuery(".centre_td").css("background-color", "transparent");
+        jQuery("#centre_table").css({"background-image": current_image_centre, "background-size": jQuery('#centre .change_size').val() + "%", "background-repeat": jQuery("#centre .change_repeat").val(), "background-position": current_image_centre_position});
     });
 
     jQuery("#outside .pick_color_radio").click(function() {
@@ -66,7 +70,7 @@ jQuery(document).ready(function() {
         jQuery("#centre .editor_action").css('display', 'none');
         jQuery("#centre .color_action").css('display', 'block');
         jQuery("#centre_table").css("background", "transparent");
-        jQuery(".centre_td").css("background", "#FFFFFF");
+        jQuery(".centre_td").css("background", current_color_centre);
     });
 
     jQuery(".transparent").click(function() {
@@ -112,6 +116,7 @@ jQuery(document).ready(function() {
         var status = jQuery(this).val();
         if (status == 'on'){
             jQuery("body").css("cursor", "move");
+            var position = null;
             var mousedown = false;
             var startX = null;
             var startY = null;
@@ -139,7 +144,9 @@ jQuery(document).ready(function() {
                 if (mousedown){
                     newTop = top + event.pageX - startX;
                     newLeft = left + event.pageY - startY;
-                    jQuery("body").css("background-position", newTop + "px " + newLeft + "px");
+                    position = newTop + "px " + newLeft + "px";
+                    current_image_outside_position = position;
+                    jQuery("body").css("background-position", position);
                     event.preventDefault();
                 }
             }));
@@ -155,6 +162,7 @@ jQuery(document).ready(function() {
         var status = jQuery(this).val();
         if (status == 'on'){
             jQuery("#centre_table").css("cursor", "move");
+            var position = null;
             var mousedown = false;
             var startX = null;
             var startY = null;
@@ -182,7 +190,9 @@ jQuery(document).ready(function() {
                 if (mousedown){
                     newTop = top + event.pageX - startX;
                     newLeft = left + event.pageY - startY;
-                    jQuery("#centre_table").css("background-position", newTop + "px " + newLeft + "px");
+                    position = newTop + "px " + newLeft + "px";
+                    current_image_centre_position = position;
+                    jQuery("#centre_table").css("background-position", position);
                     event.preventDefault();
                 }
             }));
