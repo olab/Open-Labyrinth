@@ -79,8 +79,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) { ?>
                                         </td>
                                         <td>
                                             <hr>
-                                            <p style="margin-bottom: 0px"><input type="text" name="cfunc_<?php echo $counter->id; ?>" size="5"
-                                                      value="<?php $c = $templateData['node']->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">&nbsp;type +, - or = an integer - e.g. '+1' or '=32'</p>
+                                            <p style="margin-bottom: 0px"><input type="text" name="cfunc_<?php echo $counter->id; ?>" size="5" value="<?php $c = $templateData['node']->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">&nbsp;type +, - or = an integer - e.g. '+1' or '=32'</p>
                                             <p style="margin-top:0px"><input type="checkbox" value="1" name="cfunc_ch_<?php echo $counter->id; ?>" <?php if ($c != NULL) {if($c->display == 1) echo 'checked="checked"';}else{echo 'checked="checked"';} ?> /> <?php echo __('appear on node'); ?></p>
                                         </td>
                                     </tr>
