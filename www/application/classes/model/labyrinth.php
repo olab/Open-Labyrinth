@@ -127,23 +127,26 @@ class Model_Labyrinth extends Model {
                 switch ($node->link_type->name) {
                     case 'ordered':
                         if (isset($result[$link->order])) {
-                            $result[$link->order + 1] = $link;
+                            $nextIndex = $this->findNextIndex($result, $link->order + 1);
+                            $result[$nextIndex] = $link;
                         } else {
                             $result[$link->order] = $link;
                         }
                         break;
                     case 'random order':
-                        $randomIndex = rand();
+                        $randomIndex = rand(0, 100000);
                         if (isset($result[$randomIndex])) {
-                            $result[$randomIndex + 1] = $link;
+                            $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
+                            $result[$nextIndex] = $link;
                         } else {
                             $result[$randomIndex] = $link;
                         }
                         break;
                     case 'random select one *':
-                        $randomIndex = rand() * ($link->probability == 0 ? 1 : $link->probability);
+                        $randomIndex = rand(0, 100000) * ($link->probability == 0 ? 1 : $link->probability);
                         if (isset($result[$randomIndex])) {
-                            $result[$randomIndex + 1] = $link;
+                            $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
+                            $result[$nextIndex] = $link;
                         } else {
                             $result[$randomIndex] = $link;
                         }
@@ -160,19 +163,25 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
+    private function findNextIndex($result, $index){
+        if (isset($result[$index])){
+            $nextIndex = $this->findNextIndex($result, $index + 1);
+        }else{
+            $nextIndex = $index;
+        }
+        return $nextIndex;
+    }
+
     private function clearArray($array) {
         if (count($array) > 0) {
             $result = array();
-            for ($i = 0, $j = 0; $i < count($array); $j++) {
-                if (isset($array[$j])) {
-                    $result[] = $array[$j];
-                    $i++;
-                }
+            $array_keys = array_keys($array);
+            sort($array_keys);
+            foreach($array_keys as $key){
+                $result[] = $array[$key];
             }
-
             return $result;
         }
-
         return NULL;
     }
 
