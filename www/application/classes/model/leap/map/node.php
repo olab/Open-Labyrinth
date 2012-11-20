@@ -241,6 +241,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->info = Arr::get($values, 'mnodeinfo', '');
             $this->probability = Arr::get($values, 'mnodeprobability', FALSE);
             $this->link_style_id = Arr::get($values, 'linkstyle', 1);
+            $this->link_type_id = 2;
             $this->priority_id = Arr::get($values, 'priority', 1);
             $this->undo = Arr::get($values, 'mnodeUndo', FALSE);
             $this->end = Arr::get($values, 'ender', FALSE);
@@ -262,6 +263,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->info = '';
             $this->probability = FALSE;
             $this->link_style_id = 1;
+            $this->link_type_id = 2;
             $this->priority_id = 1;
             $this->type_id = 1;
             $this->undo = FALSE;
