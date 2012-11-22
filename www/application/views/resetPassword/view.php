@@ -37,7 +37,7 @@
                                         <p><?php echo __('Email Address:'); ?></p>
                                     </td>
                                     <td>
-                                        <input type="text" name="email" size="50" value="" autocomplete="off" />
+                                        <input class="not-autocomplete" type="text" name="email" size="50" value="" autocomplete="off" />
                                     </td>
                                 </tr>
                                 <?php if (!empty($templateData['passError'])){ ?>

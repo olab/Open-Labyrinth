@@ -28,7 +28,7 @@
             <form action=<?php echo URL::base().'usermanager/saveNewGroup'; ?> method="post">
                 <table>
                     <tr><td align="left"><p><?php echo __('group name'); ?></p></td>
-                        <td align="left"><input type="text" name="groupname" size="50" value=""></td></tr>
+                        <td align="left"><input class="not-autocomplete" type="text" name="groupname" size="50" value=""></td></tr>
 
                     <tr><td align="left"><p>&nbsp;</p></td><td align="left">
                             <input type="submit" name="AddGroupSubmit" value="<?php echo __('submit'); ?>"></td></tr>

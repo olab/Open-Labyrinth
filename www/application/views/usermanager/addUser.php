@@ -27,10 +27,10 @@
                 <tr bgcolor="#ffffff"><td>
                         <form action="<?php echo URL::base().'usermanager/newUserSummary'; ?>" method="post">
                             <table>
-                                <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input type="text" name="uid" size="20" value=""></td></tr>
+                                <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uid" size="20" value=""></td></tr>
                                 <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value=""></td></tr>
-                                <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input type="text" name="uname" size="50" value=""></td></tr>
-                                <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input type="text" name="uemail" size="50" value=""></td></tr>
+                                <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uname" size="50" value=""></td></tr>
+                                <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uemail" size="50" value=""></td></tr>
 
                                 <tr><td align="left"><p>
                                             <?php echo __('user type'); ?>

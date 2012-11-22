@@ -39,7 +39,7 @@
                                     <td nowrap="">
                                         <p>
                                             <?php echo __('Select file to upload:'); ?>
-                                            <input type="FILE" size="50" name="filename" />
+                                            <input type="file" size="50" name="filename" />
                                             <input type="submit" name="Submit" value="<?php echo __('submit'); ?>" />
                                         </p>
                                     </td>
@@ -54,7 +54,7 @@
                         <form method="POST" action="<?php echo URL::base().'dictionaryManager/addWord'; ?>">
                             <p>
                                 <?php echo __('Add word to dictionary:'); ?>
-                                <input type="text" name="word" size="50" />
+                                <input class="not-autocomplete" type="text" name="word" size="50" />
                                 <input type="submit" name="Search" value="<?php echo __('add'); ?>">
                             </p>
                         </form>
@@ -66,7 +66,7 @@
                         <form method="POST" action="<?php echo URL::base().'dictionaryManager/search'; ?>">
                             <p>
                             <?php echo __('Search word in dictionary (enter the beginning of a word):'); ?>
-                            <input type="text" name="search_value" value="<?php if (isset($_POST['search_value'])){ echo $_POST['search_value'];} ?>" size="50" />
+                            <input class="not-autocomplete" type="text" name="search_value" value="<?php if (isset($_POST['search_value'])){ echo $_POST['search_value'];} ?>" size="50" />
                             <input type="submit" name="Search" value="<?php echo __('search'); ?>">
                             </p>
                         </form>
@@ -80,7 +80,7 @@
                             foreach($templateData['search_results'] as $value){
                                 echo '<tr>
                                 <td>'.$i.'</td>
-                                <td><input type="text" style="width:100%" name="word_value['.$value['id'].']" value="'.$value['word'].'" /></td>
+                                <td><input class="not-autocomplete" type="text" style="width:100%" name="word_value['.$value['id'].']" value="'.$value['word'].'" /></td>
                                 <td><input type="checkbox" name="word_ch['.$value['id'].']" value="1" /></td>
                                 </tr>';
                                 $i++;

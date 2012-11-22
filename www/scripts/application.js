@@ -18,7 +18,7 @@ jQuery(document).ready(function(){
         jQuery("#step2_form").submit();
     });
 
-    jQuery("textarea, input[type=text]")
+    jQuery("textarea, input[type=text]:not('.not-autocomplete')")
         // don't navigate away from the field on tab when selecting an item
         .bind( "keydown", function( event ) {
             if ( event.keyCode === jQuery.ui.keyCode.TAB &&
