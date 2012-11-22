@@ -62,6 +62,20 @@ class Model_Leap_User extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'resetHashKey' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => TRUE,
+            )),
+            'resetHashKeyTime' => new DB_ORM_Field_DateTime($this, array(
+                'nullable' => TRUE,
+            )),
+            'resetAttempt' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
+            'resetTimestamp' => new DB_ORM_Field_DateTime($this, array(
+                'nullable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -106,6 +120,34 @@ class Model_Leap_User extends DB_ORM_Model {
             $this->load();
             
             return $this;
+        }
+    }
+
+    public function getUserByEmail($email) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('email', '=', $email);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $this->id = $result[0]['id'];
+            $this->load();
+
+            return $this;
+        }else{
+            return false;
+        }
+    }
+
+    public function getUserByHaskKey($hashKey){
+        $builder = DB_SQL::select('default')->from($this->table())->where('resetHashKey', '=', $hashKey);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $this->id = $result[0]['id'];
+            $this->load();
+
+            return $this;
+        }else{
+            return false;
         }
     }
 
@@ -161,8 +203,33 @@ class Model_Leap_User extends DB_ORM_Model {
         
         $this->save();
     }
-    
-    
+
+    public function updateHashKeyResetPassword($id, $hashKey) {
+        $this->id = $id;
+        $this->load();
+
+        $this->resetHashKey = $hashKey;
+        $this->resetHashKeyTime = date("Y-m-d H:i:s");
+        $this->save();
+    }
+
+    public function saveResetPassword($hashKey, $password){
+        $builder = DB_SQL::select('default')->from($this->table())->where('resetHashKey', '=', $hashKey);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $this->id = $result[0]['id'];
+            $this->load();
+
+            $this->password = $password;
+            $this->resetHashKey = NULL;
+            $this->resetHashKeyTime = NULL;
+            $this->resetAttempt = $this->resetAttempt + 1;
+            $this->resetTimestamp = date("Y-m-d H:i:s");
+            $this->save();
+        }
+    }
+
     public function getAllUserWithNotId($ids) {
         if(count($ids) <= 0) {
             return $this->getAllUsers();

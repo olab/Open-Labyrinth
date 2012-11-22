@@ -159,6 +159,47 @@ class Controller_UserManager extends Controller_Base {
         DB_ORM::model('user_group')->remove((int)$groupId, (int)$userId);
         Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$groupId);
     }
+
+    public function action_passwordResetSettings(){
+        $this->templateData['token'] = Security::token();
+        $this->templateData['email_config'] = Kohana::$config->load('email');
+        $view = View::factory('usermanager/passwordReset');
+        $view->set('templateData', $this->templateData);
+
+        $this->templateData['center'] = $view;
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_updatePasswordResetSettings(){
+        if ($_POST){
+            if (Security::check($_POST['token'])){
+                unset($_POST['token']);
+                $string = 'return array (';
+                foreach($_POST as $key => $value){
+                    $value = str_replace('"', '\"', $value);
+                    $string .= '"'.$key.'" => "'.$value.'", ';
+                }
+                $string .= ');';
+
+                $content = '';
+                $handle = fopen(DOCROOT.'application/config/email.php', 'r');
+                while (($buffer = fgets($handle)) !== false) {
+                    $content .= $buffer;
+                }
+
+                $position = strpos($content, 'return array');
+                $header = substr($content, 0, $position);
+
+                file_put_contents(DOCROOT.'application/config/email.php', $header.$string);
+
+                Request::initial()->redirect(URL::base().'usermanager/passwordResetSettings/');
+            }else{
+                Request::initial()->redirect(URL::base());
+            }
+        }else{
+            Request::initial()->redirect(URL::base());
+        }
+    }
 }
 
 ?>

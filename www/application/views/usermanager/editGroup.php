@@ -31,7 +31,7 @@
                             <form action=<?php echo URL::base() . 'usermanager/updateGroup/' . $templateData['group']->id; ?> method="post">
                                 <table>
                                     <tr><td align="left"><p>group name</p></td>
-                                        <td align="left"><input type="text" name="groupname" size="50" value="<?php echo $templateData['group']->name; ?>"></td></tr>
+                                        <td align="left"><input class="not-autocomplete" type="text" name="groupname" size="50" value="<?php echo $templateData['group']->name; ?>"></td></tr>
 
                                     <tr><td align="left"><p>&nbsp;</p></td><td align="left">
                                             <input type="submit" name="UpdateGroupSubmit" value="<?php echo __('submit'); ?>"></td></tr>

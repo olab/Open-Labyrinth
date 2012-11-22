@@ -52,7 +52,7 @@
                     <?php } ?>
                 </tr>
                 <tr>
-                    <td style="color:#000000;" colspan="3"><?php if(isset($templateData['error'])) echo $templateData['error']; ?></td>
+                    <td style="color:red;" colspan="3"><?php if(isset($templateData['error'])) echo $templateData['error']; ?></td>
                 </tr>
             </table>
         </center>
