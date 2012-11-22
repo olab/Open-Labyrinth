@@ -25,7 +25,7 @@
             <h4><?php echo __('Create user account'); ?></h4>
             <table width="100%" cellpadding="6">
                 <tr bgcolor="#ffffff"><td>
-                        <form action=<?php echo URL::base().'usermanager/newUserSummary'; ?> method="post">F
+                        <form action="<?php echo URL::base().'usermanager/newUserSummary'; ?>" method="post">
                             <table>
                                 <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input type="text" name="uid" size="20" value=""></td></tr>
                                 <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value=""></td></tr>

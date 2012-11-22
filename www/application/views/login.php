@@ -25,6 +25,7 @@
         <tr><td align="left"><input type="text" name="username" size="10"></td></tr>
         <tr><td align="left"><font face="Arial, Helvetica, sans-serif" size="2">Password</font></td></tr>
         <tr><td align="left"><input type="password" name="password" size="10"></td></tr>
-        <tr><td align="left"><input type="submit" name="LoginSubmit" value="Login"></td></tr>
+        <tr><td align="left"><font style="text-decoration: underline;" face="Arial, Helvetica, sans-serif" size="1"><a href="<?php echo URL::base(); ?>home/resetPassword">Forgot password</a></font></td></tr>
+        <tr><td align="left"><input style="margin-top:10px;" type="submit" name="LoginSubmit" value="Login"></td></tr>
         </tr></table>
 </form>

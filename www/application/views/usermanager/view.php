@@ -41,13 +41,22 @@
                                     }
 
                                     $outTD[$currentIndex] .= '<td valign="top" width="20%" nowrap=""><p>';
+                                    $outTD[$currentIndex] .= '<p>'.__('Username').':&nbsp;'.$user->username;
                                     if ($user->id == $templateData['currentUserId']) {
-                                        $outTD[$currentIndex] .= 'YOU:';
+                                        $outTD[$currentIndex] .= ' (<b>YOU</b>)';
                                     }
-                                    $outTD[$currentIndex] .= $user->username . '<br/>';
-                                    $outTD[$currentIndex] .= __('type') . ':' . $user->type->name . '<br/>';
-                                    $outTD[$currentIndex] .= $user->nickname . '<br/>';
-                                    $outTD[$currentIndex] .= '<a href=' . URL::base() . 'usermanager/editUser/' . $user->id . '>[' . __('edit') . ']</a>';
+                                    $outTD[$currentIndex] .= '<br />'.__('Type').':&nbsp;'.$user->type->name;
+                                    $outTD[$currentIndex] .= '<br />'.__('Name').':&nbsp;'.$user->nickname;
+                                    $outTD[$currentIndex] .= '<br />'.__('Password recovery attempts').':&nbsp;';
+                                    if ($user->resetAttempt != NULL){
+                                        $outTD[$currentIndex] .= $user->resetAttempt;
+                                    }else{
+                                        $outTD[$currentIndex] .= '0';
+                                    }
+                                    if ($user->resetTimestamp != NULL){
+                                        $outTD[$currentIndex] .= '<br />'.__('Last password recovery').':&nbsp;'.$user->resetTimestamp;
+                                    }
+                                    $outTD[$currentIndex] .= '<br /><a href=' . URL::base() . 'usermanager/editUser/' . $user->id . '>[' . __('edit') . ']</a>';
                                     $outTD[$currentIndex] .= '</p></td>';
                                     $count++;
                                 }

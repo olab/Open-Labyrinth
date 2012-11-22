@@ -191,7 +191,7 @@ class Model_VisualEditor extends Model {
                 
                 $idA = str_replace(',', '', $idA);
                 $idB = str_replace(',', '', $idB);
-                
+
                 if(is_numeric($idA) and is_numeric($idB)) {
                     $link = DB_ORM::model('map_node_link')->getLinkByNodeIDs((int)$idA, (int)$idB);
                     if($link == NULL) {
