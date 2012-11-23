@@ -25,12 +25,12 @@
             <h4><?php echo __('Create user account'); ?></h4>
             <table width="100%" cellpadding="6">
                 <tr bgcolor="#ffffff"><td>
-                        <form action="<?php echo URL::base().'usermanager/newUserSummary'; ?>" method="post">
+                        <form action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
                             <table>
-                                <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uid" size="20" value=""></td></tr>
-                                <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value=""></td></tr>
-                                <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uname" size="50" value=""></td></tr>
-                                <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uemail" size="50" value=""></td></tr>
+                                <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uid" size="20" value="<?php echo $templateData['post']['uid']; ?>"></td></tr>
+                                <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value="<?php echo $templateData['post']['upw']; ?>"></td></tr>
+                                <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uname" size="50" value="<?php echo $templateData['post']['uname']; ?>"></td></tr>
+                                <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uemail" size="50" value="<?php echo $templateData['post']['uemail']; ?>"></td></tr>
 
                                 <tr><td align="left"><p>
                                             <?php echo __('user type'); ?>
@@ -38,14 +38,16 @@
                                         <select name="usertype">
                                             <?php if(isset($templateData['types'])) { ?>
                                                 <?php foreach($templateData['types'] as $type) { ?>
-                                                    <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
+                                                    <option <?php if ($templateData['post']['usertype'] == $type->id) echo 'selected="selected"'; ?> value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
                                     </td></tr>
 
-                                <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" value="1">] [francais <input type="radio" name="langID" value="2">] </p></td></tr>
-
+                                <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" <?php if ($templateData['post']['langID'] == 1) echo 'checked="checked"'; ?> value="1">] [francais <input type="radio" name="langID" <?php if ($templateData['post']['langID'] == 2) echo 'checked="checked"'; ?> value="2">] </p></td></tr>
+                                <?php if ($templateData['errorMsg'] != NULL){ ?>
+                                <tr><td colspan="2" align="left"><p style="color:red;"><?php echo $templateData['errorMsg']; ?></p></td></tr>
+                                <?php } ?>
                                 <tr><td align="left"><p>&nbsp;</p></td><td align="left"><input type="submit" name="SaveNewUserSubmit" value="<?php echo __('submit'); ?>"></td></tr>
                             </table>
                         </form>
