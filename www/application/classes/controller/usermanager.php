@@ -48,45 +48,63 @@ class Controller_UserManager extends Controller_Base {
     
     public function action_addUser() {
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
-        
+        $this->templateData['post'] = Session::instance()->get('newUser');
+        $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
+        Session::instance()->delete('errorMsg');
         $addUserView = View::factory('usermanager/addUser');
         $addUserView->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $addUserView;
         $this->template->set('templateData', $this->templateData);
     }
     
-    public function action_newUserSummary() {
+    public function action_saveNewUser() {
         if($_POST) {
             Session::instance()->set('newUser', $_POST);
-             
-            $this->templateData['newUser'] = $_POST;
-            $this->templateData['newUser']['langID'] = DB_ORM::model('language', array($_POST['langID']))->name;
-            $this->templateData['newUser']['usertype'] = DB_ORM::model('user_type', array($_POST['usertype']))->name;
-             
-            $summaryView = View::factory('usermanager/userSummary');            
-            $summaryView->set('templateData', $this->templateData);
+            $checkUserName = DB_ORM::model('user')->getUserByName(htmlspecialchars($_POST['uid']));
+            if (!empty($_POST['uemail'])){
+                $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
+            }else{
+                $checkUserEmail = false;
+            }
 
-            $this->templateData['center'] = $summaryView;
-            $this->template->set('templateData', $this->templateData);
-        }
-    }
-    
-    public function action_saveNewUser() {
-        $userData = Session::instance()->get('newUser', null);
-        if($userData) {
-            DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], 
+            if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)){
+                $userData = $_POST;
+                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'],
                     $userData['uemail'], $userData['usertype'], $userData['langID']);
-            Session::instance()->delete('newUser');
+                Session::instance()->delete('newUser');
+
+                $this->templateData['newUser'] = $_POST;
+                $this->templateData['newUser']['langID'] = DB_ORM::model('language', array($_POST['langID']))->name;
+                $this->templateData['newUser']['usertype'] = DB_ORM::model('user_type', array($_POST['usertype']))->name;
+
+                $summaryView = View::factory('usermanager/userSummary');
+                $summaryView->set('templateData', $this->templateData);
+
+                $this->templateData['center'] = $summaryView;
+                $this->template->set('templateData', $this->templateData);
+            }else{
+                $error = array();
+                if (empty($_POST['uid'])){
+                    $error[] = __('Empty username is not allowed.');
+                }elseif ($checkUserName){
+                    $error[] = __('Such username already exists.');
+                }
+                if ($checkUserEmail){
+                    $error[] = __('Such email address already exists.');
+                }
+                Session::instance()->set('errorMsg', implode('<br />', $error));
+                Request::initial()->redirect(URL::base().'usermanager/addUser');
+            }
         }
-        
-        Request::initial()->redirect(URL::base().'usermanager');
     }
-    
+
     public function action_editUser() {
         $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
-        
+        $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
+        Session::instance()->delete('errorMsg');
+
         $editUserView = View::factory('usermanager/editUser');
         $editUserView->set('templateData', $this->templateData);
         
@@ -97,10 +115,27 @@ class Controller_UserManager extends Controller_Base {
     public function action_saveOldUser() {
         if($_POST) {
             $userId = $this->request->param('id', 0);
-            
-            DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), 
+            $user = DB_ORM::model('user')->getUserById(htmlspecialchars($userId));
+            $userEmail = $user->email;
+            $newEmail = Arr::get($_POST, 'uemail', '');
+            if ($userEmail != $newEmail){
+                if (!empty($newEmail)){
+                    $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($newEmail));
+                }else{
+                    $checkUserEmail = false;
+                }
+
+                if (!$checkUserEmail){
+                    DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''),
+                        Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
+                }else{
+                    Session::instance()->set('errorMsg', __('Such email address already exists.'));
+                    Request::initial()->redirect(URL::base().'usermanager/editUser/'.$userId);
+                }
+            }else{
+                DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''),
                     Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
-            
+            }
         }
         Request::initial()->redirect(URL::base().'usermanager');
     }

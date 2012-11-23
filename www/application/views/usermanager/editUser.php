@@ -47,7 +47,9 @@
                                     </td></tr>
 
                                 <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" value="1" <?php if($templateData['user']->language_id == 1) echo 'checked=""'; ?>>] [francais <input type="radio" name="langID" value="2" <?php if($templateData['user']->language_id == 2) echo 'checked=""'; ?>>] </p></td></tr>
-
+                                <?php if ($templateData['errorMsg'] != NULL){ ?>
+                                <tr><td colspan="2" align="left"><p style="color:red;"><?php echo $templateData['errorMsg']; ?></p></td></tr>
+                                <?php } ?>
                                 <tr><td align="left"><p>&nbsp;</p></td><td align="left"><input type="submit" name="EditUserSubmit" value="<?php echo __('submit'); ?>"></td></tr>
                             </table>
                         </form>

@@ -111,6 +111,13 @@ class Model_Leap_User extends DB_ORM_Model {
         return array('id');
     }
 
+    public function getUserById($id){
+        $this->id = $id;
+        $this->load();
+
+        return $this;
+    }
+
     public function getUserByName($username) {
         $builder = DB_SQL::select('default')->from($this->table())->where('username', '=', $username);
         $result = $builder->query();
@@ -120,6 +127,8 @@ class Model_Leap_User extends DB_ORM_Model {
             $this->load();
             
             return $this;
+        }else{
+            return false;
         }
     }
 

@@ -31,8 +31,8 @@
                            <?php echo __('e-mail'); ?>: <strong><?php if(isset($templateData['newUser']['uemail'])) echo $templateData['newUser']['uemail']; ?></strong><br>
                            <?php echo __('user type'); ?>: <strong><?php if(isset($templateData['newUser']['usertype'])) echo $templateData['newUser']['usertype']; ?></strong><br>
                            <?php echo __('language'); ?>: <strong><?php if(isset($templateData['newUser']['langID'])) echo $templateData['newUser']['langID']; ?></strong></p>
+                        <p style="color:green;"><?php echo __('New user added successfully.'); ?></p>
                         <p><a href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a></p>
-                        <p><a href=<?php echo URL::base().'usermanager/saveNewUser'; ?>><?php echo __('add').' '.__('user'); ?></a></p>
                     </td></tr>
             </table>
         </td>
