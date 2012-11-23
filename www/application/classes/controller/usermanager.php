@@ -49,6 +49,9 @@ class Controller_UserManager extends Controller_Base {
     public function action_addUser() {
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
         $this->templateData['post'] = Session::instance()->get('newUser');
+        if (!isset($this->templateData['post']['langID'])){
+            $this->templateData['post']['langID'] = NULL;
+        }
         $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
         Session::instance()->delete('errorMsg');
         $addUserView = View::factory('usermanager/addUser');
