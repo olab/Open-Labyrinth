@@ -117,7 +117,7 @@ class Controller_Home extends Controller_Base {
                     if ($user){
                         $url = URL::base(true).'home/confirmLink/';
                         $hashKey = Auth::instance()->hash($user->username.$user->email.rand());
-                        $link = '<a href="'.$url.$hashKey.'">'.$url.$hashKey.'</a>';
+                        $link = $url.$hashKey;
                         //send mail start
                         $emailConfig = Kohana::$config->load('email');
                         $arraySearch = array('<%name%>', '<%username%>', '<%link%>');
