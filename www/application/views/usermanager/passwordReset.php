@@ -45,7 +45,7 @@
                                 </tr>
                                 <tr>
                                     <td align="left">
-                                        <p><?php echo __('Email subject: '); ?></p>
+                                        <p><?php echo __('Request email subject: '); ?></p>
                                     </td>
                                     <td align="left">
                                         <p><input size="50" type="text" name="email_password_reset_subject" value="<?php echo $templateData['email_config']['email_password_reset_subject']; ?>" /></p>
@@ -53,14 +53,32 @@
                                 </tr>
                                 <tr>
                                     <td align="left">
-                                        <p><?php echo __('Email body: '); ?></p>
+                                        <p><?php echo __('Request email body: '); ?></p>
                                     </td>
                                     <td align="left">
-                                        <p><?php echo '<%name%> - tag that inserts nick name into email body'; ?></p>
+                                        <p><?php echo '<%name%> - tag that inserts name into email body'; ?></p>
                                         <p><?php echo '<%username%> - tag that inserts user name into email body'; ?></p>
                                         <p><?php echo '<%link%> - tag that inserts link to new password page into email body'; ?></p>
                                         <p>
                                             <textarea style="width:320px; height:130px;" name="email_password_reset_body"><?php echo $templateData['email_config']['email_password_reset_body']; ?></textarea>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <p><?php echo __('Complete email subject: '); ?></p>
+                                    </td>
+                                    <td align="left">
+                                        <p><input size="50" type="text" name="email_password_complete_subject" value="<?php echo $templateData['email_config']['email_password_complete_subject']; ?>" /></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <p><?php echo __('Complete email body: '); ?></p>
+                                    </td>
+                                    <td align="left">
+                                        <p>
+                                            <textarea style="width:320px; height:130px;" name="email_password_complete_body"><?php echo $templateData['email_config']['email_password_complete_body']; ?></textarea>
                                         </p>
                                     </td>
                                 </tr>

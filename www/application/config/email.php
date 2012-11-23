@@ -27,4 +27,8 @@ To reset your password, you will need to click on the URL below and proceed with
 
 <%link%>
 
+Thank you.", "email_password_complete_subject" => "Password is changed successfully", "email_password_complete_body" => "Hello <%name%>,
+
+Password for your \"<%username%>\" account is changed successfully.
+
 Thank you.", );

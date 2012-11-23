@@ -215,7 +215,21 @@ class Controller_Home extends Controller_Base {
                 $hashKey = $_POST['hashKey'];
                 if (!empty($newPassword)){
                     if($newPassword == $confirmPassword) {
+                        $user = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
+
+                        //send mail start
+                        $emailConfig = Kohana::$config->load('email');
+                        $arraySearch = array('<%name%>', '<%username%>');
+                        $arrayReplace = array($user->nickname, $user->username);
+
+                        $to = $user->email;
+                        $subject = $emailConfig['email_password_complete_subject'];
+                        $message = str_replace($arraySearch, $arrayReplace, $emailConfig['email_password_complete_body']);
+                        $from = $emailConfig['fromname'].' <'.$emailConfig['mailfrom'].'>';
+                        $headers = "From: " . $from;
+
                         DB_ORM::model('user')->saveResetPassword($hashKey, Auth::instance()->hash($newPassword));
+                        mail($to,$subject,$message,$headers);
 
                         Session::instance()->set('passMessage', 'Password is saved. Go to the login page and login with new password.');
                         Request::initial()->redirect(URL::base().'home/passwordMessage');
