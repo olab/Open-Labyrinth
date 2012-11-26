@@ -133,7 +133,7 @@ class Controller_Home extends Controller_Base {
                         DB_ORM::model('user')->updateHashKeyResetPassword($user->id, $hashKey);
 
                         //send mail end
-                        Session::instance()->set('passMessage', __('An email with link has been sent to your email address. Working time of the link expires in 30 minutes.'));
+                        Session::instance()->set('passMessage', __('A unique link to recover your password has been sent to your registered email address. This link will only be active for 30 minutes.'));
                         Request::initial()->redirect(URL::base().'home/passwordMessage');
                     }
                 }else{
@@ -231,7 +231,7 @@ class Controller_Home extends Controller_Base {
                         DB_ORM::model('user')->saveResetPassword($hashKey, Auth::instance()->hash($newPassword));
                         mail($to,$subject,$message,$headers);
 
-                        Session::instance()->set('passMessage', 'Password is saved. Go to the login page and login with new password.');
+                        Session::instance()->set('passMessage', 'Your new password has been saved. Please return to the login page, and login using your new password.');
                         Request::initial()->redirect(URL::base().'home/passwordMessage');
                     }else{
                         Session::instance()->set('passError', __('The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field.'));
