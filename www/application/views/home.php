@@ -25,6 +25,7 @@
         <title><?php if(isset($templateData['title'])) echo $templateData['title']; ?></title>
         <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/basic.css" />
         <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/jquery-ui-1.9.1.custom.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" />
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>

@@ -256,10 +256,8 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
     public function deleteFile($fileId) {
         $this->id = $fileId;
         $this->load();
-        
-        unlink(DOCROOT.'/'.$this->path);
-        
         $this->delete();
+        unlink(DOCROOT.'/'.$this->path);
     }
     
     public function getFilesSize() { 
