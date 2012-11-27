@@ -72,8 +72,8 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
                 <tr>
                     <td>
                         <p id="buttons">
-                            <input id="submit" type="submit" name="Submit" value="<?php echo __('Submit'); ?>" />
-                            <input id="restore" type="button" value="Restore" />
+                            <input id="submit" type="submit" name="Submit" value="<?php echo __('Crop and Save'); ?>" />
+                            <input id="restore" type="button" value="<?php echo __('Undo'); ?>" />
                         </p>
                         <p style="display:none;" id="processing"><?php echo __("Processing...") ?></p>
                     </td>

@@ -51,7 +51,7 @@ if (isset($templateData['service'])) { ?>
                                 </table>
                             </form>
                             <hr>
-                            <p><a href="remoteservices.asp"><?php echo __('remote services'); ?></a></p>
+                            <p><a href="#"><?php echo __('remote services'); ?></a></p>
                         </td></tr></table>
             </td></tr></table>
 <?php } ?>

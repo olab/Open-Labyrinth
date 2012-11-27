@@ -24,18 +24,18 @@
     <tr bgcolor="#ddddee"><td align="right" colspan="5"><p><strong><font color="white"><?php echo __('Labyrinths'); ?>&nbsp;&nbsp;&nbsp;</font></strong></p></td></tr>
 
     <tr>
-        <td valign="center" nowrap=""><a href="mylabyrinth.asp"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
+        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"><strong><?php echo __('Labyrinths I have played'); ?></strong></a></p></td>
         <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="labyrinthlist.asp?t=a"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
+        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"><strong><?php echo __('Labyrinths I am Authoring'); ?></strong></a></p></td>
     </tr>
 
     <tr>
-        <td valign="center" nowrap=""><a href="labyrinthlist.asp?t=p"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
+        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'collectionManager'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'collectionManager'; ?>"></a><p><a href="<?php echo URL::base() . 'collectionManager'; ?>"><strong><?php echo __('Collections'); ?></strong></a></p></td>
         <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="labyrinthlist.asp?t=c"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
+        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"><strong><?php echo __('closed Labyrinths'); ?></strong></a></p></td>
     </tr>
 
@@ -43,7 +43,7 @@
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"><strong><?php echo __('open Labyrinths'); ?></strong></a></p></td>
         <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="labyrinthlist.asp?t=k"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
+        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
         <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"><strong><?php echo __('key Labyrinths'); ?></strong></a></p></td>
     </tr>
 
