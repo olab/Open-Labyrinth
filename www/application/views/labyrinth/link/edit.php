@@ -22,7 +22,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) { ?>
     <table width="100%" height="100%" cellpadding='6'>
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit links of node'); ?>&nbsp; <a href="editmnode.asp?id=44"><?php echo $templateData['node']->id; ?>: <?php echo $templateData['node']->title; ?></a> </h4>
+                <h4><?php echo __('edit links of node'); ?>&nbsp; <a href="#"><?php echo $templateData['node']->id; ?>: <?php echo $templateData['node']->title; ?></a> </h4>
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff">
                         <td align="left">

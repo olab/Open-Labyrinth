@@ -25,7 +25,7 @@ if(isset($templateData['map'])) { ?>
 
             <p><strong><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth" border="0"> Visual Editor for Map <?php echo $templateData['map']->id; ?> "<?php echo $templateData['map']->name; ?>"</strong>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                [<a href="mapviewhelp.asp" onclick="window.open('mapviewhelp.asp', 'map viewer help', 'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=500, height=400'); return false">help</a>]
+                [<a href="#" onclick="window.open('#', 'map viewer help', 'toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=500, height=400'); return false">help</a>]
             </p>
             <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="1400" height="1200" id="Object1" align="top">
                 <param name="allowScriptAccess" value="sameDomain">

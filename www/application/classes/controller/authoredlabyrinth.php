@@ -23,7 +23,11 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_AuthoredLabyrinth extends Controller_Base {
     
     public function action_index() {
-        $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+        if(Auth::instance()->get_user()->type->name == 'superuser') {
+            $maps = DB_ORM::model('map')->getAllEnabledMap();
+        }else{
+            $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+        }
         $this->templateData['maps'] = $maps;
         
         $openView = View::factory('labyrinth/authored');

@@ -36,7 +36,7 @@ function getRandomColor() {
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff" align="left">
                         <td align="left">
-                            <p><a href="labyrinth_report.asp?mapid=21">back to reports</a></p>
+                            <p><a href="#">back to reports</a></p>
                             <p>number of sessions: <?php if(isset($templateData['sessions'])) echo count($templateData['sessions']); ?> (more than <?php if(isset($templateData['minClicks'])) echo count($templateData['minClicks']); ?> clicks):</p>
 
                             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
