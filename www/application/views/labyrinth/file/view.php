@@ -36,19 +36,24 @@ if (isset($templateData['map'])) { ?>
                                     <?php
                                         $preview = '';
                                         $isInput = false;
-                                        
+                                        $isImage = false;
+
                                         if($file->mime == 'image/gif') {
-                                            $preview = '<img src="'.URL::base().$file->path.'">';
+                                            $preview = '<img src="'.URL::base().$file->path.'?'.time().'" />';
                                             $isInput = true;
+                                            $isImage = true;
                                         } else if($file->mime == 'image/jpg') {
-                                            $preview = '<img src="'.URL::base().$file->path.'">';
+                                            $preview = '<img src="'.URL::base().$file->path.'?'.time().'" />';
                                             $isInput = true;
+                                            $isImage = true;
                                         } else if($file->mime == 'image/png') {
-                                            $preview = '<img src="'.URL::base().$file->path.'">';
+                                            $preview = '<img src="'.URL::base().$file->path.'?'.time().'" />';
                                             $isInput = true;
+                                            $isImage = true;
                                         } else if($file->mime == 'image/jpeg') {
-                                            $preview = '<img src="'.URL::base().$file->path.'">';
+                                            $preview = '<img src="'.URL::base().$file->path.'?'.time().'" />';
                                             $isInput = true;
+                                            $isImage = true;
                                         } else if($file->mime == 'application/vnd.ms-powerpoint') {
                                             $preview = '<img src="'.URL::base().'images/PPIcon.gif">';
                                         } else if($file->mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
@@ -91,6 +96,9 @@ if (isset($templateData['map'])) { ?>
                                                     <br><?php echo filesize(DOCROOT.'/'.$file->path) / 1000; ?> kb<br>last modified <?php echo date('d.m.Y H:i:s.', filemtime(DOCROOT.'/'.$file->path)); ?>
                                                         <br>[<a href="<?php echo URL::base().'fileManager/editFile/'.$templateData['map']->id.'/'.$file->id; ?>">edit</a>]&nbsp;&nbsp;&nbsp;[<a href="<?php echo URL::base().'fileManager/deleteFile/'.$templateData['map']->id.'/'.$file->id; ?>">delete</a>]
                                                 </p>
+                                                <?php if ($isImage){ ?>
+                                                <p>[<a href="<?php echo URL::base().'fileManager/imageEditor/'.$templateData['map']->id.'/'.$file->id; ?>">image editor</a>]</p>
+                                                <?php } ?>
                                             </td>
                                             <tr><td colspan="3"><hr></td></tr>
                                 </tr>
