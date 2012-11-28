@@ -34,6 +34,8 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
             zoomSteps:10,
             rotationSteps:10,
             selector:{
+                w:100,
+                h:100,
                 centered:true,
                 borderColor:'blue',
                 borderColorHover:'yellow'

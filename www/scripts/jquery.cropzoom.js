@@ -232,10 +232,8 @@
                     // calculateTranslationAndRotation();
                 },
                 drag:function (event, ui) {
-                    var posY = ui.position.top + ((getData('image').rotH - getData('image').h) / 2); //FIX Scroll of window by Aramys Miranda
-                    getData('image').posY = posY;
-                    var posX = ui.position.left + ((getData('image').rotW - getData('image').w) / 2);//FIX Scroll of window by Aramys Miranda
-                    getData('image').posX = posX;
+                    getData('image').posY = ui.position.top - $(document).scrollTop() + ((getData('image').rotH - getData('image').h) / 2); //FIX Scroll of window by Aramys Miranda
+                    getData('image').posX = ui.position.left - $(document).scrollLeft() + ((getData('image').rotW - getData('image').w) / 2);//FIX Scroll of window by Aramys Miranda
                     if ($options.image.snapToContainer)
                         limitBounds(ui);
                     else
@@ -429,14 +427,20 @@
                     'rotationContainer').mouseover(
                     function () {
                         $(this).css('opacity', 1);
+                        $('#rotationPopUp').css('display', 'block');
                     }).mouseout(function () {
                         $(this).css('opacity', 0.6);
+                        $('#rotationPopUp').css('display', 'none');
                     });
 
                 var rotMin = $('<div />').attr('id', 'rotationMin')
                     .html("0");
                 var rotMax = $('<div />').attr('id', 'rotationMax')
                     .html("360");
+                var rotLabel = $('<div />').attr('id', 'rotationLabel')
+                    .html("Rotate Clockwise");
+                var rotPopup = $('<div />').attr('id', 'rotationPopUp')
+                    .html("Drag dark grey indicator to rotate image");
 
                 var $slider = $("<div />").attr('id', 'rotationSlider');
                 // Aplicamos el Slider
@@ -471,6 +475,8 @@
                 rotationContainerSlider.append(rotMin);
                 rotationContainerSlider.append($slider);
                 rotationContainerSlider.append(rotMax);
+                rotationContainerSlider.append(rotLabel);
+                rotationContainerSlider.append(rotPopup);
 
                 if ($options.expose.rotationElement != '') {
                     $slider
@@ -512,6 +518,8 @@
                     "<b>-</b>");
                 var zoomMax = $('<div />').attr('id', 'zoomMax').html(
                     "<b>+</b>");
+                var zoomLabel = $('<div />').attr('id', 'zoomLabel').html(
+                    "Zoom in/out");
 
                 var $slider = $("<div />").attr('id', 'zoomSlider');
 
@@ -581,10 +589,12 @@
                     zoomContainerSlider.append(zoomMax);
                     zoomContainerSlider.append($slider);
                     zoomContainerSlider.append(zoomMin);
+                    zoomContainerSlider.append(zoomLabel);
                 } else {
                     zoomContainerSlider.append(zoomMin);
                     zoomContainerSlider.append($slider);
                     zoomContainerSlider.append(zoomMax);
+                    zoomContainerSlider.append(zoomLabel);
                 }
 
                 if ($options.expose.zoomElement != '') {
