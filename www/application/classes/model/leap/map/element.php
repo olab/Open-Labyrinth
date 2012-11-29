@@ -260,32 +260,14 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         unlink(DOCROOT.'/'.$this->path);
     }
     
-    public function getFilesSize() { 
+    public function getFilesSize($filesArray) {
         $totalsize = 0; 
-        $totalcount = 0; 
-        $dircount = 0; 
-        $path = DOCROOT.'/files/';
-        if ($handle = opendir($path)) { 
-            while (false !== ($file = readdir($handle))) { 
-                $nextpath = $path . '/' . $file; 
-                if ($file != '.' && $file != '..' && !is_link ($nextpath)) { 
-                    if (is_dir ($nextpath)) { 
-                        $dircount++; 
-                        $result = $this->getFilesSize($nextpath); 
-                        $totalsize += $result['size']; 
-                        $totalcount += $result['count']; 
-                        $dircount += $result['dircount']; 
-                    } else if (is_file ($nextpath)) { 
-                        $totalsize += filesize ($nextpath); 
-                        $totalcount++; 
-                    } 
-                } 
-            } 
-        } 
-        closedir ($handle); 
+        foreach($filesArray as $file){
+            $totalsize += filesize(DOCROOT.$file->path);
+        }
+
         $total['size'] = $totalsize; 
-        $total['count'] = $totalcount; 
-        $total['dircount'] = $dircount; 
+        $total['count'] = count($filesArray);
         return $total; 
     } 
 

@@ -139,12 +139,11 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if ($receivedMapId != NULL){
                     $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
 
-                    $fileInfo = DB_ORM::model('map_element')->getFilesSize();
+                    $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$receivedMapId);
+                    $fileInfo = DB_ORM::model('map_element')->getFilesSize($this->templateData['files']);
 
                     $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
                     $this->templateData['files_count'] = $fileInfo['count'];
-
-                    $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$receivedMapId);
 
                     $fileView = View::factory('labyrinth/casewizard/file/view');
                     $fileView->set('templateData', $this->templateData);
