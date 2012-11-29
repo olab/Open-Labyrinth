@@ -4,7 +4,7 @@
 
 #rotationMin.vertical,#rotationMax.vertical{color:#000;font:700 14px Arial;margin:auto;width:100%;text-align:center}
 #rotationSlider.vertical{margin: 7px auto;height: 150px;width:6px;position:relative}
-#rotationContainer.vertical{background-color:#FFF;z-index:3;width:31px;height: 200px; margin-top:15px;}
+#rotationContainer.vertical{background-color:#FFF;z-index:3;width:70px;height: 20px; padding:5px; margin-top:15px;}
 /* Horizontal */
 #zoomMin.horizontal,#zoomMax.horizontal{color:#000;font:300 12px Arial;margin:2px 3px;padding:0 5px;float:left;text-align:center}
 #zoomSlider.horizontal{margin: 7px auto;height: 6px;width:300px;float:left;position:relative}
@@ -20,20 +20,42 @@
     height:25px;
 }
 
-#rotationPopUp {
-    background: #FFFFFF;
-    display: none;
-    padding: 5px;
-    position: absolute;
-    right: -180px;
-    top: 0;
-    width: 170px;
+#rotationLeft {
+    position:absolute;
+    left:0px;
+    width:15px;
+    height: 18px;
+    background: url(/images/rotationButton.png);
+    background-repeat: no-repeat;
+    margin-left: 5px;
+    cursor:pointer;
+}
+
+#rotationRight {
+    position:absolute;
+    right:0px;
+    width:15px;
+    height: 18px;
+    background: url(/images/rotationButton.png);
+    background-repeat: no-repeat;
+    background-position: -15px 0;
+    margin-right: 5px;
+    cursor:pointer;
+}
+
+#rotationValue {
+    float:left;
+    text-align: center;
+    width:100%;
+    padding-left: 2px;
 }
 
 #rotationLabel {
+    left: -56px;
     position: absolute;
+    text-align: right;
     top: -20px;
-    width: 120px;
+    width: 130px;
 }
 
 #zoomLabel {
