@@ -433,73 +433,47 @@
                         $('#rotationPopUp').css('display', 'none');
                     });
 
-                var rotMin = $('<div />').attr('id', 'rotationMin')
-                    .html("0");
-                var rotMax = $('<div />').attr('id', 'rotationMax')
-                    .html("360");
-                var rotLabel = $('<div />').attr('id', 'rotationLabel')
-                    .html("Rotate Clockwise");
-                var rotPopup = $('<div />').attr('id', 'rotationPopUp')
-                    .html("Drag dark grey indicator to rotate image");
+                var rotLeft = $('<div />').attr('id', 'rotationLeft');
+                var rotValue = $('<div />').attr('id', 'rotationValue').html("0&deg;");
+                var rotRight = $('<div />').attr('id', 'rotationRight');
+                var rotLabel = $('<div />').attr('id', 'rotationLabel').html("Rotate tool");
 
                 var $slider = $("<div />").attr('id', 'rotationSlider');
                 // Aplicamos el Slider
                 var orientation = 'vertical';
                 var value = Math.abs(360 - $options.image.rotation);
 
-                if ($options.expose.slidersOrientation == 'horizontal') {
-                    orientation = 'horizontal';
-                    value = $options.image.rotation;
-                }
-
-                $slider
-                    .slider({
-                    orientation:orientation,
-                    value:value,
-                    range:"max",
-                    min:0,
-                    max:360,
-                    step:(($options.rotationSteps > 360 || $options.rotationSteps < 0) ? 1
-                        : $options.rotationSteps),
-                    slide:function (event, ui) {
-                        getData('image').rotation = (value == 360 ? Math
-                            .abs(360 - ui.value)
-                            : Math.abs(ui.value));
-                        calculateTranslationAndRotation();
-                        if ($options.image.onRotate != null)
-                            $options.image.onRotate($slider,
-                                getData('image').rotation);
-                    }
+                $('#rotationRight').live('click', function(e){
+                    var rot = getData('image').rotation + 45;
+                    if (rot == 360){rot = 0;}
+                    getData('image').rotation = rot;
+                    calculateTranslationAndRotation();
+                    $('#rotationValue').html(rot+'&deg;');
+                    e.preventDefault();
                 });
 
-                rotationContainerSlider.append(rotMin);
-                rotationContainerSlider.append($slider);
-                rotationContainerSlider.append(rotMax);
-                rotationContainerSlider.append(rotLabel);
-                rotationContainerSlider.append(rotPopup);
+                $('#rotationLeft').live('click', function(e){
+                    var rot = getData('image').rotation - 45;
+                    if (rot < 0){rot = 315;}
+                    getData('image').rotation = rot;
+                    calculateTranslationAndRotation();
+                    $('#rotationValue').html(rot+'&deg;');
+                    e.preventDefault();
+                });
 
-                if ($options.expose.rotationElement != '') {
-                    $slider
-                        .addClass($options.expose.slidersOrientation);
-                    rotationContainerSlider
-                        .addClass($options.expose.slidersOrientation);
-                    rotMin.addClass($options.expose.slidersOrientation);
-                    rotMax.addClass($options.expose.slidersOrientation);
-                    $($options.expose.rotationElement).empty().append(
-                        rotationContainerSlider);
-                } else {
-                    $slider.addClass('vertical');
-                    rotationContainerSlider.addClass('vertical');
-                    rotMin.addClass('vertical');
-                    rotMax.addClass('vertical');
-                    rotationContainerSlider.css({
-                        'position':'absolute',
-                        'top':5,
-                        'left':5,
-                        'opacity':0.6
-                    });
-                    _self.append(rotationContainerSlider);
-                }
+                rotationContainerSlider.append(rotLeft);
+                rotationContainerSlider.append(rotValue);
+                rotationContainerSlider.append(rotRight);
+                rotationContainerSlider.append(rotLabel);
+
+                rotationContainerSlider.addClass('vertical');
+                rotationContainerSlider.css({
+                    'position':'absolute',
+                    'top':5,
+                    'left':5,
+                    'opacity':0.6
+                });
+                _self.append(rotationContainerSlider);
             }
 
             ;
