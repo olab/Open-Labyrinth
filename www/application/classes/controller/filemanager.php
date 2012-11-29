@@ -26,14 +26,13 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            
-            $fileInfo = DB_ORM::model('map_element')->getFilesSize();
+
+            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$mapId);
+            $fileInfo = DB_ORM::model('map_element')->getFilesSize($this->templateData['files']);
             
             $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
             $this->templateData['files_count'] = $fileInfo['count'];
-            
-            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$mapId);
-            
+
             $fileView = View::factory('labyrinth/file/view');
             $fileView->set('templateData', $this->templateData);
         
