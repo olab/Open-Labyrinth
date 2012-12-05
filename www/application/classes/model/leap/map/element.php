@@ -261,14 +261,18 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
     }
     
     public function getFilesSize($filesArray) {
-        $totalsize = 0; 
-        foreach($filesArray as $file){
-            $totalsize += filesize(DOCROOT.$file->path);
-        }
+        $totalsize = 0;
+        $total['size'] = 0;
+        $total['count'] = 0;
+        if (count($filesArray) > 0){
+            foreach($filesArray as $file){
+                $totalsize += filesize(DOCROOT.$file->path);
+            }
 
-        $total['size'] = $totalsize; 
-        $total['count'] = count($filesArray);
-        return $total; 
+            $total['size'] = $totalsize;
+            $total['count'] = count($filesArray);
+        }
+        return $total;
     } 
 
     public function sizeFormat($size) 

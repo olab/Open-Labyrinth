@@ -32,6 +32,7 @@ class Controller_FileManager extends Controller_Base {
             
             $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
             $this->templateData['files_count'] = $fileInfo['count'];
+            $this->templateData['media_copyright'] = Kohana::$config->load('media_upload_copyright');
 
             $fileView = View::factory('labyrinth/file/view');
             $fileView->set('templateData', $this->templateData);
