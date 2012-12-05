@@ -109,18 +109,21 @@ if (isset($templateData['map'])) { ?>
 
                             <p><?php echo __('upload a file to Labyrinth'); ?> "<?php echo $templateData['map']->name; ?>"</p>
 
-                            <form method="POST" enctype="multipart/form-data" action="<?php echo URL::base().'fileManager/uploadFile/'.$templateData['map']->id; ?>">
+                            <form method="POST" id="upload-form" enctype="multipart/form-data" action="<?php echo URL::base().'fileManager/uploadFile/'.$templateData['map']->id; ?>">
                                 <table width="100%" border="0" cellspacing="6">
                                     <tr>
                                         <td nowrap=""><p><?php echo __('select file to upload'); ?></p></td>
                                         <td align="center">
                                             <input type="FILE" size="50" name="filename"></td>
                                         <td>
-                                            <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+                                            <input id="opener" type="button" name="Submit" value="<?php echo __('submit'); ?>">
                                         </td>
                                     </tr>
                                 </table>
                             </form>
+                            <div id="dialog-confirm" title="<?php echo $templateData['media_copyright']['title']; ?>">
+                                <div class="dialog-box"><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><?php echo $templateData['media_copyright']['copyright_message']; ?></div>
+                            </div>
                             <hr>
                             <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
                         </td>

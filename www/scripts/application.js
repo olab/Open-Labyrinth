@@ -131,4 +131,27 @@ jQuery(document).ready(function(){
             myField.value += myValue;
         }
     }
+
+    jQuery("#dialog-confirm").dialog({
+        autoOpen: false,
+        draggable: false,
+        resizable: false,
+        modal: true,
+        buttons: {
+            "I agree": function() {
+                jQuery(this).dialog( "close" );
+                jQuery('#upload-form').submit();
+            },
+            Cancel: function() {
+                jQuery(this).dialog( "close" );
+            }
+        }
+    });
+
+    jQuery("#opener").click(function() {
+        $("#dialog-confirm").dialog( "open" );
+        return false;
+    });
+
+    jQuery("#tabs").tabs();
 });

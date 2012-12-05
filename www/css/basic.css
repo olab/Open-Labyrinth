@@ -19,7 +19,7 @@
 */
 /* Layout Stylesheet */
 
-p {  font-family: Arial, Helvetica, sans-serif;  font-size: 80%;font-style: normal; font-weight: normal; color: #000000}
+p {  font-family: Arial, Helvetica, sans-serif;  font-size: 13px;font-style: normal; font-weight: normal; color: #000000}
 h1 {  font-family: Arial, Helvetica, sans-serif; font-size: 262.5%; font-weight: bold; color: #000000}
 h2 {  font-family: Arial, Helvetica, sans-serif; font-size: 187.5%; font-weight: bold; color: #000000}
 h3 {  font-family: Arial, Helvetica, sans-serif; font-size: 150%; font-weight: bold; color: #000000}
@@ -295,4 +295,8 @@ ul.auto-list > li{
     background: #fff;
     line-height: 80%;
     padding: 7px 7px 8px;
+}
+
+#tabs li {
+    font-size:14px;
 }
