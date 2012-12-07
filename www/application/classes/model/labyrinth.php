@@ -366,7 +366,6 @@ class Model_Labyrinth extends Model {
     }
 
     private function calculateCounterFunction($counter, $function){
-        $function = str_replace(',', '.', $function);
         if ($function[0] == '=') {
             $counter = substr($function, 1, strlen($function));
         } else if ($function[0] == '-') {
