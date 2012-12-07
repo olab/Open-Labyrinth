@@ -51,9 +51,9 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'start_value' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'start_value' => new DB_ORM_Field_Double($this, array(
                 'nullable' => FALSE,
+                'savable' => TRUE,
             )),
             
             'icon_id' => new DB_ORM_Field_Integer($this, array(
@@ -133,7 +133,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         $this->name = Arr::get($values, 'cName', '');
         $this->description = Arr::get($values, 'cDesc', '');
         $this->icon_id = Arr::get($values, 'cIconId', NULL);
-        $this->start_value = Arr::get($values, 'cStartV', 0);
+        $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', 0));
         $this->visible = Arr::get($values, 'cVisible', FALSE);
         
         $this->save();
@@ -160,7 +160,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             $this->name = Arr::get($values, 'cName', $this->name);
             $this->description = Arr::get($values, 'cDesc', $this->description);
             $this->icon_id = Arr::get($values, 'cIconId', $this->icon_id);
-            $this->start_value = Arr::get($values, 'cStartV', $this->start_value);
+            $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', $this->start_value));
             $this->visible = Arr::get($values, 'cVisible', $this->visible);
 
             $this->save();

@@ -263,7 +263,7 @@ class Model_Labyrinth extends Model {
                         $tmp = substr($tmp, 0, $e - 1);
                         $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
                         if (is_numeric($tmp)) {
-                            $thisCounter = (int) $tmp;
+                            $thisCounter = $tmp;
                         }
                     }
 
@@ -281,11 +281,11 @@ class Model_Labyrinth extends Model {
 
                     if ($counterFunction != '') {
                         if ($counterFunction[0] == '=') {
-                            $thisCounter = (int) substr($counterFunction, 1, strlen($counterFunction));
+                            $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
                         } else if ($counterFunction[0] == '-') {
-                            $thisCounter -= (int) substr($counterFunction, 1, strlen($counterFunction));
+                            $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
                         } else if ($counterFunction[0] == '+') {
-                            $thisCounter += (int) substr($counterFunction, 1, strlen($counterFunction));
+                            $thisCounter += substr($counterFunction, 1, strlen($counterFunction));
                         }
                     }
 
@@ -303,6 +303,7 @@ class Model_Labyrinth extends Model {
 
                     $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
 
+                    $redirect = NULL;
                     if ($rules != NULL and count($rules) > 0) {
                         foreach ($rules as $rule) {
                             $resultExp = FALSE;
@@ -336,9 +337,16 @@ class Model_Labyrinth extends Model {
 
                             if ($resultExp == TRUE) {
                                 if ($rule->function == 'redir') {
+                                    $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
                                     $redirect = $rule->redirect_node_id;
                                 }
                             }
+                        }
+                        if ($redirect != NULL){
+                            $updateCounter .= '[CID=' . $counter->id . ',V=' . $thisCounter . ']';
+                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter);
+                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+                            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
                         }
                     }
 
@@ -355,6 +363,17 @@ class Model_Labyrinth extends Model {
         }
 
         return '';
+    }
+
+    private function calculateCounterFunction($counter, $function){
+        if ($function[0] == '=') {
+            $counter = substr($function, 1, strlen($function));
+        } else if ($function[0] == '-') {
+            $counter -= substr($function, 1, strlen($function));
+        } else if ($function[0] == '+') {
+            $counter += substr($function, 1, strlen($function));
+        }
+        return $counter;
     }
 
     private function getReviewLinks($sesionId) {
@@ -404,7 +423,7 @@ class Model_Labyrinth extends Model {
                                     $tmp = substr($tmp, 0, $e - 1);
                                     $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
                                     if (is_numeric($tmp)) {
-                                        $thisCounter = (int) $tmp;
+                                        $thisCounter = $tmp;
 
                                         if ($chat->counter_id == $counter->id) {
                                             if ($element->function != '') {
@@ -453,7 +472,7 @@ class Model_Labyrinth extends Model {
                         $tmp = substr($tmp, 0, $e - 1);
                         $tmp = str_replace('CID=' . $question->counter_id . ',V=', '', $tmp);
                         if (is_numeric($tmp)) {
-                            $thisCounter = (int) $tmp;
+                            $thisCounter = $tmp;
                             if (count($question->responses) > 0) {
                                 foreach ($question->responses as $resp) {
                                     if ($resp->id == $r) {

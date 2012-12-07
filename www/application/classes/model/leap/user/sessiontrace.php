@@ -232,7 +232,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                             $result[$counter->name][0] = $counter->name;
                             $result[$counter->name][2] = $counter->id;
                             if (is_numeric($tmp)) {
-                                $thisCounter = (int) $tmp;
+                                $thisCounter = $tmp;
                                 $result[$counter->name][1][] = $thisCounter;
                             }
                             $j++;

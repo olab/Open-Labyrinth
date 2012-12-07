@@ -47,7 +47,7 @@ if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
                             <p><strong><?php echo __('counter rules'); ?></strong></p>
                             <?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
                                 <?php foreach($templateData['rules'] as $rule) { ?>
-                                    <p><img src="<?php echo URL::base(); ?>images/rule.gif" align="absmiddle" alt="rule"> rule: if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') - <a href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>">delete</a></p>
+                                    <p><img src="<?php echo URL::base(); ?>images/rule.gif" align="absmiddle" alt="rule"> rule: if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') and reset counter '<?php echo $rule->counter_value; ?>' - <a href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>">delete</a></p>
                                 <?php } ?>
                             <?php } ?>
                             <hr>
