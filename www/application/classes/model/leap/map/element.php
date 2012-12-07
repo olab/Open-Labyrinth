@@ -252,7 +252,28 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             }
         }
     }
-    
+
+    public function saveElement($mapId, $values){
+        $this->map_id = $mapId;
+        $this->path = $values['path'];
+        $this->mime = File::mime($values['path']);
+        $this->name = $values['name'];
+
+        $this->save();
+        return $this->getLastAddedElement($mapId);
+    }
+
+    public function getLastAddedElement($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_element', array($result[0]['id']));
+        }
+
+        return NULL;
+    }
+
     public function deleteFile($fileId) {
         $this->id = $fileId;
         $this->load();

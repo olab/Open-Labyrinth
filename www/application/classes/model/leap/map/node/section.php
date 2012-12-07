@@ -97,6 +97,18 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         $this->map_id = $mapId;
         $this->name = Arr::get($values, 'sectionname', '');
         $this->save();
+        return $this->getLastAddedSection($mapId);
+    }
+
+    public function getLastAddedSection($mapId){
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_node_section', array($result[0]['id']));
+        }
+
+        return NULL;
     }
     
     public function updateSectionName($id, $values) {

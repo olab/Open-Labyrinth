@@ -146,7 +146,16 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
             }
         }
     }
-    
+
+    public function addFullLink($mapId, $values){
+        $this->map_id = $mapId;
+        $this->text = Arr::get($values, 'text', '');
+        $this->node_id_1 = Arr::get($values, 'node_id_1', '');
+        $this->node_id_2 = Arr::get($values, 'node_id_2', '');
+
+        $this->save();
+    }
+
     public function addVUELink($mapId, $nodeId1, $nodeId2) {
         $this->map_id = $mapId;
         $this->node_id_1 = $nodeId1;

@@ -181,7 +181,18 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                 ->column('map_id', $mapId);
         return $builder->execute();
     }
-    
+
+    public function getLastAddedAvatar($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_avatar', array($result[0]['id']));
+        }
+
+        return NULL;
+    }
+
     public function updateAvatar($avatarId, $values) {
         $this->id = $avatarId;
         $this->load();

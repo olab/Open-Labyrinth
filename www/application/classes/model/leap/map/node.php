@@ -245,8 +245,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->priority_id = Arr::get($values, 'priority', 1);
             $this->undo = Arr::get($values, 'mnodeUndo', FALSE);
             $this->end = Arr::get($values, 'ender', FALSE);
-			$this->type_id = 2; // Child type id
-            
+            if (Arr::get($values, 'type_id', FALSE)){
+                $this->type_id = Arr::get($values, 'type_id', FALSE);
+            }else{
+                $this->type_id = 2; // Child type id
+            }
+
             $this->save();
             
             return $this;
@@ -254,7 +258,43 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function createFullNode($mapId, $values){
+        if($mapId != NULL) {
+            $this->map_id = $mapId;
+            $this->title = Arr::get($values, 'title', '');
+            $this->text = Arr::get($values, 'text', '');
+            $this->info = Arr::get($values, 'info', '');
+            $this->probability = Arr::get($values, 'probability', FALSE);
+            $this->link_style_id = Arr::get($values, 'link_style_id', 1);
+            $this->link_type_id = Arr::get($values, 'link_type_id', 1);
+            $this->priority_id = Arr::get($values, 'priority_id', 1);
+            $this->undo = Arr::get($values, 'undo', FALSE);
+            $this->end = Arr::get($values, 'end', FALSE);
+            $this->type_id = Arr::get($values, 'type_id', FALSE);
+            $this->x = Arr::get($values, 'x', FALSE);
+            $this->y = Arr::get($values, 'y', FALSE);
+            $this->rgb = Arr::get($values, 'rgb', FALSE);
+
+            $this->save();
+
+            return $this->getLastAddedNode($mapId);
+        }
+
+        return NULL;
+    }
+
+    public function getLastAddedNode($mapId){
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_node', array($result[0]['id']));
+        }
+
+        return NULL;
+    }
+
     public function createDefaultRootNode($mapId) {
         if($mapId != NULL) {
             $this->map_id = $mapId;

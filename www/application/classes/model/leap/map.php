@@ -370,7 +370,7 @@ class Model_Leap_Map extends DB_ORM_Model {
         return NULL;
     }
     
-    public function createMap($values) {
+    public function createMap($values, $isCreateRoot = true) {
         $this->name = Arr::get($values, 'title', 'empty_title');
         $this->author_id = Arr::get($values, 'author', 1);
         $this->abstract = Arr::get($values, 'description', 'empty_description');
@@ -381,13 +381,15 @@ class Model_Leap_Map extends DB_ORM_Model {
         $this->delta_time = Arr::get($values, 'delta_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
-        $this->language_id = 1;
+        $this->language_id = Arr::get($values, 'language_id', 1);
         
         $this->save();
         
         $map = $this->getMapByName($this->name);
-        DB_ORM::model('map_node')->createDefaultRootNode($map->id);
-        
+        if ($isCreateRoot){
+            DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+        }
+
         return $map;
     }
     
