@@ -142,7 +142,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         if(!$result->is_loaded()){
             $this->node_id = $nodeId; 
             $this->counter_id = $counterId;
-            $this->function = $function;
+            $this->function = str_replace(',', '.', $function);
             $this->display = $display;
 
             $this->save();
@@ -190,7 +190,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             $this->load();
             
             if($this) {
-                $this->function = $function;
+                $this->function = str_replace(',', '.', $function);
                 $this->display = $display;
 
                 $this->save();
@@ -202,7 +202,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         $counters = DB_ORM::model('map_counter')->getCountersByMap($map_id);
         if(count($counters) > 0) {
             foreach($counters as $counter) {
-                $function = Arr::get($values, 'cfunc_'.$counter->id);
+                $function = str_replace(',', '.', Arr::get($values, 'cfunc_'.$counter->id));
                 $display = Arr::get($values, 'cfunc_ch_'.$counter->id);
                 $nodeCounter = DB_ORM::model('map_node_counter')->getNodeCounter($nodeId, $counter->id);
                 if($nodeCounter != NULL) {
@@ -222,7 +222,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                     if($counterId == $counter->counter_id) {
                         $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
                         $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
-                        $counter->function = Arr::get($values, $inputName, $counter->function);
+                        $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
                         if (Arr::get($values, $chName) == NULL){
                             $counter->display = 0;
                         }else{
@@ -233,7 +233,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                 } else {
                     $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
                     $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
-                    $counter->function = Arr::get($values, $inputName, $counter->function);
+                    $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
                     if (Arr::get($values, $chName) == NULL){
                         $counter->display = 0;
                     }else{
