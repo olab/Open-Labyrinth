@@ -75,7 +75,18 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public function addFullResponses($questionId, $values){
+        $this->question_id = $questionId;
+        $this->response = Arr::get($values, 'response', '');
+        $this->feedback = Arr::get($values, 'feedback', '');
+        $this->is_correct = Arr::get($values, 'is_correct', 0);
+        $this->score = Arr::get($values, 'score', 0);
+
+        $this->save();
+        return true;
+    }
+
     public function getResponsesByQuestion($questionId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('question_id', '=', (int)$questionId);
         $result = $builder->query();

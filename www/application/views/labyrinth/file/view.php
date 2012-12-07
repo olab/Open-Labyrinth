@@ -76,7 +76,10 @@ if (isset($templateData['map'])) { ?>
                                             $isInput = true;
                                         } else if($file->mime == 'application/vnd.ms-excel') {
                                             $preview = '<img src="'.URL::base().'images/wordicon.gif">';
-                                        } else {
+                                        } else if(strstr($file->mime, 'audio')) {
+                                            $preview = '<audio src="'.URL::base().$file->path.'" controls preload="auto" autobuffer></audio>';
+                                            $isInput = true;
+                                        }else{
                                             $preview = '<p>no preview</p>';
                                         }
                                     ?>

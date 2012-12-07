@@ -231,7 +231,33 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         
         $this->save();
     }
-    
+
+    public function addFullQuestion($mapId, $values){
+        $this->map_id = $mapId;
+        $this->entry_type_id = Arr::get($values, 'entry_type_id', '');;
+        $this->stem = Arr::get($values, 'stem', '');
+        $this->width = Arr::get($values, 'width', 0);
+        $this->height = Arr::get($values, 'height', 0);
+        $this->feedback = Arr::get($values, 'feedback', '');
+        $this->show_answer = Arr::get($values, 'show_answer', 0);
+        $this->num_tries = Arr::get($values, 'num_tries', 0);
+        $this->counter_id = Arr::get($values, 'counter_id', 0);
+
+        $this->save();
+        return $this->getLastAddedQuestion($mapId);
+    }
+
+    public function getLastAddedQuestion($mapId){
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_question', array($result[0]['id']));
+        }
+
+        return NULL;
+    }
+
     private function saveResponceQuestion($mapId, $type, $values) {
         $builder = DB_ORM::insert('map_question')
                 ->column('map_id', $mapId)

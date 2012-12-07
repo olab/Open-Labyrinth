@@ -324,7 +324,8 @@ abstract class Base_DB_ORM_Model extends Kohana_Object {
 			}
 			$record = $builder->query();
 			if ( ! $record->is_loaded()) {
-				throw new Kohana_Marshalling_Exception('Message: Failed to load record from database. Reason: Unable to match primary key with a record.');
+				//throw new Kohana_Marshalling_Exception('Message: Failed to load record from database. Reason: Unable to match primary key with a record.');
+                return NULL;
 			}
 			$columns = $record->fetch(0);
 		    $this->metadata['loaded'] = TRUE;

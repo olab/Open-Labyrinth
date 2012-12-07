@@ -491,7 +491,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         $media = DB_ORM::model('map_element', array((int) $id));
                                         if ($media->mime == 'application/x-shockwave-flash') {
                                             $replaceString = Controller_RenderLabyrinth::getSwfHTML($id);
-                                        } else {
+                                        } elseif (strstr($media->mime, 'audio')) {
+                                            $replaceString = Controller_RenderLabyrinth::getAudioHTML($id);
+                                        }else{
                                             $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
                                         }
                                         break;
@@ -539,7 +541,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         return '';
     }
-    
+
+    private static function getAudioHTML($id) {
+        $audio = DB_ORM::model('map_element', array((int) $id));
+        if ($audio) {
+            return '<audio src="'.URL::base().$audio->path.'" controls preload="auto" autoplay="autoplay" autobuffer></audio>';
+        }
+
+        return '';
+    }
+
     private static function getSwfHTML($id) {
         $swf = DB_ORM::model('map_element', array((int) $id));
         if ($swf) {

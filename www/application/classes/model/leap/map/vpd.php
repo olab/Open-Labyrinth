@@ -117,7 +117,6 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         $typeId = DB_ORM::model('map_vpd_type')->getTypeIdByName($typeName);
         
         if($typeId != NULL) {
-            var_dump($typeId);
             $builder = DB_ORM::insert('map_vpd')
                     ->column('map_id', $mapId)
                     ->column('vpd_type_id', (int)$typeId);
@@ -125,6 +124,16 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
             
             DB_ORM::model('map_vpd_element')->saveElementValues($id, $values);
         }
+    }
+
+    public function createNewElementTypeId($mapId, $typeId, $values) {
+        $builder = DB_ORM::insert('map_vpd')
+            ->column('map_id', $mapId)
+            ->column('vpd_type_id', (int)$typeId);
+        $id = $builder->execute();
+
+        DB_ORM::model('map_vpd_element')->saveElementValues($id, $values);
+        return $id;
     }
 }
 

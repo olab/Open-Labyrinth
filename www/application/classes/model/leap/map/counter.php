@@ -137,6 +137,19 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         $this->visible = Arr::get($values, 'cVisible', FALSE);
         
         $this->save();
+
+        return $this->getLastAddedCounter($mapId);
+    }
+
+    public function getLastAddedCounter($mapId){
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $counter = DB_ORM::model('map_counter', array($result[0]['id']));
+            return $counter;
+        }
+        return NULL;
     }
     
     public function updateCounter($counterId, $values) {
