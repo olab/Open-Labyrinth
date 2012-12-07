@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `map_counters` (
   `map_id` int(10) unsigned DEFAULT NULL,
   `name` varchar(200) DEFAULT NULL,
   `description` text,
-  `start_value` int(11) NOT NULL DEFAULT '0',
+  `start_value` DOUBLE NOT NULL DEFAULT '0',
   `icon_id` int(11) DEFAULT NULL,
   `prefix` varchar(20) DEFAULT NULL,
   `suffix` varchar(20) DEFAULT NULL,
@@ -306,7 +306,7 @@ CREATE TABLE IF NOT EXISTS `map_counter_rules` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `counter_id` int(10) unsigned NOT NULL,
   `relation_id` int(11) NOT NULL,
-  `value` int(11) NOT NULL,
+  `value` DOUBLE NOT NULL DEFAULT '0',
   `function` varchar(50) DEFAULT NULL,
   `redirect_node_id` int(11) DEFAULT NULL,
   `message` varchar(500) DEFAULT NULL,
@@ -950,7 +950,12 @@ INSERT INTO `map_types` (`id`, `name`, `description`) VALUES
 (2, 'Game - scores, 1 startpoint, 1 or more endpoints', ''),
 (3, 'Maze - no scores, 1 or more startpoints, no endpoints', ''),
 (4, 'Algorithm - no scores, 1 startpoint, 1 or more endpoints', ''),
-(5, 'Key Feature Problem', '');
+(5, 'Key Feature Problem', ''),
+(6, 'Leniar', ''),
+(7, 'HEIDR', ''),
+(8, 'Semi-leniar', ''),
+(9, 'Branched', ''),
+(10, 'Make My Own', '');
 
 -- --------------------------------------------------------
 
@@ -1439,3 +1444,21 @@ ALTER TABLE `user_sessiontraces`
   ADD CONSTRAINT `user_sessiontraces_ibfk_3` FOREIGN KEY (`map_id`) REFERENCES `maps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_sessiontraces_ibfk_5` FOREIGN KEY (`session_id`) REFERENCES `user_sessions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `user_sessiontraces_ibfk_6` FOREIGN KEY (`node_id`) REFERENCES `map_nodes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  
+--
+-- Table structure for table `dictionary`
+--
+
+CREATE TABLE IF NOT EXISTS `dictionary` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `word` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word` (`word`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  
+ALTER TABLE `map_node_counters` ADD `display` INT NOT NULL DEFAULT '1';
+
+ALTER TABLE `users` ADD `resetHashKey` VARCHAR( 255 ) NULL ,
+ADD `resetHashKeyTime` DATETIME NULL ,
+ADD `resetAttempt` INT NULL ,
+ADD `resetTimestamp` DATETIME NULL;

@@ -45,9 +45,9 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
                 'nullable' => FALSE,
             )),
             
-            'value' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'value' => new DB_ORM_Field_Double($this, array(
                 'nullable' => FALSE,
+                'savable' => TRUE,
             )),
             
             'function' => new DB_ORM_Field_String($this, array(
@@ -132,13 +132,16 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
     public function addRule($counterId, $values) {
         $this->counter_id = $counterId;
         $this->relation_id = Arr::get($values, 'relation', 1);
-        $this->value = Arr::get($values, 'rulevalue', 0);
+        $this->value = str_replace(',','.', Arr::get($values, 'rulevalue', 0));
         $this->function = 'redir';                                              // In current version
         $this->redirect_node_id = Arr::get($values, 'node', 0);
-        
+        $ctrval = Arr::get($values, 'ctrval', '=0');
+        if (!empty($ctrval)){
+            $this->counter_value = $ctrval;
+        }else{
+            $this->counter_value = '=0';
+        }
         $this->save();
-        
-        DB_ORM::model('map_node_counter')->addNodeCounter($this->redirect_node_id, $this->counter_id, Arr::get($values, 'ctrval', '=0'));
     }
 }
 

@@ -32,9 +32,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             if ($rootNode != NULL) {
                 $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
-                if ($data['redirect'] != NULL) {
-                    Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $data['redirect']);
-                }
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -99,11 +96,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 				}
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
-                    //echo Debug::vars($data['redirect']);
-                    if ($data['redirect'] != NULL) {
-                        Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $data['redirect']);
-                    }
-
                     if ($data['node']->link_style->name == 'type in text') {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
                         $data['links'] = $result['links']['display'];
