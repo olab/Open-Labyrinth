@@ -93,7 +93,45 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function getAllAuthors($mapId){
+        $builder = DB_SQL::select('default')->
+            from($this->table())->
+            join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')->
+            where('map_users.map_id', '=', $mapId, 'AND')->where('users.type_id', '=', '2');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $users = array();
+            foreach($result as $record) {
+                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
+            }
+
+            return $users;
+        }
+
+        return NULL;
+    }
+
+    public function getAllLearners($mapId){
+        $builder = DB_SQL::select('default')->
+            from($this->table())->
+            join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')->
+            where('map_users.map_id', '=', $mapId, 'AND')->where('users.type_id', '=', '1');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $users = array();
+            foreach($result as $record) {
+                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
+            }
+
+            return $users;
+        }
+
+        return NULL;
+    }
+
     public function getAllUsersIds($mapId) {
         $users = $this->getAllUsers($mapId);
         if($users != NULL) {

@@ -81,11 +81,23 @@ if (isset($templateData['map'])) { ?>
                                         <td align="right"><p><?php echo __('registered Labyrinth authors'); ?>:</p></td>
                                         <td align="left">
                                             <p>
-                                                <?php if (isset($templateData['regUsers'])) { ?>
-                                                    <?php foreach ($templateData['regUsers'] as $user) { ?>
+                                                <?php if (isset($templateData['regAuthors'])) { ?>
+                                                    <?php foreach ($templateData['regAuthors'] as $user) { ?>
                                                         <?php echo $user->nickname . ', '; ?>
                                                     <?php }
                                                 } ?>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><p><?php echo __('registered Labyrinth learners'); ?>:</p></td>
+                                        <td align="left">
+                                            <p>
+                                                <?php if (isset($templateData['regLearners'])) { ?>
+                                                <?php foreach ($templateData['regLearners'] as $user) { ?>
+                                                    <?php echo $user->nickname . ', '; ?>
+                                                    <?php }
+                                            } ?>
                                             </p>
                                         </td>
                                     </tr>
