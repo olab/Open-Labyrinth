@@ -756,9 +756,14 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
             $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
             
-            $regUsers = DB_ORM::model('map_user')->getAllUsers($mapId);
-            if($regUsers != NULL) {
-                $this->templateData['regUsers'] = $regUsers;
+            $regAuthors = DB_ORM::model('map_user')->getAllAuthors($mapId);
+            if($regAuthors != NULL) {
+                $this->templateData['regAuthors'] = $regAuthors;
+            }
+
+            $regLearners = DB_ORM::model('map_user')->getAllLearners($mapId);
+            if($regLearners != NULL) {
+                $this->templateData['regLearners'] = $regLearners;
             }
             
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
