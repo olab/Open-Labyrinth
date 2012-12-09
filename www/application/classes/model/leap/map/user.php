@@ -98,7 +98,7 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         $builder = DB_SQL::select('default')->
             from($this->table())->
             join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')->
-            where('map_users.map_id', '=', $mapId, 'AND')->where('users.type_id', '=', '2');
+            where('map_users.map_id', '=', $mapId, 'AND')->where('users.type_id', '=', '2')->where('users.type_id', '=', '4', 'OR');
         $result = $builder->query();
 
         if($result->is_loaded()) {
