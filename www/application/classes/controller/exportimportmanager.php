@@ -343,6 +343,7 @@ class Controller_ExportImportManager extends Controller_Base {
 
     public function action_uploadMVP() {
         if($_FILES) {
+            set_time_limit(0);
             if(is_uploaded_file($_FILES['filename']['tmp_name'])) {
                 move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT.'/files/'.$_FILES['filename']['name']);
                 $fileName = 'files/'.$_FILES['filename']['name'];
@@ -493,7 +494,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 $label = (string)$attr->label;
                 if ($label != 'unallocated'){
                     $id = (int)$attr->id;
-                    $nodeSection[$id]['sectionname'] = (string)$attr->label;
+                    $nodeSection[$id]['sectionname'] = html_entity_decode((string)$attr->label);
 
                     $activityNode = array();
                     $i = 0;
@@ -509,7 +510,7 @@ class Controller_ExportImportManager extends Controller_Base {
                         foreach($section->ActivityNode as $node){
                             $nodeAttr = $node->attributes();
                             $id = (int)$nodeAttr->id;
-                            $nodeArray[$id]['title'] = (string)$nodeAttr->label;
+                            $nodeArray[$id]['title'] = html_entity_decode((string)$nodeAttr->label);
 
                             $nodeArray[$id]['text'] = $this->getIdFromString($node->Content);
                             $nodeArray[$id]['rules_probability'] = (string)$node->Rules->Probability;
@@ -536,7 +537,7 @@ class Controller_ExportImportManager extends Controller_Base {
         if (isset($xml->Links->Link)){
             foreach($xml->Links->Link as $link){
                 $linkAttr = $link->attributes();
-                $linksArray[$i]['text'] = (string)$linkAttr->label;
+                $linksArray[$i]['text'] = html_entity_decode((string)$linkAttr->label);
                 $linksArray[$i]['display'] = (int)$linkAttr->display;
 
                 $linksArray[$i]['node_id_1'] = $this->getIdFromString($link->ActivityNodeA);
@@ -611,7 +612,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     $nodeArray[$id]['x'] = (string)$nodeAttr->mnodeX;
                     $nodeArray[$id]['y'] = (string)$nodeAttr->mnodeY;
                     $nodeArray[$id]['rgb'] = (string)$nodeAttr->mnodeRGB;
-                    $nodeArray[$id]['info'] = (string)$node->OL_infoText->div;
+                    $nodeArray[$id]['info'] = html_entity_decode((string)$node->OL_infoText->div);
                 }
             }
         }
@@ -875,7 +876,8 @@ class Controller_ExportImportManager extends Controller_Base {
             foreach($nodeArray as $key => $node){
                 $id = 'ctt_'.$node['text'];
                 if (isset($nodeContentsArray[$id]['div'])){
-                    $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, (string)$nodeContentsArray[$id]['div']);
+                    $string = html_entity_decode((string)$nodeContentsArray[$id]['div']);
+                    $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, $string);
                 }else{
                     $nodeArray[$key]['text'] = '';
                 }
@@ -932,9 +934,10 @@ class Controller_ExportImportManager extends Controller_Base {
 
     public function parseXML($tmpFileName){
         $content = file_get_contents($tmpFileName);
-        $searchArray = array('<ol:', '</ol:');
-        $replaceArray = array('<', '</');
+        $searchArray = array('<ol:', '</ol:', '&#034;');
+        $replaceArray = array('<', '</', '"');
         $xmlString = str_replace($searchArray, $replaceArray, $content);
+        $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
         return simplexml_load_string($xmlString);
     }
 
