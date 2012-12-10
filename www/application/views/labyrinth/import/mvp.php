@@ -26,8 +26,19 @@
             <table width="100%" bgcolor="#ffffff"><tbody><tr><td>
                 <form action="<?php echo URL::base(); ?>exportImportManager/uploadMVP" enctype="multipart/form-data" method="POST">
                     <table width="20%" border="0">
-                        <tbody><tr><td><input type="file" name="filename" size="50"></td><td align="center">
-                            <input type="submit" value="<?php echo __('submit'); ?>" name="Submit"></td></tr>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <input type="file" name="filename" size="50">
+                            </td>
+                            <td align="center">
+                                <input type="submit" value="<?php echo __('submit'); ?>" name="Submit">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center"><span style="font-size: 14px; color: #333333;"><?php echo __('The maximum file upload size is 20.00 MB.'); ?></span></td>
+                            <td></td>
+                        </tr>
                         </tbody></table>
                 </form>
                 <hr>
