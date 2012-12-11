@@ -25,43 +25,78 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public $template = 'home'; // Default
 
     public function action_index() {
+        $continue = true;
         $mapId = $this->request->param('id', NULL);
         $editOn = $this->request->param('id2', NULL);
         if ($mapId != NULL) {
-            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+            $mapDB = DB_ORM::model('map', array($mapId));
+            if ($mapDB->security_id == 4){
+                $sessionId = Session::instance()->id();
+                $checkValue = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+                $checkSession = Session::instance()->get($checkValue);
+                if ($checkSession != '1'){
+                    $this->template = View::factory('labyrinth/security');
+                    $templateData['mapDB'] = $mapDB;
+                    $templateData['title'] = 'OpenLabyrinth';
+                    $templateData['keyError'] = Session::instance()->get('keyError');
+                    Session::instance()->delete('keyError');
+                    $this->template->set('templateData', $templateData);
+                    $continue = false;
+                }
+            }
+            if ($continue){
+                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
-            if ($rootNode != NULL) {
-                $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
-                if ($data) {
-                    $data['navigation'] = $this->generateNavigation($data['sections']);
+                if ($rootNode != NULL) {
+                    $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
+                    if ($data) {
+                        $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                    if ($data['node']->link_style->name == 'type in text') {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links']['display'];
-                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        if ($data['node']->link_style->name == 'type in text') {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links']['display'];
+                            $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                            $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        } else {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links'];
+                        }
+
+                        if ($editOn != NULL and $editOn == 1) {
+                            $data['node_edit'] = TRUE;
+                        } else {
+                            $data['node_text'] = $this->parseText($data['node_text']);
+                        }
+
+                        $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+                        $data['skin_path'] = $data['map']->skin->path;
+                        $this->template = View::factory('labyrinth/skin/basic/basic');
+                        $this->template->set('templateData', $data);
                     } else {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links'];
+                        Request::initial()->redirect(URL::base());
                     }
-
-                    if ($editOn != NULL and $editOn == 1) {
-                        $data['node_edit'] = TRUE;
-                    } else {
-                        $data['node_text'] = $this->parseText($data['node_text']);
-                    }
-
-                    $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-                    $data['skin_path'] = $data['map']->skin->path;
-                    $this->template = View::factory('labyrinth/skin/basic/basic');
-                    $this->template->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
-            } else {
-                Request::initial()->redirect(URL::base());
             }
         } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_checkKey(){
+        $mapId = $this->request->param('id', NULL);
+        if (($mapId != NULL) & (isset($_POST['securityKey']))){
+            $checkKey = DB_ORM::model('map_key')->checkKey($mapId, $_POST['securityKey']);
+            if ($checkKey){
+                $sessionId = Session::instance()->id();
+                $checkValue = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+                Session::instance()->set($checkValue, '1');
+            }else{
+                Session::instance()->set('keyError', 'Invalid key');
+            }
+            Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$mapId);
+        }else{
             Request::initial()->redirect(URL::base());
         }
     }
