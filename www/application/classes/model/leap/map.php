@@ -286,6 +286,7 @@ class Model_Leap_Map extends DB_ORM_Model {
      */
     public function getAllMapsForRegisteredUser($user_id){
         $builder = DB_SQL::select('default')
+            ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
             ->join('LEFT', 'map_users', 'mu')
