@@ -126,11 +126,12 @@ class Model_Labyrinth extends Model {
             foreach ($node->links as $link) {
                 switch ($node->link_type->name) {
                     case 'ordered':
-                        if (isset($result[$link->order])) {
-                            $nextIndex = $this->findNextIndex($result, $link->order + 1);
+                        $order = $link->order * 10000;
+                        if (isset($result[$order])) {
+                            $nextIndex = $this->findNextIndex($result, $order + 1);
                             $result[$nextIndex] = $link;
                         } else {
-                            $result[$link->order] = $link;
+                            $result[$order] = $link;
                         }
                         break;
                     case 'random order':
