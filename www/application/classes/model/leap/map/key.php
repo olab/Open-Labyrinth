@@ -104,7 +104,6 @@ class Model_Leap_Map_Key extends DB_ORM_Model {
         }
     }
 
-
     public function checkKey($mapId, $key){
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId, 'AND')->where('key', '=', $key);
         $result = $builder->query();
