@@ -1,0 +1,1 @@
+UPDATE `map_securities` SET `name` = 'keys (a key is required to access this Labyrinth)' WHERE `id` = 4 LIMIT 1 ;
