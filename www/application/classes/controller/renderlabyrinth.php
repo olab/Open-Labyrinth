@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -30,11 +31,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn = $this->request->param('id2', NULL);
         if ($mapId != NULL) {
             $mapDB = DB_ORM::model('map', array($mapId));
-            if ($mapDB->security_id == 4){
+            if ($mapDB->security_id == 4) {
                 $sessionId = Session::instance()->id();
-                $checkValue = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+                $checkValue = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
                 $checkSession = Session::instance()->get($checkValue);
-                if ($checkSession != '1'){
+                if ($checkSession != '1') {
                     $this->template = View::factory('labyrinth/security');
                     $templateData['mapDB'] = $mapDB;
                     $templateData['title'] = 'OpenLabyrinth';
@@ -44,7 +45,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $continue = false;
                 }
             }
-            if ($continue){
+            if ($continue) {
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -84,19 +85,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_checkKey(){
+    public function action_checkKey() {
         $mapId = $this->request->param('id', NULL);
-        if (($mapId != NULL) & (isset($_POST['securityKey']))){
+        if (($mapId != NULL) & (isset($_POST['securityKey']))) {
             $checkKey = DB_ORM::model('map_key')->checkKey($mapId, $_POST['securityKey']);
-            if ($checkKey){
+            if ($checkKey) {
                 $sessionId = Session::instance()->id();
-                $checkValue = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+                $checkValue = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
                 Session::instance()->set($checkValue, '1');
-            }else{
+            } else {
                 Session::instance()->set('keyError', 'Invalid key');
             }
-            Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$mapId);
-        }else{
+            Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
@@ -105,30 +106,29 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
         $editOn = $this->request->param('id3', NULL);
-		$bookMark = $this->request->param('id4', NULL);
-        
+        $bookMark = $this->request->param('id4', NULL);
+
         if ($mapId != NULL) {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {
-					if($_POST) {
-						$nodeId = Arr::get($_POST, 'id', NULL);
-						if($nodeId == NULL) {
-							Request::initial()->redirect(URL::base());
-							return;
-						}
-					}
-                   
+                    if ($_POST) {
+                        $nodeId = Arr::get($_POST, 'id', NULL);
+                        if ($nodeId == NULL) {
+                            Request::initial()->redirect(URL::base());
+                            return;
+                        }
+                    }
                 }
             }
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
             if ($node != NULL) {
-				if($bookMark != NULL) {
-					$data = Model::factory('labyrinth')->execute($node->id, (int)$bookMark);
-				} else {
-					$data = Model::factory('labyrinth')->execute($node->id);
-				}
+                if ($bookMark != NULL) {
+                    $data = Model::factory('labyrinth')->execute($node->id, (int) $bookMark);
+                } else {
+                    $data = Model::factory('labyrinth')->execute($node->id);
+                }
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
                     if ($data['node']->link_style->name == 'type in text') {
@@ -239,41 +239,41 @@ class Controller_RenderLabyrinth extends Controller_Template {
             echo Model::factory('labyrinth')->question($sessionId, $questionId, $optionNumber);
         }
     }
-    
+
     public function action_remote() {
         $mapId = $this->request->param('id', NULL);
         $mode = $this->request->param('id2', NULL);
-        
+
         $this->auto_render = false;
-        
-        if($mapId != NULL and $mode != NULL) {
-            switch($mode) {
+
+        if ($mapId != NULL and $mode != NULL) {
+            switch ($mode) {
                 case 'u':
                     $username = $this->request->param('id3', NULL);
                     $password = $this->request->param('id4', NULL);
                     $nodeId = $this->request->param('id5', NULL);
-                    if($this->checkRemoteUser($username, $password)) {
-                        if($nodeId != NULL) {
-                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($nodeId, $mapId);
-                        } else { 
+                    if ($this->checkRemoteUser($username, $password)) {
+                        if ($nodeId != NULL) {
+                            echo '<?xml version="1.0" encoding=UTF-8?>' . $this->remote_go($nodeId, $mapId);
+                        } else {
                             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($rootNode->id, $mapId);
+                            echo '<?xml version="1.0" encoding=UTF-8?>' . $this->remote_go($rootNode->id, $mapId);
                         }
                     } else {
                         echo '<?xml version="1.0" encoding=UTF-8?><labyrinth>Not a valid service: no registration for this username and password</labyrinth>';
                     }
                     break;
                 case 'i':
-                    if($this->checkRemoteIP($mapId)) {
+                    if ($this->checkRemoteIP($mapId)) {
                         $nodeId = $this->request->param('id3', NULL);
-                        if($nodeId != NULL) {
-                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($nodeId, $mapId);
+                        if ($nodeId != NULL) {
+                            echo '<?xml version="1.0" encoding=UTF-8?>' . $this->remote_go($nodeId, $mapId);
                         } else {
                             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-                            echo '<?xml version="1.0" encoding=UTF-8?>'.$this->remote_go($rootNode->id, $mapId);
+                            echo '<?xml version="1.0" encoding=UTF-8?>' . $this->remote_go($rootNode->id, $mapId);
                         }
                     } else {
-                        echo '<?xml version="1.0" encoding=UTF-8?><labyrinth>Not a valid service: no registration for this IP ('.getenv('REMOTE_ADDR').')</labyrinth>';
+                        echo '<?xml version="1.0" encoding=UTF-8?><labyrinth>Not a valid service: no registration for this IP (' . getenv('REMOTE_ADDR') . ')</labyrinth>';
                     }
                     break;
             }
@@ -281,16 +281,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
             echo '';
         }
     }
-	
-	public function action_addBookmark() {
-		$sessionId = $this->request->param('id', NULL);
-		$nodeId = $this->request->param('id2', NULL);
-		
-		if($sessionId != NULL and $nodeId != NULL) {
-			DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
-		}
-	}
-    
+
+    public function action_addBookmark() {
+        $sessionId = $this->request->param('id', NULL);
+        $nodeId = $this->request->param('id2', NULL);
+
+        if ($sessionId != NULL and $nodeId != NULL) {
+            DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
+        }
+    }
+
     private function remote_go($nodeId, $mapId) {
         if ($mapId != NULL) {
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
@@ -316,37 +316,36 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
 
-                    if($data) {
+                    if ($data) {
                         $data['links'] = str_replace('Array', '', $data['links']);
-                        $data['trace_links'] = '<a href="#" onclick="toggle_visibility('."'track'".');"><p class="style2"><strong>Review your pathway</strong></p></a><div id="track" style="display:none">'.$data['trace_links'].'</div>';
+                        $data['trace_links'] = '<a href="#" onclick="toggle_visibility(' . "'track'" . ');"><p class="style2"><strong>Review your pathway</strong></p></a><div id="track" style="display:none">' . $data['trace_links'] . '</div>';
                         $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-                        $out  = "<labyrinth>";
-                        $out .= "<mnodetitle>".urlencode($data['node_title'])."</mnodetitle>";
+                        $out = "<labyrinth>";
+                        $out .= "<mnodetitle>" . urlencode($data['node_title']) . "</mnodetitle>";
                         $out .= "<javascripttime></javascripttime>";
-                        $out .= "<mapname>".urlencode($data['map']->name)."</mapname>";
-                        $out .= "<mapid>".urlencode($data['map']->id)."</mapid>";
-                        $out .= "<mnodeid>".urlencode($data['node']->id)."</mnodeid>";
+                        $out .= "<mapname>" . urlencode($data['map']->name) . "</mapname>";
+                        $out .= "<mapid>" . urlencode($data['map']->id) . "</mapid>";
+                        $out .= "<mnodeid>" . urlencode($data['node']->id) . "</mnodeid>";
                         $out .= "<timestring></timestring>";
-                        $out .= "<message>".urlencode($data['node_text'])."</message>";
+                        $out .= "<message>" . urlencode($data['node_text']) . "</message>";
                         $out .= "<colourbar></colourbar>";
-                        $out .= "<linker>".urlencode($data['links'])."</linker>";
-                        $out .= "<links>".urlencode($data['remote_links'])."</links>";
-                        $out .= "<counters>".$data['remoteCounters']."</counters>";
-                        $out .= "<tracestring>".urlencode($data['trace_links'])."</tracestring>";
-                        $out .= "<rootnode>".urlencode($rootNode->id)."</rootnode>";
-                        $out .= "<infolink>".urlencode($data['node']->info)."</infolink>";
+                        $out .= "<linker>" . urlencode($data['links']) . "</linker>";
+                        $out .= "<links>" . urlencode($data['remote_links']) . "</links>";
+                        $out .= "<counters>" . $data['remoteCounters'] . "</counters>";
+                        $out .= "<tracestring>" . urlencode($data['trace_links']) . "</tracestring>";
+                        $out .= "<rootnode>" . urlencode($rootNode->id) . "</rootnode>";
+                        $out .= "<infolink>" . urlencode($data['node']->info) . "</infolink>";
                         $out .= "<usermode></usermode>";
                         $out .= "<dam></dam>";
-                        $out .= "<mysession>".urlencode(Session::instance()->get('session_id'))."</mysession>";
-                        $out .= "<counterstring>".urlencode($data['counters'])."</counterstring>";
+                        $out .= "<mysession>" . urlencode(Session::instance()->get('session_id')) . "</mysession>";
+                        $out .= "<counterstring>" . urlencode($data['counters']) . "</counterstring>";
                         $out .= "<navme></navme>";
-                        $out .= "<maptype>".urlencode($data['map']->type->name)."</maptype>";
+                        $out .= "<maptype>" . urlencode($data['map']->type->name) . "</maptype>";
                         $out .= "<remoteredir></remoteredir>";
                         $out .= "</labyrinth>";
-                        
+
                         return $out;
                     }
-                    
                 } else {
                     return '';
                 }
@@ -357,40 +356,40 @@ class Controller_RenderLabyrinth extends Controller_Template {
             return '';
         }
     }
-    
+
     private function checkRemoteUser($username, $password) {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);
-        
+
         $user = DB_ORM::model('user')->getUserByName($username);
-        if($user) {
-            if($user->password == $password and $user->type->name == 'remote service') {
+        if ($user) {
+            if ($user->password == $password and $user->type->name == 'remote service') {
                 return TRUE;
             }
         }
-        
+
         return FALSE;
     }
-    
+
     private function checkRemoteIP($mapId) {
-        if(($id = DB_ORM::model('remoteService')->checkService(getenv('REMOTE_ADDR'))) != FALSE) {
-            if(DB_ORM::model('remoteMap')->checkMap($id, $mapId)) {
+        if (($id = DB_ORM::model('remoteService')->checkService(getenv('REMOTE_ADDR'))) != FALSE) {
+            if (DB_ORM::model('remoteMap')->checkMap($id, $mapId)) {
                 return TRUE;
             }
         }
         return FALSE;
     }
-    
+
     private function generateRemoteLinks($links) {
-        if(count($links) > 0) {
+        if (count($links) > 0) {
             $result = '';
-            foreach($links as $link) {
-                $result .= $link->node_id_2.','.$link->text.';';
+            foreach ($links as $link) {
+                $result .= $link->node_id_2 . ',' . $link->text . ';';
             }
-            
+
             return $result;
         }
-        
+
         return '';
     }
 
@@ -404,17 +403,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $title = $link->node_2->title;
                 if ($link->text != '' and $link->text != ' ') {
                     $title = $link->text;
-                    
                 }
 
                 switch ($node->link_style->name) {
                     case 'text (default)':
-						if($link->image_id != 0) {
-							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="'.URL::base().$link->image->path.'"></a></p>';
-						} else {
-							$result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
+                        if ($link->image_id != 0) {
+                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></p>';
+                        } else {
+                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
                         }
-						break;
+                        break;
                     case 'dropdown':
                         $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
                         break;
@@ -424,10 +422,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     case 'type in text':
                         if (isset($result['links']['alinkfil'])) {
                             $result['links']['alinkfil'] .= '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] .= '"'.$link->node_id_2 . '", ';
+                            $result['links']['alinknod'] .= '"' . $link->node_id_2 . '", ';
                         } else {
                             $result['links']['alinkfil'] = '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] = '"'.$link->node_id_2 . '", ';
+                            $result['links']['alinknod'] = '"' . $link->node_id_2 . '", ';
                         }
                         break;
                 }
@@ -435,7 +433,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             switch ($node->link_style->name) {
                 case 'dropdown':
-                    $result['links'] = '<select name="links" onchange='.chr(34)."jumpMenu('parent',this,0)".chr(34).' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
+                    $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
                     break;
                 case 'dropdown + confidence':
                     $result['links'] = '<form method="post" action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '"><select name="id">' . $result['links'] . '</select>';
@@ -453,18 +451,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
             }
 
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="'.URL::base().'reportManager/showReport/'.Session::instance()->get('session_id').'">end session and view report</a></p>';
+                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
                 return $result;
             }
 
@@ -497,7 +495,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         return NULL;
     }
-    
+
     public static function parseText($text) {
         $result = $text;
 
@@ -520,7 +518,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             $replaceString = Controller_RenderLabyrinth::getSwfHTML($id);
                                         } elseif (strstr($media->mime, 'audio')) {
                                             $replaceString = Controller_RenderLabyrinth::getAudioHTML($id);
-                                        }else{
+                                        } else {
                                             $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
                                         }
                                         break;
@@ -555,8 +553,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
-    private static function getInfoHTML($id){
-        $info = '<a href="#" onclick="window.open(\''.URL::base().'renderLabyrinth/info/'.$id.'\', \'info\', \'toolbar=no, directories=no, location=no, status=no, menubat=no, resizable=no, scrollbars=yes, width=500, height=400\'); return false;"><img src="'.URL::base().'images/info_lblu.gif" border="0" alt="info"></a>';
+    private static function getInfoHTML($id) {
+        $info = '<a href="#" onclick="window.open(\'' . URL::base() . 'renderLabyrinth/info/' . $id . '\', \'info\', \'toolbar=no, directories=no, location=no, status=no, menubat=no, resizable=no, scrollbars=yes, width=500, height=400\'); return false;"><img src="' . URL::base() . 'images/info_lblu.gif" border="0" alt="info"></a>';
         return $info;
     }
 
@@ -572,7 +570,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private static function getAudioHTML($id) {
         $audio = DB_ORM::model('map_element', array((int) $id));
         if ($audio) {
-            return '<audio src="'.URL::base().$audio->path.'" controls preload="auto" autoplay="autoplay" autobuffer></audio>';
+            return '<audio src="' . URL::base() . $audio->path . '" controls preload="auto" autoplay="autoplay" autobuffer></audio>';
         }
 
         return '';
@@ -584,17 +582,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $userBrowser = Controller_RenderLabyrinth::getUserBroswer();
             if (substr($userBrowser, 0, 2) == "ie") {
                 return "<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0'>
-                <param name='movie' value='".URL::base().$swf->path."' />
+                <param name='movie' value='" . URL::base() . $swf->path . "' />
                 <param name='allowScriptAccess' value='sameDomain' />
                 <param name='quality' value='high' />
                 </object>";
             } else {
-                return "<object type='application/x-shockwave-flash' data='".URL::base().$swf->path."'>
+                return "<object type='application/x-shockwave-flash' data='" . URL::base() . $swf->path . "'>
                 <param name='allowScriptAccess' value='sameDomain' />
                 <param name='quality' value='high' />
                 </object>";
             }
-            
+
             return '';
         }
 
@@ -604,9 +602,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private static function getAvatarHTML($id) {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
         if ($avatar->image != null) {
-            $image = '<img src="'.URL::base().'avatars/'.$avatar->image.'" />';
-        }else{
-            $image = '<img src="'.URL::base().'avatars/default.png" />';
+            $image = '<img src="' . URL::base() . 'avatars/' . $avatar->image . '" />';
+        } else {
+            $image = '<img src="' . URL::base() . 'avatars/default.png" />';
         }
         return $image;
     }
@@ -754,18 +752,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     break;
                 case 'PhysicalExam':
                     $result .= "<table width='100%' border='1' cellspacing='0' cellpadding='6' RULES='NONE' FRAME='BOX'><tr><td align='left' valign='top' width='30%'><p><strong>Physical Examination</strong></p></td><td align='left' valign='top'><p>";
-                    $result .= "Examination: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamName')."<br />";
-                    if(Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamDesc') != '') {
-                        $result .= "Description: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamDesc')."<br />";
+                    $result .= "Examination: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamName') . "<br />";
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamDesc') != '') {
+                        $result .= "Description: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ExamDesc') . "<br />";
                     }
-                    $result .= "Body part: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'BodyPart')."<br />";
-                    $result .= "Orientation: - ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist')
-                            .' - '.Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist').
-                            ' - '.Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'RightLeft').
-                            ' - '.Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FrontBack').
-                            ' - '.Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'InfSup').
+                    $result .= "Body part: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'BodyPart') . "<br />";
+                    $result .= "Orientation: - " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist')
+                            . ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist') .
+                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'RightLeft') .
+                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FrontBack') .
+                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'InfSup') .
                             "</p></td><td valign='top'><p>";
-                    
+
                     if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FindMedia') != '') {
                         $mId = (int) Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FindMedia');
                         $mediaElement = DB_ORM::model('map_element', array((int) $mId));
@@ -775,19 +773,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $result .= $this->getImageHTML($mId);
                         }
                     }
-                    
+
                     $result .= '</p></td></tr></table>';
                     break;
                 case 'DiagnosticTest':
                     $result .= "<table width='100%' border='1' cellspacing='0' cellpadding='6' RULES='NONE' FRAME='BOX'><tr><td align='left' valign='top'><p><strong>Diagnostic Test</strong></p></td><td align='left' valign='top'><p>";
-                    $result .= "Test: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestName')."<br />";
-                    $result .= "Description: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestDesc')."</p></td><td valign='top'><p>";
+                    $result .= "Test: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestName') . "<br />";
+                    $result .= "Description: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestDesc') . "</p></td><td valign='top'><p>";
                     if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestResult') != '') {
-                        $result .= "Result: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestResult')."<br />";
+                        $result .= "Result: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestResult') . "<br />";
                     }
-                    $result .= "Units: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestUnits')."</p></td>";
-                    $result .= "<td valign='top'><p>Normal values: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestNorm')."<br />";
-                    
+                    $result .= "Units: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestUnits') . "</p></td>";
+                    $result .= "<td valign='top'><p>Normal values: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestNorm') . "<br />";
+
                     if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestMedia') != '') {
                         $mId = (int) Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'TestMedia');
                         $mediaElement = DB_ORM::model('map_element', array((int) $mId));
@@ -797,29 +795,47 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $result .= Controller_RenderLabyrinth::getImageHTML($mId);
                         }
                     }
-                    
+
                     $result .= "</p></td></tr></table>";
                     break;
                 case 'DifferentialDiagnostic':
                     $result .= "<table width='100%' border='1' cellspacing='0' cellpadding='6' RULES='NONE' FRAME='BOX'><tr><td align='left' valign='top'><p><strong>Differential Diagnosis</strong></p></td><td align='left' valign='top'><p>";
-                    $result .= "Diagnosis: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'DiagTitle')."<br />Description: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'DiagDesc')."<br />";
-                    $result .= "Likelihood: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Likelihood')."</p></td>";
+                    $result .= "Diagnosis: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'DiagTitle') . "<br />Description: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'DiagDesc') . "<br />";
+                    $result .= "Likelihood: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Likelihood') . "</p></td>";
                     $result .= "</tr></table>";
                     break;
                 case 'Intervention':
                     $result .= "<table width='100%' border='1' cellspacing='0' cellpadding='6' RULES='NONE' FRAME='BOX'><tr><td align='left' valign='top'><p><strong>Intervention</strong></p></td><td align='left' valign='top'><p>";
-                
-                    $result .= "Intervention: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervTitle')."<br />";
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervDesc') != '') { $result .= "Description: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervDesc')."</p></td><td valign='top'><p>"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicTitle') != '') { $result .= "Medication: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicTitle')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicDose') != '') { $result .= "Dose: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicDose')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicRoute') != '') { $result .= "Route: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicRoute')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicFreq') != '') { $result .= "Frequency: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicFreq')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSource') != '') { $result .= "Source: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSource')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSourceID') != '') { $result .= "Source ID: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSourceID')."</p></td><td valign='top'><p>"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Appropriateness') != '') { $result .= "Appropriateness: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Appropriateness')."<br />"; }
-                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultTitle') != '') { $result .= "Results: ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultTitle')." - ".Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultDesc')."<br />"; }
-                        
+
+                    $result .= "Intervention: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervTitle') . "<br />";
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervDesc') != '') {
+                        $result .= "Description: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'IntervDesc') . "</p></td><td valign='top'><p>";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicTitle') != '') {
+                        $result .= "Medication: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicTitle') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicDose') != '') {
+                        $result .= "Dose: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicDose') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicRoute') != '') {
+                        $result .= "Route: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicRoute') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicFreq') != '') {
+                        $result .= "Frequency: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicFreq') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSource') != '') {
+                        $result .= "Source: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSource') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSourceID') != '') {
+                        $result .= "Source ID: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iMedicSourceID') . "</p></td><td valign='top'><p>";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Appropriateness') != '') {
+                        $result .= "Appropriateness: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'Appropriateness') . "<br />";
+                    }
+                    if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultTitle') != '') {
+                        $result .= "Results: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultTitle') . " - " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ResultDesc') . "<br />";
+                    }
+
                     if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iTestMedia') != '') {
                         $mId = (int) Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'iTestMedia');
                         $mediaElement = DB_ORM::model('map_element', array((int) $mId));
@@ -829,7 +845,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $result .= $this->getImageHTML($mId);
                         }
                     }
-                    
+
                     $result .= "</p></td></tr></table>";
                     break;
             }
@@ -837,31 +853,31 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         return $result;
     }
-    
+
     public static function getDamHTML($id) {
-        $dam = DB_ORM::model('map_dam', array((int)$id));
+        $dam = DB_ORM::model('map_dam', array((int) $id));
         $result = '';
-        
-        if($dam != NULL) {
-            if(count($dam->elements) > 0) {
-                foreach($dam->elements as $damElement) {
-                    switch($damElement->element_type) {
+
+        if ($dam != NULL) {
+            if (count($dam->elements) > 0) {
+                foreach ($dam->elements as $damElement) {
+                    switch ($damElement->element_type) {
                         case 'vpd':
-                            $result .= '[[VPD:'.$damElement->element_id.']]';
+                            $result .= '[[VPD:' . $damElement->element_id . ']]';
                             break;
                         case 'dam':
-                            $result .= '[[DAM:'.$damElement->element_id.']]';
+                            $result .= '[[DAM:' . $damElement->element_id . ']]';
                             break;
                         case 'mr':
-                            $result .= '[[MR:'.$damElement->element_id.']]';
+                            $result .= '[[MR:' . $damElement->element_id . ']]';
                             break;
                     }
-                    
+
                     $result = Controller_RenderLabyrinth::parseText($result);
                 }
             }
         }
-        
+
         return $result;
     }
 
@@ -876,15 +892,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         return '';
     }
-    
+
     private static function getUserBroswer() {
-        if ( stristr($_SERVER['HTTP_USER_AGENT'], 'Firefox') ) return 'firefox';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'Chrome') ) return 'chrome';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'Safari') ) return 'safari';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'Opera') ) return 'opera';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0') ) return 'ie6';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0') ) return 'ie7';
-        elseif ( stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0') ) return 'ie8';
+        if (stristr($_SERVER['HTTP_USER_AGENT'], 'Firefox'))
+            return 'firefox';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'Chrome'))
+            return 'chrome';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'Safari'))
+            return 'safari';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'Opera'))
+            return 'opera';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0'))
+            return 'ie6';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0'))
+            return 'ie7';
+        elseif (stristr($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0'))
+            return 'ie8';
     }
 
     private function generateReviewLinks($traces) {

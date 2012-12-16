@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,37 +22,41 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_UserManager extends Controller_Base {
-    
+
     public function before() {
         parent::before();
-        
-        if(Auth::instance()->get_user()->type->name != 'superuser') {
+
+        if (Auth::instance()->get_user()->type->name != 'superuser') {
             Request::initial()->redirect(URL::base());
         }
-        
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage Users'))->set_url(URL::base() . 'usermanager'));
+
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
-    
-    public function action_index() {   
-        $this->templateData['users'] = DB_ORM::model('user')->getAllUsers(); 
+
+    public function action_index() {
+        $this->templateData['users'] = DB_ORM::model('user')->getAllUsers();
         $this->templateData['userCount'] = count($this->templateData['users']);
         $this->templateData['currentUserId'] = Auth::instance()->get_user()->id;
         $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups();
-        
+
         $view = View::factory('usermanager/view');
         $view->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_addUser() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add User'))->set_url(URL::base() . 'usermanager/addUser'));
+
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
         $this->templateData['post'] = Session::instance()->get('newUser');
         $array = array('uid', 'upw', 'uname', 'uemail', 'usertype', 'langID');
-        foreach($array as $value){
-            if (!isset($this->templateData['post'][$value])){
+        foreach ($array as $value) {
+            if (!isset($this->templateData['post'][$value])) {
                 $this->templateData['post'][$value] = NULL;
             }
         }
@@ -63,21 +68,20 @@ class Controller_UserManager extends Controller_Base {
         $this->templateData['center'] = $addUserView;
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_saveNewUser() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             Session::instance()->set('newUser', $_POST);
             $checkUserName = DB_ORM::model('user')->getUserByName(htmlspecialchars($_POST['uid']));
-            if (!empty($_POST['uemail'])){
+            if (!empty($_POST['uemail'])) {
                 $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
-            }else{
+            } else {
                 $checkUserEmail = false;
             }
 
-            if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)){
+            if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)) {
                 $userData = $_POST;
-                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'],
-                    $userData['uemail'], $userData['usertype'], $userData['langID']);
+                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID']);
                 Session::instance()->delete('newUser');
 
                 $this->templateData['newUser'] = $_POST;
@@ -89,23 +93,25 @@ class Controller_UserManager extends Controller_Base {
 
                 $this->templateData['center'] = $summaryView;
                 $this->template->set('templateData', $this->templateData);
-            }else{
+            } else {
                 $error = array();
-                if (empty($_POST['uid'])){
+                if (empty($_POST['uid'])) {
                     $error[] = __('Empty username is not allowed.');
-                }elseif ($checkUserName){
+                } elseif ($checkUserName) {
                     $error[] = __('Such username already exists.');
                 }
-                if ($checkUserEmail){
+                if ($checkUserEmail) {
                     $error[] = __('Such email address already exists.');
                 }
                 Session::instance()->set('errorMsg', implode('<br />', $error));
-                Request::initial()->redirect(URL::base().'usermanager/addUser');
+                Request::initial()->redirect(URL::base() . 'usermanager/addUser');
             }
         }
     }
 
     public function action_editUser() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit User'))->set_url(URL::base() . 'usermanager/editUser/' . $this->request->param('id', 0)));
+
         $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
         $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
@@ -113,93 +119,99 @@ class Controller_UserManager extends Controller_Base {
 
         $editUserView = View::factory('usermanager/editUser');
         $editUserView->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $editUserView;
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_saveOldUser() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             $userId = $this->request->param('id', 0);
             $user = DB_ORM::model('user')->getUserById(htmlspecialchars($userId));
             $userEmail = $user->email;
             $newEmail = Arr::get($_POST, 'uemail', '');
-            if ($userEmail != $newEmail){
-                if (!empty($newEmail)){
+            if ($userEmail != $newEmail) {
+                if (!empty($newEmail)) {
                     $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($newEmail));
-                }else{
+                } else {
                     $checkUserEmail = false;
                 }
 
-                if (!$checkUserEmail){
-                    DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''),
-                        Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
-                }else{
+                if (!$checkUserEmail) {
+                    DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
+                } else {
                     Session::instance()->set('errorMsg', __('Such email address already exists.'));
-                    Request::initial()->redirect(URL::base().'usermanager/editUser/'.$userId);
+                    Request::initial()->redirect(URL::base() . 'usermanager/editUser/' . $userId);
                 }
-            }else{
-                DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''),
-                    Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
+            } else {
+                DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
             }
         }
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect(URL::base() . 'usermanager');
     }
-    
+
     public function action_deleteUser() {
         DB_ORM::model('user', array($this->request->param('id', 0)))->delete();
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect(URL::base() . 'usermanager');
     }
-    
+
     public function action_addGroup() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Group'))->set_url(URL::base() . 'usermanager/addGroup'));
+
         $this->templateData['center'] = View::factory('usermanager/addGroup');
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_saveNewGroup() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             DB_ORM::model('group')->createGroup(Arr::get($_POST, 'groupname', 'empty_name'));
         }
-        Request::initial()->redirect(URL::base().'usermanager');
+        Request::initial()->redirect(URL::base() . 'usermanager');
     }
-    
+
     public function action_editGroup() {
         $groupId = $this->request->param('id', 0);
-        
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Group'))->set_url(URL::base() . 'usermanager/editGroup/' . $groupId));
+
         $this->templateData['group'] = DB_ORM::model('group', array($groupId));
-        
+
         $this->templateData['users'] = DB_ORM::model('group')->getAllUsersOutGroup($groupId);
         $this->templateData['members'] = DB_ORM::model('group')->getAllUsersInGroup($groupId);
-        
+
         $view = View::factory('usermanager/editGroup');
         $view->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
-    
+
+    public function action_deleteGroup() {
+        DB_ORM::model('group', array($this->request->param('id', 0)))->delete();
+        Request::initial()->redirect(URL::base() . 'usermanager');
+    }
+
     public function action_addMemberToGroup() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             DB_ORM::model('user_group')->add($this->request->param('id', 0), Arr::get($_POST, 'userid', NULL));
         }
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$this->request->param('id', 0));
+        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
     }
-    
+
     public function action_updateGroup() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             DB_ORM::model('group')->updateGroup($this->request->param('id', 0), Arr::get($_POST, 'groupname', 'empty_name'));
         }
-        
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$this->request->param('id', 0));
+
+        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
     }
-    
+
     public function action_removeMember() {
         $userId = $this->request->param('id', 0);
         $groupId = $this->request->param('id2', 0);
-        
-        DB_ORM::model('user_group')->remove((int)$groupId, (int)$userId);
-        Request::initial()->redirect(URL::base().'usermanager/editGroup/'.$groupId);
-    }
-}
 
-?>
+        DB_ORM::model('user_group')->remove((int) $groupId, (int) $userId);
+        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $groupId);
+    }
+
+}

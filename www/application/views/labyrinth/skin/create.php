@@ -27,9 +27,9 @@
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skineditor.css">
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jscolor.js"></script>
-    <script src="<?php echo URL::base(); ?>fileupload/js/vendor/jquery.ui.widget.js"></script>
-    <script src="<?php echo URL::base(); ?>fileupload/js/jquery.iframe-transport.js"></script>
-    <script src="<?php echo URL::base(); ?>fileupload/js/jquery.fileupload.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.iframe-transport.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/skineditor.js"></script>
 </head>
 
@@ -39,7 +39,7 @@
             <tbody><tr>
                 <td class="centre_td" align="left" bgcolor="#FFFFFF" width="81%">
                     <h4><font color="#000000">Title of your labyrinth</font></h4>
-                    
+
                                                                         <p>Some text of node</p>
                         <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt sollicitudin elementum. Vivamus gravida, arcu at ultricies ultrices, velit justo pulvinar lorem, at hendrerit tortor ligula a ante. Integer at erat lorem. In hac habitasse platea dictumst. Morbi laoreet ante a metus pulvinar tincidunt. Praesent dapibus mattis luctus. Sed varius facilisis nulla, sed accumsan odio sodales ac. Aenean fermentum sollicitudin velit in mollis. Aliquam ut nisi aliquet tortor ultrices iaculis ac quis metus. Donec accumsan pretium aliquet. Integer nunc odio, tincidunt ac semper nec, aliquet a libero. Curabitur non sapien quis elit tempus faucibus.
 
@@ -53,16 +53,16 @@
                     </tbody></table>
                 </td>
                 <td class="centre_td" rowspan="2" bgcolor="#FFFFFF" valign="top" width="19%"><p align="center">
-                        
+
                     </p><h5>Map: Your labyrinth (11)<br>
                         Node: 20<br><strong>Score:</strong></h5>
                     <input name="bookmark" value="bookmark" type="button">
-                    
+
                                         <h5>
                                                     <a href="#">turn editing on</a>
                                             </h5>
                                         <p><a href="#">reset</a></p>
-                    
+
                     <a href="#"><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" alt="OpenLabyrinth" height="20" border="0" width="118"></a>
                     <h5>OpenLabyrinth is an open source educational pathway system</h5>
                 </td></tr>
@@ -92,7 +92,7 @@
                 <div class="upload_action editor_action">
                     <div class="select_image">
                         <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                        <input name="files[]" data-url="<?php echo URL::base(); ?>fileupload/php/" autocomplete="off" style="display: none;" id="outside_upload" class="upload_file" type="file" />
+                        <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" style="display: none;" id="outside_upload" class="upload_file" type="file" />
                         <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                     </div>
                     <div class="progress_display">
@@ -135,7 +135,7 @@
                 <div class="upload_action editor_action">
                     <div class="select_image">
                         <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                        <input name="files[]" data-url="<?php echo URL::base(); ?>fileupload/php/" autocomplete="off" style="display: none;" id="centre_upload" class="upload_file" type="file" />
+                        <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" style="display: none;" id="centre_upload" class="upload_file" type="file" />
                         <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                     </div>
                     <div class="progress_display">

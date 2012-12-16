@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,25 +22,34 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_MapUserManager extends Controller_Base {
-    
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            
-            $userIds = DB_ORM::model('map_user')->getAllUsersIds((int)$mapId);
-            $this->templateData['existUsers'] = DB_ORM::model('map_user')->getAllUsers((int)$mapId);
-            
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+
+            $userIds = DB_ORM::model('map_user')->getAllUsersIds((int) $mapId);
+            $this->templateData['existUsers'] = DB_ORM::model('map_user')->getAllUsers((int) $mapId);
+
             $this->templateData['admins'] = DB_ORM::model('user')->getUsersByTypeName('superuser', $userIds);
             $this->templateData['authors'] = DB_ORM::model('user')->getUsersByTypeName('author', $userIds);
             $this->templateData['learners'] = DB_ORM::model('user')->getUsersByTypeName('learner', $userIds);
-            
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Users'))->set_url(URL::base() . 'mapUserManager/index/' . $mapId));
+
             $mapUserView = View::factory('labyrinth/user/view');
             $mapUserView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $mapUserView;
             unset($this->templateData['right']);
@@ -48,27 +58,28 @@ class Controller_MapUserManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addUser() {
         $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
+        if ($_POST and $mapId != NULL) {
             DB_ORM::model('map_user')->addUser($mapId, Arr::get($_POST, 'mapuserID', NULL));
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_deleteUser() {
         $mapId = $this->request->param('id', NULL);
         $userId = $this->request->param('id2', NULL);
-        if($mapId != NULL) {
+        if ($mapId != NULL) {
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
+
 }
-    
+
 ?>

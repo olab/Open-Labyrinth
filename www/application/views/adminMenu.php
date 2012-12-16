@@ -19,59 +19,93 @@
  *
  */
 ?>
-<table cellpadding="2" width="100%" cellpadding='6'>
 
-    <tr bgcolor="#ddddee"><td align="right" colspan="5"><p><strong><font color="white"><?php echo __('Labyrinths'); ?>&nbsp;&nbsp;&nbsp;</font></strong></p></td></tr>
+<div class="row-fluid">
+    <div class="span8">
+        <div class="pull-left">
+            <img src="<?php echo URL::base(); ?>/images/openlabyrinth-large.png" alt="" class="brand-large" />
+        </div>
+        <h1><?php echo __('Welcome to <span class="text-info">OpenLabyrinth</strong>'); ?></h1>
+        <p class="lead">
+            <?php echo __('OpenLabyrinth is a standards compliant open source virtual
+                    patient authoring and player environment. It is maintained
+                    by a group of enthusiasts who love the capability of
+                    OpenLabyrinth for virtual patients.'); ?>
+        </p>
 
-    <tr>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'playedLabyrinth'; ?>"><strong><?php echo __('Labyrinths I have played'); ?></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"><strong><?php echo __('Labyrinths I am Authoring'); ?></strong></a></p></td>
-    </tr>
+        <div class="box">
+            <h4 class="box-header round-top"><?php echo __('OpenLabyrinth Tip-of-the-Day'); ?></h4>
+            <div class="box-container-toggle">
+                <div class="box-content">
+                    <p>
+                        <span class="label label-info"><?php echo __('Did You Know?'); ?></span>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla volutpat hendrerit mattis. Cras enim ipsum, commodo vehicula vestibulum sed, vulputate quis purus. Morbi accumsan adipiscing laoreet. Suspendisse porta lobortis aliquet. Suspendisse massa arcu, porta nec congue porttitor, varius ut odio. Morbi et justo neque. Morbi urna justo, dapibus in porttitor eu, malesuada quis massa. Integer eu sem lectus, quis convallis elit. Praesent sit amet justo erat. Vivamus vitae lectus id libero aliquam rhoncus vel sit amet quam. Nunc erat lectus, aliquet eu euismod in, mollis eu orci. Etiam eget felis neque, vitae consequat tortor. Nam nec elit ac orci gravida egestas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="span4">
+        <?php if (isset($templateData['latestAuthoredLabyrinths'])) : ?>
+        <div class="box">
+            <h4 class="box-header round-top"><?php echo __('Latest Authored Labyrinths'); ?></h4>
+            <div class="box-container-toggle">
+                <div class="box-content">
+                    <ul class="unstyled">
+                    <?php
+                    foreach ($templateData['latestAuthoredLabyrinths'] as $map) {
+                        ?>
+                        <li style="margin-bottom: 10px">
+                            <div class="row-fluid">
+                                <div class="pull-left">
+                                    <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                        <i class="icon-play icon-white"></i>
+                                        Play
+                                    </a>
 
-    <tr>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'collectionManager'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'collectionManager'; ?>"></a><p><a href="<?php echo URL::base() . 'collectionManager'; ?>"><strong><?php echo __('Collections'); ?></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'closeLabyrinth'; ?>"><strong><?php echo __('closed Labyrinths'); ?></strong></a></p></td>
-    </tr>
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+        <?php if (isset($templateData['latestPlayedLabyrinths'])) : ?>
+        <div class="box">
+            <h4 class="box-header round-top"><?php echo __('Latest Played Labyrinths'); ?></h4>
+            <div class="box-container-toggle">
+                <div class="box-content">
+                    <ul class="unstyled">
+                    <?php
+                    foreach ($templateData['latestPlayedLabyrinths'] as $map) {
+                        ?>
+                        <li style="margin-bottom: 10px">
+                            <div class="row-fluid">
+                                <div class="pull-left">
+                                    <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
+                                </div>
+                                <div class="pull-right">
+                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                        <i class="icon-play icon-white"></i>
+                                        Play
+                                    </a>
 
-    <tr>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'openLabyrinth'; ?>"><strong><?php echo __('open Labyrinths'); ?></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLSphere"></a></td>
-        <td valign="center" nowrap=""><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"></a><p><a href="<?php echo URL::base() . 'keyLabyrinth'; ?>"><strong><?php echo __('key Labyrinths'); ?></strong></a></p></td>
-    </tr>
-
-    <tr bgcolor="#ddddee"><td align="right" colspan="5"><p><strong><font color="white"><?php echo __('Tools'); ?>&nbsp;&nbsp;&nbsp;</font></strong></p></td></tr>
-
-    <tr>
-        <td nowrap=""><a href="<?php echo URL::base(); ?>presentationManager"><img src="<?php echo URL::base(); ?>images/presentl.jpg" border="0" alt="OLPresentations"></a></td>
-        <td nowrap=""><p><a href="<?php echo URL::base(); ?>presentationManager"><strong><?php echo __('presentations'); ?></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td nowrap=""><a href="<?php echo URL::base(); ?>remoteServiceManager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt="OLRemote"></a></td>
-        <td nowrap=""><p><a href="<?php echo URL::base(); ?>remoteServiceManager"><strong><?php echo __('remote services'); ?></strong></a></p></td>
-    </tr>
-
-    <tr>
-        <td nowrap=""><a href=<?php echo URL::base() . 'labyrinthManager/createLabyrinth'; ?>><img src="<?php echo URL::base(); ?>images/addl.jpg" border="0" alt="OLCreate"></a></td>
-        <td nowrap=""><p><a href=<?php echo URL::base() . 'labyrinthManager/createLabyrinth'; ?>><strong><?php echo __('create Labyrinth'); ?></strong></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-
-        <td nowrap=""><a href=<?php echo URL::base() . 'usermanager'; ?>><img src="<?php echo URL::base(); ?>images/usersl.jpg" border="0" alt="OLRemote"></a></td>
-        <td><p><a href=<?php echo URL::base() . 'usermanager'; ?>><strong><?php echo __('users'); ?></strong></a></p></td>
-    </tr>
-    <?php if(Auth::instance()->get_user()->type->name == 'superuser'){ ?>
-    <tr>
-        <td nowrap=""><a href="<?php echo URL::base(); ?>dictionaryManager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt=""></a></td>
-        <td nowrap=""><p><a href="<?php echo URL::base(); ?>dictionaryManager"><strong><?php echo __('manage dictionary'); ?></strong></a></p></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td nowrap=""><a href="<?php echo URL::base(); ?>systemManager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt=""></a></td>
-        <td nowrap=""><p><a href="<?php echo URL::base(); ?>systemManager"><strong><?php echo __('system settings'); ?></strong></a></p></td>
-    </tr>
-    <?php } ?>
-</table>
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>

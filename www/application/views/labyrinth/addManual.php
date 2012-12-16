@@ -19,106 +19,121 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('add Labyrinth'); ?></h4>
-            <table bgcolor="#ffffff"><tr><td align="left">
-                        <form id="addManualForm" name="addManualForm" method="post" action=<?php echo URL::base().'labyrinthManager/addNewMap' ?>>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="4">
-                                <tr>
-                                    <td width="33%" align="right"><p><?php echo __('title'); ?></p></td>
-                                    <td width="50%"><p><input name="title" type="text" id="mtitle" size="40" value=""></p></td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('description'); ?></p></td>
-                                    <td align="left"><p><textarea name="description" cols="40" rows="5" id="mdesc"></textarea></p></td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('keywords'); ?></p></td>
-                                    <td align="left"><p>
-                                            <input name="keywords" type="text" id="keywords" size="40" value="">
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('Labyrinth type'); ?></p></td>
-                                    <td align="left"><p>
-                                            <label>
-                                                <select name="type">
-                                                    <option value="1" selected="selected"><?php echo __('select'); ?></option>
-                                                    <?php if(isset($templateData['types'])) { ?>
-                                                        <?php foreach($templateData['types'] as $type) { ?>
-                                                            <option value=<?php echo $type->id; ?>><?php echo $type->name; ?></option>
-                                                        <?php } ?>
-                                                    <?php } ?>
-                                                </select>
-                                            </label>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('Labyrinth Skin'); ?></p></td>
-                                    <td align="left"><p>
-                                            <label>
-                                                <select name="skin">
-                                                    <option value="1" selected="selected"><?php echo __('select'); ?></option>
-                                                    <?php if(isset($templateData['skins'])) { ?>
-                                                        <?php foreach($templateData['skins'] as $skin) { ?>
-                                                            <option value=<?php echo $skin->id; ?>><?php echo $skin->name; ?></option>
-                                                        <?php } ?>
-                                                    <?php } ?>
-                                                </select>
-                                            </label>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('timing'); ?></p></td>
-                                    <td align="left"><p>
-                                            <?php echo __('timing off'); ?><input type="radio" name="timing" value=0 checked=""> : <?php echo __('timing on'); ?><input type="radio" name="timing" value=1>
-                                            <br><br>
-                                            <?php echo __('time delta (seconds)'); ?><input name="delta_time" type="text" id="delta_time" value="" size="6">
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('security'); ?></p></td>
-                                    <td align="left">
-                                        <p>
-                                            <?php if(isset($templateData['securities'])) { ?>
-                                                <?php foreach($templateData['securities'] as $security) { ?>
-                                                    <input type="radio" name="security" value=<?php echo $security->id; ?>><?php echo __($security->name); ?><br>
-                                                <?php } ?>
-                                            <?php } ?>
-                                            <br><br></p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right"><p><?php echo __('section browsing'); ?></p></td>
-                                    <td align="left"><p>
-                                        </p><p>
-                                            <?php if(isset($templateData['sections'])) { ?>
-                                                <?php foreach($templateData['sections'] as $section) { ?>
-                                                    <?php echo __($section->name); ?><input type="radio" name="section" value=<?php echo $section->id; ?>> |
-                                                <?php } ?>
-                                            <?php } ?>
-                                            <br><br></p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="left"><p>&nbsp;</p></td>
-                                    <td align="left"><p>
-                                            <label>
-                                                <input type="submit" name="AddManualMapSubmit" value="<?php echo __('submit'); ?>">
-                                            </label>
-                                        </p></td>
-                                    <td align="left"><p>&nbsp;</p></td>
-                                </tr>
-                            </table>
-                        </form>
-                    </td></tr></table>
-        </td>
-    </tr>
-</table>
+<h1><?php echo __("Create Manually"); ?></h1>
+
+<form class="form-horizontal" id="addManualForm" name="addManualForm" method="post" action="<?php echo URL::base() . 'labyrinthManager/addNewMap' ?>">
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Details'); ?></legend>
+        <div class="control-group">
+            <label class="control-label" for="title"><?php echo __('Labyrinth Title'); ?></label>
+            <div class="controls">
+                <input type="text" class="span6" id="title" name="title" value="" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="description"><?php echo __('Labyrinth Description'); ?></label>
+            <div class="controls">
+                <textarea class="span6" id="description" name="description"></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="keywords"><?php echo __('Labyrinth Keywords'); ?></label>
+            <div class="controls">
+                <input type="text" class="span6" id="keywords" name="keywords" value="" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="type"><?php echo __('Labyrinth Type'); ?></label>
+            <div class="controls">
+                <select id="type" name="type" class="span6">
+                <?php
+                if (isset($templateData['types'])) {
+                    foreach ($templateData['types'] as $type) {
+                        ?>
+                        <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
+                        <?php
+                    }
+                }
+                ?>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="skin"><?php echo __('Labyrinth Skin'); ?></label>
+            <div class="controls">
+                <select id="skin" name="skin" class="span6">
+                <?php
+                if (isset($templateData['skins'])) {
+                    foreach ($templateData['skins'] as $skin) {
+                        ?>
+                        <option value="<?php echo $skin->id; ?>"><?php echo $skin->name; ?></option>
+                        <?php
+                    }
+                }
+                ?>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Timing'); ?></legend>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Timing'); ?></label>
+            <div class="controls">
+                <label class="radio">
+                    <input type="radio" id="timing-on" name="timing" value="1"> <?php echo __('On'); ?>
+                </label>
+                <label class="radio">
+                    <input type="radio" id="timing-off" name="timing" value="0" checked> <?php echo __('Off'); ?>
+                </label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
+            <div class="controls">
+                <input type="text" class="span1" id="delta_time" name="delta_time" value="" />
+                <span class="help-inline"><?php echo __('Seconds'); ?></span>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Security'); ?></legend>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Security'); ?></label>
+            <div class="controls">
+            <?php
+            if (isset($templateData['securities'])) {
+                foreach ($templateData['securities'] as $security) {
+                    ?>
+                    <label class="radio">
+                        <input type="radio" id="security-<?php echo $security->id; ?>" name="security" value="<?php echo $security->id; ?>" /> <?php echo __($security->name); ?>
+                    </label>
+                    <?php
+                }
+            }
+            ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Section Browsing'); ?></label>
+            <div class="controls">
+            <?php
+            if (isset($templateData['sections'])) {
+                foreach ($templateData['sections'] as $section) {
+                    ?>
+                    <label class="radio">
+                        <input type="radio" id="section-<?php echo $section->id; ?>" name="section" value="<?php echo $section->id; ?>" /> <?php echo __($section->name); ?>
+                    </label>
+                    <?php
+                }
+            }
+            ?>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="pull-right">
+        <input type="submit" class="btn btn-primary btn-large" name="AddManualMapSubmit" value="<?php echo __('Create Labyrinth'); ?>" />
+    </div>
+</form>
 

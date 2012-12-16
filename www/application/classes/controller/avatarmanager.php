@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,122 +22,131 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_AvatarManager extends Controller_Base {
-    
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int)$mapId);
-            
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int) $mapId);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
+
             $avatarView = View::factory('labyrinth/avatar/view');
             $avatarView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $avatarView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addAvatar() {
         $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
+        if ($mapId != NULL) {
             $avatarId = DB_ORM::model('map_avatar')->addAvatar($mapId);
-            Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
+            Request::initial()->redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_editAvatar() {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $avatarId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int)$avatarId));
-            
+        if ($mapId != NULL and $avatarId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int) $avatarId));
+
             $edtAvatarView = View::factory('labyrinth/avatar/edit');
             $edtAvatarView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $edtAvatarView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_deleteAvatar() {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $avatarId != NULL) {
-            $upload_dir = DOCROOT.'/avatars/';
+        if ($mapId != NULL and $avatarId != NULL) {
+            $upload_dir = DOCROOT . '/avatars/';
             $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-            if (!empty($avatarImage)){
-                @unlink($upload_dir.$avatarImage);
+            if (!empty($avatarImage)) {
+                @unlink($upload_dir . $avatarImage);
             }
-            DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
-            Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
+            DB_ORM::model('map_avatar', array((int) $avatarId))->delete();
+            Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_updateAvatar() {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
-        if($_POST and $mapId != NULL and $avatarId != NULL) {
-            $upload_dir = DOCROOT.'/avatars/';
+        if ($_POST and $mapId != NULL and $avatarId != NULL) {
+            $upload_dir = DOCROOT . '/avatars/';
             $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-            if (!empty($avatarImage)){
-                @unlink($upload_dir.$avatarImage);
+            if (!empty($avatarImage)) {
+                @unlink($upload_dir . $avatarImage);
             }
             $img = $_POST['image_data'];
             $img = str_replace('data:image/png;base64,', '', $img);
             $img = str_replace(' ', '+', $img);
             $data = base64_decode($img);
             $file = uniqid() . '.png';
-            file_put_contents($upload_dir.$file, $data);
+            file_put_contents($upload_dir . $file, $data);
             $_POST['image_data'] = $file;
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
-            if ($_POST['save_exit_value'] == 0){
-                Request::initial()->redirect(URL::base().'avatarManager/editAvatar/'.$mapId.'/'.$avatarId);
-            }else{
-                Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
+            if ($_POST['save_exit_value'] == 0) {
+                Request::initial()->redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
+            } else {
+                Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
             }
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_duplicateAvatar() {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $avatarId != NULL) {
+        if ($mapId != NULL and $avatarId != NULL) {
             $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-            if (!empty($avatarImage)){
-                $upload_dir = DOCROOT.'/avatars/';
+            if (!empty($avatarImage)) {
+                $upload_dir = DOCROOT . '/avatars/';
                 $file = uniqid() . '.png';
-                copy($upload_dir.$avatarImage, $upload_dir.$file);
-            }else{
+                copy($upload_dir . $avatarImage, $upload_dir . $file);
+            } else {
                 $file = NULL;
             }
             DB_ORM::model('map_avatar')->duplicateAvatar($avatarId, $file);
-            Request::initial()->redirect(URL::base().'avatarManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
 }
-    
+
 ?>
