@@ -54,6 +54,9 @@ abstract class Base_DB_MySQL_Connection_Standard extends DB_SQL_Connection_Stand
 				$this->error = 'Message: Failed to connect to database. Reason: ' . mysql_error($this->link_id);
 				throw new Kohana_Database_Exception($this->error, array(':dsn' => $this->data_source->id));
 			}
+			if ( ! empty($this->data_source->charset) AND ! @mysql_set_charset(strtolower($this->data_source->charset), $this->link_id)) {
+				throw new Kohana_Database_Exception('Message: Failed to set character set. Reason: :reason', array(':reason' => mysql_error($this->link_id)));
+			}
 		}
 	}
 
