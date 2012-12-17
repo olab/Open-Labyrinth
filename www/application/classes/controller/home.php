@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,10 +22,11 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Home extends Controller_Base {
-    
+
     public function action_index() {
+
     }
-    
+
     public function action_login() {
         if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
@@ -36,7 +38,7 @@ class Controller_Home extends Controller_Base {
             }
         }
     }
-    
+
     public function action_logout() {
         if (Auth::instance()->logged_in()) {
             Auth::instance()->logout();
@@ -44,14 +46,14 @@ class Controller_Home extends Controller_Base {
 
         Request::initial()->redirect(URL::base());
     }
-    
+
     public function action_changePassword() {
-        if(Auth::instance()->logged_in()) {
+        if (Auth::instance()->logged_in()) {
             $this->templateData['user'] = Auth::instance()->get_user();
-            
+
             $view = View::factory('changePassword');
             $view->set('templateData', $this->templateData);
-            
+
             $this->templateData['center'] = $view;
             unset($this->templateData['left']);
             unset($this->templateData['right']);
@@ -60,64 +62,70 @@ class Controller_Home extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_updatePassword() {
-        if($_POST and Auth::instance()->logged_in()) {
+        if (isset($_POST) && !empty($_POST) && Auth::instance()->logged_in()) {
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Update Password')));
+
             $newPassword = Arr::get($_POST, 'newpswd', NULL);
             $confirmPassword = Arr::get($_POST, 'pswd_confirm', NULL);
             $currentPassword = Arr::get($_POST, 'upw', NULL);
-            
-            if($currentPassword != NULL and 
-                    $newPassword != NULL and 
-                    $confirmPassword != NULL and 
-                    $newPassword == $confirmPassword and 
-                    Auth::instance()->hash($currentPassword) == Auth::instance()->get_user()->password) {   
-                $user = DB_ORM::model('user', array((int)Auth::instance()->get_user()->id));
+
+            if ($currentPassword != NULL and
+                    $newPassword != NULL and
+                    $confirmPassword != NULL and
+                    $newPassword == $confirmPassword and
+                    Auth::instance()->hash($currentPassword) == Auth::instance()->get_user()->password) {
+                $user = DB_ORM::model('user', array((int) Auth::instance()->get_user()->id));
                 $user->password = Auth::instance()->hash($newPassword);
                 $user->save();
-                
+
                 Request::initial()->redirect(URL::base());
             }
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-	
-	public function action_search() {
-		if($_POST) {
-			$scope = Arr::get($_POST, 'scope', NULL);
-			$key = Arr::get($_POST, 'searchterm', NULL);
-			$title = TRUE;
-			if($scope == 'a') {
-				$title = FALSE;
-			}
-			
-			if($key != NULL) {
-				$maps = DB_ORM::model('map')->getSearchMap($key, $title);
-				
-				$view = View::factory('search');
-				$view->set('maps', $maps);
-				$view->set('term', $key);
-				
-				$this->templateData['center'] = $view;
-				unset($this->templateData['right']);
-				$this->template->set('templateData', $this->templateData);
-			}
-		} else {
-			Request::initial()->redirect(URL::base());
-		}
-	}
 
-    public function action_resetPassword(){
-        if ($_POST){
-            if (Security::check($_POST['token'])){
+    public function action_search() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Search')));
+
+        if (isset($_POST) && !empty($_POST)) {
+            $scope = Arr::get($_POST, 'scope', NULL);
+            $key = Arr::get($_POST, 'searchterm', NULL);
+            $title = TRUE;
+            if ($scope == 'a') {
+                $title = FALSE;
+            }
+
+            if ($key != NULL) {
+                $maps = DB_ORM::model('map')->getSearchMap($key, $title);
+
+                $view = View::factory('search');
+                $view->set('maps', $maps);
+                $view->set('term', $key);
+
+                $this->templateData['center'] = $view;
+                unset($this->templateData['right']);
+                $this->template->set('templateData', $this->templateData);
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_resetPassword() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Reset Password')));
+
+        if (isset($_POST) && !empty($_POST)) {
+            if (Security::check($_POST['token'])) {
                 $email = htmlspecialchars($_POST['email']);
-                if (!empty($email)){
+                if (!empty($email)) {
                     $user = DB_ORM::model('user')->getUserByEmail($email);
-                    if ($user){
-                        $url = URL::base(true).'home/confirmLink/';
-                        $hashKey = Auth::instance()->hash($user->username.$user->email.rand());
-                        $link = $url.$hashKey;
+                    if ($user) {
+                        $url = URL::base(true) . 'home/confirmLink/';
+                        $hashKey = Auth::instance()->hash($user->username . $user->email . rand());
+                        $link = $url . $hashKey;
                         //send mail start
                         $emailConfig = Kohana::$config->load('email');
                         $arraySearch = array('<%name%>', '<%username%>', '<%link%>');
@@ -126,45 +134,46 @@ class Controller_Home extends Controller_Base {
                         $to = $user->email;
                         $subject = $emailConfig['email_password_reset_subject'];
                         $message = str_replace($arraySearch, $arrayReplace, $emailConfig['email_password_reset_body']);
-                        $from = $emailConfig['fromname'].' <'.$emailConfig['mailfrom'].'>';
+                        $from = $emailConfig['fromname'] . ' <' . $emailConfig['mailfrom'] . '>';
                         $headers = "From: " . $from;
-                        mail($to,$subject,$message,$headers);
+                        mail($to, $subject, $message, $headers);
 
                         DB_ORM::model('user')->updateHashKeyResetPassword($user->id, $hashKey);
 
                         //send mail end
                         Session::instance()->set('passMessage', __('A unique link to recover your password has been sent to your registered email address. This link will only be active for 30 minutes.'));
-                        Request::initial()->redirect(URL::base().'home/passwordMessage');
+                        Request::initial()->redirect(URL::base() . 'home/passwordMessage');
                     }
-                }else{
+                } else {
                     $attempt = Session::instance()->get('passAttempt') + 1;
                     Session::instance()->set('passAttempt', $attempt);
-                    if ($attempt >= 3){
+                    if ($attempt >= 3) {
                         Session::instance()->set('passAttemptTimeStamp', time());
                     }
                     Session::instance()->set('passError', __('The email addresses you entered do not match.'));
-                    Request::initial()->redirect(URL::base().'home/resetPassword');
+
+                    Request::initial()->redirect(URL::base() . 'home/resetPassword');
                 }
             }
-        }else{
+        } else {
             $attempt = Session::instance()->get('passAttempt');
-            if ($attempt >= 3){
+            if ($attempt >= 3) {
                 $timestamp = Session::instance()->get('passAttemptTimeStamp');
                 $timeDiff = floor((time() - $timestamp) / 60);
-                if ($timeDiff <= 20){
+                if ($timeDiff <= 20) {
                     $showDiffTime = 20 - $timeDiff;
-                    if ($showDiffTime == 0){
+                    if ($showDiffTime == 0) {
                         $showDiffTime = 'less 1';
                     }
-                    Session::instance()->set('passMessage', 'You have exceeded the maximum number of password resets allowed. Please try again in '.$showDiffTime.' minutes.');
-                    Request::initial()->redirect(URL::base().'home/passwordMessage');
-                }else{
+                    Session::instance()->set('passMessage', 'You have exceeded the maximum number of password resets allowed. Please try again in ' . $showDiffTime . ' minutes.');
+                    Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                } else {
                     Session::instance()->delete('passAttempt');
                     Session::instance()->delete('passAttemptTimeStamp');
                     Session::instance()->delete('passError');
-                    Request::initial()->redirect(URL::base().'home/resetPassword');
+                    Request::initial()->redirect(URL::base() . 'home/resetPassword');
                 }
-            }else{
+            } else {
                 $this->templateData['passError'] = Session::instance()->get('passError');
                 Session::instance()->delete('passError');
                 $view = View::factory('resetPassword/view');
@@ -178,13 +187,15 @@ class Controller_Home extends Controller_Base {
         }
     }
 
-    public function action_confirmLink(){
+    public function action_confirmLink() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Confirm Request')));
+
         $hashKey = $this->request->param('id', NULL);
-        if ($hashKey != NULL){
+        if ($hashKey != NULL) {
             $user = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
-            if ($user){
+            if ($user) {
                 $timeDiff = floor((time() - strtotime($user->resetHashKeyTime)) / 60);
-                if ($timeDiff <= 30){
+                if ($timeDiff <= 30) {
                     $this->templateData['passError'] = Session::instance()->get('passError');
                     Session::instance()->delete('passError');
                     $this->templateData['hashKey'] = $hashKey;
@@ -195,26 +206,28 @@ class Controller_Home extends Controller_Base {
                     unset($this->templateData['left']);
                     unset($this->templateData['right']);
                     $this->template->set('templateData', $this->templateData);
-                }else{
+                } else {
                     Session::instance()->set('passMessage', 'Working time of the link has expired. Please repeat the password recovery procedure.');
-                    Request::initial()->redirect(URL::base().'home/passwordMessage');
+                    Request::initial()->redirect(URL::base() . 'home/passwordMessage');
                 }
-            }else{
+            } else {
                 Request::initial()->redirect(URL::base());
             }
-        }else{
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_updateResetPassword(){
-        if ($_POST){
-            if (Security::check($_POST['token'])){
+    public function action_updateResetPassword() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Update Password')));
+
+        if (isset($_POST) && !empty($_POST)) {
+            if (Security::check($_POST['token'])) {
                 $newPassword = $_POST['newpswd'];
                 $confirmPassword = $_POST['pswd_confirm'];
                 $hashKey = $_POST['hashKey'];
-                if (!empty($newPassword)){
-                    if($newPassword == $confirmPassword) {
+                if (!empty($newPassword)) {
+                    if ($newPassword == $confirmPassword) {
                         $user = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
 
                         //send mail start
@@ -225,33 +238,33 @@ class Controller_Home extends Controller_Base {
                         $to = $user->email;
                         $subject = $emailConfig['email_password_complete_subject'];
                         $message = str_replace($arraySearch, $arrayReplace, $emailConfig['email_password_complete_body']);
-                        $from = $emailConfig['fromname'].' <'.$emailConfig['mailfrom'].'>';
+                        $from = $emailConfig['fromname'] . ' <' . $emailConfig['mailfrom'] . '>';
                         $headers = "From: " . $from;
 
                         DB_ORM::model('user')->saveResetPassword($hashKey, Auth::instance()->hash($newPassword));
-                        mail($to,$subject,$message,$headers);
+                        mail($to, $subject, $message, $headers);
 
                         Session::instance()->set('passMessage', 'Your new password has been saved. Please return to the login page, and login using your new password.');
-                        Request::initial()->redirect(URL::base().'home/passwordMessage');
-                    }else{
+                        Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                    } else {
                         Session::instance()->set('passError', __('The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field.'));
-                        Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
+                        Request::initial()->redirect(URL::base() . 'home/confirmLink/' . $hashKey);
                     }
-                }else{
+                } else {
                     Session::instance()->set('passError', __('Empty password is not allowed.'));
-                    Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
+                    Request::initial()->redirect(URL::base() . 'home/confirmLink/' . $hashKey);
                 }
-            }else{
+            } else {
                 Request::initial()->redirect(URL::base());
             }
-        }else{
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_passwordMessage(){
+    public function action_passwordMessage() {
         $this->templateData['passMessage'] = Session::instance()->get('passMessage');
-        if ($this->templateData['passMessage'] != NULL){
+        if ($this->templateData['passMessage'] != NULL) {
             Session::instance()->delete('passMessage');
             $view = View::factory('resetPassword/notification');
             $view->set('templateData', $this->templateData);
@@ -260,9 +273,9 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['left']);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
-        }else{
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
+
 }
-?>

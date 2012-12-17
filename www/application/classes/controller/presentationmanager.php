@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,6 +22,14 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_PresentationManager extends Controller_Base {
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage Presentations'))->set_url(URL::base() . 'presentationmanager'));
+
+        $this->template->set('templateData', $this->templateData);
+    }
 
     public function action_index() {
         $this->templateData['presentations'] = DB_ORM::model('map_presentation')->getAllPresentations(Auth::instance()->get_user()->id);
@@ -137,20 +146,20 @@ class Controller_PresentationManager extends Controller_Base {
             Request::initial()->redirect(URL::base() . 'presentationManager');
         }
     }
-    
+
     public function action_addUser() {
         $presentationId = $this->request->param('id', NULL);
         if ($_POST and $presentationId != NULL) {
             $userId = Arr::get($_POST, 'presUserID', NULL);
-            if($userId != NULL) {
+            if ($userId != NULL) {
                 $type = substr($userId, 0, 2);
-                switch($type) {
+                switch ($type) {
                     case 'u:':
-                        DB_ORM::model('map_presentation_user')->add($presentationId, (int)substr($userId, 2, strlen($userId)));
+                        DB_ORM::model('map_presentation_user')->add($presentationId, (int) substr($userId, 2, strlen($userId)));
                         break;
                     case 'g:':
                         $typeName = Arr::get($_POST, 'presUserType', NULL);
-                        DB_ORM::model('map_presentation_user')->addUsersFromGroup($presentationId, (int)substr($userId, 2, strlen($userId)), $typeName);
+                        DB_ORM::model('map_presentation_user')->addUsersFromGroup($presentationId, (int) substr($userId, 2, strlen($userId)), $typeName);
                         break;
                 }
             }
@@ -159,61 +168,62 @@ class Controller_PresentationManager extends Controller_Base {
             Request::initial()->redirect(URL::base() . 'presentationManager');
         }
     }
-    
+
     public function action_deleteUser() {
         $presentationId = $this->request->param('id', NULL);
         $userId = $this->request->param('id2', NULL);
         if ($userId != NULL and $presentationId != NULL) {
-            DB_ORM::model('map_presentation_user', array((int)$userId))->delete();
+            DB_ORM::model('map_presentation_user', array((int) $userId))->delete();
             Request::initial()->redirect(URL::base() . 'presentationManager/editPresentation/' . $presentationId);
         } else {
             Request::initial()->redirect(URL::base() . 'presentationManager');
         }
-    } 
-    
+    }
+
     public function action_render() {
         $presentationId = $this->request->param('id', NULL);
         if ($this->checkUser($presentationId)) {
-            $this->templateData['presentation'] = DB_ORM::model('map_presentation', array((int)$presentationId));
-            
+            $this->templateData['presentation'] = DB_ORM::model('map_presentation', array((int) $presentationId));
+
             $renderView = View::factory('presentation/render');
             $renderView->set('templateData', $this->templateData);
-            
+
             $this->template = $renderView;
         } else {
-            Request::initial()->redirect(URL::base() );
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     private function checkUser($presentationId) {
-        $presentation = DB_ORM::model('map_presentation', array((int)$presentationId));
-        if($presentation) {
-            
-            if(Auth::instance()->logged_in()) {
-                
+        $presentation = DB_ORM::model('map_presentation', array((int) $presentationId));
+        if ($presentation) {
+
+            if (Auth::instance()->logged_in()) {
+
                 $userIDs = array();
                 $userIDs[] = $presentation->author->id;
-                foreach($presentation->users as $user) {
+                foreach ($presentation->users as $user) {
                     $userIDs[] = $user->user_id;
                 }
-                
-                if(array_search(Auth::instance()->get_user()->id, $userIDs) === FALSE) {
+
+                if (array_search(Auth::instance()->get_user()->id, $userIDs) === FALSE) {
                     return FALSE;
                 } else {
-					if($presentation->access == 1) {
-						if(Auth::instance()->get_user()->type->name == 'learner') {
-							return FALSE;
-						}
-					}
+                    if ($presentation->access == 1) {
+                        if (Auth::instance()->get_user()->type->name == 'learner') {
+                            return FALSE;
+                        }
+                    }
                     return TRUE;
                 }
             }
-            
+
             return FALSE;
         }
-        
+
         return FALSE;
     }
+
 }
 
 ?>

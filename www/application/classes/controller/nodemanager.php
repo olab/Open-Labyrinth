@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,90 +22,99 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_NodeManager extends Controller_Base {
-    
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int)$mapId);
-            
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Nodes'))->set_url(URL::base() . 'nodeManager/index/' . $mapId));
+
             $nodeView = View::factory('labyrinth/node/view');
             $nodeView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $nodeView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addNode() {
-        $mapId = $this->request->param('id', NULL);
-        $editMode = $this->request->param('id2', NULL);
-        if($mapId != NULL) {
-            if($editMode != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $editMode = (int) $this->request->param('id2', 0);
+        if ($mapId) {
+            if ($editMode) {
                 $this->templateData['editMode'] = $editMode;
             } else {
                 $this->templateData['editMode'] = 'w';
             }
-            
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
             $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
-            
+
             $addNodeView = View::factory('labyrinth/node/addNode');
             $addNodeView->set('templateData', $this->templateData);
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-        
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $addNodeView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_createNode() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
             $_POST['map_id'] = $mapId;
             $node = DB_ORM::model('map_node')->createNode($_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_editNode() {
-        $nodeId = $this->request->param('id', NULL);
-        $editMode = $this->request->param('id2', NULL);
-        if($nodeId != NULL) {
-            if($editMode != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        $editMode = (int) $this->request->param('id2', 0);
+        if ($nodeId) {
+            if ($editMode) {
                 $this->templateData['editMode'] = $editMode;
             } else {
                 $this->templateData['editMode'] = 'w';
             }
-            
-            $this->templateData['node'] = DB_ORM::model('map_node', array((int)$nodeId));
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$this->templateData['node']->map_id));
+
+            $this->templateData['node'] = DB_ORM::model('map_node', array($nodeId));
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $this->templateData['node']->map_id));
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
             $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->templateData['node']->map_id);
-            
+            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['node']->map_id);
+
             $editNodeView = View::factory('labyrinth/node/editNode');
             $editNodeView->set('templateData', $this->templateData);
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-        
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $editNodeView;
             unset($this->templateData['right']);
@@ -113,14 +123,14 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_updateNode() {
-        $nodeId = $this->request->param('id', NULL);
-        if($_POST and $nodeId != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $nodeId) {
             $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-            if($node != NULL) {
+            if ($node) {
                 DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
-                Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id); 
+                Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $node->map_id);
             } else {
                 Request::initial()->redirect(URL::base());
             }
@@ -128,39 +138,39 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_setRootNode() {
-        $mapId = $this->request->param('id', NULL);
-        $nodeId = $this->request->param('id2', NULL);
-        
-        if($mapId != NULL and $nodeId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $nodeId = (int) $this->request->param('id2', 0);
+
+        if ($mapId && $nodeId) {
             DB_ORM::model('map_node')->setRootNode($mapId, $nodeId);
-            Request::initial()->redirect(URL::base().'nodeManager/editNode/'.$nodeId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_editConditional() {
-        $nodeId = $this->request->param('id', NULL);
-        $countOfCondidtionFiled = $this->request->param('id2', NULL);
-        if($nodeId != NULL) {
-            if($countOfCondidtionFiled != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        $countOfCondidtionFiled = (int) $this->request->param('id2', 0);
+        if ($nodeId) {
+            if ($countOfCondidtionFiled) {
                 $this->templateData['countOfCondidtionFiled'] = $countOfCondidtionFiled;
             } else {
                 $this->templateData['countOfCondidtionFiled'] = 0;
             }
-            
-            $this->templateData['node'] = DB_ORM::model('map_node', array((int)$nodeId));
+
+            $this->templateData['node'] = DB_ORM::model('map_node', array($nodeId));
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($this->templateData['node']->map_id);
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$this->templateData['node']->map_id));
-            
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $this->templateData['node']->map_id));
+
             $editConditionalView = View::factory('labyrinth/node/editConditional');
             $editConditionalView->set('templateData', $this->templateData);
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $editConditionalView;
             unset($this->templateData['right']);
@@ -169,64 +179,67 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addConditionalCount() {
-        $nodeId = $this->request->param('id', NULL);
-        $countOfCondidtionFiled = $this->request->param('id2', NULL);
-        if($nodeId != NULL) {
-            if($countOfCondidtionFiled != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        $countOfCondidtionFiled = (int) $this->request->param('id2', 0);
+        if ($nodeId) {
+            if ($countOfCondidtionFiled) {
                 $countOfCondidtionFiled++;
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
+                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_deleteConditionalCount() {
-        $nodeId = $this->request->param('id', NULL);
-        $countOfCondidtionFiled = $this->request->param('id2', NULL);
-        if($nodeId != NULL) {
-            if($countOfCondidtionFiled != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        $countOfCondidtionFiled = (int) $this->request->param('id2', 0);
+        if ($nodeId) {
+            if ($countOfCondidtionFiled) {
                 $countOfCondidtionFiled--;
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/'.$countOfCondidtionFiled);
+                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_saveConditional() {
-        $nodeId = $this->request->param('id', NULL);
-        $countOfCondidtionFiled = $this->request->param('id2', NULL);
-        if($nodeId != NULL and $_POST) {
-            if($countOfCondidtionFiled != NULL) {
+        $nodeId = (int) $this->request->param('id', 0);
+        $countOfCondidtionFiled = (int) $this->request->param('id2', 0);
+        if (isset($_POST) && !empty($_POST) && $nodeId) {
+            if ($countOfCondidtionFiled) {
                 DB_ORM::model('map_node')->addCondtional($nodeId, $_POST, $countOfCondidtionFiled);
-                Request::initial()->redirect(URL::base().'nodeManager/editNode/'.$nodeId);
+                Request::initial()->redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
             } else {
-                Request::initial()->redirect(URL::base().'nodeManager/editConditional/'.$nodeId.'/1');
+                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_grid() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int)$mapId);
-            
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Node Grid'))->set_url(URL::base() . 'nodeManager/grid/' . $mapId));
+
             $nodeGridView = View::factory('labyrinth/node/grid');
             $nodeGridView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $nodeGridView;
             unset($this->templateData['right']);
@@ -235,30 +248,33 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_saveGrid() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map_node')->updateAllNode($_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/grid/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/grid/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_sections() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['node_sections'] = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
             $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
-            
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
+
             $nodeSectionsView = View::factory('labyrinth/node/section');
             $nodeSectionsView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $nodeSectionsView;
             unset($this->templateData['right']);
@@ -267,41 +283,41 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_updateSection() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map')->updateSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addNodeSection() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map_node_section')->createSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_editSection() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        if($sectionId != NULL and $mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['section'] = DB_ORM::model('map_node_section', array((int)$sectionId));
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        if ($sectionId && $mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            $this->templateData['section'] = DB_ORM::model('map_node_section', array($sectionId));
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection();
-            
+
             $editSectionsView = View::factory('labyrinth/node/editSection');
             $editSectionsView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $editSectionsView;
             unset($this->templateData['right']);
@@ -310,65 +326,64 @@ class Controller_NodeManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_updateNodeSection() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        if($_POST and $sectionId != NULL and $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
             DB_ORM::model('map_node_section')->updateSectionName($sectionId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_deleteNodeSection() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        if($sectionId != NULL and $mapId != NULL) {
-            DB_ORM::model('map_node_section')->deleteSection((int)$sectionId);
-            Request::initial()->redirect(URL::base().'nodeManager/sections/'.$mapId);
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        if ($sectionId && $mapId) {
+            DB_ORM::model('map_node_section')->deleteSection($sectionId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addNodeInSection() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        if($_POST and $sectionId != NULL and $mapId != NULL) {
-            $nodeId = Arr::get($_POST, 'mnodeID', NULL);
-            if($nodeId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
+            $nodeId = (int) Arr::get($_POST, 'mnodeID', 0);
+            if ($nodeId) {
                 DB_ORM::model('map_node_section_node')->addNode($nodeId, $sectionId);
             }
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
-    public function action_updateSectionNodes() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        if($_POST and $sectionId != NULL and $mapId != NULL) {
-            DB_ORM::model('map_node_section_node')->updateNodesOrder($sectionId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-    
-    public function action_deleteNodeBySection() {
-        $mapId = $this->request->param('id', NULL);
-        $sectionId = $this->request->param('id2', NULL);
-        $nodeId = $this->request->param('id3', NULL);
-        if($sectionId != NULL and $mapId != NULL and $nodeId != NULL) {
-            DB_ORM::model('map_node_section_node')->deleteNodeBySection($sectionId, $nodeId);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-}
 
-?>
+    public function action_updateSectionNodes() {
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
+            DB_ORM::model('map_node_section_node')->updateNodesOrder($sectionId, $_POST);
+            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_deleteNodeBySection() {
+        $mapId = (int) $this->request->param('id', 0);
+        $sectionId = (int) $this->request->param('id2', 0);
+        $nodeId = (int) $this->request->param('id3', 0);
+        if ($sectionId && $mapId && $nodeId) {
+            DB_ORM::model('map_node_section_node')->deleteNodeBySection($sectionId, $nodeId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+}

@@ -19,31 +19,23 @@
  *
  */
 ?>
-<form action="<?php echo URL::base().'systemManager/updateMediaUploadCopyright/'; ?>" method="post">
-    <table>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Title: '); ?></p>
-            </td>
-            <td align="left">
-                <p><input size="50" type="text" name="title" value="<?php echo $templateData['media_copyright']['title']; ?>" /></p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Copyright message: '); ?></p>
-            </td>
-            <td align="left">
-                <p>
-                    <textarea style="width:320px; height:130px;" name="copyright_message"><?php echo $templateData['media_copyright']['copyright_message']; ?></textarea>
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" align="left">
-                <input type="Submit" value="<?php echo __('Submit'); ?>">
-            </td>
-        </tr>
-    </table>
+<form class="form-horizontal" action="<?php echo URL::base() . 'systemManager/updateMediaUploadCopyright/'; ?>" method="post">
     <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
+
+    <fieldset class="fieldset">
+        <legend><?php echo __('Media Upload - Copyright Notice'); ?></legend>
+        <div class="control-group">
+            <label class="control-label" for="title"><?php echo __('Notice Title'); ?></label>
+            <div class="controls">
+                <input type="text" class="span8" id="title" name="title" value="<?php echo $templateData['media_copyright']['title']; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="copyright_message"><?php echo __('Copyright Message'); ?></label>
+            <div class="controls">
+                <textarea class="span8" rows="6" id="copyright_message" name="copyright_message"><?php echo $templateData['media_copyright']['copyright_message']; ?></textarea>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-primary" value="<?php echo __('Update Message'); ?>" />
+    </fieldset>
 </form>

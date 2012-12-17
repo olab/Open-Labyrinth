@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -22,63 +23,74 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_LabyrinthManager extends Controller_Base {
 
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
         Request::initial()->redirect(URL::base());
     }
-    
+
     public function action_createLabyrinth() {
         $this->templateData['center'] = View::factory('labyrinth/createLabyrinth');
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_addManual() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Create Manually'))->set_url(URL::base() . 'labyrinthManager/addManual'));
+
         $this->templateData['types'] = DB_ORM::model('map_type')->getAllTypes();
         $this->templateData['skins'] = DB_ORM::model('map_skin')->getAllSkins();
         $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
         $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
-        
+
         $addManualView = View::factory('labyrinth/addManual');
         $addManualView->set('templateData', $this->templateData);
-        
+
         $leftView = View::factory('labyrinth/labyrinthEditorMenu');
         $leftView->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $addManualView;
         $this->templateData['left'] = $leftView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_caseWizard(){
+    public function action_caseWizard() {
         $stepId = $this->request->param('id', '1');
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Create Step-by-Step'))->set_url(URL::base() . 'labyrinthManager/caseWizard'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Step :step', array(':step' => $stepId))));
+
         $action = $this->request->param('id2', 'none');
         $receivedMapId = $this->request->param('id3', 'none');
         $typeStep3 = null;
         $createSkin = false;
-        switch($action){
+        switch ($action) {
             case 'editNode':
                 $typeStep3 = 'editNode';
                 $nodeId = $this->request->param('id4', NULL);
-                if ($nodeId != NULL){
+                if ($nodeId != NULL) {
                     $this->templateData['nodeId'] = $nodeId;
                     $editMode = $this->request->param('id5', NULL);
-                    if($editMode != NULL) {
+                    if ($editMode != NULL) {
                         $this->templateData['editMode'] = $editMode;
                     } else {
                         $this->templateData['editMode'] = 'w';
                     }
 
-                    $this->templateData['node'] = DB_ORM::model('map_node', array((int)$nodeId));
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$this->templateData['node']->map_id));
+                    $this->templateData['node'] = DB_ORM::model('map_node', array((int) $nodeId));
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $this->templateData['node']->map_id));
                     $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
                     $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
-                    $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->templateData['node']->map_id);
+                    $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['node']->map_id);
 
                     $editNodeView = View::factory('labyrinth/casewizard/editNode');
                     $editNodeView->set('templateData', $this->templateData);
                     $this->templateData['nodeData'] = $editNodeView;
-
                 }
 
                 $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($receivedMapId);
@@ -88,17 +100,17 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $labyrinthType = $_POST['labyrinthType'];
                 $session = Session::instance();
                 $session->set('labyrinthType', $labyrinthType);
-                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/2');
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/2');
                 exit;
                 break;
 
             case 'addNewLabyrinth':
-                if($_POST) {
+                if (isset($_POST) && !empty($_POST)) {
                     $session = Session::instance();
                     $_POST['type'] = $session->get('labyrinthType');
                     $_POST['author'] = Auth::instance()->get_user()->id;
                     $map = DB_ORM::model('map')->createMap($_POST);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/3/'.$map->id);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $map->id);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -106,25 +118,25 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
             case 'updateVisualEditor':
                 $mapId = $this->request->param('id3', NULL);
-                if ($mapId != NULL){
+                if ($mapId) {
                     $emap = Arr::get($_POST, 'emap', NULL);
                     $elink = Arr::get($_POST, 'elink', NULL);
                     $enode = Arr::get($_POST, 'enode', NULL);
 
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                     Model::factory('visualEditor')->update($mapId, $emap, $enode, $elink);
                 }
-                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/3/'.$mapId);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $mapId);
                 exit;
                 break;
 
             case 'updateNode':
                 $nodeId = $this->request->param('id3', NULL);
-                if($_POST and $nodeId != NULL) {
+                if ($_POST and $nodeId != NULL) {
                     $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-                    if($node != NULL) {
+                    if ($node != NULL) {
                         DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
-                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editNode/'.$node->map_id.'/'.$node->id);
+                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editNode/' . $node->map_id . '/' . $node->id);
                     } else {
                         Request::initial()->redirect(URL::base());
                     }
@@ -136,10 +148,10 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addFile':
                 $typeStep3 = 'addFile';
-                if ($receivedMapId != NULL){
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                if ($receivedMapId != NULL) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $receivedMapId));
 
-                    $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$receivedMapId);
+                    $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int) $receivedMapId);
                     $fileInfo = DB_ORM::model('map_element')->getFilesSize($this->templateData['files']);
 
                     $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
@@ -154,9 +166,9 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'uploadFile':
                 $mapId = $receivedMapId;
-                if($_FILES and $mapId != NULL) {
+                if ($_FILES and $mapId != NULL) {
                     DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addFile/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addFile/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -165,9 +177,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'deleteFile':
                 $mapId = $receivedMapId;
                 $fileId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $fileId != NULL) {
+                if ($mapId != NULL and $fileId != NULL) {
                     DB_ORM::model('map_element')->deleteFile($fileId);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addFile/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addFile/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -176,9 +188,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'editFile':
                 $mapId = $receivedMapId;
                 $fileId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $fileId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['file'] = DB_ORM::model('map_element', array((int)$fileId));
+                if ($mapId != NULL and $fileId != NULL) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
                     $fileView = View::factory('labyrinth/casewizard/file/edit');
                     $fileView->set('templateData', $this->templateData);
@@ -192,9 +204,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'updateFile':
                 $mapId = $receivedMapId;
                 $fileId = $this->request->param('id4', NULL);
-                if($_POST and $mapId != NULL and $fileId != NULL) {
+                if ($_POST and $mapId != NULL and $fileId != NULL) {
                     DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addFile/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addFile/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -202,9 +214,9 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addQuestion':
                 $mapId = $receivedMapId;
-                if($mapId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int)$mapId);
+                if ($mapId) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
                     $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
                     $questionView = View::factory('labyrinth/casewizard/question/view');
@@ -220,17 +232,17 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $mapId = $receivedMapId;
                 $templateType = $this->request->param('id4', NULL);
 
-                if($mapId != NULL and $templateType != NULL) {
-                    $type = DB_ORM::model('map_question_type', array((int)$templateType));
+                if ($mapId != NULL and $templateType != NULL) {
+                    $type = DB_ORM::model('map_question_type', array((int) $templateType));
 
-                    if($type) {
-                        $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+                    if ($type) {
+                        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                         $this->templateData['questionType'] = $templateType;
                         $this->templateData['args'] = $type->template_args;
-                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
+                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
 
 
-                        $editView = View::factory('labyrinth/casewizard/question/'.$type->template_name);
+                        $editView = View::factory('labyrinth/casewizard/question/' . $type->template_name);
                         $editView->set('templateData', $this->templateData);
 
                         $this->templateData['content'] = $editView;
@@ -245,18 +257,18 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $templateType = $this->request->param('id4', NULL);
                 $questionId = $this->request->param('id5', NULL);
 
-                if($mapId != NULL and $templateType != NULL and $questionId != NULL) {
-                    $type = DB_ORM::model('map_question_type', array((int)$templateType));
+                if ($mapId != NULL and $templateType != NULL and $questionId != NULL) {
+                    $type = DB_ORM::model('map_question_type', array((int) $templateType));
 
-                    if($type) {
-                        $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+                    if ($type) {
+                        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                         $this->templateData['questionType'] = $templateType;
                         $this->templateData['args'] = $type->template_args;
-                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
-                        $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
+                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+                        $this->templateData['question'] = DB_ORM::model('map_question', array((int) $questionId));
 
 
-                        $editView = View::factory('labyrinth/casewizard/question/'.$type->template_name);
+                        $editView = View::factory('labyrinth/casewizard/question/' . $type->template_name);
                         $editView->set('templateData', $this->templateData);
 
                         $this->templateData['content'] = $editView;
@@ -271,14 +283,14 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $templateType = $this->request->param('id4', NULL);
                 $questionId = $this->request->param('id5', NULL);
 
-                if($_POST and $mapId != NULL and $templateType != NULL and $questionId != NULL) {
-                    $type = DB_ORM::model('map_question_type', array((int)$templateType));
+                if ($_POST and $mapId != NULL and $templateType != NULL and $questionId != NULL) {
+                    $type = DB_ORM::model('map_question_type', array((int) $templateType));
 
-                    if($type) {
+                    if ($type) {
                         DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
                     }
 
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addQuestion/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addQuestion/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -288,15 +300,15 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $mapId = $receivedMapId;
                 $templateType = $this->request->param('id4', NULL);
 
-                if($_POST and $mapId != NULL and $templateType != NULL) {
-                    $type = DB_ORM::model('map_question_type', array((int)$templateType));
+                if ($_POST and $mapId != NULL and $templateType != NULL) {
+                    $type = DB_ORM::model('map_question_type', array((int) $templateType));
 
-                    if($type) {
+                    if ($type) {
                         var_dump($_POST);
                         DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
                     }
 
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addQuestion/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addQuestion/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -306,11 +318,11 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $mapId = $receivedMapId;
                 $questionId = $this->request->param('id4', NULL);
 
-                if($mapId != NULL and $questionId != NULL) {
-                    DB_ORM::model('map_question', array((int)$questionId))->delete();
+                if ($mapId != NULL and $questionId != NULL) {
+                    DB_ORM::model('map_question', array((int) $questionId))->delete();
                     DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
 
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addQuestion/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addQuestion/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -318,9 +330,9 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addAvatar':
                 $mapId = $receivedMapId;
-                if($mapId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int)$mapId);
+                if ($mapId) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int) $mapId);
 
                     $avatarView = View::factory('labyrinth/casewizard/avatar/view');
                     $avatarView->set('templateData', $this->templateData);
@@ -333,9 +345,9 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addNewAvatar':
                 $mapId = $receivedMapId;
-                if($mapId != NULL) {
+                if ($mapId) {
                     $avatarId = DB_ORM::model('map_avatar')->addAvatar($mapId);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editAvatar/'.$mapId.'/'.$avatarId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editAvatar/' . $mapId . '/' . $avatarId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -344,9 +356,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'editAvatar':
                 $mapId = $receivedMapId;
                 $avatarId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $avatarId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int)$avatarId));
+                if ($mapId != NULL and $avatarId != NULL) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int) $avatarId));
 
                     $editAvatarView = View::factory('labyrinth/casewizard/avatar/edit');
                     $editAvatarView->set('templateData', $this->templateData);
@@ -360,14 +372,14 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'deleteAvatar':
                 $mapId = $receivedMapId;
                 $avatarId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $avatarId != NULL) {
-                    $upload_dir = DOCROOT.'/avatars/';
+                if ($mapId != NULL and $avatarId != NULL) {
+                    $upload_dir = DOCROOT . '/avatars/';
                     $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-                    if (!empty($avatarImage)){
-                        @unlink($upload_dir.$avatarImage);
+                    if (!empty($avatarImage)) {
+                        @unlink($upload_dir . $avatarImage);
                     }
-                    DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addAvatar/'.$mapId);
+                    DB_ORM::model('map_avatar', array((int) $avatarId))->delete();
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addAvatar/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -376,24 +388,24 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'updateAvatar':
                 $mapId = $receivedMapId;
                 $avatarId = $this->request->param('id4', NULL);
-                if($_POST and $mapId != NULL and $avatarId != NULL) {
-                    $upload_dir = DOCROOT.'/avatars/';
+                if ($_POST and $mapId != NULL and $avatarId != NULL) {
+                    $upload_dir = DOCROOT . '/avatars/';
                     $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-                    if (!empty($avatarImage)){
-                        @unlink($upload_dir.$avatarImage);
+                    if (!empty($avatarImage)) {
+                        @unlink($upload_dir . $avatarImage);
                     }
                     $img = $_POST['image_data'];
                     $img = str_replace('data:image/png;base64,', '', $img);
                     $img = str_replace(' ', '+', $img);
                     $data = base64_decode($img);
                     $file = uniqid() . '.png';
-                    file_put_contents($upload_dir.$file, $data);
+                    file_put_contents($upload_dir . $file, $data);
                     $_POST['image_data'] = $file;
                     DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
-                    if ($_POST['save_exit_value'] == 0){
-                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editAvatar/'.$mapId.'/'.$avatarId);
-                    }else{
-                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addAvatar/'.$mapId);
+                    if ($_POST['save_exit_value'] == 0) {
+                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editAvatar/' . $mapId . '/' . $avatarId);
+                    } else {
+                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addAvatar/' . $mapId);
                     }
                 } else {
                     Request::initial()->redirect(URL::base());
@@ -403,17 +415,17 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'duplicateAvatar':
                 $mapId = $receivedMapId;
                 $avatarId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $avatarId != NULL) {
+                if ($mapId != NULL and $avatarId != NULL) {
                     $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-                    if (!empty($avatarImage)){
-                        $upload_dir = DOCROOT.'/avatars/';
+                    if (!empty($avatarImage)) {
+                        $upload_dir = DOCROOT . '/avatars/';
                         $file = uniqid() . '.png';
-                        copy($upload_dir.$avatarImage, $upload_dir.$file);
-                    }else{
+                        copy($upload_dir . $avatarImage, $upload_dir . $file);
+                    } else {
                         $file = NULL;
                     }
                     DB_ORM::model('map_avatar')->duplicateAvatar($avatarId, $file);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addAvatar/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addAvatar/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -421,8 +433,8 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addCounter':
                 $mapId = $receivedMapId;
-                if($mapId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+                if ($mapId) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
 
                     $countersView = View::factory('labyrinth/casewizard/counter/view');
@@ -436,8 +448,8 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'addNewCounter':
                 $mapId = $receivedMapId;
-                if($mapId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+                if ($mapId) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                     $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap($mapId);
 
                     $addCounterView = View::factory('labyrinth/casewizard/counter/add');
@@ -451,9 +463,9 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'saveNewCounter':
                 $mapId = $receivedMapId;
-                if($_POST and $mapId != NULL) {
+                if ($_POST and $mapId != NULL) {
                     DB_ORM::model('map_counter')->addCounter($mapId, $_POST);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addCounter/'.$mapId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addCounter/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -462,9 +474,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'editCounter':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $counterId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['counter'] = DB_ORM::model('map_counter', array((int)$counterId));
+                if ($mapId != NULL and $counterId != NULL) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['counter'] = DB_ORM::model('map_counter', array((int) $counterId));
                     $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap($mapId);
                     $this->templateData['rules'] = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counterId);
                     $this->templateData['relations'] = DB_ORM::model('map_counter_relation')->getAllRealtions();
@@ -482,9 +494,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'updateCounter':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($_POST and $mapId != NULL and $counterId != NULL) {
+                if ($_POST and $mapId != NULL and $counterId != NULL) {
                     DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editCounter/'.$mapId.'/'.$counterId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $mapId . '/' . $counterId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -495,10 +507,10 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $counterId = $this->request->param('id4', NULL);
                 $ruleId = $this->request->param('id5', NULL);
                 $nodeId = $this->request->param('id6', NULL);
-                if($mapId != NULL and $counterId != NULL and $ruleId != NULL and $nodeId != NULL) {
-                    DB_ORM::model('map_counter_rule', array((int)$ruleId))->delete();
+                if ($mapId != NULL and $counterId != NULL and $ruleId != NULL and $nodeId != NULL) {
+                    DB_ORM::model('map_counter_rule', array((int) $ruleId))->delete();
                     DB_ORM::model('map_node_counter')->deleteNodeCounter($nodeId, $counterId);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editCounter/'.$mapId.'/'.$counterId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $mapId . '/' . $counterId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -507,9 +519,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'addRule':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($_POST and $mapId != NULL and $counterId != NULL) {
+                if ($_POST and $mapId != NULL and $counterId != NULL) {
                     DB_ORM::model('map_counter_rule')->addRule($counterId, $_POST);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/editCounter/'.$mapId.'/'.$counterId);
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $mapId . '/' . $counterId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -518,10 +530,10 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'deleteCounter':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($mapId != NULL and $counterId != NULL) {
-                    DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int)$counterId);
-                    DB_ORM::model('map_counter', array((int)$counterId))->delete();
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/addCounter/'.$mapId);
+                if ($mapId != NULL and $counterId != NULL) {
+                    DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int) $counterId);
+                    DB_ORM::model('map_counter', array((int) $counterId))->delete();
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addCounter/' . $mapId);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -530,14 +542,14 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'grid':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($mapId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int)$mapId);
-                    if($counterId != NULL) {
-                        $this->templateData['counters'][] = DB_ORM::model('map_counter', array((int)$counterId));
+                if ($mapId) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+                    if ($counterId != NULL) {
+                        $this->templateData['counters'][] = DB_ORM::model('map_counter', array((int) $counterId));
                         $this->templateData['oneCounter'] = true;
                     } else {
-                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
+                        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
                     }
 
                     $gridCounterView = View::factory('labyrinth/casewizard/counter/grid');
@@ -552,13 +564,13 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'updateGrid':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($_POST and $mapId != NULL) {
-                    if($counterId != NULL) {
-                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int)$counterId, (int)$mapId);
-                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/grid/'.$mapId.'/'.$counterId);
+                if ($_POST and $mapId != NULL) {
+                    if ($counterId != NULL) {
+                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int) $counterId, (int) $mapId);
+                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $mapId . '/' . $counterId);
                     } else {
-                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int)$mapId);
-                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/4/grid/'.$mapId);
+                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int) $mapId);
+                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $mapId);
                     }
                 } else {
                     Request::initial()->redirect(URL::base());
@@ -568,9 +580,9 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'previewCounter':
                 $mapId = $receivedMapId;
                 $counterId = $this->request->param('id4', NULL);
-                if($counterId != NULL) {
-                    $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                    $this->templateData['counter'] = DB_ORM::model('map_counter', array((int)$counterId));
+                if ($counterId != NULL) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+                    $this->templateData['counter'] = DB_ORM::model('map_counter', array((int) $counterId));
 
                     $previewCounter = View::factory('labyrinth/casewizard/counter/preview');
                     $previewCounter->set('templateData', $this->templateData);
@@ -582,7 +594,7 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
 
             case 'uploadSkin':
-                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $this->templateData['map'] = DB_ORM::model('map', array((int) $receivedMapId));
                 $previewUpload = View::factory('labyrinth/casewizard/skineditor/upload');
                 $previewUpload->set('templateData', $this->templateData);
                 $this->templateData['content'] = $previewUpload;
@@ -590,14 +602,14 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'uploadNewSkin':
                 $mapId = $receivedMapId;
-                if(is_uploaded_file($_FILES['zipSkin']['tmp_name'])) {
+                if (is_uploaded_file($_FILES['zipSkin']['tmp_name'])) {
                     $ext = substr(($_FILES['zipSkin']['name']), -3);
                     $filename = substr(($_FILES['zipSkin']['name']), 0, strlen($_FILES['zipSkin']['name']) - 4);
-                    if ($ext == 'zip'){
+                    if ($ext == 'zip') {
                         $zip = new ZipArchive();
                         $result = $zip->open($_FILES['zipSkin']['tmp_name']);
-                        if ($result === true){
-                            $zip->extractTo(DOCROOT.'/css/skin/');
+                        if ($result === true) {
+                            $zip->extractTo(DOCROOT . '/css/skin/');
                             $zip->close();
                         }
 
@@ -605,11 +617,11 @@ class Controller_LabyrinthManager extends Controller_Base {
                         DB_ORM::model('map')->updateMapSkin($mapId, $skin->id);
                     }
                 }
-                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$mapId.'/'.$skin->id);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $skin->id);
                 break;
 
             case 'listSkins':
-                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $this->templateData['map'] = DB_ORM::model('map', array((int) $receivedMapId));
                 $this->templateData['skinList'] = DB_ORM::model('map_skin')->getAllSkins();
                 $this->templateData['skinId'] = $this->request->param('id4', NULL);
                 $previewList = View::factory('labyrinth/casewizard/skineditor/list');
@@ -620,10 +632,10 @@ class Controller_LabyrinthManager extends Controller_Base {
 
             case 'saveSelectedSkin':
                 $mapId = $receivedMapId;
-                if($_POST['skinId'] != 0 and $mapId != NULL) {
+                if ($_POST['skinId'] != 0 and $mapId != NULL) {
                     DB_ORM::model('map')->updateMapSkin($mapId, $_POST['skinId']);
                 }
-                Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$mapId.'/'.$_POST['skinId']);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $_POST['skinId']);
                 break;
 
             case 'createNewSkin':
@@ -631,42 +643,42 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
 
             case 'saveSkin':
-                if(isset($_POST['save'])){
+                if (isset($_POST['save'])) {
                     $skin_name = $_POST['skin_name'];
                     $centre = $_POST['centre'];
                     $outside = $_POST['outside'];
-                    $folder = DOCROOT.'css/skin/'.$receivedMapId.'_'.$skin_name.'/';
+                    $folder = DOCROOT . 'css/skin/' . $receivedMapId . '_' . $skin_name . '/';
                     $skinName = $skin_name;
-                    $skinPath = $receivedMapId.'_'.$skin_name;
+                    $skinPath = $receivedMapId . '_' . $skin_name;
                     @mkdir($folder, 0777);
 
                     $outside_image = $_POST['outside_image'];
                     $centre_image = $_POST['centre_image'];
 
-                    if ($outside_image != null){
-                        @rename(DOCROOT."fileupload/php/files/".$outside_image, $folder.$outside_image);
+                    if ($outside_image != null) {
+                        @rename(DOCROOT . "scripts/fileupload/php/files/" . $outside_image, $folder . $outside_image);
                     }
 
-                    if ($centre_image != null){
-                        @rename(DOCROOT."fileupload/php/files/".$centre_image, $folder.$centre_image);
+                    if ($centre_image != null) {
+                        @rename(DOCROOT . "scripts/fileupload/php/files/" . $centre_image, $folder . $centre_image);
                     }
 
-                    $file = @fopen($folder.'default.css', 'w+');
+                    $file = @fopen($folder . 'default.css', 'w+');
 
-                    $css = 'body {background-image: url("'.$outside_image.'"); background-color: '.$outside['b-color'].'; background-size: '.$outside['b-size'].'; background-repeat: '.$outside['b-repeat'].'; background-position: '.$outside['b-position'].';} #centre_table {background-image: url("'.$centre_image.'"); background-size: '.$centre['b-size'].'; background-repeat: '.$centre['b-repeat'].'; background-position: '.$centre['b-position'].';} .centre_td {background-color: '.$centre['b-color'].';}';
+                    $css = 'body {background-image: url("' . $outside_image . '"); background-color: ' . $outside['b-color'] . '; background-size: ' . $outside['b-size'] . '; background-repeat: ' . $outside['b-repeat'] . '; background-position: ' . $outside['b-position'] . ';} #centre_table {background-image: url("' . $centre_image . '"); background-size: ' . $centre['b-size'] . '; background-repeat: ' . $centre['b-repeat'] . '; background-position: ' . $centre['b-position'] . ';} .centre_td {background-color: ' . $centre['b-color'] . ';}';
                     @fwrite($file, $css);
 
                     $skin_id = DB_ORM::model('map_skin')->addSkin($skinName, $skinPath);
                     DB_ORM::model('map')->updateMapSkin($receivedMapId, $skin_id->id);
-                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$receivedMapId.'/done');
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/createSkin/' . $receivedMapId . '/done');
                 }
                 break;
         }
-        switch ($stepId){
+        switch ($stepId) {
             case '3':
-                if($action != NULL) {
+                if ($action != NULL) {
                     $this->templateData['map'] = $action;
-                    Model::factory('visualEditor')->generateXML((int)$action);
+                    Model::factory('visualEditor')->generateXML((int) $action);
                 }
                 break;
 
@@ -677,77 +689,57 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
 
             case '5':
-                $this->templateData['map'] = DB_ORM::model('map', array((int)$receivedMapId));
+                $this->templateData['map'] = DB_ORM::model('map', array((int) $receivedMapId));
                 $this->templateData['action'] = $action;
                 $this->templateData['result'] = $this->request->param('id4', NULL);
                 break;
         }
-        if (!$createSkin){
-            $caseWizard = View::factory('labyrinth/casewizard/step'.$stepId);
+        if (!$createSkin) {
+            $caseWizard = View::factory('labyrinth/casewizard/step' . $stepId);
             $caseWizard->set('templateData', $this->templateData);
 
             $this->templateData['center'] = $caseWizard;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
-        }else{
-            $this->templateData['action_url'] = URL::base().'labyrinthManager/caseWizard/5/saveSkin/'.$receivedMapId;
+        } else {
+            $this->templateData['action_url'] = URL::base() . 'labyrinthManager/caseWizard/5/saveSkin/' . $receivedMapId;
             $this->template = View::factory('labyrinth/skin/create');
             $this->template->set('templateData', $this->templateData);
         }
     }
 
     public function action_addNewMap() {
-        if($_POST) {
+        if (isset($_POST) && !empty($_POST)) {
             $_POST['author'] = Auth::instance()->get_user()->id;
             $map = DB_ORM::model('map')->createMap($_POST);
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$map->id);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $map->id);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_editMap() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId) {
-            $map = DB_ORM::model('map', array((int)$mapId));
-            if($map != NULL) {
-                if(Auth::instance()->get_user()->type->name != 'superuser') {
-                    if(Auth::instance()->get_user()->id != $map->author_id) {
-                        if(!DB_ORM::model('map_user')->checkUser($map->authors, Auth::instance()->get_user()->id)) {
-                            Request::initial()->redirect(URL::base());
-                        }
-                    }
-                }
-            }
-            $this->templateData['map'] = $map;
-            
-            $editorView = View::factory('labyrinth/editor');
-            $editorView->set('templateData', $this->templateData);
-			
-			$leftView = View::factory('labyrinth/editorLeftMenu');
-			$leftView->set('templateData', $this->templateData);
-            
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $editorView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_disableMap() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId) {
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
             DB_ORM::model('map')->disableMap($mapId);
         }
-        
-        Request::initial()->redirect(URL::base());
+
+        Request::initial()->redirect(URL::base() . 'authoredLabyrinth');
     }
-    
+
     public function action_global() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId) {
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['types'] = DB_ORM::model('map_type')->getAllTypes();
             $this->templateData['skins'] = DB_ORM::model('map_skin')->getAllSkins();
@@ -755,23 +747,26 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
             $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
             $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
-            
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
+
             $regAuthors = DB_ORM::model('map_user')->getAllAuthors($mapId);
-            if($regAuthors != NULL) {
+            if ($regAuthors != NULL) {
                 $this->templateData['regAuthors'] = $regAuthors;
             }
 
             $regLearners = DB_ORM::model('map_user')->getAllLearners($mapId);
-            if($regLearners != NULL) {
+            if ($regLearners != NULL) {
                 $this->templateData['regLearners'] = $regLearners;
             }
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $globalView = View::factory('labyrinth/global');
             $globalView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $globalView;
             unset($this->templateData['right']);
@@ -780,136 +775,135 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addContributor() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
             DB_ORM::model('map_contributor')->createContributor($mapId);
-            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_deleteContributor() {
-        $mapId = $this->request->param('id', NULL);
-        $contId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $contId != NULL) {
-            DB_ORM::model('map_contributor', array((int)$contId))->delete();
-            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+        $mapId = (int) $this->request->param('id', 0);
+        $contId = (int) $this->request->param('id2', 0);
+        if ($mapId && $contId) {
+            DB_ORM::model('map_contributor', array($contId))->delete();
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_saveGlobal() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST) {
-            if($mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST)) {
+            if ($mapId) {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
-                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
             } else {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
     }
-    
+
     public function action_editKeys() {
-        $mapId = $this->request->param('id', NULL);
-        $countOfKeys = $this->request->param('id2', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            if($countOfKeys != NULL) {
-                $this->templateData['keyCount'] = (int)$countOfKeys + 1;
+        $mapId = (int) $this->request->param('id', 0);
+        $countOfKeys = (int) $this->request->param('id2', 0);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            if ($countOfKeys) {
+                $this->templateData['keyCount'] = (int) $countOfKeys + 1;
             } else {
                 $this->templateData['keyCount'] = 1;
             }
-            
+
             $currentKeys = DB_ORM::model('map_key')->getKeysByMap($mapId);
-            if($currentKeys != NULL) {
+            if ($currentKeys != NULL) {
                 $this->templateData['currentKeys'] = $currentKeys;
             }
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $keysView = View::factory('labyrinth/keys');
             $keysView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $keysView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager');
+            Request::initial()->redirect(URL::base() . 'labyrinthManager');
         }
     }
-    
+
     public function action_addKey() {
-        $mapId = $this->request->param('id', NULL);
-        $countOfKeys = $this->request->param('id2', NULL);
-        if($mapId != NULL) {
-            if($countOfKeys != NULL) {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId.'/'.$countOfKeys);
+        $mapId = (int) $this->request->param('id', 0);
+        $countOfKeys = (int) $this->request->param('id2', 0);
+        if ($mapId) {
+            if ($countOfKeys) {
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/' . $countOfKeys);
             } else {
-                Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId.'/1');
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/1');
             }
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager');
+            Request::initial()->redirect(URL::base() . 'labyrinthManager');
         }
     }
-    
+
     public function action_saveKeys() {
-        $mapId = $this->request->param('id', NULL);
-        $countOfAddKeys = $this->request->param('id2', NULL);
-        if($_POST && $mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $countOfAddKeys = (int) $this->request->param('id2', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map_key')->updateKeys($mapId, $_POST);
-            if($countOfAddKeys != NULL) {
-                DB_ORM::model('map_key')->createKeys($mapId, $_POST, (int)$countOfAddKeys-1);
+            if ($countOfAddKeys) {
+                DB_ORM::model('map_key')->createKeys($mapId, $_POST, ($countOfAddKeys - 1));
             }
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
     }
-    
+
     public function action_deleteKey() {
-        $mapId = $this->request->param('id', NULL);
-        $keyId = $this->request->param('id2', NULL);
-        if($keyId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        $keyId = (int) $this->request->param('id2', 0);
+        if ($keyId) {
             DB_ORM::model('map_key', array($keyId))->delete();
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         }
     }
-    
+
     public function action_showDevNotes() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
             $this->template = View::factory('labyrinth/note');
-            $this->template->set('map', DB_ORM::model('map', array((int)$mapId)));
+            $this->template->set('map', DB_ORM::model('map', array($mapId)));
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
     }
-    
+
     public function action_updateDevNodes() {
-        $mapId = $this->request->param('id', NULL);
-        if($_POST and $mapId != NULL) {
-            $map = DB_ORM::model('map', array((int)$mapId));
-            if($map != NULL) {
+        $mapId = (int) $this->request->param('id', 0);
+        if (isset($_POST) && !empty($_POST) && $mapId) {
+            $map = DB_ORM::model('map', array($mapId));
+            if ($map) {
                 $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
                 $map->save();
             }
-            Request::initial()->redirect(URL::base().'labyrinthManager/showDevNotes/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/showDevNotes/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
     }
-}
 
-?>
+}
