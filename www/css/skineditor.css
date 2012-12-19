@@ -1,11 +1,12 @@
-body {
-    height:100%;
+html, body {
+    min-height: 100% !important;
+    height: 100%;
 }
 #skinEditor {
     background: #7895b7;
     position:fixed;
     width:100%;
-    height:200px;
+    height:300px;
     bottom:0;
     left:0;
     opacity:1;
@@ -25,29 +26,26 @@ body {
 
 #skinEditor .left {
     float:left;
-    height: 150px;
+    height: 250px;
     margin-right:10px;
     background: #FFFFFF;
-    width:400px;
+    width:420px;
     position:relative;
-    left:50%;
-    margin-left:100px;
 }
 
 #skinEditor .right {
-    float: right;
-    height:150px;
+    float: left;
+    height:250px;
     margin-left:10px;
     background: #FFFFFF;
-    width:400px;
+    width:420px;
     position: relative;
-    right:50%;
-    margin-right: 100px;
+    overflow: hidden;
 }
 
 #skinEditor .action {
     padding-left: 10px;
-    width:120px;
+    width:140px;
     float:left;
 }
 
@@ -59,10 +57,20 @@ body {
     width:270px;
     float:left;
     margin-top:10px;
+    height:215px;
 }
 
 #skinEditor .editor_action {
     display: none;
+    height: 100%;
+}
+
+#skinEditor .color_action {
+    text-align: left;
+}
+
+#skinEditor .color_action p {
+    text-align: center;
 }
 
 #skinEditor .progress_display {
@@ -87,7 +95,7 @@ body {
 }
 
 #skinEditor .progress_display .status p {
-    margin-bottom:5px;
+    margin-bottom:20px;
     margin-top:0px;
     text-align: left;
 }

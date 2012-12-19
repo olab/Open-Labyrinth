@@ -1,58 +1,63 @@
-var hideSkinEditor = true;
-var editorBodyClick = true;
-var color_blur = false;
+var isPickerOutside = false;
+var isPickerCentre = false;
 
-var current_color_outside = null;
+var current_color_outside = "#EEEEEE";
 var current_image_outside = null;
 var current_image_outside_position = null;
-var current_color_centre = null;
+var current_color_centre = "#FFFFFF";
 var current_image_centre = null;
 var current_image_centre_position = null;
+var color_opacity_centre = 1;
+var color_opacity_outside = 1;
 
 var current_image_path_outside = null;
 var current_image_path_centre = null;
 
 var base_path = null;
-
+var colorPickerOutside;
+var colorPickerCentre;
 jQuery(document).ready(function() {
+    var colorPicker = new ColorPicker();
+	colorPickerOutside = colorPicker.createPicker('colorPickerOutside');
+    var colorPicker2 = new ColorPicker();
+	colorPickerCentre = colorPicker2.createPicker('colorPickerCentre');
     base_path = jQuery('#base_path').val();
-    jQuery("#skinEditor").mouseenter(function() {
-        jQuery(this).stop().animate({"height": "200px", "opacity": "1"});
-        hideSkinEditor = true;
-    }).mouseleave(function() {
-        if (hideSkinEditor & editorBodyClick){
-            jQuery(this).stop().animate({"height": "50px", "opacity": "0.3"});
-        }
+    jQuery("#skinEditor .show").click(function() {
+        jQuery("#skinEditor").stop().animate({"height": "300px"}, function() {
+            if (isPickerOutside){
+                colorPickerOutside.showPicker();
+            }
+            if (isPickerCentre){
+                colorPickerCentre.showPicker();
+            }
+        });
+        $(this).css('display', 'none');
+        jQuery("#skinEditor .hide").css('display', 'block');
+    });
+    jQuery("#skinEditor .hide").click(function() {
+        colorPickerCentre.hidePicker();
+        colorPickerOutside.hidePicker();
+        jQuery("#skinEditor").stop().animate({"height": "50px"});
+        $(this).css('display', 'none');
+        jQuery("#skinEditor .show").css('display', 'block');
     });
 
     jQuery(".upload_input").click(function() {
-        hideSkinEditor = false;
         jQuery(this).parents(".select_image").find(".upload_file").click();
     });
 
-    jQuery(".color").click(function() {
-        hideSkinEditor = false;
-        editorBodyClick = false;
-    });
-
-    jQuery("#skinEditor").click(function() {
-        if (color_blur) {
-            editorBodyClick = true;
-            color_blur = false;
-        }
-    });
-
-    jQuery(".color").blur(function() {
-        color_blur = true;
-    });
-
     jQuery("#outside .upload_radio").click(function() {
+        colorPickerOutside.hidePicker();
+        isPickerOutside = false;
         jQuery("#outside .editor_action").css('display', 'none');
         jQuery("#outside .upload_action").css('display', 'block');
+        jQuery("body").css("background", "");
         jQuery("body").css({"background-image": current_image_outside, "background-size": jQuery('#outside .change_size').val() + "%", "background-repeat": jQuery("#outside .change_repeat").val(), "background-position": current_image_outside_position});
     });
 
     jQuery("#centre .upload_radio").click(function() {
+        colorPickerCentre.hidePicker();
+        isPickerCentre = false;
         jQuery("#centre .editor_action").css('display', 'none');
         jQuery("#centre .upload_action").css('display', 'block');
         jQuery(".centre_td").css("background-color", "transparent");
@@ -62,15 +67,38 @@ jQuery(document).ready(function() {
     jQuery("#outside .pick_color_radio").click(function() {
         jQuery("#outside .editor_action").css('display', 'none');
         jQuery("#outside .color_action").css('display', 'block');
-        jQuery("body").css("background-color", current_color_outside);
-        jQuery("body").css("background-image", "");
+        var rgb = hexToRgb(current_color_outside);
+        jQuery("body").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_outside+")");
+        colorPickerOutside.showPicker();
+        isPickerOutside = true;
     });
 
     jQuery("#centre .pick_color_radio").click(function() {
         jQuery("#centre .editor_action").css('display', 'none');
         jQuery("#centre .color_action").css('display', 'block');
         jQuery("#centre_table").css("background", "transparent");
-        jQuery(".centre_td").css("background", current_color_centre);
+        var rgb = hexToRgb(current_color_centre);
+        jQuery(".centre_td").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_centre+")");
+        colorPickerCentre.showPicker();
+        isPickerCentre = true;
+    });
+
+    jQuery("#centre .set_opacity").click(function() {
+        colorPickerCentre.hidePicker();
+        isPickerCentre = false;
+        jQuery("#centre .editor_action").css('display', 'none');
+        jQuery("#centre .opacity_action").css('display', 'block');
+        var rgb = hexToRgb(current_color_centre);
+        jQuery(".centre_td").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_centre+")");
+    });
+
+    jQuery("#outside .set_opacity").click(function() {
+        colorPickerOutside.hidePicker();
+        isPickerOutside = false;
+        jQuery("#outside .editor_action").css('display', 'none');
+        jQuery("#outside .opacity_action").css('display', 'block');
+        var rgb = hexToRgb(current_color_outside);
+        jQuery("body").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_outside+")");
     });
 
     jQuery(".transparent").click(function() {
@@ -79,21 +107,37 @@ jQuery(document).ready(function() {
     });
 
     jQuery("#outside .transparent").click(function() {
+        colorPickerOutside.hidePicker();
+        isPickerOutside = false;
         jQuery("body").css("background", "transparent");
     });
 
     jQuery("#centre .transparent").click(function() {
+        colorPickerCentre.hidePicker();
+        isPickerOutside = false;
         jQuery(".centre_td").css("background", "transparent");
     });
 
-    jQuery("#outside .color").change(function() {
+    jQuery("#colorPickerOutside").change(function() {
+        var rgb = hexToRgb("#"+jQuery(this).val());
         current_color_outside = "#"+jQuery(this).val();
-        jQuery("body").css("background-color", "#"+jQuery(this).val());
+        jQuery("body").css("background-color", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_outside+")");
     });
 
-    jQuery("#centre .color").change(function() {
+    jQuery("#colorPickerCentre").change(function() {
+        var rgb = hexToRgb("#"+jQuery(this).val());
         current_color_centre = "#"+jQuery(this).val();
-        jQuery(".centre_td").css("background-color", "#"+jQuery(this).val());
+        jQuery(".centre_td").css("background-color", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_centre+")");
+    });
+
+    jQuery("#outside .opacity_value").change(function(){
+        sliderOutside.slider( "value", this.value );
+        changeOpacityOutside(this.value);
+    });
+
+    jQuery("#centre .opacity_value").change(function(){
+        sliderCentre.slider( "value", this.value );
+        changeOpacityCentre(this.value);
     });
 
     jQuery("#outside .change_size").keyup(function() {
@@ -308,20 +352,110 @@ jQuery(document).ready(function() {
         }
     });
 
+    jQuery('.save_submit').click(function() {
+        var type = jQuery(this).attr("name");
+        var skinName = jQuery('#skinName').val();
+        if (skinName == ''){
+            alert('Please enter skin name');
+            jQuery('#skinName').focus();
+        }else{
+            jQuery('.saving_text').css('display', 'inline');
+            jQuery('.save_submit').css('display', 'none');
+            var outside = {}
+            outside['b-size'] = jQuery('body').css('background-size');
+            outside['b-repeat'] = jQuery('body').css('background-repeat');
+            outside['b-position'] = jQuery('body').css('background-position');
+            outside['b-color'] = jQuery('body').css('background-color')
+            var outside_image = current_image_path_outside;
 
-    jQuery(".save_submit").click(function() {
-        jQuery('input[name="outside[b-size]"]').val(jQuery('body').css('background-size'));
-        jQuery('input[name="outside[b-repeat]"]').val(jQuery('body').css('background-repeat'));
-        jQuery('input[name="outside[b-position]"]').val(jQuery('body').css('background-position'));
-        jQuery('input[name="outside[b-color]"]').val(jQuery('body').css('background-color'));
-        jQuery('input[name="outside_image"]').val(current_image_path_outside);
+            var centre = {}
+            centre['b-size'] = jQuery('#centre_table').css('background-size');
+            centre['b-repeat'] = jQuery('#centre_table').css('background-repeat');
+            centre['b-position'] = jQuery('#centre_table').css('background-position');
+            centre['b-color'] = jQuery('.centre_td').css('background-color');
+            var centre_image = current_image_path_centre;
+            var save = jQuery(this).attr('name');
+            var skinId = jQuery('#skinId').val();
+            var action = jQuery('#submit_form').attr('action');
+            $.post(action, {outside: outside, centre: centre, outside_image: outside_image, centre_image: centre_image, save: save, skinId: skinId}, function(){
+                if (type == 'save_changes'){
+                    alert('Skin successfully saved.');
+                    jQuery('.saving_text').css('display', 'none');
+                    jQuery('.save_submit').css('display', 'inline');
+                }else{
+                    window.location.href = jQuery('#redirect_url').val();
+                }
+            });
+        }
 
-        jQuery('input[name="centre[b-size]"]').val(jQuery('#centre_table').css('background-size'));
-        jQuery('input[name="centre[b-repeat]"]').val(jQuery('#centre_table').css('background-repeat'));
-        jQuery('input[name="centre[b-position]"]').val(jQuery('#centre_table').css('background-position'));
-        jQuery('input[name="centre[b-color]"]').val(jQuery('.centre_td').css('background-color'));
-        jQuery('input[name="centre_image"]').val(current_image_path_centre);
-
-        jQuery("#submit_form").submit();
     });
+
+    var sliderCentre = $("#slider-range-centre").slider({
+        range: "min",
+        value: color_opacity_centre,
+        min: 0,
+        max: 1,
+        step: 0.1,
+        slide: function( event, ui ) {
+            $( "#centre .opacity_value" ).val(ui.value);
+            changeOpacityCentre(ui.value);
+        }
+    });
+
+    var sliderOutside = $("#slider-range-outside").slider({
+        range: "min",
+        value: color_opacity_outside,
+        min: 0,
+        max: 1,
+        step: 0.1,
+        slide: function( event, ui ) {
+            $( "#outside .opacity_value" ).val(ui.value);
+            changeOpacityOutside(ui.value);
+        }
+    });
+
+    function changeOpacityCentre(value){
+        color_opacity_centre = value;
+        var rgb = hexToRgb(current_color_centre);
+        jQuery(".centre_td").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_centre+")");
+    }
+
+    function changeOpacityOutside(value){
+        color_opacity_outside = value;
+        var rgb = hexToRgb(current_color_outside);
+        jQuery("body").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_outside+")");
+    }
 });
+
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function rgbToHex(c) {
+    if (c == 'transparent'){
+        return 'FFFFFF';
+    }else{
+        var m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(c);
+        return m ? (1 << 24 | m[1] << 16 | m[2] << 8 | m[3]).toString(16).substr(1) : c;
+    }
+}
+
+function getOpacity(rgba){
+    var alpha = rgba.replace(/^.*,(.+)\)/,'$1')+'';
+    if (parseFloat(alpha)){
+        return parseFloat(alpha);
+    }else{
+        return 1;
+    }
+}

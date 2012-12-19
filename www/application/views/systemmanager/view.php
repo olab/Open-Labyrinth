@@ -19,28 +19,18 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('System settings'); ?></h4>
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                    <div id="tabs">
-                        <ul>
-                            <?php
-                            foreach($templateData['tabsName'] as $key => $tabsName){
-                                echo '<li><a href="#tabs-'.$key.'">'.$tabsName.'</a></li>';
-                            }
-                            ?>
-                        </ul>
-                        <?php
-                        foreach($templateData['tabs'] as $key => $tabs){
-                            echo '<div id="tabs-'.$key.'">'.$tabs.'</div>';
-                        }
-                        ?>
-                    </div>
-                </td></tr>
-            </table>
-        </td>
-    </tr>
-</table>
+<h1><?php echo __('System Settings'); ?></h1>
+<div id="tabs">
+    <ul>
+        <?php
+        foreach ($templateData['tabsName'] as $key => $tabsName) {
+            echo '<li><a href="#tabs-' . $key . '">' . $tabsName . '</a></li>';
+        }
+        ?>
+    </ul>
+    <?php
+    foreach ($templateData['tabs'] as $key => $tabs) {
+        echo '<div id="tabs-' . $key . '">' . $tabs . '</div>';
+    }
+    ?>
+</div>

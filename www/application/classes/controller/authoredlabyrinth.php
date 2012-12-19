@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,38 +22,45 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_AuthoredLabyrinth extends Controller_Base {
-    
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
-        if(Auth::instance()->get_user()->type->name == 'superuser') {
+        if (Auth::instance()->get_user()->type->name == 'superuser') {
             $maps = DB_ORM::model('map')->getAllEnabledMap();
-        }else{
+        } else {
             $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
         }
         $this->templateData['maps'] = $maps;
-        
+
         $openView = View::factory('labyrinth/authored');
         $openView->set('templateData', $this->templateData);
-        
+
         $this->templateData['center'] = $openView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_info() {
-        $mapId = $this->request->param('id', NULL);
-        if($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            
+        $mapId = (int) $this->request->param('id', 0);
+        if ($mapId) {
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Labyrinth Details'))->set_url(URL::base() . 'authoredLabyrinth/info/' . $mapId));
+
+            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+
             $infoView = View::factory('labyrinth/labyrinthInfo');
             $infoView->set('templateData', $this->templateData);
-            
+
             $this->templateData['center'] = $infoView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base().'openLabyrinth');
+            Request::initial()->redirect(URL::base() . 'openLabyrinth');
         }
     }
+
 }
-    
-?>

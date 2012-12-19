@@ -18,22 +18,33 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
-<table><tr>
-        <td bgcolor="#ffffff" align="left" width="60%" valign="top">
-            <?php if(isset($presentations) and count($presentations) > 0) { ?>
-            <p><img src="<?php echo URL::base(); ?>images/presentl.jpg" border="0" alt="OLPresentations">Presentations</p>
-            <?php foreach($presentations as $presentation) { ?>
-            <p><a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"><?php echo $presentation->title; ?></a></p>
-            <?php } ?>
-            <hr>
-            <?php } ?>
-            <p><img src="<?php echo URL::base(); ?>images/olsphere.jpg" border="0" alt="OLMaps">Open Labyrinths</p>
-            <?php if (isset($openLabyrinths) and count($openLabyrinths) > 0) { ?>
-                <?php foreach ($openLabyrinths as $labyrinth) { ?>
-                    <p><a href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a></p>
-                <?php } ?>
-            <?php } ?>
-        </td>
-    </tr>
-</table>
+
+if (isset($presentations) && is_array($presentations) && !empty($presentations)) {
+    ?>
+    <h3><?php echo __('Open Presentations'); ?></h3>
+    <ul class="unstyled">
+    <?php
+    foreach ($presentations as $presentation) {
+        ?>
+        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"></i> <?php echo $presentation->title; ?></a></li>
+        <?php
+    }
+    ?>
+    </ul>
+    <?php
+}
+
+if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinths)) {
+    ?>
+    <h3><?php echo __('Open Labyrinths'); ?></h3>
+    <ul class="unstyled">
+    <?php
+    foreach ($openLabyrinths as $labyrinth) {
+        ?>
+        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a></li>
+        <?php
+    }
+    ?>
+    </ul>
+    <?php
+}

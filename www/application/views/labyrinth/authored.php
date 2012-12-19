@@ -18,35 +18,82 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['maps'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Labyrinths I am Authoring') . ' (' . count($templateData['maps']) . ')'; ?></h4>
-                <table width="100%" cellpadding="0">
-                    <tr bgcolor="#ffffff"><td>
-                            <table width="100%">
-                                <?php foreach($templateData['maps'] as $map) { ?>
-                                    <tr bgcolor="#f3f3fa">
-                                        <td><p><a href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank"><?php echo $map->name; ?></a></p></td>
-                                        <td><p><a href="<?php echo URL::base().'labyrinthManager/editMap/'.$map->id; ?>"><img src="<?php echo URL::base(); ?>images/editl.jpg" border="0" alt="edit"></a></p></td>
-                                        <td><p><a href="<?php echo URL::base().'openLabyrinth/info/'.$map->id; ?>"><img src="<?php echo URL::base(); ?>images/infol.jpg" border="0" alt="get info"></a></p></td>
-                                        <td><p>
-                                                <?php if(count($map->contributors) > 0) { ?>
-                                                <?php foreach($map->contributors as $contributor) { ?>
-                                                    <?php echo $contributor->name ?>, (<?php echo $contributor->role->name; ?>)
-                                                <?php } ?>
-                                                <?php } ?>
-                                            </p></td>
-                                        <td><p><?php echo $map->abstract; ?></p></td>
-                                        <td valign="center"></td>
-                                    </tr>
-                                <?php } ?>
-                            </table>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-<?php } ?>
+?>
+<div class="pull-right">
+    <div class="btn-group">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            <i class="icon-plus-sign icon-white"></i>
+            Create Labyrinth
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
+            <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('Duplicate Existing'); ?></a></li>
+        </ul>
+    </div>
+</div>
+<?php
+if (isset($templateData['maps'])) {
+    ?>
+    <h1><?php echo __('My Labyrinths'); ?></h1>
 
+    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="my-labyrinths">
+        <colgroup>
+            <col style="width: 50%" />
+            <col style="width: 30%" />
+            <col style="width: 20%" />
+        <thead>
+            <tr>
+                <th><?php echo __('Labyrinth Title'); ?></th>
+                <th><?php echo __('Contributors'); ?></th>
+                <th><?php echo __('Actions'); ?></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        foreach ($templateData['maps'] as $map) {
+            ?>
+            <tr>
+                <td>
+                    <?php echo $map->name; ?>
+                </td>
+                <td>
+                <?php
+                if (count($map->contributors) > 0) {
+                    $contributors = array();
+                    foreach ($map->contributors as $contributor) {
+                        $contributors[] = '<a href="#" rel="tooltip" title="' . ucwords($contributor->role->name) . '">' . $contributor->name . '</a>';
+                    }
+                    echo implode(', ', $contributors);
+                }
+                ?>
+                </td>
+                <td class="center">
+                    <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
+                        <i class="icon-play icon-white"></i>
+                        Play
+                    </a>
+                    <a class="btn btn-info" href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
+                        <i class="icon-edit icon-white"></i>
+                        Edit
+                    </a>
+                </td>
+
+
+            </tr>
+            <?php
+        }
+        ?>
+        </tbody>
+    </table>
+    <?php
+} else {
+    ?>
+    <div class="alert alert-info">
+        <p class="lead"><?php echo __('You do not appear to have any labyrinths authored at this time.'); ?></p>
+        <p><?php echo __('Now is as good-a-time as any to click the Create Labyrinth button above.'); ?></p>
+    </div>
+    <?php
+}
+?>

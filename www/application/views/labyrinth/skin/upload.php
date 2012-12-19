@@ -19,44 +19,33 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Upload skin for "').$templateData['map']->name.'"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td style="padding:3px;" align="left">
-                        <p>
-                            [
-                            <a href="<?php echo URL::base().'skinManager/createSkin/'.$templateData['map']->id; ?>">
-                                <?php echo __('Create a new skin'); ?>
-                            </a>]&nbsp;[
-                            <a href="<?php echo URL::base().'skinManager/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>">
-                                <?php echo __('Select from a list of existing skins'); ?>
-                            </a>]&nbsp;[
-                            <a href="<?php echo URL::base().'skinManager/uploadSkin/'.$templateData['map']->id; ?>">
-                                <?php echo __('Upload a new skin'); ?>
-                            </a>]
-                        </p>
-                        <hr/>
-                            <form id="form1" name="form1" method="post" enctype="multipart/form-data" action="<?php echo URL::base().'skinManager/uploadNewSkin/'.$templateData['map']->id; ?>">
-                                <table bgcolor="#ffffff" cellpadding="6" width="80%">
-                                    <tr>
-                                        <td style="width:100px;">
-                                            <p><?php echo __('Select skin file (.zip)'); ?></p>
-                                        </td>
-                                        <td>
-                                            <input type="file" name="zipSkin" value="" />
-                                        </td>
-                                    </tr>
-
-                                    <tr><td colspan="2"><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></td></tr>
-                                </table>
-                            </form>
-                            <br>
-                            <br>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<h1><?php echo __('Edit skin of Labyrinth "').$templateData['map']->name.'"'; ?></h1>
+<div class="member-box round-all">
+    <?php echo $templateData['navigation']; ?>
+    <form class="form-horizontal" id="form1" name="form1" method="post" enctype="multipart/form-data" action="<?php echo URL::base().'skinManager/uploadNewSkin/'.$templateData['map']->id; ?>">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Upload a new skin'); ?></legend>
+            <div class="control-group">
+                <div>
+                    <p><?php echo __('Your zip file must contain:'); ?></p>
+                    <p><?php echo __('1) .css file'); ?></p>
+                    <p><?php echo __('2) image files called for in .css files'); ?></p>
+                    <p><?php echo __('To obtain a copy of the source files, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.css'; ?>"><?php echo __('.css file'); ?></a></p>
+                    <p><?php echo __('To obtain a copy of a full zip file, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.zip'; ?>"><?php echo __('.zip'); ?></a></p>
+                </div>
+            </div>
+            <div class="control-group">
+                <label style="width:200px;" class="control-label"><?php echo __('Select skin file to upload (.zip):'); ?></label>
+                <div class="controls">
+                    <input type="file" name="zipSkin" value="" />
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
 <?php } ?>

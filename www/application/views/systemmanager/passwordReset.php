@@ -19,68 +19,57 @@
  *
  */
 ?>
-<form action="<?php echo URL::base().'systemManager/updatePasswordResetSettings/'; ?>" method="post">
-    <table>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Mail from: '); ?></p>
-            </td>
-            <td align="left">
-                <p><input size="50" type="text" name="mailfrom" value="<?php echo $templateData['email_config']['mailfrom']; ?>" /></p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('From name: '); ?></p>
-            </td>
-            <td align="left">
-                <p><input size="50" type="text" name="fromname" value="<?php echo $templateData['email_config']['fromname']; ?>" /></p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Request email subject: '); ?></p>
-            </td>
-            <td align="left">
-                <p><input size="50" type="text" name="email_password_reset_subject" value="<?php echo $templateData['email_config']['email_password_reset_subject']; ?>" /></p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Request email body: '); ?></p>
-            </td>
-            <td align="left">
-                <p><?php echo '<%name%> - tag that inserts name into email body'; ?></p>
-                <p><?php echo '<%username%> - tag that inserts user name into email body'; ?></p>
-                <p><?php echo '<%link%> - tag that inserts link to new password page into email body'; ?></p>
-                <p>
-                    <textarea style="width:320px; height:130px;" name="email_password_reset_body"><?php echo $templateData['email_config']['email_password_reset_body']; ?></textarea>
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Complete email subject: '); ?></p>
-            </td>
-            <td align="left">
-                <p><input size="50" type="text" name="email_password_complete_subject" value="<?php echo $templateData['email_config']['email_password_complete_subject']; ?>" /></p>
-            </td>
-        </tr>
-        <tr>
-            <td align="left">
-                <p><?php echo __('Complete email body: '); ?></p>
-            </td>
-            <td align="left">
-                <p>
-                    <textarea style="width:320px; height:130px;" name="email_password_complete_body"><?php echo $templateData['email_config']['email_password_complete_body']; ?></textarea>
-                </p>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" align="left">
-                <input type="Submit" value="<?php echo __('Submit'); ?>">
-            </td>
-        </tr>
-    </table>
+<form class="form-horizontal" action="<?php echo URL::base() . 'systemManager/updatePasswordResetSettings/'; ?>" method="post">
     <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
+
+    <fieldset class="fieldset">
+        <legend><?php echo __('Password Recovery Settings'); ?></legend>
+        <div class="control-group">
+            <label class="control-label" for="fromname"><?php echo __('From E-Mail Address'); ?></label>
+            <div class="controls">
+                <input type="text" class="span3" id="fromname" name="fromname" value="<?php echo $templateData['email_config']['fromname']; ?>" placeholder="From Name" />
+                &lt; <input type="text" class="span5" id="mailfrom" name="mailfrom" value="<?php echo $templateData['email_config']['mailfrom']; ?>" placeholder="email@address.org"/> &gt;
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_reset_subject"><?php echo __('Reset E-Mail Subject'); ?></label>
+            <div class="controls">
+                <input type="text" class="span8" id="email_password_reset_subject" name="email_password_reset_subject" value="<?php echo $templateData['email_config']['email_password_reset_subject']; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_reset_body"><?php echo __('Reset E-Mail Body'); ?></label>
+            <div class="controls">
+                <textarea class="span8" rows="10" id="email_password_reset_body" name="email_password_reset_body"><?php echo $templateData['email_config']['email_password_reset_body']; ?></textarea>
+                <span class="help-block">
+                    <small>
+                        <span class="label label-info">Available Tags:</span>
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts name into email body.'); ?>"><?php echo __('&lt;%name%&gt;'); ?></a>,
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts user name into email body.'); ?>"><?php echo __('&lt;%username%&gt;'); ?></a>,
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts link to new password page into email body.'); ?>"><?php echo __('&lt;%link%&gt;'); ?></a>
+                    </small>
+                </span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_complete_subject"><?php echo __('Complete Reset E-Mail Subject'); ?></label>
+            <div class="controls">
+                <input type="text" class="span8" id="email_password_complete_subject" name="email_password_complete_subject" value="<?php echo $templateData['email_config']['email_password_complete_subject']; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_complete_body"><?php echo __('Complete Reset E-Mail Body'); ?></label>
+            <div class="controls">
+                <textarea class="span8" rows="10" id="email_password_complete_body" name="email_password_complete_body"><?php echo $templateData['email_config']['email_password_complete_body']; ?></textarea>
+                <span class="help-block">
+                    <small>
+                        <span class="label label-info">Available Tags:</span>
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts name into email body.'); ?>"><?php echo __('&lt;%name%&gt;'); ?></a>,
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts user name into email body.'); ?>"><?php echo __('&lt;%username%&gt;'); ?></a>,
+                    </small>
+                </span>
+            </div>
+        </div>
+        <input type="submit" class="btn btn-primary" value="<?php echo __('Update Settings'); ?>" />
+    </fieldset>
 </form>

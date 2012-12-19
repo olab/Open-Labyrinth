@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -24,46 +25,70 @@ class Controller_Base extends Controller_Template {
 
     public $template = 'home';
     protected $templateData = array();
-    
+
     public function before() {
         parent::before();
-        
-        if(Auth::instance()->logged_in()) {
-            $loggedView = View::factory('logged');
+
+        if (Auth::instance()->logged_in()) {
             I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username'] = Auth::instance()->get_user()->nickname;
-            
-            $loggedView->set('templateData', $this->templateData);
-            $this->templateData['left'] = $loggedView;
-            
-            if(Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
+
+            if (Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
                 $centerView = View::factory('adminMenu');
-                
-                $centerView->set('templateData', $this->templateData);
+
+                /*
+                 * Fetch the latest authored labyrinths.
+                 */
+                if (Auth::instance()->get_user()->type->name == 'superuser') {
+                    $maps = DB_ORM::model('map')->getAllEnabledMap(7);
+                } else {
+                    $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id, 7);
+                }
+
+                $this->templateData['latestAuthoredLabyrinths'] = $maps;
+
+                /*
+                 * Fetch the latest played labyrinths.
+                 */
+                $mapIDs = array();
+                $sessions = DB_ORM::model('user_session')->getAllSessionByUser(Auth::instance()->get_user()->id, 7);
+                if (count($sessions) > 0) {
+                    foreach ($sessions as $s) {
+                        $mapIDs[] = $s->map_id;
+                    }
+                }
+
+                if (count($mapIDs) > 0) {
+                    $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
+                }
+
                 $this->templateData['center'] = $centerView;
-                $this->templateData['right'] = View::factory('document');
+                $centerView->set('templateData', $this->templateData);
             } else {
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));
                 $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId(Auth::instance()->get_user()->id));
-                
+
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
             }
         } else {
             $this->templateData['left'] = View::factory('login');
-            
+
             $centerView = View::factory('userMenu');
-                
+
             $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
-            
+
             $centerView->set('templateData', $this->templateData);
             $this->templateData['center'] = $centerView;
         }
-        
+
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
     }
+
 }
 
 ?>

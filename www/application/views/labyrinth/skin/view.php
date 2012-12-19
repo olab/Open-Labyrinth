@@ -19,42 +19,22 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
+<h1><?php echo __('Edit skin of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
+<div class="member-box round-all">
+    <?php echo $templateData['navigation']; ?>
+    <table class="table">
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Edit skin of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="3">
-                    <tr bgcolor="#ffffff"><td align="left">
-                            <p>
-                                [
-                                <a href="<?php echo URL::base().'skinManager/createSkin/'.$templateData['map']->id; ?>">
-                                    <?php echo __('Create a new skin'); ?>
-                                </a>]&nbsp;[
-                                <a href="<?php echo URL::base().'skinManager/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>">
-                                    <?php echo __('Select from a list of existing skins'); ?>
-                                </a>]&nbsp;[
-                                <a href="<?php echo URL::base().'skinManager/uploadSkin/'.$templateData['map']->id; ?>">
-                                    <?php echo __('Upload a new skin'); ?>
-                                </a>]
-                            </p>
-                            <hr/>
-                            <table border="0" width="50%" cellpadding="3">
-                                <tr>
-                                    <td style="width:100px;"><p>Current skin:</p></td>
-                                    <td colspan="2"><p>
-                                    <?php if ($templateData['skin']->name != NULL){
-                                        echo $templateData['skin']->name;
-                                    }else{
-                                        echo 'not selected';
-                                    }?></p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td></tr>
-                </table>
+            <td width="100px"><?php echo __('Current skin:'); ?></td>
+            <td>
+            <?php if ($templateData['skin']->name != NULL){
+                echo $templateData['skin']->name;
+            }else{
+                echo 'not selected';
+            }?>
             </td>
         </tr>
     </table>
+</div>
 <?php } ?>
 
 

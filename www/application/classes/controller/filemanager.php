@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -21,94 +22,103 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_FileManager extends Controller_Base {
-    
+
+    public function before() {
+        parent::before();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+    }
+
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
-            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int)$mapId);
+            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int) $mapId);
             $fileInfo = DB_ORM::model('map_element')->getFilesSize($this->templateData['files']);
-            
+
             $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
             $this->templateData['files_count'] = $fileInfo['count'];
             $this->templateData['media_copyright'] = Kohana::$config->load('media_upload_copyright');
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
+
             $fileView = View::factory('labyrinth/file/view');
             $fileView->set('templateData', $this->templateData);
-        
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $fileView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-             Request::initial()->redirect(URL::base());
-        }
-    }
-    
-    public function action_uploadFile() {
-        $mapId = $this->request->param('id', NULL);
-        if($_FILES and $mapId != NULL) {
-            DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
-        } else {
             Request::initial()->redirect(URL::base());
-        }
-    }
-    
-    public function action_deleteFile() {
-        $mapId = $this->request->param('id', NULL);
-        $fileId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('map_element')->deleteFile($fileId);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-    
-    public function action_editFile() {
-        $mapId = $this->request->param('id', NULL);
-        $fileId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $fileId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['file'] = DB_ORM::model('map_element', array((int)$fileId));
-            
-            $fileView = View::factory('labyrinth/file/edit');
-            $fileView->set('templateData', $this->templateData);
-        
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-            
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $fileView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-             Request::initial()->redirect(URL::base());
-        }
-    }
-    
-    public function action_updateFile() {
-        $mapId = $this->request->param('id', NULL);
-        $fileId = $this->request->param('id2', NULL);
-        if($_POST and $mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
-        } else {
-             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_imageEditor(){
+    public function action_uploadFile() {
+        $mapId = $this->request->param('id', NULL);
+        if ($_FILES and $mapId != NULL) {
+            DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
+            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_deleteFile() {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
-        if($mapId != NULL and $fileId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['file'] = DB_ORM::model('map_element', array((int)$fileId));
+        if ($mapId != NULL and $fileId != NULL) {
+            DB_ORM::model('map_element')->deleteFile($fileId);
+            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_editFile() {
+        $mapId = $this->request->param('id', NULL);
+        $fileId = $this->request->param('id2', NULL);
+        if ($mapId != NULL and $fileId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
+
+            $fileView = View::factory('labyrinth/file/edit');
+            $fileView->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['left'] = $leftView;
+            $this->templateData['center'] = $fileView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_updateFile() {
+        $mapId = $this->request->param('id', NULL);
+        $fileId = $this->request->param('id2', NULL);
+        if ($_POST and $mapId != NULL and $fileId != NULL) {
+            DB_ORM::model('map_element')->updateFile($fileId, $_POST);
+            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_imageEditor() {
+        $mapId = $this->request->param('id', NULL);
+        $fileId = $this->request->param('id2', NULL);
+        if ($mapId != NULL and $fileId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
             $fileView = View::factory('labyrinth/file/imageEditor');
             $fileView->set('templateData', $this->templateData);
@@ -125,22 +135,22 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
-    public function action_imageEditorPost(){
-        $_POST["imageSource"] = DOCROOT.$_POST["filesrc"];
-        $filesrc = DOCROOT.$_POST["filesrc"];
+    public function action_imageEditorPost() {
+        $_POST["imageSource"] = DOCROOT . $_POST["filesrc"];
+        $filesrc = DOCROOT . $_POST["filesrc"];
         list($width, $height) = getimagesize($_POST["imageSource"]);
         $viewPortW = $_POST["viewPortW"];
         $viewPortH = $_POST["viewPortH"];
         $pWidth = $_POST["imageW"];
-        $pHeight =  $_POST["imageH"];
-        $ext = $this->endc(explode(".",$_POST["imageSource"]));
+        $pHeight = $_POST["imageH"];
+        $ext = $this->endc(explode(".", $_POST["imageSource"]));
         $function = $this->returnCorrectFunction($ext);
         $image = $function($_POST["imageSource"]);
         $width = imagesx($image);
         $height = imagesy($image);
         // Resample
         $image_p = imagecreatetruecolor($pWidth, $pHeight);
-        $this->setTransparency($image,$image_p,$ext);
+        $this->setTransparency($image, $image_p, $ext);
         imagecopyresampled($image_p, $image, 0, 0, 0, 0, $pWidth, $pHeight, $width, $height);
         imagedestroy($image);
         $widthR = imagesx($image_p);
@@ -149,9 +159,9 @@ class Controller_FileManager extends Controller_Base {
         $selectorX = $_POST["selectorX"];
         $selectorY = $_POST["selectorY"];
 
-        if($_POST["imageRotate"]){
+        if ($_POST["imageRotate"]) {
             $angle = 360 - $_POST["imageRotate"];
-            $image_p = imagerotate($image_p,$angle,0);
+            $image_p = imagerotate($image_p, $angle, 0);
 
             $pWidth = imagesx($image_p);
             $pHeight = imagesy($image_p);
@@ -165,30 +175,30 @@ class Controller_FileManager extends Controller_Base {
 
         $dst_x = $src_x = $dst_y = $src_y = 0;
 
-        if($_POST["imageX"] > 0){
+        if ($_POST["imageX"] > 0) {
             $dst_x = abs($_POST["imageX"]);
-        }else{
+        } else {
             $src_x = abs($_POST["imageX"]);
         }
-        if($_POST["imageY"] > 0){
+        if ($_POST["imageY"] > 0) {
             $dst_y = abs($_POST["imageY"]);
-        }else{
+        } else {
             $src_y = abs($_POST["imageY"]);
         }
 
 
-        $viewport = imagecreatetruecolor($_POST["viewPortW"],$_POST["viewPortH"]);
-        $this->setTransparency($image_p,$viewport,$ext);
+        $viewport = imagecreatetruecolor($_POST["viewPortW"], $_POST["viewPortH"]);
+        $this->setTransparency($image_p, $viewport, $ext);
 
         imagecopy($viewport, $image_p, $dst_x, $dst_y, $src_x, $src_y, $pWidth, $pHeight);
         imagedestroy($image_p);
 
 
-        $selector = imagecreatetruecolor($_POST["selectorW"],$_POST["selectorH"]);
-        $this->setTransparency($viewport,$selector,$ext);
-        imagecopy($selector, $viewport, 0, 0, $selectorX, $selectorY,$_POST["viewPortW"],$_POST["viewPortH"]);
+        $selector = imagecreatetruecolor($_POST["selectorW"], $_POST["selectorH"]);
+        $this->setTransparency($viewport, $selector, $ext);
+        imagecopy($selector, $viewport, 0, 0, $selectorX, $selectorY, $_POST["viewPortW"], $_POST["viewPortH"]);
 
-        $this->parseImage($ext,$selector,$filesrc);
+        $this->parseImage($ext, $selector, $filesrc);
         imagedestroy($viewport);
         //Return value
         echo true;
@@ -196,17 +206,19 @@ class Controller_FileManager extends Controller_Base {
         /* Functions */
     }
 
-    private function endc( $array ) { return end( $array ); }
+    private function endc($array) {
+        return end($array);
+    }
 
     private function determineImageScale($sourceWidth, $sourceHeight, $targetWidth, $targetHeight) {
-        $scalex =  $targetWidth / $sourceWidth;
-        $scaley =  $targetHeight / $sourceHeight;
+        $scalex = $targetWidth / $sourceWidth;
+        $scaley = $targetHeight / $sourceHeight;
         return min($scalex, $scaley);
     }
 
-    private function returnCorrectFunction($ext){
+    private function returnCorrectFunction($ext) {
         $function = "";
-        switch($ext){
+        switch ($ext) {
             case "png":
                 $function = "imagecreatefrompng";
                 break;
@@ -223,32 +235,32 @@ class Controller_FileManager extends Controller_Base {
         return $function;
     }
 
-    private function parseImage($ext,$img,$file = null){
-        switch($ext){
+    private function parseImage($ext, $img, $file = null) {
+        switch ($ext) {
             case "png":
-                imagepng($img,($file != null ? $file : ''));
+                imagepng($img, ($file != null ? $file : ''));
                 break;
             case "jpeg":
-                imagejpeg($img,($file ? $file : ''),90);
+                imagejpeg($img, ($file ? $file : ''), 90);
                 break;
             case "jpg":
-                imagejpeg($img,($file ? $file : ''),90);
+                imagejpeg($img, ($file ? $file : ''), 90);
                 break;
             case "gif":
-                imagegif($img,($file ? $file : ''));
+                imagegif($img, ($file ? $file : ''));
                 break;
         }
     }
 
-    private function setTransparency($imgSrc,$imgDest,$ext){
-        if($ext == "png" || $ext == "gif"){
+    private function setTransparency($imgSrc, $imgDest, $ext) {
+        if ($ext == "png" || $ext == "gif") {
             $trnprt_indx = imagecolortransparent($imgSrc);
             // If we have a specific transparent color
             if ($trnprt_indx >= 0) {
                 // Get the original image's transparent color's RGB values
-                $trnprt_color    = imagecolorsforindex($imgSrc, $trnprt_indx);
+                $trnprt_color = imagecolorsforindex($imgSrc, $trnprt_indx);
                 // Allocate the same color in the new image resource
-                $trnprt_indx    = imagecolorallocate($imgDest, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
+                $trnprt_indx = imagecolorallocate($imgDest, $trnprt_color['red'], $trnprt_color['green'], $trnprt_color['blue']);
                 // Completely fill the background of the new image with allocated color.
                 imagefill($imgDest, 0, 0, $trnprt_indx);
                 // Set the background color for new image to transparent
@@ -265,9 +277,9 @@ class Controller_FileManager extends Controller_Base {
                 // Restore transparency blending
                 imagesavealpha($imgDest, true);
             }
-
         }
     }
+
 }
-    
+
 ?>

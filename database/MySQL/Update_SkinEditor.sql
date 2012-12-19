@@ -1,0 +1,1 @@
+ALTER TABLE `map_skins` ADD `user_id` INT NULL AFTER `path` 

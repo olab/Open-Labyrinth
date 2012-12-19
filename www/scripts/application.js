@@ -87,7 +87,6 @@ jQuery(document).ready(function(){
         }
     }
 
-
     function GetCaretPosition(ctrl) {
         var CaretPos = 0;   // IE Support
         if (document.selection) {
@@ -154,4 +153,13 @@ jQuery(document).ready(function(){
     });
 
     jQuery("#tabs").tabs();
+
+	// Tooltip
+	jQuery('a[rel=tooltip]').tooltip();
+
+	// Popovers
+	jQuery('[rel=popover]').popover();
+
+	// Datepicker
+	jQuery(".datepicker").datepicker();
 });
