@@ -22,10 +22,10 @@
 <h3>Login</h3>
 <form method="post" action="<?php echo URL::base() . 'home/login' ?>">
     <label for="username"><?php echo __('Username'); ?></label>
-    <input type="text" id="username" name="username" placeholder="<?php echo __('Your Username'); ?>" />
+    <input class="not-autocomplete" type="text" id="username" name="username" placeholder="<?php echo __('Your Username'); ?>" />
 
     <label for="password"><?php echo __('Password'); ?></label>
-    <input type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
+    <input class="not-autocomplete" type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
     <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span>
 
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
@@ -45,7 +45,7 @@
                 <div class="controls">
                     <div class="input-prepend">
                         <span class="add-on"><i class="icon-envelope"></i></span>
-                        <input type="text" id="email" name="email" value="" autocomplete="off" placeholder="<?php echo __('Your e-mail address'); ?>" />
+                        <input class="not-autocomplete" type="text" id="email" name="email" value="" autocomplete="off" placeholder="<?php echo __('Your e-mail address'); ?>" />
                     </div>
                 </div>
             </div>
