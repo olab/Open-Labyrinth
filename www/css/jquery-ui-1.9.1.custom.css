@@ -467,7 +467,7 @@ body .ui-tooltip { border-width: 2px; }
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
     text-align: left !important;
-    font-size:20px !important;
+    font-size:12px !important;
 }
 /* IE 6 doesn't support max-height
 * we use height instead, but this forces the menu to always be this tall
