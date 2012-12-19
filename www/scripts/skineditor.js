@@ -42,10 +42,6 @@ jQuery(document).ready(function() {
         jQuery("#skinEditor .show").css('display', 'block');
     });
 
-    jQuery(".upload_input").click(function() {
-        jQuery(this).parents(".select_image").find(".upload_file").click();
-    });
-
     jQuery("#outside .upload_radio").click(function() {
         colorPickerOutside.hidePicker();
         isPickerOutside = false;
@@ -296,6 +292,7 @@ jQuery(document).ready(function() {
             jQuery("#outside .upload_button").click(function() {
                 jQuery("#outside .select_image").css("display", "none");
                 jQuery("#outside .progress_display").css("display", "block");
+                jQuery('#outside .upload_input').val("");
                 data.submit();
             });
         },
@@ -328,6 +325,7 @@ jQuery(document).ready(function() {
             jQuery("#centre .upload_button").click(function() {
                 jQuery("#centre .select_image").css("display", "none");
                 jQuery("#centre .progress_display").css("display", "block");
+                jQuery('#centre .upload_input').val("");
                 data.submit();
             });
         },
