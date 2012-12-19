@@ -25,7 +25,7 @@
     <input type="text" id="username" name="username" placeholder="<?php echo __('Your Username'); ?>" />
 
     <label for="password"><?php echo __('Password'); ?></label>
-    <input type="password" id="password" name="password" />
+    <input type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
     <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span>
 
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>

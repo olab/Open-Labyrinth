@@ -19,56 +19,37 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Skin for "').$templateData['map']->name.'"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td style="padding:3px;" align="left">
-                        <p>
-                            [
-                            <a href="<?php echo URL::base().'skinManager/createSkin/'.$templateData['map']->id; ?>">
-                                <?php echo __('Create a new skin'); ?>
-                            </a>]&nbsp;[
-                            <a href="<?php echo URL::base().'skinManager/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>">
-                                <?php echo __('Select from a list of existing skins'); ?>
-                            </a>]&nbsp;[
-                            <a href="<?php echo URL::base().'skinManager/uploadSkin/'.$templateData['map']->id; ?>">
-                                <?php echo __('Upload a new skin'); ?>
-                            </a>]
-                        </p>
-                        <hr/>
-                            <form id="form1" name="form1" method="post" action="<?php echo URL::base().'skinManager/saveSelectedSkin/'.$templateData['map']->id; ?>">
-                                <table bgcolor="#ffffff" cellpadding="6" width="80%">
-                                    <tr>
-                                        <td style="width:50px;">
-                                            <p><?php echo __('Name:'); ?></p>
-                                        </td>
-                                        <td>
-                                            <select name="skinId">
-                                                <option value="0">----</option>
-                                                <?php
-                                                    if (count($templateData['skinList']) > 0){
-                                                        foreach($templateData['skinList'] as $skin){
-                                                            echo '<option';
-                                                            if ($skin->id == $templateData['skinId']){
-                                                                echo ' selected="selected"';
-                                                            }
-                                                            echo ' value="'.$skin->id.'">'.$skin->name.'</option>';
-                                                        }
-                                                    }
-                                                ?>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr><td colspan="2"><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></td></tr>
-                                </table>
-                            </form>
-                            <br>
-                            <br>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+<h1><?php echo __('Edit skin of Labyrinth "').$templateData['map']->name.'"'; ?></h1>
+<div class="member-box round-all">
+    <?php echo $templateData['navigation']; ?>
+    <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'skinManager/saveSelectedSkin/'.$templateData['map']->id; ?>">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Select from a list of existing skins'); ?></legend>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Skin:'); ?></label>
+                <div class="controls">
+                    <select name="skinId">
+                        <option value="0">----</option>
+                        <?php
+                        if (count($templateData['skinList']) > 0){
+                            foreach($templateData['skinList'] as $skin){
+                                echo '<option';
+                                if ($skin->id == $templateData['skinId']){
+                                    echo ' selected="selected"';
+                                }
+                                echo ' value="'.$skin->id.'">'.$skin->name.'</option>';
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
 <?php } ?>

@@ -18,34 +18,40 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
+if (isset($templateData['map'])) {
+    $haveOne = false;
+?>
 <h1><?php echo __('Edit skin of Labyrinth "').$templateData['map']->name.'"'; ?></h1>
 <div class="member-box round-all">
     <?php echo $templateData['navigation']; ?>
-    <form class="form-horizontal" id="form1" name="form1" method="post" enctype="multipart/form-data" action="<?php echo URL::base().'skinManager/uploadNewSkin/'.$templateData['map']->id; ?>">
+    <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'skinManager/skinsSaveChanges/'.$templateData['map']->id; ?>">
         <fieldset class="fieldset">
-            <legend><?php echo __('Upload a new skin'); ?></legend>
+            <legend><?php echo __('Edit my skins'); ?></legend>
+            <?php if ($templateData['skinError'] != NULL){ ?>
+            <div class="alert alert-error">
+                <button data-dismiss="alert" class="close" type="button">&times;</button>
+                <strong><?php echo __('Error!') ?></strong>&nbsp;<?php echo $templateData['skinError']; ?>
+            </div>
+            <?php } ?>
             <div class="control-group">
-                <div>
-                    <p><?php echo __('Your zip file must contain:'); ?></p>
-                    <p><?php echo __('1) .css file'); ?></p>
-                    <p><?php echo __('2) image files called for in .css files'); ?></p>
-                    <p><?php echo __('To obtain a copy of the source files, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.css'; ?>"><?php echo __('.css file'); ?></a></p>
-                    <p><?php echo __('To obtain a copy of a full zip file, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.zip'; ?>"><?php echo __('.zip'); ?></a></p>
+                <label class="control-label"><?php echo __('Name:'); ?></label>
+                <div class="controls">
+                    <input class="not-autocomplete" type="text" name="name" value="<?php echo $templateData['skinData']->name; ?>" />
                 </div>
             </div>
             <div class="control-group">
-                <label style="width:200px;" class="control-label"><?php echo __('Select skin file to upload (.zip):'); ?></label>
+                <label class="control-label"><?php echo __('CSS file:'); ?></label>
                 <div class="controls">
-                    <input type="file" name="zipSkin" value="" />
+                    <textarea class="not-autocomplete" name="css" style="width:600px; height:300px;"><?php echo $templateData['css_content']; ?></textarea>
                 </div>
             </div>
             <div class="control-group">
                 <div class="controls">
-                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
+                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>" />
                 </div>
             </div>
         </fieldset>
+        <input type="hidden" name="skinId" value="<?php echo $templateData['skinData']->id; ?>" />
     </form>
 </div>
 <?php } ?>

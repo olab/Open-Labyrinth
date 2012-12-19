@@ -51,6 +51,25 @@
                 </span>
             </div>
         </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_complete_subject"><?php echo __('Complete Reset E-Mail Subject'); ?></label>
+            <div class="controls">
+                <input type="text" class="span8" id="email_password_complete_subject" name="email_password_complete_subject" value="<?php echo $templateData['email_config']['email_password_complete_subject']; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="email_password_complete_body"><?php echo __('Complete Reset E-Mail Body'); ?></label>
+            <div class="controls">
+                <textarea class="span8" rows="10" id="email_password_complete_body" name="email_password_complete_body"><?php echo $templateData['email_config']['email_password_complete_body']; ?></textarea>
+                <span class="help-block">
+                    <small>
+                        <span class="label label-info">Available Tags:</span>
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts name into email body.'); ?>"><?php echo __('&lt;%name%&gt;'); ?></a>,
+                        <a href="#" rel="tooltip" title="<?php echo __('Tag that inserts user name into email body.'); ?>"><?php echo __('&lt;%username%&gt;'); ?></a>,
+                    </small>
+                </span>
+            </div>
+        </div>
         <input type="submit" class="btn btn-primary" value="<?php echo __('Update Settings'); ?>" />
     </fieldset>
 </form>

@@ -1,28 +1,28 @@
-$(document).ready(function(){
+jQuery(document).ready(function(){
     //------------------Case Wizard--------------------//
-    var wizard_button = $('.wizard_body .wizard_button');
+    var wizard_button = jQuery('.wizard_body .wizard_button');
     if (wizard_button.length){
         wizard_button.click(function() {
             wizard_button.removeClass('selected');
-            $(this).addClass('selected');
+            jQuery(this).addClass('selected');
         });
     }
 
-    $("#step1_w_button").click(function() {
-        var id = $(".wizard_button.selected").attr("id");
-        $("#labyrinthType").val(id);
-        $("#step1_form").submit();
+    jQuery("#step1_w_button").click(function() {
+        var id = jQuery(".wizard_button.selected").attr("id");
+        jQuery("#labyrinthType").val(id);
+        jQuery("#step1_form").submit();
     });
 
-    $("#step2_w_button").click(function() {
-        $("#step2_form").submit();
+    jQuery("#step2_w_button").click(function() {
+        jQuery("#step2_form").submit();
     });
 
-    $("textarea, input[type=text]:not('.not-autocomplete')")
+    jQuery("textarea, input[type=text]:not('.not-autocomplete')")
         // don't navigate away from the field on tab when selecting an item
         .bind( "keydown", function( event ) {
             if ( event.keyCode === jQuery.ui.keyCode.TAB &&
-                $( this ).data( "autocomplete" ).menu.active ) {
+                jQuery( this ).data( "autocomplete" ).menu.active ) {
                 event.preventDefault();
             }
         })
@@ -131,35 +131,35 @@ $(document).ready(function(){
         }
     }
 
-    $("#dialog-confirm").dialog({
+    jQuery("#dialog-confirm").dialog({
         autoOpen: false,
         draggable: false,
         resizable: false,
         modal: true,
         buttons: {
             "I agree": function() {
-                $(this).dialog( "close" );
-                $('#upload-form').submit();
+                jQuery(this).dialog( "close" );
+                jQuery('#upload-form').submit();
             },
             Cancel: function() {
-                $(this).dialog( "close" );
+                jQuery(this).dialog( "close" );
             }
         }
     });
 
-    $("#opener").click(function() {
+    jQuery("#opener").click(function() {
         $("#dialog-confirm").dialog( "open" );
         return false;
     });
 
-    $("#tabs").tabs();
+    jQuery("#tabs").tabs();
 
 	// Tooltip
-	$('a[rel=tooltip]').tooltip();
+	jQuery('a[rel=tooltip]').tooltip();
 
 	// Popovers
-	$('[rel=popover]').popover();
+	jQuery('[rel=popover]').popover();
 
 	// Datepicker
-	$(".datepicker").datepicker();
+	jQuery(".datepicker").datepicker();
 });

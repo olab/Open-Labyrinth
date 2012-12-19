@@ -19,7 +19,7 @@
  *
  */
 ?>
-<h1>System Settings</h1>
+<h1><?php echo __('System Settings'); ?></h1>
 <div id="tabs">
     <ul>
         <?php

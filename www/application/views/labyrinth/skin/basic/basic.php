@@ -21,9 +21,9 @@
 ?>
 <html>
     <title><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout.css" />
-
+    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     <SCRIPT LANGUAGE="JavaScript">
         function toggle_visibility(id) {
             var e = document.getElementById(id);
@@ -215,7 +215,7 @@ tinyMCE.init({
 </script>
 <?php } ?>
     <div align="center">
-        <table id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
+        <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
             <tr>
                 <td class="centre_td" width="81%" bgcolor="#FFFFFF" align="left">
                     <h4><font color="#000000"><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></font></h4>
@@ -268,7 +268,8 @@ tinyMCE.init({
                     </div>
                     <a href="<?php echo URL::base(); ?>"><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth"  border="0" /></a>
                     <h5>OpenLabyrinth is an open source educational pathway system</h5>
-                </td></tr>
+                </td>
+            </tr>
             <tr>
                 <td class="centre_td" bgcolor="#FFFFFF">
                     <a href="#" onclick="toggle_visibility('track');"><p class='style2'><strong>Review your pathway</strong></p></a>
@@ -277,11 +278,7 @@ tinyMCE.init({
                     </div>
                 </td>
             </tr>
-
-        </table>
-    </td>
-</tr>
-</table>
+    </table>
 </div>
 </body>
 </html>

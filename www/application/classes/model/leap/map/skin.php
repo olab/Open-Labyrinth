@@ -46,6 +46,11 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'user_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
         );
     }
 
@@ -60,7 +65,16 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public function getSkinById($id){
+        $this->id = $id;
+        $this->load();
+
+        if($this->is_loaded()) {
+            return $this;
+        }
+    }
+
     public function getAllSkinsId() {
         $builder = DB_SQL::select('default')->from($this->table())->column('id');
         $result = $builder->query();
@@ -86,10 +100,58 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         return $result;
     }
 
+    public function getSkinsByUserId($user_id){
+        $builder = DB_SQL::select('default')->from($this->table())->where('user_id', '=', $user_id);
+        $result = $builder->query();
+
+        $skins = array();
+        if ($result->is_loaded()) {
+            foreach ($result as $record) {
+                $skins[] = DB_ORM::model('map_skin', array((int)$record['id']));
+            }
+        }
+
+        return $skins;
+    }
+
+    public function updateSkinName($id, $name, $mapId){
+        $error = false;
+        $nameChanged = true;
+        $skin = $this->getMapBySkin($name);
+        if ($skin != NULL){
+            if ($skin->id != $id){
+                $error = true;
+            }else{
+                $nameChanged = false;
+            }
+        }
+
+        if (!$error){
+            if ($nameChanged){
+                $this->id = $id;
+                $this->load();
+
+                if ($this->is_loaded()){
+                    $newPath = $mapId.'_'.$name;
+                    rename(DOCROOT.'css/skin/'.$this->path, DOCROOT.'css/skin/'.$newPath);
+
+                    $this->name = $name;
+                    $this->path = $newPath;
+                    $this->save();
+
+                    return true;
+                }
+            }
+        }else{
+            Session::instance()->set('skinError', __('That name is already taken.'));
+            return false;
+        }
+    }
+
     public function addSkin($skinName, $skinPath) {
         $this->name = $skinName;
         $this->path = $skinPath;
-
+        $this->user_id = Auth::instance()->get_user()->id;
         $this->save();
         $skin = $this->getMapBySkin($this->name);
         return $skin;
