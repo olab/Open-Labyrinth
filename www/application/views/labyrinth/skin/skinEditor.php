@@ -110,7 +110,7 @@
                         <div class="upload_action editor_action">
                             <div class="select_image">
                                 <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" style="display: none;" id="centre_upload" class="upload_file" type="file" />
+                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="centre_upload" class="upload_file" type="file" />
                                 <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                             </div>
                             <div class="progress_display">
@@ -175,7 +175,7 @@
                         <div class="upload_action editor_action">
                             <div class="select_image">
                                 <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" style="display: none;" id="outside_upload" class="upload_file" type="file" />
+                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="outside_upload" class="upload_file" type="file" />
                                 <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                             </div>
                             <div class="progress_display">

@@ -99,3 +99,19 @@ html, body {
     margin-top:0px;
     text-align: left;
 }
+
+.select_image {
+    position: relative;
+}
+
+.upload_file {
+    cursor: pointer;
+    height: 100%;
+    left: 25px;
+    position: absolute;
+    top: 0;
+    width: 150px;
+    opacity: 0;
+    -moz-opacity: 0;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0)
+}
