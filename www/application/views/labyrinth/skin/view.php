@@ -26,7 +26,7 @@ if (isset($templateData['map'])) { ?>
         <tr>
             <td width="100px"><?php echo __('Current skin:'); ?></td>
             <td>
-            <?php if ($templateData['skin']->name != NULL){
+            <?php if ($templateData['skin'] != NULL){
                 echo $templateData['skin']->name;
             }else{
                 echo 'not selected';

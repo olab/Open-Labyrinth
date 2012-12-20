@@ -84,6 +84,7 @@ jQuery(document).ready(function() {
         isPickerCentre = false;
         jQuery("#centre .editor_action").css('display', 'none');
         jQuery("#centre .opacity_action").css('display', 'block');
+        jQuery("#centre_table").css("background", "transparent");
         var rgb = hexToRgb(current_color_centre);
         jQuery(".centre_td").css("background", "rgba("+rgb.r+","+rgb.g+","+rgb.b+","+color_opacity_centre+")");
     });
@@ -261,6 +262,7 @@ jQuery(document).ready(function() {
         jQuery("#outside .position").removeAttr('checked');
         jQuery("#outside .position.off").attr('checked', 'checked');
         current_image_path_outside = null;
+        current_image_outside = null;
     });
 
     jQuery('#centre .position_reset').click(function(){
@@ -281,6 +283,7 @@ jQuery(document).ready(function() {
         jQuery("#centre .position").removeAttr('checked');
         jQuery("#centre .position.off").attr('checked', 'checked');
         current_image_path_centre = null;
+        current_image_centre = null;
     });
 
     jQuery('#outside_upload').fileupload({

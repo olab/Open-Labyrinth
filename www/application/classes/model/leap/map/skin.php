@@ -51,6 +51,12 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => TRUE,
             )),
+
+            'enabled' => new DB_ORM_Field_Boolean($this, array(
+                'default' => TRUE,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
         );
     }
 
@@ -67,16 +73,18 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     }
 
     public function getSkinById($id){
-        $this->id = $id;
-        $this->load();
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $id)->where('enabled', '=', '1');
+        $result = $builder->query();
 
-        if($this->is_loaded()) {
-            return $this;
+        if ($result->is_loaded()) {
+            return DB_ORM::model('map_skin', array($result[0]['id']));
         }
+
+        return NULL;
     }
 
     public function getAllSkinsId() {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id');
+        $builder = DB_SQL::select('default')->from($this->table())->column('id')->where('enabled', '=', '1');
         $result = $builder->query();
 
         $ids = array();
@@ -101,7 +109,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     }
 
     public function getSkinsByUserId($user_id){
-        $builder = DB_SQL::select('default')->from($this->table())->where('user_id', '=', $user_id);
+        $builder = DB_SQL::select('default')->from($this->table())->where('user_id', '=', $user_id)->where('enabled', '=', '1');
         $result = $builder->query();
 
         $skins = array();
@@ -148,17 +156,34 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         }
     }
 
+    public function deleteSkin($id){
+        $this->id = $id;
+        $this->load();
+
+        if ($this->is_loaded()){
+            if ($this->user_id == Auth::instance()->get_user()->id){
+                $this->enabled = 0;
+                $this->save();
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
     public function addSkin($skinName, $skinPath) {
         $this->name = $skinName;
         $this->path = $skinPath;
         $this->user_id = Auth::instance()->get_user()->id;
+        $this->enabled = 1;
         $this->save();
         $skin = $this->getMapBySkin($this->name);
         return $skin;
     }
 
     public function getMapBySkin($name){
-        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name);
+        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name)->where('enabled', '=', '1');
         $result = $builder->query();
 
         if ($result->is_loaded()) {

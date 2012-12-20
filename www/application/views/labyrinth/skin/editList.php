@@ -54,6 +54,21 @@ if (isset($templateData['map'])) {
                     <i class="icon-edit icon-white"></i>
                     <?php echo __('Edit'); ?>
                 </a>
+                <a data-toggle="modal" href="#" data-target="#delete-skin-<?php echo $skin->id; ?>" class="btn btn-danger">
+                    <i class="icon-trash icon-white"></i>
+                    <?php echo __('Delete'); ?>
+                </a>
+                <div class="modal hide alert alert-block alert-error fade in" id="delete-skin-<?php echo $skin->id; ?>">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $skin->name . '" skin?'); ?></p>
+                        <p>
+                            <a class="btn btn-danger" href="<?php echo URL::base() . 'skinManager/deleteSkin/'.$templateData['map']->id.'/'.$skin->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>                        </p>
+                    </div>
+                </div>
             </td>
         </tr>
         <?php } ?>
@@ -63,4 +78,5 @@ if (isset($templateData['map'])) {
         echo '<div class="alert alert-info">'.__("You don't have your own skins. Please create at least one skin.").'</div>';
     } ?>
 </div>
+
 <?php } ?>
