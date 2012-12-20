@@ -69,7 +69,7 @@ if (isset($templateData['map'])) {
     </div>
     <div class="modal hide alert alert-block alert-error fade in" id="delete-labyrinth">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="alert">×</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
         </div>
         <div class="modal-body">

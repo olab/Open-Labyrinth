@@ -70,7 +70,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-                        $data['skin_path'] = $data['map']->skin->path;
+                        if ($data['map']->skin->enabled){
+                            $data['skin_path'] = $data['map']->skin->path;
+                        }else{
+                            $data['skin_path'] = NULL;
+                        }
                         $this->template = View::factory('labyrinth/skin/basic/basic');
                         $this->template->set('templateData', $data);
                     } else {

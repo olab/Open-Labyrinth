@@ -34,7 +34,7 @@ class Controller_SkinManager extends Controller_Base {
         if ($mapId != NULL) {
             $map = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['map'] = $map;
-            $this->templateData['skin'] = DB_ORM::model('map_skin', array($map->skin_id));
+            $this->templateData['skin'] = DB_ORM::model('map_skin')->getSkinById($map->skin_id);
             $this->templateData['action'] = 'index';
             $navigation = View::factory('labyrinth/skin/navigation');
             $navigation->set('templateData', $this->templateData);
@@ -305,6 +305,16 @@ class Controller_SkinManager extends Controller_Base {
             }
         }
         Request::initial()->redirect(URL::base() . 'skinManager/index/' . $mapId);
+    }
+
+    public function action_deleteSkin(){
+        $mapId = $this->request->param('id', 0);
+        $skinId = $this->request->param('id2', 0);
+        if ($mapId & $skinId){
+            DB_ORM::model('map_skin')->deleteSkin($skinId);
+            Request::initial()->redirect(URL::base() . 'skinManager/editSkins/' . $mapId);
+        }
+        Request::initial()->redirect(URL::base());
     }
 
 }

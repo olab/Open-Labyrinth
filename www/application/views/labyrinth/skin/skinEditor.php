@@ -37,7 +37,7 @@
         $path = $templateData['skinData']->path;
         $doc_file = DOCROOT.'css/skin/'.$path.'/default.css';
         if (file_exists($doc_file)){
-            $css_file = URL::base().'css/skin/'.$path.'/default.css';
+            $css_file = URL::base().'css/skin/'.$path.'/default.css?'.rand();
             echo '<link rel="stylesheet" type="text/css" href="'.$css_file.'" />';
         }
     }
@@ -109,8 +109,10 @@
                     <div class="action_control">
                         <div class="upload_action editor_action">
                             <div class="select_image">
-                                <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="centre_upload" class="upload_file" type="file" />
+                                <div style="position: relative;">
+                                    <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
+                                    <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="centre_upload" class="upload_file" type="file" />
+                                </div>
                                 <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                             </div>
                             <div class="progress_display">
@@ -174,8 +176,10 @@
                     <div class="action_control">
                         <div class="upload_action editor_action">
                             <div class="select_image">
-                                <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
-                                <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="outside_upload" class="upload_file" type="file" />
+                                <div style="position: relative;">
+                                    <input autocomplete="off" class="upload_input" type="text" value="" placeholder="Click here to select file" name="" />
+                                    <input name="files[]" data-url="<?php echo URL::base(); ?>scripts/fileupload/php/" autocomplete="off" id="outside_upload" class="upload_file" type="file" />
+                                </div>
                                 <input autocomplete="off" class="upload_button" type="button" value="Upload" name="upload_button" />
                             </div>
                             <div class="progress_display">
