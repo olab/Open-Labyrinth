@@ -90,9 +90,8 @@ div.scroll {
     padding: 8px;
 }
 .wizard_button {
-    background-color: #cdcdcd;
-    border:1px solid #000000;
-    color: #000000;
+    border:1px solid #E5E5E5;
+
     cursor: pointer;
     display: block;
     font-size: 16px;
@@ -102,13 +101,13 @@ div.scroll {
     padding: 4px;
     text-align: center;
     text-decoration: none !important;
-    width: 280px;
     line-height:30px;
 }
+
+
 .wizard_button.li {
     margin:0;
-    width:260px;
-    height:355px;
+
 }
 .wizard_button.small {
     width:168px;
@@ -122,9 +121,7 @@ div.scroll {
     padding-left:20px;
     padding-right:20px;
 }
-.wizard_button:hover {
-    background-color: #60b3df;
-}
+
 .wizard_button.selected {
     background-color: #60b3df;
 }

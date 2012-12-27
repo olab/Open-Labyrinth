@@ -162,4 +162,20 @@ jQuery(document).ready(function(){
 
 	// Datepicker
 	jQuery(".datepicker").datepicker();
+
+
+
+    jQuery('input:radio#timing-on').change(function(){
+        $('#delta_time').prop('disabled', false);
+    });
+    jQuery('input:radio#timing-off').change(function(){
+        $('#delta_time').prop('disabled', true);
+    });
+
+    jQuery('input:radio[name=security]').change(function(){
+        if(this.value==4)$("#edit_keys").show();
+        else $("#edit_keys").hide();
+    });
+
+
 });

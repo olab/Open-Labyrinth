@@ -19,10 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit users of Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
+                  <h1><?php echo __('edit users of Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
                 <table width="100%" cellpadding="6">
                     <tr bgcolor="#ffffff"><td>
                             <table cellpadding="1">
@@ -92,9 +89,7 @@ if (isset($templateData['map'])) { ?>
                             </table>
                         </td></tr>
                 </table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>
 
 

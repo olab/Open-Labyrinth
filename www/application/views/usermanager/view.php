@@ -19,85 +19,102 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
+
+<h1><?php echo __('Users & Groups'); ?></h1>
+
+<h2>Users</h2>
+<div class="control-group">
+
+    <a class="btn btn-primary"
+       href=<?php echo URL::base() . 'usermanager/addUser' ?>><?php echo __('add') . ' ' . __('user'); ?></a></div>
+
+<p>
+    <strong><?php echo __('Users'); ?></strong>:&nbsp;<?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>
+    &nbsp;<?php echo __('registered users'); ?>&nbsp;[]</p>
+
+
+<table class="table table-striped table-bordered">
+    <colgroup>
+        <col/>
+        <col/>
+        <col/>
+        <col/>
+    </colgroup>
+    <thead>
     <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Users'); ?></h4>
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                        <p><strong><?php echo __('Users'); ?></strong>:&nbsp;<?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>&nbsp;<?php echo __('registered users'); ?>&nbsp;[<a href=<?php echo URL::base() . 'usermanager/addUser' ?>><?php echo __('add').' '.__('user'); ?></a>]</p>
-                        <table width="100%" cellpadding="2">
-                            <?php
-                            if (isset($templateData['users'])) {
-                                $count = 1;
-                                $currentIndex = 0;
-                                $outTD = array();
-                                $outTD[$currentIndex] = '';
-                                foreach ($templateData['users'] as $user) {
-                                    if ($count == 5) {
-                                        $currentIndex++;
-                                        $count = 1;
-                                        $outTD[$currentIndex] = '';
-                                    }
+        <th>
+            <?php echo __('Username'); ?>
+        </th>
+        <th>
+            <?php echo __('Name'); ?>
+        </th>
+        <th>
+            <?php echo __('Type'); ?>
+        </th>
+        <th>
+            <?php echo __('Password Recovery'); ?>
+        </th>
+        <th>
+            <?php echo __('Actions'); ?>
+        </th>
 
-                                    $outTD[$currentIndex] .= '<td valign="top" width="20%" nowrap=""><p>';
-                                    $outTD[$currentIndex] .= '<p>'.__('Username').':&nbsp;'.$user->username;
-                                    if ($user->id == $templateData['currentUserId']) {
-                                        $outTD[$currentIndex] .= ' (<b>YOU</b>)';
-                                    }
-                                    $outTD[$currentIndex] .= '<br />'.__('Type').':&nbsp;'.$user->type->name;
-                                    $outTD[$currentIndex] .= '<br />'.__('Name').':&nbsp;'.$user->nickname;
-                                    $outTD[$currentIndex] .= '<br />'.__('Password recovery attempts').':&nbsp;';
-                                    if ($user->resetAttempt != NULL){
-                                        $outTD[$currentIndex] .= $user->resetAttempt;
-                                    }else{
-                                        $outTD[$currentIndex] .= '0';
-                                    }
-                                    if ($user->resetTimestamp != NULL){
-                                        $outTD[$currentIndex] .= '<br />'.__('Last password recovery').':&nbsp;'.$user->resetTimestamp;
-                                    }
-                                    $outTD[$currentIndex] .= '<br /><a href=' . URL::base() . 'usermanager/editUser/' . $user->id . '>[' . __('edit') . ']</a>';
-                                    $outTD[$currentIndex] .= '</p></td>';
-                                    $count++;
-                                }
-
-                                foreach ($outTD as $out) {
-                                    echo '<tr>' . $out . '</tr>';
-                                }
-                            }
-                            ?>
-                        </table>
-                        <hr>
-                        <p><strong>groups</strong>&nbsp;[<a href=<?php echo URL::base().'usermanager/addGroup'; ?>>add group</a>]</p>
-                        <table>
-                        <?php
-                        if (isset($templateData['groups'])) {
-                            $count = 1;
-                            $currentIndex = 0;
-                            $outTD = array();
-                            $outTD[$currentIndex] = '';
-                            foreach ($templateData['groups'] as $group) {
-                                if ($count == 5) {
-                                    $currentIndex++;
-                                    $count = 1;
-                                    $outTD[$currentIndex] = '';
-                                }
-
-                                $outTD[$currentIndex] .= '<td valign="top" width="20%" nowrap=""><p>';
-                                $outTD[$currentIndex] .= $group->name . '<br/>';
-                                $outTD[$currentIndex] .= '<a href=' . URL::base() . 'usermanager/editGroup/' . $group->id . '>[' . __('edit') . ']</a>';
-                                $outTD[$currentIndex] .= '</p></td>';
-                                $count++;
-                            }
-
-                            foreach ($outTD as $out) {
-                                echo '<tr>' . $out . '</tr>';
-                            }
-                        }
-                        ?>
-                            </table>
-                    </td></tr>
-            </table>
-        </td>
     </tr>
+    </thead>
+
+    <tbody>
+
+
+    <?php if (isset($templateData['users']) and count($templateData['users']) > 0) { ?>
+        <?php foreach ($templateData['users'] as $user) { ?>
+            <tr>
+                <td><?php echo $user->username;?></td>
+                <td><?php echo $user->nickname;?></td>
+                <td><?php echo $user->type->name;?></td>
+                <td><?php
+
+                    if ($user->resetAttempt != NULL) {
+                        echo $user->resetAttempt;
+                    } else {
+                        echo __('No attempts');
+                    }
+                    if ($user->resetTimestamp != NULL) {
+                        echo __('Last password recovery') . ':&nbsp;' . $user->resetTimestamp;
+                    }
+
+                    echo $user->resetAttempt;?></td>
+                <td><a class="btn btn-primary" href="<?php echo URL::base() . 'usermanager/editUser/' . $user->id; ?>">edit</a>
+                </td>
+            </tr>
+
+        <?php } ?>
+    <?php }?>
+
+    </tbody>
+</table>
+
+
+<h3>Groups</h3>
+<div class="control-group">
+    <a class="btn btn-primary" href=<?php echo URL::base() . 'usermanager/addGroup'; ?>>add group</a></div>
+
+
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th><?php echo __('Title'); ?></th>
+        <th><?php echo __('Actions'); ?></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if (isset($templateData['groups']) and count($templateData['groups']) > 0) { ?>
+        <?php foreach ($templateData['groups'] as $group) { ?>
+            <tr>
+                <td><?php echo $group->name; ?></td>
+                <td><a class="btn btn-primary"
+                       href="<?php echo  URL::base() . 'usermanager/editGroup/' . $group->id; ?>"><?php echo __('edit');?> </a>
+                </td>
+            </tr>
+        <?php } ?>
+    <?php } ?>
+    </tbody>
 </table>

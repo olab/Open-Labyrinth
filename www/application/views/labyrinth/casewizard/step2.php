@@ -19,68 +19,120 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Step 2. Add global information'); ?></h4>
-            <div style="width:100%; min-height:400px; background:#FFFFFF; position: relative;">
-                <div class="wizard_body">
-                    <form id="step2_form" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/2/addNewLabyrinth' ?>">
-                    <table width="100%" cellspacing="0" cellpadding="4" border="0">
-                        <tbody><tr>
-                            <td width="33%" align="right"><p>Title: </p></td>
-                            <td width="50%"><p><input type="text" value="" size="40" id="mtitle" name="title"></p></td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Description: </p></td>
-                            <td align="left"><p><textarea id="mdesc" rows="5" cols="40" name="description"></textarea></p></td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Keywords: </p></td>
-                            <td align="left"><p>
-                                <input type="text" value="" size="40" id="keywords" name="keywords">
-                            </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Timing: </p></td>
-                            <td align="left"><p>
-                                timing off<input type="radio" checked="" value="0" name="timing"> : timing on<input type="radio" value="1" name="timing">
-                                <br><br>
-                                time delta (seconds)<input type="text" size="6" value="" id="delta_time" name="delta_time">
-                            </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Security: </p></td>
-                            <td align="left">
-                                <p>
-                                    <input type="radio" value="1" name="security">open access<br>
-                                    <input type="radio" value="2" name="security">closed (only logged in Labyrinth users can see it)<br>
-                                    <input type="radio" value="3" name="security">private (only registered authors and users can see it)<br>
-                                    <input type="radio" value="4" name="security">keys (a key is required to access this Labyrinth) - <a href="editKeys">edit</a>
-                                    </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Section browsing: </p></td>
-                            <td align="left">
-                                <p>
-                                don't show<input type="radio" value="1" name="section"> |
-                                visible<input type="radio" value="2" name="section"> |
-                                navigable<input type="radio" value="3" name="section"> |
-                                </p>
-                            </td>
-                        </tr>
-                        </tbody></table>
-                    </form>
-                </div>
-                <div class="wizard_footer">
-                    <a id="step2_w_button" href="javascript:void(0)" style="float:right;" class="wizard_button">Step 3 - Add your story</a>
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
-                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/1'; ?>" style="float:left;" class="wizard_button">Return to step 1.</a>
-                </div>
+<h1><?php echo __('Step 2. Add global information'); ?></h1>
+
+<form id="step2_form" method="post" class="form-horizontal"
+      action="<?php echo URL::base() . 'labyrinthManager/caseWizard/2/addNewLabyrinth' ?>">
+
+    <fieldset class="fieldset">
+
+        <div class="control-group">
+            <label for="mtitle" class="control-label"><?php echo 'Title';?></label>
+
+            <div class="controls">
+                <input type="text" value="" class="span6" id="mtitle" name="title"/>
             </div>
-        </td>
-    </tr>
-</table>
+        </div>
+
+
+        <div class="control-group">
+            <label for="mdesc" class="control-label"><?php echo 'Description';?></label>
+
+            <div class="controls">
+                <textarea id="mdesc" rows="5" cols="40" name="description"></textarea>
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label for="keywords" class="control-label"><?php echo 'Keywords';?></label>
+
+            <div class="controls">
+                <input type="text" value="" class="span6" id="keywords" name="keywords">
+            </div>
+        </div>
+
+        <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to
+        navigate it in a certain time.">
+            <label class="control-label"><?php echo __('Timing'); ?></label>
+
+            <div class="controls">
+                <label class="radio">
+                    <?php echo __('On'); ?>
+                    <input type="radio" name="timing" id="timing-on"
+                           value=1>
+
+                    <div class="control-group">
+                        <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
+
+                        <div class="controls">
+                            <input
+                                name="delta_time" type="text" class="span1" id="delta_time"
+                                value="">
+                            <span class="help-inline"><?php echo __('seconds'); ?></span>
+                        </div>
+                    </div>
+                </label>
+
+
+                <label class="radio">
+                    <?php echo __('Off'); ?>
+                    <input id="timing-off" type="radio" name="timing"
+                           value=0>
+                </label>
+            </div>
+        </div>
+
+
+        <?php if (isset($templateData['securities'])) { ?>
+
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Security'); ?></label>
+
+                <div class="controls">
+                    <?php foreach ($templateData['securities'] as $security) { ?>
+                        <label class="radio">
+                            <input type="radio"
+                                   name="security"
+                                   value=<?php echo $security->id; ?>>
+                            <?php echo $security->name; ?>
+                        </label>
+                    <?php } ?>
+
+                </div>
+
+
+            </div>
+        <?php } ?>
+
+
+        <?php if (isset($templateData['sections'])) { ?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Section Browsing'); ?></label>
+
+                <div class=" controls">
+                    <?php foreach ($templateData['sections'] as $section) { ?>
+                        <label class="radio">
+                            <input type="radio" name="section" value=<?php echo $section->id; ?>/>
+                            <?php echo $section->name; ?>
+                        </label>
+                    <?php } ?>
+
+                </div>
+
+            </div>
+        <?php } ?>
+
+    </fieldset>
+
+</form>
+
+<div>
+    <a id="step2_w_button" href="javascript:void(0)" style="float:right;" class="btn btn-primary wizard_button">Step 3 -
+        Add your story</a>
+    <a href="<?php echo URL::base(); ?>" style="float:right;" class="btn btn-primary wizard_button">Save & return
+        later</a>
+    <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/1'; ?>" style="float:left;"
+       class="btn btn-primary wizard_button">Return to step 1</a>
+</div>
+

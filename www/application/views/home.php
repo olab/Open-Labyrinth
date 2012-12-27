@@ -98,7 +98,7 @@
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Manage Presentations'); ?></a></li>
                                         <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Manage Remote Services'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Manage Users'); ?></a></li>
+                                        <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Manage Users & Groups'); ?></a></li>
                                         <?php
                                         if (Auth::instance()->get_user()->type->name == 'superuser') {
                                             ?>

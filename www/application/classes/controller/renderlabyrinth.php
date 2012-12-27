@@ -142,7 +142,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                     } else {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links'];
+                        if(!empty($result['links']))
+                            $data['links'] = $result['links'];
+                        else $data['links'] = "";
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
@@ -749,7 +751,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
                     $result .= '</p></td></tr></table>';
@@ -774,7 +776,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
 
@@ -846,7 +848,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
 

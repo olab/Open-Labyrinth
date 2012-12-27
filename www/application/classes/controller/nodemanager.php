@@ -109,6 +109,12 @@ class Controller_NodeManager extends Controller_Base {
             $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['node']->map_id);
 
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $this->templateData['map']->id));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Nodes'))->set_url(URL::base() . 'nodeManager/index/' .  $this->templateData['map']->id));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base() . 'nodeManager/editNode/' . $this->templateData['node']->id));
+
+
             $editNodeView = View::factory('labyrinth/node/editNode');
             $editNodeView->set('templateData', $this->templateData);
 

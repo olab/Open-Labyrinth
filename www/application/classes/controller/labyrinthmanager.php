@@ -675,6 +675,14 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
         }
         switch ($stepId) {
+
+            case '2':
+                if($action != NULL){
+                    $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
+                    $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
+                }
+
+
             case '3':
                 if ($action != NULL) {
                     $this->templateData['map'] = $action;
