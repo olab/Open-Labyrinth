@@ -3,3 +3,4 @@ www/application/cache/*
 www/application/logs/*
 www/files/*
 www/export/visual_editor/*.xml
+.idea

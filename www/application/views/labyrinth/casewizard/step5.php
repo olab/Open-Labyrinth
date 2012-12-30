@@ -19,16 +19,14 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
+
             <h4><?php echo __('Step 5. Edit Skin'); ?></h4>
-            <div style="width:100%; min-height:400px; background:#FFFFFF; position: relative;">
-                <div class="wizard_header">
-                    <ul>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'createSkin') echo 'selected'; ?>">Create a new skin</a></li>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'listSkins') echo 'selected'; ?>">Select from a list of existing skins</a></li>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'uploadSkin') echo 'selected'; ?>">Upload a new skin</a></li>
+            <div>
+                <div>
+                    <ul class="nav nav-pills">
+                        <li class="<?php if ($templateData['action'] == 'createSkin') echo 'active'; ?>"><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$templateData['map']->id; ?>" >Create a new skin</a></li>
+                        <li class="<?php if ($templateData['action'] == 'listSkins') echo 'active'; ?>"><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>" >Select from a list of existing skins</a></li>
+                        <li class="<?php if ($templateData['action'] == 'uploadSkin') echo 'active'; ?>"><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadSkin/'.$templateData['map']->id; ?>" >Upload a new skin</a></li>
                     </ul>
                 </div>
                 <div class="wizard_body">
@@ -36,11 +34,11 @@
                     if ($templateData['action'] == 'createSkin'){
                         if ($templateData['result'] == 'done'){
                     ?>
-                    <div style="text-align: center; position: relative; top:100px;">
-                        Creating of a new skin is complited successfully. Click "Save & Finish"
+                    <div>
+                        Creating of a new skin is completed successfully. Click "Save & Finish"
                     </div>
                     <?php }else{ ?>
-                    <div style="text-align: center; position: relative; top:100px;">
+                    <div>
                         Click <a style="text-decoration: underline;" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createNewSkin/'.$templateData['map']->id; ?>">here</a> to create new skin
                     </div>
                     <?php
@@ -50,12 +48,10 @@
                     }
                     ?>
                 </div>
-                <div class="wizard_footer">
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & Finish</a>
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
-                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editNode/'.$templateData['map']->id; ?>" style="float:left;" class="wizard_button">Return to step 4.</a>
+                <div>
+                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="btn btn-primary">Save & Finish</a>
+                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="btn btn-primary">Save & return later</a>
+                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editNode/'.$templateData['map']->id; ?>" class="btn btn-primary">Return to step 4.</a>
                 </div>
             </div>
-        </td>
-    </tr>
-</table>
+

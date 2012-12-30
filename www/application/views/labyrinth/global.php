@@ -20,17 +20,7 @@
  */
 if (isset($templateData['map'])) {
     ?>
-    <link rel="stylesheet" href="<?php echo URL::base()?>/scripts/tipsy/tipsy.css" type="text/css"/>
 
-    <script type="text/javascript" src="<?php echo URL::base()?>/scripts/tipsy/jquery.tipsy.js"></script>
-    <script type='text/javascript'>
-        $(function () {
-
-            $('.control-group').tipsy();
-
-
-        });
-    </script>
 
     <h1><?php echo __('Edit Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
 

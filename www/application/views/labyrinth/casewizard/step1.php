@@ -22,7 +22,6 @@
 
             <h1><?php echo __('Step 1. What kind of VP do you what?'); ?></h1>
 
-
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="wizard_body span9">
