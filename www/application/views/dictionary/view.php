@@ -21,9 +21,6 @@
 ?>
 
     <h1><?php echo __('Dictionary manager '); ?></h1>
-
-
-
     <p></p>
 <?php if ($templateData['result'] == 'success') {
     echo '<p style="color:green">File successfully uploaded to dictionary</p>';
@@ -51,12 +48,6 @@
 
 
     </form>
-
-
-
-
-
-
     <form class="form-horizontal" method="POST" action="<?php echo URL::base() . 'dictionaryManager/addWord'; ?>">
         <fieldset class="fieldset">
             <legend><?php echo __('Add word to dictionary:'); ?></legend>

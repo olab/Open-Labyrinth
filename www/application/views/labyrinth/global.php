@@ -319,9 +319,4 @@ if (isset($templateData['map'])) {
 
 
     </form>
-
-
-
-
-
 <?php } ?>
