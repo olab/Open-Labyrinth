@@ -53,10 +53,8 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
         }
     }
     ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit file: "') . $templateData['file']->name . '"'; ?></h4>
+
+                <h1><?php echo __('Edit file: "') . $templateData['file']->name . '"'; ?></h1>
                 <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>">
                     <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
                         <tr align="left"><td><p><?php echo __('preview'); ?></p></td><td><?php echo $preview; ?></td></tr>
