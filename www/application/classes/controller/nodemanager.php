@@ -145,6 +145,17 @@ class Controller_NodeManager extends Controller_Base {
         }
     }
 
+    public function action_deleteNode(){
+        $mapId = (int) $this->request->param('id', 0);
+        $nodeId = (int) $this->request->param('id2', 0);
+        if ($nodeId){
+            DB_ORM::model('map_node')->deleteNode($nodeId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
     public function action_setRootNode() {
         $mapId = (int) $this->request->param('id', 0);
         $nodeId = (int) $this->request->param('id2', 0);

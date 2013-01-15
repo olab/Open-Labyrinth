@@ -52,7 +52,18 @@ if (isset($templateData['map'])) {
                 <td>
                     <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/editNode/' . $node->id; ?>"><?php echo __('Edit'); ?></a>
                     <a class="btn btn-success" href="<?php echo URL::base() . 'renderLabyrinth/go/' . $templateData['map']->id.'/'. $node->id; ?>"><?php echo __('View'); ?></a>
-                    <a class="btn btn-success" href="<?php echo URL::base() . '' . $templateData['map']->id.'/'. $node->id; ?>"><?php echo __('Delete'); ?></a>
+                    <a data-toggle="modal" href="#" data-target="#delete-node-<?php echo $node->id; ?>" class="btn btn-danger"><?php echo __('Delete'); ?></a>
+                    <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $node->id; ?>">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $node->title . '" node?'); ?></p>
+                            <p>
+                                <a class="btn btn-danger" href="<?php echo URL::base() . 'nodeManager/deleteNode/' . $templateData['map']->id.'/'. $node->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>                        </p>
+                        </div>
+                    </div>
                 </td>
                 <td><a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>"><?php echo __('Links'); ?></a></td>
                 </tr>
@@ -65,9 +76,4 @@ if (isset($templateData['map'])) {
     <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/sections/' . $templateData['map']->id; ?>">Sections</a>
     <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>">Nodegrid</a>
     </div>
-
-
-
 <?php } ?>
-
-
