@@ -59,6 +59,10 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap($mapId);
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters'))->set_url(URL::base() . 'counterManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Counter'))->set_url(URL::base() . 'counterManager/addCounter/' . $mapId));
+
             $addCounterView = View::factory('labyrinth/counter/add');
             $addCounterView->set('templateData', $this->templateData);
 
@@ -94,6 +98,10 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['rules'] = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counterId);
             $this->templateData['relations'] = DB_ORM::model('map_counter_relation')->getAllRealtions();
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters'))->set_url(URL::base() . 'counterManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['counter']->name)->set_url(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId));
 
             $editCounterView = View::factory('labyrinth/counter/edit');
             $editCounterView->set('templateData', $this->templateData);
