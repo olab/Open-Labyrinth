@@ -296,7 +296,7 @@ class Model_Labyrinth extends Model {
                         $func = '<sup>[no]</sup>';
                     }
 
-                    if (($counter->visible) & ($apperOnNode == 1)) {
+                    if (($counter->visible != 0) & ($apperOnNode == 1)) {
                         $popup = '<a href="javascript:void(0)" onclick=\'window.open("' . URL::base() . 'renderLabyrinth/", "Counter", "toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350"); return false;\'>';
                         $counterString .= '<p>' . $popup . $label . '</a>(' . $thisCounter . ') ' . $func . '</p>';
                         $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$thisCounter.'"></counter>';

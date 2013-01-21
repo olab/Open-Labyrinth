@@ -972,7 +972,7 @@ class Controller_ExportImportManager extends Controller_Base {
     public function parseXML($tmpFileName) {
         $content = file_get_contents($tmpFileName);
         $searchArray = array('<ol:', '</ol:', '&#034;');
-        $replaceArray = array('<', '</', '"');
+        $replaceArray = array('<', '</', "'");
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
         return simplexml_load_string($xmlString);

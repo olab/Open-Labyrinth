@@ -73,8 +73,9 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'visible' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
+            'visible' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'default' => 0,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -115,30 +116,46 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     public function getCountersByMap($mapId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
-        
+
         if($result->is_loaded()) {
             $counters = array();
             foreach($result as $record) {
                 $counters[] = DB_ORM::model('map_counter', array((int)$record['id']));
             }
-            
+
             return $counters;
         }
-        
+
         return NULL;
     }
-    
+
     public function addCounter($mapId, $values) {
         $this->map_id = $mapId;
         $this->name = Arr::get($values, 'cName', '');
         $this->description = Arr::get($values, 'cDesc', '');
         $this->icon_id = Arr::get($values, 'cIconId', NULL);
         $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', 0));
-        $this->visible = Arr::get($values, 'cVisible', FALSE);
-        
+        $visible = Arr::get($values, 'cVisible', FALSE);
+        $this->visible = $visible;
+
         $this->save();
 
-        return $this->getLastAddedCounter($mapId);
+        $lastCounter = $this->getLastAddedCounter($mapId);
+        if ($visible == 2){
+            $visible = 1;
+        }
+        $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        if(count($nodes) > 0) {
+            foreach($nodes as $node) {
+                $newMapCounter = DB_ORM::model('map_node_counter');
+                $newMapCounter->counter_id = $lastCounter->id;
+                $newMapCounter->node_id = $node->id;
+                $newMapCounter->display = $visible;
+                $newMapCounter->save();
+            }
+        }
+
+        return $lastCounter;
     }
 
     public function getLastAddedCounter($mapId){
@@ -152,7 +169,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return NULL;
     }
     
-    public function updateCounter($counterId, $values) {
+    public function updateCounter($counterId, $values, $updateVisible = true) {
         $this->id = $counterId;
         $this->load();
         
@@ -161,7 +178,12 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             $this->description = Arr::get($values, 'cDesc', $this->description);
             $this->icon_id = Arr::get($values, 'cIconId', $this->icon_id);
             $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', $this->start_value));
-            $this->visible = Arr::get($values, 'cVisible', $this->visible);
+            $visible = Arr::get($values, 'cVisible', $this->visible);
+            $this->visible = $visible;
+
+            if (($visible != 2) & ($updateVisible)){
+                DB_ORM::model('map_node_counter')->updateVisibleForCounters($this->map_id, $counterId, $visible);
+            }
 
             $this->save();
         }

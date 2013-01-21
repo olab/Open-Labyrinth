@@ -22,7 +22,7 @@ if (isset($templateData['map'])) {
     ?>
 
     <h1><?php echo __('Edit links for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
-    <p><?php __('Links represent the options available to the user') ?></p>
+    <p><?php echo __('Links represent the options available to the user'); ?></p>
 
     <table class="table table-striped table-bordered">
         <thead>

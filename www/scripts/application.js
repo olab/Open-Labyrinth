@@ -177,5 +177,27 @@ jQuery(document).ready(function(){
         else $("#edit_keys").hide();
     });
 
+    jQuery('.toggle-all-on').click(function() {
+        var id = jQuery(this).attr("id");
+        jQuery(".chk_"+id).attr('checked', 'checked');
+    });
 
+    jQuery('.toggle-all-off').click(function() {
+        var id = jQuery(this).attr("id");
+        jQuery(".chk_"+id).removeAttr('checked');
+    });
+
+    jQuery('.toggle-reverse').click(function() {
+        var id = jQuery(this).attr("id");
+        var chk = jQuery(".chk_"+id);
+        chk.each(function() {
+            var check_value = jQuery(this).attr("checked");
+            if (check_value){
+                jQuery(this).removeAttr("checked");
+            } else {
+                jQuery(this).attr("checked", "checked");
+            }
+        });
+
+    });
 });
