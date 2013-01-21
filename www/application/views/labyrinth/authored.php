@@ -38,7 +38,7 @@ if (isset($templateData['maps'])) {
     ?>
     <h1><?php echo __('My Labyrinths'); ?></h1>
 
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="my-labyrinths">
+    <table  class="table table-striped table-bordered" id="my-labyrinths">
         <colgroup>
             <col style="width: 50%" />
             <col style="width: 30%" />

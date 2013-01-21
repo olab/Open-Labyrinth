@@ -18,136 +18,247 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['dam'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit a Labyrinth Data Cluster "') . $templateData['dam']->name . '"'; ?></h4>
-                <table width="100%" bgcolor="#ffffff">
-                    <tr>
-                        <td align="left">
-                            <p><strong><img src="<?php echo URL::base(); ?>images/OL_cluster_wee.gif" alt="clusters" align = "absmiddle" border="0" />&nbsp;Preview</strong></p>
-                            <table border="2"><tr><td><p><?php if(isset($templateData['preview'])) echo $templateData['preview']; ?></p></td></tr></table>
-                            <hr />
-                            <p>
-                                <p><strong><img src="<?php echo URL::base(); ?>images/OL_cluster_wee.gif" alt="clusters" align = "absmiddle" border="0" />&nbsp;Data Cluster: <?php echo $templateData['dam']->name; ?></strong></p>
-                                <?php if(count($templateData['dam']->elements) > 0) { ?>
-                                <table>
-                                    <?php foreach($templateData['dam']->elements as $element) { ?>
-                                    <?php if($element->element_type == 'vpd') { ?>
-                                    <form method="post" action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
-                                        <tr>
-                                            <td><p>VPD (<?php echo $element->vpd->type->label; ?>) element (<?php echo $element->element_id; ?>)</p></td>
-                                            <td>
-                                                <select name='trigger'>
-                                                    <option value='immediately' <?php if($element->display == 'immediately') echo 'selected=""'; ?>>immediately</option>
-                                                    <option value='ontrigger' <?php if($element->display == 'ontrigger') echo 'selected=""'; ?>>ontrigger</option>
-                                                    <option value='delayed' <?php if($element->display == 'delayed') echo 'selected=""'; ?>>delayed</option>
-                                                    <option value='ifrequested' <?php if($element->display == 'ifrequested') echo 'selected=""'; ?>>ifrequested</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select name='order'>
-                                                    <?php for($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
-                                                    <option value="<?php echo $i; ?>" <?php if($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </td>
-                                            <td><p><input type="submit" value="update"></p></td>
-                                            <td><p><a href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a></p></td>
-                                        </tr>
-                                    </form>
-                                    <?php } else if($element->element_type == 'mr') { ?>
-                                    <form method="post" action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
-                                        <tr>
-                                            <td><p>MR (<?php echo $element->element->name; ?>) element (<?php echo $element->element_id; ?>)</p></td>
-                                            <td></td>
-                                            <td>
-                                                <select name='order'>
-                                                    <?php for($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
-                                                    <option value="<?php echo $i; ?>" <?php if($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </td>
-                                            <td><p><input type="submit" value="update"></p></td>
-                                            <td><p><a href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a></p></td>
-                                        </tr>
-                                    </form>    
-                                    <?php } else if($element->element_type == 'dam') { ?>
-                                    <form method="post" action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
-                                        <tr>
-                                            <td><p>DAM (<?php echo $element->edam->name; ?>) element (<?php echo $element->element_id; ?>)</p></td>
-                                            <td></td>
-                                            <td>
-                                                <select name='order'>
-                                                    <?php for($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
-                                                    <option value="<?php echo $i; ?>" <?php if($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                                                    <?php } ?>
-                                                </select>
-                                            </td>
-                                            <td><p><input type="submit" value="update"></p></td>
-                                            <td><p><a href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a></p></td>
-                                        </tr>
-                                    </form> 
+if (isset($templateData['map']) and isset($templateData['dam'])) {
+    ?>
+
+    <h1 xmlns="http://www.w3.org/1999/html"><?php echo __('Edit a Labyrinth Data Cluster "') . $templateData['dam']->name . '"'; ?></h1>
+
+    <h3>Preview</h3>
+    <h3>Data Cluster: <?php echo $templateData['dam']->name; ?></h3>
+
+    <form method='post'
+          action='<?php echo URL::base(); ?>clusterManager/updateDamName/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
+        <fieldset class="fieldset">
+            <div class="control-group">
+
+                <label for="damname" class="control-label"><?php echo __("Data cluster name"); ?></label>
+
+                <div class="controls">
+                    <input name='damname' id='damname' type='text' class="span6"
+                           value='<?php echo $templateData['dam']->name; ?>'/>
+                </div>
+            </div>
+        </fieldset>
+
+        <input class="btn btn-primary"
+               type='submit' value='update'/>
+    </form>
+    <?php if (count($templateData['dam']->elements) > 0) { ?>
+        <h4><?php echo __("Elements");?></h4>
+        <?php foreach ($templateData['dam']->elements as $element) { ?>
+            <?php if ($element->element_type == 'vpd') { ?>
+                <form class="form-horizontal" method="post"
+                      action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
+
+
+
+
+
+                    <fieldset class="fieldset">
+                        <legend>VPD (<?php echo $element->vpd->type->label; ?>) element
+                            (<?php echo $element->element_id; ?>)</legend>
+                        <div class="control-group">
+                            <label for="vpd_order" class="control-label">Order</label>
+
+                            <div class="controls">
+                                <select id="vpd_order" name='order'>
+                                    <?php for ($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
+                                        <option
+                                            value="<?php echo $i; ?>" <?php if ($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
                                     <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="vpd_trigger" class="control-label">Trigger</label>
+
+                            <div class="controls">
+                                <select id="vpd_trigger" name='trigger'>
+                                            <option
+                                            value='immediately' <?php if ($element->display == 'immediately') echo 'selected=""'; ?>>
+                                            immediately
+                                        </option>
+                                        <option
+                                            value='ontrigger' <?php if ($element->display == 'ontrigger') echo 'selected=""'; ?>>
+                                            ontrigger
+                                        </option>
+                                        <option
+                                            value='delayed' <?php if ($element->display == 'delayed') echo 'selected=""'; ?>>
+                                            delayed
+                                        </option>
+                                        <option
+                                            value='ifrequested' <?php if ($element->display == 'ifrequested') echo 'selected=""'; ?>>
+                                            ifrequested
+                                        </option>
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                    </fieldset>
+
+
+                       <input class="btn btn-primary" type="submit" value="update">
+
+                                <a class="btn btn-primary" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
+
+                </form>
+            <?php }
+
+            else if ($element->element_type == 'mr') { ?>
+                <form method="post" class="form-horizontal"
+                      action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
+
+                    <fieldset class="fieldset">
+                        <legend>MR (<?php echo $element->element->name; ?>) element (<?php echo $element->element_id; ?>)</legend>
+                        <div class="control-group">
+                            <label for="mr_order" class="control-label">Order</label>
+
+                            <div class="controls">
+                                <select id="mr_order" name='order'>
+                                    <?php for ($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
+                                        <option
+                                            value="<?php echo $i; ?>" <?php if ($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
                                     <?php } ?>
-                                </table>
-                                <?php } ?>
-                            </p>
-                            <table width='100%' border='0' cellspacing='6'>
-                                <tr><td><hr />
-                                        <form method='post' action='<?php echo URL::base(); ?>clusterManager/updateDamName/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
-                                            <p>Data cluster name: <input name='damname' type='text' value='<?php echo $templateData['dam']->name; ?>' />&nbsp;<input type='submit' value='update' />
-                                        </form>
-                                    </td></tr>
-                                <tr><td><hr />
-                                        <?php if($templateData['vpds'] != NULL and count($templateData['vpds']) > 0) { ?>
-                                        <form method='post' action='<?php echo URL::base(); ?>clusterManager/addElementToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>    
-                                            <p>add a data element: <select name='vpdid' size='1'>
-                                                    <?php foreach($templateData['vpds'] as $vpd) { ?>
-                                                    <option value="<?php echo $vpd->id; ?>"><?php echo $vpd->type->label; ?> (<?php echo $vpd->id; ?>)</option>
-                                                    <?php } ?>
-                                                </select><input type='submit' value='add' />
-                                        </form>
-                                        <?php } else { ?>
-                                        <p>no elements to add</p>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                        <input class="btn btn-primary" type="submit" value="update">
+
+                                <a class="btn btn-primary" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
+
+
+                </form>
+
+
+
+
+            <?php }
+
+            else if ($element->element_type == 'dam') { ?>
+
+                    <form class="form-horizontal" method="post"
+                          action="<?php echo URL::base(); ?>clusterManager/updateDamElement/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">
+                        <fieldset class="fieldset">
+                            <legend><?php echo __('DAM'); ?>
+                                (<?php echo $element->edam->name; ?>) element (<?php echo $element->element_id; ?>)</legend>
+                            <div class="control-group">
+                                <label for="order" class="control-label">Order</label>
+
+                                <div class="controls">
+                                    <select id="order" name='order'>
+                                        <?php for ($i = 1; $i <= count($templateData['dam']->elements); $i++) { ?>
+                                            <option
+                                                value="<?php echo $i; ?>" <?php if ($element->order == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
                                         <?php } ?>
-                                    </td></tr>
-                                <tr><td>
-                                        <hr />
-                                        <?php if($templateData['files'] != NULL and count($templateData['files']) > 0) { ?>
-                                        <form method='post' action='<?php echo URL::base(); ?>clusterManager/addFileToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
-                                            <p>add a media resource: <select name='mrid' size='1'>
-                                                    <?php foreach($templateData['files'] as $file) { ?>
-                                                    <option value="<?php echo $file->id; ?>"><?php echo $file->name; ?></option>
-                                                    <?php } ?>
-                                                </select><input type='submit' value='add' />
-                                        </form>
-                                        <?php } else { ?>
-                                        <p>no media resources to add</p>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <input class="btn btn-primary" type="submit" value="update">
+
+
+                <a class="btn btn-primary"
+                   href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
+
+                </form>
+            <?php } ?>
+        <?php } ?>
+
+    <?php } ?>
+
+
+
+
+                <?php if ($templateData['vpds'] != NULL and count($templateData['vpds']) > 0) { ?>
+                    <form method='post' class="form-horizontal"
+                          action='<?php echo URL::base(); ?>clusterManager/addElementToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
+
+                        <fieldset class="fieldset">
+
+                            <div class="control-group">
+                                <label for="vpdid" class="control-label">Add a data element</label>
+
+                                <div class="controls">
+                                    <select name='vpdid' id='vpdid'>
+                                        <?php foreach ($templateData['vpds'] as $vpd) { ?>
+                                            <option value="<?php echo $vpd->id; ?>"><?php echo $vpd->type->label; ?>
+                                                (<?php echo $vpd->id; ?>)
+                                            </option>
                                         <?php } ?>
-                                    </td></tr>
-                                <tr><td>
-                                        <hr />
-                                        <?php if($templateData['dams'] != NULL and count($templateData['dams']) > 0) { ?>
-                                        <form method='post' action='<?php echo URL::base(); ?>clusterManager/addDamToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
-                                            <p>add a data cluster to this data cluster: <select name='adamid' size='1'>
-                                                    <?php foreach($templateData['dams'] as $dam) { ?>
-                                                    <option value="<?php echo $dam->id; ?>"><?php echo $dam->name; ?></option>
-                                                    <?php } ?>
-                                                </select><input type='submit' value='add' />
-                                        </form>
-                                        <?php } else { ?>
-                                        <p>no clusters to add</p>
+                                    </select>
+
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <input class="btn btn-primary" type='submit' value='add'/>
+                    </form>
+                <?php } else { ?>
+                    <p>no elements to add</p>
+                <?php } ?>
+
+                <?php if ($templateData['files'] != NULL and count($templateData['files']) > 0) { ?>
+                    <form method='post' class="form-horizontal"
+                          action='<?php echo URL::base(); ?>clusterManager/addFileToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
+
+
+                        <fieldset class="fieldset">
+
+                            <div class="control-group">
+                                <label for="mrid" class="control-label">Add a media resource</label>
+
+                                <div class="controls">
+                                    <select name='mrid' id='mrid'>
+                                        <?php foreach ($templateData['files'] as $file) { ?>
+                                            <option value="<?php echo $file->id; ?>"><?php echo $file->name; ?></option>
                                         <?php } ?>
-                                    </td></tr>
-                            </table>
-                            <hr />
-                            <br />
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                                    </select>
+
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <input class="btn btn-primary" type='submit' value='add'/>
+
+                    </form>
+                <?php } else { ?>
+                    <p>no media resources to add</p>
+                <?php } ?>
+
+                <?php if ($templateData['dams'] != NULL and count($templateData['dams']) > 0) { ?>
+                    <form method='post' class="form-horizontal"
+                          action='<?php echo URL::base(); ?>clusterManager/addDamToDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
+
+
+                        <fieldset class="fieldset">
+
+                            <div class="control-group">
+                                <label for="adamid" class="control-label">Add a data cluster to this data cluster</label>
+
+                                <div class="controls">
+                                    <select name='adamid' id='adamid'>
+                                        <?php foreach ($templateData['dams'] as $dam) { ?>
+                                            <option value="<?php echo $dam->id; ?>"><?php echo $dam->name; ?></option>
+                                        <?php } ?>
+                                    </select>
+
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <input class="btn btn-primary" type='submit' value='add'/>
+
+                    </form>
+                <?php } else { ?>
+                    <p>no clusters to add</p>
+                <?php } ?>
+
+
 <?php } ?>
 

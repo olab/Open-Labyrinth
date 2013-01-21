@@ -516,3 +516,7 @@ img.dashboard-member-activity-avatar {
         position: fixed;
     }
 }
+
+input[readonly].code{
+    cursor: text;
+}
