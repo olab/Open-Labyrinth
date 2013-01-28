@@ -65,7 +65,7 @@ class Model_Labyrinth extends Model {
 
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
 
-            DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
@@ -79,7 +79,7 @@ class Model_Labyrinth extends Model {
                 $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
             }
 
-            $c = $this->counters($sessionId, $node, $isRoot);
+            $c = $this->counters($traceId, $sessionId, $node, $isRoot);
             if ($c != NULL) {
                 $result['counters'] = $c['counterString'];
                 $result['redirect'] = $c['redirect'];
@@ -232,8 +232,8 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function counters($sessionId, $node, $isRoot = false) {
-        if ($node != NULL) {
+    private function counters($traceId, $sessionId, $node, $isRoot = false) {
+        if ($traceId != null && $traceId > 0 && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
             if (count($counters) > 0) {
                 $countersArray = array();
@@ -411,7 +411,7 @@ class Model_Labyrinth extends Model {
                     $updateCounter .= '[CID=' . $counter['counter']->id . ',V=' . $counter['value'] . ']';
                 }
 
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter);
+                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
                 if ($redirect != NULL){
