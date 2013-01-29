@@ -48,7 +48,7 @@ if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
                     <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                         <?php foreach($templateData['counters'] as $counter) { ?>
                             <td>
-                                <p style="margin-bottom: 0px;"><?php echo $counter->name; ?> <input class="input-small" type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"></p>
+                                <p style="margin-bottom: 0px;"><?php echo $counter->name; ?> <input class="input-small not-autocomplete" type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"></p>
                                 <p style="margin-top:0px; text-align: center;"><input autocomplete="off" class="chk_counter_id_<?php echo $counter->id; ?>" type="checkbox" value="1" name="ch_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" <?php if ($c != NULL) {if($c->display == 1) echo 'checked="checked"';}else{echo 'checked="checked"';} ?> /> <?php echo __("appear on node"); ?></p>
                             </td>
                         <?php } ?>
