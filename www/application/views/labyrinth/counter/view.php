@@ -25,8 +25,14 @@ if (isset($templateData['map'])) { ?>
     <a class="btn btn-info" href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>"><?php echo __('Counter grid'); ?></a>
 </div>
 <table class="table table-striped table-bordered">
+    <colgroup>
+        <col style="width: 5%">
+        <col style="width: 55%">
+        <col style="width: 40%">
+    </colgroup>
     <thead>
         <tr>
+            <th><?php echo __("#"); ?></th>
             <th><?php echo __("Name"); ?></th>
             <th><?php echo __("Actions"); ?></th>
         </tr>
@@ -34,6 +40,7 @@ if (isset($templateData['map'])) { ?>
 <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
     <?php foreach($templateData['counters'] as $counter) { ?>
         <tr>
+            <td><?php echo $counter->id; ?></td>
             <td><?php echo $counter->name; ?></td>
             <td>
                 <a class="btn btn-info" href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">

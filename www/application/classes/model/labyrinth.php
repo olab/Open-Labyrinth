@@ -65,7 +65,7 @@ class Model_Labyrinth extends Model {
 
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
 
-            DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
@@ -79,7 +79,7 @@ class Model_Labyrinth extends Model {
                 $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
             }
 
-            $c = $this->counters($sessionId, $node, $isRoot);
+            $c = $this->counters($traceId, $sessionId, $node, $isRoot);
             if ($c != NULL) {
                 $result['counters'] = $c['counterString'];
                 $result['redirect'] = $c['redirect'];
@@ -232,10 +232,11 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function counters($sessionId, $node, $isRoot = false) {
-        if ($node != NULL) {
+    private function counters($traceId, $sessionId, $node, $isRoot = false) {
+        if ($traceId != null && $traceId > 0 && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
             if (count($counters) > 0) {
+                $countersArray = array();
                 $updateCounter = '';
                 $oldCounter = '';
                 $counterString = '';
@@ -243,6 +244,7 @@ class Model_Labyrinth extends Model {
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($node->map_id);
                 $redirect = NULL;
                 foreach ($counters as $counter) {
+                    $countersArray[$counter->id]['counter'] = $counter;
                     $currentCountersState = '';
                     if ($rootNode != NULL) {
                         $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
@@ -253,6 +255,7 @@ class Model_Labyrinth extends Model {
                     if ($counter->icon_id != 0) {
                         $label = '<img src="' . URL::base() . $counter->icon->path . '">';
                     }
+                    $countersArray[$counter->id]['label'] = $label;
 
                     $thisCounter = 0;
                     if ($isRoot) {
@@ -290,16 +293,16 @@ class Model_Labyrinth extends Model {
                         }
                     }
 
-                    if ($counterFunction != '') {
-                        $func = '<sup>[' . $counterFunction . ']</sup>';
-                    } else {
-                        $func = '<sup>[no]</sup>';
+                    $countersArray[$counter->id]['value'] = $thisCounter;
+                    if ($counterFunction != ''){
+                        $countersArray[$counter->id]['func'][] = $counterFunction;
                     }
 
                     if (($counter->visible != 0) & ($apperOnNode == 1)) {
-                        $popup = '<a href="javascript:void(0)" onclick=\'window.open("' . URL::base() . 'renderLabyrinth/", "Counter", "toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350"); return false;\'>';
-                        $counterString .= '<p>' . $popup . $label . '</a>(' . $thisCounter . ') ' . $func . '</p>';
-                        $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$thisCounter.'"></counter>';
+                        $countersArray[$counter->id]['visible'] = true;
+
+                    } else {
+                        $countersArray[$counter->id]['visible'] = false;
                     }
 
                     $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
@@ -344,18 +347,76 @@ class Model_Labyrinth extends Model {
                             }
                         }
                         if ($redirect != NULL){
-                            $updateCounter .= '[CID=' . $counter->id . ',V=' . $thisCounter . ']';
-                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter);
-                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
-                            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
+                            $countersArray[$counter->id]['redirect'] = $redirect;
+                        }
+                    }
+                }
+
+                $redirect = NULL;
+                $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
+                if (count($commonRules) > 0){
+                    $values = array();
+                    foreach($countersArray as $key => $counter){
+                        $values[$key] = $counter['value'];
+                    }
+                    $runtimelogic = new RunTimeLogic();
+                    $runtimelogic->values = $values;
+                    foreach($commonRules as $rule){
+                        $array = $runtimelogic->parsingString($rule->rule);
+                        $resultLogic = $array['result'];
+                        if (isset($resultLogic['goto'])){
+                            if ($resultLogic['goto'] != NULL){
+                                if ($redirect == NULL){
+                                    $redirect = $resultLogic['goto'];
+                                }
+                            }
+                        }
+                        if (isset($resultLogic['counters'])){
+                            if (count($resultLogic['counters']) > 0){
+                                foreach($resultLogic['counters'] as $key => $c){
+                                    $previousValue = $countersArray[$key]['value'];
+                                    $funcStr = $c - $previousValue;
+                                    $countersArray[$key]['func'][] = $funcStr;
+                                    $countersArray[$key]['value'] = $c;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                foreach($countersArray as $key => $counter){
+                    if (isset($counter['func'])){
+                        if (count($counter['func']) > 0) {
+                            $func = '<sup>[' . implode(', ', $counter['func']) . ']</sup>';
+                        } else {
+                            $func = '<sup>[no]</sup>';
+                        }
+                    } else {
+                        $func = '<sup>[no]</sup>';
+                    }
+
+
+                    if ($counter['visible']){
+                        $popup = '<a href="javascript:void(0)" onclick=\'window.open("' . URL::base() . 'renderLabyrinth/", "Counter", "toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350"); return false;\'>';
+                        $counterString .= '<p>' . $popup . $counter['label'] . '</a>(' . $counter['value'] . ') ' . $func . '</p>';
+                        $remoteCounterString .= '<counter id="'.$counter['counter']->id.'" name="'.$counter['counter']->name.'" value="'.$counter['value'].'"></counter>';
+                    }
+
+                    if (isset($counter['redirect'])){
+                        if ($redirect == NULL){
+                            $redirect = $counter['redirect'];
                         }
                     }
 
-                    $updateCounter .= '[CID=' . $counter->id . ',V=' . $thisCounter . ']';
+                    $updateCounter .= '[CID=' . $counter['counter']->id . ',V=' . $counter['value'] . ']';
                 }
 
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter);
+                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+
+                if ($redirect != NULL){
+                    Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
+                }
 
                 return array('counterString' => $counterString, 'redirect' => $redirect, 'remote' => $remoteCounterString);
             }
@@ -637,7 +698,475 @@ class Model_Labyrinth extends Model {
                 return FALSE;
         }
     }
-
 }
+
+
+//RUN TIME LOGIC
+//-------------------------------------------------
+class RunTimeLogic {
+    var $values = array();
+
+    public function parsingString($string){
+        $posIF = 0;
+        $posTHEN = 0;
+        $str = '';
+        $dataArray = array();
+        $errors = array();
+        $posIF = strpos($string, 'IF');
+
+        if ($posIF !== false){
+            $posTHEN = strpos($string, 'THEN');
+            if ($posTHEN !== false){
+                $str = substr($string, $posIF + 3, ($posTHEN - $posIF - 4));
+
+                $str = $this->findParentheses($str);
+                $ifTrue = $this->parseStringForLogicOperaiotns($str);
+
+                if ($ifTrue){
+                    $posELSE = strpos($string, 'ELSE');
+                    if ($posELSE !== false){
+                        $then = trim(substr($string, $posTHEN + 5, ($posELSE - $posTHEN - 5)));
+                    }else{
+                        $then = trim(substr($string, $posTHEN + 5, strlen($string) - $posTHEN));
+                    }
+                    $actionArray = explode(',', $then);
+                    if (count($actionArray) > 0){
+                        foreach($actionArray as $action){
+                            $then = $this->parseAction($action);
+                            switch($then['action']){
+                                case 'goto':
+                                    if ($then['id'] != null){
+                                        $dataArray['goto'] = $then['id'];
+                                    } else {
+                                        $errors[] = 'Tag [[NODE:<em>node_id</em>]] is missed';
+                                    }
+                                    break;
+                                case 'no-entry':
+                                    $dataArray['no-entry'] = true;
+                                    break;
+                                case 'operation':
+                                    $dataArray['counters'][$then['id']] = $then['result'];
+                                    break;
+                                default:
+                                    $errors[] = 'THEN missed condition';
+                            }
+                        }
+                    }
+                }else{
+                    $posELSEIF = strpos($string, 'ELSEIF');
+                    $posELSE = strpos($string, 'ELSE');
+                    if ($posELSEIF !== false){
+                        $newString = substr($string, $posELSEIF + 4, strlen($string) - $posELSEIF);
+                        $newDataArray = $this->parsingString($newString);
+                        $dataArray = $newDataArray['result'];
+                        $errors = array_merge($errors, $newDataArray['errors']);
+                    } elseif($posELSE !== false){
+                        $else = trim(substr($string, $posELSE + 5, strlen($string) - $posELSE));
+                        $actionArray = explode(',', $else);
+                        if (count($actionArray) > 0){
+                            foreach($actionArray as $action){
+                                $else = $this->parseAction($action);
+                                switch($else['action']){
+                                    case 'goto':
+                                        if ($else['id'] != null){
+                                            $dataArray['goto'] = $else['id'];
+                                        } else {
+                                            $errors[] = 'Tag [[NODE:<em>node_id</em>]] is missed';
+                                        }
+                                        break;
+                                    case 'no-entry':
+                                        $dataArray['no-entry'] = true;
+                                        break;
+                                    case 'operation':
+                                        $dataArray['counters'][$else['id']] = $else['result'];
+                                        break;
+                                    default:
+                                        $errors[] = 'THEN missed condition';
+                                }
+                            }
+                        }
+                    } else {
+                        $dataArray['nothing'] = true;
+                    }
+                }
+            }else{
+                $errors[] = 'THEN not found';
+            }
+        }else{
+            $errors[] = 'IF not found';
+        }
+        $array['result'] = $dataArray;
+        $array['errors'] = $errors;
+        return $array;
+    }
+
+    public function findParentheses($str){
+        $posParentheses = strrpos($str, '(');
+        if ($posParentheses !== false){
+            $posParenthesesEND = strpos($str, ')');
+            if ($posParenthesesEND !== false){
+                $parenthesesStr = substr($str, $posParentheses + 1, ($posParenthesesEND - $posParentheses - 1));
+                $significantOperations = array(' AND ', ' OR ');
+                $find = false;
+                foreach($significantOperations as $op){
+                    $posOP = strpos($parenthesesStr, $op);
+                    if ($posOP !== false){
+                        $find = true;
+                        break;
+                    }
+                }
+                if ($find){
+                    $ifTrue = $this->parseStringForLogicOperaiotns(trim($parenthesesStr));
+                    if ($ifTrue){
+                        $ifTrue = 'CR_TRUE';
+                    }else{
+                        $ifTrue = 'CR_FALSE';
+                    }
+                    $str = str_replace('('.$parenthesesStr.')', $ifTrue, $str);
+                    $str = $this->findParentheses($str);
+                }
+            }
+        }
+        return $str;
+    }
+
+    public function parseStringForLogicOperaiotns($str){
+        $dataArray = array();
+        $ifTrue = false;
+        $arrayOR = explode(' OR ', $str);
+        if (count($arrayOR) >= 1){
+            $i = 0;
+            foreach($arrayOR as $or){
+                $arrayAND = explode(' AND ', $or);
+                if (count($arrayAND) > 1){
+                    $ands = array();
+                    foreach($arrayAND as $and){
+                        $ands[] = $this->parseValueExpression($and);
+                    }
+                    $dataArray['or'][]['and'] = $ands;
+                }else{
+                    $dataArray['or'][] = $this->parseValueExpression($or);
+                }
+                $i++;
+            }
+
+            if (count($dataArray['or']) > 0){
+                foreach($dataArray['or'] as $key => $find){
+                    if (isset($find['and'])){
+                        if (count($find['and']) > 0){
+                            $dataArray['or'][$key]['result'] = 1;
+                            foreach($find['and'] as $and){
+                                if ($and['result'] != 1){
+                                    $dataArray['or'][$key]['result'] = 0;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (count($dataArray['or']) > 0){
+                foreach($dataArray['or'] as $or){
+                    if ($or['result'] == 1){
+                        $ifTrue = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return $ifTrue;
+    }
+
+    public function parseValueExpression($str){
+        $array = array();
+        $result = null;
+
+        $posMATCH = strpos($str, 'MATCH');
+        $posUPPER = strpos($str, 'UPPER');
+        $posLOWER = strpos($str, 'LOWER');
+        $posPROPER = strpos($str, 'PROPER');
+        $posCRTRUE = strpos($str, 'CR_TRUE');
+        $posCRFALSE = strpos($str, 'CR_FALSE');
+        if ($posCRTRUE !== false){
+            $array['result'] = 1;
+        } elseif ($posCRFALSE !== false){
+            $array['result'] = 0;
+        } elseif ($posMATCH !== false){
+            $id = $this->getId($str);
+            $string = $this->getStringValue($str);
+
+            $match = strpos($this->values[$id], $string);
+            if ($match !== false){
+                $array['result'] = 1;
+            }else{
+                $array['result'] = 0;
+            }
+        } elseif ($posUPPER !== false){
+            $id = $this->getId($str);
+            $string = $this->getStringValue($str);
+
+            $upper = strcmp(strtoupper($this->values[$id]), $string);
+            $posExp = strpos($str, '!=');
+            if ($posExp !== false){
+                if ($upper == 0){
+                    $upper = 1;
+                } else {
+                    $upper = 0;
+                }
+            }
+
+            if ($upper == 0){
+                $array['result'] = 1;
+            } else {
+                $array['result'] = 0;
+            }
+        } elseif ($posLOWER !== false){
+            $id = $this->getId($str);
+            $string = $this->getStringValue($str);
+
+            $upper = strcmp(strtolower($this->values[$id]), $string);
+            $posExp = strpos($str, '!=');
+            if ($posExp !== false){
+                if ($upper == 0){
+                    $upper = 1;
+                } else {
+                    $upper = 0;
+                }
+            }
+
+            if ($upper == 0){
+                $array['result'] = 1;
+            } else {
+                $array['result'] = 0;
+            }
+        } elseif ($posPROPER !== false){
+            $id = $this->getId($str);
+            $string = $this->getStringValue($str);
+
+            $proper = strcmp(ucfirst($this->values[$id]), $string);
+            $posExp = strpos($str, '!=');
+            if ($posExp !== false){
+                if ($proper == 0){
+                    $proper = 1;
+                } else {
+                    $proper = 0;
+                }
+            }
+
+            if ($proper == 0){
+                $array['result'] = 1;
+            } else {
+                $array['result'] = 0;
+            }
+        } else {
+            $countOperations = $this->findAllOperations($str) + 1;
+            $countCR = substr_count($str, "[[CR:");
+            for($i = 0; $i < $countCR; $i++){
+                $posCR = strpos($str, '[[CR:');
+                $posCRClose = strpos($str, ']]');
+                $id = substr($str, $posCR + 5, ($posCRClose - $posCR - 5));
+                $result = $this->algorithmicOperation(substr($str, 0, $posCR), $result, $this->values[$id]);
+                $str = substr($str, $posCRClose + 2, strlen($str));
+                $countOperations--;
+            }
+
+            $str = trim($str);
+            for($i = 0; $i < $countOperations; $i++){
+                $pos = $this->findOperation($str);
+                $value = trim(substr($str, $pos, strlen($str)));
+                if ($value[0] == '"'){
+                    $text = $this->getStringValue($value);
+                    $result = $result . $text;
+                } else {
+                    $result = $this->algorithmicOperation($str, $result, $value);
+                }
+                $str = $value;
+            }
+
+            if (strpos($str, '!=') !== false){
+                if ($result != $this->getValue('!=', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }elseif (strpos($str, '>=') !== false){
+                if ($result >= $this->getValue('>=', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }elseif (strpos($str, '<=') !== false){
+                if ($result <= $this->getValue('<=', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }elseif (strpos($str, '>') !== false){
+                if ($result > $this->getValue('>', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }elseif (strpos($str, '<') !== false){
+                if ($result < $this->getValue('<', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }elseif(strpos($str, '=') !== false){
+                if ($result == $this->getValue('=', $str)){
+                    $array['result'] = 1;
+                }else{
+                    $array['result'] = 0;
+                }
+            }
+        }
+        return $array;
+    }
+
+    public function findAllOperations($str){
+        $count = 0;
+        $count += substr_count($str, ' + ');
+        $count += substr_count($str, ' - ');
+        $count += substr_count($str, ' / ');
+        $count += substr_count($str, ' * ');
+        $count += substr_count($str, ' MOD ');
+        $count += substr_count($str, ' DIV ');
+        return $count;
+    }
+
+    public function findOperation($str){
+        $firstPos = null;
+        $pos = null;
+        $operations = array('*' => 1, '/' => 1, '+' => 1, '-' => 1, 'MOD' => 3, 'DIV' => 3);
+        foreach($operations as $op => $len){
+            $pos = strpos($str, $op);
+            if ($pos !== false){
+                $pos += $len;
+                if ($firstPos == null){
+                    $firstPos = $pos;
+                } else {
+                    if ($firstPos > $pos){
+                        $firstPos = $pos;
+                    }
+                }
+            }
+        }
+        return $firstPos;
+    }
+
+    public function algorithmicOperation($str, $result, $value){
+        $str = trim($str);
+        if (!empty($str)){
+            if (strpos($str, '*') !== false){
+                $result = $result * $value;
+            }elseif(strpos($str, '/') !== false){
+                $result = round($result / $value, 1);
+            }elseif(strpos($str, '+') !== false){
+                $result = $result + $value;
+            }elseif(strpos($str, '-') !== false){
+                $result = $result - $value;
+            }elseif(strpos($str, 'MOD') !== false){
+                $result = $result % $value;
+            }elseif(strpos($str, 'DIV') !== false){
+                $result = intval($result / $value);
+            }
+        } else {
+            $result = $value;
+        }
+        return $result;
+    }
+
+    public function parseAction($str){
+        $array = array();
+        $posCR = strpos($str, '[[CR:');
+        $posGOTO = strpos($str, 'GOTO');
+        $posNOENTRY = strpos($str, 'NO-ENTRY');
+        if ($posCR !== false){
+            $result = null;
+            $array['action'] = 'operation';
+            $destID = $this->getId($str);
+            $posEqual = strpos($str, '=');
+            if ($posEqual !== false){
+                $str = substr($str, $posEqual + 1, strlen($str));
+                $countOperations = $this->findAllOperations($str) + 1;
+                $countCR = substr_count($str, "[[CR:");
+                if (($countOperations == 1) && ($countCR == 0)){
+                    $result = trim($str);
+                } else {
+                    for($i = 0; $i < $countCR; $i++){
+                        $posCR = strpos($str, '[[CR:');
+                        $posCRClose = strpos($str, ']]');
+                        $id = substr($str, $posCR + 5, ($posCRClose - $posCR - 5));
+                        $result = $this->algorithmicOperation(substr($str, 0, $posCR), $result, $this->values[$id]);
+                        $str = substr($str, $posCRClose + 2, strlen($str));
+                        $countOperations--;
+                    }
+                    if ($countCR == 0){
+                        $result = $this->algorithmicOperation($str, $result, $str);
+                    }
+                    $str = trim($str);
+                    for($i = 0; $i < $countOperations; $i++){
+                        $pos = $this->findOperation($str);
+                        $value = trim(substr($str, $pos, strlen($str)));
+                        if ($value[0] == '"'){
+                            $text = $this->getStringValue($value);
+                            $result = $result . $text;
+                        } else {
+                            $result = $this->algorithmicOperation($str, $result, $value);
+                        }
+                        $str = $value;
+                    }
+                }
+            }
+            $array['id'] = $destID;
+            $array['result'] = $result;
+        } elseif ($posGOTO !== false){
+            $array['action'] = 'goto';
+            $posNode = strpos($str, '[[NODE:');
+            if ($posNode !== false){
+                $posNodeClose = strpos($str, ']]');
+                $array['id'] = (int) substr($str, $posNode + 7, $posNodeClose - $posNode - 7);
+            } else {
+                $array['id'] = null;
+            }
+        } elseif ($posNOENTRY !== false) {
+            $array['action'] = 'no-entry';
+        }
+        return $array;
+    }
+
+    public function getId($str){
+        $posCR = strpos($str, '[[CR:');
+        $posCRClose = strpos($str, ']]');
+        $id = substr($str, $posCR + 5, ($posCRClose - $posCR - 5));
+        return $id;
+    }
+
+    public function getValue($exp, $str){
+        $pos = strpos($str, $exp);
+        $value = substr($str, $pos + strlen($exp), strlen($str));
+        $stringCheck = $this->getStringValue($value);
+        if ($stringCheck != null){
+            $value = $stringCheck;
+        }
+        return trim($value);
+    }
+
+    public function getStringValue($str){
+        $firstQuote = strpos($str, '"');
+        if ($firstQuote !== false){
+            $string = substr($str, $firstQuote + 1, strlen($str) - $firstQuote);
+            $secondQuote = strpos($string, '"');
+            $string = substr($string, 0, $secondQuote);
+            return $string;
+        } else {
+            return null;
+        }
+    }
+}
+//-------------------------------------------------
+//RUN TIME LOGIC
 ?>
 
