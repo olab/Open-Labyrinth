@@ -24,14 +24,22 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
             eval(targ+".location='"+selObj.options[selObj.selectedIndex].value+"'");
             if (restore) selObj.selectedIndex=0;
         }
+
+        $('[name="demtype"]').live('click', function () {
+            $('.patdem').attr('disabled', 'disabled');
+            $(this).next(".patdem").removeAttr('disabled');
+            $('[name="radio1"]').each(function () {
+                $(this).attr('disabled', 'disabled').checkboxradio('refresh');
+            });
+        });
     </script>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit data element to labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <form action="<?php echo URL::base(); ?>elementManager/updateElement/<?php echo $templateData['map']->id; ?><?php echo '/'.$templateData['vpd']->id; ?>" method="post">
-                    <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                        <tr><td align="left"><p>Type: <?php echo $templateData['vpd']->type->label; ?></p></td><td align="left"><p>ID: <?php echo $templateData['vpd']->id; ?></p></td></tr>
+
+
+                <h1><?php echo __('edit data element to labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+                <form class="form-horizontal" action="<?php echo URL::base(); ?>elementManager/updateElement/<?php echo $templateData['map']->id; ?><?php echo '/'.$templateData['vpd']->id; ?>" method="post">
+
+                        <h4>Type: <?php echo $templateData['vpd']->type->label; ?></h4>
+                        <h4>ID: <?php echo $templateData['vpd']->id; ?></h4>
                             <?php
                             $values = array();
                             foreach($templateData['vpd']->elements as $element) {
@@ -66,21 +74,31 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                             $textType .= '<option value="'.$t.'">'.$t.'</option>';
                                         }
                                     }
-                                    echo '<tr>
-                                            <td align="left"><p>VPDText type:</p></td>
-                                            <td align="left">
-                                                <select name="VPDTextType">
+                                    echo '
+                           <fieldset class="fieldset">
+
+                            <div class="control-group">
+                                <label for="VPDTextType" class="control-label">VPD Text type</label>
+
+                                <div class="controls">
+
+
+                                                <select name="VPDTextType" id="VPDTextType">
                                                     '.$textType.'
                                                 </select>
-                                            </td>
-                                            </tr>
-                                            <tr>
-                                                <td align="left"><p>VPDText:</p></td>
-                                                <td align="left">
-                                                    <textarea name="VPDText" cols="50" rows="8">'.Arr::get($values, 'VPDText', '').'</textarea>
-                                                </td>
-                                            </tr>
-                                            <tr><td colspan="2" align="left"><input type="submit" value="Submit"></td></tr></table></form>';
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="VPDText" class="control-label">VPD Text</label>
+
+                                <div class="controls">
+
+
+                                               <textarea name="VPDText" id="VPDText" cols="50" rows="8">'.Arr::get($values, 'VPDText', '').'</textarea>
+                                </div>
+                            </div>
+                             </fieldset>';
                                     break;
                                 case 'PatientDiagnoses':
                                     $textType = '';
@@ -92,45 +110,182 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                             $textType .= '<option value="'.$t.'">'.$t.'</option>';
                                         }
                                     }
-                                    echo '<tr><td align="left" colspan="2"><p>Structured demographic ...</p></td></tr>
-                                          <tr><td align="left"><p>Demographics Type:</p></td>
-                                          <td align="left"><select name="CoreDemogType">
-                                          <option value="">Select ...</option>  
+                                    echo '
+
+  <input name="demtype" checked type="radio">
+
+   <fieldset class="fieldset patdem">
+
+
+                            <legend>Structured demographic</legend>
+                            <div class="control-group">
+                                <label for="CoreDemogType" class="control-label">Demographics Type</label>
+
+                                <div class="controls">
+                                              <select name="CoreDemogType" id="CoreDemogType">
+                                         <option value="">Select ...</option>
                                           '.$textType.'
-                                          </select></td></tr>
-                                          <tr><td align="left"><p>Demographic Text:</p></td>
-                                          <td align="left"><input type="text" name="DemogText" value="'.Arr::get($values, 'DemogText', '').'" size="20"></td></tr>
-                                          <tr><td colspan="2" align="left"><input type="submit" value="Submit" /></td></tr>
-                                          </table></form><form method="post" action="'.URL::base().'elementManager/updateElement/'.$templateData['map']->id.'/'.$templateData['vpd']->id.'"><table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                                          <tr><td align="left" colspan="2"><p>Or unstructured demographic ...</p></td></tr>
-                                          <tr><td align="left"><p>Title:</p></td><td align="left"><input type="text" name="DemogTitle" value="'.Arr::get($values, 'DemogTitle', '').'" size="40"></p></td></tr>
-                                          <tr><td align="left"><p>Description:</p></td><td align="left"><input type="text" name="DemogDesc" value="'.Arr::get($values, 'DemogDesc', '').'" size="60"></p></td></tr>
-                                          <tr><td colspan="2" align="left"><input type="submit" value="Submit"/></td></tr></table></form>';
+                                          </select>
+
+                                </div>
+                            </div>
+
+
+                                <div class="control-group">
+                                <label for="DemogText" class="control-label">Demographic Text</label>
+
+                                <div class="controls">
+                                           <input type="text" name="DemogText" id="DemogText" value="'.Arr::get($values, 'DemogText', '').'" >
+
+                                </div>
+                            </div></fieldset>
+</input>
+
+
+
+<input name="demtype" type="radio">
+<fieldset disabled class="fieldset patdem">
+                                     <legend>
+                                          Unstructured demographic</legend>
+                                                                    <div class="control-group">
+                                <label for="DemogTitle" class="control-label">Title</label>
+
+                                <div class="controls">
+                                            <input type="text" name="DemogTitle" value="'.Arr::get($values, 'DemogTitle', '').'" id="DemogTitle">
+
+                                </div>
+                            </div>                                                                                                <div class="control-group">
+                                <label for="DemogDesc" class="control-label">Description</label>
+
+                                <div class="controls">
+                                           <input type="text" name="DemogDesc" id="DemogDesc" value="'.Arr::get($values, 'DemogDesc', '').'">
+                                </div>
+                            </div>
+</input>
+                                          </fieldset>';
                                     break;
                                 case 'AuthorDiagnoses':
-                                    echo '<tr><td align="left"><p>Diagnosis title:</p></td><td align="left"><input type="text" name="aDiagTitle" value="'.Arr::get($values, 'aDiagTitle', '').'" size="40"></td></tr>
-                                          <tr><td align="left"><p>Diagnosis description:</p></td><td align="left"><input type="text" name="aDiagDesc" value="'.Arr::get($values, 'aDiagDesc', '').'" size="60"></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit"/></td></tr></table></form>';
+                                    echo '
+
+                                    <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="aDiagTitle" class="control-label">Diagnosis title</label>
+
+                                <div class="controls">
+                                           <input type="text" name="aDiagTitle" id="aDiagTitle" value="'.Arr::get($values, 'aDiagTitle', '').'" >
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="aDiagDesc" class="control-label">Diagnosis description</label>
+
+                                <div class="controls">
+                                           <input type="text" name="aDiagDesc" id="aDiagDesc" value="'.Arr::get($values, 'aDiagDesc', '').'" >
+
+                                </div>
+                            </div>
+</fieldset>';
                                     break;
                                 case 'Medication':
-                                    echo '<tr><td align="left"><p>Medication title:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicTitle', '').'" name="MedicTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Dose:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicDose', '').'" name="MedicDose" size="40"></td></tr> 
-                                          <tr><td align="left"><p>Route:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicRoute', '').'" name="MedicRoute" size="40"></td></tr>
-                                          <tr><td align="left"><p>Frequency:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicFreq', '').'" name="MedicFreq" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicSource', '').'" name="MedicSource" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source ID:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'MedicSourceID', '').'" name="MedicSourceID" size="40"></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
+                                    echo '
+                                    <fieldset class="fieldset">
+
+                           <div class="control-group">
+                                <label for="MedicTitle" class="control-label">Medication title</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicTitle', '').'" id="MedicTitle" name="MedicTitle">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicDose" class="control-label">Dose</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicDose', '').'" id="MedicDose" name="MedicDose">
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicRoute" class="control-label">Route</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicRoute', '').'" id="MedicRoute" name="MedicRoute">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicFreq" class="control-label">Frequency</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicFreq', '').'" name="MedicFreq" id="MedicFreq">
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicSource" class="control-label">Medication item source</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicSource', '').'" name="MedicSource" id="MedicSource">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicSourceID" class="control-label">Medication item source ID</label>
+
+                                <div class="controls">
+                                           <input type="text" value="'.Arr::get($values, 'MedicSourceID', '').'" name="MedicSourceID" id="MedicSourceID">
+
+                                </div>
+                            </div>
+
+</fieldset>
+
+                      ';
                                     break;
                                 case 'InterviewItem':
                                     $checked = '';
                                     if(Arr::get($values, 'trigger', FALSE)) {
                                         $checked = 'checked';
                                     }
-                                    echo '<tr><td align="left"><p>Question:</p></td><td align="left"><input type="text" name="QAQuestion" value="'.Arr::get($values, 'QAQuestion', '').'" size="60"></td></tr>
-                                          <tr><td align="left"><p>Answer:</p></td><td align="left"><input type="text" name="QAAnswer" value="'.Arr::get($values, 'QAAnswer', '').'" size="40"></td></tr>  
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="QAMedia">' . $filesString . '</select></td></tr>
-                                          <tr><td align="left"><p>Trigger:</p></td><td align="left"><input type="checkbox" name="trigger" '.$checked.' /></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
+                                    echo '
+                                    <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="QAQuestion" class="control-label">Question</label>
+
+                                <div class="controls">
+                                          <input type="text" name="QAQuestion" value="'.Arr::get($values, 'QAQuestion', '').'" id="QAQuestion"/>
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="QAAnswer" class="control-label">Answer</label>
+
+                                <div class="controls">
+                                          <input type="text" name="QAAnswer" id="QAAnswer" value="'.Arr::get($values, 'QAAnswer', '').'"/>
+
+                                </div>
+                            </div>
+
+                                                        <div class="control-group">
+                                <label for="QAMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                          <select name="QAMedia" id="QAMedia">' . $filesString . '</select>
+
+                                </div>
+                            </div>
+
+                                                        <div class="control-group">
+                                <label for="trigger" class="control-label">Trigger</label>
+
+                                <div class="controls">
+                                          <input type="checkbox" id="trigger" '.$checked.' name="trigger" checked />
+
+                                </div>
+                            </div>
+
+                </fieldset>';
                                     break;
                                 case 'PhysicalExam':
                                     $checked = array();
@@ -179,35 +334,183 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                         $checked['Superior'] = '';
                                     }
 
-                                    echo '<tr><td align="left"><p>Examination Name:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'ExamName', '').'" name="ExamName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Examination Description:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'ExamDesc', '').'" name="ExamDesc" size="60"></td></tr>
-                                          <tr><td align="left"><p>Location on body - part/area:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'BodyPart', '').'" name="BodyPart" size="60"></td></tr>
-                                          <tr><td align="left"><p>Action:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'Action', '').'" name="Action" size="60" /></td></tr>
+                                    echo '
 
-                                          <tr><td align="left"><p>Orientation:</p></td><td align="left">
-                                          <table width="100%"><tr><td align="left"><p><input type="radio" value="Proximal" name="ProxDist" '.$checked['Proximal'].' /> Proximal</p></td><td align="left"><p><input type="radio" value="Distal" name="ProxDist" '.$checked['Distal'].' /> Distal</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Right" name="RightLeft" '.$checked['Right'].' /> Right</p></td><td align="left"><p><input type="radio" value="Left" name="RightLeft" '.$checked['Left'].' /> Left</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Front" name="FrontBack" '.$checked['Front'].' /> Front</p></td><td align="left"><p><input type="radio" value="Back" name="FrontBack" '.$checked['Back'].' /> Back</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Inferior" name="InfSup" '.$checked['Inferior'].' /> Inferior</p></td><td align="left"><p><input type="radio" value="Superior" name="InfSup" '.$checked['Superior'].' /> Superior</p></td><td align="left"></td></tr></table>
-                                          </td></tr>
+                                    <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="ExamName" class="control-label">Examination Name</label>
 
-                                          <tr><td align="left"><p>Finding Name:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'FindName', '').'" name="FindName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Finding Description:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'FindDesc', '').'" name="FindDesc" size="60"></td></tr>
+                                <div class="controls">
+                                          <input type="text" value="'.Arr::get($values, 'ExamName', '').'" name="ExamName" id="ExamName">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="ExamDesc" class="control-label">Examination Description</label>
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="FindMedia">' . $filesString . '</select></td></tr>"
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
+                                <div class="controls">
+                                          <input type="text" value="'.Arr::get($values, 'ExamDesc', '').'" name="ExamDesc" id="ExamDesc">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="BodyPart" class="control-label">Location on body - part/area</label>
+
+                                <div class="controls">
+                                          <input type="text" value="'.Arr::get($values, 'BodyPart', '').'" name="BodyPart" id="BodyPart">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="Action" class="control-label">Action</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'Action', '').'" name="Action" id="Action" />
+                                </div>
+                            </div>
+                            <h5>Orientation</h5>
+                 <div class="control-group">
+                    <label class="control-label">Proximity</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" value="Proximal" '.$checked['Proximal'].' name="ProxDist" />
+                            Proximal
+                        </label>
+                        <label class="radio">
+                            <input type="radio" value="Distal" '.$checked['Distal'].' name="ProxDist" />
+                            Distal
+                        </label>
+
+                    </div>
+                </div>
+
+                                <div class="control-group">
+                    <label class="control-label">Sagittal Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" '.$checked['Right'].' value="Right" name="RightLeft" />
+                            Right
+                        </label>
+                        <label class="radio">
+                            <input type="radio" '.$checked['Left'].' value="Left" name="RightLeft" />
+                            Left
+                        </label>
+
+                    </div>
+                </div>
+
+
+                                <div class="control-group">
+                    <label class="control-label">Coronal Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" '.$checked['Front'].' value="Front" name="FrontBack" />
+                            Front
+                        </label>
+                        <label class="radio">
+                            <input type="radio" '.$checked['Back'].' value="Back" name="FrontBack" />
+                            Back
+                        </label>
+
+                    </div>
+                </div>
+
+                                <div class="control-group">
+                    <label class="control-label">Transverse Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" '.$checked['Inferior'].'  value="Inferior" name="InfSup" />
+                            Inferior
+                        </label>
+                        <label class="radio">
+                            <input type="radio" '.$checked['Superior'].' value="Superior" name="InfSup" />
+                            Superior
+                        </label>
+
+                    </div>
+                </div>
+
+
+                            <div class="control-group">
+                                <label for="FindName" class="control-label">Finding Name</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'FindName', '').'" name="FindName" id="FindName">
+                                </div>
+                            </div>
+                                                        <div class="control-group">
+                                <label for="FindDesc" class="control-label">Finding Description</label>
+
+                                <div class="controls">
+                                        <input type="text" value="'.Arr::get($values, 'FindDesc', '').'" name="FindDesc" id="FindDesc">
+                                </div>
+                            </div>
+                                                        <div class="control-group">
+                                <label for="FindMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                         <select id="FindMedia" name="FindMedia">' . $filesString . '</select>
+                                </div>
+                            </div>
+
+
+     </fieldset>';
                                     break;
                                 case 'DiagnosticTest':
                                     
-                                    echo '<tr><td align="left"><p>Test Name:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'TestName', '').'" name="TestName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Test Description:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'TestDesc', '').'" name="TestDesc" size="60"></td></tr>
+                                    echo '
 
-                                          <tr><td align="left"><p>Units:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'TestUnits', '').'" name="TestUnits" size="60"></td></tr>
-                                          <tr><td align="left"><p>Result:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'TestResult', '').'" name="TestResult" size="60"></td></tr>
-                                          <tr><td align="left"><p>Normal value:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'TestNorm', '').'" name="TestNorm" size="60"></td></tr>
+                                    <fieldset class="fieldset">
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="TestMedia">'.$filesString.'</select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
+                <div class="control-group">
+                                <label for="TestName" class="control-label">Test Name</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'TestName', '').'" name="TestName" id="TestName">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestDesc" class="control-label">Test Description</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'TestDesc', '').'" name="TestDesc" id="TestDesc">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestUnits" class="control-label">Units</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'TestUnits', '').'" name="TestUnits" id="TestUnits">
+                                </div>
+                </div>
+
+                <div class="control-group">
+                                <label for="TestResult" class="control-label">Result</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'TestResult', '').'" id="TestResult" name="TestResult">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestNorm" class="control-label">Normal value</label>
+
+                                <div class="controls">
+                                         <input type="text" value="'.Arr::get($values, 'TestNorm', '').'" name="TestNorm" id="TestNorm">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                         <select id="TestMedia" name="TestMedia">' . $filesString . '</select>
+                                </div>
+                 </div>
+            </fieldset>';
                                     break;
                                 case 'DifferentialDiagnostic':
                                     $textType = '';
@@ -219,12 +522,33 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                             $textType .= '<option value="'.$t.'">'.$t.'</option>';
                                         }
                                     }
-                                    echo '<tr><td align="left"><p>Diagnosis title:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'DiagTitle', '').'" name="DiagTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Diagnosis description:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'DiagDesc', '').'" name="DiagDesc" size="60"></td></tr>
-                                          <tr><td align="left"><p>Likelihood</p></td><td align="left"><select name="Likelihood">
-                                          '.$textType.'
-                                          </select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
+                                    echo '
+                                    <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="DiagTitle" class="control-label">Diagnosis title</label>
+
+                                <div class="controls">
+                                          <input type="text" value="'.Arr::get($values, 'DiagTitle', '').'" id="DiagTitle" name="DiagTitle" >
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="DiagDesc" class="control-label">Diagnosis description</label>
+
+                                <div class="controls">
+                                        <input type="text" id="DiagDesc" value="'.Arr::get($values, 'DiagDesc', '').'" name="DiagDesc">
+                                </div>
+                            </div>
+                           <div class="control-group">
+                                <label for="Likelihood" class="control-label">Likelihood</label>
+
+                                <div class="controls">
+                                          <select name="Likelihood" id="Likelihood">
+                                         '.$textType.'
+                                          </select>
+                                </div>
+                            </div>
+                          </fieldset>';
                                     break;
                                 case 'Intervention':
                                     $textType = '';
@@ -236,30 +560,101 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                             $textType .= '<option value="'.$t.'">'.$t.'</option>';
                                         }
                                     }
-                                    echo '<tr><td align="left"><p>Intervention title:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'IntervTitle', '').'" name="IntervTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Intervention description:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'IntervDesc', '').'" name="IntervDesc" size="60"></td></tr>
+                                    echo '
+            <fieldset>
+                             <div class="control-group">
+                                <label for="IntervTitle" class="control-label">Intervention title</label>
 
-                                          <tr><td align="left"><p>Medication title:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicTitle', '').'" name="iMedicTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Dose:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicDose', '').'" name="iMedicDose" size="40"></td></tr>
-                                          <tr><td align="left"><p>Route:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicRoute', '').'" name="iMedicRoute" size="40"></td></tr>
-                                          <tr><td align="left"><p>Frequency:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicFreq', '').'" name="iMedicFreq" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicSource', '').'" name="iMedicSource" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source ID:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'iMedicSourceID', '').'" name="iMedicSourceID" size="40"></td></tr>
+                                <div class="controls">
+                                       <input type="text" value="'.Arr::get($values, 'IntervTitle', '').'" name="IntervTitle" id="IntervTitle">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="IntervDesc" class="control-label">Intervention description</label>
 
-                                          <tr><td align="left"><p>Appropriateness</p></td><td align="left"><select name="Appropriateness">
+                                <div class="controls">
+                                        <input type="text" id="IntervDesc" value="'.Arr::get($values, 'IntervDesc', '').'" name="IntervDesc">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicTitle" class="control-label">Medication title</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicTitle" value="'.Arr::get($values, 'iMedicTitle', '').'" name="iMedicTitle">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicDose" class="control-label">Dose</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicDose" value="'.Arr::get($values, 'iMedicDose', '').'" name="iMedicDose">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicRoute" class="control-label">Route</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicRoute" value="'.Arr::get($values, 'iMedicRoute', '').'" name="iMedicRoute">
+                                </div>
+                            </div>
+                                                                                                                                                                       <div class="control-group">
+                                <label for="iMedicFreq" class="control-label">Frequency</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicFreq" value="'.Arr::get($values, 'iMedicFreq', '').'" name="iMedicFreq">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicSource" class="control-label">Medication item source</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicSource" value="'.Arr::get($values, 'iMedicSource', '').'" name="iMedicSource">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicSourceID" class="control-label">Medication item source ID</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicSourceID" value="'.Arr::get($values, 'iMedicSourceID', '').'" name="iMedicSourceID">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="Appropriateness" class="control-label">Appropriateness</label>
+
+                                <div class="controls">
+                                        <select name="Appropriateness" id="Appropriateness">
                                           <option value=""/>select ...</option>
                                           '.$textType.'
-                                          </select></td></tr>
+                                          </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="ResultTitle" class="control-label">Results title</label>
 
-                                          <tr><td align="left"><p>Results title:</p></td><td align="left"><input type="text" value="'.Arr::get($values, 'ResultTitle', '').'" name="ResultTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Results description:</p></td><td align="left"><input type="text" name="'.Arr::get($values, 'ResultDesc', '').'" name="ResultDesc" size="60"></td></tr>
+                                <div class="controls">
+                                        <input type="text" id="ResultTitle" value="'.Arr::get($values, 'ResultTitle', '').'" name="ResultTitle">
+                                </div>
+                            </div>
+                                                                                                                                                                       <div class="control-group">
+                                <label for="ResultDesc" class="control-label">Results description</label>
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="iTestMedia">'.$filesString.'</select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" name="Submit" value="Submit" /></td></tr></table></form>';
+                                <div class="controls">
+                                        <input type="text" id="ResultDesc" value="'.Arr::get($values, 'ResultDesc', '').'" name="ResultDesc">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iTestMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                         <select id="iTestMedia" name="iTestMedia">' . $filesString . '</select>
+                                </div>
+                            </div>
+                </fieldset>';
                                     break;
                             }
                             ?>
-                        </td>
-                        </tr>
-                    </table>
+                        <input class="btn btn-primary" type="submit" value="Submit">
+
+    </form>
+
                 <?php } ?>
