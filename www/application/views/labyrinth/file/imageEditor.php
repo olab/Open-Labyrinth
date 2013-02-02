@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map']) && isset($templateData['file']) && (strstr($templateData['file']->mime, 'image'))) {
     $src = URL::base().$templateData['file']->path;
-    $size = getimagesize(DOCROOT.$src);
+    $size = getimagesize($src);
     ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery.cropzoom.js"></script>
 <script type="text/javascript">
@@ -61,27 +61,16 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
         });
     });
 </script>
-<table width="100%" height="100%" cellpadding="6">
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Image Editor: "') . $templateData['file']->name . '"'; ?></h4>
-            <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                <tr>
-                    <td>
+
+            <h1><?php echo __('Image Editor: "') . $templateData['file']->name . '"'; ?></h1>
+
                         <div id="image_editor"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p id="buttons">
+
+
+                        <div id="buttons">
                             <input id="submit" type="submit" name="Submit" value="<?php echo __('Crop and Save'); ?>" />
                             <input id="restore" type="button" value="<?php echo __('Undo'); ?>" />
-                        </p>
-                        <p style="display:none;" id="processing"><?php echo __("Processing...") ?></p>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+                        </div>
+                        <div style="display:none;" id="processing"><?php echo __("Processing...") ?></div>
+
 <?php } ?>

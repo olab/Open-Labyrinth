@@ -55,12 +55,36 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
     ?>
 
                 <h1><?php echo __('Edit file: "') . $templateData['file']->name . '"'; ?></h1>
-                <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>">
-                    <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                        <tr align="left"><td><p><?php echo __('preview'); ?></p></td><td><?php echo $preview; ?></td></tr>
-                        <tr align="left"><td><p><?php echo __('chemin'); ?>path</p></td><td><p><?php echo URL::base().$templateData['file']->path; ?></p></td></tr>
-                        <tr align="left"><td><p>ID</p></td><td><p><?php echo $templateData['file']->id; ?></p></td></tr>
-                        <tr align="left"><td><p>MIME</p></td><td>
+
+                <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>" class="form-horizontal">
+                    <fieldset class="fieldset">
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('preview'); ?>
+                            </label>
+                            <div class="controls" style="max-width: 80%;">
+                                <?php echo $preview; ?>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('File Path'); ?>
+                            </label>
+                            <div class="controls">
+                                <a href="<?php echo URL::base().$templateData['file']->path;?>"><?php echo URL::base().$templateData['file']->path;?> </a>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('ID'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" readonly value="<?php echo $templateData['file']->id; ?>"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('MIME Type'); ?>
+                            </label>
+                            <div class="controls">
                                 <select name="mrelmime" size="1">
                                     <option value="not_selected">select</option>
                                     <option value="video/x-msvideo" <?php if ($templateData['file']->mime == 'video/x-msvideo') echo 'selected=""'; ?>>avi:video/x-msvideo</option>
@@ -94,43 +118,68 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                     <option value="audio/x-wav" <?php if ($templateData['file']->mime == 'audio/x-wav') echo 'selected=""'; ?>>wav:audio/x-wav</option>
                                     <option value="application/vnd.ms-excel" <?php if ($templateData['file']->mime == 'application/vnd.ms-excel') echo 'selected=""'; ?>>xls:application/vnd.ms-excel</option>
                                     <option value="application/vnd.ms-excel" <?php if ($templateData['file']->mime == 'application/vnd.ms-excel') echo 'selected=""'; ?>>xlsx:application/vnd.ms-excel</option>
-                                    <option value="application/zip" <?php if ($templateData['file']->mime == 'application/zip') echo 'selected=""'; ?>>zip:application/zip</option></select></td></tr>
-                        <tr align="left"><td><p><?php echo __('title'); ?></p></td><td><input type="text" name="mrelname" size="40" value="<?php echo $templateData['file']->name; ?>"></td></tr>
-                        <tr align="left"><td><p><?php echo __('properties'); ?></p></td><td>
-                                <table>
-                                    <tr>
-                                        <td><p><?php echo __('height'); ?>: <input type="text" name="h" size="4" value="<?php if ($templateData['file']->height > 0) echo $templateData['file']->height; ?>">
-                                                <select name="hv">
-                                                    <option <?php if ($templateData['file']->height_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
-                                                    <option <?php if ($templateData['file']->height_type == '%') echo 'selected=""'; ?> value="%">percent</option></select></p></td>
-                                        <td><p><?php echo __('width'); ?>: <input type="text" name="w" size="4" value="<?php if ($templateData['file']->width > 0) echo $templateData['file']->width; ?>">
-                                                <select name="wv">
-                                                    <option <?php if ($templateData['file']->width_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
-                                                    <option value="%" <?php if ($templateData['file']->width_type == '%') echo 'selected=""'; ?>>percent</option>
-                                                </select></p></td>
-                                    </tr>
-                                    <tr>
-                                        <td><p><?php echo __('horizontal align'); ?>: <select name="a">
-                                                    <option <?php if ($templateData['file']->h_align == '') echo 'selected=""'; ?> value="">none</option>
-                                                    <option <?php if ($templateData['file']->h_align == 'left') echo 'selected=""'; ?> value="left">left</option>
-                                                    <option <?php if ($templateData['file']->h_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
-                                                    <option <?php if ($templateData['file']->h_align == 'right') echo 'selected=""'; ?> value="right">right</option>
-                                                </select></p></td>
-                                        <td><p><?php echo __('vertical align'); ?>: <select name="v">
-                                                    <option <?php if ($templateData['file']->v_align == '') echo 'selected=""'; ?> value="">none</option>
-                                                    <option <?php if ($templateData['file']->v_align == 'top') echo 'selected=""'; ?> value="top">top</option>
-                                                    <option <?php if ($templateData['file']->v_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
-                                                    <option <?php if ($templateData['file']->v_align == 'bottom') echo 'selected=""'; ?> value="bottom">bottom</option>
-                                                </select></p></td>
-                                    </tr>
-                                </table>
-                            </td></tr>
-                        <tr align="left"><td><p>&nbsp;</p></td><td>
-                                <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-                            </td></tr>
-                    </table>
+                                    <option value="application/zip" <?php if ($templateData['file']->mime == 'application/zip') echo 'selected=""'; ?>>zip:application/zip</option></select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="mrelname"><?php echo __('title'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" name="mrelname" id="mrelname" value="<?php echo $templateData['file']->name; ?>">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="h"><?php echo __('Height'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" id="h" name="h"  value="<?php if ($templateData['file']->height > 0) echo $templateData['file']->height; ?>">
+                                <select name="hv">
+                                    <option <?php if ($templateData['file']->height_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
+                                    <option <?php if ($templateData['file']->height_type == '%') echo 'selected=""'; ?> value="%">percent</option></select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="w"><?php echo __('Width'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" name="w" id="w" value="<?php if ($templateData['file']->width > 0) echo $templateData['file']->width; ?>">
+                                <select name="wv">
+                                    <option <?php if ($templateData['file']->width_type == 'px') echo 'selected=""'; ?> value="px">pixels</option>
+                                    <option value="%" <?php if ($templateData['file']->width_type == '%') echo 'selected=""'; ?>>percent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="w"><?php echo __('Horizontal alignment'); ?>
+                            </label>
+                            <div class="controls">
+                                <select name="a">
+                                    <option <?php if ($templateData['file']->h_align == '') echo 'selected=""'; ?> value="">none</option>
+                                    <option <?php if ($templateData['file']->h_align == 'left') echo 'selected=""'; ?> value="left">left</option>
+                                    <option <?php if ($templateData['file']->h_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
+                                    <option <?php if ($templateData['file']->h_align == 'right') echo 'selected=""'; ?> value="right">right</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="w"><?php echo __('Vertical align'); ?>
+                            </label>
+                            <div class="controls">
+                                <select name="v">
+                                    <option <?php if ($templateData['file']->v_align == '') echo 'selected=""'; ?> value="">none</option>
+                                    <option <?php if ($templateData['file']->v_align == 'top') echo 'selected=""'; ?> value="top">top</option>
+                                    <option <?php if ($templateData['file']->v_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
+                                    <option <?php if ($templateData['file']->v_align == 'bottom') echo 'selected=""'; ?> value="bottom">bottom</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+
                 </form>  
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>
