@@ -210,32 +210,14 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
             <label class="control-label"><?php echo __('Direction'); ?></label>
 
             <div class="controls">
-
-
-
-
-
-                    <label class="radio">
-
+               <label class="radio">
                         <input type="radio" name="linkDirection" value="1" checked=""><?php echo __('one way'); ?>
-
-
-
                     </label>
-
             </div>
             <div class="controls">
-
-
-
-
-
                 <label class="radio">
-
                     <input
                         type="radio" name="linkDirection" value="2"><?php echo __('both ways'); ?>
-
-
                 </label>
 
             </div>

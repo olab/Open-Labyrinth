@@ -18,32 +18,40 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('NodeGrid "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="3">
-                    <tr bgcolor="#ffffff"><td align="left">
-                            <form action="<?php echo URL::base().'nodeManager/saveGrid/'.$templateData['map']->id; ?>" method="POST">
-                                <p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p>
-                                <?php if(isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
-                                <table border="0" width="50%" cellpadding="3">
-                                    <tr><td colspan="3"><hr></td></tr>
-                                    <?php foreach($templateData['nodes'] as $node) { ?>
-                                    <tr>
-                                        <td valign="top"><p>ID:<?php echo $node->id; ?> <?php if($node->type->name == 'root') echo __('[root]'); ?></p></td>
-                                        <td valign="top"><p><input type="text" size="50" name="title_<?php echo $node->id; ?>" value="<?php echo $node->title; ?>"></p></td>
-                                        <td valign="top"><p><textarea cols="40" rows="4" name="text_<?php echo $node->id; ?>"><?php echo $node->text; ?></textarea></p></td>
-                                    </tr>
-                                    <?php } ?>
-                                </table>
-                                <?php } ?>
-                                <p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p>
-                            </form>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+if (isset($templateData['map'])) {
+    ?>
+    <h1><?php echo __('NodeGrid "') . $templateData['map']->name . '"'; ?></h1>
+    <form class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
+
+        <?php if (isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
+
+
+                <?php foreach ($templateData['nodes'] as $node) { ?>
+    <fieldset class="fieldset">
+        <legend>Node with ID <?php echo $node->id; ?> <?php if ($node->type->name == 'root') echo __('(root)'); ?></legend>
+            <div class="control-group">
+                <label for="title_<?php echo $node->id; ?>" class="control-label"><?php echo __('Title'); ?></label>
+
+                <div class="controls">
+                    <input type="text" id="title_<?php echo $node->id; ?>" name="title_<?php echo $node->id; ?>"
+                           value="<?php echo $node->title; ?>">
+                </div>
+            </div>
+        <div class="control-group">
+            <label for="title_<?php echo $node->id; ?>" class="control-label"><?php echo __('Description'); ?></label>
+
+            <div class="controls">
+                <textarea id="text_<?php echo $node->id; ?>"
+                          name="text_<?php echo $node->id; ?>"><?php echo $node->text; ?></textarea>
+            </div>
+        </div>
+    </fieldset>
+
+                <?php } ?>
+        <?php } ?>
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+
+
+    </form>
+
 <?php } ?>

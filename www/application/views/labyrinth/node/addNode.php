@@ -40,77 +40,116 @@ if (isset($templateData['map'])) { ?>
             autocomplete_trigger: ""
         });
     </script>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h4>
-                <table bgcolor="#ffffff"><tr><td>
-                            <p><a href="<?php echo URL::base().'nodeManager/addNode/'.$templateData['map']->id.'/h'; ?>">HTML</a> - <a href="<?php echo URL::base().'nodeManager/addNode/'.$templateData['map']->id.'/w'; ?>">WYSIWYG</a></p>
-                            <form id="form1" name="form1" method="post" action="<?php echo URL::base().'nodeManager/createNode/'.$templateData['map']->id; ?>">
-                                <table width="100%" border="0" cellspacing="0" cellpadding="4">
-                                    <tr>
-                                        <td width="40%" align="right"><p><?php echo __('title'); ?></p></td>
-                                        <td width="40%"><p><textarea name="mnodetitle" cols="60" rows="2"></textarea></p></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('node content'); ?></p></td>
-                                        <td><p>
-                                                <textarea name="mnodetext" cols='60' rows='10' <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>>&lt;p&gt;&lt;/p&gt;</textarea>
-                                            </p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><img src="<?php echo URL::base(); ?>images/info_blak.gif">supporting information</p></td>
-                                        <td><textarea name="mnodeinfo" cols='60' rows='10' <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea></td>
-                                    </tr>
-                                    <tr>
-                                        <td><p>&nbsp;</p></td>
-                                        <td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('exit Node Probability'); ?></p></td>
-                                        <td><hr><p>[&nbsp;<?php echo __('on'); ?>&nbsp;<input name="mnodeprobability" type="radio" value="1">&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;<?php echo __('off'); ?>&nbsp;<input name="mnodeprobability" type="radio" value="0">&nbsp;]</p><hr></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('link function style'); ?></p></td>
-                                        <td><p>
-                                                <?php if(isset($templateData['linkStyles'])) { ?>
-                                                    <?php foreach($templateData['linkStyles'] as $linkStyle) { ?>
-                                                        <input type="radio" name="linkstyle" value="<?php echo $linkStyle->id ?>"><?php echo $linkStyle->name; ?> |
-                                                    <?php } ?>
-                                                <?php } ?>
-                                             </p>
-                                             <hr>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('node priority'); ?></p></td>
-                                        <td><p>
-                                                <?php if(isset($templateData['priorities'])) { ?>
-                                                    <?php foreach($templateData['priorities'] as $priority) { ?>
-                                                        <input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?> |
-                                                    <?php } ?>
-                                                <?php } ?>
-                                                </p><hr></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('enable undo links'); ?></p></td>
-                                        <td><p>[&nbsp;<?php echo __('on'); ?>&nbsp;<input name="mnodeUndo" type="radio" value="1">&nbsp;]&nbsp;&nbsp;&nbsp;[&nbsp;<?php echo __('off'); ?>&nbsp;<input name="mnodeUndo" type="radio" value="0">&nbsp;]
-                                            </p><hr></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><p><?php echo __('link to end and report from this node'); ?></p></td>
-                                        <td><p><input type="radio" name="ender" value="0" checked=""><?php echo __('off'); ?> (<?php echo __('default'); ?>) | <input type="radio" name="ender" value="1"><?php echo __('on'); ?></p><hr></td>
-                                    </tr>
-                                    <tr>
-                                        <td><p>&nbsp;</p></td>
-                                        <td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td>
-                                    </tr>
-                                </table>
+
+                <h1><?php echo __('add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+
+
+                            <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'nodeManager/createNode/'.$templateData['map']->id; ?>">
+
+                                <fieldset class="fieldset">
+                                    <div class="control-group">
+                                        <label for="mnodetitle" class="control-label"><?php echo __('title'); ?></label>
+
+                                        <div class="controls">
+                                            <input type="text" name="mnodetitle" id="mnodetitle" />
+                                        </div>
+                                    </div>
+
+
+                                    <div class="control-group">
+                                        <label for="mnodetext" class="control-label"><?php echo __('node content'); ?></label>
+
+                                        <div class="controls">
+                                            <textarea name="mnodetext" id="mnodetext"  <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="mnodeinfo" class="control-label"><?php echo __('Supporting Information content'); ?></label>
+
+                                        <div class="controls">
+                                            <textarea name="mnodeinfo" id="mnodeinfo" <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
+                                        </div>
+                                    </div>
+                                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+                                </fieldset>
+<fieldset class="fieldset">
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Exit Node Probability'); ?></label>
+
+        <div class="controls">
+            <label class="radio">
+               <input name="mnodeprobability" type="radio" value="1"><?php echo __('on'); ?>
+            </label>
+        </div>
+        <div class="controls">
+            <label class="radio">
+               <input name="mnodeprobability" type="radio" value="0"><?php echo __('off'); ?>
+            </label>
+
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Link function style'); ?></label>
+        <?php if(isset($templateData['linkStyles'])) { ?>
+            <?php foreach($templateData['linkStyles'] as $linkStyle) { ?>
+
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" name="linkstyle" value="<?php echo $linkStyle->id ?>"><?php echo $linkStyle->name; ?>
+                    </label>
+                </div>
+            <?php } ?>
+        <?php } ?>
+
+    </div>
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Node priority'); ?></label>
+        <?php if(isset($templateData['priorities'])) { ?>
+            <?php foreach($templateData['priorities'] as $priority) { ?>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?>
+                    </label>
+                </div>
+            <?php } ?>
+        <?php } ?>
+
+    </div>
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Enable undo links'); ?></label>
+
+        <div class="controls">
+            <label class="radio">
+                <input name="mnodeUndo" type="radio" value="1"><?php echo __('on'); ?>
+            </label>
+        </div>
+        <div class="controls">
+            <label class="radio">
+                <input name="mnodeUndo" type="radio" value="0"><?php echo __('off'); ?>
+            </label>
+
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Link to end and report from this node'); ?></label>
+
+        <div class="controls">
+            <label class="radio">
+                <input type="radio" name="ender" value="1"><?php echo __('on'); ?>
+            </label>
+        </div>
+        <div class="controls">
+            <label class="radio">
+                <input type="radio" name="ender" value="0" checked=""><?php echo __('off'); ?>
+            </label>
+
+        </div>
+    </div>
+</fieldset>
+
+                 <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                             </form>
                             <br>
-                        </td></tr></table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>

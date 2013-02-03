@@ -47,8 +47,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
 
     <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-    <a href="<?php echo URL::base() . 'nodeManager/editNode/' . $templateData['node']->id . '/h'; ?>">HTML</a> - <a
-        href="<?php echo URL::base() . 'nodeManager/editNode/' . $templateData['node']->id . '/w'; ?>">WYSIWYG</a></p>
+
 
     <form id="form1" name="form1" method="post" class="form-horizontal"
           action="<?php echo URL::base() . 'nodeManager/updateNode/' . $templateData['node']->id; ?>">
