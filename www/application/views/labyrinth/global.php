@@ -163,6 +163,7 @@ if (isset($templateData['map'])) {
                                                 <option
                                                     value="<?php echo $role->id; ?>" <?php if ($role->id == $contributor->role_id) echo 'selected=""'; ?>><?php echo $role->name; ?></option>
                                             <?php } ?>
+
                                         </select>
 
 
@@ -307,6 +308,9 @@ if (isset($templateData['map'])) {
         <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>">
     </div>
 
+                                        <?php
+                                        echo Helper_Controller_Metadata::displayEditor($templateData["map"],"map");?>
 
     </form>
+
 <?php } ?>

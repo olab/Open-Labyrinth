@@ -66,6 +66,20 @@ if (isset($templateData['map'])) { ?>
                         <td align="right"><p><?php echo __('number of links'); ?></p></td>
                         <td align="left"><p>0&nbsp;</p></td>
                     </tr>
+                                    <tr>
+                    <td>
+                    <?php
+
+
+                    $vars = $templateData["map"]->as_array();
+
+                    foreach ($vars as $property):?>
+                        <?php if (Helper_Controller_Metadata::isMetadataRecord($property)): ?>
+                            <?php echo Helper_Controller_Metadata::getView($property); ?>
+                            <?php endif; ?>
+                        <?php endforeach;?>
+                    </td>
+                </tr>
                 </table>
             </td>
         </tr>

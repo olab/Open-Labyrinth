@@ -811,7 +811,12 @@ class Controller_LabyrinthManager extends Controller_Base {
             if ($mapId) {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
+
                 Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+
+                Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
+                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+
             } else {
                 Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
             }
