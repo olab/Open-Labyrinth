@@ -90,7 +90,7 @@
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Export Labyrinths'); ?></li>
                                         <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('XML'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('Medbiquitous ANSI'); ?></a></li>
+                                        <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous ANSI'); ?></a></li>
                                     </ul>
                                 </li>
                                 <li class="dropdown">
