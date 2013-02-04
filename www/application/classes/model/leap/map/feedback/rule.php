@@ -153,6 +153,21 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         return NULL;
     }
     
+    public function getRulesByTypeNameAndMapId($typeName, $mapId) {
+        $rules = $this->getRulesByTypeName($typeName);
+        if($rules != null && count($rules) > 0) {
+            $result = array();
+            foreach($rules as $rule) {
+                if($rule->map_id == $mapId)
+                    $result[] = $rule;
+            }
+            
+            return count($result) > 0 ? $result : NULL;
+        }
+        
+        return NULL;
+    }
+    
     public function addRule($mapId, $typeName, $values) {
         switch($typeName) {
             case 'time':
@@ -177,6 +192,24 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
             case 'counter':
                 $this->addCounterRule($mapId, $values);
                 break;
+        }
+    }
+    
+    public function duplicateRules($fromMapId, $toMapId) {
+        $rules = $this->getRulesByMap($fromMapId);
+        
+        if($rules == null || $toMapId == null || $toMapId <= 0) return;
+        
+        foreach($rules as $rule) {
+            $builder = DB_ORM::insert('map_feedback_rule')
+                    ->column('map_id', $toMapId)
+                    ->column('rule_type_id', $rule->rule_type_id)
+                    ->column('operator_id', $rule->operator_id)
+                    ->column('counter_id', $rule->counter_id)
+                    ->column('value', $rule->value)
+                    ->column('message', $rule->message);
+            
+            $builder->execute();
         }
     }
     

@@ -143,6 +143,28 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
         }
         $this->save();
     }
+    
+    public function duplicateRules($fromCounterId, $toCounterId, $nodeMap) {
+        $rules = $this->getRulesByCounterId($fromCounterId);
+        
+        if($rules == null || $toCounterId == null || $toCounterId <= 0) return;
+        
+        foreach($rules as $rule) {
+            $builder = DB_ORM::insert('map_counter_rule')
+                    ->column('counter_id', $toCounterId)
+                    ->column('relation_id', $rule->relation_id)
+                    ->column('value', $rule->value)
+                    ->column('function', $rule->function)
+                    ->column('message', $rule->message)
+                    ->column('counter', $rule->counter)
+                    ->column('counter_value', $rule->counter_value);
+            
+            if(isset($nodeMap[$rule->redirect_node_id]))
+                $builder = $builder->column ('redirect_node_id', $nodeMap[$rule->redirect_node_id]);
+            
+            $builder->execute();
+        }
+    }
 }
 
 ?>
