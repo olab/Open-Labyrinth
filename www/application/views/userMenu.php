@@ -26,7 +26,7 @@ if (isset($presentations) && is_array($presentations) && !empty($presentations))
     <?php
     foreach ($presentations as $presentation) {
         ?>
-        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"></i> <?php echo $presentation->title; ?></a></li>
+        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"> <?php echo $presentation->title; ?></a></li>
         <?php
     }
     ?>

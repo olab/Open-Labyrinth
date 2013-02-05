@@ -109,9 +109,4 @@
         <?php endif; ?>
     </div>
 </div>
-           <a href="<?php echo URL::base(); ?>vocabulary/manager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt=""></a>
-        
-           <p><a href="<?php echo URL::base(); ?>vocabulary/manager"><strong><?php echo __('manage rdf vocabularies'); ?></strong></a></p>
-           <a href="<?php echo URL::base(); ?>metadata/manager"><img src="<?php echo URL::base(); ?>images/remotel.jpg" border="0" alt=""></a>
-            <p><a href="<?php echo URL::base(); ?>metadata/manager"><strong><?php echo __('manage metadata'); ?></strong></a></p>
 

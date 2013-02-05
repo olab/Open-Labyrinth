@@ -128,10 +128,8 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
             $this->load();
 
             $this->term_label = $label;
-            //$property = DB_ORM::model('vocabulary_term', array($id));
 
-            //var_dump($this);
-            //return $result[0];
+
         }
 
 

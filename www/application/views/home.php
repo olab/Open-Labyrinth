@@ -108,6 +108,25 @@
                                             <?php
                                         }
                                         ?>
+
+                                        <?php
+                                        if (Auth::instance()->get_user()->type->name == 'superuser') {
+                                            ?>
+
+                                            <li class="divider"></li>
+                                            <li>
+                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage RDF vocabularies'); ?></a></li>
+
+                                           <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>                                           <li><a href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
+
+
+                                        <?php
+                                        }
+                                        ?>
+
+
                                     </ul>
                                 </li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>

@@ -47,7 +47,7 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
         $p = $this->p;
         $o = $this->o;
 
-        if ($this->type == Model_Leap_Vocabulary_Term::)
+        if ($this->type == Model_Leap_Vocabulary_Term::Property)
             $o = "'$o'";
         else
             $o = "<$o>";

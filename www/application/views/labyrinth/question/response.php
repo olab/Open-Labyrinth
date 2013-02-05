@@ -19,67 +19,133 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h4>
 
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td>
+                <h1><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h1>
+
                             <?php if(isset($templateData['question'])) { ?>
-                            <form method="POST" action="<?php echo URL::base().'questionManager/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">
+                            <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">
                             <?php } else { ?>
-                            <form method="POST" action="<?php echo URL::base().'questionManager/saveNewQuestion/'.$templateData['map']->id.'/'.$templateData['questionType']; ?>">
+                            <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/saveNewQuestion/'.$templateData['map']->id.'/'.$templateData['questionType']; ?>">
                             <?php } ?>
-                                <table border="0" width="100%" cellpadding="1">
-                                    <tr><td><p>stem:</p></td><td><p><textarea cols="50" rows="3" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea></p></td></tr>
-                                    <tr><td colspan="2"><hr></td></tr>
+
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="qstem" class="control-label"><?php echo __('Stem'); ?>
+            </label>
+            <div class="controls">
+                <textarea id="qstem" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="qstem" class="control-label"><?php echo __('Stem'); ?>
+            </label>
+            <div class="controls">
+                <textarea id="qstem" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Show answer to user'); ?>
+            </label>
+            <div class="controls">
+                <label class="radio">
+                    <input type="radio" name="qshow" value="1" <?php if(isset($templateData['question']) and $templateData['question']->show_answer == 1) echo 'checked=""'; ?>> show
+                </label>
+                <label class="radio">
+                    <input type="radio" name="qshow" value="0" <?php if(isset($templateData['question']) and $templateData['question']->show_answer == 0) echo 'checked=""'; ?>> do not show
+                </label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="scount" class="control-label"><?php echo __('Track score with existing counter'); ?>
+            </label>
+            <div class="controls">
+                <select id="scount" name="scount">
+                    <option value="0">no counter</option>
+                    <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+                        <?php foreach($templateData['counters'] as $counter) { ?>
+                            <option value="<?php echo $counter->id; ?>" <?php if(isset($templateData['question']) and $counter->id == $templateData['question']->counter_id) echo 'selected=""'; ?>><?php echo $counter->name; ?></option>
+                        <?php } ?>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="numtries" class="control-label"><?php echo __('Number of tries allowed'); ?>
+            </label>
+            <div class="controls">
+
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="fback" class="control-label"><?php echo __('Number of tries allowed'); ?>
+            </label>
+            <div class="controls">
+                <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
+            </div>
+        </div>
+</fieldset>
+
+
+
+
                                     <?php if(isset($templateData['args'])) { ?>
                                         <?php for($i = 1; $i <= (int)$templateData['args']; $i++) { ?>
-                                            <tr>
-                                                <td>
-                                                    <p><?php echo __('response').' '.$i; ?>:</p>
-                                                </td>
-                                                <td>
-                                                    <p>response: <input type="text" name="qresp<?php echo $i; ?>t" size="50" 
-                                                                        value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->response; ?>"></p>
-                                                    <p><?php echo __('feedback'); ?>: <input type="text" name="qfeed<?php echo $i; ?>" size="50" 
-                                                                        value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->feedback; ?>"></p>
-                                                    <p>[<input type="radio" name="qresp<?php echo $i ?>y" value="1" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 1) echo 'checked=""'; ?>> correct] 
-                                                        [<input type="radio" name="qresp<?php echo $i ?>y" value="0" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 0) echo 'checked=""'; ?>> incorrect] 
-                                                        <select name="qresp<?php echo $i; ?>s">
-                                                            <?php for($j = -10; $j <= 10; $j++) { ?>
-                                                                <option value="<?php echo $j; ?>" 
-                                                                    <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->score == $j) { echo 'selected=""'; } ?>
-                                                                    <?php if(!isset($templateData['question']) and $j == 0) echo 'selected=""'; ?>><?php echo $j; ?></option>
-                                                            <?php } ?>
-                                                        </select>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                            <tr><td colspan="2"><hr></td></tr>
+            <fieldset class="fieldset">
+                <legend><?php echo __('Response #').$i; ?></legend>
+                <div class="control-group">
+                    <label for="qresp<?php echo $i; ?>t" class="control-label"><?php echo __('Response'); ?>
+                    </label>
+                    <div class="controls">
+                        <input type="text" id="qresp<?php echo $i; ?>t" name="qresp<?php echo $i; ?>t"
+                               value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->response; ?>"/>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="qfeed<?php echo $i; ?>" class="control-label"><?php echo __('Feedback'); ?>
+                    </label>
+                    <div class="controls">
+                        <input id="qfeed<?php echo $i; ?>" type="text" name="qfeed<?php echo $i; ?>"
+                               value="<?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0) echo $templateData['question']->responses[$i-1]->feedback; ?>">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label"><?php echo __('Correctness'); ?>
+                    </label>
+                    <div class="controls">
+                        <label class="radio">
+                            <input type="radio" name="qresp<?php echo $i ?>y" value="1" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 1) echo 'checked=""'; ?>> correct
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="qresp<?php echo $i ?>y" value="0" <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->is_correct == 0) echo 'checked=""'; ?>> incorrect
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="qresp<?php echo $i; ?>s" class="control-label"><?php echo __('Score'); ?>
+                    </label>
+                    <div class="controls">
+                        <select id="" name="qresp<?php echo $i; ?>s">
+                            <?php for($j = -10; $j <= 10; $j++) { ?>
+                                <option value="<?php echo $j; ?>"
+                                    <?php if(isset($templateData['question']) and count($templateData['question']->responses) > 0 and $templateData['question']->responses[$i-1]->score == $j) { echo 'selected=""'; } ?>
+                                    <?php if(!isset($templateData['question']) and $j == 0) echo 'selected=""'; ?>><?php echo $j; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+
                                         <?php } ?>
                                     <?php } ?>
-                                    <tr><td><p><?php echo __('show answer to user'); ?>:</p></td><td><p>[<input type="radio" name="qshow" value="1" <?php if(isset($templateData['question']) and $templateData['question']->show_answer == 1) echo 'checked=""'; ?>> show] [<input type="radio" name="qshow" value="0" <?php if(isset($templateData['question']) and $templateData['question']->show_answer == 0) echo 'checked=""'; ?>> do not show]</p></td></tr>
-                                    <tr><td><p><?php echo __('number of tries allowed'); ?>:</p></td><td><p><select name="numtries"><option value="-1" <?php if(isset($templateData['question']) and $templateData['question']->num_tries == -1) echo 'selected=""'; ?>>no limit</option><option value="1" <?php if(isset($templateData['question']) and $templateData['question']->num_tries == 1) echo 'selected=""'; ?>>1 try</select></p></td></tr>
-                                    <tr><td><p><?php echo __('track score with existing counter'); ?>:</p></td>
-                                        <td><p>
-                                                <select name="scount">
-                                                    <option value="0">no counter</option>
-                                                    <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                                        <?php foreach($templateData['counters'] as $counter) { ?>
-                                                            <option value="<?php echo $counter->id; ?>" <?php if(isset($templateData['question']) and $counter->id == $templateData['question']->counter_id) echo 'selected=""'; ?>><?php echo $counter->name; ?></option>
-                                                        <?php } ?>
-                                                    <?php } ?>
-                                                </select>
-                                            </p></td></tr>
-                                    <tr><td><p><?php echo __('feedback'); ?>:</p></td><td><p><textarea cols="60" rows="3" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></p></td></tr>
-                                    <tr><td colspan="2"><input type="submit" name="Submit" value="submit"></td></tr>
-                                </table>
+
+
+
+
+
+                                    <input class="btn btn-primary" type="submit" name="Submit" value="submit">
+
                             </form>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>

@@ -25,46 +25,60 @@ if (isset($templateData['map'])) { ?>
             if (restore) selObj.selectedIndex=0;
         }
     </script>
-    <table width="100%" height="100%" cellpadding="6">
+
+                <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
+
+    <table class="table table-striped table-bordered">
+        <thead>
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td>
-                            <table border="0" width="100%" cellpadding="1">
+            <th>Embeddable</th>
+            <th>Content</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
                                 <?php if(isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
                                     <?php foreach($templateData['questions'] as $question) { ?>
                                         <tr>
                                             <td>
                                                 <p>
-                                                    <input type="text" value="[[QU:<?php echo $question->id; ?>]]"><?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>) 
-                                                    [<a href="<?php echo URL::base().'questionManager/editQuestion/'.$templateData['map']->id.'/'.$question->entry_type_id.'/'.$question->id; ?>">edit</a> 
-                                                    - <a href="<?php echo URL::base().'questionManager/deleteQuestion/'.$templateData['map']->id.'/'.$question->id; ?>">delete</a>]
+                                                    <input readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></td><td>
+
+                                                    <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>)</td><td>
+                                                    <a class="btn btn-primary" href="<?php echo URL::base().'questionManager/editQuestion/'.$templateData['map']->id.'/'.$question->entry_type_id.'/'.$question->id; ?>">edit</a>
+                                                    <a class="btn btn-primary" href="<?php echo URL::base().'questionManager/deleteQuestion/'.$templateData['map']->id.'/'.$question->id; ?>">delete</a>
                                                 </p>
                                             </td>
                                         </tr>
                                     <?php } ?>
                                 <?php } ?>
-                                <tr>
-                                    <td>
-                                        <p>add question 
-                                            <?php if(isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
-                                            <select onchange="jumpMenu('parent',this,0)" name="qt">
-                                                <option value=""><?php echo __('select'); ?> ...</option>
-                                                <?php foreach($templateData['question_types'] as $type) { ?>
-                                                    <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                            <?php } ?>
-                                        </p>
-                                    </td>
-                                </tr>
+
+
+        </tbody>
                             </table>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
+
+    <form class="form-horizontal" action="#">
+        <fieldset class="fieldset">
+           <legend>add question</legend>
+                <?php if(isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+                <div class="control-group">
+                    <label for="qt" class="control-label"><?php echo __('Question type'); ?>
+                    </label>
+                    <div class="controls">
+                        <select onchange="jumpMenu('parent',this,0)" id="qt" name="qt">
+                            <option value=""><?php echo __('select'); ?> ...</option>
+                            <?php foreach($templateData['question_types'] as $type) { ?>
+                                <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+
+                <?php } ?>
+        </fieldset>
+    </form>
+
 <?php } ?>
 
 
