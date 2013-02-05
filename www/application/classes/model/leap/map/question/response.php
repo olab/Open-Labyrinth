@@ -122,7 +122,23 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
         $builder = DB_ORM::delete('map_question_response')->where('question_id', '=', (int)$questionId);
         $builder->execute();
     }
- 
+    
+    public function duplicateResponses($fromQuestionId, $toQuestionId) {
+        $resp = $this->getResponsesByQuestion($fromQuestionId);
+        
+        if($resp == null || $toQuestionId == null || $toQuestionId <= 0) return;
+        
+        foreach($resp as $r) {
+            $builder = DB_ORM::insert('map_question_response')
+                    ->column('question_id', $toQuestionId)
+                    ->column('response', $r->response)
+                    ->column('feedback', $r->feedback)
+                    ->column('is_correct', $r->is_correct)
+                    ->column('score', $r->score);
+            
+            $builder->execute();
+        }
+    }
 }
 
 ?>

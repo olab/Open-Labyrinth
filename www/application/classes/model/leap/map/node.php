@@ -535,6 +535,102 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         
         $this->save();
     }
+    
+    public function duplicateNodes($fromMapId, $toMapId) {
+        $nodes = $this->getNodesByMap($fromMapId);
+        
+        if($nodes == null) return array();
+        
+        $nodeMap = array();
+        foreach($nodes as $node) {
+            $values = array('title' => $node->title,
+                            'text' => $node->title,
+                            'info' => $node->info,
+                            'probability' => $node->probability,
+                            'link_style_id' => $node->link_style_id,
+                            'link_type_id' => $node->link_type_id,
+                            'priority_id' => $node->priority_id,
+                            'undo' => $node->undo,
+                            'end' => $node->end,
+                            'type_id' => $node->type_id,
+                            'x' => $node->x,
+                            'y' => $node->y,
+                            'rgb' => $node->rgb);
+            
+            $newNode = $this->createFullNode($toMapId, $values);
+            
+            $nodeMap[$node->id] = $newNode->id;
+        }
+        
+        return $nodeMap;
+    }
+    
+    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+        foreach($nodeMap as $k => $v) {
+            $this->id = $v;
+            $this->load();
+            
+            $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            
+            $this->save();
+        }
+    }
+    
+    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+        $result = $text;
+
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
+
+        foreach ($codes as $code) {
+            $regExp = '/[\[' . $code . ':\d\]]+/';
+            if (preg_match_all($regExp, $text, $matches)) {
+                foreach ($matches as $match) {
+                    foreach ($match as $value) {
+                        if (stristr($value, '[[' . $code . ':')) {
+                            $m = explode(':', $value);
+                            $id = substr($m[1], 0, strlen($m[1]) - 2);
+                            if (is_numeric($id)) {
+                                $replaceString = '';
+                                switch ($code) {
+                                    case 'MR':
+                                        if(isset($elemMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $elemMap[(int)$id] . ']]';
+                                        break;
+                                    case 'AV':
+                                        if(isset($avatarMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $avatarMap[(int)$id] . ']]';
+                                        break;
+                                    case 'CHAT':
+                                        if(isset($chatMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $chatMap[(int)$id] . ']]';
+                                        break;
+                                    case 'QU':
+                                        if(isset($questionMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $questionMap[(int)$id] . ']]';
+                                        break;
+                                    case 'VPD':
+                                        if(isset($vpdMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $vpdMap[(int)$id] . ']]';
+                                        break;
+                                    case 'DAM':
+                                        if(isset($damMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $damMap[(int)$id] . ']]';
+                                        break;
+                                    case 'INFO':
+                                        break;
+                                }
+
+                                $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
 }
 
 ?>

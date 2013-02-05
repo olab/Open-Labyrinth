@@ -172,6 +172,16 @@ class Model_Leap_Map_User extends DB_ORM_Model {
             $this->save();
         }
     }
+    
+    public function duplicateUsers($fromMapId, $toMapId) {
+        $users = $this->getAllUsers($fromMapId);
+        
+        if($users == null) return;
+        
+        foreach($users as $user) {
+            $this->addUser($toMapId, $user->id);
+        }
+    }
 }
 
 ?>

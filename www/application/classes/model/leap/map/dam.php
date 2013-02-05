@@ -233,6 +233,26 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
             }
         }
     }
+    
+    public function duplicateDam($fromMapId, $toMapId, $vpdsMap, $elemMap) {
+        $dams = $this->getAllDamByMap($fromMapId);
+        
+        if($dams == null || $toMapId == null || $toMapId <= 0) return array();
+        
+        $damsMap = array();
+        foreach($dams as $dam) {
+            $builder = DB_ORM::insert('map_dam')
+                    ->column('map_id', $toMapId)
+                    ->column('name', $dam->name);
+                    
+            $damsMap[$dam->id] = $builder->execute();
+        }
+        
+        foreach($damsMap as $k => $v)
+            DB_ORM::model('map_dam_element')->duplicateElements($k, $v, $vpdsMap, $elemMap, $damsMap);
+        
+        return $damsMap;
+    }
 }
 
 ?>

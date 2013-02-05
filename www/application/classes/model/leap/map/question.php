@@ -257,6 +257,34 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
         return NULL;
     }
+    
+    public function duplicateQuestions($fromMapId, $toMapId, $counterMap) {
+        $questions = $this->getQuestionsByMap($fromMapId);
+        
+        if($questions == null || $toMapId == null || $toMapId <= 0) return array();
+        
+        $questionMap = array();
+        foreach($questions as $question) {
+            $builder = DB_ORM::insert('map_question')
+                    ->column('map_id', $toMapId)
+                    ->column('stem', $question->stem)
+                    ->column('entry_type_id', $question->entry_type_id)
+                    ->column('width', $question->width)
+                    ->column('height', $question->height)
+                    ->column('feedback', $question->feedback)
+                    ->column('show_answer', $question->show_answer)
+                    ->column('num_tries', $question->num_tries);
+            
+            if(isset($counterMap[$question->counter_id]))
+                $builder = $builder->column ('counter_id', $counterMap[$question->counter_id]);
+            
+            $questionMap[$question->id] = $builder->execute();
+            
+            DB_ORM::model('map_question_response')->duplicateResponses($question->id, $questionMap[$question->id]);
+        }
+        
+        return $questionMap;
+    }
 
     private function saveResponceQuestion($mapId, $type, $values) {
         $builder = DB_ORM::insert('map_question')

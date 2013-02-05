@@ -143,6 +143,22 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         
         return NULL;
     }
+    
+    public function duplicateSections($fromMapId, $toMapId, $nodeMap) {
+        $sections = $this->getSectionsByMapId($fromMapId);
+        
+        if($sections == null || $toMapId == null || $toMapId <= 0) return;
+        
+        foreach($sections as $section) {
+            $builder = DB_ORM::insert('map_node_section')
+                    ->column('map_id', $toMapId)
+                    ->column('name', $section->name);
+            
+            $newId = $builder->execute();
+                    
+            DB_ORM::model('map_node_section_node')->duplicateSectionNodes($section->id, $newId, $nodeMap);
+        }
+    }
 }
 
 ?>

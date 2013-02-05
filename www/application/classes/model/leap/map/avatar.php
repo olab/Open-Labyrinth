@@ -277,6 +277,51 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $duplicateAvatar->save();
         }
     }
+    
+    public function duplicateAvatars($fromMapId, $toMapId) {
+        $avatars = $this->getAvatarsByMap($fromMapId);
+        
+        if($avatars == null || $toMapId == null || $toMapId <= 0) return array();
+        
+        $avatarMap = array();
+        foreach($avatars as $avatar) {
+            $avatarImage = $this->getAvatarImage($avatar->id);
+            if (!empty($avatarImage)) {
+                $upload_dir = DOCROOT . 'avatars/';
+                $file = uniqid() . '.png';
+				if(is_dir($upload_dir))
+					copy($upload_dir . $avatarImage, $upload_dir . $file);
+            } else {
+                $file = NULL;
+            }
+            
+            $builder = DB_ORM::insert('map_avatar')
+                    ->column('map_id', $toMapId)
+                    ->column('skin_1', $avatar->skin_1)
+                    ->column('skin_2', $avatar->skin_2)
+                    ->column('cloth', $avatar->cloth)
+                    ->column('nose', $avatar->nose)
+                    ->column('hair', $avatar->hair)
+                    ->column('environment', $avatar->environment)
+                    ->column('accessory_1', $avatar->accessory_1)
+                    ->column('accessory_2', $avatar->accessory_2)
+                    ->column('accessory_3', $avatar->accessory_3)
+                    ->column('bkd', $avatar->bkd)
+                    ->column('sex', $avatar->sex)
+                    ->column('mouth', $avatar->mouth)
+                    ->column('outfit', $avatar->outfit)
+                    ->column('bubble', $avatar->bubble)
+                    ->column('bubble_text', $avatar->bubble_text)
+                    ->column('age', $avatar->age)
+                    ->column('eyes', $avatar->eyes)
+                    ->column('hair_color', $avatar->hair_color)
+                    ->column('image', $file);
+            
+            $avatarMap[$avatar->id] = $builder->execute();
+        }
+        
+        return $avatarMap;
+    }
 }
 
 ?>

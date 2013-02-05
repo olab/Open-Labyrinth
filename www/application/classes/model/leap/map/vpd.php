@@ -135,6 +135,27 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         DB_ORM::model('map_vpd_element')->saveElementValues($id, $values);
         return $id;
     }
+    
+    public function duplicateElements($fromMapId, $toMapId) {
+        $vpds = $this->getAllVpdByMap($fromMapId);
+        
+        if($vpds == null || $toMapId == null || $toMapId <= 0) return null;
+        
+        $vpdMap = array();
+        foreach($vpds as $vpd) {
+            $builder = DB_ORM::insert('map_vpd')
+                    ->column('map_id', $toMapId)
+                    ->column('vpd_type_id', $vpd->vpd_type_id);
+                    
+            $vpdMap[$vpd->id] = $builder->execute();
+        }
+        
+        foreach($vpdMap as $k => $v) {
+            DB_ORM::model('map_vpd_element')->duplicateElement($k, $v);
+        }
+        
+        return $vpdMap;
+    }
 }
 
 ?>

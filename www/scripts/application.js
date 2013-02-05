@@ -200,4 +200,8 @@ jQuery(document).ready(function(){
         });
 
     });
+	
+	jQuery('.confirm-dialog-link').click(function() {
+        $('.confirm-link').attr('href', $(this).attr('link'));
+    });
 });

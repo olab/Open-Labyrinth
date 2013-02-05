@@ -116,19 +116,19 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     public function getCountersByMap($mapId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
-
+        
         if($result->is_loaded()) {
             $counters = array();
             foreach($result as $record) {
                 $counters[] = DB_ORM::model('map_counter', array((int)$record['id']));
             }
-
+            
             return $counters;
         }
-
+        
         return NULL;
     }
-
+    
     public function addCounter($mapId, $values) {
         $this->map_id = $mapId;
         $this->name = Arr::get($values, 'cName', '');
@@ -137,7 +137,6 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', 0));
         $visible = Arr::get($values, 'cVisible', FALSE);
         $this->visible = $visible;
-
         $this->save();
 
         $lastCounter = $this->getLastAddedCounter($mapId);
@@ -184,11 +183,44 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             if (($visible != 2) & ($updateVisible)){
                 DB_ORM::model('map_node_counter')->updateVisibleForCounters($this->map_id, $counterId, $visible);
             }
-
             $this->save();
         }
     }
-
+    
+    public function duplicateCounters($fromMapId, $toMapId, $nodesMap, $elementsMap) {
+        $counters = $this->getCountersByMap($fromMapId);
+        
+        if($counters == null || $toMapId == null || $toMapId <= 0) return array();
+        
+        $counterMap = array();
+        foreach($counters as $counter) {
+            $builder = DB_ORM::insert('map_counter')
+                    ->column('map_id', $toMapId)
+                    ->column('name', $counter->name)
+                    ->column('description', $counter->description)
+                    ->column('start_value', $counter->start_value)
+                    ->column('prefix', $counter->prefix)
+                    ->column('suffix', $counter->suffix)
+                    ->column('visible', $counter->visible)
+                    ->column('out_of', $counter->out_of)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name)
+                    ->column('name', $counter->name);
+            
+            if(isset($elementsMap[$counter->icon_id]))
+                $builder = $builder->column ('icon_id', $elementsMap[$counter->icon_id]);
+            
+            $counterMap[$counter->id] = $builder->execute();
+            
+            DB_ORM::model('map_counter_rule')->duplicateRules($counter->id, $counterMap[$counter->id], $nodesMap);
+        }
+        
+        return $counterMap;
+    }
 }
 
 ?>

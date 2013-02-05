@@ -276,6 +276,31 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_2', '=', $nodeA, 'AND')->where('node_id_1', '=', $nodeB);
         $builder->execute();
     }
+    
+    public function duplicateLinks($fromMapId, $toMapId, $nodeMap, $elementMap) {
+        $links = $this->getLinksByMap($fromMapId);
+        
+        if($links == null || $toMapId == null || $toMapId <= 0) return;
+        
+        foreach($links as $link) {
+            $builder = DB_ORM::insert('map_node_link')
+                    ->column('map_id', $toMapId)
+                    ->column('text', $link->text)
+                    ->column('order', $link->order)
+                    ->column('probability', $link->probability);
+                    
+            if(isset($nodeMap[$link->node_id_1]))
+                $builder = $builder->column ('node_id_1', $nodeMap[$link->node_id_1]);
+            
+            if(isset($nodeMap[$link->node_id_2]))
+                $builder = $builder->column ('node_id_2', $nodeMap[$link->node_id_2]);
+   
+            if(isset($elementMap[$link->image_id]))
+                $builder = $builder->column ('image_id', $elementMap[$link->image_id]);
+            
+            $builder->execute();
+        }
+    }
 }
 
 ?>
