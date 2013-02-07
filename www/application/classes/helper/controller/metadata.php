@@ -26,18 +26,25 @@ class Helper_Controller_Metadata
 
     public static function displayEditor($object, $modelName)
     {
-        $html = "";
+        $html = "<fieldset class='fieldset'><legend>Metadata</legend>";
 
         $metadata = Model_Leap_Metadata::getMetadataByModelName($modelName);
         Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/tiny_mce.js');
         Helper_Html_Javascript::add('scripts/jquery/jquery-ui-1.9.1.custom.min.js');
         foreach ($metadata as $property) {
+            $html .="
+            <div id='control-group'>
+            <label class='control-label'>".$property->label."</label>
+
+            ";
 
             $html .= self::metadataEdit($property, $object);
 
+            $html .="</div>";
+
         }
 
-
+        $html .='</fieldset>';
 
         Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js');
         Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
@@ -105,7 +112,7 @@ class Helper_Controller_Metadata
             } else {
                 $id = 0;
             }
-            $html .= "<div id='$name' class='$type single'><h5>$label</h5><p>$comment</p>";
+            $html .= "<div id='$name' class=' controls $type single'>";
             if($handlesCardinality){
                 $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);
             }
@@ -127,7 +134,7 @@ class Helper_Controller_Metadata
             else $values_count = 0;
 
 
-            $html .= "<div class='$type multi' id='$name'><h5>$label</h5><p>$comment</p>";
+            $html .= "<div class='controls $type multi' id='$name'>";
             if (!$handlesCardinality) {
 
 

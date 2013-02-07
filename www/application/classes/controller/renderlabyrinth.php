@@ -917,11 +917,27 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     private function generateReviewLinks($traces) {
+        /*
+         *                             {
+                                "startDate":"2011,12,10",
+                                "endDate":"2011,12,11",
+                                "headline":"Headline Goes Here",
+                            }
+         *
+         */
         if ($traces != NULL and count($traces) > 0) {
-            $result = '';
+            $result = array();
+            $i = 0;
             foreach ($traces as $trace) {
-                $result .= '<p><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></p>';
+                $result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
+                //$result .= '<li><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></li>';
+                if($i>0)
+                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
+                $i++;
+
             }
+
+            $result =json_encode($result);
 
             return $result;
         }

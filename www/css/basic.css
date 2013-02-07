@@ -520,3 +520,34 @@ img.dashboard-member-activity-avatar {
 input[readonly].code{
     cursor: text;
 }
+
+.basic #nodetext{
+    text-align:justify;
+}
+
+.basic div.container{
+    min-width: 5em;
+    line-height: 1.61em;
+    max-width: 50em;
+    padding: 0 5em;
+    font-size:16px;
+    margin-bottom: 10px;
+}
+
+.navbar .nav > li{
+    margin: 0 3px;
+}
+
+#mnodetitle{
+    font-size:20px;
+    height:auto;
+    width:100%;
+    margin-top:10px;
+}
+
+
+#mnodetext_parent, #mnodetext_tbl{
+    float:left;
+    width:100%;
+}
+

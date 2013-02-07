@@ -29,12 +29,9 @@ function getRandomColor(){
 } 
 ?>
 <?php if (isset($templateData['session'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff" align="left"><td align="left">
+
+                <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+
                             <p><?php echo __('user'); ?>:&nbsp;<?php echo $templateData['session']->user->nickname; ?><br>
                                 session:&nbsp;<?php echo $templateData['session']->id; ?><br>
                                 Labyrinth:&nbsp;<?php echo $templateData['session']->map->name; ?> (<?php echo $templateData['session']->map->id; ?>)<br>
@@ -252,11 +249,8 @@ function getRandomColor(){
                                 </dataset>
                            <?php } ?>
                            <?php } ?>
-                           </graph>" quality="high" bgcolor="#FFFFFF" name="Line" align="" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+                           </graph>"  name="Line" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
-            </td></tr>
-    </table>
-    </td>
-    </tr>
-    </table>
+
+
 <?php } ?>

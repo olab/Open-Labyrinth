@@ -29,13 +29,9 @@ function getRandomColor() {
 }
 ?>
 <?php if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff" align="left">
-                        <td align="left">
+
+                <h1><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+
                             <p><a href="#">back to reports</a></p>
                             <p>number of sessions: <?php if(isset($templateData['sessions'])) echo count($templateData['sessions']); ?> (more than <?php if(isset($templateData['minClicks'])) echo count($templateData['minClicks']); ?> clicks):</p>
 
@@ -210,11 +206,6 @@ function getRandomColor() {
                                 <?php } ?>
                                 <?php } ?>
                             </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>
 

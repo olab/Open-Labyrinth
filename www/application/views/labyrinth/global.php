@@ -304,12 +304,14 @@ if (isset($templateData['map'])) {
     </fieldset>
 
 
-    <div class="pull-right">
-        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>">
-    </div>
+
+
 
                                         <?php
                                         echo Helper_Controller_Metadata::displayEditor($templateData["map"],"map");?>
+
+    <div class="pull-right">
+        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>"> </div>
 
     </form>
 

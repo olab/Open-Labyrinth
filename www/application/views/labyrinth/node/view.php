@@ -65,7 +65,7 @@ if (isset($templateData['map'])) {
                         </div>
                     </div>
                 </td>
-                <td><a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>"><?php echo __('Links'); ?></a></td>
+                <td><a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id .'/' . $node->id; ?>"><?php echo __('Links'); ?></a></td>
                 </tr>
             <?php } ?>
             </tbody>
