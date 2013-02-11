@@ -26,7 +26,7 @@ class Helper_DB_ORM_Field_Adaptor_Skos extends DB_ORM_Field_Adaptor
                 $extras = json_decode($json_extras);
                 $source = $extras->source;
                 if ( ! is_null($value)) {
-                    $value = new SkosTerm($value,$source);
+                    $value = new Helper_Model_SkosTerm($value,$source);
                 }
                 return $value;
                 break;
@@ -40,7 +40,7 @@ class Helper_DB_ORM_Field_Adaptor_Skos extends DB_ORM_Field_Adaptor
     public function __set($key, $value) {
         switch ($key) {
             case 'value':
-                if ($value instanceof SkosTerm) {
+                if ($value instanceof Helper_Model_SkosTerm) {
                     $value = $value->uri();
                 }
                 $this->model->{$this->metadata['field']} = $value;

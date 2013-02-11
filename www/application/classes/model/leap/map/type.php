@@ -86,5 +86,3 @@ class Model_Leap_Map_Type extends DB_ORM_Model {
     }
 }
 
-?>
-

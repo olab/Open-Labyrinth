@@ -152,4 +152,3 @@ class Controller_ElementManager extends Controller_Base {
 
 }
 
-?>

@@ -226,4 +226,3 @@ class Controller_PresentationManager extends Controller_Base {
 
 }
 
-?>

@@ -86,4 +86,3 @@ class Model_Leap_Map_Security extends DB_ORM_Model {
     }
 }
 
-?>

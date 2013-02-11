@@ -143,4 +143,3 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
     }
 }
 
-?>

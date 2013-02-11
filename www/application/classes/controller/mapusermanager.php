@@ -82,4 +82,3 @@ class Controller_MapUserManager extends Controller_Base {
 
 }
 
-?>

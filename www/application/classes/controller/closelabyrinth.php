@@ -53,4 +53,3 @@ class Controller_CloseLabyrinth extends Controller_Base {
 
 }
 
-?>

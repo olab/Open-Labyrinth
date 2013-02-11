@@ -205,4 +205,3 @@ class Controller_ChatManager extends Controller_Base {
 
 }
 
-?>

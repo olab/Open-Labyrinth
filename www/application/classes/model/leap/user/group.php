@@ -89,4 +89,3 @@ class Model_Leap_User_Group extends DB_ORM_Model {
     }
 }
 
-?>

@@ -149,4 +149,3 @@ class Controller_AvatarManager extends Controller_Base {
 
 }
 
-?>

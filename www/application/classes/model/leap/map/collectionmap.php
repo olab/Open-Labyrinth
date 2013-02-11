@@ -99,4 +99,3 @@ class Model_Leap_Map_CollectionMap extends DB_ORM_Model {
     }
 }
 
-?>

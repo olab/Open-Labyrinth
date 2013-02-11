@@ -28,7 +28,7 @@ class Helper_DB_ORM_Field_Adaptor_Reference extends DB_ORM_Field_Adaptor
                 if(isset($extras->label))  $label = $extras->label;
                 else $label = null;
                 if ( ! is_null($value)) {
-                    $value = new ReferredEntity($value,$source, $label);
+                    $value = new Helper_Model_ReferredEntity($value,$source, $label);
                 }
                 return $value;
                 break;
@@ -42,7 +42,7 @@ class Helper_DB_ORM_Field_Adaptor_Reference extends DB_ORM_Field_Adaptor
     public function __set($key, $value) {
         switch ($key) {
             case 'value':
-                if ($value instanceof ReferredEntity) {
+                if ($value instanceof Helper_Model_ReferredEntity) {
                     $value = $value->uri();
                 }
                 $this->model->{$this->metadata['field']} = $value;

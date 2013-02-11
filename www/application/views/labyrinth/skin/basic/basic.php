@@ -19,12 +19,12 @@
  *
  */
 ?>
+<!DOCTYPE html>
 <html>
 <head>
-<title><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta charset="utf-8">
-<title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?></title>
+<meta http-equiv="X-UA-Compatible" content="IE=10,9,8" />
+<title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?> - <?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/jquery-ui/themes/base/jquery.ui.all.css"/>
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css"/>
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css"/>
 <link rel="stylesheet" href="<?php echo URL::base(); ?>css/basic.css"/>
-<link href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet"></link>
+<link href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet"/>
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
 <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -219,9 +219,9 @@
             //dates[dates_lngth-1].endDate = $.datepicker.formatDate('yy,mm,dd,', mydate); Date.now();
             data = {
                 "timeline": {
-                    "headline": "<?php echo $templateData['map']->name; ?>",
+
                     "type": "default",
-                    "text": "<p></p>",
+
                     "asset": {
                         "credit": "Credit Name Goes Here",
                         "caption": "Caption text goes here"
@@ -245,7 +245,7 @@
                     debug: true,                           //OPTIONAL DEBUG TO CONSOLE
 
                     css: '<?php echo URL::base(); ?>scripts/timelinejs/css/timeline.css',     //OPTIONAL PATH TO CSS
-                    js: '<?php echo URL::base(); ?>scripts/timelinejs/js/timeline-min.js'    //OPTIONAL PATH TO JS
+                    js: '<?php echo URL::base(); ?>scripts/timelinejs/js/timeline.js'    //OPTIONAL PATH TO JS
                 });
             }, 500);
 
@@ -476,12 +476,13 @@ if ($templateData['skin_path'] != NULL) {
                     <div class="span3">
                         <ul class="nav pull-right">
                             <li>
-                                <div><?php if (!isset($templateData['node_edit'])) { ?>
+                                <div>
+                                    <?php if(Auth::instance()->logged_in()){ if (!isset($templateData['node_edit'])) { ?>
                                         <a class="btn btn-primary"
                                            href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">edit</a>
                                     <?php } else { ?>
                                         <a class="btn btn-primary"
-                                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php } ?>
+                                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php }} ?>
                                 </div>
                             </li>
                             <li><div><a class="btn btn-primary" href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>">info</a></div></li>

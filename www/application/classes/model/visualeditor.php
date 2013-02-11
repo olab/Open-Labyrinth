@@ -292,4 +292,3 @@ class Model_VisualEditor extends Model {
     }
 }
 
-?>

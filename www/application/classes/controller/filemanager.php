@@ -282,4 +282,3 @@ class Controller_FileManager extends Controller_Base {
 
 }
 
-?>

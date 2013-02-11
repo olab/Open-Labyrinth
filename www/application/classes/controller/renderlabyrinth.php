@@ -970,4 +970,3 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
 }
 
-?>

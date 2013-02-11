@@ -7888,7 +7888,7 @@ if(typeof VMM.Timeline != 'undefined' && typeof VMM.Timeline.TimeNav == 'undefin
 			interval_calc.minute.minor 				= 60;
 			
 			// SECOND
-			interval_calc.second.type 				= "decade";
+			interval_calc.second.type 				= "second";
 			interval_calc.second.first 				= _first.seconds;
 			interval_calc.second.base 				= Math.floor(_first.seconds);
 			interval_calc.second.last 				= _last.seconds;
@@ -8732,15 +8732,19 @@ if(typeof VMM.Timeline != 'undefined' && typeof VMM.Timeline.TimeNav == 'undefin
 				interval					=		interval_calc.hour;
 				interval_major				=		interval_calc.day;
 				interval_macro				=		interval_calc.minute;
-			} else if (timespan.minutes		>		data.length / config.nav.density) {
+			} else if (timespan.minutes		>		data.length / config.nav.density
+                ||
+                timespan.seconds		>		data.length / config.nav.density) {
 				interval					=		interval_calc.minute;
 				interval_major				=		interval_calc.hour;
 				interval_macro				=		interval_calc.second;
-			} else if (timespan.seconds		>		data.length / config.nav.density) {
-				interval					=		interval_calc.second;
-				interval_major				=		interval_calc.minute;
-				interval_macro				=		interval_calc.second;
-			} else {
+			} //else if (timespan.seconds		>		data.length / config.nav.density) {
+				//interval					=		interval_calc.second;
+				//interval_major				=		interval_calc.minute;
+			//	interval_macro				=		interval_calc.second;
+			//}
+
+        else {
 				trace("NO IDEA WHAT THE TYPE SHOULD BE");
 				interval					=		interval_calc.day;
 				interval_major				=		interval_calc.month;

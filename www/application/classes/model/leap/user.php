@@ -292,4 +292,3 @@ class Model_Leap_User extends DB_ORM_Model {
     }
 }
 
-?>

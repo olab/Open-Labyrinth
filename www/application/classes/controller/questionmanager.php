@@ -168,4 +168,3 @@ class Controller_QuestionManager extends Controller_Base {
 
 }
 
-?>

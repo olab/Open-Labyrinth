@@ -407,5 +407,3 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 }
-?>
-

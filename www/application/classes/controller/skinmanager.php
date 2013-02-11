@@ -319,4 +319,3 @@ class Controller_SkinManager extends Controller_Base {
 
 }
 
-?>

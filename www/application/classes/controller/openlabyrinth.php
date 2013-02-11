@@ -53,4 +53,3 @@ class Controller_OpenLabyrinth extends Controller_Base {
 
 }
 
-?>

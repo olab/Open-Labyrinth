@@ -80,4 +80,3 @@ class Model_Leap_Map_Collection extends DB_ORM_Model {
     }
 }
 
-?>

@@ -126,4 +126,3 @@ class Model_Leap_Group extends DB_ORM_Model {
     }
 }
 
-?>

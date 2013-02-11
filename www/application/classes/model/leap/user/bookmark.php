@@ -94,4 +94,3 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 	}
 }
 
-?>
