@@ -56,8 +56,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($data['node']->link_style->name == 'type in text') {
                             $result = $this->generateLinks($data['node'], $data['node_links']);
                             $data['links'] = $result['links']['display'];
-                            $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                            $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            }
                         } else {
                             $result = $this->generateLinks($data['node'], $data['node_links']);
                             $data['links'] = $result['links'];
@@ -140,8 +142,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data['node']->link_style->name == 'type in text') {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
                         $data['links'] = $result['links']['display'];
-                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                             $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                             $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        }
                     } else {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
                         if(!empty($result['links']))
@@ -484,6 +488,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {
+                if(!isset($result['links']['display']))
+                    $result['links']['display'] = '';
                 $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
                 return $result;
             } else if ($node->end) {
