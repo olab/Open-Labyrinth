@@ -684,6 +684,11 @@ class Model_Leap_Map extends DB_ORM_Model
 
         return $result;
     }
+
+    public function countLinks(){
+        $result = count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
+        return $result;
+    }
 }
 
-?>
+

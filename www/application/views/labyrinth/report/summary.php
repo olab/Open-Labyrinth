@@ -188,23 +188,26 @@ function getRandomColor() {
                             <?php } ?>
                             <?php } ?> 
                             <p>data table:</p>
-                            <table border="1">
+                            <table class="table table-bordered table-striped">
+                                <thead>
                                 <tr>
-                                    <td><p>sessionID</p></td>
-                                    <td><p>number of nodes</p></td>
-                                    <td><p>time taken (s)</p></td>
-                                    <td><p>last node</p></td>
-                                </tr>
+                                    <td>sessionID</td>
+                                    <td>number of nodes</td>
+                                    <td>time taken (s)</td>
+                                    <td>last node</td>
+                                </tr></thead>
+                                <tbody>
                                 <?php if(isset($templateData['sessions']) and count($templateData['sessions']) > 0) { ?>
                                 <?php foreach($templateData['sessions'] as $session) { ?>
                                 <tr>
-                                    <td><p><?php echo $session->id; ?></p></td>
-                                    <td><p><?php echo count($session->traces); ?></p></td>
-                                    <td><p><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></p></td>
-                                    <td><p><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></p></td>
+                                    <td><?php echo $session->id; ?></td>
+                                    <td><?php echo count($session->traces); ?></td>
+                                    <td><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
+                                    <td><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
                                 </tr>
                                 <?php } ?>
                                 <?php } ?>
+                                </tbody>
                             </table>
 
 <?php } ?>

@@ -551,3 +551,20 @@ input[readonly].code{
     width:100%;
 }
 
+
+
+#footer .navbar-inner {
+    min-height: 40px;
+    padding-right: 20px;
+    padding-left: 20px;
+    background-color: #fafafa;
+    background-color: rgba(242,242,242,0.01);
+    background-image: -moz-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(255,255,255,0.85)), to(rgba(242,242,242,0.85)));
+    background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
+    background-image: -o-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
+    background-repeat: repeat-x;
+
+}
+

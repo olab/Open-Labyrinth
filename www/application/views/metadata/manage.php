@@ -1,7 +1,7 @@
-<div>
-    <h2>Metadata Manager</h2>
-    <table border="1">
-        <thead><tr><td colspan="9">Metadata Fields</td></tr>
+    <h1>Metadata Manager</h1>
+    <h4>Metadata Fields</h4>
+    <table class="table table-bordered table-striped" >
+        <thead></tr>
         <tr>
             <td>Identifier</td>
             <td>Name</td>
@@ -52,7 +52,7 @@
                 <td>
                     <form method="post" action="<?php echo URL::base() . 'metadata/manager/delete'; ?>">
                         <input type="hidden" name="name" value="<?php echo $field->name; ?>"/>
-                        <input type="submit" value="delete"/>
+                        <input class="btn btn-danger" type="submit" value="delete"/>
                     </form>
                 </td>
             </tr>
@@ -62,45 +62,44 @@
         </tbody>
     </table>
 
-    <div><h4>Add New</h4>
-        <form method="post" action="<?php echo URL::base() . 'metadata/manager/add'; ?>">
-        <table border="1">
-            <thead>
-            <tr>
-                <td>Name</td>
-                <td>Destination Model</td>
-                <td>Type</td>
-                <td>Label</td>
-                <td>Comment</td>
-                <td>Cardinality</td>
-                <td>Extra Options</td>
-            </tr>
 
-            </thead>
+        <form method="post" class="form-horizontal" action="<?php echo URL::base() . 'metadata/manager/add'; ?>">
+            <fieldset class="fieldset">
+                <legend>Add New</legend>
+                <div class="control-group">
+                    <label class="control-label" for="name">Name</label>
 
-            <tbody>
-            <tr>
-
-                <?php
+                    <div class="controls">
+                        <?php
 
 
 
-                $models = $templateData["models"];
+                        $models = $templateData["models"];
 
-             ?>
+                        ?>
+<td>
+                            <input type="text" id="name" name="name"/>
 
-                    <td>
-                       <input type="text" name="name"/>
-                    </td>
-                    <td>
-                        <select name='model'>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="model">Destination Model</label>
+
+                    <div class="controls">
+                        <select id="model" name='model'>
                             <?php foreach ($models as $key=>$model):?>
-                            <option value="<?php echo $key?>"><?php echo $model?></option>
+                                <option value="<?php echo $key?>"><?php echo $model?></option>
                             <?php  endforeach;?>
                         </select>
-                    </td>
-                    <td>
-                        <select name='type'>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="type">Type</label>
+
+                    <div class="controls">
+                        <select name='type' id="type">
                             <option value="stringrecord">String</option>
                             <option value="textrecord">Text</option>
                             <option value="daterecord">Date</option>
@@ -109,30 +108,48 @@
                             <option value="skosrecord">Class from a SKOS classification</option>
                             <option value="inlineobjectrecord">Complex object defined inline</option>
                         </select>
-                    </td>
-                    <td>
-                        <input type="text" name="label"/>
-                    </td>
-                    <td>
-                        <input type="text" name="comment"/>
-                    </td>
-                    <td>
-                        <select name='cardinality'>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="label">Label</label>
+
+                    <div class="controls">
+                        <input type="text" id="label" name="label"/>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="comment">Comment</label>
+
+                    <div class="controls">
+                        <input type="text" id="comment" name="comment"/>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="cardinality">Cardinality</label>
+
+                    <div class="controls">
+                        <select name='cardinality' id="cardinality">
                             <option value="1">Sigle value</option>
                             <option value="n">Multiple values</option>
                         </select>
-                    </td>
-                    <td>
-                        <textarea name="options"></textarea>
-                    </td>
+                    </div>
 
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="options">Extra Options</label>
 
-            </tr>
-            </tbody>
-        </table>
-            <input type="submit" value="Add">
+                    <div class="controls">
+                        <textarea id="options" name="options"></textarea>
+                    </div>
+
+                </div>
+
+            </fieldset>
+
+            <input class="btn btn-primary" type="submit" value="Add">
 
         </form>
 
-    </div>
-</div>

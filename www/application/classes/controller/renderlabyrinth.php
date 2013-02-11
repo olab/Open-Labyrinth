@@ -89,6 +89,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+
+
     public function action_checkKey() {
         $mapId = $this->request->param('id', NULL);
         if (($mapId != NULL) & (isset($_POST['securityKey']))) {
@@ -189,6 +191,23 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $infoView->set('info', $node->info);
 
             $this->template = $infoView;
+        }
+    }
+
+    public function action_mapinfo()
+    {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+
+            $infoView = View::factory('labyrinth/labyrinthInfo');
+            $infoView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $infoView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base() . 'openLabyrinth');
         }
     }
 

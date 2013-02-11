@@ -58,21 +58,24 @@ class Helper_Controller_Metadata
 
     public  static function metadataView($metadataRecord)
     {
-        $html = "";
-
+        $result =array();;
+        $label = $metadataRecord[0]->field->label;
+        $name = $metadataRecord[0]->field->name;
+        $result["label"] = $label;
         $valuesCount = count($metadataRecord);
+        $html = "";
         if ($valuesCount < 2) {
-            $label = $metadataRecord[0]->field->label;
-            $name = $metadataRecord[0]->field->name;
+
+
             $id = $metadataRecord[0]->id;
-            $html .= "<div><h5>$label</h5>";
+            $html .= "<div>";
             $html .= Model_Leap_Metadata_Record::getViewer($name, $id);
             $html .= "</div>";
 
         } else {
-            $label = $metadataRecord[0]->field->label;
+
             $html .= "<div><h5>$label</h5><ul>";
-            $name = $metadataRecord[0]->field->name;
+
 
             for ($i = 0; $i < $valuesCount; $i++) {
 
@@ -85,7 +88,8 @@ class Helper_Controller_Metadata
             $html .= "</ul></div>";
 
         }
-        return $html;
+        $result["body"] =$html;
+        return $result;
     }
 
     public static function metadataEdit($metadata, $object)

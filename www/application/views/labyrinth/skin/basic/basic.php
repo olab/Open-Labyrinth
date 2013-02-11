@@ -450,7 +450,7 @@ if ($templateData['skin_path'] != NULL) {
                     <div class="span4">
                         <ul class="nav">
                             <li>
-                                <div><a class="btn btn-primary" href="#pathway" id="timeline_link">Review your
+                                <div><a class="btn btn-primary" href="#pathway" id="timeline_link">review your
                                         pathway</a></div>
                             </li>
                             <li>
@@ -484,7 +484,7 @@ if ($templateData['skin_path'] != NULL) {
                                            href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php } ?>
                                 </div>
                             </li>
-
+                            <li><div><a class="btn btn-primary" href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>">info</a></div></li>
                             <li><input class="btn btn-primary" type="button" onclick='ajaxBookmark();' name="bookmark"
                                        value="bookmark"/></li>
                         </ul>

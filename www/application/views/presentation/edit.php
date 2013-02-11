@@ -19,16 +19,15 @@
  *
  */
 if (isset($templateData['presentation'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit presentation "') . $templateData['presentation']->title . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td align="left">
-                            <table border="0" width="100%" cellpadding="1">
-                                <tr><td valign="top">
-                                        <h4>presentation: Presentation title</h4>
-                                        <p>[<a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $templateData['presentation']->id; ?>"><?php echo __('preview'); ?></a>] [<a href="#"><?php echo __('reset'); ?></a>] [<a href="#"><?php echo __('report'); ?></a>] [<a href="<?php echo URL::base(); ?>presentationManager/deletePresentation/<?php echo $templateData['presentation']->id; ?>"><?php echo __('delete'); ?></a>] - [<a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('presentations'); ?></a>]</p>
+
+                <h1><?php echo __('edit presentation "') . $templateData['presentation']->title . '"'; ?></h1>
+
+
+    <a class="btn btn-primary" href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $templateData['presentation']->id; ?>"><?php echo __('preview'); ?></a>
+    <a class="btn btn-warning" href="#"><?php echo __('reset'); ?></a>
+    <a class="btn btn-primary" href="#"><?php echo __('report'); ?></a>
+    <a class="btn btn-danger" href="<?php echo URL::base(); ?>presentationManager/deletePresentation/<?php echo $templateData['presentation']->id; ?>"><?php echo __('delete'); ?></a>
+
                                         <p><strong><?php echo __('presentation Labyrinths'); ?></strong></p>
                                         <table width="100%">
                                             <?php if(count($templateData['presentation']->maps) > 0) { ?>

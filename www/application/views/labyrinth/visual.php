@@ -19,9 +19,8 @@
  *
  */
 if(isset($templateData['map'])) { ?>
-<table bgcolor="#ffffff" cellpadding="6" width="100%">
-    <tr>
-        <td valign="top" width="20%">
+
+
 
             <p><strong><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth" border="0"> Visual Editor for Map <?php echo $templateData['map']->id; ?> "<?php echo $templateData['map']->name; ?>"</strong>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -36,7 +35,5 @@ if(isset($templateData['map'])) { ?>
                 <embed src="<?php echo URL::base(); ?>documents/viewer.swf" flashvars="dataXML=<?php echo URL::base(); ?>export/visual_editor/mapview_<?php echo $templateData['map']->id; ?>.xml" quality="high" width="1400" height="1200" name="mapv<?php echo $templateData['map']->id; ?>" align="top" allowscriptaccess="sameDomain" allowfullscreen="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
             </object>
 
-        </td>
-    </tr>
-</table>
+
 <?php } ?>
