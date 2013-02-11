@@ -663,7 +663,7 @@ class Model_Leap_Map extends DB_ORM_Model
             if($query->count() == 1 && $mapId > 0 && $query[0]['id'] == $mapId) {
                 return $result;
             }
-            
+
             $addNumber = 1;
             $tmpName = $mapName . '_%';
             $builder = DB_SQL::select('default')

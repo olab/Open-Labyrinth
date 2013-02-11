@@ -94,7 +94,7 @@ class Controller_ExportImportManager extends Controller_Base {
 
         Request::initial()->redirect(URL::base());
     }
-    
+
     public function action_exportMVP() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Export Medbiquitous ANSI'))->set_url(URL::base() . 'exportimportmanager/exportMVP'));
         if (Auth::instance()->get_user()->type->name == 'superuser') {
@@ -103,16 +103,16 @@ class Controller_ExportImportManager extends Controller_Base {
             $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
         }
         $this->templateData['maps'] = $maps;
-        
+
         $this->templateData['center'] = View::factory('labyrinth/export/mvp');
         $this->templateData['center']->set('templateData', $this->templateData);
-        
+
         unset($this->templateData['left']);
         unset($this->templateData['right']);
-        
+
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_exportMVPMap() {
         $mapId = $this->request->param('id', 0);
         if($mapId > 0) {
@@ -120,7 +120,7 @@ class Controller_ExportImportManager extends Controller_Base {
             $params['mapId'] = $mapId;
             $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);;
             $pathInfo = pathinfo($path);
-            
+
             $this->response->headers('Content-Length', sprintf("%u", filesize($path)));
             $this->response->headers('Content-Disposition', $pathInfo['filename']);
             $this->response->headers('Content-Type', "application/zip");
@@ -133,7 +133,7 @@ class Controller_ExportImportManager extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base() . 'exportimportmanager/exportMVP');
         }
-        
+
     }
 
     public function exportVUE($mapId) {
@@ -469,10 +469,10 @@ class Controller_ExportImportManager extends Controller_Base {
         $tmpFolder = DOCROOT . 'files/' . $mvpFolder;
         $tmpFileName = $tmpFolder . '/metadata.xml';
         $xml = $this->parseXML($tmpFileName);
-        
+
         if(isset($xml->general->version))
             $version = (string)$xml->general->version;
-        
+
         $findElement = array();
         $replaceElement = array();
         $map = array();

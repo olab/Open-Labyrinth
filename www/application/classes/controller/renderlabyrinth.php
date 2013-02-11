@@ -91,8 +91,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-
-
     public function action_checkKey() {
         $mapId = $this->request->param('id', NULL);
         if (($mapId != NULL) & (isset($_POST['securityKey']))) {

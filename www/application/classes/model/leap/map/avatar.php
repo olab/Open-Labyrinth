@@ -277,12 +277,12 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $duplicateAvatar->save();
         }
     }
-    
+
     public function duplicateAvatars($fromMapId, $toMapId) {
         $avatars = $this->getAvatarsByMap($fromMapId);
-        
+
         if($avatars == null || $toMapId == null || $toMapId <= 0) return array();
-        
+
         $avatarMap = array();
         foreach($avatars as $avatar) {
             $avatarImage = $this->getAvatarImage($avatar->id);
@@ -294,7 +294,7 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             } else {
                 $file = NULL;
             }
-            
+
             $builder = DB_ORM::insert('map_avatar')
                     ->column('map_id', $toMapId)
                     ->column('skin_1', $avatar->skin_1)
@@ -316,10 +316,10 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                     ->column('eyes', $avatar->eyes)
                     ->column('hair_color', $avatar->hair_color)
                     ->column('image', $file);
-            
+
             $avatarMap[$avatar->id] = $builder->execute();
         }
-        
+
         return $avatarMap;
     }
 }

@@ -131,12 +131,12 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         
         DB_ORM::model('map_chat_element')->updateElementsByChatId($chatId, $chatQuestionCount, $values);
     }
-    
+
     public function duplicateChats($fromMapId, $toMapId, $counterMap) {
         $chats = $this->getChatsByMap($fromMapId);
-        
+
         if($chats == null || $toMapId == null || $toMapId <= 0) return array();
-        
+
         $chatMap = array();
         foreach($chats as $chat) {
             $builder = DB_ORM::insert('map_chat')
@@ -146,10 +146,10 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
                 $builder = $builder->column ('counter_id', $counterMap[$chat->counter_id]);
 
             $chatMap[$chat->id] = $builder->execute();
-            
+
             DB_ORM::model('map_chat_element')->duplicateElements($chat->id, $chatMap[$chat->id]);
         }
-        
+
         return $chatMap;
     }
 }
