@@ -158,6 +158,16 @@ class Model_Labyrinth extends Model {
                 }
             }
 
+            if ($node->link_type_id == 3){
+                if (count($result) > 0){
+                    $resultRandomOne = array();
+                    $keys = array_keys($result);
+                    asort($keys);
+                    $resultRandomOne[0] = $result[$keys[0]];
+                    $result = $resultRandomOne;
+                }
+            }
+
             return $this->clearArray($result);
         }
 
