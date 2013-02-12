@@ -649,7 +649,7 @@ class Model_Leap_Map extends DB_ORM_Model
         DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avartMap, $chatMap, $questionMap, $damsMap);
     }
 
-    private function getMapName($mapName)
+    private function getMapName($mapName, $mapId = 0)
     {
         $result = $mapName;
         $builder = DB_SQL::select('default')
