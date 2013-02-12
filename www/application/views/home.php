@@ -104,7 +104,6 @@
                                         if (Auth::instance()->get_user()->type->name == 'superuser') {
                                             ?>
                                             <li class="divider"></li>
-                                            <li><a href="<?php echo URL::base(); ?>dictionaryManager"><?php echo __('System Dictionary'); ?></a></li>
                                             <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li>
                                             <?php
                                         }

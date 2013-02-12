@@ -564,5 +564,3 @@ class RunTimeLogic {
         }
     }
 }
-
-?>

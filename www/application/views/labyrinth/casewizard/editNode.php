@@ -27,7 +27,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) { ?>
         relative_urls : false,
         entity_encoding: "raw",
         theme: "advanced",
-        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap,autocomplete",
+        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
         // Theme options
         theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull",
         theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
@@ -40,8 +40,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) { ?>
         theme_advanced_toolbar_align: "left",
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_resizing: true,
-        editor_selector: "mceEditor",
-        autocomplete_trigger: ""
+        editor_selector: "mceEditor"
     });
 </script>
 
