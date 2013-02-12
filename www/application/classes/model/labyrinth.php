@@ -162,7 +162,7 @@ class Model_Labyrinth extends Model {
                 if (count($result) > 0){
                     $resultRandomOne = array();
                     $keys = array_keys($result);
-                    asort($keys);
+                    rsort($keys);
                     $resultRandomOne[0] = $result[$keys[0]];
                     $result = $resultRandomOne;
                 }
