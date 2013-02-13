@@ -74,14 +74,26 @@ if (isset($templateData['maps'])) {
                         <i class="icon-play icon-white"></i>
                         Play
                     </a>
-                    <a class="btn green-text confirm-dialog-link" data-toggle="modal" data-target="#duplicate_labyrinth" href="#" link="<?php echo URL::base(); ?>authoredLabyrinth/duplicate/<?php echo $map->id; ?>">
-                        <i class="icon-th"></i> 
-                        Duplicate
-                    </a>
-                    <a class="btn  btn-info" href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
+                    <a class="btn btn-info" href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
                         <i class="icon-edit icon-white"></i>
                         Edit
                     </a>
+                    <a class="btn btn-info" data-toggle="modal" data-target="#duplicate_labyrinth<?php echo $map->id; ?>" href="#">
+                        <i class="icon-th icon-white"></i>
+                        Duplicate
+                    </a>
+                    <div class="modal hide fade in" id="duplicate_labyrinth<?php echo $map->id; ?>">
+                        <div class="modal-header block">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4><?php echo __('Are you sure want to duplicate Case?'); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <p><?php echo __('You have just clicked the duplicate button, are you certain that you wish to proceed with duplicate "'.$map->name.'" labyrinth?'); ?></p>
+                            <p>
+                                <a class="btn confirm-link" href="<?php echo URL::base(); ?>authoredLabyrinth/duplicate/<?php echo $map->id; ?>"><?php echo __('Duplicate Case'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            </p>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <?php
@@ -89,19 +101,6 @@ if (isset($templateData['maps'])) {
         ?>
         </tbody>
     </table>
-    </div>
-    
-    <div class="modal hide alert alert-block alert-error fade in" id="duplicate_labyrinth">
-        <div class="modal-header block">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="alert-heading"><?php echo __('Caution! Are you sure want to duplicate this Labyrinth?'); ?></h4>
-        </div>
-        <div class="modal-body">
-            <p><?php echo __('You have just clicked the duplicate button, are you certain that you wish to proceed with duplicate this labyrinth?'); ?></p>
-            <p>
-                <a class="btn green confirm-link" href="#"><?php echo __('Duplicate Case'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </p>
-        </div>
     </div>
     <?php
 } else {

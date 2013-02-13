@@ -57,7 +57,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         
         $this->removeDir();
         
-        return $result ? (DOCROOT . 'files/' . $this->folderName . '.zip') : '';
+        return $result ? (DOCROOT . 'tmp/' . $this->folderName . '.zip') : '';
     }
     
     /**
@@ -67,7 +67,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
     private function createZipArchive() {
         if(!is_dir($this->folderPath)) return false;
         
-        $dest = DOCROOT . 'files/' . $this->folderName . '.zip';
+        $dest = DOCROOT . 'tmp/' . $this->folderName . '.zip';
         $zip = new ZipArchive();
         
         if($h = opendir($this->folderPath)) {
@@ -145,7 +145,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
      * Create temp folder 
      */
     private function makeTempFolder() {
-        $this->folderPath = DOCROOT . 'files/';
+        $this->folderPath = DOCROOT . 'tmp/';
         $this->folderName = 'mvp_' . rand();
         
         if(is_dir($this->folderPath . $this->folderName)) {
@@ -282,7 +282,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
                     <VirtualPatientData xmlns="http://ns.medbiq.org/virtualpatientdata/v1/" 
                                         xmlns:xsi="http://ns.medbiq.org/virtualpatientdata/v1/XMLSchema-instance" 
                                         xmlns:ol="http://www.w3.org/2001/XMLSchema-instance" 
-                                        ol:schemaLocation="http://142.51.75.17/openlabyrinth http://142.51.75.17/openlabyrinth/SCORM_objects/ol.xsd">';
+                                        ol:schemaLocation="">';
         
         $content .= $this->generateVPDText($nodes, $vpds);
         $content .= $this->generateVPDXtensibleInfo($avatars, $questions);
@@ -1021,9 +1021,8 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
                               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                               xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
                               xmlns:imsss="http://www.imsglobal.org/xsd/imsss"
-                              xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3"
-                              identifier="MANIFEST-A648AD47-F66A-413D-AABA-F48420C725AC" version="1.3">';
-        
+                              xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3">';
+
         $content .= $this->generateResources($elements);
         $this->copyResourcesFiles($elements);
         
