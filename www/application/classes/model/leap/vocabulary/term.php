@@ -16,6 +16,10 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
     const Reverse = "rev";
 
 
+    const RDFPropertyType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property";
+    const RDFClassType = "http://www.w3.org/2000/01/rdf-schema#Class";
+    const OWLClassType = "http://www.w3.org/2002/07/owl#Class";
+
     public function __construct() {
         parent::__construct();
 
@@ -83,8 +87,14 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
         return $this->vocabulary->namespace . $this->name;
     }
 
-    public static function getAll(){
-        $builder = DB_SQL::select('default')->from(self::table());
+    public static function getAll($types = array()){
+
+        if(empty($types))
+            $builder = DB_SQL::select('default')->from(self::table());
+        else{
+            $builder = DB_SQL::select('default')->from(self::table())->where('type','IN',$types);
+
+        }
 
         $result = $builder->query();
 
@@ -101,7 +111,7 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
     }
 
 
-    public function newTerm($uri, $label=""){
+    public function newTerm($uri, $label="", $type=""){
         $namespace = self::guessNamespace($uri);
         $name = self::guessName($uri);
         if($name == "")return;
@@ -117,8 +127,9 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
             ->where('name', '=', $name);
         $result = $builder->query();
         $this->name = $name;
+        if($label=="")$label = $name;
         $this->term_label = $label;
-
+        $this->type = $type;
         $this->vocab_id  = $vocab->id;
 
         if ($result->is_loaded()) {

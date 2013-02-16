@@ -54,7 +54,7 @@ class Controller_Vocabulary_Manager extends Controller_Base
             $termUri  =  $term->toString();
             $vocab_term = DB_ORM_Model::factory("vocabulary_term");
 
-            $vocab_term->newTerm($termUri, $term->label());
+            $vocab_term->newTerm($termUri, $term->label(),$term->type());
 
             $termLabels[] = $term->toString();
             if($vocab_term->vocabulary->namespace!=="")

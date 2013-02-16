@@ -23,8 +23,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=10,9,8" />
-<title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?> - <?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
+<meta http-equiv="X-UA-Compatible" content="IE=10,9,8"/>
+<title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?>
+    - <?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/jquery-ui/themes/base/jquery.ui.all.css"/>
@@ -47,7 +48,6 @@
       href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-114-precomposed.png"/>
 <link rel="apple-touch-icon-precomposed" sizes="144x144"
       href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-144-precomposed.png"/>
-
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
 <script language="JavaScript">
     function toggle_visibility(id) {
@@ -306,17 +306,10 @@ if ($templateData['skin_path'] != NULL) {
 
 
 </style>
-<!--[if !IE 7]>
-<style type="text/css">
-    #wrap {
-        display: table;
-        height: 100%
-    }
-</style>
-<![endif]-->
+
 </head>
 
-<body class="basic">
+<body>
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
     <script language="javascript" type="text/javascript"
             src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
@@ -343,164 +336,139 @@ if ($templateData['skin_path'] != NULL) {
     </script>
 <?php } ?>
 
-<div id="wrap">
-    <div id="pathway" class="modal hide fade" tabindex="-1">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3>Your pathway through the labyrinth</h3>
-        </div>
-        <div id="timeline-body" class="modal-body">
-
-        </div>
+<div id="pathway" class="modal hide fade" tabindex="-1">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3>Your pathway through the labyrinth</h3>
+    </div>
+    <div id="timeline-body" class="modal-body">
 
     </div>
-    <div class="navbar  navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a href="<?php echo URL::base(); ?>" class="brand"><img
-                        src="<?php echo URL::base(); ?>images/openlabyrinth-header.png" alt=""/> <span>Open</span>Labyrinth</a>
 
-                <div class="nav-collapse collapse">
-
-                    <div class="pull-right row">
-                        <div class="span3">
-                            <div>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
-                                (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)
-                            </div>
-                            <div>Node: <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
-                        </div>
-
-                        <div class="span1">
-                            <div>Score</div>
-                            <div>0</div>
-                        </div>
-                    </div>
-                </div>
-                <!--/.nav-collapse -->
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
+</div>
 
 
-        <div id="nodetext">
-            <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-                <?php if (isset($templateData['node_edit'])) { ?>
-                    <form method='POST'
-                          action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>'>
-                        <h1><input placeholder="Title" id="mnodetitle" type='text' name='mnodetitle'
-                                   value='<?php echo $templateData['node']->title; ?>'/></h1>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div id="content" class="span8">
 
 
-                        <textarea name='mnodetext' cols='60' rows='20'
-                                  class='mceEditor'><?php echo $templateData['node_text']; ?></textarea>
-                        <input class="btn btn-primary" type='submit' name='Submit' value='Submit'/>
-                    </form>
-                    <p><a class="btn btn-primary"
-                          href='<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id ."/". $templateData['node']->id; ?>'>links</a>
+            <div id="nodetext">
+                <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
+                    <?php if (isset($templateData['node_edit'])) { ?>
+                        <form method='POST'
+                              action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>'>
+                            <h1><input placeholder="Title" id="mnodetitle" type='text' name='mnodetitle'
+                                       value='<?php echo $templateData['node']->title; ?>'/></h1>
 
-                        <a class="btn btn-primary"
-                           href='<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>'>nodes</a>
 
-                        <a class="btn btn-primary"
-                           href='<?php echo URL::base() . 'fileManager/index/' . $templateData['map']->id; ?>'>files</a>
+                            <textarea name='mnodetext' cols='60' rows='20'
+                                      class='mceEditor'><?php echo $templateData['node_text']; ?></textarea>
+                            <input class="btn btn-primary" type='submit' name='Submit' value='Submit'/>
+                        </form>
+                       <a class="btn btn-primary"
+                              href='<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id . "/" . $templateData['node']->id; ?>'>links</a>
 
-                        <a class="btn btn-primary"
-                           href='<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>'>counters</a>
+                            <a class="btn btn-primary"
+                               href='<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>'>nodes</a>
 
-                        <a class="btn btn-primary"
-                           href='<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $templateData['map']->id; ?>'>main
-                            editor</a></p>
+                            <a class="btn btn-primary"
+                               href='<?php echo URL::base() . 'fileManager/index/' . $templateData['map']->id; ?>'>files</a>
+
+                            <a class="btn btn-primary"
+                               href='<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>'>counters</a>
+
+                            <a class="btn btn-primary"
+                               href='<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $templateData['map']->id; ?>'>main
+                                editor</a>
+                    <?php } else { ?>
+                        <h1><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></h1>
+                        <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
+                    <?php } ?>
                 <?php } else { ?>
                     <h1><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></h1>
                     <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
                 <?php } ?>
-            <?php } else { ?>
-                <h1><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></h1>
-                <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
-            <?php } ?>
+            </div>
+            <div>
+                    <?php if (isset($templateData['links'])) {
+                        echo $templateData['links'];
+                    }?>
+
+            </div>
+
         </div>
-        <div>
-            <?php if (isset($templateData['links'])) {
-                echo $templateData['links'];
-            }?>
-        </div>
+        <div class="span1">
+            <div class="well sidebar-nav sidebar-nav-fixed">
 
-        <?php if (isset($templateData['counters'])) echo $templateData['counters']; ?>
-
-
-        <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
-
-    </div>
-    <!-- /container -->
-</div>
-<div id="footer">
-
-    <div class="navbar">
-        <div class="navbar-inner navbar-fixed-bottom">
-            <div class="container">
-                <div class="row">
-                    <div class="span4">
-                        <ul class="nav">
-                            <li>
-                                <div><a class="btn btn-primary" href="#pathway" id="timeline_link">review your
-                                        pathway</a></div>
-                            </li>
-                            <li>
-                                <div><a class="btn btn-primary"
-                                        href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a>
-                                </div>
-                            </li>
-
-                        </ul>
-
-
+                <div class="row-fluid">
+                    <div class="span6" id="score">
+                        <div>Score</div>
+                        <div>0</div>
                     </div>
-
-                    <div class="span1">
-                        <div id="footer-logo">
-                            <a href="<?php echo URL::base(); ?>"><img
-                                    src="<?php echo URL::base(); ?>images/footer-logo.png"
-                                    title="OpenLabyrinth is an open source educational pathway system"
-                                    alt="OpenLabyrinth logo"/></a>
-
+                        <div class="span6">
+                            <div>Node: <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
+                            <a class="btn btn-primary"
+                               href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"><?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
+                                (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)</a>
                         </div>
-                    </div>
-                    <div class="span3">
-                        <ul class="nav pull-right">
-                            <li>
-                                <div>
-                                    <?php if(Auth::instance()->logged_in()){ if (!isset($templateData['node_edit'])) { ?>
-                                        <a class="btn btn-primary"
-                                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">edit</a>
-                                    <?php } else { ?>
-                                        <a class="btn btn-primary"
-                                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php }} ?>
-                                </div>
-                            </li>
-                            <li><div><a class="btn btn-primary" href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>">info</a></div></li>
-                            <li><input class="btn btn-primary" type="button" onclick='ajaxBookmark();' name="bookmark"
-                                       value="bookmark"/></li>
-                        </ul>
+                </div>
+                <div id="navigation">
+                    <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
+                    <a class="btn btn-primary" href="#pathway" id="timeline_link">review your
+                        pathway</a>
+                    <a class="btn btn-primary"
+                       href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a>
+
+                </div>
+
+                <div id="operations">
+                    <input class="btn btn-primary" type="button" onclick='ajaxBookmark();'
+                           name="bookmark"
+                           value="bookmark"/>
+                    <?php if (Auth::instance()->logged_in()) {
+                        if (!isset($templateData['node_edit'])) {
+                            ?>
+                            <a class="btn btn-primary"
+                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">edit</a>
+                        <?php } else { ?>
+                            <a class="btn btn-primary"
+                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php
+                        }
+                    } ?>
+                </div>
+
+                <div id="counters-desktop">
+                    <?php if (isset($templateData['counters'])) echo $templateData['counters']; ?>
+                </div>
+
+
+                <div id="branding">
+                    <div id="footer-logo">
+                        <a href="<?php echo URL::base(); ?>"><img
+                                src="<?php echo URL::base(); ?>images/footer-logo.png"
+                                title="OpenLabyrinth is an open source educational pathway system"
+                                alt="OpenLabyrinth logo"/></a>
+
                     </div>
                 </div>
 
 
             </div>
+
+
         </div>
+
+
     </div>
 </div>
+
 
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript"
+        src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
 

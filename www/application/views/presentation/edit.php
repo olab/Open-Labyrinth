@@ -28,14 +28,25 @@ if (isset($templateData['presentation'])) { ?>
     <a class="btn btn-primary" href="#"><?php echo __('report'); ?></a>
     <a class="btn btn-danger" href="<?php echo URL::base(); ?>presentationManager/deletePresentation/<?php echo $templateData['presentation']->id; ?>"><?php echo __('delete'); ?></a>
 
-                                        <p><strong><?php echo __('presentation Labyrinths'); ?></strong></p>
-                                        <table width="100%">
+                                        <h3><?php echo __('presentation Labyrinths'); ?></h3>
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                            <tr>
+                                                <td>Labyrinth</td>
+                                                <td>Security</td>
+                                                <td>Order</td>
+                                                <td>Operations</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+
                                             <?php if(count($templateData['presentation']->maps) > 0) { ?>
                                             <?php foreach($templateData['presentation']->maps as $mp) { ?>
                                             <tr>
-                                                <td><p><?php echo $mp->map->name; ?> (<?php echo $mp->map->security->name; ?>)</p></td>
-                                                <td><p><a href="#"><?php echo __('report'); ?></a></p></td>
-                                                <td><p><a href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map->id; ?>"><?php echo __('edit'); ?></a></p></td>
+                                                <td><?php echo $mp->map->name; ?></td>
+                                                <td><?php echo $mp->map->security->name; ?></td>
+
                                                 <td>
                                                     <select name="ord_18">
                                                         <option value="1">1</option>
@@ -50,15 +61,30 @@ if (isset($templateData['presentation'])) { ?>
                                                         <option value="10">10</option>
                                                     </select>
                                                 </td>
-                                                <td><p><a href="<?php echo URL::base(); ?>presentationManager/deleteMap/<?php echo $templateData['presentation']->id; ?>/<?php echo $mp->id; ?>">delete</a></p></td>
+                                                <td>
+                                                    <a class="btn btn-primary" href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map->id; ?>"><?php echo __('edit'); ?></a>
+                                                    <a class="btn btn-primary" href="#"><?php echo __('report'); ?></a>
+                                                    <a class="btn btn-danger" href="<?php echo URL::base(); ?>presentationManager/deleteMap/<?php echo $templateData['presentation']->id; ?>/<?php echo $mp->id; ?>">remove</a></td>
                                             <?php } ?>
                                             <?php } ?>
+                                            </tbody>
                                         </table>
                                         <p>note that Labyrinths set as 'private' need to be changed to 'closed','key' or 'open' access to be used in a presentation.</p>
-                                        <p>[<a href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/4">reset all to 'key' now</a>] - [<a href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/2">reset all to 'closed' now</a>] - [<a href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/1">reset all to 'open' now</a>]</p>
+                                        <a class="btn btn-warning" href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/4">reset all to 'key' now</a>
+    <a class="btn btn-warning" href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/2">reset all to 'closed' now</a>
+    <a class="btn btn-warning" href="<?php echo URL::base(); ?>presentationManager/resetSecurity/<?php echo $templateData['presentation']->id; ?>/1">reset all to 'open' now</a>
 
-                                        <p>add Labyrinth</p>
-                                        <form action="<?php echo URL::base(); ?>presentationManager/addMap/<?php echo $templateData['presentation']->id; ?>" method="post">
+
+                                        <form class="form-horizontal" action="<?php echo URL::base(); ?>presentationManager/addMap/<?php echo $templateData['presentation']->id; ?>" method="post">
+                                            <fieldset class="fieldset">
+                                                <legend></legend>
+                                                <div class="control-group">
+                                                    <label class="control-label"></label>
+                                                    <div class="controls">
+
+                                                    </div>
+                                                </div>
+                                            </fieldset>
                                             <select name="labid">
                                                 <?php if(isset($templateData['maps']) and count($templateData['maps']) > 0) { ?>
                                                 <?php foreach($templateData['maps'] as $map) { ?>

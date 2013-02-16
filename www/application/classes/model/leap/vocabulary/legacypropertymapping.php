@@ -73,12 +73,17 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
                 $mappings[] = DB_ORM::model('vocabulary_legacypropertymapping', array((int)$record['id']));
             }
 
+
             return $mappings;
         }
 
         return array();
 
 
+    }
+
+    public static function get_properties_by_class($className){
+        return array_keys(DB_ORM_Model::factory($className)->as_array());
     }
 
     public static function get_mappings_by_class($className){
@@ -141,5 +146,9 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
         return $triples;
 
     }
+    public static $PrivateProperties = array(
+        'user'=>array('password', 'type', 'type_id', 'resetHashKey', 'resetHashKeyTime', 'resetAttempt', 'resetTimestamp'),
+        'user_session'=>array('user_ip'),
+    );
 
 }

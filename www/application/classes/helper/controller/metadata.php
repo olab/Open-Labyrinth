@@ -48,7 +48,6 @@ class Helper_Controller_Metadata
 
         Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js');
         Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
-        Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
         Helper_Html_Javascript::render(true);
 
 

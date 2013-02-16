@@ -16,24 +16,43 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base {
 
         $inlines = Model_Leap_Metadata::getMetadataByType("inlineobjectrecord");
 
-        $models = array("user"=>"user","map"=>"map");
+        $models =  Model_Leap_Metadata::$Models;
+
+        $properties = array();
+
+        foreach($models as $model=>$label){
+
+            if(isset(Model_Leap_Vocabulary_LegacyPropertyMapping::$PrivateProperties[$model])){
+                $properties[$model] = array_values(array_diff( Model_Leap_Vocabulary_LegacyPropertyMapping::get_properties_by_class($model), Model_Leap_Vocabulary_LegacyPropertyMapping::$PrivateProperties[$model]));
+
+            }
+            else
+                $properties[$model] =  Model_Leap_Vocabulary_LegacyPropertyMapping::get_properties_by_class($model);
+
+        }
 
         foreach($inlines as $inline){
             $models[$inline->name]='inlineobjectrecord.'.$inline->name;
         }
 
-        $terms = array();
-
-        foreach(Model_Leap_Vocabulary_Term::getAll() as $term){
-            $terms[$term->id]= $term->term_label;
+        $terms_properties = array();
+        foreach(Model_Leap_Vocabulary_Term::getAll(array(Model_Leap_Vocabulary_Term::RDFPropertyType)) as $term){
+            $terms_properties[$term->id]= array("label"=>$term->term_label, "uri"=>$term->getFullRepresentation());
+        }
+        $terms_classes = array();
+        foreach(Model_Leap_Vocabulary_Term::getAll(array(Model_Leap_Vocabulary_Term::RDFClassType,Model_Leap_Vocabulary_Term::OWLClassType)) as $term){
+            $terms_classes[$term->id]= array("label"=>$term->term_label, "uri"=>$term->getFullRepresentation());
         }
 
+
         $this->templateData['metadata'] = Model_Leap_Metadata::getMetadataByModelName();
-        $this->templateData['terms'] = $terms;
+        $this->templateData['terms_properties'] = $terms_properties;
+        $this->templateData['terms_classes'] = $terms_classes;
         $this->templateData['metadataMappings'] = $metadataMappings;
         $this->templateData['classMappings'] = $classMappings;
         $this->templateData['legacyPropertyMappings'] = $legacyPropertyMappings;
         $this->templateData['models'] = $models;
+        $this->templateData['properties'] = $properties;
         $view = View::factory('vocabulary/mappings/manage');
         $view->set('templateData', $this->templateData);
 
@@ -45,6 +64,9 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base {
 
     public function action_addlegacy(){
         $values = $this->request->post();
+        if(isset(Model_Leap_Vocabulary_LegacyPropertyMapping::$PrivateProperties[$values["class"]]))
+            if(in_array($values["property"],Model_Leap_Vocabulary_LegacyPropertyMapping::$PrivateProperties[$values["class"]]) )
+                return;
         $metadata = DB_ORM::model('vocabulary_legacypropertymapping');
         $metadata->load($values);
         $metadata->save();

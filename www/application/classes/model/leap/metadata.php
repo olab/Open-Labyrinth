@@ -14,6 +14,15 @@ class Model_Leap_Metadata extends DB_ORM_Model
     const Cardinality_Many = "n";
     const Cardinality_One = "1";
 
+    static $Models = array(
+        "user"=>"user",
+        "map"=>"map",
+        "map_node_link"=>"link",
+        "map_node"=>"node",
+        "user_session"=>"user session",
+        "user_sessiontrace"=>"user session trace"
+    );
+
     public function __construct()
     {
         parent::__construct();

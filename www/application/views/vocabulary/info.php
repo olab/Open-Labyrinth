@@ -13,10 +13,10 @@ if (isset($templateData['vocabularies'])) {
     <h3>Available Vocabularies and Terms</h3>
     <?php  if (count($templateData['vocabularies']) > 0) { ?>
     <?php foreach ($templateData['vocabularies'] as $vocab) { ?>
-        <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>] {<a href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>">Reimport</a>}
+        <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>] {<a target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>">Reimport</a>}
             <div style="margin-left: 20px;">
             <?php foreach ($vocab->terms as $term) { ?>
-                <a title="<?php echo $term->term_label; ?>" href="<?php echo $term->getFullRepresentation(); ?>"><?php echo $term->name; ?></a> [<?php echo $term->id; ?>],
+                <a target="_blank" title="<?php echo $term->term_label; ?>" href="<?php echo $term->getFullRepresentation(); ?>"><?php echo $term->name; ?></a> [<?php echo $term->id; ?>],
             <?php } ?>
             </div>
         <?php } ?>

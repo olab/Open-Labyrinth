@@ -137,5 +137,19 @@ $(document).ready(function () {
 
     }
 
+initLegacyProperties();
+    function initLegacyProperties(){
+        $("#legacy-property option").remove();
+        $(properties[$("#legacy-class").val()]).each(function() {
+            $("#legacy-property").append('<option value="' + this + '">' + this + '</option>');
+        });
+    }
+
+$("#legacy-class").change(
+    function(){
+     initLegacyProperties();
+    });
+
+
 
 });

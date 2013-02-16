@@ -10,9 +10,10 @@ class Controller_Metadata_Manager extends Controller_Base {
 
 
     public function action_index(){
+
         $metadata = Model_Leap_Metadata::getMetadataByModelName();
         $inlines = Model_Leap_Metadata::getMetadataByType("inlineobjectrecord");
-        $models = array("user"=>"user","map"=>"map");
+        $models = Model_Leap_Metadata::$Models;
 
         foreach($inlines as $inline){
             $models[$inline->name]='inlineobjectrecord.'.$inline->name;
@@ -27,8 +28,16 @@ class Controller_Metadata_Manager extends Controller_Base {
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
 
-    }
 
+    }
+    private function getSubclassesOf($parent) {
+        $result = array();
+        foreach (get_declared_classes() as $class) {
+           // if (is_subclass_of($class, $parent))
+                $result[] = $class;
+        }
+        return $result;
+    }
     public function before() {
         parent::before();
 

@@ -510,61 +510,65 @@ img.dashboard-member-activity-avatar {
 .show-grid .show-grid [class*="span"] {
     background-color: #CCCCCC;
 }
-@media (max-width: 979px) {
-    .navbar-fixed-top,
-    .navbar-fixed-bottom {
-        position: fixed;
+
+body {
+    padding-bottom: 40px;
+    padding-top: 40px;
+    font-size: 100%;
+}
+
+.container-fluid > .row-fluid{
+
+    margin: 0 auto;
+    width:68%;
+
+}
+
+div#nodetext{
+    font-size: 1em;
+    line-height: 1.5em;
+    text-align: justify;
+
+}
+
+div#content{
+
+    max-width:35em;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.sidebar-nav-fixed {
+    position:fixed;
+    top:40px;
+    width:21.97%;
+}
+
+@media (max-width: 767px) {
+    .sidebar-nav-fixed {
+        position:static;
+        width:auto;
     }
 }
 
-input[readonly].code{
-    cursor: text;
+@media (max-width: 979px) {
+    .sidebar-nav-fixed {
+        top:70px;
+    }
 }
 
-.basic #nodetext{
-    text-align:justify;
+/* for demo purposes (fixed top navbar placement in the fiddle. Ok to remove */
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 0;
+    }
 }
 
-.basic div.container{
-    min-width: 5em;
-    line-height: 1.61em;
-    max-width: 50em;
-    padding: 0 5em;
-    font-size:16px;
-    margin-bottom: 10px;
+@media (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
 }
-
-.navbar .nav > li{
-    margin: 0 3px;
-}
-
-#mnodetitle{
-    font-size:20px;
-    height:auto;
-    width:100%;
-    margin-top:10px;
-}
-
-
-#mnodetext_parent, #mnodetext_tbl{
-    float:left;
-    width:100%;
-}
-
-
-
-#footer .navbar-inner {
-    min-height: 40px;
-    padding-right: 20px;
-    padding-left: 20px;
-    background-color: #fafafa;
-    background-color: rgba(242,242,242,0.01);
-    background-image: -moz-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(255,255,255,0.85)), to(rgba(242,242,242,0.85)));
-    background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
-    background-image: -o-linear-gradient(top, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(242,242,242,0.85));
-    background-repeat: repeat-x;
-
-}
-
