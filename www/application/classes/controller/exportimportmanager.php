@@ -122,7 +122,7 @@ class Controller_ExportImportManager extends Controller_Base {
             $pathInfo = pathinfo($path);
 
             $this->response->headers('Content-Length', sprintf("%u", filesize($path)));
-            $this->response->headers('Content-Disposition', $pathInfo['filename']);
+            $this->response->headers('Content-Disposition', "attachment; filename=\"".$pathInfo['filename'] . '.' . $pathInfo['extension']."\"" );
             $this->response->headers('Content-Type', "application/zip");
             $this->response->headers('Content-Transfer-Encoding', "binary");
             $this->response->send_headers();
@@ -750,7 +750,16 @@ class Controller_ExportImportManager extends Controller_Base {
                 $avatarsArray[$id]['avbubble'] = $array[(string) $avatarAttr->AvatarBubble];
                 $avatarsArray[$id]['avbubbletext'] = (string) $avatar->OL_AvatarBubbleText->div;
 
-                $avatarsArray[$id]['image_data'] = 'ntr'; //need to reload
+                if (isset($avatarAttr->AvatarImage)){
+                    $avatarImageName = (string) $avatarAttr->AvatarImage;
+                    $avatarsArray[$id]['image_data'] = $avatarImageName;
+                    $avatarFile = $tmpFolder.'media/'.$avatarImageName;
+                    if (file_exists($avatarFile)){
+                        copy($avatarFile, DOCROOT . '/avatars/' . $avatarImageName);
+                    }
+                } else {
+                    $avatarsArray[$id]['image_data'] = 'ntr'; //need to reload
+                }
 
                 DB_ORM::model('map_avatar')->addAvatar($map->id);
                 $avatarDB = DB_ORM::model('map_avatar')->getLastAddedAvatar($map->id);
