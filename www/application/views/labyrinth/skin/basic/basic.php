@@ -268,44 +268,7 @@ if ($templateData['skin_path'] != NULL) {
     }
 }
 ?>
-<style type="text/css">
 
-        /* Sticky footer styles
-        -------------------------------------------------- */
-
-    html, body {
-        height: 100%;
-    }
-
-    #wrap {
-        min-height: 100%;
-        padding-bottom: 5em;
-    }
-
-    #main {
-        overflow: auto;
-        padding-bottom: 150px;
-    }
-
-        /* must be same height as the footer */
-
-    #footer {
-        position: relative;
-        position: fixed;
-        bottom: 0;
-
-        width: 100%
-
-    }
-
-    #footer-logo {
-
-        width: 32px;
-        margin: 10px auto 0;
-    }
-
-
-</style>
 
 </head>
 
@@ -366,21 +329,21 @@ if ($templateData['skin_path'] != NULL) {
                                       class='mceEditor'><?php echo $templateData['node_text']; ?></textarea>
                             <input class="btn btn-primary" type='submit' name='Submit' value='Submit'/>
                         </form>
-                       <a class="btn btn-primary"
-                              href='<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id . "/" . $templateData['node']->id; ?>'>links</a>
+                        <a class="btn btn-primary"
+                           href='<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id . "/" . $templateData['node']->id; ?>'>links</a>
 
-                            <a class="btn btn-primary"
-                               href='<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>'>nodes</a>
+                        <a class="btn btn-primary"
+                           href='<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>'>nodes</a>
 
-                            <a class="btn btn-primary"
-                               href='<?php echo URL::base() . 'fileManager/index/' . $templateData['map']->id; ?>'>files</a>
+                        <a class="btn btn-primary"
+                           href='<?php echo URL::base() . 'fileManager/index/' . $templateData['map']->id; ?>'>files</a>
 
-                            <a class="btn btn-primary"
-                               href='<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>'>counters</a>
+                        <a class="btn btn-primary"
+                           href='<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>'>counters</a>
 
-                            <a class="btn btn-primary"
-                               href='<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $templateData['map']->id; ?>'>main
-                                editor</a>
+                        <a class="btn btn-primary"
+                           href='<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $templateData['map']->id; ?>'>main
+                            editor</a>
                     <?php } else { ?>
                         <h1><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></h1>
                         <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
@@ -391,51 +354,64 @@ if ($templateData['skin_path'] != NULL) {
                 <?php } ?>
             </div>
             <div>
-                    <?php if (isset($templateData['links'])) {
-                        echo $templateData['links'];
-                    }?>
+                <?php if (isset($templateData['links'])) {
+                    echo $templateData['links'];
+                }?>
 
             </div>
 
         </div>
         <div class="span1">
-            <div class="well sidebar-nav sidebar-nav-fixed">
+            <div id="sidebar" class="well sidebar-nav sidebar-nav-fixed">
 
                 <div class="row-fluid">
-                    <div class="span6" id="score">
-                        <div>Score</div>
-                        <div>0</div>
+                    <div class="span8">
+                        <div id="map-title" class="row-fluid">       <a href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"><?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
+                                (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)</a></div>
+<div id="map-ops"  class="row-fluid">
+
+
+    <button class="btn span7"  onclick='ajaxBookmark();'
+           name="bookmark"><i class="icon-edit"></i>bookmark</button>
+
+</div>
+
+
+
+
+
+
                     </div>
-                        <div class="span6">
-                            <div>Node: <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
-                            <a class="btn btn-primary"
-                               href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"><?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
-                                (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)</a>
-                        </div>
+                    <div class="span4" id="score">
+                        <div>Score</div>
+                        <div style="font-weight: bolder">0</div>
+                    </div>
+
+                </div>
+                <div id="node-info" class="row-fluid">
+                    <div class="span6">Node <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
+                    <?php if (Auth::instance()->logged_in()) {
+                        if (!isset($templateData['node_edit'])) {
+                            ?>
+                            <a class="btn span6"
+                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>"><i class="icon-edit"></i>edit</a>
+                        <?php } else { ?>
+                        <a class="btn span6"
+                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>"><i class="icon-edit"></i>view</a><?php
+                        }
+                    } ?>
                 </div>
                 <div id="navigation">
                     <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
-                    <a class="btn btn-primary" href="#pathway" id="timeline_link">review your
+                    <a class="btn" href="#pathway" id="timeline_link">review your
                         pathway</a>
-                    <a class="btn btn-primary"
+                    <a class="btn"
                        href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a>
 
                 </div>
 
                 <div id="operations">
-                    <input class="btn btn-primary" type="button" onclick='ajaxBookmark();'
-                           name="bookmark"
-                           value="bookmark"/>
-                    <?php if (Auth::instance()->logged_in()) {
-                        if (!isset($templateData['node_edit'])) {
-                            ?>
-                            <a class="btn btn-primary"
-                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">edit</a>
-                        <?php } else { ?>
-                            <a class="btn btn-primary"
-                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">view</a>   <?php
-                        }
-                    } ?>
+
                 </div>
 
                 <div id="counters-desktop">
@@ -443,13 +419,16 @@ if ($templateData['skin_path'] != NULL) {
                 </div>
 
 
-                <div id="branding">
-                    <div id="footer-logo">
+                <div id="branding" class="row-fluid">
+                    <div class="span2" id="footer-logo">
                         <a href="<?php echo URL::base(); ?>"><img
                                 src="<?php echo URL::base(); ?>images/footer-logo.png"
-                                title="OpenLabyrinth is an open source educational pathway system"
                                 alt="OpenLabyrinth logo"/></a>
 
+                    </div>
+                    <div class="span10">
+                        <a href="<?php echo URL::base(); ?>">OpenLabyrinth is an open source educational pathway
+                            system</a>
                     </div>
                 </div>
 

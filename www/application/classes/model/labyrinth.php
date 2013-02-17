@@ -391,7 +391,7 @@ class Model_Labyrinth extends Model {
                         }
                     }
                 }
-
+                $counterString .="<ul>";
                 foreach($countersArray as $key => $counter){
                     if (isset($counter['func'])){
                         if (count($counter['func']) > 0) {
@@ -406,7 +406,7 @@ class Model_Labyrinth extends Model {
 
                     if ($counter['visible']){
                         $popup = '<a href="javascript:void(0)" onclick=\'window.open("' . URL::base() . 'renderLabyrinth/", "Counter", "toolbar=no, directories=no, location=no, status=no, menubar=no, resizable=yes, scrollbars=yes, width=400, height=350"); return false;\'>';
-                        $counterString .= '<p>' . $popup . $counter['label'] . '</a>(' . $counter['value'] . ') ' . $func . '</p>';
+                        $counterString .= '<li><i class="icon-cardio"></i>' . $popup . $counter['label'] . '</a>(' . $counter['value'] . ') ' . $func . '</li>';
                         $remoteCounterString .= '<counter id="'.$counter['counter']->id.'" name="'.$counter['counter']->name.'" value="'.$counter['value'].'"></counter>';
                     }
 
@@ -418,7 +418,7 @@ class Model_Labyrinth extends Model {
 
                     $updateCounter .= '[CID=' . $counter['counter']->id . ',V=' . $counter['value'] . ']';
                 }
-
+                $counterString .="</ul>";
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 

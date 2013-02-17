@@ -504,21 +504,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function generateNavigation($sections) {
         if (count($sections) > 0) {
-            $result = '';
+            $result = '<ul>';
             foreach ($sections as $section) {
                 if ($section->map->section->name == 'visible') {
-                    $result .= "<p>" . $section->name . "</p>";
+                    $result .= "<li>" . $section->name . "</li>";
                 } else if ($section->map->section->name == 'navigable') {
-                    $result .= '<p><a href="';
+                    $result .= '<li><a href="';
                     if (count($section->nodes) > 0) {
                         $result .= URL::base() . 'renderLabyrinth/go/' . $section->map_id . '/' . $section->nodes[0]->node->id;
                     } else {
                         $result .= URL::base() . 'renderLabyrinth/index/' . $section->map_id;
                     }
-                    $result .= '">' . $section->name . '</a></p>';
+                    $result .= '">' . $section->name . '</a></li>';
                 }
             }
-
+            $result .= '</ul>';
             return $result;
         }
 

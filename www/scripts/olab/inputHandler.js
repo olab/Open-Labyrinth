@@ -138,7 +138,9 @@ $(document).ready(function () {
     }
 
 initLegacyProperties();
+
     function initLegacyProperties(){
+        if(typeof properties=="undefined")return;
         $("#legacy-property option").remove();
         $(properties[$("#legacy-class").val()]).each(function() {
             $("#legacy-property").append('<option value="' + this + '">' + this + '</option>');

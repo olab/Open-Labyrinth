@@ -546,6 +546,46 @@ div#content{
     width:21.97%;
 }
 
+#counters-desktop ul{
+    padding: 0;
+    margin-left: 0;
+    list-style: none;
+}
+
+#counters-desktop li{
+    margin-left: 0;
+    padding-left: 0;
+    background: #e3e3e3;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+
+}
+
+div#sidebar{
+    border:none;
+}
+
+div#score{
+    background: #e3e3e3;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+div#node-info, div#navigation{
+    background: #e3e3e3;
+
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+#map-title{
+    font-size: small;
+    line-height: 1em;
+}
+
+
 @media (max-width: 767px) {
     .sidebar-nav-fixed {
         position:static;
@@ -571,4 +611,13 @@ div#content{
     body {
         padding-top: 0;
     }
+}
+#footer-logo {
+
+
+font-size: .8em;
+}
+
+.icon-cardio{
+    background: url("skin/basic/glyphicons_282_cardio.png") 0 0;
 }
