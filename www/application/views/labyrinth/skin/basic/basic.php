@@ -363,51 +363,61 @@ if ($templateData['skin_path'] != NULL) {
         </div>
         <div class="span1">
             <div id="sidebar" class="well sidebar-nav sidebar-nav-fixed">
+                <div class="pane-title"><?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
+                    (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)</div>
 
                 <div class="row-fluid">
-                    <div class="span8">
-                        <div id="map-title" class="row-fluid">       <a href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"><?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
-                                (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)</a></div>
-<div id="map-ops"  class="row-fluid">
+
+                    <div class="span6">
+
+                        <div id="map-ops" >
+
+                            <div >
+                                <a href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"
+                                   class="btn row-fluid"><i class="icon-info-sign"></i>information</a></div>
+                            <button class="btn row-fluid" onclick='ajaxBookmark();'
+                                    name="bookmark"><i class="icon-edit"></i>bookmark
+                            </button>
 
 
-    <button class="btn span7"  onclick='ajaxBookmark();'
-           name="bookmark"><i class="icon-edit"></i>bookmark</button>
-
-</div>
-
-
-
-
+                        </div>
 
 
                     </div>
-                    <div class="span4" id="score">
+                    <div class="span3" id="score">
                         <div>Score</div>
                         <div style="font-weight: bolder">0</div>
                     </div>
-
+                    <div class="span3" id="timer">
+                        <div>Time</div>
+                        <div style="font-weight: bolder">0</div>
+                    </div>
                 </div>
-                <div id="node-info" class="row-fluid">
-                    <div class="span6">Node <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
+                <div id="node-info" class="row-fluid pane-title">
+                    <div class="span8 ">
+                        Node <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
+                    <div class="span4">
                     <?php if (Auth::instance()->logged_in()) {
                         if (!isset($templateData['node_edit'])) {
                             ?>
-                            <a class="btn span6"
-                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>"><i class="icon-edit"></i>edit</a>
+                            <a class="btn"
+                               href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>"><i
+                                    class="icon-edit"></i>edit</a>
                         <?php } else { ?>
                         <a class="btn span6"
-                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>"><i class="icon-edit"></i>view</a><?php
+                           href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>">
+                                <i class="icon-eye-open"></i>view</a><?php
                         }
-                    } ?>
+                    } ?></div>
                 </div>
                 <div id="navigation">
+                    <div  class="pane-title">Navigation</div>
                     <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
-                    <a class="btn" href="#pathway" id="timeline_link">review your
-                        pathway</a>
-                    <a class="btn"
-                       href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a>
-
+                    <div  id="nav-buttons" class="row-fluid">
+                        <a class="btn span8" href="#pathway" id="timeline_link"><i class="icon-time"></i>review your pathway</a>
+                        <a class="btn span4"
+                           href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'><i class="icon-repeat"></i>reset</a>
+                    </div>
                 </div>
 
                 <div id="operations">
@@ -415,7 +425,12 @@ if ($templateData['skin_path'] != NULL) {
                 </div>
 
                 <div id="counters-desktop">
-                    <?php if (isset($templateData['counters'])) echo $templateData['counters']; ?>
+
+                    <?php if (isset($templateData['counters'])){?>
+                    <div class="pane-title">Counters</div>
+                    <?php echo $templateData['counters']; ?>
+
+                    <?php }?>
                 </div>
 
 

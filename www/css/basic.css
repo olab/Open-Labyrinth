@@ -566,18 +566,27 @@ div#sidebar{
     border:none;
 }
 
-div#score{
+div#score, div#timer{
     background: #e3e3e3;
     text-align: center;
     padding: 10px;
-    border-radius: 10px;
+
 }
 
+.btn{
+    box-sizing: border-box;
+}
+div#node-info{
+    padding:0px;
+}
+
+div#node-info div{
+    padding:10px;
+}
 div#node-info, div#navigation{
-    background: #e3e3e3;
+
 
     margin-top: 10px;
-    border-radius: 10px;
 }
 
 #map-title{
@@ -620,4 +629,20 @@ font-size: .8em;
 
 .icon-cardio{
     background: url("skin/basic/glyphicons_282_cardio.png") 0 0;
+}
+
+#branding{
+    font-size: small;
+    line-height: 1em;
+}
+
+.pane-title{
+    margin-top:15px;
+    font-weight: bolder;
+    padding: 10px;
+    background: #e3e3e3;
+}
+
+#navigation li{
+    list-style-image:  url("skin/basic/glyphicons_072_bookmark.png") ;;
 }
