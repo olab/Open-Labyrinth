@@ -10,7 +10,7 @@ if (isset($templateData['vocabularies'])) {
 
     ?>
 <div style="color: #000000;">
-    <h3>Available Vocabularies and Terms</h3>
+    <h1>Available Vocabularies and Terms</h1>
     <?php  if (count($templateData['vocabularies']) > 0) { ?>
     <?php foreach ($templateData['vocabularies'] as $vocab) { ?>
         <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>] {<a target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>">Reimport</a>}
@@ -24,19 +24,25 @@ if (isset($templateData['vocabularies'])) {
 
 </div>
 
-    <div>
-        <h4>Import new / update existing vocabulary</h4>
-        <form method="get" action="<?php echo URL::base() . 'vocabulary/manager/import/'; ?>">
-            <fieldset>
-            <label>Universal Resource Identifier</label>
-            <input name="uri" type="text" size="100"/><br/>
 
+
+        <form class="form-horizontal" method="get" action="<?php echo URL::base() . 'vocabulary/manager/import/'; ?>">
+            <fieldset class="fieldset">
+                <legend>Import new / update existing vocabulary</legend>
+                <div class="control-group">
+                    <label class="control-label">Universal Resource Identifier</label>
+
+                    <div class="controls">
+                        <input name="uri" type="text" />
+                    </div>
+                </div>
             </fieldset>
-            <input type="submit" value="Import"/>
+
+            <input class="btn btn-primary" type="submit" value="Import"/>
         </form>
 
-    </div>
 
-    <div><a href="<?php echo URL::base() . 'vocabulary/mappings/manager/'; ?>"><h4>Manage RDF Mappings</h4></a></div>
+
+    <a class="btn btn-primary btn-large" href="<?php echo URL::base() . 'vocabulary/mappings/manager/'; ?>">Manage RDF Mappings</a>
 
 <?php } ?>

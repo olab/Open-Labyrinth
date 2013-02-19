@@ -19,22 +19,21 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('User account'); ?></h4>
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                        <p><?php echo __('username'); ?>: <strong><?php if(isset($templateData['newUser']['uid'])) echo $templateData['newUser']['uid']; ?></strong><br>
-                           <?php echo __('password'); ?>: <strong><?php if(isset($templateData['newUser']['upw'])) echo $templateData['newUser']['upw']; ?></strong><br>
-                           <?php echo __('name'); ?>: <strong><?php if(isset($templateData['newUser']['uname'])) echo $templateData['newUser']['uname']; ?></strong><br>
-                           <?php echo __('e-mail'); ?>: <strong><?php if(isset($templateData['newUser']['uemail'])) echo $templateData['newUser']['uemail']; ?></strong><br>
-                           <?php echo __('user type'); ?>: <strong><?php if(isset($templateData['newUser']['usertype'])) echo $templateData['newUser']['usertype']; ?></strong><br>
-                           <?php echo __('language'); ?>: <strong><?php if(isset($templateData['newUser']['langID'])) echo $templateData['newUser']['langID']; ?></strong></p>
-                        <p style="color:green;"><?php echo __('New user added successfully.'); ?></p>
-                        <p><a href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a></p>
-                    </td></tr>
+
+            <h1><?php echo __('User account'); ?></h1>
+            <table>
+                <tr><td>
+                        <?php echo __('username'); ?></td><td><?php if(isset($templateData['newUser']['uid'])) echo $templateData['newUser']['uid']; ?></td>
+                    </tr>
+
+                <tr><td><?php echo __('password'); ?></td><td><?php if(isset($templateData['newUser']['upw'])) echo $templateData['newUser']['upw']; ?></td></tr>
+                <tr><td><?php echo __('name'); ?></td><td><?php if(isset($templateData['newUser']['uname'])) echo $templateData['newUser']['uname']; ?></td></tr>
+                <tr><td> <?php echo __('e-mail'); ?></td><td><?php if(isset($templateData['newUser']['uemail'])) echo $templateData['newUser']['uemail']; ?></td></tr>
+                <tr><td> <?php echo __('user type'); ?></td><td><?php if(isset($templateData['newUser']['usertype'])) echo $templateData['newUser']['usertype']; ?></td></tr>
+                <tr><td><?php echo __('language'); ?></td><td><?php if(isset($templateData['newUser']['langID'])) echo $templateData['newUser']['langID']; ?></td></tr>
+
+
+
             </table>
-        </td>
-    </tr>
-</table>
+<?php echo __('New user added successfully.'); ?>
+<a class="btn btn-primary" href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a>

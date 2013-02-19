@@ -8,7 +8,7 @@
 
         <?php } ?>
     <?php } ?>
-    <a href="<?php echo URL::base(); ?>vocabulary/manager">Back to the vocabulary manager</a>
+    <a class="btn btn-primary" href="<?php echo URL::base(); ?>vocabulary/manager">Back to the vocabulary manager</a>
     </div>
 
 

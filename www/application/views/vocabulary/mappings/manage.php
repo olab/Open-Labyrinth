@@ -96,9 +96,7 @@
 <h3>Common Property Mappings</h3>
 <table class="table table-bordered table-striped">
     <thead>
-    <tr>
-        <td colspan="6"></td>
-    </tr>
+
     <tr>
         <td>Identifier</td>
         <td>Class Name</td>
