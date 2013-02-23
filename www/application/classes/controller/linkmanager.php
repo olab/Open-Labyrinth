@@ -63,6 +63,9 @@ class Controller_LinkManager extends Controller_Base {
             $this->templateData['linkStylies'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
             $this->templateData['linkTypes'] = DB_ORM::model('map_node_link_type')->getAllLinkTypes();
             $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap((int) $mapId);
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base() . 'nodeManager/index/'. $mapId. '/' . $nodeId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Links'))->set_url(URL::base() . 'linkManager/index/' . $mapId));
 
             $editLinkView = View::factory('labyrinth/link/edit');
             $editLinkView->set('templateData', $this->templateData);
@@ -112,6 +115,10 @@ class Controller_LinkManager extends Controller_Base {
             $this->templateData['editLink'] = DB_ORM::model('map_node_link', array((int) $editLinkId));
             $this->templateData['linkStylies'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
             $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap((int) $mapId);
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base() . 'nodeManager/index/'. $mapId. '/' . $nodeId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Links'))->set_url(URL::base() . 'linkManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('→'.$this->templateData['editLink']->node_2->title))->set_url(URL::base() . 'linkManager/editLink/' . $mapId. '/' . $nodeId. '/'. $editLinkId));
 
             $editLinkView = View::factory('labyrinth/link/edit');
             $editLinkView->set('templateData', $this->templateData);

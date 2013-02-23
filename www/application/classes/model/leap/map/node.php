@@ -395,12 +395,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    public function getAllNodesNotInSection() {
+    public function getAllNodesNotInSection($mapId = null) {
+
         $tableName = DB_ORM::model('map_node_section_node');
         $builder = DB_SQL::select('default')
                 ->from($tableName::table())
                 ->column('node_id');
-        
+
         $allNodeInSectionresult = $builder->query();
         
         $ids = array();
@@ -415,7 +416,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         } else {
             $builder = DB_SQL::select('default')->from($this->table());
         }
-        
+        if(isset($mapId))$builder->where("map_id","=",$mapId);
         $result = $builder->query();
         
         if($result->is_loaded()) {

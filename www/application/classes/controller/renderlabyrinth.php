@@ -435,9 +435,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 switch ($node->link_style->name) {
                     case 'text (default)':
                         if ($link->image_id != 0) {
-                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></p>';
+                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
                         } else {
-                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
+                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></li>';
                         }
                         break;
                     case 'dropdown':
@@ -459,6 +459,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             switch ($node->link_style->name) {
+                case 'text (default)':
+                    $result['links'] = '<ul>'.$result['links'].'</ul>';
+                    break;
                 case 'dropdown':
                     $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
                     break;
@@ -478,9 +481,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
             }
 
             return $result;
@@ -488,10 +491,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($node->end and $node->link_style->name == 'type in text') {
                 if(!isset($result['links']['display']))
                     $result['links']['display'] = '';
-                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
                 return $result;
             }
 

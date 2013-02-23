@@ -327,8 +327,10 @@ class Controller_NodeManager extends Controller_Base {
         if ($sectionId && $mapId) {
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['section'] = DB_ORM::model('map_node_section', array($sectionId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection();
-
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection($mapId);
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['section']->name)->set_url(URL::base() . 'nodeManager/editSection/' . $mapId. '/'. $sectionId));
             $editSectionsView = View::factory('labyrinth/node/editSection');
             $editSectionsView->set('templateData', $this->templateData);
 

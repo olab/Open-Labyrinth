@@ -28,7 +28,8 @@ if (isset($templateData['map'])) {
             <thead>
             <tr>
                 <th>Section title</th>
-                <th></th>
+                <th>Nodes</th>
+                <th>Operations</th>
             </tr>
             </thead>
             <tbody>
@@ -87,8 +88,8 @@ if (isset($templateData['map'])) {
 
                 <div class="controls">
                     <?php foreach ($templateData['sections'] as $section) { ?>
-                        <?php echo $section->name; ?>
-                        <label class="radio">
+
+                        <label class="radio"><?php echo $section->name; ?>
                             <input type="radio" name="sectionview" value="<?php echo $section->id; ?>" <?php if ($templateData['map']->section->id == $section->id) echo 'checked=""'; ?>/>
                         </label>
                     <?php } ?>

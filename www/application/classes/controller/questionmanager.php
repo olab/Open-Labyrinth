@@ -67,8 +67,9 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['questionType'] = $templateType;
                 $this->templateData['args'] = $type->template_args;
                 $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-
-
+                Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/addQuestion/' . $mapId));
                 $editView = View::factory('labyrinth/question/' . $type->template_name);
                 $editView->set('templateData', $this->templateData);
 
@@ -99,7 +100,9 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['args'] = $type->template_args;
                 $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int) $questionId));
-
+                Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
+                Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['question']->stem)->set_url(URL::base() . 'questionManager/editQuestion/' . $this->templateData['map']->id . '/' . $this->templateData['question']->entry_type_id . '/' . $this->templateData['question']->id));
 
                 $editView = View::factory('labyrinth/question/' . $type->template_name);
                 $editView->set('templateData', $this->templateData);

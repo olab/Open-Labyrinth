@@ -18,15 +18,16 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
+if (isset($templateData['map'])) {
+    ?>
     <script language="javascript" type="text/javascript">
-        function jumpMenu(targ,selObj,restore){ 
-            eval(targ+".location='<?php echo URL::base(); ?>questionManager/addQuestion/<?php echo $templateData['map']->id; ?>/"+selObj.options[selObj.selectedIndex].value+"'");
-            if (restore) selObj.selectedIndex=0;
+        function jumpMenu(targ, selObj, restore) {
+            eval(targ + ".location='<?php echo URL::base(); ?>questionManager/addQuestion/<?php echo $templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
+            if (restore) selObj.selectedIndex = 0;
         }
     </script>
 
-                <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
 
     <table class="table table-striped table-bordered">
         <thead>
@@ -37,45 +38,55 @@ if (isset($templateData['map'])) { ?>
         </tr>
         </thead>
         <tbody>
-                                <?php if(isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
-                                    <?php foreach($templateData['questions'] as $question) { ?>
-                                        <tr>
-                                            <td>
-                                                <p>
-                                                    <input readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></td><td>
+        <?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
+            <?php foreach ($templateData['questions'] as $question) { ?>
+                <tr>
+                    <td>
 
-                                                    <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>)</td><td>
-                                                    <a class="btn btn-primary" href="<?php echo URL::base().'questionManager/editQuestion/'.$templateData['map']->id.'/'.$question->entry_type_id.'/'.$question->id; ?>">edit</a>
-                                                    <a class="btn btn-primary" href="<?php echo URL::base().'questionManager/deleteQuestion/'.$templateData['map']->id.'/'.$question->id; ?>">delete</a>
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } ?>
+                        <input readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></td>
+                    <td>
+
+                        <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>
+                        , <?php echo $question->width; ?>, <?php echo $question->height; ?>)
+                    </td>
+                    <td>
+                        <a class="btn btn-primary"
+                           href="<?php echo URL::base() . 'questionManager/editQuestion/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>">edit</a>
+                        <a class="btn btn-primary"
+                           href="<?php echo URL::base() . 'questionManager/deleteQuestion/' . $templateData['map']->id . '/' . $question->id; ?>">delete</a>
+
+                    </td>
+                </tr>
+            <?php } ?>
+        <?php } else { ?>
+            <tr class="info"><td colspan="3">There are no available questions right now. You may add a question using the menu below.</td> </tr>
+
+        <?php }?>
 
 
         </tbody>
-                            </table>
+    </table>
 
 
     <form class="form-horizontal" action="#">
         <fieldset class="fieldset">
-           <legend>add question</legend>
-                <?php if(isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+            <legend>Add question</legend>
+            <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
                 <div class="control-group">
                     <label for="qt" class="control-label"><?php echo __('Question type'); ?>
                     </label>
+
                     <div class="controls">
-                        <select onchange="jumpMenu('parent',this,0)" id="qt" name="qt">
+                        <select class="span4" onchange="jumpMenu('parent',this,0)" id="qt" name="qt">
                             <option value=""><?php echo __('select'); ?> ...</option>
-                            <?php foreach($templateData['question_types'] as $type) { ?>
+                            <?php foreach ($templateData['question_types'] as $type) { ?>
                                 <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
                             <?php } ?>
                         </select>
                     </div>
                 </div>
 
-                <?php } ?>
+            <?php } ?>
         </fieldset>
     </form>
 

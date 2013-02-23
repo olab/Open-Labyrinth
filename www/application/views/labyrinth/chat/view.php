@@ -24,7 +24,8 @@ if (isset($templateData['map'])) { ?>
                 <table class="table table-striped table-bordered" id="my-labyrinths">
                     <thead>
                     <tr>
-                        <th>Code & Stem</th>
+                        <th>Code</th>
+                        <th>Stem</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -32,16 +33,17 @@ if (isset($templateData['map'])) { ?>
                     <tbody>
                     <?php if(isset($templateData['chats']) and count($templateData['chats']) > 0) { ?>
                         <?php foreach($templateData['chats'] as $chat) { ?>
-                            <tr><td><label><input readonly="readonly" class="span6 code" type="text" value="[[CHAT:<?php echo $chat->id; ?>]]"> <?php echo $chat->stem; ?></label></td>
+                            <tr><td><label><input readonly="readonly" class="span6 code" type="text" value="[[CHAT:<?php echo $chat->id; ?>]]"> </label></td>
+                                <td><?php echo $chat->stem; ?></td>
                                 <td>
                                <a class="btn btn-primary" href="<?php echo URL::base().'chatManager/editChat/'.$templateData['map']->id.'/'.$chat->id.'/'.count($chat->elements); ?>"><?php echo __('edit'); ?></a>
-                               <a class="btn bnt-primary" href="<?php echo URL::base().'chatManager/deleteChat/'.$templateData['map']->id.'/'.$chat->id; ?>"><?php echo __('delete'); ?></a></td></tr>
+                               <a class="btn btn-danger" href="<?php echo URL::base().'chatManager/deleteChat/'.$templateData['map']->id.'/'.$chat->id; ?>"><?php echo __('delete'); ?></a></td></tr>
                         <?php } ?>
                     <?php } ?>
                     </tbody>
                     </table>
 
 
-                             <a class="btn btn-primary" href="<?php echo URL::base().'chatManager/addChat/'.$templateData['map']->id.'/2'; ?>"><?php echo __('Add Chat'); ?></a>
+                             <a class="btn btn-primary" href="<?php echo URL::base().'chatManager/addChat/'.$templateData['map']->id; ?>"><?php echo __('Add Chat'); ?></a>
 
 <?php } ?>

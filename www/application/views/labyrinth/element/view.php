@@ -61,6 +61,8 @@ if (isset($templateData['map'])) {
                     </td>
                 <tr>
             <?php } ?>
+        <?php } else{ ?>
+            <tr class="info"><td colspan="3">There are no elements yet. You may add an element by clicking the button below</td></tr>
         <?php } ?>
 
 

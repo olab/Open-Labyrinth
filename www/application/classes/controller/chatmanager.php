@@ -67,6 +67,10 @@ class Controller_ChatManager extends Controller_Base {
             } else {
                 $this->templateData['question_count'] = 2;
             }
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+                    Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'chatManager/addChat/' . $mapId));
+
 
             $addChatView = View::factory('labyrinth/chat/add');
             $addChatView->set('templateData', $this->templateData);
@@ -147,6 +151,11 @@ class Controller_ChatManager extends Controller_Base {
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['question_count'] = $chatQuestionCount;
             $this->templateData['chat'] = DB_ORM::model('map_chat', array((int) $chatId));
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title( $this->templateData['chat']->stem)->set_url(URL::base().'chatManager/editChat/'. $this->templateData['map']->id.'/'.$chatId.'/'.count($this->templateData['chat']->elements)));
+
 
             $editChatView = View::factory('labyrinth/chat/edit');
             $editChatView->set('templateData', $this->templateData);

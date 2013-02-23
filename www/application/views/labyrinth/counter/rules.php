@@ -21,9 +21,7 @@
 if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
 <h1><?php echo __('Counters Rules') . ' "' . $templateData['map']->name . '"'; ?></h1>
-<div class="control-group">
-    <a class="btn btn-info" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><?php echo __('Add rule'); ?></a>
-</div>
+
 <table class="table table-striped table-bordered">
     <colgroup>
         <col style="width: 5%">
@@ -65,8 +63,11 @@ if (isset($templateData['map'])) { ?>
             </td>
         </tr>
         <?php } ?>
+    <?php } else{ ?>
+        <tr class="info"><td colspan="3">There are no rules set yet. You may add a rule by clicking the button below</td></tr>
     <?php } ?>
 </table>
+    <a class="btn btn-info" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><?php echo __('Add rule'); ?></a>
 <a id="availableNodesText" style="display:none;"><?php echo $templateData['nodes']['text']; ?></a>
 <a id="availableNodesId" style="display:none;"><?php echo $templateData['nodes']['id']; ?></a>
 <a id="availableCountersText" style="display:none;"><?php echo $templateData['counters']['text']; ?></a>

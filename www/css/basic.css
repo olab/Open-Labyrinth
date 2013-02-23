@@ -29,7 +29,7 @@ body {
     margin:auto;
 }
 #hdr {
-    height:relative;
+
     background:#ffffff;
     color: #ffffff;
     border:solid #ffffff;
@@ -513,136 +513,21 @@ img.dashboard-member-activity-avatar {
 
 body {
     padding-bottom: 40px;
-    padding-top: 40px;
+    padding-top: 60px;
     font-size: 100%;
 }
 
-.container-fluid > .row-fluid{
-
-    margin: 0 auto;
-    width:68%;
-
-}
-
-div#nodetext{
-    font-size: 1em;
-    line-height: 1.5em;
-    text-align: justify;
-
-}
-
-div#content{
-
-    max-width:35em;
-}
-
-.sidebar-nav {
-    padding: 9px 0;
-}
-
-.sidebar-nav-fixed {
-    position:fixed;
-    top:40px;
-    width:21.97%;
-}
-
-#counters-desktop ul{
-    padding: 0;
-    margin-left: 0;
-    list-style: none;
-}
-
-#counters-desktop li{
-    margin-left: 0;
-    padding-left: 0;
-    background: #e3e3e3;
-    border-radius: 5px;
-    margin-top: 10px;
-    text-align: center;
-
-}
-
-div#sidebar{
-    border:none;
-}
-
-div#score, div#timer{
-    background: #e3e3e3;
-    text-align: center;
-    padding: 10px;
-
-}
-
-.btn{
-    box-sizing: border-box;
-}
-div#node-info{
-    padding:0px;
-}
-
-div#node-info div{
-    padding:10px;
-}
-div#node-info, div#navigation{
-
-
-    margin-top: 10px;
-}
-
-#map-title{
-    font-size: small;
-    line-height: 1em;
-}
-
-
-@media (max-width: 767px) {
-    .sidebar-nav-fixed {
-        position:static;
-        width:auto;
-    }
-}
-
-@media (max-width: 979px) {
-    .sidebar-nav-fixed {
-        top:70px;
-    }
-}
-
-/* for demo purposes (fixed top navbar placement in the fiddle. Ok to remove */
-
-@media (max-width: 767px) {
-    body {
-        padding-top: 0;
-    }
-}
-
-@media (max-width: 979px) {
-    body {
-        padding-top: 0;
-    }
-}
-#footer-logo {
-
-
-font-size: .8em;
-}
-
-.icon-cardio{
-    background: url("skin/basic/glyphicons_282_cardio.png") 0 0;
-}
-
-#branding{
-    font-size: small;
-    line-height: 1em;
-}
-
-.pane-title{
-    margin-top:15px;
-    font-weight: bolder;
-    padding: 10px;
-    background: #e3e3e3;
-}
-
-#navigation li{
-    list-style-image:  url("skin/basic/glyphicons_072_bookmark.png") ;;
+td[colspan*="0"],
+td[colspan*="2"],
+td[colspan*="3"],
+td[colspan*="4"],
+td[colspan*="5"],
+td[colspan*="6"],
+td[colspan*="7"],
+td[colspan*="8"],
+td[colspan*="9"],
+td[colspan*="11"] {
+   text-align: center;
+    font-size: 80%;
+    font-style: italic;
 }

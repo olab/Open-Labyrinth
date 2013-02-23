@@ -20,7 +20,11 @@
  */
 if (isset($templateData['map'])) { ?>
 
-                <h1><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php if(!isset($templateData['question'])){
+            echo __('New question for"') . $templateData['map']->name . '"';
+        } else {
+            echo __('Edit question "') . $templateData['question']->stem . '"'; }?>
+    </h1>
 
                             <?php if(isset($templateData['question'])) { ?>
                             <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">

@@ -92,7 +92,7 @@ if (isset($templateData['section']) and isset($templateData['map'])) {
         method="post">
 
         <fieldset>
-            <legend>Details</legend>
+            <legend><?php echo __("Add node to section") ?></legend>
             <div class="control-group">
                 <label for="mnodeID" class="control-label"><?php echo __('Add an unallocated node to this section'); ?>
                 </label>

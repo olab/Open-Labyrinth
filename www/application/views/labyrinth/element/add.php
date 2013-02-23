@@ -65,16 +65,18 @@ if (isset($templateData['map'])) {
 
 
 
-    <form class="form-horizontal"
-          action="<?php echo URL::base(); ?>elementManager/saveElement/<?php echo $templateData['map']->id; ?><?php if (isset($templateData['add_type'])) echo '/' . $templateData['add_type']; ?>"
-          method="post">
-    <h2>Type: <?php if (isset($templateData['add_type'])) echo $templateData['add_type']; ?></h2>
+
 
 
 
 
 
     <?php if (isset($templateData['add_type'])) { ?>
+    <form class="form-horizontal"
+          action="<?php echo URL::base(); ?>elementManager/saveElement/<?php echo $templateData['map']->id; ?><?php if (isset($templateData['add_type'])) echo '/' . $templateData['add_type']; ?>"
+          method="post">
+    <h2>Type: <?php if (isset($templateData['add_type'])) echo $templateData['add_type']; ?></h2>
+
         <?php
         $filesString = '<option value="">Select ...</option>';
         if (isset($templateData['files']) and count($templateData['files']) > 0) {
@@ -607,10 +609,10 @@ if (isset($templateData['map'])) {
                 </fieldset>';
                 break;
         }
-        ?>
+        ?>    <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
     <?php } ?>
 
-    <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
+
 
 <?php } ?>

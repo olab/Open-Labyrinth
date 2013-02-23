@@ -21,7 +21,7 @@
 if (isset($templateData['node']) && isset($templateData['map'])) {
     ?>
 
-    <h1><?php echo __('edit links of node'); ?>&nbsp; <a href="#"><?php echo $templateData['node']->id; ?>
+    <h1><?php echo __('Edit links of node'); ?>&nbsp; <a href="#"><?php echo $templateData['node']->id; ?>
             : <?php echo $templateData['node']->title; ?></a></h1>
 
     <?php if (isset($templateData['linkTypes']) and count($templateData['linkTypes']) > 0) { ?>
@@ -59,7 +59,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
 
 
-    <h4><?php echo __('linked to'); ?></h4>
+    <h4><?php echo __('Linked to'); ?></h4>
     <?php if ($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
         <form class="form-horizontal" method="post" action="<?php echo URL::base() . 'linkManager/updateOrder/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
     <?php } ?>
@@ -80,7 +80,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
                     <tr>
                         <td><?php echo $link->node_2->title; ?> (<?php echo $link->node_2->id; ?>)</td>
                         <td >
-                                <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/editLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id; ?>"><?php echo __('edit'); ?>
+                                <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/editLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id ."#edit"; ?>"><?php echo __('edit'); ?>
                                     </a>
 
                                 <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/deleteLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id; ?>"><?php echo __('delete'); ?>
@@ -105,7 +105,12 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
                         <?php } ?>
                     </tr>
                 <?php } ?>
-            <?php } ?>
+            <?php } else {?>
+                <tr class="info"><td colspan="3"><?php echo __('No links available yet. You may link this node to others, using the form below.'); ?></td></tr>
+            <?php }?>
+
+
+
         </tbody>
     </table>
     <?php if ($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
@@ -119,7 +124,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
                 <?php if (count($templateData['linkStylies']) > 0) { ?>
                 <div class="control-group">
-                    <label class="control-label"><?php echo __('link presentation style'); ?></label>
+                    <label class="control-label"><?php echo __('Link presentation style'); ?></label>
 
                     <div class="controls">
 
@@ -149,9 +154,16 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
     <?php } else { ?>
         <form class="form-horizontal" id="form3" name="form1" method="post" action="<?php echo URL::base() . 'linkManager/addLink/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
     <?php } ?>
-    <h4><?php echo __('Add link'); ?></strong></h4>
-    <fieldset class="fieldset">
 
+    <fieldset class="fieldset">
+    <legend>
+        <?php if (isset($templateData['editLink'])) { ?>
+            <a name="edit">Edit Link</a>
+        <?php } else { ?>
+            Add new Link
+        <?php } ?>
+
+    </legend>
 
     <div class="control-group">
         <label for="linkmnodeid" class="control-label"><?php echo __('Target node'); ?>
@@ -165,8 +177,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
                     <?php } ?>
                 </select>
             <?php } else if (isset($templateData['editLink'])) { ?>
-                <?php echo __('Edit link'); ?> : <?php echo $templateData['editLink']->node_2->title; ?>
-                        [<?php echo $templateData['editLink']->node_2->id; ?>]
+                <input value="<?php echo $templateData['editLink']->node_2->title; ?> [<?php echo $templateData['editLink']->node_2->id; ?>]" type="text" readonly="readonly"/>
             <?php } ?>
         </div>
     </div>
@@ -229,7 +240,8 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
 
 
-<input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('update'); ?>">
+<input class="btn btn-primary" type="submit" name="Submit" value="<?php if (isset($templateData['editLink'])) echo __('update');
+else echo __('add');?>">
 
     </form>
 
