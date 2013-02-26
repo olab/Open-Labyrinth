@@ -118,15 +118,17 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
             case 'updateVisualEditor':
                 $mapId = $this->request->param('id3', NULL);
+                $this->auto_render = false;
                 if ($mapId) {
-                    $emap = Arr::get($_POST, 'emap', NULL);
-                    $elink = Arr::get($_POST, 'elink', NULL);
-                    $enode = Arr::get($_POST, 'enode', NULL);
-
+                    $mapId = Arr::get($_POST, 'id', NULL);
+                    $data = Arr::get($_POST, 'data', NULL);
+                    
+                    Model::factory('visualEditor')->updateFromJSON($mapId, $data);
                     $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-                    Model::factory('visualEditor')->update($mapId, $emap, $enode, $elink);
+                    if(Auth::instance()->logged_in())
+                        DB_ORM::model('visualeditorsave')->deleteSave($mapId, Auth::instance()->get_user()->id);
                 }
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $mapId);
+                echo Model::factory('visualEditor')->generateJSON($mapId);
                 exit;
                 break;
 
@@ -686,7 +688,16 @@ class Controller_LabyrinthManager extends Controller_Base {
             case '3':
                 if ($action != NULL) {
                     $this->templateData['map'] = $action;
-                    Model::factory('visualEditor')->generateXML((int) $action);
+                    $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($action);
+                    
+                    $saveJson = '';
+                    if(Auth::instance()->logged_in())
+                        $saveJson = DB_ORM::model('visualeditorsave')->getSave($action, Auth::instance()->get_user()->id);
+                    
+                    if($saveJson != null)
+                        $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
+                    
+                    $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
                 }
                 break;
 
@@ -811,12 +822,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             if ($mapId) {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
-
-
-
-                Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
-                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
-
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
             } else {
                 Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
             }

@@ -152,7 +152,10 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $this->text = Arr::get($values, 'text', '');
         $this->node_id_1 = Arr::get($values, 'node_id_1', '');
         $this->node_id_2 = Arr::get($values, 'node_id_2', '');
-
+        $this->image_id = Arr::get($values, 'image_id', null);
+        $this->order = Arr::get($values, 'order', 0);
+        $this->probability = Arr::get($values, 'probability', 0);
+        
         $this->save();
     }
 

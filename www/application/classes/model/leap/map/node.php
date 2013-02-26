@@ -283,6 +283,48 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         return NULL;
     }
+    
+    public function createNodeFromJSON($mapId, $values) {
+        if($mapId == null) return null;
+        
+        $builder = DB_ORM::insert('map_node')
+                ->column('map_id', $mapId)
+                ->column('title', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', '')))))
+                ->column('text', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', '')))))
+                ->column('info', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', '')))))
+                ->column('probability', (Arr::get($values, 'isExit', 'false') == 'true'))
+                ->column('type_id', (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2)
+                ->column('link_style_id', Arr::get($values, 'linkStyle', 1))
+                ->column('priority_id', Arr::get($values, 'nodePriority', 1))
+                ->column('undo', (Arr::get($values, 'undo', 'false') == 'true'))
+                ->column('end', (Arr::get($values, 'isEnd', 'false') == 'true'))
+                ->column('x', Arr::get($values, 'x', 0))
+                ->column('y', Arr::get($values, 'y', 0))
+                ->column('rgb', Arr::get($values, 'color', '#FFFFFF'));
+        
+        return $builder->execute();
+    }
+    
+    public function updateNodeFromJSON($nodeId, $values) {
+        $this->id = $nodeId;
+        $this->load();
+        if($this) {
+            $this->title = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
+            $this->text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
+            $this->info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $this->probability = Arr::get($values, 'isExit', 'false') == 'true';
+            $this->type_id = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
+            $this->link_style_id = Arr::get($values, 'linkStyle', 1);
+            $this->priority_id = Arr::get($values, 'nodePriority', 1);
+            $this->undo = Arr::get($values, 'undo', 'false') == 'true';
+            $this->end = Arr::get($values, 'isEnd', 'false') == 'true';
+            $this->x = Arr::get($values, 'x', 0);
+            $this->y = Arr::get($values, 'y', 0);
+            $this->rgb = Arr::get($values, 'color', '#FFFFFF');
+            
+            $this->save();
+        }
+    }
 
     public function getLastAddedNode($mapId){
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
