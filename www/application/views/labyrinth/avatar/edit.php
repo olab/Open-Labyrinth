@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map']) and isset($templateData['avatar'])) { ?>
 <script type="text/javascript" language="javascript" src="<?php echo URL::base() ?>scripts/avatar.js"></script>
-<script type="text/javascript" language="javascript" src="<?php echo URL::base() ?>scripts/jscolor.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
 <script type="text/javascript" language="javascript">
     window.onload = function() {
         AvatarSetup({
@@ -100,7 +100,10 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) { ?>
                             <option <?php if($templateData['avatar']->outfit == 'sweater') echo 'selected=""'; ?> value="sweater">Sweater</option>
                         </select></td>
                         <td><p>Cloth Color</p></td>
-                        <td><input id="clothcolor" class="color {slider:false}" type="text" value="<?php echo $templateData['avatar']->cloth; ?>" size="6" name="avcloth">
+                        <td>
+                            <input id="clothcolor" type="text" value="<?php echo $templateData['avatar']->cloth; ?>" size="6" name="avcloth">
+                            <input type="hidden" id="clothCoorPicker" value="<?php echo strlen($templateData['avatar']->cloth) <= 0 ? '#FFFFFF' : '#'.$templateData['avatar']->cloth; ?>"/>
+                            <div id="clothColorContainer"></div>
                         </td>
                     </tr>
 
@@ -260,7 +263,12 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) { ?>
                     </tr>
 
                     <tr bgcolor="#EEEEEE">
-                        <td nowrap=""><p>Background Color</p></td><td><input class="color {slider:false, required:false}" id="bgcolor" type="text" value="<?php echo $templateData['avatar']->bkd; ?>" size="6" name="avbkd"></td>
+                        <td nowrap=""><p>Background Color</p></td>
+                        <td>
+                            <input id="bgcolor" type="text" value="<?php echo $templateData['avatar']->bkd; ?>" size="6" name="avbkd">
+                            <input type="hidden" id="avBgPicker" value="<?php echo strlen($templateData['avatar']->bkd) <= 0 ? '#FFFFFF' : '#'.$templateData['avatar']->bkd; ?>"/>
+                            <div id="avBgPickerContainer"></div>
+                        </td>
                         <td><p>Environment</p></td>
                         <td>
                             <select autocomplete="off" id="environment" size="1" name="avenvironment">

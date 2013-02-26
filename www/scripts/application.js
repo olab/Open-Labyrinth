@@ -88,4 +88,35 @@ jQuery(document).ready(function(){
 
     });
 
+    jQuery('#clothcolor').click(function() {
+        $('#clothColorContainer').show();
+        $('#clothColorContainer').farbtastic('#clothCoorPicker');
+    });
+    
+    jQuery('#clothcolor').blur(function() {
+        $('#clothColorContainer').hide();
+        var color = 'FFFFFF';
+        var val = $('#clothCoorPicker').val();
+        if(val.length > 2) {
+            color = val.substr(1, val.length - 1);
+        }
+        $('#clothcolor').val(color);
+        $('#clothcolor').change();
+    });
+    
+    jQuery('#bgcolor').click(function() {
+        $('#avBgPickerContainer').show();
+        $('#avBgPickerContainer').farbtastic('#avBgPicker');
+    });
+    
+    jQuery('#bgcolor').blur(function() {
+        $('#avBgPickerContainer').hide();
+        var color = 'FFFFFF';
+        var val = $('#avBgPicker').val();
+        if(val.length > 2) {
+            color = val.substr(1, val.length - 1);
+        }
+        $('#bgcolor').val(color);
+        $('#bgcolor').change();
+    });
 });

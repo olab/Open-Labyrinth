@@ -1088,16 +1088,21 @@ AvatarRender = function() {
         deleteFillElement('0bgcolor');
         var color_value = document.getElementById("bgcolor").value;
         if (color_value != ''){
-            var color = this.color;
+            var color = '#'+ color_value;
             color_value = {r: 255, g: 255, b: 255};
-            color_value.r = Math.round(color.rgb[0] * 255);
-            color_value.g = Math.round(color.rgb[1] * 255);
-            color_value.b = Math.round(color.rgb[2] * 255);
+            color_value.r = hexToR(color);
+            color_value.g = hexToG(color);
+            color_value.b = hexToB(color);
             changeBackgroundColor(color_value);
         }else{
             redrawMainBody('bgcolor');
         }
     };
+    
+    function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+    function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+    function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+    function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 
     function changeBackgroundColor(color_value){
         var value = document.getElementById("environment").value;
