@@ -331,6 +331,7 @@ class Controller_NodeManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['section']->name)->set_url(URL::base() . 'nodeManager/editSection/' . $mapId. '/'. $sectionId));
+
             $editSectionsView = View::factory('labyrinth/node/editSection');
             $editSectionsView->set('templateData', $this->templateData);
 

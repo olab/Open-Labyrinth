@@ -189,17 +189,17 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 ->set('counters', $newCounters)
                 ->where('session_id', '=', $sessionId, 'AND')
                 ->where('map_id', '=', $mapId, 'AND');
-        
+
         if($traceId != null) {
             $builder = $builder->where('id', '=', $traceId, 'AND');
             $builder = $builder->where('node_id', '=', $nodeId);
         } else  {
             $builder = $builder->where('node_id', '=', $nodeId);
         }
-        
+
         $builder->order_by('id', 'ASC');
         $builder->limit(1);
-        
+
         $builder->execute();
     }
     

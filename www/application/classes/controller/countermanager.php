@@ -240,12 +240,13 @@ class Controller_CounterManager extends Controller_Base {
             $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
             $nodes = array();
             $ids = array();
-            foreach($nodesArray as $node){
-                $word = html_entity_decode($node->title, ENT_QUOTES);
-                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-                $nodes[] = $word;
-                $ids[] = '[[NODE:'.$node->id.']]';
-
+            if (count($nodesArray) > 0){
+                foreach($nodesArray as $node){
+                    $word = html_entity_decode($node->title, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $nodes[] = $word;
+                    $ids[] = '[[NODE:'.$node->id.']]';
+                }
             }
             $this->templateData['nodes']['text'] = json_encode($nodes);
             $this->templateData['nodes']['id'] = json_encode($ids);
@@ -253,11 +254,13 @@ class Controller_CounterManager extends Controller_Base {
             $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $counters = array();
             $ids = array();
-            foreach($countersArray as $counter){
-                $word = html_entity_decode($counter->name, ENT_QUOTES);
-                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-                $counters[] = $word;
-                $ids[] = '[[CR:'.$counter->id.']]';
+            if (count($countersArray) > 0){
+                foreach($countersArray as $counter){
+                    $word = html_entity_decode($counter->name, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $counters[] = $word;
+                    $ids[] = '[[CR:'.$counter->id.']]';
+                }
             }
             $this->templateData['counters']['text'] = json_encode($counters);
             $this->templateData['counters']['id'] = json_encode($ids);
@@ -284,12 +287,13 @@ class Controller_CounterManager extends Controller_Base {
             $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
             $nodes = array();
             $ids = array();
-            foreach($nodesArray as $node){
-                $word = html_entity_decode($node->title, ENT_QUOTES);
-                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-                $nodes[] = $word;
-                $ids[] = '[[NODE:'.$node->id.']]';
-
+            if (count($nodesArray) > 0){
+                foreach($nodesArray as $node){
+                    $word = html_entity_decode($node->title, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $nodes[] = $word;
+                    $ids[] = '[[NODE:'.$node->id.']]';
+                }
             }
             $this->templateData['nodes']['text'] = json_encode($nodes);
             $this->templateData['nodes']['id'] = json_encode($ids);
@@ -297,11 +301,13 @@ class Controller_CounterManager extends Controller_Base {
             $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $counters = array();
             $ids = array();
-            foreach($countersArray as $counter){
-                $word = html_entity_decode($counter->name, ENT_QUOTES);
-                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-                $counters[] = $word;
-                $ids[] = '[[CR:'.$counter->id.']]';
+            if (count($countersArray) > 0){
+                foreach($countersArray as $counter){
+                    $word = html_entity_decode($counter->name, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $counters[] = $word;
+                    $ids[] = '[[CR:'.$counter->id.']]';
+                }
             }
             $this->templateData['counters']['text'] = json_encode($counters);
             $this->templateData['counters']['id'] = json_encode($ids);

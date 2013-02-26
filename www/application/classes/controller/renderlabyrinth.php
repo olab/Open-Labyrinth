@@ -952,18 +952,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
          *
          */
         if ($traces != NULL and count($traces) > 0) {
-            $result = array();
+            //$result = array();
+            $result = '';
             $i = 0;
             foreach ($traces as $trace) {
-                $result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
-                //$result .= '<li><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></li>';
-                if($i>0)
-                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
-                $i++;
+                //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
+//                if($i>0)
+//                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
+//                $i++;
 
+                $result .= '<li><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></li>';
             }
 
-            $result =json_encode($result);
+            //$result =json_encode($result);
 
             return $result;
         }

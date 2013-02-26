@@ -10,7 +10,6 @@ class Controller_Metadata_Manager extends Controller_Base {
 
 
     public function action_index(){
-
         $metadata = Model_Leap_Metadata::getMetadataByModelName();
         $inlines = Model_Leap_Metadata::getMetadataByType("inlineobjectrecord");
         $models = Model_Leap_Metadata::$Models;
@@ -27,9 +26,8 @@ class Controller_Metadata_Manager extends Controller_Base {
         $this->templateData['center'] = $view;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
-
-
     }
+
     private function getSubclassesOf($parent) {
         $result = array();
         foreach (get_declared_classes() as $class) {

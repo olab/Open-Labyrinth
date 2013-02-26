@@ -139,7 +139,7 @@ if (isset($templateData['presentation'])) {
                             href="<?php echo URL::base(); ?>presentationManager/deleteUser/<?php echo $templateData['presentation']->id; ?>/<?php echo $user->id; ?>"><?php echo __('delete'); ?></a></td>
 
                 </tr>
-    
+
             <?php } ?>
         <?php } ?>
 

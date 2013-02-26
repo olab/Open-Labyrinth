@@ -78,7 +78,7 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  */
 Kohana::init(array(
 
-    'base_url' => '/olab/www',
+    'base_url' => '/',
 ));
 
 /**

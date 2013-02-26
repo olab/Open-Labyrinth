@@ -514,7 +514,7 @@ img.dashboard-member-activity-avatar {
 body {
     padding-bottom: 40px;
     padding-top: 60px;
-    font-size: 100%;
+    /*font-size: 100%;*/
 }
 
 td[colspan*="0"],

@@ -79,6 +79,4 @@ class Model_Leap_Vocabulary_Mapping extends DB_ORM_Model
     }
 
 
-
-
 }

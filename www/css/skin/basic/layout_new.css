@@ -8,11 +8,11 @@
 *
 * Open Labyrinth is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with Open Labyrinth. If not, see <http://www.gnu.org/licenses/>.
+* along with Open Labyrinth.  If not, see <http://www.gnu.org/licenses/>.
 *
 * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
 *
@@ -23,12 +23,9 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color: #000000;
     background:#EEE;
-    text-align:center;
     padding:0;
 }
-p {
-    font-size: 80%;
-}
+
 h1, h2, h3, h4, h5 {
     font-weight: bold;
     color: #000000
@@ -49,13 +46,7 @@ h5 {
     font-size: 60%;
     font-weight: normal;
 }
-li {
-    font-size: 60%;
-}
-a:link{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
-a:visited{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
-a:hover{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111;}
-a:active{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111;}
+
 #outer {
     text-align:left;
     border:1px solid #ffffff;
@@ -63,7 +54,6 @@ a:active{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-wei
     margin:auto;
 }
 #hdr {
-    height:relative;
     background:#ffffff;
     color: #ffffff;
     border:solid #ffffff;
@@ -122,4 +112,137 @@ div.scroll {
     border: 1px solid #666666;
     background-color: #cccccc;
     padding: 8px;
+}
+
+
+
+
+.container-fluid > .row-fluid{
+
+    margin: 0 auto;
+    width:68%;
+
+}
+
+div#nodetext{
+    font-size: 1em;
+    line-height: 1.64em;
+    text-align: justify;
+
+}
+
+div#content{
+
+    max-width:40em;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.sidebar-nav-fixed {
+    position:fixed;
+    top:40px;
+    width:21.97%;
+}
+
+#counters-desktop ul{
+    padding: 0;
+    margin-left: 0;
+    list-style: none;
+}
+
+#counters-desktop li{
+    margin-left: 0;
+    padding-left: 0;
+    background: #e3e3e3;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+
+}
+
+div#sidebar{
+    border:none;
+}
+
+div#score, div#timer{
+    background: #e3e3e3;
+    text-align: center;
+    padding: 10px;
+
+}
+
+.btn{
+    box-sizing: border-box;
+}
+div#node-info{
+    padding:0px;
+}
+
+div#node-info div{
+    padding:10px;
+}
+div#node-info, div#navigation{
+
+
+    margin-top: 10px;
+}
+
+#map-title{
+    font-size: small;
+    line-height: 1em;
+}
+
+
+@media (max-width: 767px) {
+    .sidebar-nav-fixed {
+        position:static;
+        width:auto;
+    }
+}
+
+@media (max-width: 979px) {
+    .sidebar-nav-fixed {
+        top:70px;
+    }
+}
+
+/* for demo purposes (fixed top navbar placement in the fiddle. Ok to remove */
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
+}
+#footer-logo {
+
+
+    font-size: .8em;
+}
+
+.icon-cardio{
+    background: url("glyphicons_282_cardio.png") 0 0;
+}
+
+#branding{
+    font-size: small;
+    line-height: 1em;
+}
+
+.pane-title{
+    margin-top:15px;
+    font-weight: bolder;
+    padding: 10px;
+    background: #e3e3e3;
+}
+
+#navigation li{
+    list-style-image:  url("glyphicons_072_bookmark.png") ;;
 }
