@@ -122,7 +122,7 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if ($mapId) {
                     $mapId = Arr::get($_POST, 'id', NULL);
                     $data = Arr::get($_POST, 'data', NULL);
-                    
+
                     Model::factory('visualEditor')->updateFromJSON($mapId, $data);
                     $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
                     if(Auth::instance()->logged_in())
@@ -689,14 +689,14 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if ($action != NULL) {
                     $this->templateData['map'] = $action;
                     $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($action);
-                    
+
                     $saveJson = '';
                     if(Auth::instance()->logged_in())
                         $saveJson = DB_ORM::model('visualeditorsave')->getSave($action, Auth::instance()->get_user()->id);
-                    
+
                     if($saveJson != null)
                         $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
-                    
+
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
                 }
                 break;
@@ -822,7 +822,12 @@ class Controller_LabyrinthManager extends Controller_Base {
             if ($mapId) {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+
+
+
+                Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
+                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+
             } else {
                 Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
             }

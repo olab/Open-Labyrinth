@@ -85,20 +85,20 @@ class Model_VisualEditor extends Model {
                 $title = base64_encode(str_replace('&#43;', '+', $node->title));
                 $text = base64_encode(str_replace('&#43;', '+', $node->text));
                 $info = base64_encode(str_replace('&#43;', '+', $node->info));
-                
+
                 $counters = '';
                 $countersData = DB_ORM::model('map_node_counter')->getNodeCounters($node->id);
                 if($countersData != null && isset($countersData) && count($countersData) > 0) {
                     foreach($countersData as $counter) {
                         $counters .= '{id: ' . $counter->counter_id . ', func: "' . $counter->function . '", show: ' . ($counter->display == 1 ? 'true' : 'false') . '}, ';
                     }
-                    
+
                     if(strlen($counters) > 2) {
                         $counters = substr($counters, 0, strlen($counters) - 2);
                         $counters = 'counters: [' . $counters . ']';
                     }
                 }
-                
+
                 $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x > 0 ? $node->x : (200 + rand(20, 100))) . ', y: ' . ($node->y > 0 ? $node->y : (200 + rand(20, 100))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
             }
 
@@ -432,7 +432,7 @@ class Model_VisualEditor extends Model {
                 if (isset($newNodesMap[$link['nodeA']])) {
                     $link['nodeA'] = $newNodesMap[$link['nodeA']];
                 }
-                
+
                 if (isset($newNodesMap[$link['nodeB']])) {
                     $link['nodeB'] = $newNodesMap[$link['nodeB']];
                 }
@@ -455,7 +455,7 @@ class Model_VisualEditor extends Model {
                 $link->delete();
             }
         }
-        
+
         if (isset($linksUpdate['new'])) {
             foreach ($linksUpdate['new'] as $link) {
                 $v = array();
@@ -557,7 +557,7 @@ class Model_VisualEditor extends Model {
             $nodeMap[$node['id']] = $model->createNodeFromJSON($mapId, $node);
             $this->updateNodeCountersFromJSON($node, $nodeMap[$node['id']]);
         }
-        
+
         return $nodeMap;
     }
 
@@ -570,7 +570,7 @@ class Model_VisualEditor extends Model {
             $this->updateNodeCountersFromJSON($node, $node['id']);
         }
     }
-    
+
     private function updateNodeCountersFromJSON($node, $nodeId) {
         if (isset($node['counters']) && count($node['counters']) > 0) {
             foreach ($node['counters'] as $counter) {

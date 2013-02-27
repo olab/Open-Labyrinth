@@ -135,17 +135,17 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                 ->from($this->table())
                 ->where('node_id', '=', $nodeId);
         $records = $builder->query();
-        
+
         $result = array();
-        if($records->is_loaded()) {  
+        if($records->is_loaded()) {
             foreach($records as $r) {
                 $result[] = DB_ORM::model('map_node_counter', array((int)$r['id']));
             }
         }
-        
+
         return $result;
     }
-    
+
     public function addNodeCounter($nodeId, $counterId, $function, $display = 1) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())

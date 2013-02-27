@@ -460,7 +460,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             switch ($node->link_style->name) {
                 case 'text (default)':
-                    $result['links'] = '<ul>'.$result['links'].'</ul>';
+                    $result['links'] = '<ul class="links">'.$result['links'].'</ul>';
                     break;
                 case 'dropdown':
                     $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
@@ -953,7 +953,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
          */
         if ($traces != NULL and count($traces) > 0) {
             //$result = array();
-            $result = '';
+            $result = '<ul class="links">';
             $i = 0;
             foreach ($traces as $trace) {
                 //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
@@ -965,7 +965,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             //$result =json_encode($result);
-
+            $result .= '</ul>';
             return $result;
         }
 

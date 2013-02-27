@@ -92,7 +92,7 @@ jQuery(document).ready(function(){
         $('#clothColorContainer').show();
         $('#clothColorContainer').farbtastic('#clothCoorPicker');
     });
-    
+
     jQuery('#clothcolor').blur(function() {
         $('#clothColorContainer').hide();
         var color = 'FFFFFF';
@@ -103,12 +103,12 @@ jQuery(document).ready(function(){
         $('#clothcolor').val(color);
         $('#clothcolor').change();
     });
-    
+
     jQuery('#bgcolor').click(function() {
         $('#avBgPickerContainer').show();
         $('#avBgPickerContainer').farbtastic('#avBgPicker');
     });
-    
+
     jQuery('#bgcolor').blur(function() {
         $('#avBgPickerContainer').hide();
         var color = 'FFFFFF';

@@ -49,8 +49,15 @@ h5 {
     font-size: 60%;
     font-weight: normal;
 }
+ul {
+    list-style-type: none;
+    padding:0;
+}
+.links a {
+    font-size: 12px;
+}
 li {
-    font-size: 60%;
+    font-size: 80%;
 }
 a:link{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
 a:visited{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
