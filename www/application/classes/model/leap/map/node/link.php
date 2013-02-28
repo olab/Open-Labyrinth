@@ -155,7 +155,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $this->image_id = Arr::get($values, 'image_id', null);
         $this->order = Arr::get($values, 'order', 0);
         $this->probability = Arr::get($values, 'probability', 0);
-        
+
         $this->save();
     }
 

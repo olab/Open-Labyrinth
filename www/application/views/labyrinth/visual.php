@@ -41,16 +41,16 @@ if (isset($templateData['map'])) { ?>
                         <button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
                     <canvas id="canvas" width="1200" height="800" style="background-color: #cccccc;">Not supported</canvas>
                 </div>
-                
+
                 <div class="modal hide" id="visual_editor_restore">
                     <div class="modal-header">
                         <h3>Auto save</h3>
                     </div>
-                    
+
                     <div class="modal-body">
                         You have some auto saved data. Do you want to restore this save or use current state.
                     </div>
-                    
+
                     <div class="modal-footer">
                         <a href="#" class="btn" id="veLastSave">Load last save</a>
                         <a href="#" class="btn" id="veCurrentSave">Load current state</a>
@@ -142,9 +142,9 @@ if (isset($templateData['map'])) { ?>
                         <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                             <div>
                                 <div class="control-group">
-                                    <?php 
-                                        $countersData = ''; 
-                                        foreach ($templateData['counters'] as $counter) { 
+                                    <?php
+                                        $countersData = '';
+                                        foreach ($templateData['counters'] as $counter) {
                                             $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
                                     ?>
                                         <?php echo $counter->name; ?>
@@ -225,7 +225,7 @@ if (isset($templateData['map'])) { ?>
                     </div>
                 </div>
     </div>
-    
+
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/mouse.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/transform.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/node.js"></script>
@@ -237,6 +237,6 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/nodeModal.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/visualEditor.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
-    
+
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/application.js"></script>
 <?php } ?>

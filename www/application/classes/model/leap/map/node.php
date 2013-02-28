@@ -283,10 +283,10 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         return NULL;
     }
-    
+
     public function createNodeFromJSON($mapId, $values) {
         if($mapId == null) return null;
-        
+
         $builder = DB_ORM::insert('map_node')
                 ->column('map_id', $mapId)
                 ->column('title', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', '')))))
@@ -301,10 +301,10 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('x', Arr::get($values, 'x', 0))
                 ->column('y', Arr::get($values, 'y', 0))
                 ->column('rgb', Arr::get($values, 'color', '#FFFFFF'));
-        
+
         return $builder->execute();
     }
-    
+
     public function updateNodeFromJSON($nodeId, $values) {
         $this->id = $nodeId;
         $this->load();
@@ -321,7 +321,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->x = Arr::get($values, 'x', 0);
             $this->y = Arr::get($values, 'y', 0);
             $this->rgb = Arr::get($values, 'color', '#FFFFFF');
-            
+
             $this->save();
         }
     }

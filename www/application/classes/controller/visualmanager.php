@@ -36,21 +36,21 @@ class Controller_VisualManager extends Controller_Base {
 
     public function action_index() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base() . 'visualManager/index/' . $this->mapId));
-        
+
         $saveJson = '';
         if(Auth::instance()->logged_in())
             $saveJson = DB_ORM::model('visualeditorsave')->getSave($this->mapId, Auth::instance()->get_user()->id);
-        
+
         $this->templateData['node'] = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
         $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
-        
+
         $json = Model::factory('visualEditor')->generateJSON($this->mapId);
-        
+
         $this->templateData['mapJSON'] = $json;
-        
+
         if($saveJson != null)
             $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
-        
+
         $visualView = View::factory('labyrinth/visual');
         $visualView->set('templateData', $this->templateData);
 
@@ -108,32 +108,32 @@ class Controller_VisualManager extends Controller_Base {
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
-    
+
     public function action_updateJSON() {
         $mapId = Arr::get($_POST, 'id', null);
         $json = Arr::get($_POST, 'data', null);
-        
+
         $this->auto_render = false;
         Model::factory('visualEditor')->updateFromJSON($mapId, $json);
         if(Auth::instance()->logged_in())
             DB_ORM::model('visualeditorsave')->deleteSave($mapId, Auth::instance()->get_user()->id);
-        
+
         echo Model::factory('visualEditor')->generateJSON($mapId);
     }
-    
+
     public function action_autoSave() {
         $status = 'fail';
         $this->auto_render = false;
-        
+
         if(Auth::instance()->logged_in()) {
             $mapId = Arr::get($_POST, 'id', null);
             $json = Arr::get($_POST, 'data', null);
 
             DB_ORM::model('visualeditorsave')->saveJSON($mapId, Auth::instance()->get_user()->id, $json);
-            
+
             $status = 'Saved';
         }
-        
+
         echo $status;
     }
 }
