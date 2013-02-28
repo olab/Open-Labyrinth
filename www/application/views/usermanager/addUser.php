@@ -23,9 +23,16 @@
                         <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
                             <fieldset class="fieldset">
                                 <legend>Add new user</legend>
-
                                 <div class="control-group">
-                                    <label for="upw" class="control-label"><?php echo __('new password'); ?></label>
+                                    <label for="uid" class="control-label"><?php echo __('User name'); ?></label>
+
+                                    <div class="controls">
+                                        <input id="uid"  type="text" name="uid" value="">
+
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="upw" class="control-label"><?php echo __('Password'); ?></label>
 
                                     <div class="controls">
                                         <input id="upw"  type="password" name="upw" value="">
@@ -33,7 +40,7 @@
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label for="uname" class="control-label"><?php echo __('name'); ?></label>
+                                    <label for="uname" class="control-label"><?php echo __('Nickname'); ?></label>
 
                                     <div class="controls">
                                         <input id="uname" class="not-autocomplete" type="text" name="uname" >

@@ -20,51 +20,56 @@
  */
 ?>
 
-            <?php if (isset($templateData['group'])) { ?>
+<?php if (isset($templateData['group'])) { ?>
 
-                            <a class="btn btn-danger" href=<?php echo URL::base() . 'usermanager/deleteGroup/' . $templateData['group']->id; ?>>delete</a>
-                            <form class="form-horizontal" action="<?php echo URL::base() . 'usermanager/updateGroup/' . $templateData['group']->id; ?>" method="post">
-                                                <fieldset class="fieldset">
-                                                    <legend>Edit group</legend>
-                                                    <div class="control-group">
-                                                        <label for="groupname" class="control-label">group name</label>
+    <a class="btn btn-danger" href=<?php echo URL::base() . 'usermanager/deleteGroup/' . $templateData['group']->id; ?>>delete</a>
+    <form class="form-horizontal"
+          action="<?php echo URL::base() . 'usermanager/updateGroup/' . $templateData['group']->id; ?>" method="post">
+        <fieldset class="fieldset">
+            <legend>Edit group</legend>
+            <div class="control-group">
+                <label for="groupname" class="control-label">group name</label>
 
-                                                        <div class="controls">
-                                                            <input id="groupname" class="not-autocomplete" type="text" name="groupname" size="50" value="<?php echo $templateData['group']->name; ?>">
-                                                        </div>
-                                                    </div>
-                                                </fieldset>
+                <div class="controls">
+                    <input id="groupname" class="not-autocomplete" type="text" name="groupname" size="50"
+                           value="<?php echo $templateData['group']->name; ?>">
+                </div>
+            </div>
+        </fieldset>
 
 
-
-                                            <input class="btn btn-primary" type="submit" name="UpdateGroupSubmit" value="<?php echo __('submit'); ?>">
-                            </form>
+        <input class="btn btn-primary" type="submit" name="UpdateGroupSubmit" value="<?php echo __('submit'); ?>">
+    </form>
 
     <h3>Members</h3>
 
-                            <form action="<?php echo URL::base().'usermanager/addMemberToGroup/'.$templateData['group']->id; ?>" method="post">
+    <form action="<?php echo URL::base() . 'usermanager/addMemberToGroup/' . $templateData['group']->id; ?>"
+          method="post">
 
-                                <fieldset class="fieldset">
-                                    <legend></legend>
-                                    <div class="control-group">
-                                        <label for="userid" class="control-label">User</label>
+        <fieldset class="fieldset">
+            <legend></legend>
+            <div class="control-group">
+                <label for="userid" class="control-label">User</label>
 
-                                        <div class="controls">
-                                            <select id="userid" name="userid">
-                                                <?php foreach($templateData['users'] as $user) { ?>
-                                                    <option value="<?php echo $user->id; ?>"><?php echo $user->nickname; ?> (<?php echo $user->username; ?>)</option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </fieldset>
+                <div class="controls">
+                    <select id="userid" name="userid">
+                        <?php foreach ($templateData['users'] as $user) { ?>
+                            <option value="<?php echo $user->id; ?>"><?php echo $user->nickname; ?>
+                                (<?php echo $user->username; ?>)
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
 
 
-                                <?php if(isset($templateData['users'])) { ?>
+        <?php if (isset($templateData['users'])) { ?>
 
-                                <input class="btn btn-primary" type="submit" name="AddUserToGroupSubmit" value="<?php echo __('submit'); ?>">
-                                <?php } ?>
-                            </form>
+            <input class="btn btn-primary" type="submit" name="AddUserToGroupSubmit"
+                   value="<?php echo __('submit'); ?>">
+        <?php } ?>
+    </form>
     <table class="table table-border table-striped">
         <thead>
         <tr>
@@ -73,11 +78,13 @@
         </tr>
         </thead>
         <tbody>
-        <?php if(isset($templateData['members'])) { ?>
-            <?php foreach($templateData['members'] as $member) { ?>
+        <?php if (isset($templateData['members'])) { ?>
+            <?php foreach ($templateData['members'] as $member) { ?>
                 <tr>
-                    <td><?php echo $member->nickname.'('.$member->username.')';?></td>
-                    <td><a href=<?php echo URL::base().'usermanager/removeMember/'.$member->id.'/'.$templateData['group']->id; ?>>remove</a></td>
+                    <td><?php echo $member->nickname . '(' . $member->username . ')';?></td>
+                    <td>
+                        <a href=<?php echo URL::base() . 'usermanager/removeMember/' . $member->id . '/' . $templateData['group']->id; ?>>remove</a>
+                    </td>
                 </tr>
 
             <?php } ?>
@@ -87,4 +94,4 @@
     </table>
 
 
-            <?php } ?>
+<?php } ?>

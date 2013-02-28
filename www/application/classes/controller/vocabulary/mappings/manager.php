@@ -8,6 +8,12 @@
  */ 
 class Controller_Vocabulary_Mappings_Manager extends Controller_Base {
 
+    public function before(){
+
+        parent::before();
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage RDF Vocabularies'))->set_url(URL::base() . 'vocabulary/manager'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Mappings'))->set_url(URL::base() . 'vocabulary/mappings/manager'));
+    }
 
     public function action_index(){
         $metadataMappings = Model_Leap_Vocabulary_Mapping::getAll();

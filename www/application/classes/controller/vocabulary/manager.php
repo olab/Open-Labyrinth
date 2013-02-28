@@ -25,7 +25,7 @@ class Controller_Vocabulary_Manager extends Controller_Base
 
     public function before() {
         parent::before();
-
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage RDF Vocabularies'))->set_url(URL::base() . 'vocabulary/manager'));
     
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
             Request::initial()->redirect(URL::base());

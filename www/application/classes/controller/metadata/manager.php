@@ -38,6 +38,7 @@ class Controller_Metadata_Manager extends Controller_Base {
     }
     public function before() {
         parent::before();
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Metadata'))->set_url(URL::base() . 'vocabulary/metadata/manager'));
 
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
             Request::initial()->redirect(URL::base());
