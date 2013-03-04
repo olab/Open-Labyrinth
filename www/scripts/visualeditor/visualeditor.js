@@ -25,6 +25,7 @@ var VisualEditor = function() {
     self.deleteModal = new DeleteModal();
     self.nodeModal = new NodeModal();
     self.isChanged = false;
+    self.isViewportInit = true;
     
     // Initialize visual editor
     self.Init = function(params) {
@@ -309,10 +310,13 @@ var VisualEditor = function() {
             }
         }
         
-        var rootNode = GetRootNode();
-        if(rootNode != null) {
-            var pos = rootNode.transform.GetPosition();
-            viewport.Translate(-pos[0] + self.canvas.width * 0.5 - rootNode.width * 0.5, -pos[1] + self.canvas.height * 0.5 - rootNode.height * 0.5);
+        if(self.isViewportInit) {
+            self.isViewportInit = false;
+            var rootNode = GetRootNode();
+            if(rootNode != null) {
+                var pos = rootNode.transform.GetPosition();
+                viewport.Translate(-pos[0] + self.canvas.width * 0.5 - rootNode.width * 0.5, -pos[1] + self.canvas.height * 0.5 - rootNode.height * 0.5);
+            }
         }
     }
     

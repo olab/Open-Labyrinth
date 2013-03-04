@@ -98,12 +98,12 @@ var NodeModal = function() {
         
         if($content != null) {
             $content.val(self.node.content);
-            tinymce.get(contentId).setContent(self.node.content);
+            //tinymce.get(contentId).setContent(self.node.content);
         }
     
         if($support != null) {
             $support.val(self.node.support);
-            tinymce.get(supportId).setContent(self.node.support);
+            //tinymce.get(supportId).setContent(self.node.support);
         }
         
         if($supportKeywords != null)
@@ -159,8 +159,8 @@ var NodeModal = function() {
     var ApplyEvent = function() {
         if(self.node != null && visualEditor != null) {
             self.node.title = GetValueFromValField($title);
-            self.node.content = tinymce.get(contentId).getContent({format : 'raw', no_events : 1});//GetValueFromValField($content);
-            self.node.support = tinymce.get(supportId).getContent({format : 'raw', no_events : 1});//GetValueFromValField($support);
+            self.node.content = GetValueFromValField($content);//tinymce.get(contentId).getContent({format : 'raw', no_events : 1});//GetValueFromValField($content);
+            self.node.support = GetValueFromValField($support);//tinymce.get(supportId).getContent({format : 'raw', no_events : 1});//GetValueFromValField($support);
             self.node.supportKeywords = GetValueFromValField($supportKeywords);
             self.node.isExit = GetBooleanValueFromField($isExitNodePorb);
             self.node.linkStyle = GetIntegerValueFromField($linkStyle);

@@ -4,7 +4,7 @@ $(function() {
         'canvasId': '#canvas'
     };
     
-    tinyMCE.init({
+    /*tinyMCE.init({
         // General options
         mode: "textareas",
         relative_urls : false,
@@ -24,8 +24,7 @@ $(function() {
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
-    });
-
+    });*/
 
     var visualEditor = new VisualEditor();
     visualEditor.Init(params);
@@ -92,7 +91,10 @@ $(function() {
     
     $('#update').click(function() {
         var data = visualEditor.Serialize();
-        $.post(sendURL, {data: data.substring(0, data.length - 1), id: mapId}, function(data) {
+        $.post(sendURL, {
+            data: data.substring(0, data.length - 1), 
+            id: mapId
+        }, function(data) {
             if(data && data.length > 0) {
                 data = data.substring(1, data.length - 1);
                 data = data.substring(0, data.length - 1);
@@ -119,7 +121,10 @@ $(function() {
         if(visualEditor.isChanged) {
             visualEditor.isChanged = false;
             var data = visualEditor.Serialize();
-            $.post(autoSaveURL, {data: data.substring(0, data.length - 1), id: mapId}, function(data) {
+            $.post(autoSaveURL, {
+                data: data.substring(0, data.length - 1), 
+                id: mapId
+            }, function(data) {
                 if(data != 'fail') {
                     $veMessage.text(data);
                     $veMessageContainer.css('left', visualEditor.GetWidth() * 0.5 - $veMessageContainer.width() * 0.5);
