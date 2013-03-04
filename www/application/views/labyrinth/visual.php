@@ -124,13 +124,13 @@ if (isset($templateData['map'])) { ?>
                         <div class="control-group">
                             <label for="nodecontent" class="control-label" style="text-align: left;"><strong>Node Content</strong></label>
                             <div class="controls">
-                                <textarea cols='20' id="nodecontent" rows='10' style="width: 100%;"></textarea>
+                                <textarea cols='20' class="mceEditor" id="nodecontent" rows='10' style="width: 100%;"></textarea>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="nodesupport" class="control-label" style="text-align: left;"><strong>Supporting Information</strong></label>
                             <div class="controls">
-                                <textarea cols='20' id="nodesupport" rows='10' style="width: 100%;"></textarea>
+                                <textarea cols='20' class="mceEditor" id="nodesupport" rows='10' style="width: 100%;"></textarea>
                             </div>
                         </div>
                         <div class="control-group">

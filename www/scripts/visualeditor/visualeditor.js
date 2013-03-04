@@ -308,6 +308,12 @@ var VisualEditor = function() {
                 self.links.push(link);
             }
         }
+        
+        var rootNode = GetRootNode();
+        if(rootNode != null) {
+            var pos = rootNode.transform.GetPosition();
+            viewport.Translate(-pos[0] + self.canvas.width * 0.5 - rootNode.width * 0.5, -pos[1] + self.canvas.height * 0.5 - rootNode.height * 0.5);
+        }
     }
     
     self.AddNewNode = function() {
@@ -628,6 +634,17 @@ var VisualEditor = function() {
             self.nodeModal.SetNode(node);
             self.nodeModal.Show();
         }
+    }
+    
+    var GetRootNode = function() {
+        if(self.nodes.length <= 0) return null;
+        
+        for(var i = 0; i < self.nodes.length; i++) {
+            if(self.nodes[i].isRoot)
+                return self.nodes[i];
+        }
+    
+        return null;
     }
     
     var GetNodeById = function(id) {

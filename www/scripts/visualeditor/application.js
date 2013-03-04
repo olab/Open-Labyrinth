@@ -4,7 +4,7 @@ $(function() {
         'canvasId': '#canvas'
     };
     
-    /*tinyMCE.init({
+    tinyMCE.init({
         // General options
         mode: "textareas",
         relative_urls : false,
@@ -24,7 +24,7 @@ $(function() {
         theme_advanced_statusbar_location: "bottom",
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
-    });*/
+    });
 
 
     var visualEditor = new VisualEditor();
