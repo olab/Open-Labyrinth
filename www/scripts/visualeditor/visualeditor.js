@@ -26,7 +26,7 @@ var VisualEditor = function() {
     self.nodeModal = new NodeModal();
     self.isChanged = false;
     self.isViewportInit = true;
-    
+
     // Initialize visual editor
     self.Init = function(params) {
         if('canvasContainer' in params) {
@@ -309,7 +309,7 @@ var VisualEditor = function() {
                 self.links.push(link);
             }
         }
-        
+
         if(self.isViewportInit) {
             self.isViewportInit = false;
             var rootNode = GetRootNode();
@@ -319,7 +319,7 @@ var VisualEditor = function() {
             }
         }
     }
-    
+
     self.AddNewNode = function() {
         var node = new Node();
         node.id = GetNewNodeId();
@@ -642,15 +642,15 @@ var VisualEditor = function() {
     
     var GetRootNode = function() {
         if(self.nodes.length <= 0) return null;
-        
+
         for(var i = 0; i < self.nodes.length; i++) {
             if(self.nodes[i].isRoot)
                 return self.nodes[i];
         }
-    
+
         return null;
     }
-    
+
     var GetNodeById = function(id) {
         if(self.nodes.length <= 0) return null;
 
