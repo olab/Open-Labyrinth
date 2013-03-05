@@ -4,7 +4,7 @@ var Node = function() {
     var defWidth = 230;
     var defHeight = 125;
     var defHeaderHeight = 16;
-    var defColor = '#F2EBFF';
+    var defColor = '#FFFFFF';
     var defHeaderColor = '#8a8ab1';
     var defBorderSize = 1;
     var defBorderColor = '#eeeeee';
@@ -244,7 +244,7 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (self.linkButtonRaius * self.linkButtonRaius) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
+        return (self.linkButtonRaius * self.linkButtonRaius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
     var IsAddButtonCollision = function(x, y, viewport) {
@@ -256,7 +256,7 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (self.linkButtonRaius * self.linkButtonRaius) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
+        return (self.linkButtonRaius * self.linkButtonRaius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
     var IsRootButtonCollision = function(x, y, viewport) {
@@ -268,7 +268,7 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (self.rootButtonRadius * self.rootButtonRadius * scale[0] * scale[1] * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
+        return (self.rootButtonRadius * self.rootButtonRadius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
     var IsDeleteButtonCollision = function(x, y, viewport) {
@@ -280,7 +280,7 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (self.deleteButtonRadius * self.deleteButtonRadius) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
+        return (self.deleteButtonRadius * self.deleteButtonRadius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
     var IsColorButtonCollision = function(x, y, viewport) {
