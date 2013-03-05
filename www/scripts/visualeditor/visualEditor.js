@@ -248,6 +248,16 @@ var VisualEditor = function() {
             for(var i = 0; i < object.nodes.length; i++) {
                 var node = new Node();
                 node.id = object.nodes[i].id;
+                
+                var testId = node.id + "";
+                if(testId.indexOf('g') > -1) {
+                    var g = parseInt(testId.substr(0, testId.length - 1));
+                    if(!isNaN(g))
+                        generateIdNodeCounter = g;
+                    
+                    node.isNew = true;
+                }
+                
                 node.title = decode64(object.nodes[i].title);
                 node.content = decode64(object.nodes[i].content);
                 node.support = decode64(object.nodes[i].support);
@@ -284,10 +294,8 @@ var VisualEditor = function() {
         if('links' in object && object.links.length > 0) {
             self.links = new Array();
             for(var i = 0; i < object.links.length; i++) {
-                var nodeAId = parseInt(object.links[i].nodeA);
-                var nodeBId = parseInt(object.links[i].nodeB);
-                
-                if(isNaN(nodeAId) || isNaN(nodeBId)) continue;
+                var nodeAId = object.links[i].nodeA;
+                var nodeBId = object.links[i].nodeB;
                 
                 var nodeA = GetNodeById(nodeAId);
                 if(nodeA == null) continue;
@@ -295,8 +303,14 @@ var VisualEditor = function() {
                 var nodeB = GetNodeById(nodeBId);
                 if(nodeB == null) continue;
                 
-                var id = parseInt(object.links[i].id);
-                if(isNaN(id)) continue;
+                var id = object.links[i].id;
+                
+                var testLinkId = object.links[i].id + "";
+                if(testLinkId.indexOf('g') > -1) {
+                    var l = parseInt(testLinkId.substr(0, testLinkId.length - 1));
+                    if(!isNaN(l))
+                        generateIdLinkCounter = l;
+                }
                 
                 var existLink = GetLinkById(id);
                 if(existLink != null) continue;
@@ -320,6 +334,12 @@ var VisualEditor = function() {
                 viewport.Translate(-pos[0] + self.canvas.width * 0.5 - rootNode.width * 0.5, -pos[1] + self.canvas.height * 0.5 - rootNode.height * 0.5);
             }
         }
+        
+        if(generateIdNodeCounter > 1)
+            generateIdNodeCounter++;
+        
+        if(generateIdLinkCounter > 1)
+            generateIdLinkCounter++;
     }
 
     self.AddNewNode = function() {
