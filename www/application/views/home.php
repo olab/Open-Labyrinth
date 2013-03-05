@@ -66,6 +66,7 @@
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="<?php echo URL::base(); ?>usermanager/viewUser/<?php echo Auth::instance()->get_user()->id; ?>"><?php echo __('View Profile'); ?></a></li>
                                     <li><a href="<?php echo URL::base(); ?>usermanager/editUser/<?php echo Auth::instance()->get_user()->id; ?>"><?php echo __('Edit Profile'); ?></a></li>
                                     <li class="divider"></li>
                                     <li><a href="<?php echo URL::base(); ?>home/logout"><?php echo __('Logout'); ?></a></li>
@@ -116,11 +117,11 @@
 
                                             <li class="divider"></li>
                                             <li>
-                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage RDF vocabularies'); ?></a></li>
+                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Vocabularies & Mappings'); ?></a></li>
 
                                            <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
                                             <li class="divider"></li>
-                                            <li><a href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>                                           <li><a href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
+                                            <li><a  href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>                                           <li><a target="_blank" href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
 
 
                                         <?php
@@ -192,5 +193,6 @@
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
+
     </body>
 </html>

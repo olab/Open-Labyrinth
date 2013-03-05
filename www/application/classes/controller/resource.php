@@ -49,10 +49,10 @@ class Controller_Resource extends Controller_Base
     private static function getPagePath($type, $id){
         switch($type){
             case "map":
-                return URL::base() . 'openlabyrinth/info/' . $id;
+                return URL::base() . 'labyrinthManager/info/' . $id;
 
             case "user":
-                return URL::base() . 'usermanager/';
+                return URL::base() . 'usermanager/viewUser/'. $id;
             default:
                 return URL::base();
         }

@@ -2,18 +2,17 @@
  * Created with JetBrains PhpStorm.
  * User: larjohns
  * Date: 11/11/2012
- * Time: 1:45 πμ
+ * Time: 1:45 ??
  * To change this template use File | Settings | File Templates.
  */
-
+if(!tinymce.initialized){
 tinyMCE.init({
     mode : "textareas",
     theme : "simple",
     editor_selector : "wysiwyg"
-});
+});}
 $(document).ready(function () {
 
-    //$( '.textarea' ).ckeditor();
 
     $('.textarea').tinymce(
         {
@@ -21,7 +20,7 @@ $(document).ready(function () {
             theme : "advanced",
             plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
             theme_advanced_buttons3_add : "tablecontrols",
-            skin: 'cirkuit',
+            skin: 'bootstrap',
             entity_encoding : "raw"
 
         }
@@ -45,7 +44,9 @@ $(document).ready(function () {
 
             var a = document.createElement('a');
             $(a).addClass('remove');
-            $(a).append("[-]remove");
+            $(a).addClass('btn');
+            $(a).addClass('btn-danger');
+            $(a).append("remove");
 
             $(div).append(a);
 
@@ -73,7 +74,7 @@ $(document).ready(function () {
     };
 
     $("form").submit(function (event) {
-        var inlines = $(".metadata-container").children(".inlineobjectrecord");
+        var inlines = $(".metadata-container").find(".inlineobjectrecord");
 
         for(var i=0;i<inlines.length;i++){
             var inline_objects = $(inlines[i]).find(".inline-object").
@@ -120,7 +121,7 @@ $(document).ready(function () {
                 }
 
                 value[$(inlines[i]).attr("id")]=inline_values;
-                var k = 0;
+
             }
         }
 
@@ -129,7 +130,12 @@ $(document).ready(function () {
             serializeArray();
         var inputsObj = {};
         for (i in inputs) {
-            inputsObj[inputs[i].name] = inputs[i].value
+            var name = inputs[i].name.replace("[]","");
+            if (typeof inputsObj[name] != 'undefined') {
+                inputsObj[name] = $.merge([inputsObj[name]],[inputs[i].value]);
+            }
+            else
+                inputsObj[name] = inputs[i].value
         }
 
         value = $.extend(value,inputsObj);

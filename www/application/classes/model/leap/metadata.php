@@ -23,6 +23,14 @@ class Model_Leap_Metadata extends DB_ORM_Model
         "user_sessiontrace"=>"user session trace"
     );
 
+
+    static $MetadataExtras = array(
+        "referencerecord" => array("source", "type", "label"),
+        "skosrecord" => array("source"),
+    );
+
+
+
     public function __construct()
     {
         parent::__construct();
@@ -224,5 +232,7 @@ class Model_Leap_Metadata extends DB_ORM_Model
             $object->relate($name,"has_many",$relation);
         }
     }
+
+
 
 }

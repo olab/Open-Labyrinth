@@ -29,6 +29,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             mode: "textareas",
             relative_urls: false,
             theme: "advanced",
+            skin: "bootstrap",
             entity_encoding: "raw",
             plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
             // Theme options
@@ -248,7 +249,8 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             </div>
 
         </fieldset>
-
+        <?php
+        echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
 
         <div class="pull-right">
             <input class="btn btn-large btn-primary" type="submit" name="Submit"

@@ -15,11 +15,12 @@ class Controller_Metadata_Manager extends Controller_Base {
         $models = Model_Leap_Metadata::$Models;
 
         foreach($inlines as $inline){
-            $models[$inline->name]='inlineobjectrecord.'.$inline->name;
+            $models['inlineobjectrecord.'.$inline->name]=$inline->name;
         }
 
         $this->templateData['metadata'] = $metadata;
         $this->templateData['models'] = $models;
+        $this->templateData["extras"] = Model_Leap_Metadata::$MetadataExtras;
         $view = View::factory('metadata/manage');
         $view->set('templateData', $this->templateData);
 

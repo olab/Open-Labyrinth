@@ -36,7 +36,6 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
     {
         if (empty($values)) return;
         $metadata = Model_Leap_Metadata::getMetadataByName($metadataName);
-
         $builder = DB_SQL::select('default')
             ->from(DB_ORM::model($metadata->getModelname())->table())
             ->where('object_id', '=', $objectId)

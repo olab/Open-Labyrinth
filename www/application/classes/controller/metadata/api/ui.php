@@ -37,7 +37,7 @@ class Controller_Metadata_API_UI extends RESTful_Controller  {
 
 
     public function action_get() {
-
+       // $editor =
         echo json_encode(Model_Leap_Metadata_Record::getEditor($this->request->query("metadata")));
 
     }
@@ -52,4 +52,3 @@ class Controller_Metadata_API_UI extends RESTful_Controller  {
     }
 
 }
-?>

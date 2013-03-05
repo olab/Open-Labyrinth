@@ -43,6 +43,7 @@ if (isset($templateData['maps'])) {
             <col style="width: 50%" />
             <col style="width: 20%" />
             <col style="width: 30%" />
+            </colgroup>
         <thead>
             <tr>
                 <th><?php echo __('Labyrinth Title'); ?></th>

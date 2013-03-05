@@ -134,6 +134,7 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $nodeId) {
             $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
+            Model_Leap_Metadata_Record::updateMetadata("map_node",$nodeId,$_POST);
             if ($node) {
                 DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
                 Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $node->map_id);

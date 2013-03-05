@@ -141,6 +141,7 @@ class Controller_LinkManager extends Controller_Base {
         $updateLinkId = $this->request->param('id3', NULL);
         if ($_POST and $mapId != NULL and $nodeId != NULL and $updateLinkId != NULL) {
             DB_ORM::model('map_node_link')->updateLink($updateLinkId, $_POST);
+            Model_Leap_Metadata_Record::updateMetadata("map_node_link",$updateLinkId,$_POST);
             Request::initial()->redirect(URL::base() . 'linkManager/editLinks/' . $mapId . '/' . $nodeId);
         } else {
             Request::initial()->redirect(URL::base());

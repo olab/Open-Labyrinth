@@ -46,6 +46,32 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
     }
 
+    public static function data_source()
+    {
+        return 'default';
+    }
+
+    public static function primary_key()
+    {
+        return array('id');
+    }
+
+    public function updateRecord($recId, $value)
+    {
+
+        $this->id = $recId;
+        $this->load();
+        $valueObject = is_array($value) ? $value : json_decode($value, true);
+
+        if ($value != NULL) {
+            foreach ($valueObject as $key => $subValue) {
+                Model_Leap_Metadata_Record::mergeRecords($this->id, $key, $subValue);
+            }
+        }
+
+
+        $this->save();
+    }
 
     public function load(Array $columns = array())
     {
@@ -57,59 +83,25 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
     }
 
-    public static function data_source()
-    {
-        return 'default';
-    }
-
-    public static function table()
-    {
-        return 'metadata_inlineobject_fields';
-    }
-
-    public static function primary_key()
-    {
-        return array('id');
-    }
-
-
-    public function updateRecord($recId, $value)
-    {
-        $this->id = $recId;
-        $this->load();
-        $valueObject = is_array($value)?$value:json_decode($value, true);
-        var_dump($valueObject);
-        if ($value != NULL) {
-            foreach ($valueObject as $key => $subValue) {
-                Model_Leap_Metadata_Record::mergeRecords($this->id,$key,$subValue);
-            }
-        }
-
-
-        $this->save();
-    }
-
-
     public function newRecord($field_id, $objectId, $value = "")
     {
 
         $this->object_id = $objectId;
         $this->field_id = $field_id;
-        $valueObject = is_array($value)?$value:json_decode($value, true);
+        $valueObject = is_array($value) ? $value : json_decode($value, true);
         //var_dump($valueObject); die;
 
         $this->save(TRUE);
 
         if ($value != NULL) {
             foreach ($valueObject as $key => $subValue) {
-                Model_Leap_Metadata_Record::mergeRecords($this->id,$key,$subValue);
+                Model_Leap_Metadata_Record::mergeRecords($this->id, $key, $subValue);
             }
         }
 
         return $this;
 
     }
-
 
     public function getRecord($recId)
     {
@@ -128,6 +120,10 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
         return NULL;
     }
 
+    public static function table()
+    {
+        return 'metadata_inlineobject_fields';
+    }
 
     public function getEditorUI($name)
     {
@@ -137,14 +133,13 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
 
         $metadata = Model_Leap_Metadata::getMetadataByName($name);
-        if($metadata->cardinality == Model_Leap_Metadata::Cardinality_Many){
+        if ($metadata->cardinality == Model_Leap_Metadata::Cardinality_Many) {
             $cardinalityClass = "multi";
-        }
-        else {
+        } else {
             $cardinalityClass = "single";
         }
 
-        $inlineMetadata = Model_Leap_Metadata::getMetadata("inlineobjectrecord." . $name);
+        $inlineMetadata = Model_Leap_Metadata::getMetadataByModelName("inlineobjectrecord." . $name);
 
         $formFieldName = $name . ($metadata->cardinality === Model_Leap_Metadata::Cardinality_Many ? "[]" : "");
 
@@ -152,8 +147,14 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
         //var_dump($metadata);
         foreach ($inlineMetadata as $inline) {
             //Model_Leap_Metadata_Record::getEditor($inline->name);
+            $html .=  '          <div class="control-group" >
+                                   <label class="control-label" >'.$inline->label.'</label >
+                                     <div class="controls" >
+                                     '.Helper_Controller_Metadata::metadataEdit($inline, $this).'
+                                        </div >
+                                 </div >';
 
-            $html .= Helper_Controller_Metadata::metadataEdit($inline, $this);
+
 
         }
 
@@ -175,48 +176,46 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
     }
 
-
     public function getViewerUI()
     {
         $mappings_count = count($this->field->mappings);
 
         $uri = Model_Leap_Vocabulary::getObjectUri($this->field->model, $this->object_id);
-        $thisUri =  Model_Leap_Vocabulary::getObjectUri($this->field->name, $this->id);
+        $thisUri = Model_Leap_Vocabulary::getObjectUri($this->field->name, $this->id);
         if ($mappings_count > 0) {
-            $rdfa = "property='" . $this->field->getMappingsString() . "' about='" . $uri . "' resource='" .$thisUri ."'" ;
+            $rdfa = "property='" . $this->field->getMappingsString() . "' about='" . $uri . "' resource='" . $thisUri . "'";
         } else $rdfa = "";
 
 
         $html = "<div $rdfa>";
-        $name  = $this->field->name;
+        $name = $this->field->name;
 
-        $inlineMetadata = Model_Leap_Metadata::getMetadata("inlineobjectrecord." . $name);
+        $inlineMetadata = Model_Leap_Metadata::getMetadataByModelName("inlineobjectrecord." . $name);
 
 
-        //var_dump($metadata);
+
+
         foreach ($inlineMetadata as $inline) {
             //Model_Leap_Metadata_Record::getEditor($inline->name);
 
             $name = $inline->name;
-            if(!$this->is_relation($name))break;
-            $html .= Helper_Controller_Metadata::metadataView($this->$name);
+            if (!$this->is_relation($name)) break;
+            $rendered_obj = Helper_Controller_Metadata::metadataView($this->$name);
+
+            $html .= $rendered_obj["label"].": " . $rendered_obj["body"];
 
         }
 
 
-        $html .="</div>";
+        $html .= "</div>";
 
         return $html;
 
     }
 
-
-
-
-
     public function toString()
     {
-        return   Model_Leap_Vocabulary::getObjectUri($this->field->name, $this->id);
+        return Model_Leap_Vocabulary::getObjectUri($this->field->name, $this->id);
     }
 
 

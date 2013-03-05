@@ -188,6 +188,7 @@ if ($templateData['skin_path'] != NULL) {
 // General options
         mode:"textareas",
         relative_urls:false,
+        skin:"bootstrap",
         theme:"advanced",
         plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap,autocomplete",
 // Theme options

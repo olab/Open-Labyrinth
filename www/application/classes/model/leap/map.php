@@ -186,7 +186,7 @@ class Model_Leap_Map extends DB_ORM_Model
                 'parent_key' => array('id'),
             )),
         );
-        Model_Leap_Map::initialize_metadata($this);
+        self::initialize_metadata($this);
     }
 
     private static function initialize_metadata($object)

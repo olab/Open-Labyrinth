@@ -23,6 +23,7 @@ if (isset($templateData['map'])) {
 
     <h1><?php echo __('Labyrinth information for') . ' "' . $templateData['map']->name . '"'; ?></h1>
     <table class="table table-bordered table-striped">
+        <tbody>
         <tr>
             <td><?php echo __('title'); ?></td>
             <td><?php echo $templateData['map']->name; ?></td>
@@ -80,6 +81,7 @@ if (isset($templateData['map'])) {
             </td>
         </tr>  <?php endif; ?>
         <?php endforeach;?>
+        </tbody>
     </table>
 
 <?php } ?>

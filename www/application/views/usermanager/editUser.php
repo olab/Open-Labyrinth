@@ -82,7 +82,8 @@
                                         </div>
                                     </div>
                                 </fieldset>
-
+                            <?php
+                            echo Helper_Controller_Metadata::displayEditor($templateData["user"],"user");?>
                                 <?php if ($templateData['errorMsg'] != NULL){ ?>
                              <?php echo $templateData['errorMsg']; ?>
                                 <?php } ?>

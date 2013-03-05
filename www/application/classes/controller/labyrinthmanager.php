@@ -794,7 +794,24 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
+    public function action_info() {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
 
+            $infoView = View::factory('labyrinth/labyrinthInfo');
+            $infoView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $infoView;
+                $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base() . 'openLabyrinth');
+        }
+    }
     public function action_addContributor() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {

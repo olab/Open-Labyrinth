@@ -186,6 +186,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'parent_key' => array('id'),
             )),
         );
+        self::initialize_metadata($this);
+    }
+
+    private static function initialize_metadata($object)
+    {
+        $metadata = Model_Leap_Metadata::getMetadataRelations("map_node", $object);
+        $object->relations = array_merge($object->relations, $metadata);
     }
 
     public static function data_source() {

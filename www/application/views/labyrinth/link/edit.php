@@ -202,7 +202,7 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
                     </select>
                 <?php } else { ?>
                     <select id="linkimage" name="linkImage">
-                        <option value="0" select="">no image</option>
+                        <option value="0" selected="">no image</option>
                     </select>
                 <?php } ?>
             </div>
@@ -236,8 +236,9 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
     </fieldset>
 
-    <table width="100%">
 
+    <?php if (isset($templateData['editLink']))
+    echo Helper_Controller_Metadata::displayEditor($templateData["editLink"],"map_node_link");?>
 
 
 <input class="btn btn-primary" type="submit" name="Submit" value="<?php if (isset($templateData['editLink'])) echo __('update');

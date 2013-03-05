@@ -26,11 +26,16 @@ class Helper_Controller_Metadata
 
     public static function displayEditor($object, $modelName)
     {
-        $html = "<fieldset class='fieldset'><legend>Metadata</legend>";
+        $html = "<fieldset class='fieldset metadata-container'><legend>Metadata</legend>";
 
         $metadata = Model_Leap_Metadata::getMetadataByModelName($modelName);
-        Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/tiny_mce.js');
-        Helper_Html_Javascript::add('scripts/jquery/jquery-ui-1.9.1.custom.min.js');
+
+        if(count($metadata)<1){
+            $html = "";
+            return $html;
+        }
+       //Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/tiny_mce.js');
+       // Helper_Html_Javascript::add('scripts/jquery/jquery-ui-1.9.1.custom.min.js');
         foreach ($metadata as $property) {
             $html .="
             <div id='control-group'>
@@ -48,6 +53,7 @@ class Helper_Controller_Metadata
 
         Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js');
         Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
+        Helper_Html_Javascript::add('scripts/olab/calendarHandler.js');
         Helper_Html_Javascript::render(true);
 
 
@@ -147,10 +153,10 @@ class Helper_Controller_Metadata
 
                     $html .= "<div>";
                     $html .= Model_Leap_Metadata_Record::getEditor($name, $id);
-                    $html .= "<a class='remove'>[-]remove</a></div>";
+                    $html .= "<a class='remove btn btn-danger'>remove</a></div>";
 
                 }
-                $html .= "<a class='add'>[+]add</a>";
+                $html .= "<a class='add btn btn-primary'>add</a>";
             } else {
 
                 $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);

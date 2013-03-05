@@ -26,6 +26,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><i class="icon-play"></i> <?php echo __('Play'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a></li>
             <li><a data-toggle="modal" href="#" data-target="#delete-labyrinth"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'labyrinthManager/info/' . $templateData['map']->id; ?>"><i class="icon-info-sign"></i> <?php echo __('Information'); ?></a></li>
             <li><a data-toggle="modal" href="<?php echo URL::base(); ?>labyrinthManager/showDevNotes/<?php echo $templateData['map']->id; ?>" data-target="#developer-notes"><i class="icon-edit"></i> Notes</a></li>
 
             <li class="nav-header">Core Layout</li>

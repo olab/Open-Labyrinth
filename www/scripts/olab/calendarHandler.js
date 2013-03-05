@@ -8,11 +8,11 @@
 $(document).ready(function () {
 
 
-        $(".date").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: "yy-mm-dd"
-        });
+        $(".date").datepicker(
+            {
+                format:"yyyy-mm-dd"
+            }
+        );
 
 
 
