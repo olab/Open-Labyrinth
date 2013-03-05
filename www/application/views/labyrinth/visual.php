@@ -33,13 +33,13 @@ if (isset($templateData['map'])) { ?>
     <h3 class="case-header-style orange"><?php echo __('VISUAL EDITOR'); ?></h3>
     <div>
                 <div style="position: relative" id="canvasContainer">
-                    <div style="position: absolute; top: 5px; left: 5px">
+                    <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
                         <p><input type="button" class="btn" value="Update" id="update" /></p><p><input type="button" class="btn" value="Add Node" id="addNode"/></p>
                         <p style="position:relative; float:left;"><input type="button" class="btn" value="+" id="zoomIn" /> <input type="button" class="btn" value="-" id="zoomOut" /></p>
                     </div>
-                    <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide">
+                    <div style="position: absolute; left:50%;" id="ve_message" class="alert alert-success hide">
                         <button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
-                    <canvas id="canvas" width="1200" height="800" style="background-color: #cccccc;">Not supported</canvas>
+                    <canvas id="canvas" width="100" height="800" style="background-color: #cccccc;">Not supported</canvas>
                 </div>
 
                 <div class="modal hide" id="visual_editor_restore">
@@ -48,11 +48,11 @@ if (isset($templateData['map'])) { ?>
                     </div>
 
                     <div class="modal-body">
-                        You have some auto saved data. Do you want to restore this save or use current state.
+                        You have some autosaved data. Do you want to restore this autosave data or use current state?
                     </div>
 
                     <div class="modal-footer">
-                        <a href="#" class="btn" id="veLastSave">Load last save</a>
+                        <a href="#" class="btn" id="veLastSave">Load autosave data</a>
                         <a href="#" class="btn" id="veCurrentSave">Load current state</a>
                     </div>
                 </div>
@@ -124,13 +124,13 @@ if (isset($templateData['map'])) { ?>
                         <div class="control-group">
                             <label for="nodecontent" class="control-label" style="text-align: left;"><strong>Node Content</strong></label>
                             <div class="controls">
-                                <textarea cols='20' id="nodecontent" rows='10' style="width: 100%;"></textarea>
+                                <textarea cols='20' class="mceEditor" id="nodecontent" rows='10' style="width: 100%;"></textarea>
                             </div>
                         </div>
                         <div class="control-group">
                             <label for="nodesupport" class="control-label" style="text-align: left;"><strong>Supporting Information</strong></label>
                             <div class="controls">
-                                <textarea cols='20' id="nodesupport" rows='10' style="width: 100%;"></textarea>
+                                <textarea cols='20' class="mceEditor" id="nodesupport" rows='10' style="width: 100%;"></textarea>
                             </div>
                         </div>
                         <div class="control-group">

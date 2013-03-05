@@ -131,7 +131,7 @@ class Controller_VisualManager extends Controller_Base {
 
             DB_ORM::model('visualeditorsave')->saveJSON($mapId, Auth::instance()->get_user()->id, $json);
 
-            $status = 'Saved';
+            $status = 'Autosave completed';
         }
 
         echo $status;

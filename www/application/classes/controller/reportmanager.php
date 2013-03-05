@@ -81,6 +81,7 @@ class Controller_ReportManager extends Controller_Base
                 }
             }
 
+            $this->templateData['feedbacks'] = Model::factory('labyrinth')->getMainFeedback($this->templateData['session'], $this->templateData['counters'], $this->templateData['session']->map_id);
 
                 Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['session']->map->name)->set_url(URL::base() . 'labyrinthManager/global/' . $this->templateData['session']->map->id));
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $this->templateData['session']->map->id));
@@ -98,60 +99,56 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
-        public
-        function action_summaryReport()
-        {
-            $mapId = $this->request->param('id', NULL);
-            if ($mapId != NULL) {
-                $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-                $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
+    public function action_summaryReport() {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int) $mapId);
 
-                $minClicks = 0;
-                if (count($this->templateData['sessions']) > 0) {
-                    $minClicks = count($this->templateData['sessions'][0]->traces);
-                    foreach ($this->templateData['sessions'] as $session) {
-                        if ($minClicks > count($session->traces)) {
-                            $minClicks = count($session->traces);
-                        }
+            $minClicks = 0;
+            if (count($this->templateData['sessions']) > 0) {
+                $minClicks = count($this->templateData['sessions'][0]->traces);
+                foreach ($this->templateData['sessions'] as $session) {
+                    if ($minClicks > count($session->traces)) {
+                        $minClicks = count($session->traces);
                     }
                 }
-
-                if (count($this->templateData['sessions']) > 0) {
-                    foreach ($this->templateData['sessions'] as $session) {
-                        $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($session->id);
-                    }
-                }
-
-                $allCounters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-                if ($allCounters != NULL and count($allCounters) > 0) {
-                    foreach ($allCounters as $counter) {
-                        $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
-                    }
-                }
-
-                $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
-                $this->templateData['minClicks'] = $minClicks;
-
-                $summaryView = View::factory('labyrinth/report/summary');
-                $summaryView->set('templateData', $this->templateData);
-
-                $this->templateData['center'] = $summaryView;
-                unset($this->templateData['left']);
-                unset($this->templateData['right']);
-                $this->template->set('templateData', $this->templateData);
-            } else {
-                Request::initial()->redirect(URL::base());
-            }
-        }
-
-        private
-        function checkUser()
-        {
-            if (Auth::instance()->get_user()->type->name == 'author' or Auth::instance()->get_user()->type->name == 'superuser') {
-                return TRUE;
             }
 
-            return FALSE;
-        }
+            if (count($this->templateData['sessions']) > 0) {
+                foreach ($this->templateData['sessions'] as $session) {
+                    $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($session->id);
+                }
+            }
 
+            $allCounters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            if ($allCounters != NULL and count($allCounters) > 0) {
+                foreach ($allCounters as $counter) {
+                    $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
+                }
+            }
+
+            $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+            $this->templateData['minClicks'] = $minClicks;
+
+            $summaryView = View::factory('labyrinth/report/summary');
+            $summaryView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $summaryView;
+            unset($this->templateData['left']);
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
     }
+
+    private function checkUser() {
+        if (Auth::instance()->get_user()->type->name == 'author' or Auth::instance()->get_user()->type->name == 'superuser') {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+}

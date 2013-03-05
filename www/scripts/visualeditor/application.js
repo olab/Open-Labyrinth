@@ -26,7 +26,6 @@ $(function() {
         editor_selector: "mceEditor"
     });*/
 
-
     var visualEditor = new VisualEditor();
     visualEditor.Init(params);
     
@@ -89,20 +88,24 @@ $(function() {
         visualEditor.AddNewNode();
         visualEditor.Render();
     });
-    
+
+    var $veMessageContainer = $('#ve_message');
+    var $veMessage = $('#ve_message_text');
+    var $veActionButton = $('#ve_actionButton');
+
     $('#update').click(function() {
         var data = visualEditor.Serialize();
-        $.post(sendURL, {data: data.substring(0, data.length - 1), id: mapId}, function(data) {
+        showMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
+        $.post(sendURL, {
+            data: data.substring(0, data.length - 1),
+            id: mapId
+        }, function(data) {
             if(data && data.length > 0) {
                 data = data.substring(1, data.length - 1);
                 data = data.substring(0, data.length - 1);
-                
-                $veMessage.text('Update has been successful');
-                $veMessageContainer.css('left', visualEditor.GetWidth() * 0.5 - $veMessageContainer.width() * 0.5);
-                $veMessageContainer.removeClass('hide');
-                    
-                veMessageHandle = setInterval(hideMessage, 1500);
-                
+
+                showMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
+
                 visualEditor.Deserialize(data);
                 visualEditor.Render();
             }
@@ -111,32 +114,46 @@ $(function() {
     
     setInterval(autoSave, 60000);
     
-    var veMessageHandle = null;
-    var $veMessageContainer = $('#ve_message');
-    var $veMessage = $('#ve_message_text');
-    
     function autoSave() {
         if(visualEditor.isChanged) {
             visualEditor.isChanged = false;
             var data = visualEditor.Serialize();
-            $.post(autoSaveURL, {data: data.substring(0, data.length - 1), id: mapId}, function(data) {
+            $.post(autoSaveURL, {
+                data: data.substring(0, data.length - 1),
+                id: mapId
+            }, function(data) {
                 if(data != 'fail') {
-                    $veMessage.text(data);
-                    $veMessageContainer.css('left', visualEditor.GetWidth() * 0.5 - $veMessageContainer.width() * 0.5);
-                    $veMessageContainer.removeClass('hide');
-                    
-                    veMessageHandle = setInterval(hideMessage, 1500);
+                    showMessage($veMessageContainer, $veMessage, 'success', data, 1500, null, null);
                 }
             });
         }
     }
-    
-    function hideMessage() {
-        if(veMessageHandle != null) {
-            clearInterval(veMessageHandle);
+
+    function showMessage(messageForm, messageObj, messageType, message, timeOut, hideObj, hide){
+        messageForm.removeClass('alert-success');
+        messageForm.removeClass('alert-error');
+        messageForm.removeClass('alert-info');
+
+        messageForm.addClass('alert-' + messageType);
+        messageObj.text(message);
+
+        var width = parseInt(messageForm.width());
+        messageForm.css('margin-left', '-' + (width / 2) + 'px');
+        messageForm.removeClass('hide');
+
+        if (hideObj != null){
+            if (hide == true){
+                hideObj.addClass('hide');
+            } else {
+                hideObj.removeClass('hide');
+            }
         }
-        
-        $veMessage.text('');
-        $veMessageContainer.addClass('hide');
+
+        if (timeOut != null){
+            setTimeout(function() {
+                messageForm.addClass('hide');
+                messageObj.text('');
+            }, timeOut);
+        }
     }
 });

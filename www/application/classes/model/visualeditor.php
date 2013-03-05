@@ -99,7 +99,7 @@ class Model_VisualEditor extends Model {
                     }
                 }
 
-                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x > 0 ? $node->x : (200 + rand(20, 100))) . ', y: ' . ($node->y > 0 ? $node->y : (200 + rand(20, 100))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
+                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (200 + rand(20, 100))) . ', y: ' . ($node->y != null ? $node->y : (200 + rand(20, 100))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
             }
 
             if (strlen($nodesJSON) > 2) {
