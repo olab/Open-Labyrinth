@@ -725,6 +725,9 @@ var VisualEditor = function() {
     }
     
     var encode64 = function (input) {
+        input = input.replace(/\0/g,"");
+        return  B64.encode($.trim(input));
+/*
         input = escape(input);
         var output = "";
         var chr1, chr2, chr3 = "";
@@ -756,10 +759,13 @@ var VisualEditor = function() {
             enc1 = enc2 = enc3 = enc4 = "";
         } while (i < input.length);
 
-        return output;
+        return output;*/
     }
 
     var decode64 = function(input) {
+        input = input.replace(/\0/g,"");
+        return  B64.decode($.trim(input));
+/*
         var output = "";
         var chr1, chr2, chr3 = "";
         var enc1, enc2, enc3, enc4 = "";
@@ -798,6 +804,6 @@ var VisualEditor = function() {
 
         } while (i < input.length);
 
-        return unescape(output);
+        return unescape(output);*/
     }
 }

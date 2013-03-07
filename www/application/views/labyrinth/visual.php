@@ -225,7 +225,7 @@ if (isset($templateData['map'])) { ?>
                     </div>
                 </div>
     </div>
-
+    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/mouse.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/transform.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/node.js"></script>
