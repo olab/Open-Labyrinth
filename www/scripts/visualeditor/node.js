@@ -71,6 +71,8 @@ var Node = function() {
     self.colorButtonWidth = 30;
     self.colorButtonHeight = 10;
     
+    self.paddingSelect = 16;
+    
     // Data
     self.id = 0;
     self.isRoot = false;
@@ -85,6 +87,7 @@ var Node = function() {
     self.undo = false;
     self.isEnd = false;
     self.counters = new Array();
+    self.isSelected = false;
     
     // Daraw current node
     // context - canvas context
@@ -99,12 +102,13 @@ var Node = function() {
         context.save();
         context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
         
+        if(self.isSelected)
+            DrawSelectedArea(context);
+        
         DrawContentArea(context);
         DrawHeaderArea(context);
         DrawLinkButton(context);
         DrawAddButton(context);
-        DrawRootButton(context);
-        DrawDeleteButton(context);
         
         if(self.title.length > 0) {
             var title = self.title.replace(/<(?:.|\n)*?>/gm, '');
@@ -117,8 +121,7 @@ var Node = function() {
             content = (content.length >= 160) ? (content.substring(0, 157) + '...') : content;
             DrawContent(context, content);
         }
-        
-        DrawColorButton(context);
+
         
         context.restore();
     }
@@ -144,16 +147,24 @@ var Node = function() {
                 }
             }
             
-            if(!isAnotherDrag && (IsHeaderCollision(mouse.x, mouse.y, viewport) || self.isDragging)) {
+            if(!isAnotherDrag && (self.IsHeaderCollision(mouse.x, mouse.y, viewport) || self.isDragging)) {
                 isRedraw = true;
                 self.isDragging = true;
-                TranslateNode(mouse.x - mouse.oldX, mouse.y - mouse.oldY, viewport);
+                if(self.isSelected && anotherNodes.length > 0) {
+                    for(var i = 0; i < anotherNodes.length; i++) {
+                        if(anotherNodes[i].isSelected) {
+                            anotherNodes[i].TranslateNode(mouse.x - mouse.oldX, mouse.y - mouse.oldY, viewport);
+                        }
+                    }
+                } else {
+                    self.TranslateNode(mouse.x - mouse.oldX, mouse.y - mouse.oldY, viewport);
+                }
             } else {
                 self.isDragging = false;
             }
         } else {
             self.isDragging = false;
-            if(IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
+            if(self.IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
                 isRedraw = true;
                 self.linkButtonBackgroundColor = self.linkButtonHoverBackgroundColor;
             } else if(self.linkButtonBackgroundColor != defLinkButtonBackgroundColor) {
@@ -161,29 +172,14 @@ var Node = function() {
                 self.linkButtonBackgroundColor = defLinkButtonBackgroundColor;
             }
             
-            if(IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
+            if(self.IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
                 isRedraw = true;
                 self.addButtonBackgroundColor = self.addButtonHoverBackgroundColor;
             } else if(self.addButtonBackgroundColor != defAddButtonBackgroundColor) {
                 isRedraw = true;
                 self.addButtonBackgroundColor = defAddButtonBackgroundColor;
             }
-            
-            if(IsRootButtonCollision(mouse.x, mouse.y, viewport) && !self.isRoot) {
-                isRedraw = true;
-                self.rootButtonBackgroundColor = self.rootButtonHoverBackgroundColor;
-            } else if(self.rootButtonBackgroundColor != defRootButtonBackgroundColor) {
-                isRedraw = true;
-                self.rootButtonBackgroundColor = defRootButtonBackgroundColor;
-            }
-            
-            if(IsDeleteButtonCollision(mouse.x, mouse.y, viewport)) {
-                isRedraw = true;
-                self.deleteButtonBackgroundColor = self.deleteButtonHoverBackgroundColor;
-            } else if(self.deleteButtonBackgroundColor != defDeleteButtonBackgroundColor) {
-                isRedraw = true;
-                self.deleteButtonBackgroundColor = defDeleteButtonBackgroundColor;
-            }
+
         }
 
         return isRedraw;
@@ -192,13 +188,10 @@ var Node = function() {
     self.MouseClick = function(mouse, viewport) {
         var result = new Array();
 
-        if(IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
+        if(self.IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
             result[0] = self.id;
             result[1] = 'add';
-        } else if(IsRootButtonCollision(mouse.x, mouse.y, viewport)) {
-            result[0] = self.id;
-            result[1] = 'root';
-        } else if(IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
+        } else if(self.IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
             if(!self.isLinkButtonEnabled) {
                 result[0] = self.id;
                 result[1] = 'link';
@@ -207,16 +200,10 @@ var Node = function() {
                 result[1] = 'rlink';
             }
             self.isLinkButtonEnabled = !self.isLinkButtonEnabled;
-        } else if(IsColorButtonCollision(mouse.x, mouse.y, viewport)) {
-            result[0] = self.id;
-            result[1] = 'color';
-        } else if(IsDeleteButtonCollision(mouse.x, mouse.y, viewport)) {
-            result[0] = self.id;
-            result[1] = 'delete';
-        } else if(IsMainAreaCollision(mouse.x, mouse.y, viewport)) {
+        } else if(self.IsMainAreaCollision(mouse.x, mouse.y, viewport)) {
             result[0] = self.id;
             result[1] = 'main';
-        } else if(IsHeaderCollision(mouse.x, mouse.y, viewport)) {
+        } else if(self.IsHeaderCollision(mouse.x, mouse.y, viewport)) {
             result[0] = self.id;
             result[1] = 'header';
         }
@@ -224,7 +211,28 @@ var Node = function() {
         return result;
     }
     
-    var IsHeaderCollision = function(x, y, viewport) {
+    self.IsNodeInRect = function(x, y, width, height, viewport) {
+        var tr = new Transform();
+        tr.Multiply(viewport);
+        tr.Multiply(self.transform);
+        
+        var pos = tr.GetPosition();
+        var scale = tr.GetScale();
+        
+        var x0 = [pos[0], pos[0] + self.width * scale[0]];
+        var y0 = [pos[1], pos[1] + self.height * scale[1]];
+        
+        var xW = x + width;
+        var yH = y + height;
+        
+        var x1 = [Math.min(x, xW), Math.max(x, xW)];
+        var y1 = [Math.min(y, yH), Math.max(y, yH)];
+        
+        return ((x0[0] >= x1[0] && x0[0] <= x1[1]) || (x0[1] >= x1[0] && x0[1] <= x1[1])) && 
+               ((y0[0] >= y1[0] && y0[0] <= y1[1]) || (y0[1] >= y1[0] && y0[1] <= y1[1]));
+    }
+    
+    self.IsHeaderCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -235,7 +243,7 @@ var Node = function() {
         return (x  >= pos[0] && x <= (pos[0] + self.width * scale[0]) && y  >= pos[1] && y <= (pos[1] + self.headerHeight * scale[1])); 
     }
     
-    var IsLinkButtonCollision = function(x, y, viewport) {
+    self.IsLinkButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -247,7 +255,7 @@ var Node = function() {
         return (self.linkButtonRaius * self.linkButtonRaius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
-    var IsAddButtonCollision = function(x, y, viewport) {
+    self.IsAddButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -259,7 +267,7 @@ var Node = function() {
         return (self.linkButtonRaius * self.linkButtonRaius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
-    var IsRootButtonCollision = function(x, y, viewport) {
+    self.IsRootButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -271,7 +279,7 @@ var Node = function() {
         return (self.rootButtonRadius * self.rootButtonRadius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
-    var IsDeleteButtonCollision = function(x, y, viewport) {
+    self.IsDeleteButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -283,7 +291,7 @@ var Node = function() {
         return (self.deleteButtonRadius * self.deleteButtonRadius * (scale[0] + scale[1]) * 0.5) >= ((pos[0] - x) * (pos[0] - x) + (pos[1] - y) * (pos[1] - y));
     }
     
-    var IsColorButtonCollision = function(x, y, viewport) {
+    self.IsColorButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -295,7 +303,7 @@ var Node = function() {
         return (x >= pos[0] && x <= (pos[0] + self.colorButtonWidth * scale[0]) && y >= pos[1] && y <= (pos[1] + self.colorButtonHeight * scale[1]));
     }
     
-    var IsMainAreaCollision = function(x, y, viewport) {
+    self.IsMainAreaCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
@@ -306,7 +314,7 @@ var Node = function() {
         return (x  >= pos[0] && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1] + self.headerHeight * scale[1]) && y <= (pos[1] + (self.height - self.headerHeight) * scale[1])); 
     }
     
-    var TranslateNode = function(dx, dy, viewport) {
+    self.TranslateNode = function(dx, dy, viewport) {
         var scale = viewport.GetScale();
         
         self.transform.TranslateWithoutScale(dx / scale[0], dy / scale[1]);
@@ -317,12 +325,15 @@ var Node = function() {
         context.rect(0, 0, self.width, self.height);
         context.fillStyle = self.color;
         context.fill();
+        context.lineWidth = 1;
+        context.strokeStyle = self.headerColor;
+        context.stroke();
     }
     
     var DrawHeaderArea = function(context) {
         context.beginPath();
         context.rect(0, 0, self.width, self.headerHeight);
-        context.fillStyle = self.headerColor;
+        context.fillStyle = (self.isRoot) ? self.rootButtonActiveColor : self.headerColor;
         context.fill();
     }
     
@@ -451,6 +462,55 @@ var Node = function() {
             context.fill();
         }
     }
+    
+    var DrawSelectedArea = function(context) {
+        context.beginPath();
+        context.lineWidth = 2;
+        
+        DashedLineTo(context, -self.paddingSelect, -self.paddingSelect, self.width + self.paddingSelect, -self.paddingSelect, [5,5]);
+        DashedLineTo(context, self.width + self.paddingSelect, -self.paddingSelect, self.width + self.paddingSelect, self.height + self.paddingSelect, [5,5]);
+        DashedLineTo(context, self.width + self.paddingSelect, self.height + self.paddingSelect, -self.paddingSelect, self.height + self.paddingSelect, [5,5]);
+        DashedLineTo(context, -self.paddingSelect, self.height + self.paddingSelect, -self.paddingSelect, -self.paddingSelect, [5,5]);
+        
+        context.stroke();
+    }
+    
+    var DashedLineTo = function (context, fromX, fromY, toX, toY, pattern) {
+        var lt = function (a, b) {return a <= b;};
+        var gt = function (a, b) {return a >= b;};
+        var capmin = function (a, b) {return Math.min(a, b);};
+        var capmax = function (a, b) {return Math.max(a, b);};
+
+        var checkX = {thereYet: gt, cap: capmin};
+        var checkY = {thereYet: gt, cap: capmin};
+
+        if (fromY - toY > 0) {
+            checkY.thereYet = lt;
+            checkY.cap = capmax;
+        }
+        if (fromX - toX > 0) {
+            checkX.thereYet = lt;
+            checkX.cap = capmax;
+        }
+
+        context.moveTo(fromX, fromY);
+        var offsetX = fromX;
+        var offsetY = fromY;
+        var idx = 0, dash = true;
+        while (!(checkX.thereYet(offsetX, toX) && checkY.thereYet(offsetY, toY))) {
+            var ang = Math.atan2(toY - fromY, toX - fromX);
+            var len = pattern[idx];
+
+            offsetX = checkX.cap(toX, offsetX + (Math.cos(ang) * len));
+            offsetY = checkY.cap(toY, offsetY + (Math.sin(ang) * len));
+
+            if (dash) context.lineTo(offsetX, offsetY);
+            else context.moveTo(offsetX, offsetY);
+
+            idx = (idx + 1) % pattern.length;
+            dash = !dash;
+        }
+    };
     
     self.GetCounterById = function(id) {
         if(self.counters == null && self.counters.length <= 0) return null;

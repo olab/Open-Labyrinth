@@ -19,41 +19,25 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Automated password recovery'); ?></h4>
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                        <form action="<?php echo URL::base(); ?>home/updateResetPassword" method="post">
-                            <table cellspacing="10" cellpadding="0" border="0">
-                                <tr>
-                                    <td colspan="2"><p>Enter your new password</p></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"><hr /></td>
-                                </tr>
-                                <tr>
-                                    <td width="140" align="right"><p>New password:</p></td>
-                                    <td><input style="float:left;" type="password" name="newpswd" size="30" /></td>
-                                </tr>
-                                <tr>
-                                    <td width="140" align="right"><p>Confirm new password:</p></td>
-                                    <td><input style="float:left;" type="password" name="pswd_confirm" size="30" /></td>
-                                </tr>
-                                <tr><td colspan="2"><hr /></td></tr>
-                                <?php if (!empty($templateData['passError'])){ ?>
-                                <tr>
-                                    <td colspan="2"><font style="color:red"><?php echo $templateData['passError']; ?></font></td>
-                                </tr>
-                                <?php } ?>
-                                <tr><td colspan="2"><input type="submit" value="Submit"></td></tr>
-                            </table>
-                            <input type="hidden" name="token" value="<?php echo Security::token(); ?>" />
-                            <input type="hidden" name="hashKey" value="<?php echo $templateData['hashKey']; ?>" />
-                        </form>
-                    </td></tr>
-            </table>
-        </td>
-    </tr>
-</table>
+<h1><?php echo __('Automated password recovery'); ?></h1>
+
+<form class="form-horizontal" action="<?php echo URL::base(); ?>home/updateResetPassword" method="post">
+    <fieldset class="fieldset">
+        <legend>Enter your new password</legend>
+        <div class="control-group">
+            <label for="newpswd" class="control-label"><?php echo __('New password'); ?>:</label>
+            <div class="controls">
+                <input type="password" id="newpswd" name="newpswd" size="30" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="pswd_confirm" class="control-label"><?php echo __('Confirm new password'); ?>:</label>
+            <div class="controls">
+                <input type="password" id="pswd_confirm" name="pswd_confirm" size="30" />
+            </div>
+        </div>
+    </fieldset>
+    <input type="submit" class="btn btn-primary" value="Submit"/>
+    <input type="hidden" name="token" value="<?php echo Security::token(); ?>" />
+    <input type="hidden" name="hashKey" value="<?php echo $templateData['hashKey']; ?>" />
+</form>

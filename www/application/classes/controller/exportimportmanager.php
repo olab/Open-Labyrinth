@@ -120,16 +120,14 @@ class Controller_ExportImportManager extends Controller_Base {
             $params['mapId'] = $mapId;
             $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);;
             $pathInfo = pathinfo($path);
-
-            $this->response->headers('Content-Length', sprintf("%u", filesize($path)));
-            $this->response->headers('Content-Disposition', "attachment; filename=\"".$pathInfo['filename'] . '.' . $pathInfo['extension']."\"" );
-            $this->response->headers('Content-Type', "application/zip");
-            $this->response->headers('Content-Transfer-Encoding', "binary");
-            $this->response->send_headers();
-
-            $file = fopen($path,'rb');
-            fpassthru($file);
-            fclose($file);
+            
+            header("Cache-Control: public");
+            header("Content-Description: File Transfer");
+            header("Content-Disposition: attachment; filename=".$pathInfo['basename']);
+            header("Content-Type: application/zip");
+            header("Content-Transfer-Encoding: binary");
+            
+            readfile($path);
         } else {
             Request::initial()->redirect(URL::base() . 'exportimportmanager/exportMVP');
         }
@@ -752,10 +750,18 @@ class Controller_ExportImportManager extends Controller_Base {
 
                 if (isset($avatarAttr->AvatarImage)){
                     $avatarImageName = (string) $avatarAttr->AvatarImage;
-                    $avatarsArray[$id]['image_data'] = $avatarImageName;
-                    $avatarFile = $tmpFolder.'media/'.$avatarImageName;
-                    if (file_exists($avatarFile)){
-                        copy($avatarFile, DOCROOT . '/avatars/' . $avatarImageName);
+                    if($avatarImageName != 'ntr') {
+                        if($avatarImageName != '') {
+                            $avatarsArray[$id]['image_data'] = $avatarImageName;
+                            $avatarFile = $tmpFolder.'media/'.$avatarImageName;
+                            if (file_exists($avatarFile)){
+                                copy($avatarFile, DOCROOT . '/avatars/' . $avatarImageName);
+                            }
+                        }else {
+                            $avatarsArray[$id]['image_data'] = '';
+                        }
+                    } else {
+                        $avatarsArray[$id]['image_data'] = 'ntr';
                     }
                 } else {
                     $avatarsArray[$id]['image_data'] = 'ntr'; //need to reload

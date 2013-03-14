@@ -43,8 +43,7 @@ if (isset($templateData['map']) and isset($templateData['question_count']) and i
                                             <legend><?php echo __("Question #") . $i ?></legend>
 
                                             <div class="control-group">
-                                                <label for="question<?php echo $i; ?>"
-                                                       class="control-label"><?php echo __('Question'); ?></label>
+                                                <label for="question<?php echo $i; ?>" class="control-label"><?php echo __('Question'); ?></label>
 
                                                 <div class="controls">
                                                     <input id="question<?php echo $i; ?>" type="text" name="question<?php echo $i; ?>"

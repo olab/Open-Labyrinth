@@ -7,6 +7,9 @@ var VisualEditor = function() {
     var generateIdLinkCounter = 1;
     var maxZoom = 1.6;
     var minZoom = 0.5;
+    var ctrlKeyPressed = false;
+    var shiftKeyPressed = false;
+    var def2PI = Math.PI * 2;
     
     var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     
@@ -26,7 +29,15 @@ var VisualEditor = function() {
     self.nodeModal = new NodeModal();
     self.isChanged = false;
     self.isViewportInit = true;
-
+    self.selectorTool = new Selector();
+    self.isSelectActive = false;
+    self.copyFunction = null;
+    self.pasteFunction = null;
+    self.zoomIn = null;
+    self.zoomOut = null;
+    self.update = null;
+    self.rightPanel = new RightPanel();
+    
     // Initialize visual editor
     self.Init = function(params) {
         if('canvasContainer' in params) {
@@ -51,6 +62,33 @@ var VisualEditor = function() {
         CreateContext();
         CreateEvents();
         
+        self.rightPanel.Init({
+           panelId: '#veRightPanel',
+           closeBtn: '.veRightPanelCloseBtn',
+           colorInputId: '#colorpickerInput',
+           colorPickerId: '#colopickerContainer',
+           saveBtn: '#veRightPanelSaveBtn',
+           accordion: '#veAccordionRightPanel',
+           nodeRootBtn: '#veNodeRootBtn',
+           nodeDeleteBtn: '#veDeleteNodeBtn',
+           visualEditor: self,
+           nodeTitle: '#nodetitle', 
+           nodeContent: '#nodecontent', 
+           nodeSupport: '#nodesupport', 
+           nodeSupportKeywords: '#nodesupportkeywords',
+           nodeIsExitNodePorb: '#exitNodeOptions', 
+           nodeLinkStyle: '#linkStyleOptions', 
+           nodePriority: '#nodePriorities',
+           nodeUndoLinks: '#nodeUndoLinks', 
+           endNode: '#nodeEndAndReport', 
+           nodeCounters: '#counters'
+        });
+        
+        self.deleteModal.Init({
+            modalId: '#visual_editor_delete', 
+            applyBtn: '#deleteNode', 
+            visualEditor: self
+        });
         self.colorModal.Init({
             modalId: '#visual_editor_colorpicker', 
             inputId: '#colorpicker_input', 
@@ -62,50 +100,36 @@ var VisualEditor = function() {
             modalId: '#visual_editor_link', 
             applyBtn: '#linkApply', 
             linkTypes: '#linkTypes', 
+            linkImages: '#mimage',
+            linkLabel: '#labelText',
             visualEditor: self
         });
-        self.deleteModal.Init({
-            modalId: '#visual_editor_delete', 
-            applyBtn: '#deleteNode', 
-            visualEditor: self
-        });
-        self.nodeModal.Init({
-            modalId: '#visual_editor_node', 
-            applyBtn: '#nodeApply', 
-            visualEditor: self, 
-            title: '#nodetitle', 
-            content: '#nodecontent', 
-            support: '#nodesupport', 
-            supportKeywords: '#nodesupportkeywords',
-            isExitNodePorb: '#exitNodeOptions', 
-            linkStyle: '#linkStyleOptions', 
-            nodePriority: '#nodePriorities',
-            undoLinks: '#nodeUndoLinks', 
-            endNode: '#nodeEndAndReport', 
-            counters: '#counters'
-        });
-                         
+                     
         Resize(null);
+        self.ZoomOut();
+        self.ZoomOut();
     }
     
     // Render current state of visual editor
     self.Render = function() {
         ClearContext();
+
+        if(self.links.length > 0) {
+            for(var i = 0; i < self.links.length; i++) {
+                self.links[i].Draw(self.context, viewport);
+            }
+        }
         
         if(self.nodes.length > 0) {
             for(var i = 0; i < self.nodes.length; i++) {
                 self.nodes[i].Draw(self.context, viewport);
             }
         }
-        
-        if(self.links.length > 0) {
-            for(var i = 0; i < self.links.length; i++) {
-                self.links[i].Draw(self.context, viewport);
-            }
-        }
     
         if(self.linkConnector != null)
             self.linkConnector.Draw(self.context, viewport);
+        
+        self.selectorTool.Draw(self.context, viewport);
         
         self.isChanged = true;
     }
@@ -172,73 +196,95 @@ var VisualEditor = function() {
     
     // Serialize nodes info
     self.Serialize = function() {
-        var result = '';
+        return SerializeElements(self.nodes, self.links);
+    }
+    
+    self.SerializeSelected = function() {
+        var selectedNodes = new Array();
+        var selectedLinks = new Array();
         
         if(self.nodes.length > 0) {
-            var nodes = '';
             for(var i = 0; i < self.nodes.length; i++) {
-                var pos = self.nodes[i].transform.GetPosition();
+                if(self.nodes[i].isSelected)
+                    selectedNodes.push(self.nodes[i]);
+            }
+        }
+        
+        if(self.links.length > 0) {
+            for(var i = 0; i < self.links.length; i++) {
+                if(self.links[i].isSelected)
+                    selectedLinks.push(self.links[i]);
+            }
+        }
+        
+        return SerializeElements(selectedNodes, selectedLinks);
+    }
+    
+    var SerializeElements = function(nodes, links) {
+        var result = '';
+        
+        if(nodes.length > 0) {
+            var nodesStr = '';
+            for(var i = 0; i < nodes.length; i++) {
+                var pos = nodes[i].transform.GetPosition();
 
-                nodes += '{"id": "' + self.nodes[i].id + '", "isRoot": "' + self.nodes[i].isRoot + '", "isNew": "' + self.nodes[i].isNew + '", "title": "' + encode64(self.nodes[i].title) + '", "content": "' + encode64(self.nodes[i].content) + '", "support": "' + encode64(self.nodes[i].support) + '", "supportKeywords": "' + self.nodes[i].supportKeywords + '", "isExit": "' + self.nodes[i].isExit + '", "linkStyle": "' + self.nodes[i].linkStyle + '", "nodePriority": "' + self.nodes[i].nodePriority + '", "undo": "' + self.nodes[i].undo + '", "isEnd": "' + self.nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + self.nodes[i].color + '"';
+                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
 
-                if(self.nodes[i].counters.length > 0) {
+                if(nodes[i].counters.length > 0) {
                     var counters = '';
-                    for(var j = 0; j < self.nodes[i].counters.length; j++) {
-                        counters += '{"id": "' + self.nodes[i].counters[j].id + '", "func": "' + self.nodes[i].counters[j].func + '", "show": "' + self.nodes[i].counters[j].show + '"}, ';
+                    for(var j = 0; j < nodes[i].counters.length; j++) {
+                        counters += '{"id": "' + nodes[i].counters[j].id + '", "func": "' + nodes[i].counters[j].func + '", "show": "' + nodes[i].counters[j].show + '"}, ';
                     }
                     
                     if(counters.length > 0) {
                         counters = counters.substring(0, counters.length - 2);
                         counters = '"counters": [' + counters + ']';
                         
-                        nodes += ', ' + counters + '}, ';
+                        nodesStr += ', ' + counters + '}, ';
                     } else {
-                        nodes += '}, ';
+                        nodesStr += '}, ';
                     }
                 } else {
-                    nodes += '}, ';
+                    nodesStr += '}, ';
                 }
             }
             
-            if(nodes.length > 2) {
-                nodes = nodes.substring(0, nodes.length - 2);
-                nodes = '"nodes": [' + nodes + ']';
+            if(nodesStr.length > 2) {
+                nodesStr = nodesStr.substring(0, nodesStr.length - 2);
+                nodesStr = '"nodes": [' + nodesStr + ']';
                 
-                result += nodes;
+                result += nodesStr;
             }
         }
         
-        if(self.links.length > 0) {
-            var links = '';
-            for(var i = 0; i < self.links.length; i++) {
-                links += '{"id": "' + self.links[i].id + '", "nodeA": "' + self.links[i].nodeA.id + '", "nodeB": "' + self.links[i].nodeB.id + '", "type": "' + self.links[i].type + '", "isNew": "' + self.links[i].isNew + '"}, ';
+        if(links.length > 0) {
+            var linksStr = '';
+            for(var i = 0; i < links.length; i++) {
+                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + links[i].label + '", "imageId": "' + links[i].imageId + '"}, ';
             }
             
-            if(links.length > 2) {
-                links = links.substring(0, links.length - 2);
-                links = '"links": [' + links + ']';
+            if(linksStr.length > 2) {
+                linksStr = linksStr.substring(0, linksStr.length - 2);
+                linksStr = '"links": [' + linksStr + ']';
                 
                 if(result.length > 0) {
-                    result += ', ' + links;
+                    result += ', ' + linksStr;
                 }
             }
         }
         
         if(result.length > 0) {
-            result = '{' + result + '};';
+            var pos = viewport.GetPosition();
+            var scale = viewport.GetScale();
+            result = '{' + result + ', "viewport": ["' + pos[0] + '", "' + pos[1] + '", "' + scale[0] + '", "' + scale[1] + '"]' + '};';
         }
 
         return result;
     }
-    
+ 
     // Deserialize nodes info
     self.Deserialize = function(jsonString) {
         if(jsonString.length <= 0) return;
-        
-        function evalJson(jsArray){
-            eval("function parseJSON(){ return "+ jsArray +"; }");
-            return parseJSON();
-        }
         
         var object = evalJson(jsonString);
         if(object == null) return;
@@ -267,9 +313,8 @@ var VisualEditor = function() {
                 node.isRoot = (object.nodes[i].isRoot == 'true');
                 var x = parseInt(object.nodes[i].x);
                 var y = parseInt(object.nodes[i].y);
-                
+
                 if(isNaN(x)) x = 0;
-                
                 if(isNaN(y)) y = 0;
                 
                 var linkStyle = parseInt(object.nodes[i].linkStyle);
@@ -320,18 +365,22 @@ var VisualEditor = function() {
                 link.id = id;
                 link.nodeA = nodeA;
                 link.nodeB = nodeB;
+                link.label = object.links[i].label;
+                link.imageId = object.links[i].imageId;
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 
                 self.links.push(link);
             }
         }
-
+        
         if(self.isViewportInit) {
             self.isViewportInit = false;
             var rootNode = GetRootNode();
             if(rootNode != null) {
                 var pos = rootNode.transform.GetPosition();
-                viewport.Translate(-pos[0] + self.canvas.width * 0.5 - rootNode.width * 0.5, -pos[1] + self.canvas.height * 0.5 - rootNode.height * 0.5);
+                var scale = viewport.GetScale();
+                
+                viewport.SetPosition(-pos[0] + self.canvas.width / scale[0] * 0.5 - rootNode.width / scale[0] * 0.5, -pos[1] + self.canvas.height / scale[1] * 0.5 - rootNode.height / scale[1] * 0.5);
             }
         }
         
@@ -341,7 +390,104 @@ var VisualEditor = function() {
         if(generateIdLinkCounter > 1)
             generateIdLinkCounter++;
     }
+    
+    self.DeserializeFromPaste = function(jsonString) {
+        if(jsonString.length <= 0) return;
+        
+        var object = evalJson(jsonString);
+        if(object == null) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        var nodesMap = new Array();
+        var rootNode = GetRootNode();
+        var rndX = (Math.random() * (150 - 100) + 100);
+        var rndY = (Math.random() * (150 - 50) + 50);
+        
+        var oldViewportPos = new Array();
+        var oldViewportScale = new Array();
+        if('viewport' in object && object.viewport.length > 0) {
+            oldViewportPos[0] = parseFloat(object.viewport[0]);
+            oldViewportPos[1] = parseFloat(object.viewport[1]);
+            oldViewportScale[0] = parseFloat(object.viewport[2]);
+            oldViewportScale[1] = parseFloat(object.viewport[3]);
+            
+            if(isNaN(oldViewportPos[0])) oldViewportPos[0] = 0;
+            if(isNaN(oldViewportPos[1])) oldViewportPos[1] = 0;
+            if(isNaN(oldViewportScale[0])) oldViewportScale[0] = 1;
+            if(isNaN(oldViewportScale[1])) oldViewportScale[1] = 1;
+        }
+        
+        if('nodes' in object && object.nodes.length > 0) {
+            for(var i = 0; i < object.nodes.length; i++) {
+                var node = new Node();
+                node.id = GetNewNodeId();
+                nodesMap.push({oldId: object.nodes[i].id , newId: node.id});
+                node.isNew = true;
+                
+                node.title = decode64(object.nodes[i].title);
+                node.content = decode64(object.nodes[i].content);
+                node.support = decode64(object.nodes[i].support);
+                node.isExit = (object.nodes[i].isExit == 'true');
+                node.undo = (object.nodes[i].undo == 'true');
+                node.isEnd = (object.nodes[i].isEnd == 'true');
+                node.isRoot = (rootNode == null) ? (object.nodes[i].isRoot == 'true') : false;
+                var x = parseInt(object.nodes[i].x);
+                var y = parseInt(object.nodes[i].y);
 
+                if(isNaN(x)) x = 0;
+                if(isNaN(y)) y = 0;
+                
+                var p = [oldViewportPos[0] - pos[0], oldViewportPos[1] - pos[1]];
+                var tr = new Transform();
+                tr.Translate(p[0], p[1]);
+                tr.Translate(x, y);
+                tr.Scale(1 / oldViewportScale[0], 1 / oldViewportScale[1]);
+                tr.Scale(scale[0], scale[1]);
+                
+                var g = tr.GetPosition();
+                
+                node.transform.Translate(g[0] + rndX, g[1] + rndY);
+                
+                var linkStyle = parseInt(object.nodes[i].linkStyle);
+                if(isNaN(linkStyle)) linkStyle = 1;
+                node.linkStyle = linkStyle;
+                
+                var nodePriority = parseInt(object.nodes[i].nodePriority);
+                if(isNaN(nodePriority)) nodePriority = 1;
+                node.nodePriority = nodePriority;
+                
+                node.color = (object.nodes[i].color.length > 0) ? object.nodes[i].color : node.color;
+                
+                self.nodes.push(node);
+            }
+        }
+        
+        if('links' in object && object.links.length > 0) {
+            for(var i = 0; i < object.links.length; i++) {
+                var nodeAId = GetNodeFromMap(nodesMap, object.links[i].nodeA);
+                var nodeBId = GetNodeFromMap(nodesMap, object.links[i].nodeB);
+                
+                var nodeA = GetNodeById(nodeAId);
+                if(nodeA == null) continue;
+                
+                var nodeB = GetNodeById(nodeBId);
+                if(nodeB == null) continue;
+                
+                var id = GetNewLinkId();
+                
+                var link = new Link();
+                
+                link.id = id;
+                link.nodeA = nodeA;
+                link.nodeB = nodeB;
+                link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
+                
+                self.links.push(link);
+            }
+        }
+    }
+    
     self.AddNewNode = function() {
         var node = new Node();
         node.id = GetNewNodeId();
@@ -360,10 +506,114 @@ var VisualEditor = function() {
         self.nodes.push(node);
     }
     
+    self.AddDandelion = function(count) {
+        if(count <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        var x0 = self.canvas.width / scale[0] * 0.5 - pos[0];
+        var y0 = self.canvas.height / scale[1] * 0.5 - pos[1];
+        
+        var step = Math.PI / (count - 1);
+        
+        var radius = 270 * Math.sin((Math.PI - step) * 0.5) / Math.sin(step);
+        var nodes = new Array();
+        
+        for(var i = 0, countIndex = 0; countIndex < count; i += step, countIndex++) {
+            var x = x0 + radius * Math.cos(i);
+            var y = y0 + radius * Math.sin(i);
+            
+            var node = new Node();
+            node.id = GetNewNodeId();
+            node.title = 'new node';
+            node.isNew = true;
+            
+            node.transform.Translate(x, y);
+            nodes.push(node);
+            self.nodes.push(node);
+        }
+        
+        var startNode = new Node();
+        startNode.id = GetNewNodeId();
+        startNode.title = 'new node';
+        startNode.isNew = true;
+        
+        startNode.transform.Translate(x0, y0 - radius);
+        self.nodes.push(startNode);
+        
+        var endNode = new Node();
+        endNode.id = GetNewNodeId();
+        endNode.title = 'new node';
+        endNode.isNew = true;
+        
+        endNode.transform.Translate(x0, y0 + radius * 2);
+        self.nodes.push(endNode);
+        
+        if(nodes.length > 0) {
+            for(var i = 0; i < nodes.length; i++) {
+                var startLink = new Link();
+                startLink.nodeA = startNode;
+                startLink.nodeB = nodes[i];
+                startLink.type = 'direct';
+                startLink.id = GetNewLinkId();
+                
+                self.links.push(startLink);
+                
+                var endLink = new Link();
+                endLink.nodeA = nodes[i];
+                endLink.nodeB = endNode;
+                endLink.type = 'direct';
+                endLink.id = GetNewLinkId();
+                
+                self.links.push(endLink);
+                    
+                for(var j = i; j < nodes.length; j++) {
+                    if(nodes[i].id == nodes[j].id) continue;
+                    
+                    var link = new Link();
+                    
+                    link.nodeA = nodes[i];
+                    link.nodeB = nodes[j];
+                    link.type = 'dual';
+                    link.id = GetNewLinkId();
+                    
+                    self.links.push(link);
+                }
+            }
+        }
+    }
+    
+    self.AddNode = function(node) {
+        if(node == null) return;
+        
+        node.id = GetNewNodeId();
+        if(self.$canvas != null) {
+            var pos = viewport.GetPosition();
+            
+            var w = 100 - pos[0] + Math.random() * (70 - 40) + 40;
+            var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+            
+            node.transform.Translate(w, h);
+        }
+        
+        self.nodes.push(node);
+    }
+    
     self.GetWidth = function() {
         if(self.$canvas == null) return 0;
         
         return self.$canvas.width();
+    }
+    
+    var GetNodeFromMap = function(nodesMap, oldId) {
+        if(nodesMap == null || nodesMap.length <= 0) return null;
+        
+        for(var i = 0 ; i < nodesMap.length; i++) {
+            if(nodesMap[i].oldId == oldId)
+                return nodesMap[i].newId;
+        }
+    
+        return null;
     }
     
     var Resize = function() {
@@ -409,9 +659,62 @@ var VisualEditor = function() {
         self.canvas.addEventListener("mousedown", MouseDown, false);
         self.canvas.addEventListener("mouseup", MouseUp, false);
         self.canvas.addEventListener("mousemove", MouseMove, false);
+        self.canvas.addEventListener("mouseout", MouseOut, false);
         self.canvas.addEventListener("touchstart", MouseDown, false);
         self.canvas.addEventListener("touchmove", MouseMove, false);
         self.canvas.addEventListener("touchend", MouseUp, false);
+        document.addEventListener("keydown", KeyDown, false);
+        document.addEventListener("keyup", KeyUp, false);
+    }
+    
+    var MouseOut = function(event) {
+        $('body').css('cursor', 'default');
+        $('body').removeClass('clearCursor');
+    }
+    
+    var KeyDown = function(event) {
+        ctrlKeyPressed = event.ctrlKey;
+        shiftKeyPressed = event.shiftKey;
+
+        if(ctrlKeyPressed && event.keyCode == 67) {
+            if(self.copyFunction != null)
+                self.copyFunction();
+        } else if(ctrlKeyPressed && event.keyCode == 86) {
+            if(self.pasteFunction != null)
+                self.pasteFunction();
+        } else if((event.keyCode == 107) || (shiftKeyPressed && event.keyCode == 187) || (shiftKeyPressed && event.keyCode == 61)) {
+            if(self.zoomIn != null)
+                self.zoomIn();
+        } else if((event.keyCode == 109) || (shiftKeyPressed && event.keyCode == 189) || (shiftKeyPressed && event.keyCode == 173)) {
+            if(self.zoomOut != null)
+                self.zoomOut();
+        } else if((shiftKeyPressed && event.keyCode == 83)) {
+            if(self.update!= null)
+                self.update();
+        } else if(event.keyCode == 46) {
+            if(self.nodes != null && self.nodes.length > 0) {
+                var nodeId = 0;
+                for(var i = 0; i < self.nodes.length; i++) {
+                    if(self.nodes[i].isSelected) {
+                        nodeId = self.nodes[i].id;
+                        break;
+                    }
+                }
+                
+                if(self.rightPanel != null) {
+                    var node = GetNodeById(nodeId);
+                    if(node != null) {
+                        self.rightPanel.node = node;
+                        self.rightPanel.DeleteNodes();
+                    }
+                }
+            }
+        }
+    } 
+    
+    var KeyUp = function(event) {
+        ctrlKeyPressed = event.ctrlKey;
+        shiftKeyPressed = event.shiftKey;
     }
     
     var UpdateMousePosition = function(event) {
@@ -441,18 +744,9 @@ var VisualEditor = function() {
         //event.preventDefault();
         self.mouse.isDown = true;
         UpdateMousePosition(event);
-        
+
         var isRedraw = false;
-        if(self.links.length > 0) {
-            for(var i = 0; i < self.links.length; i++) {
-                if(self.links[i].MouseClick(self.mouse, viewport)) {
-                    isRedraw = true;
-                    ShowLinkManagetDialog(self.links[i].id);
-                    self.mouse.isDown = false;
-                }
-            }
-        }
-        
+
         if(self.nodes.length > 0) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
                 var result = self.nodes[i].MouseClick(self.mouse, viewport);
@@ -462,7 +756,6 @@ var VisualEditor = function() {
                     } else if(result[1] == 'add') {
                         AddNodeWithLink(result[0]);
                     } else if(result[1] == 'root') {
-                        SetRootNode(result[0]);
                     } else if(result[1] == 'link') {
                         ShowLinkConnector(result[0]);
                     } else if(result[1] == 'rlink') {
@@ -474,11 +767,40 @@ var VisualEditor = function() {
                         ShowDeleteDialog(result[0]);
                         self.mouse.isDown = false;
                     } else if(result[1] == 'main') {
-                        ShowNodeDialog(result[0]);
+                        ShowRightPanel(result[0], 'node');
                         self.mouse.isDown = false;
+                    } else if(result[1] == 'deleteC') {
+                        ShowDeleteDialog(result[0]);
+                        self.mouse.isDown = false;
+                    } else if(result[1] == 'rootC') {
+                        SetRootNode(result[0]);
                     }
                 }
             }
+        }
+        
+        if(self.links.length > 0 && !isRedraw) {
+            for(var i = 0; i < self.links.length; i++) {
+                if(self.links[i].MouseClick(self.mouse, viewport)) {
+                    isRedraw = true;
+                    ShowLinkManagetDialog(self.links[i].id);
+                    self.mouse.isDown = false;
+                }
+            }
+        }
+        
+        if(!isRedraw && self.selectorTool != null && self.isSelectActive) {
+            if(!ctrlKeyPressed) {
+                for(var i = 0; i < self.links.length; i++) {
+                    self.links[i].isSelected = false;
+                }
+
+                for(var i = self.nodes.length - 1; i >= 0; i--) { 
+                    self.nodes[i].isSelected = false;
+                }
+            }
+            self.selectorTool.MouseDown(self.mouse, viewport);
+            isRedraw = true;
         }
 
         if(isRedraw)
@@ -528,6 +850,24 @@ var VisualEditor = function() {
             }*/
         }
         
+        if(!isRedraw && self.selectorTool != null && self.isSelectActive) {
+            if(self.nodes.length > 0) {
+                for(var i = self.nodes.length - 1; i >= 0; i--) {
+                    if(self.nodes[i].IsNodeInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport))
+                        self.nodes[i].isSelected = true;
+                }
+            }
+            
+            if(self.links.length > 0) {
+                for(var i = self.links.length - 1; i >= 0; i--) {
+                    if(self.links[i].IsLinkInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport))
+                        self.links[i].isSelected = true;
+                }
+            }
+            self.selectorTool.MouseUp(self.mouse, viewport);
+            isRedraw = true;
+        }
+        
         if(isRedraw)
             self.Render();
 
@@ -535,6 +875,8 @@ var VisualEditor = function() {
     }
     
     var MouseMove = function(event) {
+        var isCursorSet = false;
+        
         if(self.mouse.isDown)
             event.preventDefault();
         
@@ -542,34 +884,88 @@ var VisualEditor = function() {
 
         var isRedraw = false;
         
+        event.stopPropagation();
+        event.target.style.cursor = 'default';
+        
         if(self.linkConnector != null) {
+            if(self.linkConnector.IsConnectorCollision(self.mouse.x, self.mouse.y, viewport)) {
+                event.target.style.cursor = 'move';
+                isCursorSet = true;
+            }
             if(self.linkConnector.MouseMove(self.mouse, viewport, self.nodes)) {
+                event.target.style.cursor = 'move';
+                isCursorSet = true;
                 isRedraw = true;
             }
         }
         
-        if(self.nodes.length > 0 && !isRedraw) {
+        if(self.nodes.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
-                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes))
+                if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'move';
+                    isCursorSet = true;
+                } else if(!isCursorSet && 'IsLinkButtonCollision' in self.nodes[i] && self.nodes[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && 'IsAddButtonCollision' in self.nodes[i] && self.nodes[i].IsAddButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && self.nodes[i].IsMainAreaCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                }
+                
+                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes)) {
+                    if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                        event.target.style.cursor = 'move';
+                        isCursorSet = true;
+                    }
                     isRedraw = true;
+                }
             }
         }
         
-        if(self.links.length > 0 && !isRedraw) {
+        if(self.links.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
             for(var i = 0; i < self.links.length; i++) {
-                if(self.links[i].MouseMove(self.mouse, viewport))
+                if(self.links[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                }
+                if(self.links[i].MouseMove(self.mouse, viewport)) {
+                    if(!isCursorSet) {
+                        event.target.style.cursor = 'default';
+                        isCursorSet = true;
+                    }
                     isRedraw = true;
+                }
             }
         }
-
-        if(!isRedraw && self.mouse.isDown) {
+        
+        if(!isCursorSet && !self.isSelectActive) {
+            event.target.style.cursor = 'move';
+            isCursorSet = true;
+        } else if(!isCursorSet) {
+            event.target.style.cursor = 'crosshair';
+            isCursorSet = true;
+        }
+        
+        if(isCursorSet) {
+            $('body').addClass('clearCursor');
+        } else {
+            $('body').removeClass('clearCursor');
+        }
+        
+        if(!isRedraw && self.mouse.isDown && !self.isSelectActive) {
             var scale = viewport.GetScale();
-
+            
             var tx = (self.mouse.x - self.mouse.oldX) / scale[0];
             var ty = (self.mouse.y - self.mouse.oldY) / scale[1];
             
             viewport.TranslateWithoutScale(tx, ty);
             isRedraw = true;
+        } else if(!isRedraw && self.mouse.isDown && self.isSelectActive) {
+            if(self.selectorTool.MouseMove(self.mouse, viewport))
+                isRedraw = true;
         }
 
         if(isRedraw)
@@ -644,35 +1040,39 @@ var VisualEditor = function() {
         }
     }
     
+    var ShowRightPanel = function(elementId, mode) {
+        if(self.rightPanel != null) {
+            if(mode == 'node') {
+                var node = GetNodeById(elementId);
+                if(node != null) {
+                    self.rightPanel.node = node;
+                    self.rightPanel.mode = 'node';
+                    self.rightPanel.Show();
+                }
+            }
+        }
+    }
+    
     var ShowDeleteDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
+        var selectedNodes = new Array();
         
-        if(node != null && self.deleteModal != null) {
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                if(self.nodes[i].isSelected)
+                    selectedNodes.push(self.nodes[i]);
+            }
+        }
+        
+        if(selectedNodes.length > 0 && self.deleteModal != null && node != null && node.isSelected) {
+            self.deleteModal.selectedNodes = selectedNodes;
+            self.deleteModal.Show('multiple');
+        }else if(node != null && self.deleteModal != null) {
             self.deleteModal.node = node;
-            self.deleteModal.Show();
+            self.deleteModal.Show('single');
         }
     }
     
-    var ShowNodeDialog = function(nodeId) {
-        var node = GetNodeById(nodeId);
-        
-        if(node != null && self.nodeModal != null) {
-            self.nodeModal.SetNode(node);
-            self.nodeModal.Show();
-        }
-    }
-    
-    var GetRootNode = function() {
-        if(self.nodes.length <= 0) return null;
-
-        for(var i = 0; i < self.nodes.length; i++) {
-            if(self.nodes[i].isRoot)
-                return self.nodes[i];
-        }
-
-        return null;
-    }
-
     var GetNodeById = function(id) {
         if(self.nodes.length <= 0) return null;
 
@@ -691,6 +1091,17 @@ var VisualEditor = function() {
         for(var i = 0; i < self.links.length; i++) {
             if(self.links[i].id == id)
                 return self.links[i];
+        }
+    
+        return null;
+    }
+    
+    var GetRootNode = function() {
+        if(self.nodes.length <= 0) return null;
+        
+        for(var i = 0; i < self.nodes.length; i++) {
+            if(self.nodes[i].isRoot)
+                return self.nodes[i];
         }
     
         return null;
@@ -727,83 +1138,15 @@ var VisualEditor = function() {
     var encode64 = function (input) {
         input = input.replace(/\0/g,"");
         return  B64.encode($.trim(input));
-/*
-        input = escape(input);
-        var output = "";
-        var chr1, chr2, chr3 = "";
-        var enc1, enc2, enc3, enc4 = "";
-        var i = 0;
-
-        do {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if (isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if (isNaN(chr3)) {
-                enc4 = 64;
-            }
-
-            output = output +
-            keyStr.charAt(enc1) +
-            keyStr.charAt(enc2) +
-            keyStr.charAt(enc3) +
-            keyStr.charAt(enc4);
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
-        } while (i < input.length);
-
-        return output;*/
     }
 
     var decode64 = function(input) {
         input = input.replace(/\0/g,"");
         return  B64.decode($.trim(input));
-/*
-        var output = "";
-        var chr1, chr2, chr3 = "";
-        var enc1, enc2, enc3, enc4 = "";
-        var i = 0;
-
-        // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-        var base64test = /[^A-Za-z0-9\+\/\=]/g;
-        if (base64test.exec(input)) {
-            alert("There were invalid base64 characters in the input text.\n" +
-                "Valid base64 characters are A-Z, a-z, 0-9, '+', '/',and '='\n" +
-                "Expect errors in decoding.");
-        }
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        do {
-            enc1 = keyStr.indexOf(input.charAt(i++));
-            enc2 = keyStr.indexOf(input.charAt(i++));
-            enc3 = keyStr.indexOf(input.charAt(i++));
-            enc4 = keyStr.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if (enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            if (enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
-            }
-
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
-
-        } while (i < input.length);
-
-        return unescape(output);*/
+    }
+    
+    var evalJson = function(jsArray) {
+        eval("function parseJSON(){ return "+ jsArray +"; }");
+        return parseJSON();
     }
 }

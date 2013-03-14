@@ -44,7 +44,7 @@ var LinkConnector = function() {
     self.MouseMove = function(mouse, viewport) {
         var isRedraw = false;
         if(mouse.isDown) {
-            if(IsConnectorCollision(mouse.x, mouse.y, viewport) || self.isDragging) {
+            if(self.IsConnectorCollision(mouse.x, mouse.y, viewport) || self.isDragging) {
                 isRedraw = true;
                 self.isMoved = true;
                 self.isDragging = true;
@@ -80,7 +80,7 @@ var LinkConnector = function() {
         self.transform.Translate(self.node.width * 0.5, -60);
     }
     
-    var IsConnectorCollision = function(x, y, viewport) {
+    self.IsConnectorCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);

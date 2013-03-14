@@ -3,8 +3,11 @@ var DeleteModal = function() {
     var $modal = null;
     var $apply = null;
     var visualEditor = null;
+    var dialogMode = 'single'; // single node delete or multiply
     
     self.node = null;
+    self.selectedNodes = null;
+    self.rightPanel = null;
     
     self.Init = function(parameters) {
         if('modalId' in parameters)
@@ -19,27 +22,56 @@ var DeleteModal = function() {
         
         if('visualEditor' in parameters)
             visualEditor = parameters.visualEditor;
+        
+        if('rightPanel' in parameters)
+            self.rightPanel = parameters.rightPanel;
     }
     
-    self.Show = function() {
+    self.Show = function(mode) {
+        dialogMode = mode;
         if($modal != null) {
+            if(mode == 'single') {
+                $('.deleteModalHeaderNode').show();
+                $('.deleteModalContentNode').show();
+            } else if(mode == 'multiple') {
+                $('.deleteModalHeaderNodes').show();
+                $('.deleteModalContentNodes').show();
+            }
+            
             $modal.modal();
         }
     }
     
     self.Hide = function() {
         if($modal != null) {
+            $('.deleteModalHeaderNode').hide();
+            $('.deleteModalContentNode').hide();
+            $('.deleteModalHeaderNodes').hide();
+            $('.deleteModalContentNodes').hide();
             $modal.modal('hide');
         }
     }
      
     var ApplyEvent = function() {
-        if(self.node != null && visualEditor != null) {
-            visualEditor.DeleteNodeById(self.node.id);
-            self.node = null;
-            
-            visualEditor.Render();
+        if(dialogMode == 'single') {
+            if(self.node != null && visualEditor != null) {
+                visualEditor.DeleteNodeById(self.node.id);
+                self.node = null;
+
+                visualEditor.Render();
+            }
+        } else if(dialogMode == 'multiple') {
+            if(self.selectedNodes != null && self.selectedNodes.length > 0 && visualEditor != null) {
+                for(var i = 0; i < self.selectedNodes.length; i++) {
+                    visualEditor.DeleteNodeById(self.selectedNodes[i].id);
+                }
+                
+                visualEditor.Render();
+            }
         }
+        
+        if(self.rightPanel != null)
+            self.rightPanel.Hide();
         
         self.Hide();
         

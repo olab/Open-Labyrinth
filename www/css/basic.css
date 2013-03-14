@@ -181,7 +181,7 @@ div.scroll {
     width: 79%;
     float:left;
     background: #cdcdcd;
-    height: 600px;
+    height: 800px;
 }
 .wizard_body .node-editor {
     min-width: 600px;
@@ -532,58 +532,64 @@ td[colspan*="11"] {
     font-style: italic;
 }
 
-.metadata-container .controls >div{
-    margin-top:10px;
-    margin-bottom: 10px;
-    float:left;
-    width:100%;
+.visual-editor-right-panel {
+    display: block;
+    background-color: #eeeeee;
+    height: 790px;
+    max-height: 790px;
+    min-width: 290px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 5px;
 }
 
-
-
-
-
-
-.inlineobjectrecord > .control-subgroup {
-    margin-left: 0;
+.visual-editor-right-panel.hide {
+    display: none;
 }
 
-.btn [class^="icon-"], .nav [class^="icon-"], .btn [class*=" icon-"], .nav [class*=" icon-"] {
-
-    margin-right: 3px;
+.visual-editor-right-panel .footer {
+    text-align: center;
 }
 
-fieldset{
-    margin-bottom: 10px;
-}
-.btn-group > select {
-    position: relative;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    border-radius: 0;
-}
-.btn-group > select:first-child {
-    margin-left: 0;
-    -webkit-border-bottom-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    -webkit-border-top-left-radius: 4px;
-    border-top-left-radius: 4px;
-    -moz-border-radius-bottomleft: 4px;
-    -moz-border-radius-topleft: 4px;
+.child-block {
+    display: block;
 }
 
-.btn-group > select:last-child,
-{
-    -webkit-border-top-right-radius: 4px;
-    border-top-right-radius: 4px;
-    -webkit-border-bottom-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    -moz-border-radius-topright: 4px;
-    -moz-border-radius-bottomright: 4px;
+.child-block div {
+    display: block;
 }
 
+.accordion .node-panel {
+    display: none;
+}
 
-.control-label > .pull-right{
-    margin-top: 0;
-    width: 100%;
+.accordion.node-panel .node-panel {
+    display: block;
+}
+
+.clearCursor {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.deleteModalHeaderNode {
+    display: none;
+}
+
+.deleteModalHeaderNodes {
+    display: none;
+}
+
+.deleteModalContentNode {
+    display: none;
+}
+
+.deleteModalContentNodes {
+    display: none;
 }
