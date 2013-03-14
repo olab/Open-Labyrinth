@@ -37,7 +37,7 @@
         <div class="instractions">
             <p class="header">Instructions:</p>
 
-            <p class="li">This is hight level editing. Just get the main points of your story down one idea per
+            <p class="li">This is high level editing. Just get the main points of your story down one idea per
                 node.</p>
         </div>
         <div class="visual-editor">
