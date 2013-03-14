@@ -15,6 +15,10 @@ var Link = function() {
     
     self.id = 0;
     self.isNew = false;
+    self.isSelected = false;
+    self.selectPadding = 5;
+    self.label = '';
+    self.imageId = 0;
     
     self.Draw = function(context, viewport) {
         DrawByType(context, viewport);
@@ -23,7 +27,7 @@ var Link = function() {
     self.MouseMove = function(mouse, viewport) {
         var isRedraw = false;
         
-        if(IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
+        if(self.IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
             isRedraw = true;
             self.arrowButtonBackgroundColor = self.arrowButtonHoverColor;
         } else if(self.arrowButtonBackgroundColor != defArrowButtonBackgroundColor) {
@@ -35,10 +39,34 @@ var Link = function() {
     }
     
     self.MouseClick = function(mouse, viewport) {       
-        return IsLinkButtonCollision(mouse.x, mouse.y, viewport);
+        return self.IsLinkButtonCollision(mouse.x, mouse.y, viewport);
     }
     
-    var IsLinkButtonCollision = function(x, y, viewport) {
+    self.IsLinkInRect = function(x, y, width, height, viewport) {
+        var trs = GetNodesTransformations(viewport);
+        var trA = trs[0];
+        var trB = trs[1];
+        
+        var xW = x + width;
+        var yH = y + height;
+        
+        var x1 = [Math.min(x, xW), Math.max(x, xW)];
+        var y1 = [Math.min(y, yH), Math.max(y, yH)];
+        
+        var posA = trA.GetPosition();
+        var posB = trB.GetPosition();
+        
+        var scale = viewport.GetScale();
+        
+        var cdx = Math.abs((posA[0] - posB[0]) * 0.5);
+        var cdy = Math.abs((posA[1] - posB[1]) * 0.5);
+        
+        var cPos = [Math.min(posA[0], posB[0]) + cdx, Math.min(posA[1], posB[1]) + cdy];
+        
+        return (cPos[0] >= x1[0] && cPos[0] <= x1[1]) && (cPos[1] >= y1[0] && cPos[1] <= y1[1]);
+    }
+    
+    self.IsLinkButtonCollision = function(x, y, viewport) {
         var result = false;
         
         var trs = GetNodesTransformations(viewport);
@@ -126,6 +154,63 @@ var Link = function() {
         } else {
             DrawNoneTypeLine(context, stateParams, viewport);
         }
+        
+        if(self.isSelected)
+            DrawSelected(context, viewport, stateParams);
+    }
+
+    var DrawSelected = function(context, viewport, stateParams) {
+        var trs = GetNodesTransformations(viewport);
+        var trA = trs[0];
+        var trB = trs[1];
+        
+        var posA = trA.GetPosition();
+        var posB = trB.GetPosition();
+        
+        var scale = viewport.GetScale();
+        var avgScale = (scale[0] + scale[1]) * 0.5;
+        
+        var cdx = Math.abs((posA[0] - posB[0]) * 0.5);
+        var cdy = Math.abs((posA[1] - posB[1]) * 0.5);
+        
+        var cPos = [Math.min(posA[0], posB[0]) + cdx, Math.min(posA[1], posB[1]) + cdy];
+        var x = new Array();
+        var y = new Array();
+        if(self.type == 'direct' || self.type == 'back') {
+            var angle = 0;
+            if(self.type == 'direct') {
+                angle = Math.atan2(posB[1] - posA[1], posB[0] - posA[0]);
+            } else if(self.type == 'back') {
+                angle = Math.atan2(posA[1] - posB[1], posA[0] - posB[0]);
+            }
+            
+            var arrowPos = GetArrowPosition(trA.GetPosition(), trB.GetPosition());
+            
+            var circlePos = RotatePoint(angle, (-(stateParams.lineWidth * 5 + 10) * 0.5 - 3) * (scale[0] + scale[1]) * 0.5, 0);
+            
+            circlePos[0] += arrowPos[0];
+            circlePos[1] += arrowPos[1];
+
+            x = [circlePos[0] - self.arrowButtonRaduis * avgScale - self.selectPadding, circlePos[0] + self.arrowButtonRaduis * avgScale + self.selectPadding];
+            y = [circlePos[1] - self.arrowButtonRaduis * avgScale - self.selectPadding, circlePos[1] + self.arrowButtonRaduis * avgScale + self.selectPadding];
+        } else if(self.type == 'dual') {
+            x = [cPos[0] - self.arrowButtonRaduis * 2 * avgScale - self.selectPadding * 2, cPos[0] + self.arrowButtonRaduis * 2 * avgScale + self.selectPadding * 2];
+            y = [cPos[1] - self.arrowButtonRaduis * 2 * avgScale - self.selectPadding * 2, cPos[1] + self.arrowButtonRaduis * 2 * avgScale + self.selectPadding * 2];
+        } else {
+            x = [cPos[0] - self.arrowButtonRaduis * avgScale - self.selectPadding, cPos[0] + self.arrowButtonRaduis * avgScale + self.selectPadding];
+            y = [cPos[1] - self.arrowButtonRaduis * avgScale - self.selectPadding, cPos[1] + self.arrowButtonRaduis * avgScale + self.selectPadding];
+        }
+        
+        context.beginPath();
+        context.lineWidth = 2 * avgScale;
+        
+        var st = [5 * avgScale, 5 * avgScale];
+        DashedLineTo(context, x[0], y[0], x[1], y[0], st);
+        DashedLineTo(context, x[1], y[0], x[1], y[1], st);
+        DashedLineTo(context, x[1], y[1], x[0], y[1], st);
+        DashedLineTo(context, x[0], y[1], x[0], y[0], st);
+        
+        context.stroke();
     }
     
     var DrawNoneTypeLine = function(context, stateParams, viewport) {
@@ -248,11 +333,11 @@ var Link = function() {
             
         trA.Multiply(viewport);
         trA.Multiply(self.nodeA.transform);
-        trA.Translate(self.nodeA.width * 0.5, 0);
+        trA.Translate(self.nodeA.width * 0.5, self.nodeA.height * 0.5);
             
         trB.Multiply(viewport);
         trB.Multiply(self.nodeB.transform);
-        trB.Translate(self.nodeB.width * 0.5, 0);
+        trB.Translate(self.nodeB.width * 0.5, self.nodeB.height * 0.5);
         
         return [trA, trB];
     }
@@ -275,4 +360,41 @@ var Link = function() {
         
         return arrowPos;
     }
+    
+    var DashedLineTo = function (context, fromX, fromY, toX, toY, pattern) {
+        var lt = function (a, b) {return a <= b;};
+        var gt = function (a, b) {return a >= b;};
+        var capmin = function (a, b) {return Math.min(a, b);};
+        var capmax = function (a, b) {return Math.max(a, b);};
+
+        var checkX = {thereYet: gt, cap: capmin};
+        var checkY = {thereYet: gt, cap: capmin};
+
+        if (fromY - toY > 0) {
+            checkY.thereYet = lt;
+            checkY.cap = capmax;
+        }
+        if (fromX - toX > 0) {
+            checkX.thereYet = lt;
+            checkX.cap = capmax;
+        }
+
+        context.moveTo(fromX, fromY);
+        var offsetX = fromX;
+        var offsetY = fromY;
+        var idx = 0, dash = true;
+        while (!(checkX.thereYet(offsetX, toX) && checkY.thereYet(offsetY, toY))) {
+            var ang = Math.atan2(toY - fromY, toX - fromX);
+            var len = pattern[idx];
+
+            offsetX = checkX.cap(toX, offsetX + (Math.cos(ang) * len));
+            offsetY = checkY.cap(toY, offsetY + (Math.sin(ang) * len));
+
+            if (dash) context.lineTo(offsetX, offsetY);
+            else context.moveTo(offsetX, offsetY);
+
+            idx = (idx + 1) % pattern.length;
+            dash = !dash;
+        }
+    };
 }

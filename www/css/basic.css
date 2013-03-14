@@ -181,7 +181,7 @@ div.scroll {
     width: 79%;
     float:left;
     background: #cdcdcd;
-    height: 600px;
+    height: 800px;
 }
 .wizard_body .node-editor {
     min-width: 600px;
@@ -530,4 +530,66 @@ td[colspan*="11"] {
    text-align: center;
     font-size: 80%;
     font-style: italic;
+}
+
+.visual-editor-right-panel {
+    display: block;
+    background-color: #eeeeee;
+    height: 790px;
+    max-height: 790px;
+    min-width: 290px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 5px;
+}
+
+.visual-editor-right-panel.hide {
+    display: none;
+}
+
+.visual-editor-right-panel .footer {
+    text-align: center;
+}
+
+.child-block {
+    display: block;
+}
+
+.child-block div {
+    display: block;
+}
+
+.accordion .node-panel {
+    display: none;
+}
+
+.accordion.node-panel .node-panel {
+    display: block;
+}
+
+.clearCursor {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.deleteModalHeaderNode {
+    display: none;
+}
+
+.deleteModalHeaderNodes {
+    display: none;
+}
+
+.deleteModalContentNode {
+    display: none;
+}
+
+.deleteModalContentNodes {
+    display: none;
 }
