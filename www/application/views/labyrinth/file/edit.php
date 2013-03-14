@@ -94,6 +94,7 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                     <option value="application/x-director" <?php if ($templateData['file']->mime == 'application/x-director') echo 'selected=""'; ?>>dcr:application/x-director</option>
                                     <option value="application/x-director" <?php if ($templateData['file']->mime == 'application/x-director') echo 'selected=""'; ?>>dxr:application/x-director</option>
                                     <option value="image/gif" <?php if ($templateData['file']->mime == 'image/gif') echo 'selected=""'; ?>>gif:image/gif</option>
+                                    <option value="image/png" <?php if ($templateData['file']->mime == 'image/png') echo 'selected=""'; ?>>png:image/png</option>
                                     <option value="text/html" <?php if ($templateData['file']->mime == 'text/html') echo 'selected=""'; ?>>htm:text/html</option>
                                     <option value="text/html" <?php if ($templateData['file']->mime == 'text/html') echo 'selected=""'; ?>>html:text/html</option>
                                     <option value="image/jpeg" <?php if ($templateData['file']->mime == 'image/jpeg') echo 'selected=""'; ?>>jpeg:image/jpeg</option>

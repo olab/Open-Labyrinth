@@ -71,7 +71,6 @@ class Controller_ChatManager extends Controller_Base {
                     Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'chatManager/addChat/' . $mapId));
 
-
             $addChatView = View::factory('labyrinth/chat/add');
             $addChatView->set('templateData', $this->templateData);
 

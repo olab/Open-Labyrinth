@@ -20,7 +20,7 @@
  */
 ?>
 <h3>Login</h3>
-<form method="post" action="<?php echo URL::base() . 'home/login' ?>">
+<form id="loginForm" name="loginForm" method="post" action="<?php echo URL::base() . 'home/login' ?>">
     <label for="username"><?php echo __('Username'); ?></label>
     <input class="not-autocomplete" type="text" id="username" name="username" placeholder="<?php echo __('Your Username'); ?>" />
 

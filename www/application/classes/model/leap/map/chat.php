@@ -110,7 +110,16 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
                 ->column('counter_id', Arr::get($values, 'scount', 0));
         $newChatId = $builder->execute();
         
-        for($i = 1; $i <= $countOfQuestions; $i++) {
+        $indexes = array();
+        foreach($values as $k => $v) {
+            if(strstr($k, 'questionIndex') != false) {
+                $indexes[] = $v;
+            }
+        }
+        
+        $count = 1;
+        foreach($indexes as $i) {
+            if($count > $countOfQuestions) break;
             $element = DB_ORM::model('map_chat_element');
             $element->chat_id = $newChatId;
             $element->question = Arr::get($values, 'question'.$i, '');
@@ -118,6 +127,7 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
             $element->function = Arr::get($values, 'counter'.$i, '');
             
             $element->save();
+            $count++;
         }
     }
     
