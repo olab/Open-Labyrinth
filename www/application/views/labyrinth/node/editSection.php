@@ -21,28 +21,25 @@
 if (isset($templateData['section']) and isset($templateData['map'])) {
     ?>
 
-    <h1><?php echo __('Edit node sections "') . $templateData['section']->name . '"'; ?></h1>
+    <div class="page-header">
+    <h1><?php echo __('Edit node sections "') . $templateData['section']->name . '"'; ?></h1></div>
 
     <form class="form-horizontal"
         action="<?php echo URL::base() . 'nodeManager/updateNodeSection/' . $templateData['map']->id . '/' . $templateData['section']->id; ?>"
         method="post">
         <fieldset>
-            <legend>Details</legend>
+            <legend>Section Details</legend>
         <div class="control-group">
             <label for="sectiontitle" class="control-label"><?php echo __('Section title'); ?>
             </label>
             <div class="controls">
-                <input id="sectiontitle" type="text" name="sectiontitle" size="20"
-                       value="<?php echo $templateData['section']->name; ?>"><a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/deleteNodeSection/' . $templateData['map']->id . '/' . $templateData['section']->id; ?>"><?php echo __('delete'); ?></a>
+                <input id="sectiontitle" type="text" name="sectiontitle" class="span6"
+                       value="<?php echo $templateData['section']->name; ?>">
 
             </div>
         </div>
-
-
-
-
-
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('save'); ?>">
+        <div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Save details'); ?>"></div>
         </fieldset>
     </form>
 
@@ -50,7 +47,7 @@ if (isset($templateData['section']) and isset($templateData['map'])) {
         action="<?php echo URL::base() . 'nodeManager/updateSectionNodes/' . $templateData['map']->id . '/' . $templateData['section']->id; ?>"
         method="post">
 
-        <fieldset><legend><?php echo __('Nodes'); ?></legend>
+        <fieldset><legend><?php echo __('Section Nodes'); ?></legend>
 
 
             <?php if (count($templateData['section']->nodes) > 0) { ?>
@@ -62,26 +59,25 @@ if (isset($templateData['section']) and isset($templateData['map'])) {
                             - <?php echo __('node conditional'); ?>: <?php echo $node->order; ?> - <?php echo __('ordered'); ?>
                         </label>
                         <div class="controls">
-                            <select id="node_<?php echo $node->id; ?>" name="node_<?php echo $node->id; ?>">
+                            <div class="btn-group">
+                            <select  id="node_<?php echo $node->id; ?>" name="node_<?php echo $node->id; ?>">
                                 <?php for ($i = 0; $i < count($templateData['section']->nodes); $i++) { ?>
                                     <option
                                         value="<?php echo $i; ?>" <?php if ($i == $node->order) echo 'selected=""'; ?>><?php echo $i; ?></option>
                                 <?php } ?>
-                            </select><a class="btn btn-primary"
-                                href="<?php echo URL::base() . 'nodeManager/deleteNodeBySection/' . $templateData['map']->id . '/' . $templateData['section']->id . '/' . $node->node->id; ?>"><?php echo __('delete'); ?></a>
-
+                            </select><a class="btn btn-danger"
+                                href="<?php echo URL::base() . 'nodeManager/deleteNodeBySection/' . $templateData['map']->id . '/' . $templateData['section']->id . '/' . $node->node->id; ?>">
+                                    <i class="icon-trash"></i>
+                                    <?php echo __('Remove'); ?></a>
+                        </div>
                         </div>
                     </div>
 
                 <?php } ?>
             <?php } ?>
-
-
-
-
-
         </fieldset>
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('save'); ?>">
+        <div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Save order'); ?>"></div>
 
     </form>
 
@@ -114,8 +110,8 @@ if (isset($templateData['section']) and isset($templateData['map'])) {
 
 
         </fieldset>
-
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('add'); ?>">
+<div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Add node'); ?>"></div>
 
     </form>
 

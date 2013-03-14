@@ -28,31 +28,41 @@ $(document).ready(function () {
 
 
     $("body").on("click", ".remove", function (event) {
-        $(event.target).parent().remove();
+        $(event.target).closest("div").remove();
     });
 
     $(".add").unbind('click').click(function (event) {
-        var metadataname = $(event.target).parent().attr("id");
+        var metadataname = $(event.target).closest(".control-group").attr("id");
 
-        var add_link = event.target;
+
 
 
         $.getJSON('../../metadata/api/ui?metadata=' + metadataname, function (data) {
 
             var div = document.createElement('div');
             $(div).append(data);
-
+            $(div).addClass("input-append");
+            $(div).addClass("span9");
+            var div2 = document.createElement('div');
+            $(div2).append(div);
             var a = document.createElement('a');
             $(a).addClass('remove');
             $(a).addClass('btn');
             $(a).addClass('btn-danger');
-            $(a).append("remove");
+            $(a).append("<i class='icon-remove'></i>");
+            $(a).append("Remove");
 
             $(div).append(a);
+            $(event.target).closest(".control-group").children(".controls").append(div2);
 
-            $(add_link).before(div);
+            $(".date").datepicker(
+                {
+                    format:"yyyy-mm-dd"
+                }
+            );
 
         });
+
 
     });
 
@@ -85,9 +95,9 @@ $(document).ready(function () {
                 var value = JSON.stringify(serialize_recursive(inline_objects[j]));
                 var input = document.createElement('input');
                 var suffix = "";
-                if($(inlines[i]).hasClass("multi"))
+                if($(inline_objects[j]).hasClass("multi"))
                     suffix = "[]";
-                $(input).attr("name", $(inlines[i]).attr("id") +suffix);
+                $(input).attr("name", $(inline_objects[j]).attr("id") +suffix);
                 $(input).attr("value", value);
                 $(input).attr("type", "hidden");
                 $(input).attr("class", "result");
@@ -95,7 +105,19 @@ $(document).ready(function () {
 
 
             }
+            var value = JSON.stringify(serialize_recursive(inlines[i]));
+            var input = document.createElement('input');
+            var suffix = "";
+            if($(inlines[i]).hasClass("multi"))
+                suffix = "[]";
+            $(input).attr("name", $(inlines[i]).attr("id") +suffix);
+            $(input).attr("value", value);
+            $(input).attr("type", "hidden");
+            $(input).attr("class", "result");
+            $(inlines[i]).append(input);
+
             $(inlines[i]).find(":input").not(".result").attr("disabled","disabled");
+
             $(inlines[i]).addClass("processed");
         }
         return true;
@@ -132,7 +154,7 @@ $(document).ready(function () {
         for (i in inputs) {
             var name = inputs[i].name.replace("[]","");
             if (typeof inputsObj[name] != 'undefined') {
-                inputsObj[name] = $.merge([inputsObj[name]],[inputs[i].value]);
+                inputsObj[name] = $.merge($.isArray(inputsObj[name])?inputsObj[name]:[inputsObj[name]],[inputs[i].value]);
             }
             else
                 inputsObj[name] = inputs[i].value

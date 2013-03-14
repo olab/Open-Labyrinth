@@ -63,11 +63,28 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
         $this->load();
         $valueObject = is_array($value) ? $value : json_decode($value, true);
 
+        $inlineMetadata = Model_Leap_Metadata::getMetadataByModelName("inlineobjectrecord." . $this->field->name);
+
+
         if ($value != NULL) {
+
             foreach ($valueObject as $key => $subValue) {
+               // if($key=="epipleon")var_dump($valueObject);die;
+               // $subValue = is_array($subValue)?$subValue:array($subValue);
+                $metadata = Model_Leap_Metadata::getMetadataByName($key);
+                if($metadata->cardinality==Model_Leap_Metadata::Cardinality_Many && !is_array($subValue))
+                    $subValue = array($subValue);
                 Model_Leap_Metadata_Record::mergeRecords($this->id, $key, $subValue);
             }
         }
+
+        foreach($inlineMetadata as $inline){
+            if(!isset($valueObject[$inline->name])){
+
+                Model_Leap_Metadata_Record::mergeRecords($this->id, $inline->name, array());
+            }
+        }
+
 
 
         $this->save();
@@ -143,15 +160,16 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
         $formFieldName = $name . ($metadata->cardinality === Model_Leap_Metadata::Cardinality_Many ? "[]" : "");
 
-        $html .= "<div class='inline-object $cardinalityClass' id='$formFieldName'>";
+        $html .= "<div class='inline-object control-subgroup span9 $cardinalityClass' id='$formFieldName'>";
         //var_dump($metadata);
         foreach ($inlineMetadata as $inline) {
-            //Model_Leap_Metadata_Record::getEditor($inline->name);
-            $html .=  '          <div class="control-group" >
-                                   <label class="control-label" >'.$inline->label.'</label >
-                                     <div class="controls" >
-                                     '.Helper_Controller_Metadata::metadataEdit($inline, $this).'
-                                        </div >
+            $metadataEditor = Helper_Controller_Metadata::metadataEdit($inline, $this);
+
+            $html .=  '          <div class="control-group" id="'.$inline->name.'" >
+                                   <label class="control-label" >'.$inline->label.'<div class="pull-right">'.$metadataEditor["controls"].'</div></label >
+
+                                     '.$metadataEditor["form"].'
+
                                  </div >';
 
 
@@ -200,6 +218,7 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
             $name = $inline->name;
             if (!$this->is_relation($name)) break;
+            if(empty($this->$name ))break;
             $rendered_obj = Helper_Controller_Metadata::metadataView($this->$name);
 
             $html .= $rendered_obj["label"].": " . $rendered_obj["body"];

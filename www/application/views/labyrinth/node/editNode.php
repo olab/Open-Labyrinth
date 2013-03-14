@@ -45,9 +45,15 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         });
     </script>
 
+<div class="page-header">
+    <div class="pull-right">
+        <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
+            <i class="icon-sitemap"></i>
+            <?php echo __('Set as Root'); ?></a>
 
+    </div>
     <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-
+    </div>
 
     <form id="form1" name="form1" method="post" class="form-horizontal"
           action="<?php echo URL::base() . 'nodeManager/updateNode/' . $templateData['node']->id; ?>">
@@ -136,9 +142,11 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
                 <?php } ?>
             <?php } ?>
-            <div class="control-group">
+            <div class="btn-group">
 
-                <a class="btn btn-primary" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>"><?php echo __("Manage"); ?></a>
+                <a class="btn btn-info" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>">
+                    <i class="icon-dashboard"></i>
+                    <?php echo __("Manage"); ?></a>
             </div>
         </fieldset>
 
@@ -168,7 +176,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 <div class="controls">
                     <?php echo $templateData['node']->conditional; ?>
                     <?php echo $templateData['node']->conditional_message; ?>&nbsp;<i></i>
-                    <a class="btn btn-primary"
+                    <a class="btn btn-info"
                        href="<?php echo URL::base() . 'nodeManager/editConditional/' . $templateData['node']->id; ?>"><?php echo __('Edit'); ?></a>
                 </div>
             </div>
@@ -241,20 +249,15 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
         </fieldset>
 
-        <fieldset class="fieldset">
-            <div class="control-group">
-                <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>"><?php echo __('Set as Root'); ?></a>
 
-
-            </div>
-
-        </fieldset>
         <?php
         echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
+        <div class="form-actions">
 
-        <div class="pull-right">
+            <div class="pull-right">
+
             <input class="btn btn-large btn-primary" type="submit" name="Submit"
-                   value="<?php echo __('Save changes'); ?>"></div>
+                   value="<?php echo __('Save changes'); ?>"></div></div>
     </form>
 
 <?php } ?>

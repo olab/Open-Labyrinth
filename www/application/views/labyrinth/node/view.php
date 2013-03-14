@@ -20,17 +20,25 @@
  */
 if (isset($templateData['map'])) {
     ?>
+    <div class="page-header">
+    <div class="pull-right">
+        <div class="btn-group">
+            <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/addNode/' . $templateData['map']->id; ?>">
+                <i class="icon-plus-sign icon-white"></i>
+                <?php echo __('Add a node'); ?></a>
+        </div>
+    </div>
+        <h1><?php echo __('Edit nodes of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
+    </div>
 
-    <h1><?php echo __('Edit nodes of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
-    <div class="control-group"> <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/addNode/' . $templateData['map']->id; ?>"><?php echo __('Add a node'); ?></a></div>
 
     <?php if (isset($templateData['nodes'])) { ?>
         <table class="table table-striped table-bordered">
             <colgroup>
                 <col style="width: 5%">
-                <col style="width: 40%">
+                <col style="width: 45%">
                 <col style="width: 30%">
-                <col style="width: 20%">
+                <col style="width: 15%">
             </colgroup>
             <thead>
             <tr>
@@ -45,14 +53,19 @@ if (isset($templateData['map'])) {
             <tbody>
             <?php foreach ($templateData['nodes'] as $node) { ?>
                 <tr>
-                    <td><?php echo $node->id; ?><?php if ($node->type->name == 'root') echo '[root]'; ?></td>
+                    <td><?php echo $node->id; ?><?php if ($node->type->name == 'root') echo '(root)'; ?></td>
                 <td><a href="<?php echo URL::base() . 'renderLabyrinth/go/' . $templateData['map']->id.'/'. $node->id; ?>"><?php echo $node->title; ?></a></td>
 
 
                 <td>
-                    <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/editNode/' . $node->id; ?>"><?php echo __('Edit'); ?></a>
-                    <a class="btn btn-success" href="<?php echo URL::base() . 'renderLabyrinth/go/' . $templateData['map']->id.'/'. $node->id; ?>"><?php echo __('View'); ?></a>
-                    <a data-toggle="modal" href="#" data-target="#delete-node-<?php echo $node->id; ?>" class="btn btn-danger"><?php echo __('Delete'); ?></a>
+                    <div class="btn-group">
+                    <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/editNode/' . $node->id; ?>">
+                        <i class="icon-edit icon-white"></i><?php echo __('Edit'); ?></a>
+                    <a target="_blank" class="btn btn-success" href="<?php echo URL::base() . 'renderLabyrinth/go/' . $templateData['map']->id.'/'. $node->id; ?>">
+                        <i class="icon-eye-open icon-white"></i>
+                        <?php echo __('View'); ?></a>
+                    <a data-toggle="modal" href="#" data-target="#delete-node-<?php echo $node->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
+                    </div>
                     <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $node->id; ?>">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -65,15 +78,16 @@ if (isset($templateData['map'])) {
                         </div>
                     </div>
                 </td>
-                <td><a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id .'/' . $node->id; ?>"><?php echo __('Links'); ?></a></td>
+                <td><a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id .'/' . $node->id; ?>">
+                        <i class="icon-link icon-white"></i><?php echo __('Links'); ?></a></td>
                 </tr>
             <?php } ?>
             </tbody>
         </table>
     <?php } ?>
 
-    <div class="control-group">
+    <!--div class="control-group">
     <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/sections/' . $templateData['map']->id; ?>">Sections</a>
     <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>">Nodegrid</a>
-    </div>
+    </div-->
 <?php } ?>

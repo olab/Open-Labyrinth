@@ -531,3 +531,59 @@ td[colspan*="11"] {
     font-size: 80%;
     font-style: italic;
 }
+
+.metadata-container .controls >div{
+    margin-top:10px;
+    margin-bottom: 10px;
+    float:left;
+    width:100%;
+}
+
+
+
+
+
+
+.inlineobjectrecord > .control-subgroup {
+    margin-left: 0;
+}
+
+.btn [class^="icon-"], .nav [class^="icon-"], .btn [class*=" icon-"], .nav [class*=" icon-"] {
+
+    margin-right: 3px;
+}
+
+fieldset{
+    margin-bottom: 10px;
+}
+.btn-group > select {
+    position: relative;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+.btn-group > select:first-child {
+    margin-left: 0;
+    -webkit-border-bottom-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-bottomleft: 4px;
+    -moz-border-radius-topleft: 4px;
+}
+
+.btn-group > select:last-child,
+{
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    -moz-border-radius-bottomright: 4px;
+}
+
+
+.control-label > .pull-right{
+    margin-top: 0;
+    width: 100%;
+}

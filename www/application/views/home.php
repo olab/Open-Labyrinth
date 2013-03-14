@@ -30,10 +30,16 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery-ui-1.9.1.custom.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
+        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
+
+
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/basic.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
+        <!--[if IE 7]>
+        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" />
 
+        <![endif]-->
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
             <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>

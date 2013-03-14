@@ -18,7 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
+?>    <div class="page-header">
 <div class="pull-right">
     <div class="btn-group">
         <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -36,8 +36,9 @@
 <?php
 if (isset($templateData['maps'])) {
     ?>
+
     <h1><?php echo __('My Labyrinths'); ?></h1>
-    
+    </div>
     <table  class="table table-striped table-bordered" id="my-labyrinths">
         <colgroup>
             <col style="width: 50%" />
@@ -71,6 +72,7 @@ if (isset($templateData['maps'])) {
                 ?>
                 </td>
                 <td class="center">
+                    <div class="btn-group">
                     <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
                         <i class="icon-play icon-white"></i>
                         Play
@@ -79,10 +81,10 @@ if (isset($templateData['maps'])) {
                         <i class="icon-edit icon-white"></i>
                         Edit
                     </a>
-                    <a class="btn btn-info" data-toggle="modal" data-target="#duplicate_labyrinth<?php echo $map->id; ?>" href="#">
+                    <a class="btn" data-toggle="modal" data-target="#duplicate_labyrinth<?php echo $map->id; ?>" href="#">
                         <i class="icon-th icon-white"></i>
                         Duplicate
-                    </a>
+                    </a></div>
                     <div class="modal hide fade in" id="duplicate_labyrinth<?php echo $map->id; ?>">
                         <div class="modal-header block">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>

@@ -20,9 +20,9 @@
  */
 if (isset($templateData['map'])) {
     ?>
-
-    <h1><?php echo __('edit node sections for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
-
+<div class="page-header">
+    <h1><?php echo __('Edit node sections for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    </div>
     <?php if (isset($templateData['node_sections'])) { ?>
         <table class="table table-striped table-bordered">
             <thead>
@@ -51,7 +51,14 @@ if (isset($templateData['map'])) {
 
                         <?php } ?><?php } ?>
                     </td>
-                    <td><a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/editSection/' . $templateData['map']->id . '/' . $nodeSection->id; ?>">edit</a></td>
+                    <td>
+                        <div class="btn-group">
+                        <a class="btn btn-info" href="<?php echo URL::base() . 'nodeManager/editSection/' . $templateData['map']->id . '/' . $nodeSection->id; ?>">
+                            <i class="icon-edit"></i>
+                            Edit</a>
+                            <a class="btn btn-danger" href="<?php echo URL::base() . 'nodeManager/deleteNodeSection/' . $templateData['map']->id . '/' . $nodeSection->id; ?>">
+                                <i class="icon-trash"></i>
+                                <?php echo __('delete'); ?></a></div></td>
                 </tr>
 
             <?php } ?>
@@ -73,14 +80,15 @@ if (isset($templateData['map'])) {
 
         </fieldset>
 
-        <input class="btn btn-primary" type="submit" value="add">
+        <div class="form-actions">
+        <input class="btn btn-primary" type="submit" value="Add section"></div>
     </form>
 
 
 
     <form class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/updateSection/' . $templateData['map']->id; ?>" method="post">
         <fieldset class="fieldset">
-            <legend>Visibility</legend>
+            <legend>Section Headers Visibility</legend>
             <?php if(isset($templateData['sections'])) { ?>
 
             <div class="control-group">
@@ -95,8 +103,8 @@ if (isset($templateData['map'])) {
                     <?php } ?>
                 </div>
             </div>
-
-            <input class="btn btn-primary" type="submit" value="<?php echo __('update'); ?>">
+            <div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="<?php echo __('Save options'); ?>"></div>
             <?php } ?>
        </fieldset>
     </form>

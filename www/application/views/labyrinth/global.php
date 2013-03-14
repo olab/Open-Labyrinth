@@ -21,7 +21,9 @@
 if (isset($templateData['map'])) {
     ?>
 
-
+    <script language="javascript" type="text/javascript"
+            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
+            xmlns="http://www.w3.org/1999/html"></script>
     <h1><?php echo __('Edit Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
 
     <form class="form-horizontal" id="globalMapFrom" name="globalMapFrom" method="post"
@@ -103,7 +105,7 @@ if (isset($templateData['map'])) {
 
 
                     <div class="pull-right">
-                        <a class="btn btn-primary"
+                        <a class="btn btn-info"
                            href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>><?php echo __('Add'); ?></a>
                     </div>
 
@@ -114,7 +116,7 @@ if (isset($templateData['map'])) {
 
 
                 <div class="controls">
-                    <a class="btn btn-primary"
+                    <a class="btn btn-info"
                        href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>><?php echo __('Add'); ?></a>
                 </div>
 
@@ -172,7 +174,7 @@ if (isset($templateData['map'])) {
                                 </div>
                             </div>
                             <div class="pull-right">
-                                <a class="btn btn-primary"
+                                <a class="btn btn-danger"
                                    href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>">
                                     <?php echo __('Delete'); ?>
                                 </a>

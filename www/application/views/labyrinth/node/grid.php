@@ -20,7 +20,8 @@
  */
 if (isset($templateData['map'])) {
     ?>
-    <h1><?php echo __('NodeGrid "') . $templateData['map']->name . '"'; ?></h1>
+    <div class="page-header">
+    <h1><?php echo __('NodeGrid "') . $templateData['map']->name . '"'; ?></h1></div>
     <form class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
 
         <?php if (isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
@@ -33,7 +34,7 @@ if (isset($templateData['map'])) {
                 <label for="title_<?php echo $node->id; ?>" class="control-label"><?php echo __('Title'); ?></label>
 
                 <div class="controls">
-                    <input type="text" id="title_<?php echo $node->id; ?>" name="title_<?php echo $node->id; ?>"
+                    <input class="span6" type="text" id="title_<?php echo $node->id; ?>" name="title_<?php echo $node->id; ?>"
                            value="<?php echo $node->title; ?>">
                 </div>
             </div>
@@ -41,7 +42,7 @@ if (isset($templateData['map'])) {
             <label for="title_<?php echo $node->id; ?>" class="control-label"><?php echo __('Description'); ?></label>
 
             <div class="controls">
-                <textarea id="text_<?php echo $node->id; ?>"
+                <textarea class="span6" id="text_<?php echo $node->id; ?>"
                           name="text_<?php echo $node->id; ?>"><?php echo $node->text; ?></textarea>
             </div>
         </div>
@@ -49,7 +50,8 @@ if (isset($templateData['map'])) {
 
                 <?php } ?>
         <?php } ?>
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+        <div class="form-actions">
+        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>"></div>
 
 
     </form>

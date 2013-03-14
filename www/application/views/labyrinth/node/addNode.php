@@ -18,14 +18,17 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>    
+if (isset($templateData['map'])) {
+    ?>
+    <script language="javascript" type="text/javascript"
+            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
     <script language="javascript" type="text/javascript">
         tinyMCE.init({
             // General options
             mode: "textareas",
-            relative_urls : false,
+            relative_urls: false,
             theme: "advanced",
+            skin: "bootstrap",
             plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
             // Theme options
             theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
@@ -40,115 +43,122 @@ if (isset($templateData['map'])) { ?>
         });
     </script>
 
-                <h1><?php echo __('add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php echo __('Add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
 
 
-                            <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'nodeManager/createNode/'.$templateData['map']->id; ?>">
+    <form class="form-horizontal" id="form1" name="form1" method="post"
+          action="<?php echo URL::base() . 'nodeManager/createNode/' . $templateData['map']->id; ?>">
 
-                                <fieldset class="fieldset">
-                                    <div class="control-group">
-                                        <label for="mnodetitle" class="control-label"><?php echo __('title'); ?></label>
+        <fieldset class="fieldset">
+            <div class="control-group">
+                <label for="mnodetitle" class="control-label"><?php echo __('Title'); ?></label>
 
-                                        <div class="controls">
-                                            <input type="text" name="mnodetitle" id="mnodetitle" />
-                                        </div>
-                                    </div>
+                <div class="controls">
+                    <input class="span6" type="text" name="mnodetitle" id="mnodetitle"/>
+                </div>
+            </div>
 
 
-                                    <div class="control-group">
-                                        <label for="mnodetext" class="control-label"><?php echo __('node content'); ?></label>
+            <div class="control-group">
+                <label for="mnodetext" class="control-label"><?php echo __('Node content'); ?></label>
 
-                                        <div class="controls">
-                                            <textarea name="mnodetext" id="mnodetext"  <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label for="mnodeinfo" class="control-label"><?php echo __('Supporting Information content'); ?></label>
+                <div class="controls">
+                    <textarea name="mnodetext"
+                              id="mnodetext"  <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="mnodeinfo" class="control-label"><?php echo __('Supporting Information content'); ?></label>
 
-                                        <div class="controls">
-                                            <textarea name="mnodeinfo" id="mnodeinfo" <?php if(isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
-                                        </div>
-                                    </div>
-                                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-                                </fieldset>
-<fieldset class="fieldset">
-    <div class="control-group">
-        <label class="control-label"><?php echo __('Exit Node Probability'); ?></label>
-
-        <div class="controls">
-            <label class="radio">
-               <input name="mnodeprobability" type="radio" value="1"><?php echo __('on'); ?>
-            </label>
-        </div>
-        <div class="controls">
-            <label class="radio">
-               <input name="mnodeprobability" type="radio" value="0"><?php echo __('off'); ?>
-            </label>
-
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label"><?php echo __('Link function style'); ?></label>
-        <?php if(isset($templateData['linkStyles'])) { ?>
-            <?php foreach($templateData['linkStyles'] as $linkStyle) { ?>
+                <div class="controls">
+                    <textarea name="mnodeinfo"
+                              id="mnodeinfo" <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset class="fieldset">
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Exit Node Probability'); ?></label>
 
                 <div class="controls">
                     <label class="radio">
-                        <input type="radio" name="linkstyle" value="<?php echo $linkStyle->id ?>"><?php echo $linkStyle->name; ?>
+                        <input name="mnodeprobability" type="radio" value="1"><?php echo __('on'); ?>
                     </label>
                 </div>
-            <?php } ?>
-        <?php } ?>
-
-    </div>
-    <div class="control-group">
-        <label class="control-label"><?php echo __('Node priority'); ?></label>
-        <?php if(isset($templateData['priorities'])) { ?>
-            <?php foreach($templateData['priorities'] as $priority) { ?>
                 <div class="controls">
                     <label class="radio">
-                        <input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?>
+                        <input name="mnodeprobability" type="radio" value="0"><?php echo __('off'); ?>
+                    </label>
+
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Link function style'); ?></label>
+                <?php if (isset($templateData['linkStyles'])) { ?>
+                    <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
+
+                        <div class="controls">
+                            <label class="radio">
+                                <input type="radio" name="linkstyle"
+                                       value="<?php echo $linkStyle->id ?>"><?php echo $linkStyle->name; ?>
+                            </label>
+                        </div>
+                    <?php } ?>
+                <?php } ?>
+
+            </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Node priority'); ?></label>
+                <?php if (isset($templateData['priorities'])) { ?>
+                    <?php foreach ($templateData['priorities'] as $priority) { ?>
+                        <div class="controls">
+                            <label class="radio">
+                                <input type="radio" name="priority"
+                                       value="<?php echo $priority->id ?>"><?php echo $priority->name; ?>
+                            </label>
+                        </div>
+                    <?php } ?>
+                <?php } ?>
+
+            </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Enable undo links'); ?></label>
+
+                <div class="controls">
+                    <label class="radio">
+                        <input name="mnodeUndo" type="radio" value="1"><?php echo __('on'); ?>
                     </label>
                 </div>
-            <?php } ?>
-        <?php } ?>
+                <div class="controls">
+                    <label class="radio">
+                        <input name="mnodeUndo" type="radio" value="0"><?php echo __('off'); ?>
+                    </label>
 
-    </div>
-    <div class="control-group">
-        <label class="control-label"><?php echo __('Enable undo links'); ?></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Link to end and report from this node'); ?></label>
 
-        <div class="controls">
-            <label class="radio">
-                <input name="mnodeUndo" type="radio" value="1"><?php echo __('on'); ?>
-            </label>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" name="ender" value="1"><?php echo __('on'); ?>
+                    </label>
+                </div>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" name="ender" value="0" checked=""><?php echo __('off'); ?>
+                    </label>
+
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-actions">
+            <div class="pull-right">
+                <input class="btn btn-large btn-primary" type="submit" name="Submit"
+                       value="<?php echo __('Add node'); ?>"></div>
         </div>
-        <div class="controls">
-            <label class="radio">
-                <input name="mnodeUndo" type="radio" value="0"><?php echo __('off'); ?>
-            </label>
+    </form>
 
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label"><?php echo __('Link to end and report from this node'); ?></label>
-
-        <div class="controls">
-            <label class="radio">
-                <input type="radio" name="ender" value="1"><?php echo __('on'); ?>
-            </label>
-        </div>
-        <div class="controls">
-            <label class="radio">
-                <input type="radio" name="ender" value="0" checked=""><?php echo __('off'); ?>
-            </label>
-
-        </div>
-    </div>
-</fieldset>
-
-                 <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-                            </form>
-                            <br>
 
 <?php } ?>

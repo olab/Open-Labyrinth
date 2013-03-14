@@ -37,19 +37,20 @@ class Helper_Controller_Metadata
        //Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/tiny_mce.js');
        // Helper_Html_Javascript::add('scripts/jquery/jquery-ui-1.9.1.custom.min.js');
         foreach ($metadata as $property) {
+            $name = $property->name;
+            $metadataEditor = self::metadataEdit($property, $object);
             $html .="
-            <div id='control-group'>
-            <label class='control-label'>".$property->label."</label>
+            <div class='control-group' id='$name'>
+            <label class='control-label'>".$property->label."<div class='pull-right'>".$metadataEditor["controls"]."</div></label>";
 
-            ";
-
-            $html .= self::metadataEdit($property, $object);
+            $html .= $metadataEditor["form"];
 
             $html .="</div>";
 
         }
 
         $html .='</fieldset>';
+
 
         Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js');
         Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
@@ -63,8 +64,12 @@ class Helper_Controller_Metadata
 
     public  static function metadataView($metadataRecord)
     {
-        $result =array();;
-        $label = $metadataRecord[0]->field->label;
+        $result =array();
+        if(!isset($metadataRecord[0])){
+            var_dump($metadataRecord);
+           // return;
+        }
+        $label = $metadataRecord[0]->field->name;
         $name = $metadataRecord[0]->field->name;
         $result["label"] = $label;
         $valuesCount = count($metadataRecord);
@@ -101,6 +106,7 @@ class Helper_Controller_Metadata
     {
 
         $html = "";
+        $controls = "";
         $cardinality = $metadata->cardinality;
         $handlesCardinality = DB_ORM::model($metadata->getModelName())->handlesCardinality();
 
@@ -143,7 +149,7 @@ class Helper_Controller_Metadata
             else $values_count = 0;
 
 
-            $html .= "<div class='controls $type multi' id='$name'>";
+            $html .= "<div class='controls $type multi' >";
             if (!$handlesCardinality) {
 
 
@@ -151,19 +157,20 @@ class Helper_Controller_Metadata
 
                     $id = $values[$i]->id;
 
-                    $html .= "<div>";
+                    $html .= "<div><div class='input-append span9'>";
                     $html .= Model_Leap_Metadata_Record::getEditor($name, $id);
-                    $html .= "<a class='remove btn btn-danger'>remove</a></div>";
+                    $html .= "<a class='remove btn btn-danger'><i class='icon-remove'></i>Remove</a></div></div>";
 
                 }
-                $html .= "<a class='add btn btn-primary'>add</a>";
+                $controls .= "<a class='add btn btn-info'><i class='icon-plus'></i>Add</a>";
             } else {
 
                 $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);
             }
             $html .= "</div>";
         }
-        return $html;
+        $output = array("form"=>$html, "controls" =>$controls);
+        return  $output;
     }
 
 }

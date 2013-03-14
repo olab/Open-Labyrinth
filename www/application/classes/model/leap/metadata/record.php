@@ -29,12 +29,12 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
     {
         Helper_Html_Javascript::add("http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js");
         Helper_Html_Javascript::add("scripts/jquery/jquery-1.8.2.js");
-        Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
+       // Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
     }
 
     public static function mergeRecords($objectId, $metadataName, $values)
     {
-        if (empty($values)) return;
+        //if (empty($values)) return;
         $metadata = Model_Leap_Metadata::getMetadataByName($metadataName);
         $builder = DB_SQL::select('default')
             ->from(DB_ORM::model($metadata->getModelname())->table())
