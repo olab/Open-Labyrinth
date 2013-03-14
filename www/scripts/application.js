@@ -167,7 +167,6 @@ jQuery(document).ready(function(){
         if($chatQCont != null) {
             var i = 1;
             $.each($chatQCont.children('fieldset'), function(index, obj) {
-                $(obj).attr('id', 'qDiv' + i);
                 $(obj).children('legend').text('Question #' + i);
                 
                 i++;
