@@ -106,7 +106,8 @@ if (isset($templateData['map'])) {
 
                     <div class="pull-right">
                         <a class="btn btn-info"
-                           href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>><?php echo __('Add'); ?></a>
+                           href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
+                            <i class="icon-plus"></i><?php echo __('Add'); ?></a>
                     </div>
 
                 <?php } ?>
@@ -117,7 +118,8 @@ if (isset($templateData['map'])) {
 
                 <div class="controls">
                     <a class="btn btn-info"
-                       href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>><?php echo __('Add'); ?></a>
+                       href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
+                        <i class="icon-plus"></i> <?php echo __('Add'); ?></a>
                 </div>
 
             <?php } ?>
@@ -176,7 +178,7 @@ if (isset($templateData['map'])) {
                             <div class="pull-right">
                                 <a class="btn btn-danger"
                                    href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>">
-                                    <?php echo __('Delete'); ?>
+                                    <i class="icon-trash"></i><?php echo __('Delete'); ?>
                                 </a>
                             </div>
                         </div>

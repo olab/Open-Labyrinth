@@ -25,7 +25,7 @@
 </script>
 <h1>Metadata Manager</h1>
 <h4>Metadata Fields</h4>
-<table class="table table-bordered table-striped" style="table-layout: fixed; word-wrap: break-word;">
+<table class="table table-striped table-hover" style="table-layout: fixed; word-wrap: break-word;">
     <colgroup>
         <col style="width: 5%" />
         <col style="width: 15%" />
@@ -37,17 +37,17 @@
         <col style="width: 10%" />
         <col style="width: 10%" />
     </colgroup>
-    <thead>
+    <thead >
     <tr>
-        <td>Identifier</td>
-        <td>Name</td>
-        <td>Destination Model</td>
-        <td>Type</td>
-        <td>Label</td>
-        <td>Comment</td>
-        <td>Cardinality</td>
-        <td>Extra Options</td>
-        <td>Operations</td>
+        <th>Identifier</th>
+        <th>Name</th>
+        <th>Destination Model</th>
+        <th>Type</th>
+        <th>Label</th>
+        <th>Comment</th>
+        <th>Cardinality</th>
+        <th>Extra Options</th>
+        <th>Operations</th>
     </tr>
 
     </thead>

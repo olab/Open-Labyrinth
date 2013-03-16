@@ -23,6 +23,20 @@ if (isset($templateData['map'])) { ?>
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
             xmlns="http://www.w3.org/1999/html"></script>
     <script type="text/javascript">
+
+
+        $(document).ready(function() {
+            $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
+
+            $('#sidebar').animate({
+                width: 'toggle'
+            }, 0);
+
+            $('.to-hide').toggleClass('hide');
+            $('#content').toggleClass('span12 span10');
+        });
+
+
         var sendURL = '<?php echo URL::base(); ?>visualManager/updateJSON';
         var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
         var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
@@ -31,8 +45,9 @@ if (isset($templateData['map'])) { ?>
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
     </script>
+    <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
-    <h3 class="case-header-style orange"><?php echo __('VISUAL EDITOR'); ?></h3>
+    <h3 class="case-header-style orange"><?php echo __('VISUAL EDITOR'); ?></h3></div>
     <div class="block">
         <div class="block" style="position: relative;" id="canvasContainer">
             <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
@@ -46,7 +61,7 @@ if (isset($templateData['map'])) { ?>
             </div>
             
             <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
-            <canvas id="canvas" width="100" height="800" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
+            <canvas id="canvas" width="100%" height="500px" style="background-color: #cccccc; width:100%" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
                 <p>&nbsp;</p>

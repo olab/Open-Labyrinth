@@ -181,5 +181,27 @@ jQuery(document).ready(function(){
     
     $('#forgot-password-submit').click(function() {
         $('#forgot-password-form').submit();
-    })
+    });
+
+
+    $('a.toggles').click(function() {
+        $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
+
+        $('#sidebar').animate({
+            width: 'toggle'
+        }, 0);
+        $('#content').toggleClass('span12 span10');
+        $('.to-hide').toggleClass('hide');
+    });
+
+ /*
+    $('#content').toggle(
+
+        function() {
+
+        }, function() {
+
+        });
+*/
+
 });

@@ -31,6 +31,7 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
+        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/fixed-header/css/defaultTheme.css" />
 
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
@@ -151,7 +152,7 @@
                 <?php
                 if (Auth::instance()->logged_in()) {
                     ?>
-                    <div class="span2">
+                    <div id="sidebar" class="span2">
                             <form action="<?php echo URL::base(); ?>home/search" method="post">
                                 <input type="hidden" name="scope" value="t" />
                                 <div class="input-prepend">
@@ -164,7 +165,7 @@
                             <?php if (isset($templateData['left'])) echo $templateData['left']; ?>
                         </div>
                     </div>
-                    <div class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
+                    <div id="content" class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
                         <div>
                             <?php Breadcrumbs::render(); ?>
                         </div>
@@ -195,10 +196,15 @@
                 ?>
             </div>
         </div>
+
+        <a href="#" class="toggles"><i class="icon-chevron-left"></i></a>
+
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/fixed-header/jquery.fixedheadertable.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
+
 
     </body>
 </html>
