@@ -488,6 +488,131 @@ var VisualEditor = function() {
         }
     }
     
+    self.DeserializeLinear = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildLinear(self.nodes);
+        }
+    }
+    
+    self.DeserializeBranched = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildBranched(self.nodes);
+        }
+    }
+    
+    self.DeserializeDandelion = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildDandelion(self.nodes);
+        }
+    }
+    
+    var BuildLinear = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        for(var i = 1; i < nodes.length; i++) {
+            nodes[i].transform.SetIdentity();
+            nodes[i].transform.Translate(w, h + i * 2 * nodes[i].height);
+        }
+    }
+    
+    var BuildBranched = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        var oldW = w;
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        w += nodes[0].width * 0.5;
+        w -= ((nodes.length - 2) * nodes[0].width + (nodes.length - 3) * nodes[0].width) * 0.5;
+        
+        for(var i = 1; i < nodes.length - 1; i++) {
+            nodes[i].transform.SetIdentity();
+            nodes[i].transform.Translate(w, h + 2 * nodes[i].height);
+            w += 2 * nodes[i].width;
+        }
+        
+        nodes[nodes.length - 1].transform.SetIdentity();
+        nodes[nodes.length - 1].transform.Translate(oldW, h + 4 * nodes[nodes.length - 1].height);
+    }
+    
+    var BuildDandelion = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        
+        var y0 = h + 2 * self.nodes[0].height;
+        
+        var step = Math.PI / (nodes.length - 3);
+        var radius = 270 * Math.sin((Math.PI - step) * 0.5) / Math.sin(step);
+        
+        for(var i = 0, countIndex = 1; countIndex < (nodes.length - 1); i += step, countIndex++) {
+            var x = w + radius * Math.cos(i);
+            var y = y0 + radius * Math.sin(i);
+            
+            nodes[countIndex].transform.SetIdentity();
+            nodes[countIndex].transform.Translate(x, y);
+        }
+        
+        nodes[nodes.length - 1].transform.SetIdentity();
+        nodes[nodes.length - 1].transform.Translate(w, y0 + radius * 2);
+    }
+    
     self.AddNewNode = function() {
         var node = new Node();
         node.id = GetNewNodeId();

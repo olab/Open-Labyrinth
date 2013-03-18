@@ -204,4 +204,13 @@ jQuery(document).ready(function(){
         });
 */
 
+    
+    jQuery('#nodeCountContainer button').click(function() {
+        if($(this).attr('id') != 'applyCount')
+            $('#nodeCount').attr('disabled', 'disabled');
+    });
+    
+    jQuery('#nodeCountCustom').click(function() {
+        $('#nodeCount').removeAttr('disabled');
+    });
 });

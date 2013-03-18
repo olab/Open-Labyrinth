@@ -19,341 +19,111 @@
  *
  */
 ?>
+
 <script language="javascript" type="text/javascript"
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
             xmlns="http://www.w3.org/1999/html"></script>
-    <script type="text/javascript">
-        var sendURL = '<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/updateVisualEditor/<?php echo $templateData['map']; ?>';
-        var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
-        var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
-        var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
-        var mapId = <?php echo $templateData['map']; ?>;
-        var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
+    <script language="javascript" type="text/javascript">
+        tinyMCE.init({
+            // General options
+            mode: "textareas",
+            relative_urls : false,
+            entity_encoding: "raw",
+            theme: "advanced",
+            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+            // Theme options
+            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull",
+            theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
+            theme_advanced_buttons3: "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo",
+            theme_advanced_buttons4: "link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+            theme_advanced_buttons5: "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup",
+            theme_advanced_buttons6: "charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+            theme_advanced_buttons7: "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,imgmap",
+            theme_advanced_toolbar_location: "top",
+            theme_advanced_toolbar_align: "left",
+            theme_advanced_statusbar_location: "bottom",
+            theme_advanced_resizing: true,
+            editor_selector: "mceEditor"
+        });
     </script>
-<h1><?php echo __('Step 3. Add your story'); ?></h1>
-<div>
-    <div class="wizard_body">
-        <div class="instractions">
-            <p class="header">Instructions:</p>
 
-            <p class="li">This is high level editing. Just get the main points of your story down one idea per
-                node.</p>
-        </div>
-        <div class="visual-editor">
-            <div class="block" style="position: relative;" id="canvasContainer">
-            <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
-                <p><input type="button" class="btn" value="Update" id="update" /></p>
-                <p><input type="button" class="btn" value="Add Node" id="addNode"/></p>
-                <!--<p><input type="button" class="btn" value="Background color" id="backgroundColor"/></p>-->
-                <p><input type="button" class="btn active" value="Pan" id="vePan"/></p>
-                <p><input type="button" class="btn" value="Select" id="veSelect"/></p>
-                <p><input type="button" class="btn" value="Add dandelion" id="veDandelion"/></p>
-                <p style="position:relative; float:left;"><input type="button" class="btn" value="+" id="zoomIn" /> <input type="button" class="btn" value="-" id="zoomOut" /></p>
+<h1><?php echo __('Step 3. VP creator'); ?> - <?php if (isset($templateData['map'])) echo $templateData['map']->type->name; ?></h1>
+
+<div class="span6">
+    <form class="form-horizontal left" method="post" action="<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/<?php
+    $action = '';
+    if($templateData['map']->type_id == 6) {
+        $action = 'createLinear';
+    } else if($templateData['map']->type_id == 9) {
+        $action = 'createBranched';
+    }
+    
+    echo $action;
+    ?>/<?php echo $templateData['map']->id; ?>">
+        <input type="hidden" name="nodesCount" id="formNodeCount" value="0"/>
+        <div class="block">
+            <div class="block" data-toggle="buttons-radio" id="nodeCountContainer">
+                <button type="button" class="btn" value="6">6</button>
+                <button type="button" class="btn" value="12">12</button>
+                <button type="button" class="btn" value="18">18</button>
+                <button type="button" class="btn" value="24">24</button>
+                <button type="button" class="btn" value="Custom" id="nodeCountCustom">Custom</button>
+                <input type="text" style="width: 40px;" id="nodeCount" disabled/>
+                <button class="btn" id="applyCount">Apply</button>
             </div>
-            
-            <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
-            <canvas id="canvas" width="100" height="800" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
-            <div class="visual-editor-right-panel hide" id="veRightPanel">
-                <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
-                <p>&nbsp;</p>
-                <div class="accordion block" id="veAccordionRightPanel">
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelActions">Actions</a>
-                        </div>
-                        <div id="veRightPanelActions" class="accordion-body block collapse">
-                            <div class="accordion-inner block" align="center">
-                                <button id="veNodeRootBtn" type="button" class="btn" data-toggle="button">Set as Root</button>
-                                <button id="veDeleteNodeBtn" type="button" class="btn btn-danger">Delete Node</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelBackgroundColor">Background Color</a>
-                        </div>
-                        <div id="veRightPanelBackgroundColor" class="accordion-body block collapse" align="center">
-                            <div class="accordion-inner block">
-                                <input type="text" id="colorpickerInput" value="" />
-                                <div class="child-block" id="colopickerContainer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelNodeContent">Node Content</a>
-                        </div>
-                        <div id="veRightPanelNodeContent" class="accordion-body block collapse">
-                            <div class="accordion-inner block" style="margin-left: 0">
-                                <div class="block" style="max-height: 565px;width: 430px; overflow: auto;padding-right: 25px;">
-                                <div class="control-group block">
-                                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Title</strong></label>
-                                    <div class="controls">
-                                        <input type="text" id="nodetitle" value=""/>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodecontent" class="control-label" style="text-align: left;"><strong>Node Content</strong></label>
-                                    <div class="controls block">
-                                        <textarea cols='20' class="mceEditor" id="nodecontent" rows='10' style="width: 100%;"></textarea>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodesupport" class="control-label" style="text-align: left;"><strong>Supporting Information</strong></label>
-                                    <div class="controls block">
-                                        <textarea cols='20' class="mceEditor" id="nodesupport" rows='10' style="width: 100%;"></textarea>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Supporting Information Keyword</strong></label>
-                                    <div class="controls block">
-                                        <input type="text" id="nodesupportkeywords" value="" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                        <div>
-                                            <div class="control-group">
-                                                <?php
-                                                $countersData = '';
-                                                foreach ($templateData['counters'] as $counter) {
-                                                    $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
-                                                    ?>
-                                                    <?php echo $counter->name; ?>
-                                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
-                                                    <div class="controls">
-                                                        <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
-                                                    </div>
+        </div>
+        <br/>
+        <div id="entryPointContainer">
+            <legend><?php echo __('Entry Point'); ?></legend>
+            <div class="control-group">
+                <label for="rootTitle" class="control-label"><?php echo 'Title';?></label>
 
-                                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Appear on node</strong></label>
-                                                    <div class="controls">
-                                                        <input type="checkbox" id="nodecounter_show_<?php echo $counter->id; ?>" value="1" />
-                                                    </div>
-                                                <?php } ?>
-                                            </div>
-                                            <div id="counters" data="[<?php
-                                        if (strlen($countersData) > 2) {
-                                            echo substr($countersData, 0, strlen($countersData) - 2);
-                                        }
-                                        ?>]"></div>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                                <div class="row-fluid block">
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Exit Node Probability</strong></label>
-                                            <div class="controls" id="exitNodeOptions">
-                                                <label class="radio">On<input name="exit" type="radio" value="1"></label>
-                                                <label class="radio">Off<input name="exit" type="radio" value="0" checked=""></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Link Function Style</strong></label>
-
-                                            <div class="controls" id="linkStyleOptions">
-                                                <label class="radio"><input name="style" type="radio" value="1" checked="">text (default)</label>
-                                                <label class="radio"><input name="style" type="radio" value="2">dropdown</label>
-                                                <label class="radio"><input name="style" type="radio" value="3">dropdown + confidence</label>
-                                                <label class="radio"><input name="style" type="radio" value="4">type in text</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row-fluid block">
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Node Priorities</strong></label>
-
-                                            <div class="controls" id="nodePriorities">
-                                                <label class="radio"><input name="priority" type="radio" value="1" checked="">normal (default)</label>
-                                                <label class="radio"><input name="priority" type="radio" value="2">must avoid</label>
-                                                <label class="radio"><input name="priority" type="radio" value="3">must visit</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Undo Links</strong></label>
-
-                                            <div class="controls" id="nodeUndoLinks">
-                                                <label class="radio">Enabled<input name="undo" type="radio" value="1"></label>
-                                                <label class="radio">Disabled<input name="undo" type="radio" value="0" checked=""></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label class="control-label"><strong>Link to end and report from this node</strong></label>
-
-                                    <div class="controls" id="nodeEndAndReport">
-                                        <label class="radio">Off (default)<input name="end" type="radio" value="0" checked=""></label>
-                                        <label class="radio">On<input name="end" type="radio" value="1"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="controls">
+                    <input type="text" id="rootTitle" value="new node" name="rootTitle"/>
                 </div>
-                <div class="footer block">
-                    <button class="btn" id="veRightPanelSaveBtn">Save</button>
-                    <button class="btn veRightPanelCloseBtn">Close</button>
+            </div>
+            <div class="control-group">
+                <label for="rootContent" class="control-label"><?php echo 'Content';?></label>
+
+                <div class="controls">
+                    <textarea id="rootContent" class="mceEditor" name="rootContent"></textarea>
                 </div>
             </div>
         </div>
 
-        <div class="modal hide block" id="visual_editor_dandelion">
-            <div class="modal-header block">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Dandelion</h3>
-            </div>
+        <div id="nodesContainer">
             
-            <div class="modal-body block">
-                <div class="block" align="center">
-                    <div class="block" data-toggle="buttons-radio" id="veDandelionCountContainer">
-                        <button type="button" class="btn" value="6">6</button>
-                        <button type="button" class="btn" value="8">8</button>
-                        <button type="button" class="btn" value="18">18</button>
-                        <button type="button" class="btn" value="24">24</button>
-                        <button type="button" class="btn" value="Custom" id="veDandelionCustom">Custom</button>
-                        <input type="text" style="margin-top: 10px; width: 40px;" id="veDandelionCount" disabled/>
-                    </div>
+        </div>
+
+        <div id="endPointContainer">
+            <legend><?php echo __('End Point'); ?></legend>
+            <div class="control-group">
+                <label for="endTitle" class="control-label"><?php echo 'Title';?></label>
+
+                <div class="controls">
+                    <input type="text" id="endTitle" name="endTitle"/>
                 </div>
             </div>
+            <div class="control-group">
+                <label for="endContent" class="control-label"><?php echo 'Content';?></label>
 
-            <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn" id="veDandelionSaveBtn">Save</a>
+                <div class="controls">
+                    <textarea id="endContent" class="mceEditor" name="endContent"></textarea>
+                </div>
             </div>
         </div>
         
-        <div class="modal hide block" id="visual_editor_background_color">
-            <div class="modal-header block">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Background color</h3>
-            </div>
-            
-            <div class="modal-body block">
-                <div class="block" align="center">
-                    <div class="defined-color-picker">
-                        <div style="background-color: #FFFFFF;"></div>
-                        <div style="background-color: #CCCCCC;"></div>
-                        <div style="background-color: #000000;"></div>
-                    </div>
-                </div>
-            </div>
+        <footer>
+            <div class="pull-right"><button type="submit" id="step3_submit" class="btn btn-primary wizard_button">Step 4 - Edit Story</button></div>
+            <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/2/' . $templateData['map']->id; ?>" style="float:left;" class="btn btn-primary wizard_button">Return to step 2</a>
+        </footer>
 
-            <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn" id="veBgColorSaveBtn">Save</a>
-            </div>
-        </div>
-
-        <div class="modal hide block" id="visual_editor_link">
-            <div class="modal-header block">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Link Manager</h3>
-            </div>
-
-            <div class="modal-body block" align="center">
-                <div class="block" data-toggle="buttons-radio" id="linkTypes">
-                    <button type="button" class="btn" value="direct">Direct</button>
-                    <button type="button" class="btn" value="back">Back</button>
-                    <button type="button" class="btn" value="dual">Dual</button>
-                    <button type="button" class="btn btn-danger" value="delete">Delete</button>
-                </div>
-                <br/>
-                <div class="block" align="left">
-                    <form class="form-horizontal">
-                    <div class="control-group block">
-                        <label class="control-label"><?php echo __('Link label'); ?></label>
-                        <div class="controls block">
-                            <input type="text" id="labelText"/>
-                        </div>
-                    </div>
-                    <div class="control-group block">
-                        <label class="control-label" for="mimage"><?php echo __('Link image'); ?></label>
-                        <div class="controls block">
-                            <?php if (isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" <?php if (isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option>
-                                    <?php foreach ($templateData['images'] as $image) { ?>
-                                        <option value="<?php echo $image->id; ?>" <?php if (isset($templateData['editLink']) and $image->id == $templateData['editLink']->image_id) echo 'selected=""'; ?>><?php echo $image->name; ?> (<?php echo $image->id; ?>)</option>
-                                    <?php } ?>
-                                </select>
-                            <?php } else { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" select="">no image</option>
-                                </select>
-                            <?php } ?>
-                    </div>
-                </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-                <a href="#" class="btn" id="linkApply">Apply</a>
-            </div>
-        </div>
-
-        <div class="modal hide alert alert-block alert-error block" id="visual_editor_delete">
-            <div class="modal-header block">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
-                <h3 class="deleteModalHeaderNode">Delete this node</h3>
-                <h3 class="deleteModalHeaderNodes">Delete this nodes</h3>
-            </div>
-
-            <div class="modal-body block">
-                <p class="deleteModalContentNode">You have just clicked the delete button, are you certain that you wish to proceed with deleting this node?</p>
-                <p class="deleteModalContentNodes">You have just clicked the delete button, are you certain that you wish to proceed with deleting this nodes?</p>
-                <a href="#" class="btn btn-danger" id="deleteNode">Delete</a>
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-            </div>
-        </div>
-        
-        <div class="modal hide alert alert-block alert-error block" id="visual_editor_set_root">
-            <div class="modal-header block">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
-                <h3>Set as Root</h3>
-            </div>
-
-            <div class="modal-body block">
-                <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
-                <a href="#" class="btn btn-danger" id="setAsRootNodeBtn">Set</a>
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-            </div>
-        </div>
-    </div>
-    <div >
-        <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editNode/' . $templateData['map']; ?>"
-           style="float:right;" class="wizard_button btn btn-primary">Step 4 - Add other elements</a>
-        <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button btn btn-primary">Save & return later</a>
-        <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/2/' . $templateData['map']; ?>"
-           style="float:left;" class="btn btn-primary wizard_button">Return to step 2</a>
-    </div>
-</div>
+    </form>
 </div>
 
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/colorModal.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/mouse.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/transform.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/node.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/link.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/linkConnector.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/linkModal.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/deleteModal.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/nodeModal.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/selector.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/rightPanel.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/visualEditor.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
+<?php if(isset($templateData['map']) && $templateData['map']->type_id == 6) { ?>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/linear.js"></script>
+<?php } else if(isset($templateData['map']) && $templateData['map']->type_id == 9) { ?>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/linear.js"></script>
+<?php } ?>
 
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/application.js"></script>
