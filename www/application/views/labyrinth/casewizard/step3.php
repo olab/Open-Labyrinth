@@ -101,7 +101,7 @@
                 <label for="endTitle" class="control-label"><?php echo 'Title';?></label>
 
                 <div class="controls">
-                    <input type="text" id="endTitle" name="endTitle"/>
+                    <input type="text" id="endTitle" value="new node" name="endTitle"/>
                 </div>
             </div>
             <div class="control-group">

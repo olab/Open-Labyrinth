@@ -24,9 +24,9 @@
 <div>
     <div>
         <ul class="nav nav-pills">
-            <li class="<?php if ($templateData['action'] == 'createSkin') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/createSkin/' . $templateData['map']->id; ?>" >Create a new skin</a></li>
-            <li class="<?php if ($templateData['action'] == 'listSkins') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $templateData['map']->id . '/' . $templateData['map']->skin_id; ?>" >Select from a list of existing skins</a></li>
-            <li class="<?php if ($templateData['action'] == 'uploadSkin') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/uploadSkin/' . $templateData['map']->id; ?>" >Upload a new skin</a></li>
+            <li class="<?php if ($templateData['action'] == 'createSkin') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/6/createSkin/' . $templateData['map']->id; ?>" >Create a new skin</a></li>
+            <li class="<?php if ($templateData['action'] == 'listSkins') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/6/listSkins/' . $templateData['map']->id . '/' . $templateData['map']->skin_id; ?>" >Select from a list of existing skins</a></li>
+            <li class="<?php if ($templateData['action'] == 'uploadSkin') echo 'active'; ?>"><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/6/uploadSkin/' . $templateData['map']->id; ?>" >Upload a new skin</a></li>
         </ul>
     </div>
     <div class="wizard_body">
@@ -39,7 +39,7 @@
                 </div>
             <?php } else { ?>
                 <div>
-                    Click <a style="text-decoration: underline;" href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/createNewSkin/' . $templateData['map']->id; ?>">here</a> to create new skin
+                    Click <a style="text-decoration: underline;" href="<?php echo URL::base() . 'labyrinthManager/caseWizard/6/createNewSkin/' . $templateData['map']->id; ?>">here</a> to create new skin
                 </div>
                 <?php
             }

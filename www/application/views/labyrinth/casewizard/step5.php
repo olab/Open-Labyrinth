@@ -24,19 +24,19 @@
     <div>
         <ul class="nav nav-pills">
             <li class="<?php if ($templateData['action'] == 'editNode') echo 'active'; ?>"><a
-                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editNode/' . $templateData['map']; ?>">Edit
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map']; ?>">Edit
                     nodes</a></li>
             <li class="<?php if ($templateData['action'] == 'addFile') echo 'active'; ?>"><a
-                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addFile/' . $templateData['map']; ?>">Add
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addFile/' . $templateData['map']; ?>">Add
                     image or file</a></li>
             <li class="<?php if ($templateData['action'] == 'addQuestion') echo 'active'; ?>"><a
-                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addQuestion/' . $templateData['map']; ?>">Add
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addQuestion/' . $templateData['map']; ?>">Add
                     question</a></li>
             <li class="<?php if ($templateData['action'] == 'addAvatar') echo 'active'; ?>"><a
-                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addAvatar/' . $templateData['map']; ?>">Add
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addAvatar/' . $templateData['map']; ?>">Add
                     avatar</a></li>
             <li class="<?php if ($templateData['action'] == 'addCounter') echo 'active'; ?>"><a
-                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addCounter/' . $templateData['map']; ?>">Add
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addCounter/' . $templateData['map']; ?>">Add
                     counter</a></li>
         </ul>
     </div>
@@ -48,7 +48,7 @@
                     <ul class="nav nav-tabs nav-stacked">
                         <?php foreach ($templateData['nodes'] as $node) { ?>
                             <li>
-                                <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editNode/' . $templateData['map'] . '/' . $node->id ?>"
+                                <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map'] . '/' . $node->id ?>"
                                    class="
                             <?php if (isset($templateData['nodeId'])) {
                                        if ($templateData['nodeId'] == $node->id) echo 'selected';
