@@ -19,12 +19,12 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-
+<div class="page-header">
 <h1><?php if(!isset($templateData['question'])){
         echo __('New question for"') . $templateData['map']->name . '"';
     } else {
         echo __('Edit question "') . $templateData['question']->stem . '"'; }?>
-</h1>
+</h1></div>
                             <?php if(isset($templateData['question'])) { ?>
                             <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">
                             <?php } else { ?>
@@ -62,10 +62,10 @@ if (isset($templateData['map'])) { ?>
 
 
 
-
-
-                                   <input class="btn btn-primary" type="submit" name="Submit" value="submit">
-
+<div class="form-actions">
+<div class="pull-right">
+                                   <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Save">
+                                </div></div>
                             </form>
 
 <?php } ?>

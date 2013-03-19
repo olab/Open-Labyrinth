@@ -231,6 +231,7 @@ if (isset($templateData['map'])) {
                     <?php echo __('On'); ?>
                     <input type="radio" name="timing" id="timing-on"
                            value=1 <?php if ($templateData['map']->timing) echo 'checked=""'; ?>>
+
                     <div class="control-group">
                         <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
 
@@ -252,7 +253,6 @@ if (isset($templateData['map'])) {
                 </label>
             </div>
         </div>
-
 
 
     </fieldset>
@@ -306,16 +306,12 @@ if (isset($templateData['map'])) {
             </div>
         <?php } ?>
     </fieldset>
-
-
-
-
-
-                                        <?php
-                                        echo Helper_Controller_Metadata::displayEditor($templateData["map"],"map");?>
+    <?php
+    echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
 
     <div class="pull-right">
-        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>"> </div>
+        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit"
+               value="<?php echo __('Save changes'); ?>"></div>
 
     </form>
 

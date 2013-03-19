@@ -19,26 +19,26 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-<h1><?php echo __('Add Counter'); ?></h1>
+<div class="page-header"> <h1><?php echo __('Add Counter'); ?></h1></div>
 <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/saveNewCounter/'.$templateData['map']->id; ?>">
     <fieldset class="fieldset">
         <legend><?php echo __('Counter Content'); ?></legend>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Counter name'); ?></label>
+            <label for="cName" class="control-label"><?php echo __('Counter name'); ?></label>
             <div class="controls">
-                <input type="text" name="cName" value="" />
+                <input type="text" name="cName" id="cName" value="" />
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Counter description (optional)'); ?></label>
+            <label for="cDesc" class="control-label"><?php echo __('Counter description (optional)'); ?></label>
             <div class="controls">
-                <textarea name="cDesc" rows="6" cols="40"></textarea>
+                <textarea id="cDesc" name="cDesc" rows="6" cols="40"></textarea>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Counter image (optional)'); ?></label>
+            <label for="cIconId" class="control-label"><?php echo __('Counter image (optional)'); ?></label>
             <div class="controls">
-                <select name="cIconId">
+                <select id="cIconId" name="cIconId">
                     <option value="" selected="">no image</option>
                     <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
                     <?php foreach($templateData['images'] as $image) { ?>
@@ -49,15 +49,15 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Starting value (optional)'); ?></label>
+            <label for="cStartV" class="control-label"><?php echo __('Starting value (optional)'); ?></label>
             <div class="controls">
-                <input type="text" name="cStartV" size="4" value="" />
+                <input id="cStartV" type="text" name="cStartV" size="4" value="" />
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Visible'); ?></label>
+            <label for="cVisible" class="control-label"><?php echo __('Visible'); ?></label>
             <div class="controls">
-                <select name="cVisible">
+                <select id="cVisible" name="cVisible">
                     <option value="1"><?php echo __('show'); ?></option>
                     <option value="0"><?php echo __("don't show"); ?></option>
                     <option value="2"><?php echo __('custom'); ?></option>
@@ -65,8 +65,9 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
     </fieldset>
-    <div class="control-group">
-        <input class="btn btn-primary" type="submit" name="Submit" value="Submit" />
-    </div>
+    <div class="pull-right">
+    <div class="form-actions">
+        <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Submit" />
+    </div></div>
 </form>
 <?php } ?>

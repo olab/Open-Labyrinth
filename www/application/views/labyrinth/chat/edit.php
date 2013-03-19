@@ -65,12 +65,12 @@ if (isset($templateData['map']) and isset($templateData['question_count']) and i
 
                                                 <div class="controls">
                                                     <input type="text" name="counter<?php echo $i; ?>" id="counter<?php echo $i; ?>"
-                                                            value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->function; ?>"/>&nbsp;type +, - or = an integer - e.g. '+1' or '=32'
+                                                            value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->function; ?>"/> <span class="help-block">type +, - or = an integer - e.g. '+1' or '=32'</span>
                                                 </div>
                                             </div>
 
 
-                                            <a class="btn btn-primary"
+                                            <a class="btn btn-danger"
                                                href="<?php echo URL::base().'chatManager/removeEditChatQuestion/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/'.$templateData['question_count'].'/'.$i; ?>">Remove</a>
 
                                         </fieldset>

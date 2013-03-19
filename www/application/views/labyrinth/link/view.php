@@ -21,7 +21,8 @@
 if (isset($templateData['map'])) {
     ?>
 
-    <h1><?php echo __('Edit links for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    <div class="page-header">
+    <h1><?php echo __('Edit links for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
     <p><?php echo __('Links represent the options available to the user'); ?></p>
 
     <table class="table table-striped table-bordered">
@@ -42,18 +43,19 @@ if (isset($templateData['map'])) {
                     </td>
                     <td>
                         <?php if (count($node->links) > 0) { ?>
+                            <ul>
                             <?php foreach ($node->links as $link) { ?>
 
 
-                                <div class="controls">
+                               <li>
                                     <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $link->node_2->id; ?>"><?php echo $link->node_2->title; ?></a>
 
-                                </div>
-                            <?php } ?>
+                                    </li>
+                            <?php } ?></ul>
                         <?php } ?>
                     </td>
                     <td>
-                        <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id . '/' . $node->id; ?>">manage links</a>
+                        <a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/editLinks/' . $templateData['map']->id . '/' . $node->id; ?>"><i class="icon-link"></i>Manage links</a>
                     </td>
                 </tr>
             <?php } ?>

@@ -18,32 +18,55 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-
-                <h1><?php echo __('Chats "') . $templateData['map']->name . '"'; ?></h1>
-                <table class="table table-striped table-bordered" id="my-labyrinths">
-                    <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Stem</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <?php if(isset($templateData['chats']) and count($templateData['chats']) > 0) { ?>
-                        <?php foreach($templateData['chats'] as $chat) { ?>
-                            <tr><td><label><input readonly="readonly" class="span6 code" type="text" value="[[CHAT:<?php echo $chat->id; ?>]]"> </label></td>
-                                <td><?php echo $chat->stem; ?></td>
-                                <td>
-                               <a class="btn btn-primary" href="<?php echo URL::base().'chatManager/editChat/'.$templateData['map']->id.'/'.$chat->id.'/'.count($chat->elements); ?>"><?php echo __('edit'); ?></a>
-                               <a class="btn btn-danger" href="<?php echo URL::base().'chatManager/deleteChat/'.$templateData['map']->id.'/'.$chat->id; ?>"><?php echo __('delete'); ?></a></td></tr>
-                        <?php } ?>
-                    <?php } ?>
-                    </tbody>
-                    </table>
 
 
-                             <a class="btn btn-primary" href="<?php echo URL::base().'chatManager/addChat/'.$templateData['map']->id; ?>"><?php echo __('Add Chat'); ?></a>
+if (isset($templateData['map'])) {
+    ?>
+
+    <script type="text/javascript">
+
+    </script>
+    <div class="page-header">
+        <div class="pull-right"><a class="btn btn-primary"
+                                   href="<?php echo URL::base() . 'chatManager/addChat/' . $templateData['map']->id; ?>"><i
+                    class="icon-plus-sign"></i><?php echo __('Add Chat'); ?></a>
+        </div>
+        <h1><?php echo __('Chats "') . $templateData['map']->name . '"'; ?></h1></div>
+    <table class="table table-striped table-bordered" id="my-labyrinths">
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Stem</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <?php if (isset($templateData['chats']) and count($templateData['chats']) > 0) { ?>
+            <?php foreach ($templateData['chats'] as $chat) { ?>
+                <tr>
+                    <td><label><input readonly="readonly" class="span6 code" type="text"
+                                      value="[[CHAT:<?php echo $chat->id; ?>]]"> </label></td>
+                    <td><?php echo $chat->stem; ?></td>
+                    <td>
+                        <div class="btn-group">
+                        <a class="btn btn-info"
+                           href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id . '/' . count($chat->elements); ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
+                        <a class="btn btn-danger"
+                           href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a></div>
+                    </td>
+                </tr>
+            <?php } ?>
+        <?php } else { ?>
+<tr class="info">
+<td colspan="3">There are no chats yet. Please click the button above to add one.</td>
+</tr>
+
+
+        <?php } ?>
+        </tbody>
+    </table>
+
+
 
 <?php } ?>

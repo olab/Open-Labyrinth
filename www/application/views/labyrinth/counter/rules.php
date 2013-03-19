@@ -20,7 +20,10 @@
  */
 if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
-<h1><?php echo __('Counters Rules') . ' "' . $templateData['map']->name . '"'; ?></h1>
+<div class="page-header">
+    <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add rule'); ?></a></div>
+    <h1><?php echo __('Counters Rules for ') . ' "' . $templateData['map']->name . '"'; ?></h1></div>
+
 
 <table class="table table-striped table-bordered">
     <colgroup>
@@ -41,6 +44,7 @@ if (isset($templateData['map'])) { ?>
             <td><?php echo $rule->id; ?></td>
             <td class="changeCodeToText"><?php echo $rule->rule; ?></td>
             <td>
+                <div class="btn-group">
                 <a class="btn btn-info" href="<?php echo URL::base().'counterManager/editCommonRule/'.$templateData['map']->id.'/'.$rule->id; ?>">
                     <i class="icon-pencil icon-white"></i>
                     <?php echo __('Edit'); ?>
@@ -48,7 +52,7 @@ if (isset($templateData['map'])) { ?>
                 <a data-toggle="modal" href="#" data-target="#delete-counter-<?php echo $rule->id; ?>" class="btn btn-danger" href="javascript:void(0);">
                     <i class="icon-trash icon-white"></i>
                     <?php echo __('Delete'); ?>
-                </a>
+                </a></div>
                 <div class="modal hide alert alert-block alert-error fade in" id="delete-counter-<?php echo $rule->id; ?>">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -67,7 +71,7 @@ if (isset($templateData['map'])) { ?>
         <tr class="info"><td colspan="3">There are no rules set yet. You may add a rule by clicking the button below</td></tr>
     <?php } ?>
 </table>
-    <a class="btn btn-info" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><?php echo __('Add rule'); ?></a>
+
 <a id="availableNodesText" style="display:none;"><?php echo $templateData['nodes']['text']; ?></a>
 <a id="availableNodesId" style="display:none;"><?php echo $templateData['nodes']['id']; ?></a>
 <a id="availableCountersText" style="display:none;"><?php echo $templateData['counters']['text']; ?></a>

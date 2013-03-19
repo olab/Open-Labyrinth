@@ -20,8 +20,9 @@
  */
 if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
+
 <?php if (isset($templateData['commonRule'])){ ?>
-    <h1><?php echo __('Edit Rule'); ?></h1>
+    <div class="page-header">    <h1><?php echo __('Edit Rule'); ?></h1></div>
     <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/saveCommonRule/'.$templateData['map']->id.'/'.$templateData['commonRule']->id; ?>">
 <?php } else { ?>
     <h1><?php echo __('Add Rule'); ?></h1>

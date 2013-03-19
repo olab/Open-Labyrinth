@@ -20,46 +20,14 @@
  */
 if (isset($templateData['node']) && isset($templateData['map'])) {
     ?>
-
+<div class="page-header">
     <h1><?php echo __('Edit links of node'); ?>&nbsp; <a href="#"><?php echo $templateData['node']->id; ?>
             : <?php echo $templateData['node']->title; ?></a></h1>
-
-    <?php if (isset($templateData['linkTypes']) and count($templateData['linkTypes']) > 0) { ?>
-        <form class="form-horizontal" id="form0" name="form00" method="post"
-              action="<?php echo URL::base() . 'linkManager/updateLinkType/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
-            <fieldset class="fieldset">
-
-                <div class="control-group">
-                    <label class="control-label"><?php echo __('Order'); ?></label>
-
-                    <div class="controls">
-
-
-                        <?php foreach ($templateData['linkTypes'] as $linkType) { ?>
-
-
-                            <label class="radio">
-
-                                <input type="radio" name="linktype"
-                                                        value="<?php echo $linkType->id; ?>" <?php if ($linkType->id == $templateData['node']->link_type_id) echo 'checked=""'; ?>><?php echo $linkType->name; ?>
+    </div>
 
 
 
-                            </label>
-                        <?php } ?>
-                    </div>
-                </div>
 
-            </fieldset>
-
-                <input class="btn btn-primary" type="submit" name="Submit" value="update">
-        </form>
-
-    <?php } ?>
-
-
-
-    <h4><?php echo __('Linked to'); ?></h4>
     <?php if ($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
         <form class="form-horizontal" method="post" action="<?php echo URL::base() . 'linkManager/updateOrder/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
     <?php } ?>
@@ -80,11 +48,14 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
                     <tr>
                         <td><?php echo $link->node_2->title; ?> (<?php echo $link->node_2->id; ?>)</td>
                         <td >
-                                <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/editLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id ."#edit"; ?>"><?php echo __('edit'); ?>
+                            <div class="btn-group">
+                                <a class="btn btn-info" href="<?php echo URL::base() . 'linkManager/editLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id ."#edit"; ?>">
+                                    <i class="icon-edit"></i> <?php echo __('Edit'); ?>
                                     </a>
 
-                                <a class="btn btn-primary" href="<?php echo URL::base() . 'linkManager/deleteLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id; ?>"><?php echo __('delete'); ?>
-                                    </a>
+                                <a class="btn btn-danger" href="<?php echo URL::base() . 'linkManager/deleteLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $link->id; ?>">
+                                    <i class="icon-trash"></i> <?php echo __('Delete'); ?>
+                                    </a></div>
 
                         <?php if ($templateData['node']->link_type->name == 'ordered') { ?>
                             <td>
@@ -113,15 +84,53 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
         </tbody>
     </table>
+
+
     <?php if ($templateData['node']->link_type->name == 'ordered' or $templateData['node']->link_type->name == 'random select one *') { ?>
         <input class="btn btn-primary" type="submit" name="Submit" value="update"></form>
     <?php } ?>
+
+    <?php if (isset($templateData['linkTypes']) and count($templateData['linkTypes']) > 0) { ?>
+        <form class="form-horizontal" id="form0" name="form00" method="post"
+              action="<?php echo URL::base() . 'linkManager/updateLinkType/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
+
+            <fieldset class="fieldset">
+                <legend>Links Ordering</legend>
+                <div class="control-group">
+                    <label class="control-label"><?php echo __('Order'); ?></label>
+
+                    <div class="controls">
+
+
+                        <?php foreach ($templateData['linkTypes'] as $linkType) { ?>
+
+
+                            <label class="radio">
+
+                                <input type="radio" name="linktype"
+                                       value="<?php echo $linkType->id; ?>" <?php if ($linkType->id == $templateData['node']->link_type_id) echo 'checked=""'; ?>><?php echo $linkType->name; ?>
+
+
+
+                            </label>
+                        <?php } ?>
+                    </div>
+                </div>
+
+            </fieldset>
+<div class="form-actions">
+            <input class="btn btn-primary" type="submit" name="Submit" value="Update"></div>
+        </form>
+
+    <?php } ?>
+
+
     <?php if (isset($templateData['linkStylies'])) { ?>
 
         <form id="form2" name="formx" method="post" class="form-horizontal"
               action="<?php echo URL::base() . 'linkManager/updateLinkStyle/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
             <fieldset class="fieldset">
-
+    <legend>Links presentation</legend>
                 <?php if (count($templateData['linkStylies']) > 0) { ?>
                 <div class="control-group">
                     <label class="control-label"><?php echo __('Link presentation style'); ?></label>
@@ -139,14 +148,14 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
 
                     </div>
                 </div>
-
-                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('update'); ?>"></p>
+                    <div class="form-actions">
+                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Update'); ?>"></div>
                 <?php } ?></fieldset>
 
 
         </form>
     <?php } ?>
-    <hr>
+
     <?php if (isset($templateData['editLink'])) { ?>
         <form class="form-horizontal" id="form3" name="form1" method="post" action="<?php echo URL::base() . 'linkManager/updateLink/' . $templateData['map']->id . '/' . $templateData['node']->id . '/' . $templateData['editLink']->id; ?>">
 
@@ -240,10 +249,10 @@ if (isset($templateData['node']) && isset($templateData['map'])) {
     <?php if (isset($templateData['editLink']))
     echo Helper_Controller_Metadata::displayEditor($templateData["editLink"],"map_node_link");?>
 
-
-<input class="btn btn-primary" type="submit" name="Submit" value="<?php if (isset($templateData['editLink'])) echo __('update');
-else echo __('add');?>">
-
+    <div class="form-actions">
+<input class="btn btn-primary" type="submit" name="Submit" value="<?php if (isset($templateData['editLink'])) echo __('Update');
+else echo __('Add');?>">
+</div>
     </form>
 
 <?php } ?>

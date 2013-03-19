@@ -34,9 +34,9 @@ if (isset($templateData['map'])) {
         });
 
     </script>
-
+<div class="page-header">
     <h1><?php echo __('Add data element to labyrinth "') . $templateData['map']->name . '"'; ?></h1>
-
+    </div>
     <form class="form-horizontal">
         <fieldset class="fieldset">
             <div class="control-group">
@@ -59,19 +59,7 @@ if (isset($templateData['map'])) {
             </div>
         </fieldset>
     </form>
-
-
-
-
-
-
-
-
-
-
-
-
-    <?php if (isset($templateData['add_type'])) { ?>
+  <?php if (isset($templateData['add_type'])) { ?>
     <form class="form-horizontal"
           action="<?php echo URL::base(); ?>elementManager/saveElement/<?php echo $templateData['map']->id; ?><?php if (isset($templateData['add_type'])) echo '/' . $templateData['add_type']; ?>"
           method="post">
@@ -609,7 +597,10 @@ if (isset($templateData['map'])) {
                 </fieldset>';
                 break;
         }
-        ?>    <input class="btn btn-primary" type="submit" value="Submit">
+        ?>
+    <div class="form-actions">
+        <div class="pull-right">
+        <input class="btn btn-primary btn-large" type="submit" value="Add"></div></div>
     </form>
     <?php } ?>
 

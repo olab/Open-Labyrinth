@@ -19,7 +19,8 @@
  *
  */
 if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
-<h1><?php echo __('Counter grid'); ?></h1>
+<div class="page-header">
+<h1><?php echo __('Counter grid'); ?></h1></div>
 <?php if(isset($templateData['oneCounter'])) { ?>
     <form action="<?php echo URL::base().'counterManager/updateGrid/'.$templateData['map']->id.'/'.$templateData['counters'][0]->id; ?>" method="POST">
 <?php } else { ?>

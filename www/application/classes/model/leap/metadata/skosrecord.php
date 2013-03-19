@@ -162,7 +162,7 @@ class Model_Leap_Metadata_SkosRecord extends Model_Leap_Metadata_Record
 
         $formFieldName = $name . ($metadata->cardinality === Model_Leap_Metadata::Cardinality_Many ? "[]" : "");
 
-        $html .= "<input  class='$name' type='hidden' value='$value'/>";
+        $html .= "<input id='".$name."_'   class='$name' type='hidden' value='$value'/>";
 
 
         return $html;

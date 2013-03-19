@@ -53,8 +53,8 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
         }
     }
     ?>
-
-                <h1><?php echo __('Edit file: "') . $templateData['file']->name . '"'; ?></h1>
+<div class="page-header">
+                <h1><?php echo __('Edit file: "') . $templateData['file']->name . '"'; ?></h1></div>
 
                 <form method="POST" action="<?php echo URL::base() . 'fileManager/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>" class="form-horizontal">
                     <fieldset class="fieldset">
@@ -82,10 +82,10 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label"><?php echo __('MIME Type'); ?>
+                            <label class="control-label" for="mrelmime"><?php echo __('MIME Type'); ?>
                             </label>
                             <div class="controls">
-                                <select name="mrelmime" size="1">
+                                <select name="mrelmime" id="mrelmime" size="1">
                                     <option value="not_selected">select</option>
                                     <option value="video/x-msvideo" <?php if ($templateData['file']->mime == 'video/x-msvideo') echo 'selected=""'; ?>>avi:video/x-msvideo</option>
                                     <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document" <?php if ($templateData['file']->mime == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') echo 'selected=""'; ?>>doc:application/vnd.openxmlformats-officedocument.wordprocessingml.document</option>
@@ -153,10 +153,10 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="w"><?php echo __('Horizontal alignment'); ?>
+                            <label class="control-label" for="a"><?php echo __('Horizontal alignment'); ?>
                             </label>
                             <div class="controls">
-                                <select name="a">
+                                <select name="a" id="a">
                                     <option <?php if ($templateData['file']->h_align == '') echo 'selected=""'; ?> value="">none</option>
                                     <option <?php if ($templateData['file']->h_align == 'left') echo 'selected=""'; ?> value="left">left</option>
                                     <option <?php if ($templateData['file']->h_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
@@ -165,10 +165,10 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="w"><?php echo __('Vertical align'); ?>
+                            <label class="control-label" for="v"><?php echo __('Vertical align'); ?>
                             </label>
                             <div class="controls">
-                                <select name="v">
+                                <select name="v" id="v">
                                     <option <?php if ($templateData['file']->v_align == '') echo 'selected=""'; ?> value="">none</option>
                                     <option <?php if ($templateData['file']->v_align == 'top') echo 'selected=""'; ?> value="top">top</option>
                                     <option <?php if ($templateData['file']->v_align == 'middle') echo 'selected=""'; ?> value="middle">middle</option>
@@ -178,8 +178,9 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                         </div>
                     </fieldset>
 
-
-                                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+<div class="form-actions"><div class="pull-right">
+                                <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save'); ?>"></div>
+</div>
 
                 </form>  
 

@@ -19,7 +19,9 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <h1><?php echo __('data clusters for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    <div class="page-header">
+        <div class="pull-right">  <a class="btn btn-primary" href='<?php echo URL::base(); ?>clusterManager/addDam/<?php echo $templateData['map']->id; ?>'><i class="icon-plus-sign"></i> <?php echo __('add data cluster'); ?></a></div>
+    <h1><?php echo __('data clusters for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
 <p><?php echo __('data clusters act as aggregating and bringing mechanisms between data and media elements'); ?></p>
 <table class="table table-striped table-bordered" id="my-labyrinths">
 
@@ -38,16 +40,24 @@ if (isset($templateData['map'])) { ?>
 
             <tr>
                                 <td><?php echo $dam->name; ?> (<?php echo $dam->id; ?>)</td>
-                <td><a class="btn btn-primary" href='<?php echo URL::base(); ?>clusterManager/editCluster/<?php echo $templateData['map']->id; ?>/<?php echo $dam->id; ?>'><?php echo __('edit'); ?></a> <a class="btn btn-primary" href='<?php echo URL::base(); ?>clusterManager/deleteDam/<?php echo $templateData['map']->id; ?>/<?php echo $dam->id; ?>'><?php echo __('delete'); ?></a></td>
+                <td><div class="btn-group"><a class="btn btn-info" href='<?php echo URL::base(); ?>clusterManager/editCluster/<?php echo $templateData['map']->id; ?>/<?php echo $dam->id; ?>'><i class="icon-edit"></i> <?php echo __('Edit'); ?></a> <a class="btn btn-danger" href='<?php echo URL::base(); ?>clusterManager/deleteDam/<?php echo $templateData['map']->id; ?>/<?php echo $dam->id; ?>'><i class="icon-trash"></i><?php echo __('Delete'); ?></a>
+                    </div>
+                </td>
 
 
             </tr>
                             <?php } ?>
+                            <?php } else{ ?>
+
+        <tr class="info">
+            <td colspan="2">There are no clusters yet. You can create one using the button above.</td>
+        </tr>
+                        <?php } ?>
         </tbody>
-                            <?php } ?>
+
 
     </table>
 
-                            <a class="btn btn-primary" href='<?php echo URL::base(); ?>clusterManager/addDam/<?php echo $templateData['map']->id; ?>'><?php echo __('add data cluster'); ?></a>
+
 <?php } ?>
 

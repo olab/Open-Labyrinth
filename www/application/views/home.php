@@ -31,7 +31,6 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/fixed-header/css/defaultTheme.css" />
 
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
@@ -200,7 +199,6 @@
         <a href="#" class="toggles"><i class="icon-chevron-left"></i></a>
 
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/fixed-header/jquery.fixedheadertable.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>

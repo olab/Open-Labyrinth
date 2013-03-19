@@ -19,11 +19,15 @@
  *
  */
 if (isset($templateData['map'])) { ?>
+    <div class="page-header">   <div class="pull-right">
+            <div class="btn-group">
+                <a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">
+                    <i class="icon-plus-sign"></i>
+                    <?php echo __('Add counter'); ?></a>
+              </div>
+        </div>
 <h1><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?></h1>
-<div class="control-group">
-    <a class="btn btn-info" href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>"><?php echo __('Add counter'); ?></a>
-    <a class="btn btn-info" href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>"><?php echo __('Counter grid'); ?></a>
-</div>
+     </div>
 <table class="table table-striped table-bordered">
     <colgroup>
         <col style="width: 5%">
@@ -43,6 +47,7 @@ if (isset($templateData['map'])) { ?>
             <td><?php echo $counter->id; ?></td>
             <td><?php echo $counter->name; ?></td>
             <td>
+                <div class="btn-group">
                 <a class="btn btn-info" href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">
                     <i class="icon-pencil icon-white"></i>
                     <?php echo __('Edit'); ?>
@@ -58,7 +63,7 @@ if (isset($templateData['map'])) { ?>
                 <a data-toggle="modal" href="#" data-target="#delete-counter-<?php echo $counter->id; ?>" class="btn btn-danger" href="javascript:void(0);">
                     <i class="icon-trash icon-white"></i>
                     <?php echo __('Delete'); ?>
-                </a>
+                </a></div>
                 <div class="modal hide alert alert-block alert-error fade in" id="delete-counter-<?php echo $counter->id; ?>">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>

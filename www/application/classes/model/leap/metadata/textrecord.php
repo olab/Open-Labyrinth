@@ -49,7 +49,7 @@ class Model_Leap_Metadata_TextRecord extends Model_Leap_Metadata_LiteralRecord
 
         $formFieldName = $name .
             ($metadata->cardinality===Model_Leap_Metadata::Cardinality_Many?"[]":"");
-        $html ="<textarea class='textarea' name='".$formFieldName."'/>$value</textarea>";
+        $html ="<textarea id='".$name."_' class='textarea' name='".$formFieldName."'/>$value</textarea>";
 
         return $html;
     }

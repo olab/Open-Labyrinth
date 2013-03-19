@@ -671,3 +671,7 @@ a.toggles:hover{
 #content.span12{
     margin-left:0;
 }
+
+input[readonly].code, textarea[readonly].code{
+    cursor:text;
+}

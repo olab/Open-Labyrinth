@@ -42,9 +42,9 @@ if (isset($templateData['map'])) {
             editor_selector: "mceEditor"
         });
     </script>
-
+<div class="page-header">
     <h1><?php echo __('Add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-
+    </div>
 
     <form class="form-horizontal" id="form1" name="form1" method="post"
           action="<?php echo URL::base() . 'nodeManager/createNode/' . $templateData['map']->id; ?>">

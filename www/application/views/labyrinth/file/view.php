@@ -20,12 +20,12 @@
  */
 if (isset($templateData['map'])) {
     ?>
+<div class="page-header">
+    <h1><?php echo __('Edit files for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
+    Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to
+        display or link a file there
 
-    <h1><?php echo __('Edit files for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
-    <p>Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to
-        display or link a file there</p>
-
-    Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></p>
+    <div class="alert alert-info"> Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></div>
 
 
     <table class="table table-striped table-bordered">
@@ -102,10 +102,9 @@ if (isset($templateData['map'])) {
 
                     <td>
                         <?php if ($isInput) { ?>
-                            <input type="text" size="20" value="[[MR:<?php echo $file->id; ?>]]">
+                         <label> <input class="code" readonly="readonly" type="text"  value="[[MR:<?php echo $file->id; ?>]]"></label>
                         <?php } else { ?>
-                            <p><textarea cols="30"><a href="<?php echo URL::base() . $file->path; ?>"
-                                                      border="0"><?php echo $file->name; ?></a></textarea></p>
+                            <textarea readonly="readonly" class="code">&lt;a href="<?php echo URL::base() . $file->path; ?>"&gt;<?php echo $file->name; ?>&lt;/a&gt;</textarea>
                         <?php } ?>
                     </td>
                     <td>
@@ -115,22 +114,23 @@ if (isset($templateData['map'])) {
                     </td>
                     <td>
 
+                    <div class="btn-group">
+                            <a class="btn btn-info" href="<?php echo URL::base() . 'fileManager/editFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-edit"></i> Edit</a>
 
-                            <a class="btn btn-primary" href="<?php echo URL::base() . 'fileManager/editFile/' . $templateData['map']->id . '/' . $file->id; ?>">edit</a>
-
-                        <a class="btn btn-primary" href="<?php echo URL::base() . 'fileManager/deleteFile/' . $templateData['map']->id . '/' . $file->id; ?>">delete</a>
+                        <a class="btn btn-danger" href="<?php echo URL::base() . 'fileManager/deleteFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-trash"></i> Delete</a>
 
                         <?php if ($isImage) { ?>
 
                                 <a href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>">image
                                     editor</a>
-                        <?php } ?>
+                        <?php } ?></div>
                     </td>
 
                 </tr>
             <?php } ?>
+        <?php }else{ ?>
+        <tr class="info"><td colspan="4">There are no files available for this labyrinth, yet. You may add a file, using the form below.</td></tr>
         <?php } ?>
-
         </tbody>
     </table>
 

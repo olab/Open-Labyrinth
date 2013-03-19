@@ -20,7 +20,10 @@
  */
 if (isset($templateData['map'])) {
     ?>
-    <h1><?php echo __('data elements for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    <div class="page-header">
+        <div class="pull-right">
+        <a class="btn btn-primary" href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><i class="icon-plus-sign"></i><?php echo __('add a new data element'); ?></a></div>
+    <h1><?php echo __('Data elements for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
@@ -31,10 +34,6 @@ if (isset($templateData['map'])) {
         </tr>
         </thead>
         <tbody>
-
-
-
-
         <?php if (isset($templateData['vpds']) and count($templateData['vpds']) > 0) { ?>
 
             <?php foreach ($templateData['vpds'] as $vpd) { ?>
@@ -51,13 +50,13 @@ if (isset($templateData['map'])) {
 
                     </td>
                    <td>
+<div class="btn-group">
+                       <a class="btn btn-info"
+                           href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
+                       <a class="btn btn-danger"
+                           href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><i class="icon-edit"></i><?php echo __('Delete'); ?></a>
 
-                       <a class="btn btn-primary"
-                           href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('edit'); ?></a>
-                       <a class="btn btn-primary"
-                           href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('delete'); ?></a>
-
-
+                       </div>
                     </td>
                 <tr>
             <?php } ?>
@@ -70,5 +69,5 @@ if (isset($templateData['map'])) {
         </tbody>
 
     </table>
-    <a class="btn btn-primary" href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><?php echo __('add a new data element'); ?></a>
+
 <?php } ?>
