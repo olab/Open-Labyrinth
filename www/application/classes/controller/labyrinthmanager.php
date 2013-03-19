@@ -99,18 +99,28 @@ class Controller_LabyrinthManager extends Controller_Base {
             case 'labyrinthType':
                 $labyrinthType = $_POST['labyrinthType'];
                 $session = Session::instance();
-                $session->set('labyrinthType', $labyrinthType);
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/2');
+                DB_ORM::model('map')->updateType($receivedMapId, $labyrinthType);
+                if($labyrinthType != 10)
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId); 
+                else
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId); 
                 exit;
                 break;
 
             case 'addNewLabyrinth':
                 if (isset($_POST) && !empty($_POST)) {
                     $session = Session::instance();
+                    $id = 0;
                     $_POST['type'] = $session->get('labyrinthType');
                     $_POST['author'] = Auth::instance()->get_user()->id;
-                    $map = DB_ORM::model('map')->createMap($_POST);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $map->id);
+                    if($receivedMapId != null && $receivedMapId > 0) {
+                        DB_ORM::model('map')->updateMap($receivedMapId, $_POST);
+                        $id = $receivedMapId;
+                    } else {
+                        $map = DB_ORM::model('map')->createMap($_POST, false);
+                        $id = $map->id;
+                    }
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/2/' . $id);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -131,7 +141,16 @@ class Controller_LabyrinthManager extends Controller_Base {
                 echo Model::factory('visualEditor')->generateJSON($mapId);
                 exit;
                 break;
-
+            case 'createLinear':
+                $mapId = $this->request->param('id3', NULL);
+                DB_ORM::model('map')->createLinearMap($mapId, $_POST);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
+                break;
+            case 'createBranched':
+                $mapId = $this->request->param('id3', NULL);
+                DB_ORM::model('map')->createBranchedMap($mapId, $_POST);
+                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
+                break;
             case 'updateNode':
                 $nodeId = $this->request->param('id3', NULL);
                 if ($_POST and $nodeId != NULL) {
@@ -677,15 +696,22 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
         }
         switch ($stepId) {
-
-            case '2':
+            case '1':
                 if($action != NULL){
                     $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
                     $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
                 }
-
-
+                if($action > 0) {
+                    $this->templateData['map'] = DB_ORM::model('map', array((int) $action));
+                }
+                break;
+            case '2':
+                $this->templateData['map'] = DB_ORM::model('map', array((int) $action));
+                break;
             case '3':
+                $this->templateData['map'] = DB_ORM::model('map', array((int) $action));
+                break;
+            case '4':
                 if ($action != NULL) {
                     $this->templateData['map'] = $action;
                     $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($action);
@@ -698,16 +724,16 @@ class Controller_LabyrinthManager extends Controller_Base {
                         $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
+                    $this->templateData['mapModel'] = DB_ORM::model('map', array((int)$action));
                 }
                 break;
-
-            case '4':
+            case '5':
                 $this->templateData['type'] = $typeStep3;
                 $this->templateData['map'] = $receivedMapId;
                 $this->templateData['action'] = $action;
                 break;
 
-            case '5':
+            case '6':
                 $this->templateData['map'] = DB_ORM::model('map', array((int) $receivedMapId));
                 $this->templateData['action'] = $action;
                 $this->templateData['result'] = $this->request->param('id4', NULL);

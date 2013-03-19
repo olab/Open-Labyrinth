@@ -209,4 +209,13 @@ jQuery(document).ready(function(){
 
     $('[data-toggle=tooltip]').tooltip({placement:"left"});
 
+    
+    jQuery('#nodeCountContainer button').click(function() {
+        if($(this).attr('id') != 'applyCount')
+            $('#nodeCount').attr('disabled', 'disabled');
+    });
+    
+    jQuery('#nodeCountCustom').click(function() {
+        $('#nodeCount').removeAttr('disabled');
+    });
 });
