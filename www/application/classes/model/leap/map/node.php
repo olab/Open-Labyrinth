@@ -242,25 +242,19 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     public function createNode($values) {
         $mapId = Arr::get($values, 'map_id', NULL);
         if($mapId != NULL) {
-            $this->map_id = $mapId;
-            $this->title = Arr::get($values, 'mnodetitle', '');
-            $this->text = Arr::get($values, 'mnodetext', '');
-            $this->info = Arr::get($values, 'mnodeinfo', '');
-            $this->probability = Arr::get($values, 'mnodeprobability', FALSE);
-            $this->link_style_id = Arr::get($values, 'linkstyle', 1);
-            $this->link_type_id = 2;
-            $this->priority_id = Arr::get($values, 'priority', 1);
-            $this->undo = Arr::get($values, 'mnodeUndo', FALSE);
-            $this->end = Arr::get($values, 'ender', FALSE);
-            if (Arr::get($values, 'type_id', FALSE)){
-                $this->type_id = Arr::get($values, 'type_id', FALSE);
-            }else{
-                $this->type_id = 2; // Child type id
-            }
-
-            $this->save();
-            
-            return $this;
+            return DB_ORM::model('map_node', array(DB_ORM::insert('map_node')
+                    ->column('map_id', $mapId)
+                    ->column('title', Arr::get($values, 'mnodetitle', ''))
+                    ->column('text', Arr::get($values, 'mnodetext', ''))
+                    ->column('info', Arr::get($values, 'mnodeinfo', ''))
+                    ->column('probability', Arr::get($values, 'mnodeprobability', FALSE))
+                    ->column('link_style_id', Arr::get($values, 'linkstyle', 1))
+                    ->column('link_type_id', 2)
+                    ->column('priority_id', Arr::get($values, 'priority', 1))
+                    ->column('undo', Arr::get($values, 'mnodeUndo', FALSE))
+                    ->column('end', Arr::get($values, 'ender', FALSE))
+                    ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                    ->execute()));
         }
         
         return NULL;

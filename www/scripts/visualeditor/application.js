@@ -10,8 +10,7 @@ $(function() {
         relative_urls : false,
         entity_encoding: "raw",
         theme: "advanced",
-        skin:"bootstrap",
-        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
         // Theme options
         theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull",
         theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
@@ -26,7 +25,6 @@ $(function() {
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
     });
-
 
     var visualEditor = new VisualEditor();
     visualEditor.Init(params);
@@ -60,7 +58,14 @@ $(function() {
     }
 
     if(mapJSON != null && mapJSON.length > 0) {
-        visualEditor.Deserialize(mapJSON);
+         if(mapType != null && mapType == 6) {
+            visualEditor.DeserializeLinear(mapJSON);
+        } else if(mapType != null && mapType == 9) {
+            visualEditor.DeserializeBranched(mapJSON);
+        } else {
+            visualEditor.Deserialize(mapJSON);
+        }
+        
         visualEditor.Render();
     }
     
@@ -100,7 +105,6 @@ $(function() {
         visualEditor.AddNewNode();
         visualEditor.Render();
     });
-    
     
     $('#setAsRootNodeBtn').click(function() {
         $('#veNodeRootBtn').addClass('active');
@@ -167,7 +171,6 @@ $(function() {
             if(isNaN(count)) count = 0;
         }
         
-        
         if(count > 0) {
             visualEditor.AddDandelion(count);
             visualEditor.Render();
@@ -178,16 +181,58 @@ $(function() {
         return false;
     });
     
-    $('#veDandelionCountContainer button').click(function() {
-        $('#veDandelionCount').attr('disabled', 'disabled');
+    $('#veCountContainer button').click(function() {
+        $('#veCount').attr('disabled', 'disabled');
     })
     
-    $('#veDandelionCustom').click(function() {
-        $('#veDandelionCount').removeAttr('disabled');
+    $('#veCustom').click(function() {
+        $('#veCount').removeAttr('disabled');
     })
     
     $('#backgroundColor').click(function() {
         $('#visual_editor_background_color').modal();
+    });
+    
+    $('#veTemplate').click(function() {
+       $('#visual_editor_template').modal(); 
+    });
+    
+    $('#update').tooltip();
+    $('#addNode').tooltip({html: true});
+    $('#vePan').tooltip({html: true});
+    $('#veSelect').tooltip({html: true});
+    $('#veTemplate').tooltip({html: true});
+    $('#zoomIn').tooltip({html: true});
+    $('#zoomOut').tooltip({html: true});
+    
+    $('#veTemplateSaveBtn').click(function() {
+        var value = $('#veCountContainer').children().filter('.active').attr('value');
+        var type = $('#veTypeContainer').children().filter('.active').attr('value');
+        var count = 0;
+        if(value == 'Custom') {
+            value = $('#veCount').val();
+        }
+        
+        count = parseInt(value);
+        if(isNaN(count)) count = 0;
+        
+        if(count > 0) {
+            if(type == 'dandelion') {
+                if(count < 3)
+                    count = 3;
+                visualEditor.AddDandelion(count);
+            } else if(type == 'branched') {
+                visualEditor.AddBranched(count);
+            } else {
+                visualEditor.AddLinear(count);
+            }
+            
+            visualEditor.Render();
+        }
+        
+        $('#visual_editor_template').modal('hide');
+        
+        return false;
     });
     
     var $definedColorContainer = $('.defined-color-picker');

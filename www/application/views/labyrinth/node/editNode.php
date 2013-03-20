@@ -52,6 +52,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             <?php echo __('Set as Root'); ?></a>
 
     </div>
+
     <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
     </div>
 
@@ -92,7 +93,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                        class="control-label"><?php echo __('Supporting Information Keyword'); ?></label>
 
                 <div class="controls">
-                    <input id="mnodekeyword" class="span6" type="text"
+                    <input readonly="readonly" id="mnodekeyword" class="span6 code" type="text"
                            value="[[INFO:<?php echo $templateData['node']->id; ?>]]"/>
                 </div>
             </div>

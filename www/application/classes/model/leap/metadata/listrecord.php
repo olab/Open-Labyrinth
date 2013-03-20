@@ -154,7 +154,7 @@ class Model_Leap_Metadata_ListRecord extends Model_Leap_Metadata_Record
         $terms = $this->getPossibleTerms($metadata);
 
         $formFieldName = $name . ($metadata->cardinality===Model_Leap_Metadata::Cardinality_Many?"[]":"");
-        $html ="<select name='".$formFieldName."' id='$name'>";
+        $html ="<select id='".$name."_' name='".$formFieldName."' id='$name'>";
 
         foreach($terms as $term){
             $termId = $term->id;

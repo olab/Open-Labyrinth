@@ -37,7 +37,7 @@ class Model_Leap_Metadata_DateRecord extends Model_Leap_Metadata_LiteralRecord
         $formFieldName = $name .
             ($metadata->cardinality===Model_Leap_Metadata::Cardinality_Many?"[]":"");
         $html = HTML::style('/scripts/jquery/ui-lightness/jquery-ui-1.9.1.custom.min.css');
-        $html .="<input name='".$formFieldName."' type='text' class='date' value='$value'/>";
+        $html .="<input id='".$name."_' name='".$formFieldName."' type='text' class='date' value='$value'/>";
 
         return $html;
     }

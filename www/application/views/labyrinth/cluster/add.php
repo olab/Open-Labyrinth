@@ -19,7 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <h1><?php echo __('Add a new Labyrinth Data Cluster');?></h1>
+   <div class="page-header"><h1><?php echo __('Add a new Labyrinth Data Cluster');?></h1></div>
                             <form class="form-horizontal" method='post' action='<?php echo URL::base(); ?>clusterManager/saveNewDam/<?php echo $templateData['map']->id; ?>'>
                                 <fieldset class="fieldset">
                                     <div class="control-group">
@@ -29,8 +29,12 @@ if (isset($templateData['map'])) { ?>
                                         </div>
                                     </div>
                                 </fieldset>
+<div class="form-actions">
+    <div class="pull-right">
+        <input class="btn btn-primary btn-large" type='submit' value='Add' />
+    </div>
+</div>
 
-                                <input class="btn btn-primary" type='submit' value='Add' />
                             </form>
 
 <?php } ?>

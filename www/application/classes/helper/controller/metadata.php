@@ -38,10 +38,11 @@ class Helper_Controller_Metadata
        // Helper_Html_Javascript::add('scripts/jquery/jquery-ui-1.9.1.custom.min.js');
         foreach ($metadata as $property) {
             $name = $property->name;
+            $comment = $property->comment;
             $metadataEditor = self::metadataEdit($property, $object);
             $html .="
-            <div class='control-group' id='$name'>
-            <label class='control-label'>".$property->label."<div class='pull-right'>".$metadataEditor["controls"]."</div></label>";
+            <div data-toggle='tooltip' title='".$comment."' class='control-group' id='$name'>
+            <label for='".$name."_' class='control-label'>".$property->label."<div class='pull-right'>".$metadataEditor["controls"]."</div></label>";
 
             $html .= $metadataEditor["form"];
 
@@ -70,6 +71,7 @@ class Helper_Controller_Metadata
            // return;
         }
         $label = $metadataRecord[0]->field->name;
+
         $name = $metadataRecord[0]->field->name;
         $result["label"] = $label;
         $valuesCount = count($metadataRecord);
@@ -127,7 +129,7 @@ class Helper_Controller_Metadata
             } else {
                 $id = 0;
             }
-            $html .= "<div id='$name' class=' controls $type single'>";
+            $html .= "<div id='$name' class=' controls $type single' >";
             if($handlesCardinality){
                 $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);
             }

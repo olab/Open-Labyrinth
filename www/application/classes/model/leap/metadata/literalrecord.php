@@ -112,7 +112,7 @@ abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Rec
 
         $formFieldName = $name .
             ($metadata->cardinality===Model_Leap_Metadata::Cardinality_Many?"[]":"");
-        $html ="<input placeholder='".$metadata->comment."' name='".$formFieldName."' type='text' class='span6' value='$value'/>";
+        $html ="<input placeholder='".$metadata->comment."' name='".$formFieldName."' id='".$name."_' type='text' class='span6' value='$value'/>";
 
         return $html;
     }

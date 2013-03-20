@@ -21,12 +21,14 @@
 if (isset($templateData['map']) and isset($templateData['dam'])) {
     ?>
 
-    <h1 xmlns="http://www.w3.org/1999/html"><?php echo __('Edit a Labyrinth Data Cluster "') . $templateData['dam']->name . '"'; ?></h1>
+    <div class="page-header">
 
-    <h3>Preview</h3>
+    <h1 xmlns="http://www.w3.org/1999/html"><?php echo __('Edit a Labyrinth Data Cluster "') . $templateData['dam']->name . '"'; ?></h1></div>
+
+
     <h3>Data Cluster: <?php echo $templateData['dam']->name; ?></h3>
 
-    <form method='post'
+    <form method='post' class="form-horizontal"
           action='<?php echo URL::base(); ?>clusterManager/updateDamName/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>'>
         <fieldset class="fieldset">
             <div class="control-group">
@@ -39,9 +41,9 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                 </div>
             </div>
         </fieldset>
-
+<div class="form-actions">
         <input class="btn btn-primary"
-               type='submit' value='update'/>
+               type='submit' value='Update'/></div>
     </form>
     <?php if (count($templateData['dam']->elements) > 0) { ?>
         <h4><?php echo __("Elements");?></h4>
@@ -99,10 +101,11 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
 
                     </fieldset>
 
+<div class="form-actions">
+    <div class="btn-group">
+                       <input class="btn btn-primary" type="submit" value="Update"> <a class="btn btn-danger" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">Delete</a></div></div>
 
-                       <input class="btn btn-primary" type="submit" value="update">
 
-                                <a class="btn btn-primary" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
 
                 </form>
             <?php }
@@ -126,10 +129,16 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                             </div>
                         </div>
                     </fieldset>
+                    <div class="form-actions">
+                        <div class="btn-group">
 
-                        <input class="btn btn-primary" type="submit" value="update">
+                            <input class="btn btn-primary" type="submit" value="Update"> <a class="btn btn-danger" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">Delete</a>
+                        </div>
 
-                                <a class="btn btn-primary" href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
+
+                    </div>
+
+
 
 
                 </form>
@@ -159,12 +168,16 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                                 </div>
                             </div>
                         </fieldset>
+                        <div class="form-actions">
+                            <div class="btn-group">
+                                <input class="btn btn-primary" type="submit" value="Update"></div>
+                            <a class="btn btn-danger"
+                               href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">Delete</a>
+                            </div>
 
-                        <input class="btn btn-primary" type="submit" value="update">
 
 
-                <a class="btn btn-primary"
-                   href="<?php echo URL::base(); ?>clusterManager/removeElementFormDam/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['dam']->id; ?>/<?php echo $element->id; ?>">delete</a>
+
 
                 </form>
             <?php } ?>
@@ -196,8 +209,8 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                                 </div>
                             </div>
                         </fieldset>
-
-                        <input class="btn btn-primary" type='submit' value='add'/>
+                        <div class="form-actions">
+                        <input class="btn btn-primary" type='submit' value='Add'/></div>
                     </form>
                 <?php } else { ?>
                     <p>no elements to add</p>
@@ -223,8 +236,8 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                                 </div>
                             </div>
                         </fieldset>
-
-                        <input class="btn btn-primary" type='submit' value='add'/>
+                        <div class="form-actions">
+                        <input class="btn btn-primary" type='submit' value='Add'/></div>
 
                     </form>
                 <?php } else { ?>
@@ -251,8 +264,8 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                                 </div>
                             </div>
                         </fieldset>
+<div class="form-actions"> <input class="btn btn-primary" type='submit' value='Add'/></div>
 
-                        <input class="btn btn-primary" type='submit' value='add'/>
 
                     </form>
                 <?php } else { ?>

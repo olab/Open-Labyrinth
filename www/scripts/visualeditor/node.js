@@ -3,16 +3,14 @@ var Node = function() {
     var self = this;
     var defWidth = 230;
     var defHeight = 125;
-    var defHeaderHeight = 16;
-    var defColor = '#FFFFFF';
-    var defHeaderColor = '#8a8ab1';
+    var defHeaderHeight = 30;
+    var defColor = '#f0f0f0';
+    var defHeaderColor = '#b3b2b2';
+    var defRootHeaderColor = '#e9b23c';
     var defBorderSize = 1;
-    var defBorderColor = '#eeeeee';
+    var defBorderColor = '#b3b2b2';
     var def2PI = Math.PI * 2;
     var defLinkButtonBackgroundColor = '#9191cf';
-    var defAddButtonBackgroundColor = '#9191cf';
-    var defRootButtonBackgroundColor = '#9191cf';
-    var defDeleteButtonBackgroundColor = '#9191cf';
     
     self.isDragging = false;
     self.transform = new Transform();
@@ -25,41 +23,30 @@ var Node = function() {
     self.borderSize = defBorderSize;
     self.borderColor = defBorderColor;
     
-    self.linkButtonRaius = 12;
+    self.linkButtonRaius = 10;
     self.linkButtonBackgroundColor = defLinkButtonBackgroundColor;
     self.linkButtonStrokeSize = 1;
     self.linkButtonStrokeColor = '#ffffff';
     self.linkButtonHoverBackgroundColor = '#ff9900';
+    self.linkButtonRootBgColor = '#e9b23c';
+    self.linkButtonBgColor = '#b3b2b2';
+    self.linkButtonRootBgShadowColor = '#b68c30';
+    self.linkButtonBgShadowColor = '#6E6D6D';
     self.linkButtonRadius2 = 8;
     self.linkButtonStrokeSize2 = 2;
     self.linkButtonStrokeColor2 = '#ffffff';
-    self.linkButtonLineWidth = 3;
+    self.linkButtonLineWidth = 2;
     self.isLinkButtonEnabled = false;
+    self.isLinkButtonIsHover = false;
     
-    self.addButtonRadius = 12;
-    self.addButtonBackgroundColor = defAddButtonBackgroundColor;
-    self.addButtonStrokeSize = 1;
-    self.addButtonStrokeColor = '#ffffff';
-    self.addButtonHoverBackgroundColor = '#ff9900';
-    self.addButtonLineWidth = 5;
-    
-    self.rootButtonRadius = 12;
-    self.rootButtonBackgroundColor = defRootButtonBackgroundColor;
-    self.rootButtonStrokeSize = 1;
-    self.rootButtonStrokeColor = '#ffffff';
-    self.rootButtonHoverBackgroundColor = '#ff9900';
-    self.rootButtonActiveColor = '#ff9900';
-    self.rootFontSettings = 'bold 16px Arial';
-    self.rootFontColor = '#ffffff';
-    
-    self.deleteButtonRadius = 12;
-    self.deleteButtonBackgroundColor = defDeleteButtonBackgroundColor;
-    self.deleteButtonStrokeSize = 1;
-    self.deleteButtonStrokeColor = '#ffffff';
-    self.deleteButtonHoverBackgroundColor = '#ff9900';
-    self.deleteButtonActiveColor = '#ff9900';
-    self.deleteFontSettings = 'bold 16px Arial';
-    self.deleteFontColor = '#ffffff';
+    self.addButtonRadius = 10;
+    self.addButtonRootBgColor = '#e9b23c';
+    self.addButtonRootBgShadowColor = '#b68c30';
+    self.addButtonBgColor = '#b3b2b2';
+    self.addButtonBgShadowColor = '#6E6D6D';
+    self.addButtonLineWidth = 2;
+    self.addButtonLineColor = '#ffffff';
+    self.addButtonIsHover = false;
     
     self.titleFontSettings = 'bold 15px Arial';
     self.titleFontColor = '#000000';
@@ -88,6 +75,7 @@ var Node = function() {
     self.isEnd = false;
     self.counters = new Array();
     self.isSelected = false;
+    self.isActive = false;
     
     // Daraw current node
     // context - canvas context
@@ -102,8 +90,11 @@ var Node = function() {
         context.save();
         context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
         
-        if(self.isSelected)
+        if(self.isSelected && !self.isActive)
             DrawSelectedArea(context);
+        
+        if(self.isActive)
+            DrawActiveSelectedArea(context);
         
         DrawContentArea(context);
         DrawHeaderArea(context);
@@ -121,7 +112,6 @@ var Node = function() {
             content = (content.length >= 160) ? (content.substring(0, 157) + '...') : content;
             DrawContent(context, content);
         }
-
         
         context.restore();
     }
@@ -166,20 +156,19 @@ var Node = function() {
             self.isDragging = false;
             if(self.IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
                 isRedraw = true;
-                self.linkButtonBackgroundColor = self.linkButtonHoverBackgroundColor;
-            } else if(self.linkButtonBackgroundColor != defLinkButtonBackgroundColor) {
+                self.isLinkButtonIsHover = true;
+            } else {
                 isRedraw = true;
-                self.linkButtonBackgroundColor = defLinkButtonBackgroundColor;
+                self.isLinkButtonIsHover = false;
             }
             
             if(self.IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
                 isRedraw = true;
-                self.addButtonBackgroundColor = self.addButtonHoverBackgroundColor;
-            } else if(self.addButtonBackgroundColor != defAddButtonBackgroundColor) {
+                self.addButtonIsHover = true;
+            } else {
                 isRedraw = true;
-                self.addButtonBackgroundColor = defAddButtonBackgroundColor;
+                self.addButtonIsHover = false;
             }
-
         }
 
         return isRedraw;
@@ -229,7 +218,7 @@ var Node = function() {
         var y1 = [Math.min(y, yH), Math.max(y, yH)];
         
         return ((x0[0] >= x1[0] && x0[0] <= x1[1]) || (x0[1] >= x1[0] && x0[1] <= x1[1])) && 
-               ((y0[0] >= y1[0] && y0[0] <= y1[1]) || (y0[1] >= y1[0] && y0[1] <= y1[1]));
+        ((y0[0] >= y1[0] && y0[0] <= y1[1]) || (y0[1] >= y1[0] && y0[1] <= y1[1]));
     }
     
     self.IsHeaderCollision = function(x, y, viewport) {
@@ -240,14 +229,14 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (x  >= pos[0] && x <= (pos[0] + self.width * scale[0]) && y  >= pos[1] && y <= (pos[1] + self.headerHeight * scale[1])); 
+        return (x  >= pos[0] && x <= (pos[0] + self.headerHeight * scale[0]) && y  >= pos[1] && y <= (pos[1] + self.height * scale[1])); 
     }
     
     self.IsLinkButtonCollision = function(x, y, viewport) {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
-        tr.Translate(self.width, self.height * 0.5 + self.headerHeight * 0.5);
+        tr.Translate(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8);
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
@@ -259,7 +248,7 @@ var Node = function() {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
-        tr.Translate(self.width * 0.5, self.height);
+        tr.Translate(self.headerHeight * 0.5, self.addButtonRadius + 5);
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
@@ -311,7 +300,7 @@ var Node = function() {
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
         
-        return (x  >= pos[0] && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1] + self.headerHeight * scale[1]) && y <= (pos[1] + (self.height - self.headerHeight) * scale[1])); 
+        return (x  >= (pos[0] + self.headerHeight * scale[0]) && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1]) && y <= (pos[1] + (self.height) * scale[1])); 
     }
     
     self.TranslateNode = function(dx, dy, viewport) {
@@ -321,105 +310,106 @@ var Node = function() {
     }
     
     var DrawContentArea = function(context) {
-        context.beginPath();
-        context.rect(0, 0, self.width, self.height);
         context.fillStyle = self.color;
-        context.fill();
         context.lineWidth = 1;
-        context.strokeStyle = self.headerColor;
-        context.stroke();
+        context.strokeStyle = (self.isRoot) ? defRootHeaderColor : self.headerColor;
+        roundRect(context, 0, 0, self.width, self.height, 5, true, true);
     }
     
     var DrawHeaderArea = function(context) {
-        context.beginPath();
-        context.rect(0, 0, self.width, self.headerHeight);
-        context.fillStyle = (self.isRoot) ? self.rootButtonActiveColor : self.headerColor;
-        context.fill();
+        context.fillStyle = (self.isRoot) ? defRootHeaderColor : self.headerColor;
+        roundRectTwo(context, 0, 0, self.headerHeight, self.height, 5, true, true);
     }
     
     var DrawLinkButton = function(context) {
+        var grd = context.createLinearGradient(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 8, self.headerHeight * 0.5, self.linkButtonRaius * 4 + 8);
+        if(self.isRoot) {
+            grd.addColorStop(0, '#eec46a');
+            grd.addColorStop(1, '#dcaa41');
+        } else {
+            grd.addColorStop(0, '#c5c4c4');
+            grd.addColorStop(1, '#a6a6a6');
+        }
+        context.save();
+            context.beginPath();
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius, def2PI, false);
+
+            context.clip();
+
+            context.beginPath();
+            context.fillStyle = grd;
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius, def2PI, false);
+            context.fill();
+
+            context.beginPath();
+            context.lineWidth = 4;
+            context.shadowColor   = (self.isRoot) ? self.linkButtonRootBgShadowColor : self.linkButtonBgShadowColor;
+            context.shadowBlur    = 2;
+            context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
+            context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
+            context.stroke();
+        context.restore();
+        
         context.beginPath();
-        context.arc(self.width, self.height * 0.5 + self.headerHeight * 0.5, self.linkButtonRaius, def2PI, false);
-        context.fillStyle = (self.isLinkButtonEnabled) ? self.linkButtonHoverBackgroundColor : self.linkButtonBackgroundColor;
-        context.fill();
-        context.lineWidth = self.linkButtonStrokeSize;
+        context.moveTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 9);
+        context.lineTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 13);
+        context.moveTo(self.headerHeight * 0.5 + self.linkButtonRaius - 1, self.linkButtonRaius * 3 + 8);
+        context.lineTo(self.headerHeight * 0.5 + self.linkButtonRaius - 5, self.linkButtonRaius * 3 + 8);
+        context.moveTo(self.headerHeight * 0.5, self.linkButtonRaius * 4 + 7);
+        context.lineTo(self.headerHeight * 0.5, self.linkButtonRaius * 4 + 3);
+        context.moveTo(self.headerHeight * 0.5 - self.linkButtonRaius + 1, self.linkButtonRaius * 3 + 8);
+        context.lineTo(self.headerHeight * 0.5 - self.linkButtonRaius + 5, self.linkButtonRaius * 3 + 8);
+        context.lineWidth = self.linkButtonLineWidth;
         context.strokeStyle = self.linkButtonStrokeColor;
-        context.stroke();
-        
-        context.beginPath();
-        context.arc(self.width, self.height * 0.5 + self.headerHeight * 0.5, self.linkButtonRadius2, def2PI, false);
-        context.lineWidth = self.linkButtonStrokeSize2;
-        context.strokeStyle = self.linkButtonStrokeColor2;
-        context.stroke();
-        
-        context.beginPath();
-        context.moveTo(self.width, self.height * 0.5 + self.headerHeight * 0.5 - self.linkButtonRaius - 2);
-        context.lineTo(self.width, self.height * 0.5 + self.headerHeight * 0.5 + self.linkButtonRaius + 2);
-        context.lineWidth = self.linkButtonLineWidth;
-        context.stroke();
-        
-        context.beginPath();
-        context.moveTo(self.width - self.linkButtonRaius - 2, self.height * 0.5 + self.headerHeight * 0.5);
-        context.lineTo(self.width + self.linkButtonRaius + 2, self.height * 0.5 + self.headerHeight * 0.5);
-        context.lineWidth = self.linkButtonLineWidth;
         context.stroke();
     }
     
     var DrawAddButton = function(context) {
-        context.beginPath();
-        context.arc(self.width * 0.5, self.height, self.addButtonRadius, def2PI, false);
-        context.fillStyle = self.addButtonBackgroundColor;
-        context.fill();
-        context.lineWidth = self.addButtonStrokeSize;
-        context.strokeStyle = self.addButtonStrokeColor;
-        context.stroke();
-        
-        context.beginPath();
-        context.moveTo(self.width * 0.5 - self.addButtonRadius + 3, self.height);
-        context.lineTo(self.width * 0.5 + self.addButtonRadius - 3, self.height);
-        context.lineWidth = self.addButtonLineWidth;
-        context.stroke();
-        
-        context.beginPath();
-        context.moveTo(self.width * 0.5, self.height - self.addButtonRadius + 3);
-        context.lineTo(self.width * 0.5, self.height + self.addButtonRadius - 3);
-        context.lineWidth = self.addButtonLineWidth;
-        context.stroke();
-    }
+        var grd = context.createLinearGradient(self.headerHeight * 0.5, 5, self.headerHeight * 0.5, self.addButtonRadius*2 + 5);
+        if(self.isRoot) {
+            grd.addColorStop(0, '#eec46a');
+            grd.addColorStop(1, '#dcaa41');
+        } else {
+            grd.addColorStop(0, '#c5c4c4');
+            grd.addColorStop(1, '#a6a6a6');
+        }
+        context.save();
+            context.beginPath();
+            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius, def2PI, false);
 
-    var DrawRootButton = function(context) {
-        context.beginPath();
-        context.arc(0, self.height * 0.5 - self.rootButtonRadius - 3 + self.headerHeight * 0.5, self.rootButtonRadius, def2PI, false);
-        context.fillStyle = (self.isRoot) ? self.rootButtonActiveColor : self.rootButtonBackgroundColor;
-        context.fill();
-        context.lineWidth = self.rootButtonStrokeSize;
-        context.strokeStyle = self.rootButtonStrokeColor;
-        context.stroke();
+            context.clip();
+            
+            context.beginPath();
+            context.fillStyle = grd;
+            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius, def2PI, false);
+            context.fill();
+
+            context.beginPath();
+            context.lineWidth = 4;
+            context.shadowColor   = (self.isRoot) ? self.addButtonRootBgShadowColor : self.addButtonBgShadowColor;;
+            context.shadowBlur    = 2;
+            context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
+            context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
+            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
+            context.stroke();
+        context.restore();
         
-        context.font = self.rootFontSettings;
-        context.fillStyle = self.rootFontColor;
-        context.fillText('R', -6, self.height * 0.5 - self.rootButtonRadius + self.headerHeight * 0.5 + 3);
-    }
-    
-    var DrawDeleteButton = function(context) {
         context.beginPath();
-        context.arc(0, self.height * 0.5 + self.deleteButtonRadius + 3 + self.headerHeight * 0.5, self.deleteButtonRadius, def2PI, false);
-        context.fillStyle = self.deleteButtonBackgroundColor;
-        context.fill();
-        context.lineWidth = self.deleteButtonStrokeSize;
-        context.strokeStyle = self.deleteButtonStrokeColor;
+        context.moveTo(self.headerHeight * 0.5 - self.addButtonRadius + 5, self.addButtonRadius + 5);
+        context.lineTo(self.headerHeight * 0.5 + self.addButtonRadius - 5, self.addButtonRadius + 5);
+        context.moveTo(self.headerHeight * 0.5, self.addButtonRadius + 5 - self.addButtonRadius + 5);
+        context.lineTo(self.headerHeight * 0.5, self.addButtonRadius + 5 + self.addButtonRadius - 5);
+        context.lineWidth = self.addButtonLineWidth;
+        context.strokeStyle = self.addButtonLineColor;
         context.stroke();
-        
-        context.font = self.deleteFontSettings;
-        context.fillStyle = self.deleteFontColor;
-        context.fillText('D', -6, self.height * 0.5 + self.rootButtonRadius + self.headerHeight * 0.5 + 9);
     }
     
     var DrawTitle = function(context, title) {
         context.beginPath();
         context.font = self.titleFontSettings;
         context.fillStyle = self.titleFontColor;
-        context.fillText(title, 13, self.headerHeight + 20);
+        context.fillText(title, self.headerHeight + 13, 25);
     }
     
     var DrawContent = function(context, content) {
@@ -434,7 +424,7 @@ var Node = function() {
             var t = line + words[i] + ' ';
             var m = context.measureText(t);
             if(m.width > self.contentMaxLineWidth) {
-                context.fillText(line, 14, self.headerHeight + 36 + y);
+                context.fillText(line, self.headerHeight + 13, 36 + y);
                 line = words[i] + ' ';
                 y += self.contentLineHeight;
             } else {
@@ -444,22 +434,9 @@ var Node = function() {
         
         var m = context.measureText(line);
         if(m.width > self.contentMaxLineWidth) {
-            context.fillText(line.substring(0, 57) + '...', 13, self.headerHeight + 36 + y);
+            context.fillText(line.substring(0, 57) + '...', self.headerHeight + 13, 36 + y);
         } else {
-            context.fillText(line, 13, self.headerHeight + 36 + y);
-        }
-        
-    }
-    
-    var DrawColorButton = function(context) {
-        var blockWidth = self.colorButtonWidth / 5;
-        var colors = ['#ffffff', '#CC99FF', '#6699FF', '#66FF66', '#FFFF66'];
-        
-        for(var i = 0; i < 5; i++) {
-            context.beginPath();
-            context.rect(3 + blockWidth * i, self.height - self.colorButtonHeight - 2, blockWidth, self.colorButtonHeight);
-            context.fillStyle = colors[i];
-            context.fill();
+            context.fillText(line, self.headerHeight + 13, 40 + y);
         }
     }
     
@@ -475,14 +452,40 @@ var Node = function() {
         context.stroke();
     }
     
+    var DrawActiveSelectedArea = function(context) {
+        context.beginPath();
+        context.lineWidth = 2;
+        context.strokeStyle = '#1E2AAC';
+        DashedLineTo(context, -self.paddingSelect, -self.paddingSelect, self.width + self.paddingSelect, -self.paddingSelect, [5,5]);
+        DashedLineTo(context, self.width + self.paddingSelect, -self.paddingSelect, self.width + self.paddingSelect, self.height + self.paddingSelect, [5,5]);
+        DashedLineTo(context, self.width + self.paddingSelect, self.height + self.paddingSelect, -self.paddingSelect, self.height + self.paddingSelect, [5,5]);
+        DashedLineTo(context, -self.paddingSelect, self.height + self.paddingSelect, -self.paddingSelect, -self.paddingSelect, [5,5]);
+        
+        context.stroke();
+    }
+    
     var DashedLineTo = function (context, fromX, fromY, toX, toY, pattern) {
-        var lt = function (a, b) {return a <= b;};
-        var gt = function (a, b) {return a >= b;};
-        var capmin = function (a, b) {return Math.min(a, b);};
-        var capmax = function (a, b) {return Math.max(a, b);};
+        var lt = function (a, b) {
+            return a <= b;
+        };
+        var gt = function (a, b) {
+            return a >= b;
+        };
+        var capmin = function (a, b) {
+            return Math.min(a, b);
+        };
+        var capmax = function (a, b) {
+            return Math.max(a, b);
+        };
 
-        var checkX = {thereYet: gt, cap: capmin};
-        var checkY = {thereYet: gt, cap: capmin};
+        var checkX = {
+            thereYet: gt, 
+            cap: capmin
+        };
+        var checkY = {
+            thereYet: gt, 
+            cap: capmin
+        };
 
         if (fromY - toY > 0) {
             checkY.thereYet = lt;
@@ -521,5 +524,56 @@ var Node = function() {
         }
     
         return null;
+    }
+    
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+        if (typeof stroke == "undefined" ) {
+            stroke = true;
+        }
+        if (typeof radius === "undefined") {
+            radius = 5;
+        }
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        if (fill) {
+            ctx.fill();
+        }    
+        if (stroke) {
+            ctx.stroke();
+        }  
+    }
+    
+    function roundRectTwo(ctx, x, y, width, height, radius, fill, stroke) {
+        if (typeof stroke == "undefined" ) {
+            stroke = true;
+        }
+        if (typeof radius === "undefined") {
+            radius = 5;
+        }
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width, y);
+        ctx.lineTo(x + width, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        
+        if (fill) {
+            ctx.fill();
+        } 
+        if (stroke) {
+            ctx.stroke();
+        }  
     }
 }

@@ -287,7 +287,9 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $total['count'] = 0;
         if (count($filesArray) > 0){
             foreach($filesArray as $file){
-                $totalsize += filesize(DOCROOT.$file->path);
+
+                if(file_exists($file->name))
+                    $totalsize += filesize(DOCROOT.$file->path);
             }
 
             $total['size'] = $totalsize;

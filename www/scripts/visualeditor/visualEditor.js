@@ -11,8 +11,6 @@ var VisualEditor = function() {
     var shiftKeyPressed = false;
     var def2PI = Math.PI * 2;
     
-    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    
     self.$canvasContainer = null;
     self.$canvas = null;
     self.canvas = null;
@@ -125,7 +123,7 @@ var VisualEditor = function() {
                 self.nodes[i].Draw(self.context, viewport);
             }
         }
-    
+
         if(self.linkConnector != null)
             self.linkConnector.Draw(self.context, viewport);
         
@@ -281,7 +279,7 @@ var VisualEditor = function() {
 
         return result;
     }
- 
+    
     // Deserialize nodes info
     self.Deserialize = function(jsonString) {
         if(jsonString.length <= 0) return;
@@ -488,6 +486,131 @@ var VisualEditor = function() {
         }
     }
     
+    self.DeserializeLinear = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildLinear(self.nodes);
+        }
+    }
+    
+    self.DeserializeBranched = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildBranched(self.nodes);
+        }
+    }
+    
+    self.DeserializeDandelion = function(jsonString) {
+        self.Deserialize(jsonString);
+        
+        if(self.nodes != null && self.nodes.length > 0) {
+            for(var i = 0; i < self.nodes.length; i++) {
+                for(var j = 0; j < (self.nodes.length - 1); j++) {
+                    if(self.nodes[j].id > self.nodes[j+1].id) {
+                        var tmp = self.nodes[j+1];
+                        self.nodes[j+1] = self.nodes[j];
+                        self.nodes[j] = tmp;
+                    }
+                }
+            }
+            
+            BuildDandelion(self.nodes);
+        }
+    }
+    
+    var BuildLinear = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        for(var i = 1; i < nodes.length; i++) {
+            nodes[i].transform.SetIdentity();
+            nodes[i].transform.Translate(w, h + i * 2 * nodes[i].height);
+        }
+    }
+    
+    var BuildBranched = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        var oldW = w;
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        w += nodes[0].width * 0.5;
+        w -= ((nodes.length - 2) * nodes[0].width + (nodes.length - 3) * nodes[0].width) * 0.5;
+        
+        for(var i = 1; i < nodes.length - 1; i++) {
+            nodes[i].transform.SetIdentity();
+            nodes[i].transform.Translate(w, h + 2 * nodes[i].height);
+            w += 2 * nodes[i].width;
+        }
+        
+        nodes[nodes.length - 1].transform.SetIdentity();
+        nodes[nodes.length - 1].transform.Translate(oldW, h + 4 * nodes[nodes.length - 1].height);
+    }
+    
+    var BuildDandelion = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+        
+        var pos = viewport.GetPosition();
+        var scale = viewport.GetScale();
+        
+        var w = self.canvas.width * 0.5 / scale[0] - pos[0] - nodes[0].width * 0.5;
+        var h = 150 - pos[1] + Math.random() * (70 - 40) + 40;
+        
+        nodes[0].transform.SetIdentity();
+        nodes[0].transform.Translate(w, h);
+        
+        var y0 = h + 2 * self.nodes[0].height;
+        
+        var step = Math.PI / (nodes.length - 3);
+        var radius = 270 * Math.sin((Math.PI - step) * 0.5) / Math.sin(step);
+        
+        for(var i = 0, countIndex = 1; countIndex < (nodes.length - 1); i += step, countIndex++) {
+            var x = w + radius * Math.cos(i);
+            var y = y0 + radius * Math.sin(i);
+            
+            nodes[countIndex].transform.SetIdentity();
+            nodes[countIndex].transform.Translate(x, y);
+        }
+        
+        nodes[nodes.length - 1].transform.SetIdentity();
+        nodes[nodes.length - 1].transform.Translate(w, y0 + radius * 2);
+    }
+    
     self.AddNewNode = function() {
         var node = new Node();
         node.id = GetNewNodeId();
@@ -581,6 +704,93 @@ var VisualEditor = function() {
                 }
             }
         }
+    }
+    
+    self.AddLinear = function(count) {
+        if(count <= 0) return;
+        
+        var nodes = new Array();
+        var tNode = null;
+        for(var  i = 0; i < count; i++) {
+            var node = new Node();
+            node.id = GetNewNodeId();
+            node.title = 'new node';
+            node.isNew = true;
+            
+            nodes.push(node);
+            self.nodes.push(node);
+            
+            if(tNode != null) {
+                var link = new Link();
+                link.nodeA = tNode;
+                link.nodeB = node;
+                link.type = 'direct';
+                link.id = GetNewLinkId();
+                
+                self.links.push(link);
+                tNode = node;
+            } else {
+                tNode = node;
+            }
+        }
+        
+        BuildLinear(nodes);
+    }
+    
+    self.AddBranched = function(count) {
+        if(count <= 0) return;
+        
+        var nodes = new Array();
+        
+        var sNode = new Node();
+        sNode.id = GetNewNodeId();
+        sNode.title = 'new node';
+        sNode.isNew = true;
+        
+        nodes.push(sNode);
+        self.nodes.push(sNode);
+        
+        var linkedNodes = new Array();
+        for(var  i = 0; i < count; i++) {
+            var node = new Node();
+            node.id = GetNewNodeId();
+            node.title = 'new node';
+            node.isNew = true;
+            
+            nodes.push(node);
+            linkedNodes.push(node);
+            self.nodes.push(node);
+            
+            if(sNode != null) {
+                var link = new Link();
+                link.nodeA = sNode;
+                link.nodeB = node;
+                link.type = 'direct';
+                link.id = GetNewLinkId();
+                
+                self.links.push(link);
+            }
+        }
+        
+        var eNode = new Node();
+        eNode.id = GetNewNodeId();
+        eNode.title = 'new node';
+        eNode.isNew = true;
+        
+        nodes.push(eNode);
+        self.nodes.push(eNode);
+        
+        for(var i = 0; i < linkedNodes.length; i++) {
+            var link = new Link();
+            link.nodeA = linkedNodes[i];
+            link.nodeB = eNode;
+            link.type = 'direct';
+            link.id = GetNewLinkId();
+            
+            self.links.push(link);
+        }
+        
+        BuildBranched(nodes);
     }
     
     self.AddNode = function(node) {
@@ -705,7 +915,7 @@ var VisualEditor = function() {
                     var node = GetNodeById(nodeId);
                     if(node != null) {
                         self.rightPanel.node = node;
-                        self.rightPanel.DeleteNodes();
+                        self.rightPanel.DeleteNode();
                     }
                 }
             }
@@ -755,7 +965,6 @@ var VisualEditor = function() {
                     if(result[1] == 'header') {
                     } else if(result[1] == 'add') {
                         AddNodeWithLink(result[0]);
-                    } else if(result[1] == 'root') {
                     } else if(result[1] == 'link') {
                         ShowLinkConnector(result[0]);
                     } else if(result[1] == 'rlink') {
@@ -899,32 +1108,6 @@ var VisualEditor = function() {
             }
         }
         
-        if(self.nodes.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
-            for(var i = self.nodes.length - 1; i >= 0; i--) {
-                if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'move';
-                    isCursorSet = true;
-                } else if(!isCursorSet && 'IsLinkButtonCollision' in self.nodes[i] && self.nodes[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                } else if(!isCursorSet && 'IsAddButtonCollision' in self.nodes[i] && self.nodes[i].IsAddButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                } else if(!isCursorSet && self.nodes[i].IsMainAreaCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                }
-                
-                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes)) {
-                    if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
-                        event.target.style.cursor = 'move';
-                        isCursorSet = true;
-                    }
-                    isRedraw = true;
-                }
-            }
-        }
-        
         if(self.links.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
             for(var i = 0; i < self.links.length; i++) {
                 if(self.links[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
@@ -941,6 +1124,32 @@ var VisualEditor = function() {
             }
         }
         
+        if(self.nodes.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
+            for(var i = self.nodes.length - 1; i >= 0; i--) {
+                if(!isCursorSet && 'IsLinkButtonCollision' in self.nodes[i] && self.nodes[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && 'IsAddButtonCollision' in self.nodes[i] && self.nodes[i].IsAddButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && self.nodes[i].IsMainAreaCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'move';
+                    isCursorSet = true;
+                } 
+                
+                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes)) {
+                    if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                        event.target.style.cursor = 'move';
+                        isCursorSet = true;
+                    }
+                    isRedraw = true;
+                }
+            }
+        }
+
         if(!isCursorSet && !self.isSelectActive) {
             event.target.style.cursor = 'move';
             isCursorSet = true;
@@ -1045,11 +1254,23 @@ var VisualEditor = function() {
             if(mode == 'node') {
                 var node = GetNodeById(elementId);
                 if(node != null) {
+                    if(self.rightPanel.node != null)
+                        self.rightPanel.node.isActive = false;
+                    
                     self.rightPanel.node = node;
                     self.rightPanel.mode = 'node';
                     self.rightPanel.Show();
                 }
             }
+        }
+    }
+    
+    var ShowNodeDialog = function(nodeId) {
+        var node = GetNodeById(nodeId);
+        
+        if(node != null && self.nodeModal != null) {
+            self.nodeModal.SetNode(node);
+            self.nodeModal.Show();
         }
     }
     

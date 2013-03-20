@@ -33,9 +33,9 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
             });
         });
     </script>
+<div class="page-header"><h1><?php echo __('edit data element to labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
 
 
-                <h1><?php echo __('edit data element to labyrinth "') . $templateData['map']->name . '"'; ?></h1>
                 <form class="form-horizontal" action="<?php echo URL::base(); ?>elementManager/updateElement/<?php echo $templateData['map']->id; ?><?php echo '/'.$templateData['vpd']->id; ?>" method="post">
 
                         <h4>Type: <?php echo $templateData['vpd']->type->label; ?></h4>
@@ -653,7 +653,13 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                     break;
                             }
                             ?>
-                        <input class="btn btn-primary" type="submit" value="Submit">
+
+                        <div class="form-actions">
+                            <div class="pull-right">
+                                <input class="btn btn-primary btn-large" type="submit" value="Submit">
+                            </div>
+                        </div>
+
 
     </form>
 

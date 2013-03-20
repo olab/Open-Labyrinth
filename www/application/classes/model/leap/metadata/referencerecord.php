@@ -174,7 +174,7 @@ class Model_Leap_Metadata_ReferenceRecord extends Model_Leap_Metadata_Record
 
         $formFieldName = $name . ($metadata->cardinality === Model_Leap_Metadata::Cardinality_Many ? "[]" : "");
 
-        $html .= "<input  id='$formFieldName' class='$name' type='hidden' value='$value'/>";
+        $html .= "<input id='".$formFieldName."_'  id='$formFieldName' class='$name' type='hidden' value='$value'/>";
 
 
         return $html;

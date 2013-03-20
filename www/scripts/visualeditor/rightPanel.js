@@ -189,6 +189,7 @@ var RightPanel = function() {
         if(self.$panel != null) {
             self.$panel.removeClass('hide');
             if(self.mode == 'node' && self.$accordion != null && self.node != null) {
+                self.node.isActive = true;
                 if(self.node.isRoot && self.$nodeRootBtn != null) {
                     self.$nodeRootBtn.addClass('active');
                 } else {
@@ -266,6 +267,9 @@ var RightPanel = function() {
     }
     
     self.Hide = function() {
+        if(self.node != null)
+            self.node.isActive = false;
+        
         if(self.$panel != null) {
             if(self.$accordion != null) {
                 self.$accordion.removeClass('node-panel');
@@ -276,15 +280,6 @@ var RightPanel = function() {
     }
     
     self.DeleteNode = function() {
-        if(self.deleteModal == null) return;
-        
-        if(self.node != null) {
-            self.deleteModal.node = self.node;
-            self.deleteModal.Show('single');
-        }
-    }
-    
-    self.DeleteNodes = function() {
         if(self.deleteModal == null) return;
         
         var selectedNodes = new Array();
