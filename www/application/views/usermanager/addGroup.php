@@ -21,7 +21,7 @@
 ?>
 
 
-<form class="form-horizontal" action=<?php echo URL::base() . 'usermanager/saveNewGroup'; ?> method="post">
+<form class="form-horizontal" action="<?php echo URL::base() . 'usermanager/saveNewGroup'; ?>" method="post">
 <fieldset class="fieldset">
     <legend><?php echo __('Create group'); ?></legend>
     <div class="control-group">
@@ -33,7 +33,9 @@
     </div>
 </fieldset>
 
-
-<input class="btn btn-primary" type="submit" name="AddGroupSubmit" value="<?php echo __('submit'); ?>">
-
+<div class="form-actions">
+    <div class="pull-right">
+<input class="btn btn-primary" type="submit" name="AddGroupSubmit" value="<?php echo __('Submit'); ?>">
+    </div>
+</div>
 </form>
