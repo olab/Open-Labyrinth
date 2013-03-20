@@ -44,13 +44,13 @@
         <div class="visual-editor">
             <div class="block" style="position: relative;" id="canvasContainer">
             <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
-                <p><input type="button" class="btn" value="Update" id="update" /></p>
-                <p><input type="button" class="btn" value="Add Node" id="addNode"/></p>
-                <!--<p><input type="button" class="btn" value="Background color" id="backgroundColor"/></p>-->
-                <p><input type="button" class="btn active" value="Pan" id="vePan"/></p>
-                <p><input type="button" class="btn" value="Select" id="veSelect"/></p>
-                <p><input type="button" class="btn" value="Add dandelion" id="veDandelion"/></p>
-                <p style="position:relative; float:left;"><input type="button" class="btn" value="+" id="zoomIn" /> <input type="button" class="btn" value="-" id="zoomOut" /></p>
+                <p><button type="button" class="round-btn" id="update" data-toggle="tooltip" data-original-title="Update" data-placement="right"><i class="ve-icon-save"></i></button></p>
+                <p><button type="button" class="round-btn" id="addNode" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Add node</div>" data-placement="right"><i class="ve-icon-add"></i></button></p>
+                <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Pan mode</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
+                <p><button type="button" class="round-btn" id="veSelect" data-toggle="tooltip" data-original-title="Select&nbsp;mode" data-placement="right"><i class="ve-icon-select"></i></button></p>
+                <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
+                <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
+                <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
             </div>
             
             <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
@@ -58,36 +58,27 @@
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
                 <p>&nbsp;</p>
-                <div class="accordion block" id="veAccordionRightPanel">
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelActions">Actions</a>
-                        </div>
-                        <div id="veRightPanelActions" class="accordion-body block collapse">
+                <div class="block" style="width: 470px;">
+                    <ul class="nav nav-tabs visual-editor-right-panel-tabs">
+                        <li><a href="#actions" data-toggle="tab">Actions</a></li>
+                        <li class="active"><a href="#content" data-toggle="tab">Node Content</a></li>
+                    </ul>
+                    
+                    <div class="tab-content block">
+                        <div class="tab-pane" id="actions">
                             <div class="accordion-inner block" align="center">
                                 <button id="veNodeRootBtn" type="button" class="btn" data-toggle="button">Set as Root</button>
                                 <button id="veDeleteNodeBtn" type="button" class="btn btn-danger">Delete Node</button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelBackgroundColor">Background Color</a>
-                        </div>
-                        <div id="veRightPanelBackgroundColor" class="accordion-body block collapse" align="center">
-                            <div class="accordion-inner block">
+                            <legend>Background color</legend>
+                            <div class="block" align="center">
                                 <input type="text" id="colorpickerInput" value="" />
                                 <div class="child-block" id="colopickerContainer"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="accordion-group block node-panel">
-                        <div class="accordion-heading block">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#veAccordionRightPanel" href="#veRightPanelNodeContent">Node Content</a>
-                        </div>
-                        <div id="veRightPanelNodeContent" class="accordion-body block collapse">
+                        <div class="tab-pane active" id="content">
                             <div class="accordion-inner block" style="margin-left: 0">
-                                <div class="block" style="max-height: 565px;width: 430px; overflow: auto;padding-right: 25px;">
+                                <div class="block" style="max-height: 585px;width: 430px; overflow: auto;padding-right: 25px;">
                                 <div class="control-group block">
                                     <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Title</strong></label>
                                     <div class="controls">
@@ -198,13 +189,48 @@
                                 </div>
                             </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
+                <br/>
                 <div class="footer block">
                     <button class="btn" id="veRightPanelSaveBtn">Save</button>
-                    <button class="btn veRightPanelCloseBtn">Close</button>
+                    <button class="btn btn-danger veRightPanelCloseBtn">Close</button>
                 </div>
+            </div>
+        </div>
+        
+        <div class="modal hide block" id="visual_editor_template">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Insert pre-template</h3>
+            </div>
+            
+            <div class="modal-body block">
+                <div class="block" align="center">
+                    <div class="block" data-toggle="buttons-radio" id="veTypeContainer">
+                        <button type="button" class="btn" value="linear">Linear</button>
+                        <button type="button" class="btn" value="branched">Branched</button>
+                        <button type="button" class="btn" value="dandelion">Dandelion</button>
+                    </div>
+                </div>
+                
+                <div class="block" align="center">
+                    <div class="block" data-toggle="buttons-radio" id="veCountContainer">
+                        <button type="button" class="btn" value="6">6</button>
+                        <button type="button" class="btn" value="8">8</button>
+                        <button type="button" class="btn" value="18">18</button>
+                        <button type="button" class="btn" value="24">24</button>
+                        <button type="button" class="btn" value="Custom" id="veCustom">Custom</button>
+                        <input type="text" style="margin-top: 10px; width: 40px;" id="veCount" disabled/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="#" class="btn" data-dismiss="modal">Close</a>
+                <a href="#" class="btn" id="veTemplateSaveBtn">Save</a>
             </div>
         </div>
 

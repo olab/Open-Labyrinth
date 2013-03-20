@@ -11,8 +11,6 @@ var VisualEditor = function() {
     var shiftKeyPressed = false;
     var def2PI = Math.PI * 2;
     
-    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    
     self.$canvasContainer = null;
     self.$canvas = null;
     self.canvas = null;
@@ -125,7 +123,7 @@ var VisualEditor = function() {
                 self.nodes[i].Draw(self.context, viewport);
             }
         }
-    
+
         if(self.linkConnector != null)
             self.linkConnector.Draw(self.context, viewport);
         
@@ -281,7 +279,7 @@ var VisualEditor = function() {
 
         return result;
     }
- 
+    
     // Deserialize nodes info
     self.Deserialize = function(jsonString) {
         if(jsonString.length <= 0) return;
@@ -708,6 +706,93 @@ var VisualEditor = function() {
         }
     }
     
+    self.AddLinear = function(count) {
+        if(count <= 0) return;
+        
+        var nodes = new Array();
+        var tNode = null;
+        for(var  i = 0; i < count; i++) {
+            var node = new Node();
+            node.id = GetNewNodeId();
+            node.title = 'new node';
+            node.isNew = true;
+            
+            nodes.push(node);
+            self.nodes.push(node);
+            
+            if(tNode != null) {
+                var link = new Link();
+                link.nodeA = tNode;
+                link.nodeB = node;
+                link.type = 'direct';
+                link.id = GetNewLinkId();
+                
+                self.links.push(link);
+                tNode = node;
+            } else {
+                tNode = node;
+            }
+        }
+        
+        BuildLinear(nodes);
+    }
+    
+    self.AddBranched = function(count) {
+        if(count <= 0) return;
+        
+        var nodes = new Array();
+        
+        var sNode = new Node();
+        sNode.id = GetNewNodeId();
+        sNode.title = 'new node';
+        sNode.isNew = true;
+        
+        nodes.push(sNode);
+        self.nodes.push(sNode);
+        
+        var linkedNodes = new Array();
+        for(var  i = 0; i < count; i++) {
+            var node = new Node();
+            node.id = GetNewNodeId();
+            node.title = 'new node';
+            node.isNew = true;
+            
+            nodes.push(node);
+            linkedNodes.push(node);
+            self.nodes.push(node);
+            
+            if(sNode != null) {
+                var link = new Link();
+                link.nodeA = sNode;
+                link.nodeB = node;
+                link.type = 'direct';
+                link.id = GetNewLinkId();
+                
+                self.links.push(link);
+            }
+        }
+        
+        var eNode = new Node();
+        eNode.id = GetNewNodeId();
+        eNode.title = 'new node';
+        eNode.isNew = true;
+        
+        nodes.push(eNode);
+        self.nodes.push(eNode);
+        
+        for(var i = 0; i < linkedNodes.length; i++) {
+            var link = new Link();
+            link.nodeA = linkedNodes[i];
+            link.nodeB = eNode;
+            link.type = 'direct';
+            link.id = GetNewLinkId();
+            
+            self.links.push(link);
+        }
+        
+        BuildBranched(nodes);
+    }
+    
     self.AddNode = function(node) {
         if(node == null) return;
         
@@ -830,7 +915,7 @@ var VisualEditor = function() {
                     var node = GetNodeById(nodeId);
                     if(node != null) {
                         self.rightPanel.node = node;
-                        self.rightPanel.DeleteNodes();
+                        self.rightPanel.DeleteNode();
                     }
                 }
             }
@@ -880,7 +965,6 @@ var VisualEditor = function() {
                     if(result[1] == 'header') {
                     } else if(result[1] == 'add') {
                         AddNodeWithLink(result[0]);
-                    } else if(result[1] == 'root') {
                     } else if(result[1] == 'link') {
                         ShowLinkConnector(result[0]);
                     } else if(result[1] == 'rlink') {
@@ -1024,32 +1108,6 @@ var VisualEditor = function() {
             }
         }
         
-        if(self.nodes.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
-            for(var i = self.nodes.length - 1; i >= 0; i--) {
-                if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'move';
-                    isCursorSet = true;
-                } else if(!isCursorSet && 'IsLinkButtonCollision' in self.nodes[i] && self.nodes[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                } else if(!isCursorSet && 'IsAddButtonCollision' in self.nodes[i] && self.nodes[i].IsAddButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                } else if(!isCursorSet && self.nodes[i].IsMainAreaCollision(self.mouse.x, self.mouse.y, viewport)) {
-                    event.target.style.cursor = 'default';
-                    isCursorSet = true;
-                }
-                
-                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes)) {
-                    if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
-                        event.target.style.cursor = 'move';
-                        isCursorSet = true;
-                    }
-                    isRedraw = true;
-                }
-            }
-        }
-        
         if(self.links.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
             for(var i = 0; i < self.links.length; i++) {
                 if(self.links[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
@@ -1066,6 +1124,32 @@ var VisualEditor = function() {
             }
         }
         
+        if(self.nodes.length > 0 && !isRedraw && !(self.isSelectActive && self.selectorTool != null && self.selectorTool.isDragged)) {
+            for(var i = self.nodes.length - 1; i >= 0; i--) {
+                if(!isCursorSet && 'IsLinkButtonCollision' in self.nodes[i] && self.nodes[i].IsLinkButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && 'IsAddButtonCollision' in self.nodes[i] && self.nodes[i].IsAddButtonCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && self.nodes[i].IsMainAreaCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'default';
+                    isCursorSet = true;
+                } else if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                    event.target.style.cursor = 'move';
+                    isCursorSet = true;
+                } 
+                
+                if(self.nodes[i].MouseMove(self.mouse, viewport, self.nodes)) {
+                    if(!isCursorSet && self.nodes[i].IsHeaderCollision(self.mouse.x, self.mouse.y, viewport)) {
+                        event.target.style.cursor = 'move';
+                        isCursorSet = true;
+                    }
+                    isRedraw = true;
+                }
+            }
+        }
+
         if(!isCursorSet && !self.isSelectActive) {
             event.target.style.cursor = 'move';
             isCursorSet = true;
@@ -1170,11 +1254,23 @@ var VisualEditor = function() {
             if(mode == 'node') {
                 var node = GetNodeById(elementId);
                 if(node != null) {
+                    if(self.rightPanel.node != null)
+                        self.rightPanel.node.isActive = false;
+                    
                     self.rightPanel.node = node;
                     self.rightPanel.mode = 'node';
                     self.rightPanel.Show();
                 }
             }
+        }
+    }
+    
+    var ShowNodeDialog = function(nodeId) {
+        var node = GetNodeById(nodeId);
+        
+        if(node != null && self.nodeModal != null) {
+            self.nodeModal.SetNode(node);
+            self.nodeModal.Show();
         }
     }
     

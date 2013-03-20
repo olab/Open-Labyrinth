@@ -5,8 +5,8 @@ var LinkConnector = function() {
     self.transform = new Transform();
     self.connectorRadius = 16;
     self.connectorBackgroundColor = 'rgba(0, 0, 0, 0.5)';
-    self.connectorStrokeSize = 4;
-    self.connectorStrokeColor = '#000000';
+    self.connectorStrokeSize = 3;
+    self.connectorStrokeColor = '#ffffff';
     self.linkLineWidth = 2;
     self.linkLineColor = '#ffffff';
     self.node = null;
@@ -25,16 +25,14 @@ var LinkConnector = function() {
         
         context.beginPath();
         context.arc(0, 0, self.connectorRadius, def2PI, false);
-        context.fillStyle = self.connectorBackgroundColor;
-        context.fill();
         context.lineWidth = self.connectorStrokeSize;
         context.strokeStyle = self.connectorStrokeColor;
         context.stroke();
         
-        DrawLine(context, 0, -self.connectorRadius - 14, 0, -self.connectorRadius);
-        DrawLine(context, 0, self.connectorRadius + 14, 0, self.connectorRadius);
-        DrawLine(context, -self.connectorRadius - 14, 0, -self.connectorRadius, 0);
-        DrawLine(context, self.connectorRadius + 14, 0, self.connectorRadius, 0);
+        DrawLine(context, 0, -self.connectorRadius - 7, 0, -self.connectorRadius + 10);
+        DrawLine(context, 0, self.connectorRadius + 7, 0, self.connectorRadius - 10);
+        DrawLine(context, -self.connectorRadius - 7, 0, -self.connectorRadius + 10, 0);
+        DrawLine(context, self.connectorRadius + 7, 0, self.connectorRadius - 10, 0);
 
         context.restore();
         
@@ -49,9 +47,7 @@ var LinkConnector = function() {
                 self.isMoved = true;
                 self.isDragging = true;
                 TranslateConnector(mouse.x - mouse.oldX, mouse.y - mouse.oldY, viewport);
-            }/* else if(self.node != null) {
-                //self.Reset();
-            }*/
+            }
         } else {
             self.isDragging = false;
             isRedraw = false;
@@ -155,9 +151,16 @@ var LinkConnector = function() {
         
         context.save();
         
+        var posA = tr.GetPosition();
+        var posB = tr2.GetPosition();
+        
+        var vec = [posB[0] - posA[0], posB[1] - posA[1]];
+        var mVec = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
+        vec = [vec[0] / mVec * self.connectorRadius, vec[1] / mVec * self.connectorRadius];
+        
         context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
         context.beginPath();
-        context.moveTo(0, 0);
+        context.moveTo(vec[0], vec[1]);
         context.setTransform(tr2.matrix[0], tr2.matrix[1], tr2.matrix[2], tr2.matrix[3], tr2.matrix[4], tr2.matrix[5]);
         context.lineTo(0, 0);
         context.lineWidth = self.linkLineWidth;

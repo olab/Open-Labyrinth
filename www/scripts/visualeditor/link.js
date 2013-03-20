@@ -1,17 +1,20 @@
 var Link = function() {
     var self = this;
-    var defColor = '#ffffff';
+    var defColor = '#b3b2b2';
+    var defLineColor = '#ffffff';
     var def2PI = Math.PI * 2;
-    var defArrowButtonBackgroundColor = '#999999';
+    var defArrowButtonBackgroundColor = '#ffffff';
     
     self.nodeA = null;
     self.nodeB = null;
     self.color = defColor;
     self.lineWidth = 2;
+    self.lineColor = defLineColor;
     self.type = 'none';
     self.arrowButtonBackgroundColor = defArrowButtonBackgroundColor;
-    self.arrowButtonHoverColor = '#ff9900';
-    self.arrowButtonRaduis = (self.lineWidth * 5 + 10) * 0.5 + 2;
+    self.arrowButtonHoverColor = '#e9b23c';
+    self.arrowButtonRaduis = (self.lineWidth * 5 + 14) * 0.5 + 2;
+    self.isHover = false;
     
     self.id = 0;
     self.isNew = false;
@@ -29,9 +32,11 @@ var Link = function() {
         
         if(self.IsLinkButtonCollision(mouse.x, mouse.y, viewport)) {
             isRedraw = true;
+            self.isHover = true;
             self.arrowButtonBackgroundColor = self.arrowButtonHoverColor;
         } else if(self.arrowButtonBackgroundColor != defArrowButtonBackgroundColor) {
             isRedraw = true;
+            self.isHover = false;
             self.arrowButtonBackgroundColor = defArrowButtonBackgroundColor;
         }
         
@@ -141,17 +146,22 @@ var Link = function() {
     var DrawByType = function(context, viewport) {
         var stateParams = {
             lineWidth: self.lineWidth, 
-            color: self.color
+            color: self.color,
+            lineColor: self.lineColor
         };
 
         if(self.type == 'direct') {
-            DrawOneArrow(context, stateParams, viewport, 'direct');
+            DrawLine(context, stateParams, viewport);
+            DrawOneArrow(context, stateParams, viewport, 'direct', false);
         } else if(self.type == 'back') {
-            DrawOneArrow(context, stateParams, viewport, 'back');
+            DrawLine(context, stateParams, viewport);
+            DrawOneArrow(context, stateParams, viewport, 'back', false);
         } else if(self.type == 'dual') {
-            DrawOneArrow(context, stateParams, viewport, 'direct');
-            DrawOneArrow(context, stateParams, viewport, 'back');
+            DrawLine(context, stateParams, viewport);
+            DrawOneArrow(context, stateParams, viewport, 'back', true);
+            DrawOneArrow(context, stateParams, viewport, 'direct', true);
         } else {
+            DrawLine(context, stateParams, viewport);
             DrawNoneTypeLine(context, stateParams, viewport);
         }
         
@@ -218,17 +228,6 @@ var Link = function() {
             var trs = GetNodesTransformations(viewport);
             var trA = trs[0];
             var trB = trs[1];
-            
-            context.save();
-            context.beginPath();
-            context.setTransform(trA.matrix[0], trA.matrix[1], trA.matrix[2], trA.matrix[3], trA.matrix[4], trA.matrix[5]);
-            context.moveTo(0, 0);
-            context.setTransform(trB.matrix[0], trB.matrix[1], trB.matrix[2], trB.matrix[3], trB.matrix[4], trB.matrix[5]);
-            context.lineTo(0, 0);
-            context.lineWidth = stateParams.lineWidth;
-            context.strokeStyle = stateParams.color;
-            context.stroke();
-            context.restore();
 
             var arrowPos = GetArrowPosition(trA.GetPosition(), trB.GetPosition());
             
@@ -239,30 +238,30 @@ var Link = function() {
         }
     }
     
-    var DrawOneArrow = function(context, stateParams, viewport, direction) {
+    var DrawOneArrow = function(context, stateParams, viewport, direction, mirror) {
         if(self.nodeA != null && self.nodeB != null) {
             var trs = GetNodesTransformations(viewport);
             var trA = trs[0];
             var trB = trs[1];
             
-            context.save();
-            context.beginPath();
-            context.setTransform(trA.matrix[0], trA.matrix[1], trA.matrix[2], trA.matrix[3], trA.matrix[4], trA.matrix[5]);
-            context.moveTo(0, 0);
-            context.setTransform(trB.matrix[0], trB.matrix[1], trB.matrix[2], trB.matrix[3], trB.matrix[4], trB.matrix[5]);
-            context.lineTo(0, 0);
-            context.lineWidth = stateParams.lineWidth;
-            context.strokeStyle = stateParams.color;
-            context.stroke();
-            context.restore();
-            
             var scale = viewport.GetScale();
             
-            var arrow = [
-            [0, 0],
-            [-(stateParams.lineWidth * 5 + 10) * scale[0], -(stateParams.lineWidth * 1.4 + 3) * scale[1]],
-            [-(stateParams.lineWidth * 5 + 10) * scale[0], (stateParams.lineWidth * 1.4 + 3) * scale[1]]
-            ];
+            var arrow = new Array();
+            if(mirror) {
+                arrow = [
+                [-(stateParams.lineWidth * 5 + 14) * scale[0], 0],
+                [-7 * scale[0], -(stateParams.lineWidth * 1.4 + 5) * scale[1]],
+                [-10 * scale[0], 0],
+                [-7 * scale[0], (stateParams.lineWidth * 1.4 + 5) * scale[1]]
+                ];
+            } else {
+                arrow = [
+                [0, 0],
+                [-(stateParams.lineWidth * 5 + 10) * scale[0], -(stateParams.lineWidth * 1.4 + 5) * scale[1]],
+                [-(stateParams.lineWidth * 5 + 7) * scale[0], 0],
+                [-(stateParams.lineWidth * 5 + 10) * scale[0], (stateParams.lineWidth * 1.4 + 5) * scale[1]]
+                ];
+            }
             
             var angle = 0;
             var posA = trA.GetPosition();
@@ -285,9 +284,29 @@ var Link = function() {
             context.arc(circlePos[0], circlePos[1], self.arrowButtonRaduis * (scale[0] + scale[1]) * 0.5, def2PI, false);
             context.fillStyle = self.arrowButtonBackgroundColor;
             context.fill();
-
+            
+            if(self.isHover) {
+                stateParams.color = '#ffffff';
+            }
             DrawArrow(context, shape, stateParams);
         }
+    }
+    
+    var DrawLine = function(context, stateParams, viewport) {
+        var trs = GetNodesTransformations(viewport);
+        var trA = trs[0];
+        var trB = trs[1];
+        
+        context.save();
+            context.beginPath();
+            context.setTransform(trA.matrix[0], trA.matrix[1], trA.matrix[2], trA.matrix[3], trA.matrix[4], trA.matrix[5]);
+            context.moveTo(0, 0);
+            context.setTransform(trB.matrix[0], trB.matrix[1], trB.matrix[2], trB.matrix[3], trB.matrix[4], trB.matrix[5]);
+            context.lineTo(0, 0);
+            context.lineWidth = stateParams.lineWidth;
+            context.strokeStyle = stateParams.lineColor;
+            context.stroke();
+        context.restore();
     }
     
     var DrawArrow = function(context, arrowShape, stateParams) {
