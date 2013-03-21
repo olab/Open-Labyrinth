@@ -1090,7 +1090,7 @@
     /* Support attributes on SVG nodes. */
     var origAttr = $.fn.attr;
 
-    $.fn.attr = function (name, value, type) {
+    /*$.fn.attr = function (name, value, type) {
         if (typeof name === 'string' && value === undefined) {
             var val = origAttr.apply(this, [ name, value, type ]);
             return (val && val.baseVal ? val.baseVal.valueAsString : val);
@@ -1111,7 +1111,7 @@
                 origAttr.apply($(this), [ name, value, type ]);
             }
         });
-    };
+    };*/
 
     /* Support removing attributes on SVG nodes. */
     var origRemoveAttr = $.fn.removeAttr;
