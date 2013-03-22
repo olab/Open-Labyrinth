@@ -135,7 +135,7 @@ class Helper_Model_ReferredEntity extends Kohana_Object
         }
 
 
-        $html = "<select name='$name' >";
+        $html = "<select id='$name"."_' name='$name' >";
 
 
 

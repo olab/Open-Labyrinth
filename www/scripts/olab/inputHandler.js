@@ -5,7 +5,7 @@
  * Time: 1:45 ??
  * To change this template use File | Settings | File Templates.
  */
-if(!tinymce.initialized){
+if(typeof tinymce != 'undefined' && !tinymce.initialized){
 tinyMCE.init({
     mode : "textareas",
     theme : "simple",
@@ -13,29 +13,40 @@ tinyMCE.init({
 });}
 $(document).ready(function () {
 
+    loadEditor($(".textarea"));
 
-    $('.textarea').tinymce(
-        {
-            mode : "textareas",
-            theme : "advanced",
-            plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
-            theme_advanced_buttons3_add : "tablecontrols",
-            skin: 'bootstrap',
-            entity_encoding : "raw"
+    function loadEditor (elem){
+        elem.tinymce(
+            {
+                mode : "textareas",
+                theme : "advanced",
+                plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+                theme_advanced_buttons3_add : "tablecontrols",
+                skin: 'bootstrap',
+                entity_encoding : "raw"
 
-        }
-    );
+            }
+        );
+    }
+
+
 
 
     $("body").on("click", ".remove", function (event) {
-        $(event.target).closest("div").remove();
+        $(event.target).closest("div").fadeOut(function(){
+                $(event.target).closest("div").parent("div").remove();
+            }
+
+        );
+
     });
 
     $(".add").unbind('click').click(function (event) {
         var metadataname = $(event.target).closest(".control-group").attr("id");
 
-
-
+        $(':focus').blur();
+        $(event.target).children("i").toggleClass("icon-spinner icon-spin icon-plus-sign");
+        var button = event.target;
 
         $.getJSON('../../metadata/api/ui?metadata=' + metadataname, function (data) {
 
@@ -55,7 +66,14 @@ $(document).ready(function () {
             $(div).append(a);
             $(event.target).closest(".control-group").children(".controls").append(div2);
 
-            $(".date").datepicker(
+            $(div).children("input").focus();
+            $(button).children("i").toggleClass("icon-spinner icon-spin icon-plus-sign");
+            $(div).children(".textarea").each(function(){
+                    loadEditor($(this));
+
+                }
+            );
+            $(div).children(".date").datepicker(
                 {
                     format:"yyyy-mm-dd"
                 }
@@ -66,22 +84,7 @@ $(document).ready(function () {
 
     });
 
-    $.fn.serializeObject = function()
-    {
-        var o = {};
-        var a = this.serializeArray();
-        $.each(a, function() {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-    };
+
 
     $("form").submit(function (event) {
         var inlines = $(".metadata-container").find(".inlineobjectrecord");
@@ -163,7 +166,7 @@ $(document).ready(function () {
         value = $.extend(value,inputsObj);
         return value;
 
-    }
+    };
 
 initLegacyProperties();
 

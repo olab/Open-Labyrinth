@@ -35,7 +35,7 @@
 
 <div class="form-actions">
     <div class="pull-right">
-<input class="btn btn-primary" type="submit" name="AddGroupSubmit" value="<?php echo __('Submit'); ?>">
+<input class="btn btn-primary btn-large" type="submit" name="AddGroupSubmit" value="<?php echo __('Submit'); ?>">
     </div>
 </div>
 </form>

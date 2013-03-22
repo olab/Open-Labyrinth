@@ -58,7 +58,8 @@ if (isset($templateData['maps'])) {
             ?>
             <tr>
                 <td>
-                    <?php echo $map->name; ?>
+                    <a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a>
+
                 </td>
                 <td>
                 <?php

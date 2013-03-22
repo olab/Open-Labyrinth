@@ -19,30 +19,37 @@
  *
  */
 ?>
+<div class="page-header">
+    <div class="pull-right">
+        <a class="btn btn-danger" href="<?php echo URL::base().'usermanager/deleteUser/'.$templateData['user']->id; ?>">
+            <i class="icon-trash"></i>
+            <?php echo __('Delete User'); ?></a>
+    </div>
+    <h1><?php echo __('Edit')." ".__('user account'); ?></h1>
+</div>
 
-            <h1><?php echo __('Edit')." ".__('user account'); ?></h1>
             <?php if(isset($templateData['user'])) { ?>
-    <a class="btn btn-danger" href="<?php echo URL::base().'usermanager/deleteUser/'.$templateData['user']->id; ?>"><?php echo __('delete'); ?></a>
+
                         <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveOldUser/'.$templateData['user']->id; ?>" method="post">
                                 <fieldset class="fieldset">
-                                    <legend></legend>
+                                    <legend><?php echo __("User Details");?></legend>
                                     <div class="control-group">
-                                        <label class="control-label"><?php echo __('username'); ?></label>
+                                        <label class="control-label"><?php echo __('Username'); ?></label>
 
                                         <div class="controls">
                                             <?php echo $templateData['user']->username; ?>
                                         </div>
                                     </div>
                                     <div class="control-group">
-                                        <label for="upw" class="control-label"><?php echo __('new password'); ?></label>
+                                        <label for="upw" class="control-label"><?php echo __('New password'); ?></label>
 
                                         <div class="controls">
                                             <input id="upw"  type="password" name="upw" value="">
-                                            <span>password will be changed if value is not empty</span>
+                                            <span class="help-inline">password will be changed if value is not empty</span>
                                         </div>
                                     </div>
                                     <div class="control-group">
-                                        <label for="uname" class="control-label"><?php echo __('name'); ?></label>
+                                        <label for="uname" class="control-label"><?php echo __('Name'); ?></label>
 
                                         <div class="controls">
                                             <input id="uname" class="not-autocomplete" type="text" name="uname"  value="<?php echo $templateData['user']->nickname; ?>">
@@ -56,11 +63,11 @@
                                         </div>
                                     </div>
                                     <div class="control-group">
-                                        <label class="control-label"><?php echo __('language'); ?></label>
+                                        <label class="control-label"><?php echo __('Language'); ?></label>
 
                                         <div class="controls">
                                             <label class="radio">
-                                                english   <input type="radio" name="langID" value="1" <?php if($templateData['user']->language_id == 1) echo 'checked=""'; ?>>
+                                                english   <input checked="checked" type="radio" name="langID" value="1" <?php if($templateData['user']->language_id == 1) echo 'checked=""'; ?>>
                                             </label>
                                             <label class="radio">
                                                 francais <input type="radio" name="langID" value="2" <?php if($templateData['user']->language_id == 2) echo 'checked=""'; ?>>
@@ -69,7 +76,7 @@
                                         </div>
                                     </div>
                                     <div class="control-group">
-                                        <label for="usertype" class="control-label"><?php echo __('user type'); ?></label>
+                                        <label for="usertype" class="control-label"><?php echo __('User type'); ?></label>
 
                                         <div class="controls">
                                             <select id="usertype" name="usertype">
@@ -87,9 +94,12 @@
                                 <?php if ($templateData['errorMsg'] != NULL){ ?>
                              <?php echo $templateData['errorMsg']; ?>
                                 <?php } ?>
-                          <input class="btn btn-primary" type="submit" name="EditUserSubmit" value="<?php echo __('submit'); ?>">
 
+                            <div class="form-actions">
+                                <div class="pull-right">
+                          <input class="btn btn-primary btn-large" type="submit" name="EditUserSubmit" value="<?php echo __('Save changes'); ?>">
+                            </div></div>
                         </form>
-                       <a class="btn btn-primary" href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a>
+
 
             <?php } ?>

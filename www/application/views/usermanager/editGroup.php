@@ -22,13 +22,19 @@
 
 <?php if (isset($templateData['group'])) { ?>
 
-    <a class="btn btn-danger" href=<?php echo URL::base() . 'usermanager/deleteGroup/' . $templateData['group']->id; ?>>delete</a>
+
+   <div class="page-header">
+       <div class="pull-right"><a class="btn btn-danger" href=<?php echo URL::base() . 'usermanager/deleteGroup/' . $templateData['group']->id; ?>>
+               <i class="icon-trash"></i>
+               Delete Group</a></div>
+       <h1>Edit Group  <?php echo $templateData['group']->name; ?> </h1>
+   </div>
     <form class="form-horizontal"
           action="<?php echo URL::base() . 'usermanager/updateGroup/' . $templateData['group']->id; ?>" method="post">
         <fieldset class="fieldset">
-            <legend>Edit group</legend>
+            <legend>Group Details</legend>
             <div class="control-group">
-                <label for="groupname" class="control-label">group name</label>
+                <label for="groupname" class="control-label">Group name</label>
 
                 <div class="controls">
                     <input id="groupname" class="not-autocomplete" type="text" name="groupname" size="50"
@@ -37,13 +43,41 @@
             </div>
         </fieldset>
 
+<div class="form-actions">
+    <input class="btn btn-primary" type="submit" name="UpdateGroupSubmit" value="<?php echo __('Save'); ?>">
+</div>
 
-        <input class="btn btn-primary" type="submit" name="UpdateGroupSubmit" value="<?php echo __('submit'); ?>">
     </form>
 
     <h3>Members</h3>
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Operations</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if (isset($templateData['members'])&& !empty($templateData['members'])) { ?>
+            <?php foreach ($templateData['members'] as $member) { ?>
+                <tr>
+                    <td><a target="_blank" href="<?php echo URL::base();?>usermanager/viewUser/<?php echo $member->id;?>"><?php echo $member->nickname . '(' . $member->username . ')';?></a></td>
+                    <td>
+                        <a class="btn btn-danger" href=<?php echo URL::base() . 'usermanager/removeMember/' . $member->id . '/' . $templateData['group']->id; ?>>
+                            <i class="icon-minus-sign"></i>
+                            Remove</a>
+                    </td>
+                </tr>
 
-    <form action="<?php echo URL::base() . 'usermanager/addMemberToGroup/' . $templateData['group']->id; ?>"
+            <?php } ?>
+        <?php } else {?>
+            <tr class="info">
+                <td colspan="2">This groups has no members yet. You may add a new member, using the form below.</td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+    <form class="form-horizontal" action="<?php echo URL::base() . 'usermanager/addMemberToGroup/' . $templateData['group']->id; ?>"
           method="post">
 
         <fieldset class="fieldset">
@@ -65,33 +99,12 @@
 
 
         <?php if (isset($templateData['users'])) { ?>
-
+<div class="form-actions">
             <input class="btn btn-primary" type="submit" name="AddUserToGroupSubmit"
-                   value="<?php echo __('submit'); ?>">
+                   value="<?php echo __('Add'); ?>"></div>
         <?php } ?>
     </form>
-    <table class="table table-border table-striped">
-        <thead>
-        <tr>
-            <th>User</th>
-            <th>Operations</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php if (isset($templateData['members'])) { ?>
-            <?php foreach ($templateData['members'] as $member) { ?>
-                <tr>
-                    <td><?php echo $member->nickname . '(' . $member->username . ')';?></td>
-                    <td>
-                        <a href=<?php echo URL::base() . 'usermanager/removeMember/' . $member->id . '/' . $templateData['group']->id; ?>>remove</a>
-                    </td>
-                </tr>
 
-            <?php } ?>
-        <?php } ?>
-
-        </tbody>
-    </table>
 
 
 <?php } ?>

@@ -42,7 +42,9 @@ class Helper_Controller_Metadata
             $metadataEditor = self::metadataEdit($property, $object);
             $html .="
             <div data-toggle='tooltip' title='".$comment."' class='control-group' id='$name'>
-            <label for='".$name."_' class='control-label'>".$property->label."<div class='pull-right'>".$metadataEditor["controls"]."</div></label>";
+            <div class='control-label'>
+            <label for='".$name."_' class='control-label'>".$property->label.
+                "<div class='pull-right'></div></label>".$metadataEditor["controls"]."</div>";
 
             $html .= $metadataEditor["form"];
 

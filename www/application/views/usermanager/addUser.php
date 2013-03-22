@@ -19,10 +19,12 @@
  *
  */
 ?>
-
+<div class="page-header">
+    <h1>Add new user</h1>
+</div>
                         <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
                             <fieldset class="fieldset">
-                                <legend>Add new user</legend>
+                                <legend>User details</legend>
                                 <div class="control-group">
                                     <label for="uid" class="control-label"><?php echo __('User name'); ?></label>
 
@@ -58,7 +60,7 @@
 
                                     <div class="controls">
                                         <label class="radio">
-                                            english   <input type="radio" name="langID" value="1" >
+                                            english   <input checked="checked" type="radio" name="langID" value="1" >
                                         </label>
                                         <label class="radio">
                                             francais <input type="radio" name="langID" value="2" >
@@ -84,7 +86,11 @@
                             <?php if ($templateData['errorMsg'] != NULL){ ?>
                               <?php echo $templateData['errorMsg']; ?>
                                 <?php } ?>
-                               <input class="btn btn-primary" type="submit" name="SaveNewUserSubmit" value="<?php echo __('submit'); ?>">
+
+                            <div class="form-actions">
+                                <div class="pull-right">
+                                <input class="btn btn-large btn-primary" type="submit" name="SaveNewUserSubmit" value="<?php echo __('Save'); ?>">
+                            </div>
+                            </div>
 
                         </form>
-                        <a class="btn btn-primary" href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a>

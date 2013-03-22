@@ -19,18 +19,22 @@
  *
  */
 ?>
-
+<div class="page-header">
 <h1><?php echo __('Users & Groups'); ?></h1>
+</div>
 
-<h2>Users</h2>
-<div class="control-group">
+<div><div class="pull-right">
+        <a class="btn btn-primary"
+                                 href=<?php echo URL::base() . 'usermanager/addUser' ?>>
+            <i class="icon-plus-sign"></i>
+            <?php echo __('Add User'); ?></a></div>
+<h2>Users</h2></div>
 
-    <a class="btn btn-primary"
-       href=<?php echo URL::base() . 'usermanager/addUser' ?>><?php echo __('add') . ' ' . __('user'); ?></a></div>
 
-<p>
-    <strong><?php echo __('Users'); ?></strong>:&nbsp;<?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>
-    &nbsp;<?php echo __('registered users'); ?>&nbsp;[]</p>
+
+
+<div class="alert alert-info"><?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>
+    &nbsp;<?php echo __('registered users'); ?></div>
 
 
 <table class="table table-striped table-bordered">
@@ -82,7 +86,8 @@
                     }
 
                     echo $user->resetAttempt;?></td>
-                <td><a class="btn btn-primary" href="<?php echo URL::base() . 'usermanager/editUser/' . $user->id; ?>">edit</a>
+                <td><a class="btn btn-info" href="<?php echo URL::base() . 'usermanager/editUser/' . $user->id; ?>">
+                        <i class="icon-edit"></i><?php echo __("Edit");?> </a>
                 </td>
             </tr>
 
@@ -93,9 +98,15 @@
 </table>
 
 
-<h3>Groups</h3>
-<div class="control-group">
-    <a class="btn btn-primary" href=<?php echo URL::base() . 'usermanager/addGroup'; ?>>add group</a></div>
+<div style="margin-top: 5%"><div class="pull-right">
+        <a class="btn btn-primary" href=<?php echo URL::base() . 'usermanager/addGroup'; ?>>
+            <i class="icon-plus-sign"></i>
+            Add Group</a>
+</div><h2>Groups</h2> </div>
+
+
+
+
 
 
 <table class="table table-striped table-bordered">
@@ -110,8 +121,10 @@
         <?php foreach ($templateData['groups'] as $group) { ?>
             <tr>
                 <td><?php echo $group->name; ?></td>
-                <td><a class="btn btn-primary"
-                       href="<?php echo  URL::base() . 'usermanager/editGroup/' . $group->id; ?>"><?php echo __('edit');?> </a>
+                <td><a class="btn btn-info"
+                       href="<?php echo  URL::base() . 'usermanager/editGroup/' . $group->id; ?>">
+                        <i class="icon-edit"></i>
+                        <?php echo __('Edit');?> </a>
                 </td>
             </tr>
         <?php } ?>
