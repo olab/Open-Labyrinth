@@ -53,7 +53,7 @@ var Node = function() {
     self.contentFontSettings = '12px Arial';
     self.contentFontColor = '#000000';
     self.contentLineHeight = 14;
-    self.contentMaxLineWidth = defWidth - self.linkButtonRaius * 0.5 - self.rootButtonRadius * 0.5 - 6;
+    self.contentMaxLineWidth = defWidth - self.headerHeight - 19;
     
     self.colorButtonWidth = 30;
     self.colorButtonHeight = 10;

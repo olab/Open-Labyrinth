@@ -44,7 +44,7 @@ if (isset($templateData['map'])) { ?>
         var mapId = <?php echo $templateData['map']->id; ?>;
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
-        var mapType = 1;
+        var mapType = null;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -59,18 +59,20 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
+                <!--<p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i class="icon-facetime-video icon-white"></i></button></p>-->
             </div>
             
             <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
             <canvas id="canvas" width="100" height="800" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
-                <p>&nbsp;</p>
-                <div class="block" style="width: 470px;">
-                    <ul class="nav nav-tabs visual-editor-right-panel-tabs">
+                <div class="block" style="width: 480px;">
+                    <div class="block visual-editor-right-panel-tabs">
+                        <ul class="nav nav-tabs">
                         <li><a href="#actions" data-toggle="tab">Actions</a></li>
                         <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
                     </ul>
+                    </div>
                     
                     <div class="tab-content">
                         <div class="tab-pane" id="actions">
