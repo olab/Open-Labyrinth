@@ -62,16 +62,16 @@ if (isset($templateData['map'])) { ?>
                 <!--<p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i class="icon-facetime-video icon-white"></i></button></p>-->
             </div>
             
-            <div style="position: absolute;left:50%;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
+            <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
             <canvas id="canvas" width="100" height="800" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
                 <div class="block" style="width: 480px;">
-                    <div class="block visual-editor-right-panel-tabs">
+                    <div class="visual-editor-right-panel-tabs">
                         <ul class="nav nav-tabs">
-                        <li><a href="#actions" data-toggle="tab">Actions</a></li>
-                        <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
-                    </ul>
+                            <li><a href="#actions" data-toggle="tab">Actions</a></li>
+                            <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
+                        </ul>
                     </div>
                     
                     <div class="tab-content">
@@ -369,6 +369,7 @@ if (isset($templateData['map'])) { ?>
         </div>
     </div>
     
+    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/utils.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/colorModal.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/mouse.js"></script>

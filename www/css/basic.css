@@ -787,3 +787,8 @@ input[readonly].code, textarea[readonly].code{
     margin-left: 5px;
     margin-right: 5px;
 }
+
+.wizard_body .visual-editor-right-panel-tabs ul li {
+    margin: 0;
+    margin-right: 5px;
+}

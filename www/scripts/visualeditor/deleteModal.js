@@ -8,6 +8,7 @@ var DeleteModal = function() {
     self.node = null;
     self.selectedNodes = null;
     self.rightPanel = null;
+    self.selectRoot = false;
     
     self.Init = function(parameters) {
         if('modalId' in parameters)
@@ -63,6 +64,7 @@ var DeleteModal = function() {
         } else if(dialogMode == 'multiple') {
             if(self.selectedNodes != null && self.selectedNodes.length > 0 && visualEditor != null) {
                 for(var i = 0; i < self.selectedNodes.length; i++) {
+                    if(!self.selectedNodes[i].isRoot)
                     visualEditor.DeleteNodeById(self.selectedNodes[i].id);
                 }
                 
@@ -74,6 +76,10 @@ var DeleteModal = function() {
             self.rightPanel.Hide();
         
         self.Hide();
+        
+        if(self.selectRoot) {
+            utils.ShowMessage($('#ve_message'), $('#ve_message_text'), 'error', 'You cannot delete the root node.', 3000, $('#ve_actionButton'), false);
+        }
         
         return false;
     }

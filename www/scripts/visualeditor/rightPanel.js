@@ -284,19 +284,27 @@ var RightPanel = function() {
         
         var selectedNodes = new Array();
         
+        var selectedRoot = false;
         if(self.visualEditor != null && self.visualEditor.nodes != null && self.visualEditor.nodes.length > 0) {
             for(var i = 0; i < self.visualEditor.nodes.length; i++) {
-                if(self.visualEditor.nodes[i].isSelected)
+                if(self.visualEditor.nodes[i].isSelected) {
                     selectedNodes.push(self.visualEditor.nodes[i]);
+                    selectedRoot = selectedRoot || self.visualEditor.nodes[i].isRoot;
+                }
             }
         }
 
         if(selectedNodes.length > 0 && self.node != null && self.node.isSelected) {
             self.deleteModal.selectedNodes = selectedNodes;
+            self.deleteModal.selectRoot = selectedRoot;
             self.deleteModal.Show('multiple');
         }else if(self.node != null) {
             self.deleteModal.node = self.node;
-            self.deleteModal.Show('single');
+            if(self.node.isRoot) {
+                utils.ShowMessage($('#ve_message'), $('#ve_message_text'), 'error', 'You cannot delete the root node.', 3000, $('#ve_actionButton'), false);
+            } else {
+                self.deleteModal.Show('single');
+            }
         }
     }
     

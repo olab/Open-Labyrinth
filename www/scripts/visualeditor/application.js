@@ -36,23 +36,26 @@ $(function() {
     
     function copy() {
         var data = visualEditor.SerializeSelected();
-        showMessage($veMessageContainer, $veMessage, 'info', 'Copying...', null, $veActionButton, true);
-        
-        $.post(bufferCopy, {
-            data: data.substring(0, data.length - 1)
-        }, function(data) {
-            showMessage($veMessageContainer, $veMessage, 'success', 'Copy has been successful', 3000, $veActionButton, false);
-        });
+
+        if(data != null && data.length > 0) {
+            utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Copying...', null, $veActionButton, true);
+
+            $.post(bufferCopy, {
+                data: data.substring(0, data.length - 1)
+                }, function(dataResponse) {
+                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Copy has been successful', 3000, $veActionButton, false);
+            });
+        }
     }
     
     function paste() {
-        showMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
+        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
         $.post(bufferPaste, {}, 
         function(data) {
             if(data) {
                 visualEditor.DeserializeFromPaste(data);
                 visualEditor.Render();
-                showMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
+                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
             }
         });
     }
@@ -127,7 +130,7 @@ $(function() {
     
     function update() {
         var data = visualEditor.Serialize();
-        showMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
+        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
         visualEditor.isChanged = false;
         
         $.post(sendURL, {
@@ -138,7 +141,7 @@ $(function() {
                 data = data.substring(1, data.length - 1);
                 data = data.substring(0, data.length - 1);
                 
-                showMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
+                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
                 
                 visualEditor.Deserialize(data);
                 visualEditor.Render();
@@ -282,42 +285,14 @@ $(function() {
         if(visualEditor.isChanged) {
             visualEditor.isChanged = false;
             var data = visualEditor.Serialize();
-            showMessage($veMessageContainer, $veMessage, 'info', 'Autosaving...', null, $veActionButton, false);
+            utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Autosaving...', null, $veActionButton, false);
 
             $.post(sendURL, {
                 data: data.substring(0, data.length - 1),
                 id: mapId
             }, function(data) {
-                showMessage($veMessageContainer, $veMessage, 'success', 'Autosave has been completed.', 3000, $veActionButton, false);
+                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Autosave has been completed.', 3000, $veActionButton, false);
             });
-        }
-    }
-    
-    function showMessage(messageForm, messageObj, messageType, message, timeOut, hideObj, hide){
-        messageForm.removeClass('alert-success');
-        messageForm.removeClass('alert-error');
-        messageForm.removeClass('alert-info');
-
-        messageForm.addClass('alert-' + messageType);
-        messageObj.text(message);
-
-        var width = parseInt(messageForm.width());
-        messageForm.css('margin-left', '-' + (width / 2) + 'px');
-        messageForm.removeClass('hide');
-
-        if (hideObj != null){
-            if (hide == true){
-                hideObj.addClass('hide');
-            } else {
-                hideObj.removeClass('hide');
-            }
-        }
-        
-        if (timeOut != null){
-            setTimeout(function() {
-                messageForm.addClass('hide');
-                messageObj.text('');
-            }, timeOut);
         }
     }
 });
