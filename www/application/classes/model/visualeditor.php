@@ -113,7 +113,7 @@ class Model_VisualEditor extends Model {
         if ($clearLinks != NULL and count($clearLinks) > 0) {
             $linksJSON = '';
             foreach ($clearLinks as $id => $value) {
-                $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '"}, ';
+                $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '", label: "' . $value['link']->text . '", imageId: ' . $value['link']->image_id . '}, ';
             }
 
             if (strlen($linksJSON) > 2) {
@@ -459,6 +459,9 @@ class Model_VisualEditor extends Model {
         if (isset($linksUpdate['new'])) {
             foreach ($linksUpdate['new'] as $link) {
                 $v = array();
+                $v['text'] = $link['label'];
+                $v['image_id'] = $link['imageId'];
+                
                 if ($link['type'] == 'direct') {
                     $v['node_id_1'] = $link['nodeA'];
                     $v['node_id_2'] = $link['nodeB'];
@@ -485,8 +488,14 @@ class Model_VisualEditor extends Model {
 
         if (isset($linksUpdate['update'])) {
             foreach ($linksUpdate['update'] as $link) {
+                $l = DB_ORM::model('map_node_link', array((int) $link['id']));
+                if($l != null) {
+                    $l->text = $link['label'];
+                    $l->image_id = $link['imageId'];
+                    
+                    $l->save();
+                }
                 if ($link['type'] == 'direct') {
-                    $l = DB_ORM::model('map_node_link', array((int) $link['id']));
                     if ($l != null) {
                         DB_ORM::delete('map_node_link')->where('map_id', '=', $mapId, 'AND')
                                 ->where('node_id_1', '=', $l->node_id_2, 'AND')
@@ -502,7 +511,6 @@ class Model_VisualEditor extends Model {
                         }
                     }
                 } else if ($link['type'] == 'back') {
-                    $l = DB_ORM::model('map_node_link', array((int) $link['id']));
                     if ($l != null) {
                         DB_ORM::delete('map_node_link')
                                 ->where('node_id_1', '=', $l->node_id_2, 'AND')
@@ -518,12 +526,13 @@ class Model_VisualEditor extends Model {
                         }
                     }
                 } else if ($link['type'] == 'dual') {
-                    $l = DB_ORM::model('map_node_link', array((int) $link['id']));
                     if ($l != null) {
                         $b = DB_ORM::model('map_node_link')->getLinkByNodeIDs($l->node_id_2, $l->node_id_1);
                         if ($b == null) {
                             $v['node_id_1'] = $l->node_id_2;
                             $v['node_id_2'] = $l->node_id_1;
+                            $v['text'] = $link['label'];
+                            $v['image_id'] = $link['imageId'];
 
                             DB_ORM::model('map_node_link')->addFullLink($mapId, $v);
                         } else {

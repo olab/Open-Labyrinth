@@ -3,6 +3,8 @@ var LinkModal = function() {
     var $modal = null;
     var $apply = null;
     var $linkTypes = null;
+    var $linkLabel = null;
+    var $linkImages = null;
     var visualEditor = null;
     
     self.link = null;
@@ -21,6 +23,12 @@ var LinkModal = function() {
         if('linkTypes' in parameters)
             $linkTypes = $(parameters.linkTypes);
         
+        if('linkImages' in parameters)
+            $linkImages = $(parameters.linkImages);
+
+        if('linkLabel' in parameters)
+            $linkLabel = $(parameters.linkLabel);
+
         if('visualEditor' in parameters)
             visualEditor = parameters.visualEditor;
     }
@@ -49,14 +57,30 @@ var LinkModal = function() {
                     }
                 });
             }
+
+            if($linkLabel != null) {
+                $linkLabel.val(self.link.label);
+            }
+
+            if($linkImages != null) {
+                $.each($linkImages.children(), function(index, object) {
+                    if($(object).attr('value') == self.link.imageId) {
+                        $(object).attr('selected', 'selected');
+                    } else {
+                        $(object).removeAttr('selected');
+                    }
+                });
+            }
         }
     }
      
     var ApplyEvent = function() {
-        if(self.link != null && $linkTypes != null && visualEditor != null) {
+        if(self.link != null && $linkTypes != null && $linkLabel != null && $linkImages != null && visualEditor != null) {
             var value = $linkTypes.children().filter('.active').attr('value');
             if(value != 'delete') {
                 self.link.type = value;
+                self.link.label = $linkLabel.val();
+                self.link.imageId = $linkImages.val();
             } else {
                 visualEditor.DeleteLinkById(self.link.id);
                 self.link = null;
