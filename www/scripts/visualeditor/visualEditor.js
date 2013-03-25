@@ -8,7 +8,7 @@ var VisualEditor = function() {
     var maxZoom = 1.6;
     var minZoom = 0.1;
     var ctrlKeyPressed = false;
-    var shiftKeyPressed = false;
+    var altKeyPressed = false;
     var def2PI = Math.PI * 2;
     
     self.$canvasContainer = null;
@@ -891,7 +891,7 @@ var VisualEditor = function() {
     
     var KeyDown = function(event) {
         ctrlKeyPressed = event.ctrlKey;
-        shiftKeyPressed = event.shiftKey;
+        altKeyPressed = event.altKey;
 
         if(ctrlKeyPressed && event.keyCode == 67) {
             if(self.copyFunction != null)
@@ -899,13 +899,13 @@ var VisualEditor = function() {
         } else if(ctrlKeyPressed && event.keyCode == 86) {
             if(self.pasteFunction != null)
                 self.pasteFunction();
-        } else if((event.keyCode == 107) || (shiftKeyPressed && event.keyCode == 187) || (shiftKeyPressed && event.keyCode == 61)) {
+        } else if((event.keyCode == 107) || (altKeyPressed && event.keyCode == 187) || (altKeyPressed && event.keyCode == 61)) {
             if(self.zoomIn != null)
                 self.zoomIn();
-        } else if((event.keyCode == 109) || (shiftKeyPressed && event.keyCode == 189) || (shiftKeyPressed && event.keyCode == 173)) {
+        } else if((event.keyCode == 109) || (altKeyPressed && event.keyCode == 189) || (altKeyPressed && event.keyCode == 173)) {
             if(self.zoomOut != null)
                 self.zoomOut();
-        } else if((shiftKeyPressed && event.keyCode == 83)) {
+        } else if((altKeyPressed && event.keyCode == 83)) {
             if(self.update!= null)
                 self.update();
         } else if(event.keyCode == 46) {
@@ -937,7 +937,7 @@ var VisualEditor = function() {
     
     var KeyUp = function(event) {
         ctrlKeyPressed = event.ctrlKey;
-        shiftKeyPressed = event.shiftKey;
+        altKeyPressed = event.altKey;
     }
     
     var UpdateMousePosition = function(event) {
