@@ -346,7 +346,7 @@
             </div>
         </div>
         
-        <div class="modal hide alert alert-block alert-error block" id="visual_editor_set_root">
+        <div class="modal hide block" id="visual_editor_set_root">
             <div class="modal-header block">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
                 <h3>Set as Root</h3>
@@ -354,7 +354,7 @@
 
             <div class="modal-body block">
                 <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
-                <a href="#" class="btn btn-danger" id="setAsRootNodeBtn">Set</a>
+                <a href="#" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
                 <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>

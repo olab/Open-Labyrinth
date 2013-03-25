@@ -36,8 +36,6 @@ class Controller_UserManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-
-
     public function action_index() {
         $this->templateData['users'] = DB_ORM::model('user')->getAllUsers();
         $this->templateData['userCount'] = count($this->templateData['users']);
@@ -50,9 +48,6 @@ class Controller_UserManager extends Controller_Base {
         $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
-
-
-
 
     public function action_addUser() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add User'))->set_url(URL::base() . 'usermanager/addUser'));
@@ -113,9 +108,8 @@ class Controller_UserManager extends Controller_Base {
             }
         }
     }
+
     public function action_viewUser() {
-
-
         $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View User').' '. $this->templateData['user']->nickname)->set_url(URL::base() . 'usermanager/ViewUser/' . $this->request->param('id', 0)));

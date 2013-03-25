@@ -52,6 +52,7 @@ if (isset($templateData['map'])) { ?>
     <div class="block">
         <div class="block" style="position: relative;" id="canvasContainer">
             <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
+                <p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i style="color:white;" class="icon-fullscreen"></i></button></p>
                 <p><button type="button" class="round-btn" id="update" data-toggle="tooltip" data-original-title="Update" data-placement="right"><i class="ve-icon-save"></i></button></p>
                 <p><button type="button" class="round-btn" id="addNode" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Add node</div>" data-placement="right"><i class="ve-icon-add"></i></button></p>
                 <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Pan mode</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
@@ -59,164 +60,159 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
-                <!--<p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i class="icon-facetime-video icon-white"></i></button></p>-->
             </div>
-            
-            <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><button type="button" class="close" data-dismiss="alert">&times;</button><span id="ve_message_text">Message</span></div>
-            <canvas id="canvas" width="100" height="800" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
+
+            <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
+            <canvas id="canvas" width="100" height="200" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
-                <div class="pull-right"><button type="button" class="close veRightPanelCloseBtn">&times;</button></div>
-                <div class="block" style="width: 480px;">
-                    <div class="visual-editor-right-panel-tabs">
-                        <ul class="nav nav-tabs">
-                            <li><a href="#actions" data-toggle="tab">Actions</a></li>
-                            <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
-                        </ul>
+                <div class="block visual-editor-right-panel-tabs">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#actions" data-toggle="tab">Actions</a></li>
+                        <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane" id="actions">
+                        <div class="block" align="center">
+                            <button id="veNodeRootBtn" type="button" class="btn" data-toggle="button">Set as Root</button>
+                            <button id="veDeleteNodeBtn" type="button" class="btn btn-danger">Delete Node</button>
+                        </div>
+                        <legend>Background color</legend>
+                        <div class="block" align="center">
+                            <input type="text" id="colorpickerInput" value="" />
+                            <div class="child-block" id="colopickerContainer"></div>
+                        </div>
                     </div>
-                    
-                    <div class="tab-content">
-                        <div class="tab-pane" id="actions">
-                            <div class="block" align="center">
-                                <button id="veNodeRootBtn" type="button" class="btn" data-toggle="button">Set as Root</button>
-                                <button id="veDeleteNodeBtn" type="button" class="btn btn-danger">Delete Node</button>
+                    <div class="tab-pane active" id="veNodeContent">
+                        <div style="margin-left: 0">
+                            <div class="control-group block">
+                                <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Title</strong></label>
+                                <div class="controls">
+                                    <input type="text" id="nodetitle" value=""/>
+                                </div>
                             </div>
-                            <legend>Background color</legend>
-                            <div class="block" align="center">
-                                <input type="text" id="colorpickerInput" value="" />
-                                <div class="child-block" id="colopickerContainer"></div>
+                            <div class="control-group block">
+                                <label for="nodecontent" class="control-label" style="text-align: left;"><strong>Node Content</strong></label>
+                                <div class="controls block">
+                                    <textarea cols='20' class="mceEditor" id="nodecontent" rows='10' style="width: 100%;"></textarea>
+                                </div>
+                            </div>
+                            <div class="control-group block">
+                                <label for="nodesupport" class="control-label" style="text-align: left;"><strong>Supporting Information</strong></label>
+                                <div class="controls block">
+                                    <textarea cols='20' class="mceEditor" id="nodesupport" rows='10' style="width: 100%;"></textarea>
+                                </div>
+                            </div>
+                            <div class="control-group block">
+                                <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Supporting Information Keyword</strong></label>
+                                <div class="controls block">
+                                    <input type="text" id="nodesupportkeywords" value="" />
+                                </div>
+                            </div>
+                            <div>
+                                <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+                                    <div>
+                                        <div class="control-group">
+                                            <?php
+                                            $countersData = '';
+                                            foreach ($templateData['counters'] as $counter) {
+                                                $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
+                                                ?>
+                                                <?php echo $counter->name; ?>
+                                                <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
+                                                <div class="controls">
+                                                    <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
+                                                </div>
+
+                                                <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Appear on node</strong></label>
+                                                <div class="controls">
+                                                    <input type="checkbox" id="nodecounter_show_<?php echo $counter->id; ?>" value="1" />
+                                                </div>
+                                            <?php } ?>
+                                        </div>
+                                        <div id="counters" data="[<?php
+                                    if (strlen($countersData) > 2) {
+                                        echo substr($countersData, 0, strlen($countersData) - 2);
+                                    }
+                                    ?>]"></div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="row-fluid block">
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <label class="control-label"><strong>Exit Node Probability</strong></label>
+                                        <div class="controls" id="exitNodeOptions">
+                                            <label class="radio">On<input name="exit" type="radio" value="1"></label>
+                                            <label class="radio">Off<input name="exit" type="radio" value="0" checked=""></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <label class="control-label"><strong>Link Function Style</strong></label>
+
+                                        <div class="controls" id="linkStyleOptions">
+                                            <label class="radio"><input name="style" type="radio" value="1" checked="">text (default)</label>
+                                            <label class="radio"><input name="style" type="radio" value="2">dropdown</label>
+                                            <label class="radio"><input name="style" type="radio" value="3">dropdown + confidence</label>
+                                            <label class="radio"><input name="style" type="radio" value="4">type in text</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row-fluid block">
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <label class="control-label"><strong>Node Priorities</strong></label>
+
+                                        <div class="controls" id="nodePriorities">
+                                            <label class="radio"><input name="priority" type="radio" value="1" checked="">normal (default)</label>
+                                            <label class="radio"><input name="priority" type="radio" value="2">must avoid</label>
+                                            <label class="radio"><input name="priority" type="radio" value="3">must visit</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <label class="control-label"><strong>Undo Links</strong></label>
+
+                                        <div class="controls" id="nodeUndoLinks">
+                                            <label class="radio">Enabled<input name="undo" type="radio" value="1"></label>
+                                            <label class="radio">Disabled<input name="undo" type="radio" value="0" checked=""></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label"><strong>Link to end and report from this node</strong></label>
+
+                                <div class="controls" id="nodeEndAndReport">
+                                    <label class="radio">Off (default)<input name="end" type="radio" value="0" checked=""></label>
+                                    <label class="radio">On<input name="end" type="radio" value="1"></label>
+                                </div>
                             </div>
                         </div>
-                        <div class="tab-pane active" id="veNodeContent">
-                            <div style="margin-left: 0">
-                                <div class="block" style="max-height: 585px;width: 430px; overflow: auto;padding-right: 25px;">
-                                <div class="control-group block">
-                                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Title</strong></label>
-                                    <div class="controls">
-                                        <input type="text" id="nodetitle" value=""/>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodecontent" class="control-label" style="text-align: left;"><strong>Node Content</strong></label>
-                                    <div class="controls block">
-                                        <textarea cols='20' class="mceEditor" id="nodecontent" rows='10' style="width: 100%;"></textarea>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodesupport" class="control-label" style="text-align: left;"><strong>Supporting Information</strong></label>
-                                    <div class="controls block">
-                                        <textarea cols='20' class="mceEditor" id="nodesupport" rows='10' style="width: 100%;"></textarea>
-                                    </div>
-                                </div>
-                                <div class="control-group block">
-                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Supporting Information Keyword</strong></label>
-                                    <div class="controls block">
-                                        <input type="text" id="nodesupportkeywords" value="" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                        <div>
-                                            <div class="control-group">
-                                                <?php
-                                                $countersData = '';
-                                                foreach ($templateData['counters'] as $counter) {
-                                                    $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
-                                                    ?>
-                                                    <?php echo $counter->name; ?>
-                                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
-                                                    <div class="controls">
-                                                        <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
-                                                    </div>
 
-                                                    <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Appear on node</strong></label>
-                                                    <div class="controls">
-                                                        <input type="checkbox" id="nodecounter_show_<?php echo $counter->id; ?>" value="1" />
-                                                    </div>
-                                                <?php } ?>
-                                            </div>
-                                            <div id="counters" data="[<?php
-                                        if (strlen($countersData) > 2) {
-                                            echo substr($countersData, 0, strlen($countersData) - 2);
-                                        }
-                                        ?>]"></div>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                                <div class="row-fluid block">
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Exit Node Probability</strong></label>
-                                            <div class="controls" id="exitNodeOptions">
-                                                <label class="radio">On<input name="exit" type="radio" value="1"></label>
-                                                <label class="radio">Off<input name="exit" type="radio" value="0" checked=""></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Link Function Style</strong></label>
-
-                                            <div class="controls" id="linkStyleOptions">
-                                                <label class="radio"><input name="style" type="radio" value="1" checked="">text (default)</label>
-                                                <label class="radio"><input name="style" type="radio" value="2">dropdown</label>
-                                                <label class="radio"><input name="style" type="radio" value="3">dropdown + confidence</label>
-                                                <label class="radio"><input name="style" type="radio" value="4">type in text</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row-fluid block">
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Node Priorities</strong></label>
-
-                                            <div class="controls" id="nodePriorities">
-                                                <label class="radio"><input name="priority" type="radio" value="1" checked="">normal (default)</label>
-                                                <label class="radio"><input name="priority" type="radio" value="2">must avoid</label>
-                                                <label class="radio"><input name="priority" type="radio" value="3">must visit</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="span6">
-                                        <div class="control-group">
-                                            <label class="control-label"><strong>Undo Links</strong></label>
-
-                                            <div class="controls" id="nodeUndoLinks">
-                                                <label class="radio">Enabled<input name="undo" type="radio" value="1"></label>
-                                                <label class="radio">Disabled<input name="undo" type="radio" value="0" checked=""></label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label class="control-label"><strong>Link to end and report from this node</strong></label>
-
-                                    <div class="controls" id="nodeEndAndReport">
-                                        <label class="radio">Off (default)<input name="end" type="radio" value="0" checked=""></label>
-                                        <label class="radio">On<input name="end" type="radio" value="1"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
-                            
-                        </div>
                     </div>
                 </div>
-                <br/>
                 <div class="footer block">
-                    <button class="btn" id="veRightPanelSaveBtn">Save</button>
-                    <button class="btn btn-danger veRightPanelCloseBtn">Close</button>
+                    <div class="btn-group">
+                        <a href="javascript:void(0)" class="btn btn-success" id="veRightPanelOnlySaveBtn">Save changes</a>
+                        <a href="javascript:void(0)" class="btn btn-info" id="veRightPanelSaveBtn">Save changes and close</a>
+                        <a href="javascript:void(0)" class="btn veRightPanelCloseBtn">Close panel</a>
+                    </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="modal hide block" id="visual_editor_template">
             <div class="modal-header block">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Insert pre-template</h3>
             </div>
-            
+
             <div class="modal-body block">
                 <div class="block" align="center">
                     <div class="block" data-toggle="buttons-radio" id="veTypeContainer">
@@ -225,11 +221,11 @@ if (isset($templateData['map'])) { ?>
                         <button type="button" class="btn" value="dandelion">Dandelion</button>
                     </div>
                 </div>
-                
+
                 <div class="block" align="center">
                     <div class="block" data-toggle="buttons-radio" id="veCountContainer">
                         <button type="button" class="btn" value="6">6</button>
-                        <button type="button" class="btn" value="8">8</button>
+                        <button type="button" class="btn" value="12">12</button>
                         <button type="button" class="btn" value="18">18</button>
                         <button type="button" class="btn" value="24">24</button>
                         <button type="button" class="btn" value="Custom" id="veCustom">Custom</button>
@@ -249,7 +245,7 @@ if (isset($templateData['map'])) { ?>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Dandelion</h3>
             </div>
-            
+
             <div class="modal-body block">
                 <div class="block" align="center">
                     <div class="block" data-toggle="buttons-radio" id="veDandelionCountContainer">
@@ -268,13 +264,13 @@ if (isset($templateData['map'])) { ?>
                 <a href="#" class="btn" id="veDandelionSaveBtn">Save</a>
             </div>
         </div>
-        
+
         <div class="modal hide block" id="visual_editor_background_color">
             <div class="modal-header block">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Background color</h3>
             </div>
-            
+
             <div class="modal-body block">
                 <div class="block" align="center">
                     <div class="defined-color-picker">
@@ -354,8 +350,8 @@ if (isset($templateData['map'])) { ?>
                 <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>
-        
-        <div class="modal hide alert alert-block alert-error block" id="visual_editor_set_root">
+
+        <div class="modal hide block" id="visual_editor_set_root">
             <div class="modal-header block">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
                 <h3>Set as Root</h3>
@@ -363,12 +359,12 @@ if (isset($templateData['map'])) { ?>
 
             <div class="modal-body block">
                 <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
-                <a href="#" class="btn btn-danger" id="setAsRootNodeBtn">Set</a>
+                <a href="#" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
                 <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>
     </div>
-    
+
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/utils.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/colorModal.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
@@ -386,5 +382,5 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
 
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/application.js"></script>
-    
+
 <?php } ?>

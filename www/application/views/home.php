@@ -175,7 +175,7 @@
                         </div>
                     </div>
 					<div>
-						<a href="#" class="toggles"><i class="icon-chevron-left"></i></a>
+                        <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
 					</div>
                     <?php
                     if (isset($templateData['right'])) {

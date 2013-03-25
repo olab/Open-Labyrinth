@@ -535,9 +535,7 @@ td[colspan*="11"] {
 .visual-editor-right-panel {
     display: block;
     background-color: #eeeeee;
-    height: 100%;
-    max-height: 800px;
-    min-width: 290px;
+    width: 480px;
     position: absolute;
     top: 0;
     right: 0;
@@ -550,6 +548,8 @@ td[colspan*="11"] {
 
 .visual-editor-right-panel .footer {
     text-align: center;
+    padding-top:10px;
+    padding-bottom:10px;
 }
 
 .child-block {
@@ -753,8 +753,9 @@ input[readonly].code, textarea[readonly].code{
 }
 
 .visual-editor-right-panel-tabs {
-    padding-top: 15px;
+    padding-top: 5px;
     background-color: #a1a1a1;
+    cursor: move;
 }
 
 .visual-editor-right-panel-tabs ul {
@@ -786,6 +787,7 @@ input[readonly].code, textarea[readonly].code{
 .visual-editor-right-panel .tab-content {
     margin-left: 5px;
     margin-right: 5px;
+    height: 430px;
 }
 
 .wizard_body .visual-editor-right-panel-tabs ul li {

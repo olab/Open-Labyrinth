@@ -6,7 +6,7 @@ var VisualEditor = function() {
     var generateIdNodeCounter = 1;
     var generateIdLinkCounter = 1;
     var maxZoom = 1.6;
-    var minZoom = 0.5;
+    var minZoom = 0.1;
     var ctrlKeyPressed = false;
     var shiftKeyPressed = false;
     var def2PI = Math.PI * 2;
@@ -34,6 +34,8 @@ var VisualEditor = function() {
     self.zoomIn = null;
     self.zoomOut = null;
     self.update = null;
+    self.turnOnPanMode = null;
+    self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
     
     // Initialize visual editor
@@ -65,6 +67,7 @@ var VisualEditor = function() {
            closeBtn: '.veRightPanelCloseBtn',
            colorInputId: '#colorpickerInput',
            colorPickerId: '#colopickerContainer',
+           onlySaveBtn: '#veRightPanelOnlySaveBtn',
            saveBtn: '#veRightPanelSaveBtn',
            accordion: '#veAccordionRightPanel',
            nodeRootBtn: '#veNodeRootBtn',
@@ -829,6 +832,10 @@ var VisualEditor = function() {
     var Resize = function() {
         if(self.$canvasContainer != null && self.$canvas != null) {
             self.$canvas.attr('width', self.$canvasContainer.width());
+            var height = parseInt(window.innerHeight) - 150;
+            if (height < 400){ height = 400; }
+            $(self.$canvasContainer).height(height);
+            self.$canvas.attr('height', self.$canvasContainer.height());
             self.Render();
         }
     }
@@ -918,6 +925,12 @@ var VisualEditor = function() {
                         self.rightPanel.DeleteNode();
                     }
                 }
+            }
+        } else if (event.keyCode == 32){
+            if (self.isSelectActive){
+                self.turnOnPanMode();
+            } else {
+                self.turnOnSelectMode();
             }
         }
     } 

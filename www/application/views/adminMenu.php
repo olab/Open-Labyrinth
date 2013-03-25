@@ -23,7 +23,7 @@
 <div class="row-fluid">
     <div class="span8">
         <div class="pull-left">
-            <img src="<?php echo URL::base(); ?>/images/openlabyrinth-large.png" alt="" class="brand-large" />
+            <img src="<?php echo URL::base(); ?>images/openlabyrinth-large.png" alt="" class="brand-large" />
         </div>
         <h1><?php echo __('Welcome to <span class="text-info">OpenLabyrinth</strong>'); ?></h1>
         <p class="lead">

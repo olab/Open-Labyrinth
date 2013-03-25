@@ -3,6 +3,7 @@ var RightPanel = function() {
     
     self.$panel = null;
     self.$closeBtn = null;
+    self.$onlySaveBtn = null;
     self.$saveBtn = null;
     self.$accordion = null;
     
@@ -55,10 +56,16 @@ var RightPanel = function() {
             self.colorPickerId = parameters.colorPickerId;
         }
         
+        if('onlySaveBtn' in parameters) {
+            self.$onlySaveBtn = $(parameters.onlySaveBtn);
+            if(self.$onlySaveBtn != null)
+                self.$onlySaveBtn.click(function() {self.Save()});
+        }
+
         if('saveBtn' in parameters) {
             self.$saveBtn = $(parameters.saveBtn);
             if(self.$saveBtn != null)
-                self.$saveBtn.click(self.Save);
+                self.$saveBtn.click(function(){self.Save(); self.Hide();});
         }
         
         if('accordion' in parameters) {
@@ -182,7 +189,6 @@ var RightPanel = function() {
         }
         
         self.visualEditor.Render();
-        self.Hide();
     }
     
     self.Show = function() {
