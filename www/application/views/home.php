@@ -174,6 +174,9 @@
                             <?php if (isset($templateData['center'])) echo $templateData['center']; ?>
                         </div>
                     </div>
+					<div>
+						<a href="#" class="toggles"><i class="icon-chevron-left"></i></a>
+					</div>
                     <?php
                     if (isset($templateData['right'])) {
                         ?>
@@ -196,13 +199,10 @@
             </div>
         </div>
 
-        <a href="#" class="toggles"><i class="icon-chevron-left"></i></a>
-
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
-
 
     </body>
 </html>
