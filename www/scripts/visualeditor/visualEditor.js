@@ -926,7 +926,7 @@ var VisualEditor = function() {
                     }
                 }
             }
-        } else if (event.keyCode == 32){
+        } else if (ctrlKeyPressed && event.keyCode == 32){
             if (self.isSelectActive){
                 self.turnOnPanMode();
             } else {
