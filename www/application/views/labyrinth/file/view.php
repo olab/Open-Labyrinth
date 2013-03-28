@@ -22,22 +22,21 @@ if (isset($templateData['map'])) {
     ?>
 <div class="page-header">
     <h1><?php echo __('Edit files for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
-    Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to
-        display or link a file there
+
 
     <div class="alert alert-info"> Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></div>
 
 
     <table class="table table-striped table-bordered">
         <colgroup>
-            <col/>
+            <col style="width:25%"/>
             <col/>
             <col/>
             <col/>
         </colgroup>
         <thead>
         <tr>
-            <th>Title</th>
+            <th>Title &amp; preview</th>
             <th>Embeddable</th>
             <th>Details</th>
             <th>Actions</th>
@@ -48,6 +47,10 @@ if (isset($templateData['map'])) {
         <?php if (isset($templateData['files']) and count($templateData['files']) > 0) { ?>
             <?php foreach ($templateData['files'] as $file) { ?>
                 <tr>
+                    <td>
+                        <div class="span-12">
+                           <a href="<?php echo URL::base() . $file->path; ?>"><?php echo $file->name; ?></a>
+                        </div>
                          <?php
                     $preview = '';
                     $isInput = false;
@@ -98,13 +101,14 @@ if (isset($templateData['map'])) {
                         $preview = '<p>no preview</p>';
                     }
                     ?>
-                    <td> <?php echo $preview; ?><a href="<?php echo URL::base() . $file->path; ?>"><?php echo $file->name; ?></a></td>
+                        <?php echo $preview; ?>
+                   </td>
 
                     <td>
                         <?php if ($isInput) { ?>
                          <label> <input class="code" readonly="readonly" type="text"  value="[[MR:<?php echo $file->id; ?>]]"></label>
                         <?php } else { ?>
-                            <textarea readonly="readonly" class="code">&lt;a href="<?php echo URL::base() . $file->path; ?>"&gt;<?php echo $file->name; ?>&lt;/a&gt;</textarea>
+                        <label>   <textarea readonly="readonly" class="code">&lt;a href="<?php echo URL::base() . $file->path; ?>"&gt;<?php echo $file->name; ?>&lt;/a&gt;</textarea></label>
                         <?php } ?>
                     </td>
                     <td>
@@ -114,14 +118,14 @@ if (isset($templateData['map'])) {
                     </td>
                     <td>
 
-                    <div class="btn-group">
+                    <div class="btn-group-vertical">
                             <a class="btn btn-info" href="<?php echo URL::base() . 'fileManager/editFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-edit"></i> Edit</a>
 
                         <a class="btn btn-danger" href="<?php echo URL::base() . 'fileManager/deleteFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-trash"></i> Delete</a>
 
                         <?php if ($isImage) { ?>
 
-                                <a href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>">image
+                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-tint"></i>Image
                                     editor</a>
                         <?php } ?></div>
                     </td>
@@ -138,7 +142,10 @@ if (isset($templateData['map'])) {
           action="<?php echo URL::base() . 'fileManager/uploadFile/' . $templateData['map']->id; ?>">
         <fieldset class="fieldset">
             <legend><?php echo __('Upload a file to Labyrinth'); ?> "<?php echo $templateData['map']->name; ?>"</legend>
-
+<p>
+    Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to
+    display or link a file there
+</p>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Select file to upload'); ?></label>
                 <div class="controls">
@@ -151,9 +158,11 @@ if (isset($templateData['map'])) {
              Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4
              Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio
              (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
+
+        <div class="form-actions">
          <div class="pull-right">
              <input class="btn btn-large btn-primary" id="opener" type="button" name="Submit" value="<?php echo __('Upload'); ?>">
-         </div>
+         </div></div>
 
     </form>
     <div id="dialog-confirm" title="<?php echo $templateData['media_copyright']['title']; ?>">

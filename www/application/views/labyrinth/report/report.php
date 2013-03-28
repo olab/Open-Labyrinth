@@ -82,9 +82,9 @@ function getRandomColor(){
     </table>
 
 
-
-    <table class="table table-striped table-bordered">
     <?php if(isset($templateData['feedbacks']['general'])){?>
+    <table class="table table-striped table-bordered">
+
         <tr>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
@@ -123,9 +123,9 @@ function getRandomColor(){
         <td><?php echo __('feedback for counters'); ?></td>
         <td><?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?></td>
     </tr>
-        <?php } ?>
-    </table>
 
+    </table>
+<?php } ?>
                             
 
              

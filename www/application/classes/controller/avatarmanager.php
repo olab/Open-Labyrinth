@@ -70,6 +70,9 @@ class Controller_AvatarManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int) $avatarId));
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($avatarId)->set_url(URL::base() . 'avatarManager/editAvatar/' . $mapId.'/'.$avatarId));
             $edtAvatarView = View::factory('labyrinth/avatar/edit');
             $edtAvatarView->set('templateData', $this->templateData);
 

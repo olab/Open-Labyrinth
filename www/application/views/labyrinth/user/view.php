@@ -138,7 +138,7 @@ if (isset($templateData['map'])) {
             </div>
         </fieldset>
         <div class="form-actions"><input class="btn btn-primary" type="submit" name="Submit"
-                                         value="<?php echo __('submit'); ?>"></div>
+                                         value="<?php echo __('Submit'); ?>"></div>
 
 
     </form>

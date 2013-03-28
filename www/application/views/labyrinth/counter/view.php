@@ -78,5 +78,10 @@ if (isset($templateData['map'])) { ?>
             </td>
         </tr>
         <?php } ?>
+    <?php } else{ ?>
+        <tr class="info">
+            <td colspan="3">There are no counters in this labyrinth, yet. You may add one, clicking the button above.</td>
+        </tr>
     <?php } ?>
+
 <?php } ?>

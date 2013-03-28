@@ -20,11 +20,11 @@
  */
 if (isset($templateData['map'])) {
     ?>
-
+<div class="page-header">
     <h1><?php echo __('Labyrinth Report for "') . $templateData['map']->name . '"'; ?></h1>
+</div>
 
-
-    <p><?php echo __('click to view performance by session'); ?></p>
+    <p><?php echo __('Click to view performance by session'); ?></p>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
