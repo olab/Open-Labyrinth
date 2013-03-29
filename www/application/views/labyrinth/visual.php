@@ -63,6 +63,7 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
+            <div style="position: absolute; right: 0; top: 0;border-right: 1px solid #cccccc; border-top: 1px solid #cccccc;"><canvas id="canvasPreview" width="200" height="200" style="background-color: #EEEEEE" tabindex='2'>Not supported</canvas></div>            
             <canvas id="canvas" width="100" height="200" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="block visual-editor-right-panel-tabs">
@@ -378,6 +379,7 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/nodeModal.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/selector.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/rightPanel.js"></script>
+    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/preview.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/visualEditor.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
 

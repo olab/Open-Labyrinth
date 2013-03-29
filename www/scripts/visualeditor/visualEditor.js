@@ -37,6 +37,9 @@ var VisualEditor = function() {
     self.turnOnPanMode = null;
     self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
+
+    self.preview = null;
+    self.mode = 'node';
     
     // Initialize visual editor
     self.Init = function(params) {
@@ -105,6 +108,14 @@ var VisualEditor = function() {
             linkLabel: '#labelText',
             visualEditor: self
         });
+
+        if(self.mode == 'node') {
+            self.preview = new Preview();
+            self.preview.Init({
+                canvasId: '#canvasPreview',
+                visualEditor: self
+            });
+        }
                      
         Resize(null);
         self.ZoomOut();
@@ -133,6 +144,10 @@ var VisualEditor = function() {
         self.selectorTool.Draw(self.context, viewport);
         
         self.isChanged = true;
+        
+        if(self.preview != null) {
+            self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
+        }
     }
     
     // Zoom in viewport
@@ -1228,6 +1243,11 @@ var VisualEditor = function() {
         for(var i = 0; i < self.nodes.length; i++) {
             self.nodes[i].isRoot = (self.nodes[i].id == nodeId) ? true: false;
         }
+    }
+    
+    self.TranslateViewport = function(x, y) {
+        viewport.TranslateWithoutScale(x, y);
+        self.Render();
     }
     
     var ShowLinkConnector = function(nodeId) {
