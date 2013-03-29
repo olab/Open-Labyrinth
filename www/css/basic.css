@@ -684,18 +684,18 @@ input[readonly].code, textarea[readonly].code{
     background-image: linear-gradient(to bottom, #bebdbd, #9c9b9b);
     background-repeat: repeat-x;
     border: none;
-    box-shadow: inset 1px -1px 1px #6E6D6D; 
-    -moz-box-shadow: inset 1px -1px 1px #6E6D6D; 
-    -webkit-box-shadow: inset 1px -1px 1px #6E6D6D; 
+    box-shadow: inset 1px -1px 1px #6E6D6D;
+    -moz-box-shadow: inset 1px -1px 1px #6E6D6D;
+    -webkit-box-shadow: inset 1px -1px 1px #6E6D6D;
 }
 
 .round-btn:hover,
 .round-btn.active {
     background-color: #777676;
     background-image: none;
-    box-shadow: inset -2px 1px 2px #4F4E4E; 
-    -moz-box-shadow: inset -2px 1px 2px #4F4E4E; 
-    -webkit-box-shadow: inset -2px 1px 2px #4F4E4E; 
+    box-shadow: inset -2px 1px 2px #4F4E4E;
+    -moz-box-shadow: inset -2px 1px 2px #4F4E4E;
+    -webkit-box-shadow: inset -2px 1px 2px #4F4E4E;
 }
 
 .round-btn.disabled {
@@ -771,9 +771,9 @@ input[readonly].code, textarea[readonly].code{
     color: #ffffff;
 }
 
-.visual-editor-right-panel-tabs li a:hover, 
+.visual-editor-right-panel-tabs li a:hover,
 .visual-editor-right-panel-tabs li.active a {
-    box-shadow: 2px -2px 3px 0 rgba(141,141,141, 0.5); 
+    box-shadow: 2px -2px 3px 0 rgba(141,141,141, 0.5);
     -moz-box-shadow: 2px -2px 3px 0 rgba(141,141,141, 0.5);
     -webkit-box-shadow: 2px -2px 3px 0 rgba(141,141,141, 0.5);
     background-color: #eeeeee;

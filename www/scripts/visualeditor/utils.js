@@ -1,6 +1,6 @@
 var Utils = function() {
     var self = this;
-    
+
     self.ShowMessage = function(messageForm, messageObj, messageType, message, timeOut, hideObj, hide){
         messageForm.removeClass('alert-success');
         messageForm.removeClass('alert-error');

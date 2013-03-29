@@ -120,13 +120,13 @@ class Controller_ExportImportManager extends Controller_Base {
             $params['mapId'] = $mapId;
             $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);;
             $pathInfo = pathinfo($path);
-            
+
             header("Cache-Control: public");
             header("Content-Description: File Transfer");
             header("Content-Disposition: attachment; filename=".$pathInfo['basename']);
             header("Content-Type: application/zip");
             header("Content-Transfer-Encoding: binary");
-            
+
             readfile($path);
         } else {
             Request::initial()->redirect(URL::base() . 'exportimportmanager/exportMVP');

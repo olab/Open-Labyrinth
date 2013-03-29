@@ -90,7 +90,7 @@ var NodeModal = function() {
 
     self.SetNode = function(node) {
         if(node == null) return;
-        
+
         self.node = node;
         
         if($title != null)

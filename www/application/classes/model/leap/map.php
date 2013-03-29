@@ -520,7 +520,7 @@ class Model_Leap_Map extends DB_ORM_Model
             $this->save();
         }
     }
-    
+
     public function updateType($mapId, $typeId) {
         $this->id = $mapId;
         $this->load();
@@ -704,19 +704,19 @@ class Model_Leap_Map extends DB_ORM_Model
         $result = count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
         return $result;
     }
-    
+
     public function createLinearMap($mapId, $values) {
         if($mapId <= 0) return;
-        
+
         $count = Arr::get($values, 'nodesCount', 0);
-        
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+
+        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                             'mnodetitle' => Arr::get($values, 'rootTitle', ''),
                                                             'mnodetext' => Arr::get($values, 'rootContent', ''),
                                                             'type_id' => 1));
         $oldNode = $node;
         for($i = 1; $i <= $count; $i++) {
-            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                                 'mnodetitle' => Arr::get($values, 'nodeTitle' . $i, ''),
                                                                 'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')));
             if($oldNode != null && $node != null) {
@@ -724,29 +724,29 @@ class Model_Leap_Map extends DB_ORM_Model
                 $oldNode = $node;
             }
         }
-        
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+
+        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                             'mnodetitle' => Arr::get($values, 'endTitle', ''),
                                                             'mnodetext' => Arr::get($values, 'endContent', '')));
-        
+
         if($oldNode != null && $node != null) {
             DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
         }
     }
-    
+
     public function createBranchedMap($mapId, $values) {
         if($mapId <= 0) return;
-        
+
         $count = Arr::get($values, 'nodesCount', 0);
-        
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+
+        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                             'mnodetitle' => Arr::get($values, 'rootTitle', ''),
                                                             'mnodetext' => Arr::get($values, 'rootContent', ''),
                                                             'type_id' => 1));
         $oldNode = $node;
         $nodes = array();
         for($i = 1; $i <= $count; $i++) {
-            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                                 'mnodetitle' => Arr::get($values, 'nodeTitle' . $i, ''),
                                                                 'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')));
             $nodes[] = $node;
@@ -754,8 +754,8 @@ class Model_Leap_Map extends DB_ORM_Model
                 DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
             }
         }
-        
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId, 
+
+        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
                                                             'mnodetitle' => Arr::get($values, 'endTitle', ''),
                                                             'mnodetext' => Arr::get($values, 'endContent', '')));
         if(count($nodes) > 0) {

@@ -174,9 +174,9 @@
                             <?php if (isset($templateData['center'])) echo $templateData['center']; ?>
                         </div>
                     </div>
-					<div>
+                    <div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
-					</div>
+                    </div>
                     <?php
                     if (isset($templateData['right'])) {
                         ?>

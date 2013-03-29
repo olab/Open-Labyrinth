@@ -37,10 +37,11 @@ var VisualEditor = function() {
     self.turnOnPanMode = null;
     self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
+    self.unsavedData = false;
 
     self.preview = null;
     self.mode = 'node';
-    
+
     // Initialize visual editor
     self.Init = function(params) {
         if('canvasContainer' in params) {
@@ -66,26 +67,29 @@ var VisualEditor = function() {
         CreateEvents();
         
         self.rightPanel.Init({
-           panelId: '#veRightPanel',
-           closeBtn: '.veRightPanelCloseBtn',
-           colorInputId: '#colorpickerInput',
-           colorPickerId: '#colopickerContainer',
-           onlySaveBtn: '#veRightPanelOnlySaveBtn',
-           saveBtn: '#veRightPanelSaveBtn',
-           accordion: '#veAccordionRightPanel',
-           nodeRootBtn: '#veNodeRootBtn',
-           nodeDeleteBtn: '#veDeleteNodeBtn',
-           visualEditor: self,
-           nodeTitle: '#nodetitle', 
-           nodeContent: '#nodecontent', 
-           nodeSupport: '#nodesupport', 
-           nodeSupportKeywords: '#nodesupportkeywords',
-           nodeIsExitNodePorb: '#exitNodeOptions', 
-           nodeLinkStyle: '#linkStyleOptions', 
-           nodePriority: '#nodePriorities',
-           nodeUndoLinks: '#nodeUndoLinks', 
-           endNode: '#nodeEndAndReport', 
-           nodeCounters: '#counters'
+            panelId: '#veRightPanel',
+            closeBtn: '.veRightPanelCloseBtn',
+            colorInputId: '#colorpickerInput',
+            colorPickerId: '#colopickerContainer',
+            onlySaveBtn: '#veRightPanelOnlySaveBtn',
+            saveBtn: '#veRightPanelSaveBtn',
+            accordion: '#veAccordionRightPanel',
+            nodeRootBtn: '#veNodeRootBtn',
+            nodeDeleteBtn: '#veDeleteNodeBtn',
+            visualEditor: self,
+            nodeIDLabel: '#nodeID_label',
+            nodeTitle: '#nodetitle',
+            nodeContent: '#nodecontent',
+            nodeSupport: '#nodesupport',
+            nodeSupportKeywords: '#nodesupportkeywords',
+            nodeIsExitNodePorb: '#exitNodeOptions',
+            nodeLinkStyle: '#linkStyleOptions',
+            nodePriority: '#nodePriorities',
+            nodeUndoLinks: '#nodeUndoLinks',
+            endNode: '#nodeEndAndReport',
+            nodeCounters: '#counters',
+            unsavedDataForm: '#veRightPanel_unsaveddata',
+            unsavedDataBtnClose: '#veRightPanel_unsaveddata_close'
         });
         
         self.deleteModal.Init({
@@ -116,7 +120,7 @@ var VisualEditor = function() {
                 visualEditor: self
             });
         }
-                     
+
         Resize(null);
         self.ZoomOut();
         self.ZoomOut();
@@ -144,7 +148,7 @@ var VisualEditor = function() {
         self.selectorTool.Draw(self.context, viewport);
         
         self.isChanged = true;
-        
+
         if(self.preview != null) {
             self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
         }
@@ -1249,7 +1253,7 @@ var VisualEditor = function() {
         viewport.TranslateWithoutScale(x, y);
         self.Render();
     }
-    
+
     var ShowLinkConnector = function(nodeId) {
         var node = GetNodeById(nodeId);
         if(node == null) return;

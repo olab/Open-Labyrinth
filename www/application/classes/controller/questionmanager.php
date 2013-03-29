@@ -88,16 +88,16 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_addPick() {
         $mapId = $this->request->param('id', null);
-        
+
         if($mapId != null) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $editView = View::factory('labyrinth/question/addPick');
             $editView->set('templateData', $this->templateData);
-            
+
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            
+
             $this->templateData['center'] = $editView;
             $this->templateData['left'] = $leftView;
             unset($this->templateData['right']);
@@ -106,13 +106,13 @@ class Controller_QuestionManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_addNewPick() {
         $mapId = $this->request->param('id', null);
-        
+
         if($mapId != null && $_POST != null) {
             DB_ORM::model('map_question')->addPickQuestion($mapId, $_POST);
-            
+
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -132,12 +132,12 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int) $questionId));
                 if($this->templateData['question'] != null && count($this->templateData['question']->responses) > 0 && $this->templateData['question']->entry_type_id == 7)
                     $this->templateData['args'] = count($this->templateData['question']->responses);
-                else 
+                else
                 $this->templateData['args'] = $type->template_args;
-                
+
                 $this->templateData['questionType'] = $templateType;
                 $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-                
+
                 Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
                 Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['question']->stem)->set_url(URL::base() . 'questionManager/editQuestion/' . $this->templateData['map']->id . '/' . $this->templateData['question']->entry_type_id . '/' . $this->templateData['question']->id));

@@ -9,7 +9,7 @@ var DeleteModal = function() {
     self.selectedNodes = null;
     self.rightPanel = null;
     self.selectRoot = false;
-    
+
     self.Init = function(parameters) {
         if('modalId' in parameters)
             $modal = $(parameters.modalId);
@@ -80,7 +80,7 @@ var DeleteModal = function() {
         if(self.selectRoot) {
             utils.ShowMessage($('#ve_message'), $('#ve_message_text'), 'error', 'You cannot delete the root node.', 3000, $('#ve_actionButton'), false);
         }
-        
+
         return false;
     }
 }

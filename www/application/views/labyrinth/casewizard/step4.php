@@ -65,7 +65,7 @@
                             <li class="active"><a href="#content" data-toggle="tab">Node Content</a></li>
                         </ul>
                     </div>
-                    
+
                     <div class="tab-content block">
                         <div class="tab-pane" id="actions">
                             <div class="accordion-inner block" align="center">

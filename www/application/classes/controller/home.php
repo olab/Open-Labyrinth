@@ -30,12 +30,11 @@ class Controller_Home extends Controller_Base {
     public function action_login() {
         if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
-            if ($status) {
-                Request::initial()->redirect(URL::base());
-            } else {
-                $this->templateData['error'] = 'Invalid username or password';
-                $this->template->set('templateData', $this->templateData);
+            if (!$status) {
+                Notice::add('You have entered the wrong username/password combination. Please try again.');
             }
+
+            Request::initial()->redirect(URL::base());
         }
     }
 
@@ -155,7 +154,7 @@ class Controller_Home extends Controller_Base {
                         $isError = true;
                     }
                     Session::instance()->set('passError', __('The email addresses you entered do not match.'));
-                    
+
                     if($isError) {
                         Request::initial()->redirect(URL::base() . 'home/resetPassword');
                     } else {

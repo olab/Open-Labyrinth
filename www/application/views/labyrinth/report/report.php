@@ -126,7 +126,7 @@ function getRandomColor(){
 
     </table>
 <?php } ?>
-                            
+
 
              
                             <h3><?php echo __('Questions'); ?></h3>

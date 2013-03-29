@@ -57,7 +57,7 @@
     } else if($templateData['map']->type_id == 9) {
         $action = 'createBranched';
     }
-    
+
     echo $action;
     ?>/<?php echo $templateData['map']->id; ?>">
         <input type="hidden" name="nodesCount" id="formNodeCount" value="0"/>
@@ -92,7 +92,7 @@
         </div>
 
         <div id="nodesContainer">
-            
+
         </div>
 
         <div id="endPointContainer">
@@ -112,7 +112,7 @@
                 </div>
             </div>
         </div>
-        
+
         <footer>
             <div class="pull-right"><button type="submit" id="step3_submit" class="btn btn-primary wizard_button">Step 4 - Edit Story</button></div>
             <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/2/' . $templateData['map']->id; ?>" style="float:left;" class="btn btn-primary wizard_button">Return to step 2</a>

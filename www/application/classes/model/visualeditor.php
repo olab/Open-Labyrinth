@@ -461,7 +461,7 @@ class Model_VisualEditor extends Model {
                 $v = array();
                 $v['text'] = $link['label'];
                 $v['image_id'] = $link['imageId'];
-                
+
                 if ($link['type'] == 'direct') {
                     $v['node_id_1'] = $link['nodeA'];
                     $v['node_id_2'] = $link['nodeB'];
@@ -492,7 +492,7 @@ class Model_VisualEditor extends Model {
                 if($l != null) {
                     $l->text = $link['label'];
                     $l->image_id = $link['imageId'];
-                    
+
                     $l->save();
                 }
                 if ($link['type'] == 'direct') {
@@ -538,7 +538,7 @@ class Model_VisualEditor extends Model {
                         } else {
                             $b->text = $link['label'];
                             $b->image_id = $link['imageId'];
-                    
+
                             $b->save();
                         }
                     }

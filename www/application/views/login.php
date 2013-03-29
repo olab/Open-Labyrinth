@@ -57,3 +57,9 @@
         <button id="forgot-password-submit" class="btn btn-primary">Reset Password</button>
     </div>
 </div>
+<?php if(count(Notice::get()) > 0) { ?>
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <?php $m = Notice::get(); echo $m[0]; ?>
+</div>
+<?php } ?>

@@ -16,6 +16,7 @@ var RightPanel = function() {
     self.deleteModal = new DeleteModal();
     
     // Data objects
+    self.$nodeIDLabel = null;
     self.$nodeTitle = null;
     self.$nodeContent = null;
     self.$nodeSupport = null;
@@ -28,7 +29,9 @@ var RightPanel = function() {
     self.$nodeCounters = null;
     self.nodeContentId = '';
     self.nodeSupportId = '';
-    
+    self.$unsavedDataBtnClose = null;
+    self.$unsavedDataForm = null;
+
     self.visualEditor = null;
     self.node = null;
     self.mode = 'node'; // mode node or link
@@ -44,7 +47,9 @@ var RightPanel = function() {
         if('closeBtn' in parameters) {
             self.$closeBtn = $(parameters.closeBtn);
             if(self.$closeBtn != null)
-                self.$closeBtn.click(self.Close);
+                self.$closeBtn.click(function() {
+                    self.Close();
+                });
         }
         
         if('colorInputId' in parameters) {
@@ -55,7 +60,7 @@ var RightPanel = function() {
         if('colorPickerId' in parameters) {
             self.colorPickerId = parameters.colorPickerId;
         }
-        
+
         if('onlySaveBtn' in parameters) {
             self.$onlySaveBtn = $(parameters.onlySaveBtn);
             if(self.$onlySaveBtn != null)
@@ -83,14 +88,30 @@ var RightPanel = function() {
             if(self.$nodeDeleteBtn != null)
                 self.$nodeDeleteBtn.click(self.DeleteNode);
         }
-        
+
+        if('unsavedDataForm' in parameters) {
+            self.$unsavedDataForm = $(parameters.unsavedDataForm);
+        }
+
+        if('unsavedDataBtnClose' in parameters) {
+            self.$unsavedDataBtnClose = $(parameters.unsavedDataBtnClose);
+            if(self.$unsavedDataBtnClose != null)
+                self.$unsavedDataBtnClose.click(function() {
+                    self.visualEditor.unsavedData = false;
+                    self.Close();
+                });
+        }
+
         self.deleteModal.Init({
             modalId: '#visual_editor_delete', 
             applyBtn: '#deleteNode', 
             visualEditor: self.visualEditor,
             rightPanel: self
         });
-        
+
+        if('nodeIDLabel' in parameters)
+            self.$nodeIDLabel = $(parameters.nodeIDLabel);
+
         if('nodeTitle' in parameters)
             self.$nodeTitle = $(parameters.nodeTitle);
         
@@ -133,9 +154,14 @@ var RightPanel = function() {
     }
     
     self.Close = function() {
-        self.Hide();
+        if (self.visualEditor.unsavedData){
+            self.$unsavedDataForm.modal();
+        } else {
+            self.$unsavedDataForm.modal('hide');
+            self.Hide();
+        }
     }
-    
+
     self.Save = function() {
         if(self.visualEditor == null) return;
         
@@ -187,7 +213,10 @@ var RightPanel = function() {
                 }
             }
         }
-        
+        self.visualEditor.unsavedData = false;
+        var tm = tinyMCE.activeEditor;
+        tm.startContent = tm.getContent({format : 'raw'});
+
         self.visualEditor.Render();
     }
     
@@ -204,9 +233,18 @@ var RightPanel = function() {
                 
                 self.$accordion.addClass('node-panel');
                 self.$colorInput.val(self.node.color);
-                $(self.colorPickerId).farbtastic(self.colorInputId);
+                $(self.colorPickerId).farbtastic(function(changedColor) {
+                    $(self.colorInputId).val(changedColor);
+                    $(self.colorInputId).css('background-color', changedColor);
+                    if (changedColor != self.node.color){
+                        $(self.colorInputId).keyup();
+                    }
+                });
                 $.farbtastic(self.colorPickerId).setColor(self.node.color);
-                
+
+                if(self.$nodeIDLabel != null)
+                    self.$nodeIDLabel.text(self.node.id);
+
                 if(self.$nodeTitle != null)
                     self.$nodeTitle.val(self.node.title);
 
@@ -313,7 +351,7 @@ var RightPanel = function() {
             }
         }
     }
-    
+
     var GetRootNode = function() {
         if(self.visualEditor == null || self.visualEditor.nodes.length <= 0) return null;
         

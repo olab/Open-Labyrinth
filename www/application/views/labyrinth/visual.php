@@ -63,7 +63,7 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
-            <div style="position: absolute; right: 0; top: 0;border-right: 1px solid #cccccc; border-top: 1px solid #cccccc;"><canvas id="canvasPreview" width="200" height="200" style="background-color: #EEEEEE" tabindex='2'>Not supported</canvas></div>            
+            <div style="position: absolute; right: 0; top: 0;border-right: 1px solid #cccccc; border-top: 1px solid #cccccc;"><canvas id="canvasPreview" width="200" height="200" style="background-color: #EEEEEE" tabindex='2'>Not supported</canvas></div>
             <canvas id="canvas" width="100" height="200" style="background-color: #cccccc" tabindex='1'>Not supported</canvas>
             <div class="visual-editor-right-panel hide" id="veRightPanel">
                 <div class="block visual-editor-right-panel-tabs">
@@ -71,6 +71,7 @@ if (isset($templateData['map'])) { ?>
                         <li><a href="#actions" data-toggle="tab">Actions</a></li>
                         <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
                     </ul>
+                    <p style="position:absolute; top:4px; right:4px;" class="label label-info">NodeID - <span id="nodeID_label"></span></p>
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane" id="actions">
@@ -208,6 +209,22 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
 
+        <div class="modal hide block" id="veRightPanel_unsaveddata">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Unsaved data</h3>
+            </div>
+
+            <div class="modal-body block">
+                <p>You have some unsaved data in panel editor.</p>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="veRightPanel_unsaveddata_close">Still close the panel</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Don't close panel</a>
+            </div>
+        </div>
+
         <div class="modal hide block" id="visual_editor_template">
             <div class="modal-header block">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -236,8 +253,8 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn" id="veTemplateSaveBtn">Save</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                <a href="javascript:void(0);" class="btn" id="veTemplateSaveBtn">Save</a>
             </div>
         </div>
 
@@ -251,7 +268,7 @@ if (isset($templateData['map'])) { ?>
                 <div class="block" align="center">
                     <div class="block" data-toggle="buttons-radio" id="veDandelionCountContainer">
                         <button type="button" class="btn" value="6">6</button>
-                        <button type="button" class="btn" value="8">8</button>
+                        <button type="button" class="btn" value="12">12</button>
                         <button type="button" class="btn" value="18">18</button>
                         <button type="button" class="btn" value="24">24</button>
                         <button type="button" class="btn" value="Custom" id="veDandelionCustom">Custom</button>
@@ -261,8 +278,8 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn" id="veDandelionSaveBtn">Save</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                <a href="javascript:void(0);" class="btn" id="veDandelionSaveBtn">Save</a>
             </div>
         </div>
 
@@ -283,8 +300,8 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn" id="veBgColorSaveBtn">Save</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                <a href="javascript:void(0);" class="btn" id="veBgColorSaveBtn">Save</a>
             </div>
         </div>
 
@@ -332,14 +349,14 @@ if (isset($templateData['map'])) { ?>
             </div>
 
             <div class="modal-footer block">
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-                <a href="#" class="btn" id="linkApply">Apply</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+                <a href="javascript:void(0);" class="btn" id="linkApply">Apply</a>
             </div>
         </div>
 
         <div class="modal hide alert alert-block alert-error block" id="visual_editor_delete">
             <div class="modal-header block">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <a class="close" data-dismiss="alert" href="javascript:void(0);">&times;</a>
                 <h3 class="deleteModalHeaderNode">Delete this node</h3>
                 <h3 class="deleteModalHeaderNodes">Delete this nodes</h3>
             </div>
@@ -347,42 +364,42 @@ if (isset($templateData['map'])) { ?>
             <div class="modal-body block">
                 <p class="deleteModalContentNode">You have just clicked the delete button, are you certain that you wish to proceed with deleting this node?</p>
                 <p class="deleteModalContentNodes">You have just clicked the delete button, are you certain that you wish to proceed with deleting this nodes?</p>
-                <a href="#" class="btn btn-danger" id="deleteNode">Delete</a>
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+                <a href="javascript:void(0);" class="btn btn-danger" id="deleteNode">Delete</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>
 
         <div class="modal hide block" id="visual_editor_set_root">
             <div class="modal-header block">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <a class="close" data-dismiss="alert" href="javascript:void(0);">&times;</a>
                 <h3>Set as Root</h3>
             </div>
 
             <div class="modal-body block">
                 <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
-                <a href="#" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
-                <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+                <a href="javascript:void(0);" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
             </div>
         </div>
     </div>
 
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/utils.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/colorModal.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/mouse.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/transform.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/node.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/link.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/linkConnector.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/linkModal.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/deleteModal.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/nodeModal.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/selector.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/rightPanel.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/preview.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/visualEditor.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/utils.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/colorModal.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/mouse.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/transform.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/node.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/link.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/linkConnector.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/linkModal.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/deleteModal.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/nodeModal.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/selector.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/rightPanel.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/preview.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
 
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/visualeditor/application.js"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
 
 <?php } ?>

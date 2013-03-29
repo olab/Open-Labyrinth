@@ -101,9 +101,9 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $session = Session::instance();
                 DB_ORM::model('map')->updateType($receivedMapId, $labyrinthType);
                 if($labyrinthType != 10)
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId); 
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId);
                 else
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId); 
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId);
                 exit;
                 break;
 
