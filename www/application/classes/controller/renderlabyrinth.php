@@ -672,6 +672,24 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if ($question->type->value == 'area') {
                 $result = "<textarea cols='" . $question->width . "' rows='" . $question->height . "' name='qresponse_" . $question->id . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");'>" . $question->feedback . "</textarea>";
                 $result .= "<div id='AJAXresponse'></div>";
+            } else if($question->type->value == 'pcq') {
+                if (count($question->responses) > 0) {
+                    $result = '<table>';
+                    $i = 1;
+                    $divIDS = 'new Array(';
+                    foreach ($question->responses as $responce) {
+                        $divIDS .= $responce->id . ',';
+                    }
+                    $divIDS = substr($divIDS, 0, strlen($divIDS) - 1);
+                    $divIDS .= ')';
+                    foreach ($question->responses as $responce) {
+                        $result .= "<tr><td><p>" . $responce->response . "</p></td>";
+                        $result .= "<td><div id='click" . $responce->id . "'><input type='checkbox' name='option' OnClick='ajaxMCQ(" . $question->id . "," . $responce->id . "," . count($question->responses) . "," . $question->num_tries . "," . $divIDS . ");' /></div></td>";
+                        $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
+                        $i++;
+                    }
+                    $result .= '</table>';
+                }
             } else {
                 if (count($question->responses) > 0) {
                     $result = '<table>';

@@ -309,6 +309,43 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             $responce->save();
         }
     }
+    
+    public function addPickQuestion($mapId, $values) {
+        if($mapId == null || $mapId <= 0) return;
+        
+        if($values != null && count($values) > 0) {
+            $questionIDs = Arr::get($values, 'questionsIDs', null);
+            if($questionIDs == null) return;
+            
+            $ids = explode(' ', $questionIDs);
+            
+            $builder = DB_ORM::insert('map_question')
+                    ->column('map_id', $mapId)
+                    ->column('entry_type_id', 7)
+                    ->column('stem', Arr::get($values, 'qstem', ''))
+                    ->column('feedback', Arr::get($values, 'fback', ''))
+                    ->column('show_answer', (int)Arr::get($values, 'qshow', 1))
+                    ->column('counter_id', (int)Arr::get($values, 'scount', 0))
+                    ->column('num_tries',  Arr::get($values, 'numtries', -1));
+            
+            $newQuestionId = $builder->execute();
+            
+            if($ids != null && count($ids) > 0 && $newQuestionId > 0) {
+                foreach($ids as $id) {
+                    if($id == null) continue;
+                    
+                    $builder = DB_ORM::insert('map_question_response')
+                            ->column('question_id', $newQuestionId)
+                            ->column('response', Arr::get($values, 'qresp' . $id . 't', ''))
+                            ->column('feedback', Arr::get($values, 'qfeed'.$id, ''))
+                            ->column('is_correct', Arr::get($values, 'qresp'.$id.'y', 0))
+                            ->column('score', Arr::get($values, 'qresp'.$id.'s', 0));
+                    
+                    $builder->execute();
+                }
+            }
+        }
+    }
 }
 
 ?>

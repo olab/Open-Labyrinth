@@ -22,7 +22,11 @@ if (isset($templateData['map'])) {
     ?>
     <script language="javascript" type="text/javascript">
         function jumpMenu(targ, selObj, restore) {
+            if(selObj.options[selObj.selectedIndex].value == '7') {
+                eval(targ + ".location='<?php echo URL::base(); ?>questionManager/addPick/<?php echo $templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
+            } else {
             eval(targ + ".location='<?php echo URL::base(); ?>questionManager/addQuestion/<?php echo $templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
+            }
             if (restore) selObj.selectedIndex = 0;
         }
     </script>
