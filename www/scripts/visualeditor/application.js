@@ -325,7 +325,7 @@ $(function () {
     var canvasHeight;
     $('#fullScreen').click(function () {
         if ($(this).hasClass('active')) {
-            $('body').css({'padding-top':'60px', 'padding-bottom':'40px', 'overflow':'auto'});
+            $('body').css({'width':'100%', 'height':'100%', 'padding-top':'60px', 'padding-bottom':'40px', 'overflow':'auto'});
             $(this).removeClass('active');
             $('#canvasContainer').css('position', 'relative');
             $('#canvasContainer').css('z-index', '0');
@@ -337,8 +337,11 @@ $(function () {
 
             visualEditor.Render();
         } else {
+            var h = window.innerHeight;
+            var w = window.innerWidth;
+
             $(document).scrollTop(0);
-            $('body').css({'width':'100%', 'height':'100%', 'margin':'0', 'padding':'0', 'overflow':'hidden'});
+            $('body').css({'width': w + 'px', 'height': h + 'px', 'margin':'0', 'padding':'0', 'overflow':'hidden'});
             canvasWidth = $('#canvas').attr('width');
             canvasHeight = $('#canvas').attr('height');
             $('.navbar-fixed-top').css('z-index', 0);
@@ -347,12 +350,11 @@ $(function () {
             $('#canvasContainer').css('top', '0');
             $('#canvasContainer').css('left', '0');
             $('#canvasContainer').css('z-index', '10');
-            var w = window.innerWidth;
+
             if (w < 100) w = 100;
             $('#canvas').attr('width', w + "px");
             $('#canvas').css('display', "block");
 
-            var h = window.innerHeight;
             if (h < 400) h = 400;
             $('#canvas').attr('height', h + "px");
             $('#canvasContainer').css('height', h + "px");
