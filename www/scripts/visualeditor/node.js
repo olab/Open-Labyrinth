@@ -103,13 +103,11 @@ var Node = function() {
         
         if(self.title.length > 0) {
             var title = self.title.replace(/<(?:.|\n)*?>/gm, '');
-            title = (title.length > 27) ? (title.substring(0, 24) + '...') : title;
             DrawTitle(context, title);
         }
         
         if(self.content.length > 0) {
             var content = self.content.replace(/<(?:.|\n)*?>/gm, '');
-            content = (content.length >= 160) ? (content.substring(0, 157) + '...') : content;
             DrawContent(context, content);
         }
         
@@ -236,7 +234,7 @@ var Node = function() {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
-        tr.Translate(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8);
+        tr.Translate(self.headerHeight * 0.5, self.linkButtonRaius + 5);
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
@@ -248,7 +246,7 @@ var Node = function() {
         var tr = new Transform();
         tr.Multiply(viewport);
         tr.Multiply(self.transform);
-        tr.Translate(self.headerHeight * 0.5, self.addButtonRadius + 5);
+        tr.Translate(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5);
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
@@ -322,7 +320,7 @@ var Node = function() {
     }
     
     var DrawLinkButton = function(context) {
-        var grd = context.createLinearGradient(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 8, self.headerHeight * 0.5, self.linkButtonRaius * 4 + 8);
+        var grd = context.createLinearGradient(self.headerHeight * 0.5, 5, self.headerHeight * 0.5, self.linkButtonRaius*2 + 5);
         if(self.isRoot) {
             grd.addColorStop(0, '#eec46a');
             grd.addColorStop(1, '#dcaa41');
@@ -332,13 +330,13 @@ var Node = function() {
         }
         context.save();
             context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius, def2PI, false);
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
 
             context.clip();
 
             context.beginPath();
             context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius, def2PI, false);
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
             context.fill();
 
             context.beginPath();
@@ -347,26 +345,26 @@ var Node = function() {
             context.shadowBlur    = 2;
             context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
             context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius * 3 + 8, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
+            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
             context.stroke();
         context.restore();
         
         context.beginPath();
-        context.moveTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 9);
-        context.lineTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 13);
-        context.moveTo(self.headerHeight * 0.5 + self.linkButtonRaius - 1, self.linkButtonRaius * 3 + 8);
-        context.lineTo(self.headerHeight * 0.5 + self.linkButtonRaius - 5, self.linkButtonRaius * 3 + 8);
-        context.moveTo(self.headerHeight * 0.5, self.linkButtonRaius * 4 + 7);
-        context.lineTo(self.headerHeight * 0.5, self.linkButtonRaius * 4 + 3);
-        context.moveTo(self.headerHeight * 0.5 - self.linkButtonRaius + 1, self.linkButtonRaius * 3 + 8);
-        context.lineTo(self.headerHeight * 0.5 - self.linkButtonRaius + 5, self.linkButtonRaius * 3 + 8);
+        context.moveTo(self.headerHeight * 0.5, 5);
+        context.lineTo(self.headerHeight * 0.5, 10);
+        context.moveTo(self.headerHeight * 0.5 + self.linkButtonRaius - 1, self.linkButtonRaius + 5);
+        context.lineTo(self.headerHeight * 0.5 + self.linkButtonRaius - 6, self.linkButtonRaius + 5);
+        context.moveTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 + 4);
+        context.lineTo(self.headerHeight * 0.5, self.linkButtonRaius * 2 - 1);
+        context.moveTo(self.headerHeight * 0.5 - self.linkButtonRaius + 1, self.linkButtonRaius + 5);
+        context.lineTo(self.headerHeight * 0.5 - self.linkButtonRaius + 6, self.linkButtonRaius + 5);
         context.lineWidth = self.linkButtonLineWidth;
         context.strokeStyle = self.linkButtonStrokeColor;
         context.stroke();
     }
     
     var DrawAddButton = function(context) {
-        var grd = context.createLinearGradient(self.headerHeight * 0.5, 5, self.headerHeight * 0.5, self.addButtonRadius*2 + 5);
+        var grd = context.createLinearGradient(self.headerHeight * 0.5, self.height - self.addButtonRadius*2 - 5, self.headerHeight * 0.5, self.height - self.addButtonRadius - 5);
         if(self.isRoot) {
             grd.addColorStop(0, '#eec46a');
             grd.addColorStop(1, '#dcaa41');
@@ -376,13 +374,13 @@ var Node = function() {
         }
         context.save();
             context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius, def2PI, false);
+            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
 
             context.clip();
             
             context.beginPath();
             context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius, def2PI, false);
+            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
             context.fill();
 
             context.beginPath();
@@ -391,15 +389,15 @@ var Node = function() {
             context.shadowBlur    = 2;
             context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
             context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.addButtonRadius + 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
+            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
             context.stroke();
         context.restore();
         
         context.beginPath();
-        context.moveTo(self.headerHeight * 0.5 - self.addButtonRadius + 5, self.addButtonRadius + 5);
-        context.lineTo(self.headerHeight * 0.5 + self.addButtonRadius - 5, self.addButtonRadius + 5);
-        context.moveTo(self.headerHeight * 0.5, self.addButtonRadius + 5 - self.addButtonRadius + 5);
-        context.lineTo(self.headerHeight * 0.5, self.addButtonRadius + 5 + self.addButtonRadius - 5);
+        context.moveTo(self.headerHeight * 0.5, self.height - self.addButtonRadius - 10);
+        context.lineTo(self.headerHeight * 0.5, self.height - self.addButtonRadius);
+        context.moveTo(self.headerHeight * 0.5 - 5, self.height - self.addButtonRadius - 5);
+        context.lineTo(self.headerHeight * 0.5 + 5, self.height - self.addButtonRadius - 5);
         context.lineWidth = self.addButtonLineWidth;
         context.strokeStyle = self.addButtonLineColor;
         context.stroke();
@@ -409,7 +407,18 @@ var Node = function() {
         context.beginPath();
         context.font = self.titleFontSettings;
         context.fillStyle = self.titleFontColor;
-        context.fillText(title, self.headerHeight + 13, 25);
+        var line = '';
+        for(var i = 0; i < title.length; i++) {
+            var t = line + title[i];
+            var m = context.measureText(t);
+            if(m.width > self.contentMaxLineWidth) {
+                break;
+            } else {
+                line = t;
+            }
+        }
+        
+        context.fillText(line, self.headerHeight + 13, 20);
     }
     
     var DrawContent = function(context, content) {
@@ -417,27 +426,22 @@ var Node = function() {
         context.font = self.contentFontSettings;
         context.fillStyle = self.contentFontColor;
         
-        var words = content.split(' ');
         var line = '';
         var y = 0;
-        for(var i = 0; i < words.length; i++) {
-            var t = line + words[i] + ' ';
-            var m = context.measureText(t);
-            if(m.width > self.contentMaxLineWidth) {
-                context.fillText(line, self.headerHeight + 13, 36 + y);
-                line = words[i] + ' ';
-                y += self.contentLineHeight;
-            } else {
-                line = t;
-            }
+        for(var i = 0, j = 1; i < content.length && j <= 7; i++) {
+             var t = line + content[i];
+             var m = context.measureText(t);
+             if(m.width > self.contentMaxLineWidth) {
+                 context.fillText(line, self.headerHeight + 13, 36 + y);
+                 y += self.contentLineHeight;
+                 line = '';
+                 j++;
+             } else {
+                 line = t;
+             }
         }
         
-        var m = context.measureText(line);
-        if(m.width > self.contentMaxLineWidth) {
-            context.fillText(line.substring(0, 57) + '...', self.headerHeight + 13, 36 + y);
-        } else {
-            context.fillText(line, self.headerHeight + 13, 40 + y);
-        }
+        context.fillText(line, self.headerHeight + 13, 36 + y);
     }
     
     var DrawSelectedArea = function(context) {

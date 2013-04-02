@@ -1,7 +1,8 @@
 $(function () {
     var params = {
         'canvasContainer':'#canvasContainer',
-        'canvasId':'#canvas'
+        'canvasId':'#canvas',
+        'aButtonsContianer': '#ve_additionalActionButton'
     };
 
     tinyMCE.init({
@@ -21,7 +22,12 @@ $(function () {
         theme_advanced_toolbar_align:"left",
         theme_advanced_statusbar_location:"bottom",
         theme_advanced_resizing:true,
-        editor_selector:"mceEditor"
+        editor_selector:"mceEditor",
+        setup: function(ed) {
+            ed.onClick.add(function(ed, e) {
+                veUnsavedData();
+            });
+        }
     });
 
     var visualEditor = new VisualEditor();
@@ -47,6 +53,10 @@ $(function () {
             });
         }
     }
+    
+    $('#copySNodesBtn').click(function() {
+        copy();
+    })
 
     function paste() {
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
@@ -59,6 +69,10 @@ $(function () {
                 }
             });
     }
+    
+    $('#pasteSNodesBtn').click(function() {
+        paste();
+    })
 
     if (mapJSON != null && mapJSON.length > 0) {
         if (mapType != null && mapType == 6) {
@@ -361,6 +375,7 @@ $(function () {
     });
 
     $('#veRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
+    $('#veSelectRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
 
     $('#veRightPanel input[type=text]').keyup(function(){
         veUnsavedData();

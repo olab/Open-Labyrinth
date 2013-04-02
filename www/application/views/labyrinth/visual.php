@@ -52,7 +52,7 @@ if (isset($templateData['map'])) { ?>
     <div class="block">
         <div class="block" style="position: relative;" id="canvasContainer">
             <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
-                <p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i style="color:white;" class="icon-fullscreen"></i></button></p>
+                <p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i style="color:white;" class="ve-icon-fullscreen"></i></button></p>
                 <p><button type="button" class="round-btn" id="update" data-toggle="tooltip" data-original-title="Update" data-placement="right"><i class="ve-icon-save"></i></button></p>
                 <p><button type="button" class="round-btn" id="addNode" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Add node</div>" data-placement="right"><i class="ve-icon-add"></i></button></p>
                 <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Pan mode</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
@@ -60,6 +60,13 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
+            </div>
+            
+            <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px; display: none;">
+                <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
+                <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
+                <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>
+                <p><button type="button" class="round-btn" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
@@ -71,7 +78,7 @@ if (isset($templateData['map'])) { ?>
                         <li><a href="#actions" data-toggle="tab">Actions</a></li>
                         <li class="active"><a href="#veNodeContent" data-toggle="tab">Node Content</a></li>
                     </ul>
-                    <p style="position:absolute; top:4px; right:4px;" class="label label-info">NodeID - <span id="nodeID_label"></span></p>
+                    <p style="position:absolute; top:4px; right:4px;" id="nodeID_container" class="label label-info">NodeID - <span id="nodeID_label"></span></p>
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane" id="actions">
@@ -207,6 +214,23 @@ if (isset($templateData['map'])) { ?>
                     </div>
                 </div>
             </div>
+            
+            <div class="visual-editor-select-right-panel hide" id="veSelectRightPanel">
+                <div class="visual-editor-right-panel-tabs">&nbsp;</div>
+                <legend>Background color</legend>
+                <div class="block" align="center">
+                    <input type="hidden" id="veSelectColorInput"/>
+                    <div id="veSelectColorContainer"></div>
+                </div>
+                
+                <div class="footer block">
+                    <div class="btn-group">
+                        <a href="javascript:void(0)" class="btn btn-success" id="veSelectRightPanelOnlySaveBtn">Save changes</a>
+                        <a href="javascript:void(0)" class="btn btn-info" id="veSelectRightPanelSaveBtn">Save changes and close</a>
+                        <a href="javascript:void(0)" class="btn" id="veSelectRightPanelCloseBtn">Close panel</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="modal hide block" id="veRightPanel_unsaveddata">
@@ -222,6 +246,22 @@ if (isset($templateData['map'])) { ?>
             <div class="modal-footer block">
                 <a href="javascript:void(0);" class="btn" id="veRightPanel_unsaveddata_close">Still close the panel</a>
                 <a href="javascript:void(0);" class="btn" data-dismiss="modal">Don't close panel</a>
+            </div>
+        </div>
+        
+        <div class="modal hide block" id="veRightPanel_unsaveddataChange">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Unsaved data</h3>
+            </div>
+
+            <div class="modal-body block">
+                <p>You have some unsaved data in panel editor.</p>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="veRightPanel_unsaveddataChange_close">Still change node</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Don't change node</a>
             </div>
         </div>
 
@@ -396,6 +436,7 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/nodeModal.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/selector.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/rightPanel.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/selectRightPanel.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/preview.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>

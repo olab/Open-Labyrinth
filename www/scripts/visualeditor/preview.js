@@ -168,6 +168,11 @@ var Preview = function() {
     var MouseUp = function(e) {
         isMouseClick = false;
         UpdateMousePosition(e);
+        
+        if(!IsInViewport(self.mouse.x, self.mouse.y) && self.visualEditor != null) {
+            self.visualEditor.TranslateViewport(-((self.mouse.x - currentViewport[0]) / currentScaleFactor), -((self.mouse.y - currentViewport[1]) / currentScaleFactor));
+            self.visualEditor.TranslateViewport(currentViewportSize[0] / currentScaleFactor * 0.5, currentViewportSize[1] / currentScaleFactor * 0.5);
+        }
     }
     
     var MouseMove = function(e) {
