@@ -278,18 +278,22 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->id = $fileId;
         $this->load();
         $this->delete();
-        unlink(DOCROOT.'/'.$this->path);
+        $filePath = DOCROOT.'/'.$this->path;
+        if (file_exists($filePath)){
+            unlink($filePath);
+        }
     }
-    
+
     public function getFilesSize($filesArray) {
         $totalsize = 0;
         $total['size'] = 0;
         $total['count'] = 0;
         if (count($filesArray) > 0){
             foreach($filesArray as $file){
-
-                if(file_exists($file->name))
-                    $totalsize += filesize(DOCROOT.$file->path);
+                $filePath = DOCROOT.$file->path;
+                if(file_exists($filePath)){
+                    $totalsize += filesize($filePath);
+                }
             }
 
             $total['size'] = $totalsize;
