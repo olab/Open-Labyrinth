@@ -27,6 +27,10 @@
     <label for="password"><?php echo __('Password'); ?></label>
     <input class="not-autocomplete" type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
     <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span>
+    
+    <?php if(isset($templateData['redirectURL'])) { ?>
+    <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/>
+    <?php } ?>
 
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
 </form>
