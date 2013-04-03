@@ -383,7 +383,7 @@ $(function () {
         veUnsavedData();
     });
 
-    $('#veRightPanel button').click(function(){
+    $('#veRightPanel button:not("#veDeleteNodeBtn")').click(function(){
         veUnsavedData();
     });
 

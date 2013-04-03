@@ -151,8 +151,6 @@ var VisualEditor = function() {
             linkLabel: '#labelText',
             visualEditor: self
         });
-        
-        
 
         if(self.mode == 'node') {
             self.preview = new Preview();
@@ -355,7 +353,7 @@ var VisualEditor = function() {
         if(links.length > 0) {
             var linksStr = '';
             for(var i = 0; i < links.length; i++) {
-                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + links[i].label + '", "imageId": "' + links[i].imageId + '"}, ';
+                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + encode64(links[i].label) + '", "imageId": "' + links[i].imageId + '"}, ';
             }
             
             if(linksStr.length > 2) {
@@ -460,7 +458,7 @@ var VisualEditor = function() {
                 link.id = id;
                 link.nodeA = nodeA;
                 link.nodeB = nodeB;
-                link.label = object.links[i].label;
+                link.label = decode64(object.links[i].label);
                 link.imageId = object.links[i].imageId;
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 
@@ -618,6 +616,7 @@ var VisualEditor = function() {
                 link.id = id;
                 link.nodeA = nodeA;
                 link.nodeB = nodeB;
+                link.label = decode64(object.links[i].label);
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 link.isSelected = true;
                 
