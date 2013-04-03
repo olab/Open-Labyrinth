@@ -24,7 +24,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=10,9,8" />
-        <title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?></title>
+        <title><?php Breadcrumbs::render('breadcrumbs/title'); ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery-ui-1.9.1.custom.css" />
