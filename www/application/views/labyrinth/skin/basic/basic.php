@@ -94,36 +94,25 @@
     }
 
     function ajaxMCQ(qid, qqq, qqx, qnts, divids) {
-//alert("qid="+qid+", qqq="+qqq+", qqx="+qqx+", qnts="+qnts);
-//qid = questionID
-//qqq = option number
-//qqx = total number of options
-//qnts = number of tries - 0 or 1
-//script should: a) update database of the question submitted, b) update screen of the response given, c) update counter if this has been set
-
-        var xmlhttp;
+        //alert("qid="+qid+", qqq="+qqq+", qqx="+qqx+", qnts="+qnts);
+        //qid = questionID
+        //qqq = option number
+        //qqx = total number of options
+        //qnts = number of tries - 0 or 1
+        //script should: a) update database of the question submitted, b) update screen of the response given, c) update counter if this has been set
+        
         var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
         var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qqq + "/" + labsess + "/" + qid;
-        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("GET", URL, false);
-            xmlhttp.send(null);
-        }
-        else if (window.ActiveXObject) {// code for IE6, IE5
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            xmlhttp.open("GET", URL, false);
-            xmlhttp.send();
-        }
-        else {
-            alert("Your browser does not support XMLHTTP for AJAX!");
-        }
-        document.getElementById("AJAXresponse" + qqq).innerHTML = xmlhttp.responseText;
-        if (qnts == 1) {
-//one try only then hide buttons
-            for (hh = 0; hh <= divids.length; hh++) {
-                var hhh = document.getElementById("click" + divids[hh]);
-                hhh.style.display = 'none';
-            }
+        
+        var $response = $('#AJAXresponse' + qqq);
+        
+        if(!$response.hasClass('sended')) {
+            $.get(URL, function(data) {
+                if(data != '') {
+                    $response.addClass('sended');
+                    $response.html(data);
+                }
+            });
         }
     }
 

@@ -206,6 +206,18 @@ class Controller_QuestionManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
+    
+    public function action_duplicateQuestion() {
+        $mapId = $this->request->param('id', null);
+        $questionId = $this->request->param('id2', null);
+        
+        if($mapId != null && $questionId != null) {
+            DB_ORM::model('map_question')->duplicateQuestion($questionId);
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
 
 }
 

@@ -32,7 +32,7 @@
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = <?php if(isset($templateData['mapModel'])) echo $templateData['mapModel']->type_id; ?>;
     </script>
-<h1><?php echo __('Step 3. Add your story'); ?></h1>
+<h1><?php echo __('Step 4. Add your story'); ?></h1>
 <div>
     <div class="wizard_body" style="position: static; ">
         <div class="instractions">
@@ -54,7 +54,7 @@
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
             </div>
             
-            <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px; display: none;">
+            <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px;display: none;">
                 <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
                 <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
                 <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>

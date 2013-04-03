@@ -267,7 +267,6 @@ if (isset($templateData['presentation'])) {
                     <div class="controls">
                         <select name="startday">
                             <option value="">select day ...&nbsp;&nbsp;</option>
-                            <option value="">select day ...&nbsp;&nbsp;</option>
                             <option value="01">01</option>
                             <option value="02">02</option>
                             <option value="03">03</option>

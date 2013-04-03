@@ -46,6 +46,7 @@
                 <div class="span2">
                     <p class="header">Nodes:</p>
                     <ul class="nav nav-tabs nav-stacked">
+                        <?php if($templateData['nodes'] != null && count($templateData['nodes']) > 0) { ?>
                         <?php foreach ($templateData['nodes'] as $node) { ?>
                             <li>
                                 <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map'] . '/' . $node->id ?>"
@@ -56,6 +57,7 @@
                                    ?>
                             "><?php echo $node->title; ?> <?php if ($node->type->name == 'root') echo '[root]'; ?>
                                     (<?php echo $node->id; ?>)</a></li>
+                        <?php } ?>
                         <?php } ?>
                     </ul>
                 </div>

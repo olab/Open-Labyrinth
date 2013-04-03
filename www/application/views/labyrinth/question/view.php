@@ -57,6 +57,8 @@ if (isset($templateData['map'])) {
                         <div class="btn-group">
                         <a class="btn btn-info"
                            href="<?php echo URL::base() . 'questionManager/editQuestion/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
+                        <a class="btn"
+                           href="<?php echo URL::base() . 'questionManager/duplicateQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-th"></i>Duplicate</a>
                         <a class="btn btn-danger"
                            href="<?php echo URL::base() . 'questionManager/deleteQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-trash"></i>Delete</a>
                         </div>

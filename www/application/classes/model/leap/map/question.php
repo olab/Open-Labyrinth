@@ -285,6 +285,38 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         
         return $questionMap;
     }
+    
+    public function duplicateQuestion($questionId) {
+        if($questionId == null || $questionId <= 0) return;
+        
+        $question = DB_ORM::model('map_question', array((int)$questionId));
+        if($question == null) return;
+        
+        $builder = DB_ORM::insert('map_question')
+                ->column('map_id', $question->map_id)
+                ->column('stem', $question->stem)
+                ->column('entry_type_id', $question->entry_type_id)
+                ->column('width', $question->width)
+                ->column('height', $question->height)
+                ->column('feedback', $question->feedback)
+                ->column('show_answer', $question->show_answer)
+                ->column('num_tries', $question->num_tries)
+                ->column ('counter_id', $question->counter_id);
+        
+        $newId = $builder->execute();
+        
+        if(count($question->responses) > 0) {
+            foreach($question->responses as $response) {
+                DB_ORM::insert('map_question_response')
+                        ->column('question_id', $newId)
+                        ->column('response', $response->response)
+                        ->column('feedback', $response->feedback)
+                        ->column('is_correct', $response->is_correct)
+                        ->column('score', $response->score)
+                        ->execute();
+            }
+        }
+    }
 
     private function saveResponceQuestion($mapId, $type, $values) {
         $builder = DB_ORM::insert('map_question')
