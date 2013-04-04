@@ -53,7 +53,7 @@ var Node = function() {
     self.contentFontSettings = '12px Arial';
     self.contentFontColor = '#000000';
     self.contentLineHeight = 14;
-    self.contentMaxLineWidth = defWidth - self.headerHeight - 19;
+    self.contentMaxLineWidth = defWidth - self.headerHeight - 24;
     
     self.colorButtonWidth = 30;
     self.colorButtonHeight = 10;
@@ -432,6 +432,7 @@ var Node = function() {
              var t = line + content[i];
              var m = context.measureText(t);
              if(m.width > self.contentMaxLineWidth) {
+                 line = t;
                  context.fillText(line, self.headerHeight + 13, 36 + y);
                  y += self.contentLineHeight;
                  line = '';
