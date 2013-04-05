@@ -840,3 +840,11 @@ input[readonly].code, textarea[readonly].code{
 .visual-editor-select-right-panel .visual-editor-right-panel-tabs {
     height: 37px;
 }
+
+.question-btn-container {
+    margin-bottom: 10px;
+}
+
+.question-copy-form {
+    margin-bottom: 0;
+}

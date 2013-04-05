@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
-		<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/basic.css" />
@@ -117,24 +117,14 @@
                                         }
                                         ?>
 
-                                        <?php
-                                        if (Auth::instance()->get_user()->type->name == 'superuser') {
-                                            ?>
-
+                                        <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
                                             <li class="divider"></li>
-                                            <li>
-                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Vocabularies & Mappings'); ?></a></li>
-
-                                           <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
+                                            <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Vocabularies & Mappings'); ?></a></li>
+                                            <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
                                             <li class="divider"></li>
-                                            <li><a  href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>                                           <li><a target="_blank" href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
-
-
-                                        <?php
-                                        }
-                                        ?>
-
-
+                                            <li><a  href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>
+                                            <li><a target="_blank" href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
+                                        <?php } ?>
                                     </ul>
                                 </li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>
@@ -203,6 +193,5 @@
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
-
     </body>
 </html>

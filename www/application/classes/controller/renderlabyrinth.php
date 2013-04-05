@@ -689,7 +689,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
                         $i++;
                     }
+                    
                     $result .= '</table>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
                 }
             } else {
                 if (count($question->responses) > 0) {
@@ -708,6 +712,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $i++;
                     }
                     $result .= '</table>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
                 }
             }
 
