@@ -7,3 +7,5 @@ INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `temp
 ALTER TABLE `map_questions` ADD `show_submit` tinyint(4) NOT NULL DEFAULT '0',
 ADD `redirect_node_id` int(10) unsigned DEFAULT NULL,
 ADD `submit_text` varchar(200) DEFAULT NULL;
+
+UPDATE `map_questions` SET `entry_type_id` = 3 WHERE `entry_type_id` IN ('4', '5', '6');
