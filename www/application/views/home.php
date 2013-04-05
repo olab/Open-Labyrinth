@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
-	<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
+		<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/basic.css" />

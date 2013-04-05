@@ -433,6 +433,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         if($questionID != null && is_numeric($questionID) && $questionID > 0) {
             $question = DB_ORM::model('map_question', array((int)$questionID));
             if($question != null) {
+                if ($counterID == '') $counterID = NULL;
                 $newQuestionID = DB_ORM::insert('map_question')
                         ->column('map_id', $mapId)
                         ->column('stem', $question->stem)

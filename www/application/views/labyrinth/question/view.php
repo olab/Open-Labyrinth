@@ -34,7 +34,7 @@ if (isset($templateData['map'])) { ?>
             </ul>
         </div>
         
-        <button class="btn btn-primary" id="copyQuestionBtn">Copy</button>
+        <button class="btn btn-primary" id="copyQuestionBtn">Paste question</button>
     </div>
     <?php } ?>
     <table class="table table-striped table-bordered">
@@ -77,19 +77,19 @@ if (isset($templateData['map'])) { ?>
         <form class="form-horizontal question-copy-form" method="POST" action="<?php echo URL::base(); ?>questionManager/copyQuestion/<?php echo $templateData['map']->id; ?>">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>Copy question</h3>
+                <h3>Paste question</h3>
             </div>
             <div class="modal-body">
                 <div align="center">
                     <div class="control-group">
-                        <label class="control-label">[[QU:</label>
+                        <label class="control-label">Question ID:</label>
                         <div class="controls">
-                            <input type="text" name="questionID" value=""/>]]
+                            [[QU:<input style="width:50px;" type="text" name="questionID" value=""/>]]
                         </div>
                     </div>
                     <?php if(isset($templateData['counters']) && count($templateData['counters']) > 0) { ?>
                     <div class="control-group">
-                        <label class="control-label">Counter:</label>
+                        <label class="control-label">Assign to counter:</label>
                         <div class="controls">
                             <select name="counterID">
                                 <option value="">Select</option>
@@ -104,7 +104,7 @@ if (isset($templateData['map'])) { ?>
             </div>
             <div class="modal-footer">
                 <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
-                <button type="submit" class="btn btn-primary">Copy</button>
+                <button type="submit" class="btn btn-primary">Paste</button>
             </div>
         </form>
     </div>
