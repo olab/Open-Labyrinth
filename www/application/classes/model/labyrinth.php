@@ -60,12 +60,19 @@ class Model_Labyrinth extends Model {
                 $sessionId = Session::instance()->get('session_id', NULL);
                 if ($sessionId == NULL && isset($_COOKIE['OL'])) {
                     $sessionId = $_COOKIE['OL'];
+                } else {
+                    if ($sessionId == NULL){
+                        $sessionId = 'notExist';
+                    }
                 }
             }
 
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-
-            $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            if ($sessionId != 'notExist'){
+                $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            } else {
+                $traceId = 'notExist';
+            }
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
@@ -243,7 +250,7 @@ class Model_Labyrinth extends Model {
     }
 
     private function counters($traceId, $sessionId, $node, $isRoot = false) {
-        if ($traceId != null && $traceId > 0 && $node != NULL) {
+        if ($traceId != null && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
             if (count($counters) > 0) {
                 $countersArray = array();
