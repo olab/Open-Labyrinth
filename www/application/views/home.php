@@ -91,7 +91,7 @@
                                         <li class="nav-header"><?php echo __('Create Labyrinth'); ?></li>
                                         <li><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
                                         <li><a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('Duplicate Existing'); ?></a></li>
+
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Import Labyrinths'); ?></li>
                                         <li><a href="<?php echo URL::base() . 'exportImportManager/importVUE'; ?>"><?php echo __('VUE'); ?></a></li>
@@ -122,12 +122,12 @@
                                             ?>
 
                                             <li class="divider"></li>
+                                            <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
                                             <li>
-                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Vocabularies & Mappings'); ?></a></li>
+                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Semantics'); ?></a></li>
 
-                                           <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
-                                            <li class="divider"></li>
-                                            <li><a  href="<?php echo URL::base(); ?>sparql/rebuild"><?php echo __('Rebuild SPARQL Index'); ?></a></li>                                           <li><a target="_blank" href="<?php echo URL::base(); ?>sparql"><?php echo __('SPARQL Endpoint'); ?></a></li>
+
+
 
 
                                         <?php
@@ -174,9 +174,11 @@
                             <?php if (isset($templateData['center'])) echo $templateData['center']; ?>
                         </div>
                     </div>
+                    <?php if(isset($templateData['left'])) ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
 					</div>
+                    <?php ?>
                     <?php
                     if (isset($templateData['right'])) {
                         ?>

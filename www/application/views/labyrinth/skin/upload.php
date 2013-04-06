@@ -40,9 +40,9 @@ if (isset($templateData['map'])) { ?>
                     <input type="file" name="zipSkin" value="" />
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
-                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
+            <div class="form-actions">
+                <div class="pull-right">
+                    <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
                 </div>
             </div>
         </fieldset>

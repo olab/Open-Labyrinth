@@ -49,7 +49,11 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base {
         foreach(Model_Leap_Vocabulary_Term::getAll(array(Model_Leap_Vocabulary_Term::RDFClassType,Model_Leap_Vocabulary_Term::OWLClassType)) as $term){
             $terms_classes[$term->id]= array("label"=>$term->term_label, "uri"=>$term->getFullRepresentation());
         }
+        $leftView = View::factory('vocabulary/semanticsMenu');
+        $leftView->set('templateData', $this->templateData);
 
+        $this->templateData['title']= "Manage Metadata Mappings";
+        $this->templateData['left'] = $leftView;
 
         $this->templateData['metadata'] = Model_Leap_Metadata::getMetadataByModelName();
         $this->templateData['terms_properties'] = $terms_properties;

@@ -21,6 +21,7 @@
 if (isset($templateData['map'])) {
     ?>
 <div class="page-header">
+    <div class="pull-right"> <a class="btn btn-primary" href="<?php echo URL::base() ?>reportManager/summaryReport/<?php echo $templateData['map']->id; ?>"><i class="icon-book"></i> Aggregate report</a></div>
     <h1><?php echo __('Labyrinth Report for "') . $templateData['map']->name . '"'; ?></h1>
 </div>
 
@@ -47,6 +48,6 @@ if (isset($templateData['map'])) {
 
         </tbody>
     </table>
-   <a class="btn btn-primary" href="<?php echo URL::base() ?>reportManager/summaryReport/<?php echo $templateData['map']->id; ?>">aggregate report</a>
+
 <?php } ?>
 

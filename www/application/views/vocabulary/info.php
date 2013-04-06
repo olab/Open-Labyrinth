@@ -9,19 +9,36 @@
 if (isset($templateData['vocabularies'])) {
 
     ?>
-<div style="color: #000000;">
+<div>
     <h1>Available Vocabularies and Terms</h1>
+    <table class="table table-bordered table-striped">
+        <colgroup>
+            <col style="width: 85%"/>
+            <col/>
+        </colgroup>
+        <thead>
+        <tr>
+            <th>Vocabulary &amp; Terms</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
     <?php  if (count($templateData['vocabularies']) > 0) { ?>
     <?php foreach ($templateData['vocabularies'] as $vocab) { ?>
-        <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>] {<a target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>">Reimport</a>}
-            <div style="margin-left: 20px;">
+            <tr>
+                <td>
+        <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>]
+            <div style="margin-left: 20px; text-align: justify">
             <?php foreach ($vocab->terms as $term) { ?>
                 <a target="_blank" title="<?php echo $term->term_label; ?>" href="<?php echo $term->getFullRepresentation(); ?>"><?php echo $term->name; ?></a> [<?php echo $term->id; ?>],
             <?php } ?>
-            </div>
+            </div></td>
+            <td><a class="btn btn-info" target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>"><i class="icon-refresh"></i> Reimport</a></td>
+            </tr>
         <?php } ?>
     <?php } ?>
-
+        </tbody>
+    </table>
 </div>
 
 
@@ -30,19 +47,17 @@ if (isset($templateData['vocabularies'])) {
             <fieldset class="fieldset">
                 <legend>Import new / update existing vocabulary</legend>
                 <div class="control-group">
-                    <label class="control-label">Universal Resource Identifier</label>
+                    <label for="uri" class="control-label">Universal Resource Identifier</label>
 
                     <div class="controls">
-                        <input name="uri" type="text" />
+                        <input name="uri" class="span8" id="uri" type="text" placeholder="e.g. http://purl.org/dc/elements/1.1/" />
                     </div>
                 </div>
             </fieldset>
-
-            <input class="btn btn-primary" type="submit" value="Import"/>
+<div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="Import"/></div>
         </form>
 
 
-
-    <a class="btn btn-primary btn-large" href="<?php echo URL::base() . 'vocabulary/mappings/manager/'; ?>">Manage RDF Mappings</a>
 
 <?php } ?>

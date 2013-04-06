@@ -125,7 +125,7 @@ if (isset($templateData['map'])) {
 
                         <?php if ($isImage) { ?>
 
-                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-tint"></i>Image
+                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-picture"></i>Image
                                     editor</a>
                         <?php } ?></div>
                     </td>

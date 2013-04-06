@@ -143,7 +143,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
                 <?php } ?>
             <?php } ?>
-            <div class="btn-group">
+            <div class="form-actions">
 
                 <a class="btn btn-info" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>">
                     <i class="icon-dashboard"></i>

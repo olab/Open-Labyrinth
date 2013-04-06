@@ -21,7 +21,7 @@
 if (isset($templateData['map'])) {
     ?>
 
-    <h1><?php echo __('feedback editor for Labyrinth: "') . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php echo __('Feedback editor for Labyrinth: "') . $templateData['map']->name . '"'; ?></h1>
 
 
 
@@ -31,10 +31,10 @@ if (isset($templateData['map'])) {
           action="<?php echo URL::base() . 'feedbackManager/updateGeneral/' . $templateData['map']->id; ?>"
           method="POST">
 
-        <fieldset class="fieldset">
+        <fieldset class="fieldset"><legend>General</legend>
             <div class="control-group">
                 <label class="control-label" for="fb">
-                    <?php echo __('general feedback irrespective of how user performs'); ?></label>
+                    <?php echo __('Feedback irrespective of how user performs'); ?></label>
 
                 <div class="controls">
                     <textarea name="fb" id="fb"><?php echo $templateData['map']->feedback; ?></textarea>
@@ -42,17 +42,17 @@ if (isset($templateData['map'])) {
             </div>
         </fieldset>
 
-
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('update'); ?>">
+<div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Update'); ?>"></div>
     </form>
 
 
-    <h3><?php echo __('feedback for time taken'); ?></h3>
+    <h3><?php echo __('Feedback for time taken'); ?></h3>
 
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <td><?php echo __('rule'); ?></td>
+            <td><?php echo __('Rule'); ?></td>
             <td>Actions</td>
         </tr>
         </thead>
@@ -61,19 +61,22 @@ if (isset($templateData['map'])) {
         <?php foreach($templateData['time_feedback_rules'] as $rule) { ?>
         <tr>
             <td>
-                <?php echo __('if time taken is'); ?>&nbsp;<?php echo $rule->operator->title; ?>
+                <?php echo __('If time taken is'); ?><?php echo $rule->operator->title; ?>
                 &nbsp;<?php echo $rule->value; ?>&nbsp;<?php echo __('then give feedback'); ?>
                 &nbsp;[<?php echo $rule->message; ?>]
             </td>
 
             <td><a class="btn btn-danger"
-                   href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><?php echo __('delete'); ?></a>
+                   href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a>
             </td>
-            <?php } ?>
-            <?php } ?>
 
 
         </tr>
+            <?php } ?>
+
+        <?php }else{ ?>
+            <tr class="info"><td colspan="2">There are no rules for time taken, yet. You may add one, using the form below.</td></tr>
+<?php } ?>
         </tbody>
 
     </table>
@@ -83,11 +86,12 @@ if (isset($templateData['map'])) {
           class="form-horizontal" method="POST">
 
         <fieldset class="fieldset">
-
+<legend>Add time-taken rule</legend>
             <div class="control-group">
                 <label class="control-label" for="cop"><?php echo __('if time taken in this session is'); ?></label>
 
                 <div class="controls">
+
                     <select name="cop" id="cop">
                         <?php if (isset($templateData['operators'])) { ?>
                             <option value="">select ...</option>
@@ -98,33 +102,34 @@ if (isset($templateData['map'])) {
                                 <?php } ?>
                             <?php } ?>
                         <?php } ?>
-                    </select><label><input type="text" name="cval" size="4"></label> <?php echo __('seconds'); ?>
+                    </select>
+                       <input type="text" name="cval" ><span class="help-inline"><?php echo __('seconds'); ?></span>
                 </div>
 
             </div>
             <div class="control-group">
                 <label class="control-label" for="cMess">then feedback</label>
 
-                <div class="controls"><textarea id="cMess" name="cMess" rows="3" cols="30"></textarea>
+                <div class="controls"><textarea id="cMess" name="cMess" ></textarea>
                 </div>
 
             </div>
 
         </fieldset>
 
+<div class="form-actions"> <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Create rule'); ?>"></div>
 
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('create rule'); ?>">
     </form>
 
 
 
 
-    <h3><?php echo __('feedback for nodes visited'); ?></h3>
+    <h3><?php echo __('Feedback for nodes visited'); ?></h3>
 
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <td><?php echo __('rule'); ?></td>
+            <td><?php echo __('Rule'); ?></td>
             <td>Action</td>
         </tr>
         </thead>
@@ -137,12 +142,14 @@ if (isset($templateData['map'])) {
                         &nbsp;<?php echo __('then give feedback'); ?>&nbsp;[<?php echo $rule->message; ?>]
                     </td>
                     <td><a class="btn btn-danger"
-                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><?php echo __('delete'); ?></a>
+                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a>
                     </td>
                 </tr>
             <?php } ?>
-        <?php } ?>
 
+        <?php }else{ ?>
+            <tr class="info"><td colspan="2">There are no rules for nodes visited, yet. You may add one, using the form below.</td></tr>
+        <?php } ?>
         </tbody>
 
     </table>
@@ -153,9 +160,9 @@ if (isset($templateData['map'])) {
           method="POST">
 
         <fieldset class="fieldset">
-
+<legend>Add rule for nodes visited</legend>
             <div class="control-group">
-                <label class="control-label" for="cval"><?php echo __('if visited node'); ?></label>
+                <label class="control-label" for="cval"><?php echo __('If visited node'); ?></label>
 
                 <div class="controls">
                     <select name="cval" id="cval">
@@ -180,17 +187,17 @@ if (isset($templateData['map'])) {
 
         </fieldset>
 
-
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('create rule'); ?>">
+<div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Create rule'); ?>"></div>
     </form>
 
-    <h3><?php echo __('feedback for must visit and must avoid nodes'); ?></h3>
+    <h3><?php echo __('Feedback for must visit and must avoid nodes'); ?></h3>
 
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <td><?php echo __('rule'); ?></td>
-            <td>action</td>
+            <td><?php echo __('Rule'); ?></td>
+            <td>Actions</td>
         </tr>
         </thead>
         <tbody>
@@ -204,7 +211,7 @@ if (isset($templateData['map'])) {
                         &nbsp;[<?php echo $rule->message; ?>]
                     </td>
                     <td><a class="btn btn-danger"
-                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><?php echo __('delete'); ?></a>
+                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a>
                     </td>
                 </tr>
             <?php } ?>
@@ -217,13 +224,16 @@ if (isset($templateData['map'])) {
                         &nbsp;[<?php echo $rule->message; ?>]
                     </td>
                     <td><a class="btn btn-danger"
-                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><?php echo __('delete'); ?></a>
+                           href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a>
                     </td>
                 </tr>
 
             <?php } ?>
         <?php } ?>
+        <?php if (!(isset($templateData['must_visit_feedback_rules']) and count($templateData['must_visit_feedback_rules']) > 0)or !(isset($templateData['must_avoid_feedback_rules']) and count($templateData['must_avoid_feedback_rules']) > 0)) { ?>
+<tr class="info"><td colspan="2">There are no rules for visited and avoided nodes, yet. You may add one, using the form below.</td></tr>
 
+        <?php } ?>
         </tbody>
 
     </table>
@@ -231,9 +241,9 @@ if (isset($templateData['map'])) {
     <form class="form-horizontal" action="<?php echo URL::base() . 'feedbackManager/addRule/' . $templateData['map']->id . '/must'; ?>"
           method="POST">
         <fieldset class="fieldset">
-            <legend></legend>
+            <legend>Add rule for visited / avoided nodes</legend>
             <div class="control-group">
-                <label class="control-label" for="crtype"><?php echo __('if the number of nodes of type'); ?></label>
+                <label class="control-label" for="crtype"><?php echo __('If the number of nodes of type'); ?></label>
 
                 <div class="controls">
                     <select name="crtype" id="crtype">
@@ -258,7 +268,7 @@ if (isset($templateData['map'])) {
                             <?php } ?>
                         <?php } ?>
                     </select>
-                    <label><input type="text" name="cval" size="4"></label>
+                    <input type="text" name="cval">
                 </div>
 
             </div>
@@ -272,16 +282,16 @@ if (isset($templateData['map'])) {
             </div>
         </fieldset>
 
-
-            <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('create rule'); ?>">
+<div class="form-actions">
+            <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Create rule'); ?>"></div>
     </form>
 
             <h3><?php echo __('Counter Feedback Rules'); ?></h3>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
-            <td>rule</td>
-            <td>actions</td>
+            <td>Rule</td>
+            <td>Actions</td>
         </tr>
         </thead>
         <tbody>
@@ -290,9 +300,12 @@ if (isset($templateData['map'])) {
                 <tr>
                     <td>if counter&nbsp;<?php echo $rule->counter_id; ?>&nbsp;is&nbsp;<?php echo $rule->operator->title; ?>
                         &nbsp;<?php echo $rule->value; ?>&nbsp;then give feedback&nbsp;[<?php echo $rule->message; ?>]</td>
-                    <td><a class="btn btn-danger" href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>">delete</a></td>
+                    <td><a class="btn btn-danger" href="<?php echo URL::base() . 'feedbackManager/deleteRule/' . $templateData['map']->id . '/' . $rule->id; ?>"><i class="icon-trash"></i>Delete</a></td>
                 </tr>
             <?php } ?>
+
+        <?php }else{ ?>
+            <tr class="info"><td colspan="2">There are no rules for time taken, yet. You may add one, using the form below.</td></tr>
         <?php } ?>
 
         </tbody>
@@ -304,9 +317,9 @@ if (isset($templateData['map'])) {
                 method="POST">
 
                 <fieldset class="fieldset">
-                    <legend></legend>
+                    <legend>Add counter feedback rule</legend>
                     <div class="control-group">
-                        <label class="control-label" for="cid"><?php echo __('if counter'); ?></label>
+                        <label class="control-label" for="cid"><?php echo __('If counter'); ?></label>
 
                         <div class="controls">
                             <select name="cid" id="cid">
@@ -335,7 +348,7 @@ if (isset($templateData['map'])) {
                                     <?php } ?>
                                 <?php } ?>
                             </select>
-                            <label><input type="text" name="cval"></label>
+                            <input type="text" name="cval">
                         </div>
 
                     </div>
@@ -348,8 +361,8 @@ if (isset($templateData['map'])) {
                     </div>
 
                 </fieldset>
-
-                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('create rule'); ?>">
+<div class="form-actions">
+                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Create rule'); ?>"></div>
             </form>
 
 

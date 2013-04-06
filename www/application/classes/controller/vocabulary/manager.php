@@ -15,8 +15,15 @@ class Controller_Vocabulary_Manager extends Controller_Base
         $this->templateData['vocabularies'] = DB_ORM::model('vocabulary')->getAllVocabulary();
 
         $view = View::factory('vocabulary/info');
-        $view->set('templateData', $this->templateData);
 
+        $leftView = View::factory('vocabulary/semanticsMenu');
+        $leftView->set('templateData', $this->templateData);
+
+
+        $this->templateData['left'] = $leftView;
+
+        $view->set('templateData', $this->templateData);
+        $this->templateData['title']= "Manage Vocabularies";
             $this->templateData['center'] = $view;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
@@ -78,6 +85,13 @@ class Controller_Vocabulary_Manager extends Controller_Base
 
         $this->templateData['terms'] = $termLabels;
 
+        $this->templateData['title']= "Manage Vocabularies";
+
+        $leftView = View::factory('vocabulary/semanticsMenu');
+        $leftView->set('templateData', $this->templateData);
+
+
+        $this->templateData['left'] = $leftView;
         $view = View::factory('vocabulary/importOK');
         $view->set('templateData', $this->templateData);
         $this->templateData['center'] = $view;

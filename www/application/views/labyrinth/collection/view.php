@@ -28,46 +28,44 @@
                 e.style.display = 'none';
         }
     </script>
-
-<h1><?php echo __('Collections'); ?></h1>
+<div class="page-header">
+    <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base(); ?>collectionManager/addCollection"><i class="icon-plus-sign"></i>Add Collection</a></div>
+<h1><?php echo __('Collections'); ?></h1></div>
     <table class="table table-striped table-bordered">
+<thead><tr>
+    <th>Collection</th>
+    <th>Actions</th>
+</tr></thead>
+<tbody>
+
+<?php if (isset($templateData['collections']) and count($templateData['collections']) > 0) { ?>
 
 
-
-                <?php if (isset($templateData['collections']) and count($templateData['collections']) > 0) { ?>
-
-
-                            <?php foreach($templateData['collections'] as $collection) { ?>
-                <tr><td>
-                        <a href="#" onclick="toggle_visibility('<?php echo $collection->id; ?>');"><?php echo $collection->name; ?> (<?php echo $collection->id; ?>)</a> <a class="btn btn-primary" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><?php echo __('edit'); ?></a>
-
-
-                        <div id="<?php echo $collection->id; ?>" style="display:none">
-                            <?php if(count($collection->maps) > 0) { ?>
-                                <table>
-                                    <?php foreach($collection->maps as $mp) { ?>
-                                        <tr>
-                                            <td><a href="<?php echo URL::base() ?>renderLabyrinth/index/<?php echo $mp->map->id; ?>"><?php echo $mp->map->name; ?></a></td>
-                                            <td><a class="btn btn-primary" href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map_id; ?>"><?php echo __('edit');?></a></td>
-
-                                            <td><?php echo $mp->map->abstract; ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                </table>
-                            <?php } ?>
-                        </div>
-
+    <?php foreach($templateData['collections'] as $collection) { ?>
+        <tr><td>
+               <?php echo $collection->name; ?>
 
                 </td>
 
-                </tr>
+            <td>
+                <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
 
 
-                            <?php } ?>
+
+            </td>
+
+        </tr>
 
 
-                <?php } ?>
+    <?php } ?>
+
+
+<?php } ?>
+
+
+
+</tbody>
+
 
     </table>
 
-<a href="<?php echo URL::base(); ?>collectionManager/addCollection">add Collection</a>

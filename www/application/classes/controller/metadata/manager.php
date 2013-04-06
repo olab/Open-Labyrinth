@@ -17,7 +17,7 @@ class Controller_Metadata_Manager extends Controller_Base {
         foreach($inlines as $inline){
             $models['inlineobjectrecord.'.$inline->name]=$inline->name;
         }
-
+        $this->templateData['title']= "Manage Metadata";
         $this->templateData['metadata'] = $metadata;
         $this->templateData['models'] = $models;
         $this->templateData["extras"] = Model_Leap_Metadata::$MetadataExtras;

@@ -62,6 +62,7 @@ class Controller_ReportManager extends Controller_Base
         $reportId = $this->request->param('id', NULL);
         if ($reportId != NULL) {
             $this->templateData['session'] = DB_ORM::model('user_session', array((int)$reportId));
+            $this->templateData['map'] = $this->templateData['session']->map;
             $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap($this->templateData['session']->map_id);
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($this->templateData['session']->map_id);
@@ -91,8 +92,13 @@ class Controller_ReportManager extends Controller_Base
                 $reportView->set('templateData', $this->templateData);
 
                 $this->templateData['center'] = $reportView;
-                unset($this->templateData['left']);
-                unset($this->templateData['right']);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['left'] = $leftView;
+
+               // unset($this->templateData['right']);
                 $this->template->set('templateData', $this->templateData);
             } else {
                 Request::initial()->redirect(URL::base());
@@ -130,12 +136,17 @@ class Controller_ReportManager extends Controller_Base
 
             $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['minClicks'] = $minClicks;
-
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Summary'))->set_url(URL::base() . 'reportManager/summaryReport/' . $mapId));
             $summaryView = View::factory('labyrinth/report/summary');
             $summaryView->set('templateData', $this->templateData);
 
             $this->templateData['center'] = $summaryView;
-            unset($this->templateData['left']);
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['left'] = $leftView;
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {

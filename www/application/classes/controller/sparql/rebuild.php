@@ -137,7 +137,11 @@ class Controller_Sparql_Rebuild extends Controller_Base
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
             Request::initial()->redirect(URL::base());
         }
+        $leftView = View::factory('vocabulary/semanticsMenu');
+        $leftView->set('templateData', $this->templateData);
 
+        $this->templateData['title']= "Rebuild SPARQL Endpoint Index";
+        $this->templateData['left'] = $leftView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }

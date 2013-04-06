@@ -1,8 +1,7 @@
 <div>
 <script type="text/javascript">
 
-    var properties =
-    <?php echo json_encode($templateData["properties"]);?>
+    var properties = <?php echo json_encode($templateData["properties"]);?>
 </script>
 <script type="text/javascript" src='<?php echo URL::base();?>scripts/jquery/jquery-ui-1.9.1.custom.min.js'></script>
 <script type="text/javascript" src='<?php echo URL::base();?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js'></script>
@@ -15,36 +14,46 @@
 
 <h3>Class Mappings</h3>
 <table class="table table-bordered table-striped">
-
+<thead>
     <tr>
-        <td>Identifier</td>
-        <td>Class Name</td>
-        <td>Term</td>
-        <td>Operations</td>
+        <th>Identifier</th>
+        <th>Class Name</th>
+        <th>Term</th>
+        <th>Operations</th>
     </tr>
     </thead>
     <tbody>
     <?php
     $classMappings = $templateData["classMappings"];
+    if(isset($classMappings)and count($classMappings)>0):
     foreach ($classMappings as $classMapping):?>
         <tr>
             <td>
                 <?php echo $classMapping->id; ?>
             </td>
             <td>
+
                 <?php echo $classMapping->class; ?>
             </td>
             <td>
-                <?php echo $classMapping->term->getFullRepresentation(); ?>
+                <a target="_blank" href="<?php echo $classMapping->term->getFullRepresentation(); ?>">
+                    <?php echo $classMapping->term->term_label; ?></a>
+
             </td>
             <td>
                 <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deleteclass'; ?>">
                     <input type="hidden" name="id" value="<?php echo $classMapping->id; ?>"/>
-                    <input class="btn btn-danger" type="submit" value="delete"/>
+                    <button class="btn btn-danger" type="submit"><i class="icon-trash"></i>Delete</button>
+
                 </form>
             </td>
         </tr>
     <?php endforeach;?>
+    <?php else:?>
+<tr class="info"><td colspan="4">There are no class mappings yet. You may add one by using the form below.</td></tr>
+
+
+    <?php endif; ?>
     </tbody>
 </table>
 
@@ -85,30 +94,31 @@
                 </div>
             </div>
         </fieldset>
-
+<div class="form-actions">
         <input class="btn btn-primary" type="submit" value="Add">
-
+</div>
     </form>
 
 </div>
 
-<!- ====================================================================================================== ->
+<!-- ====================================================================================================== -->
 <h3>Common Property Mappings</h3>
 <table class="table table-bordered table-striped">
     <thead>
 
     <tr>
-        <td>Identifier</td>
-        <td>Class Name</td>
-        <td>Property Name</td>
-        <td>Term</td>
-        <td>Relation Type</td>
-        <td>Operations</td>
+        <th>Identifier</th>
+        <th>Class Name</th>
+        <th>Property Name</th>
+        <th>Term</th>
+        <th>Relation Type</th>
+        <th>Operations</th>
     </tr>
     </thead>
     <tbody>
     <?php
     $legacyPropertyMappings = $templateData["legacyPropertyMappings"];
+    if(isset($classMappings)and count($classMappings)>0):
     foreach ($legacyPropertyMappings as $legacyPropertyMapping):?>
         <tr>
             <td>
@@ -121,7 +131,8 @@
                 <?php echo $legacyPropertyMapping->property; ?>
             </td>
             <td>
-                <?php echo $legacyPropertyMapping->term->getFullRepresentation(); ?>
+                <a target="_blank" href="<?php echo $legacyPropertyMapping->term->getFullRepresentation(); ?>">
+                <?php echo $legacyPropertyMapping->term->term_label; ?></a>
             </td>
             <td>
                 <?php echo $legacyPropertyMapping->type; ?>
@@ -129,11 +140,17 @@
             <td>
                 <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletelegacy'; ?>">
                     <input type="hidden" name="id" value="<?php echo $legacyPropertyMapping->id; ?>"/>
-                    <input class="btn btn-danger" type="submit" value="delete"/>
+                    <button class="btn btn-danger" type="submit" ><i class="icon-trash"></i> Delete</button>
                 </form>
             </td>
         </tr>
     <?php endforeach;?>
+
+    <?php else:?>
+        <tr class="info"><td colspan="6">There are no common property mappings yet. You may add one by using the form below.</td></tr>
+
+
+    <?php endif; ?>
     </tbody>
 </table>
 
@@ -167,7 +184,7 @@
                 <label for="legacy-property" class="control-label">Property</label>
 
                 <div class="controls">
-                    <select type="text" id="legacy-property" name="property"></select>
+                    <select id="legacy-property" name="property"></select>
                 </div>
             </div>
             <div class="control-group">
@@ -194,29 +211,30 @@
             </div>
         </fieldset>
 
-
+<div class="form-actions">
         <input class="btn btn-primary" type="submit" value="Add">
-
+</div>
     </form>
 
 </div>
 
-<!- ========================================================================================== ->
+<!-- ========================================================================================== -->
 
 <h3>Metadata Mappings</h3>
 <table class="table table-bordered table-striped">
     <thead>
     <tr>
-        <td>Identifier</td>
-        <td>Metadata Name</td>
-        <td>Term</td>
-        <td>Relation Type</td>
-        <td>Operations</td>
+        <th>Identifier</th>
+        <th>Metadata Name</th>
+        <th>Term</th>
+        <th>Relation Type</th>
+        <th>Operations</th>
     </tr>
     </thead>
     <tbody>
     <?php
     $metadataMappings = $templateData["metadataMappings"];
+    if(isset($classMappings)and count($classMappings)>0):
     foreach ($metadataMappings as $metadataMapping):?>
         <tr>
             <td>
@@ -226,7 +244,10 @@
                 <?php echo $metadataMapping->metadata->label; ?>
             </td>
             <td>
-                <?php echo $metadataMapping->term->getFullRepresentation(); ?>
+                <a target="_blank" href="<?php echo $metadataMapping->term->getFullRepresentation(); ?>">
+
+                <?php echo $metadataMapping->term->term_label; ?></a>
+
             </td>
             <td>
                 <?php echo $metadataMapping->type; ?>
@@ -234,11 +255,16 @@
             <td>
                 <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletemetadata'; ?>">
                     <input type="hidden" name="id" value="<?php echo $metadataMapping->id; ?>"/>
-                    <input class="btn btn-danger" type="submit" value="delete"/>
+                    <button class="btn btn-danger" type="submit" ><i class="icon-trash"></i> Delete</button>
                 </form>
             </td>
         </tr>
     <?php endforeach;?>
+    <?php else:?>
+        <tr class="info"><td colspan="5">There are no metadata mappings yet. You may add one by using the form below.</td></tr>
+
+
+    <?php endif; ?>
     </tbody>
 </table>
 
@@ -288,9 +314,9 @@
                 </div>
             </div>
         </fieldset>
-
+<div class="form-actions">
         <input class="btn btn-primary" type="submit" value="Add">
-
+</div>
     </form>
 
 </div>

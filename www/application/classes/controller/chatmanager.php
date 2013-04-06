@@ -44,7 +44,7 @@ class Controller_ChatManager extends Controller_Base {
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-
+            $this->templateData['title']= "Chats";
             $this->templateData['center'] = $chatView;
             $this->templateData['left'] = $leftView;
             unset($this->templateData['right']);
@@ -155,7 +155,7 @@ class Controller_ChatManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title( $this->templateData['chat']->stem)->set_url(URL::base().'chatManager/editChat/'. $this->templateData['map']->id.'/'.$chatId.'/'.count($this->templateData['chat']->elements)));
 
-
+            $this->templateData['title']= "Chat " . $this->templateData['chat']->stem;
             $editChatView = View::factory('labyrinth/chat/edit');
             $editChatView->set('templateData', $this->templateData);
 

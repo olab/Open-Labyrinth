@@ -43,7 +43,7 @@ class Controller_AvatarManager extends Controller_Base {
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-
+            $this->templateData['title']= "Avatars";
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $avatarView;
             unset($this->templateData['right']);
@@ -72,13 +72,13 @@ class Controller_AvatarManager extends Controller_Base {
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($avatarId)->set_url(URL::base() . 'avatarManager/editAvatar/' . $mapId.'/'.$avatarId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($avatarId)->set_url(URL::base() . 'avatarManager/editAvatar/' . $mapId.'/'));
             $edtAvatarView = View::factory('labyrinth/avatar/edit');
             $edtAvatarView->set('templateData', $this->templateData);
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-
+            $this->templateData['title']= "Edit Avatar ".$avatarId;
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $edtAvatarView;
             unset($this->templateData['right']);

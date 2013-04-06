@@ -98,7 +98,7 @@
         <td>
             <form method="post" action="<?php echo URL::base() . 'metadata/manager/delete'; ?>">
                 <input type="hidden" name="name" value="<?php echo $field->name; ?>"/>
-                <input class="btn btn-danger" type="submit" value="delete"/>
+                <button class="btn btn-danger" type="submit"><i class="icon-trash"></i> Delete</button>
             </form>
         </td>
         </tr>
@@ -178,7 +178,7 @@
 
             <div class="controls">
                 <select name='cardinality' id="cardinality">
-                    <option value="1">Sigle value</option>
+                    <option value="1">Single value</option>
                     <option value="n">Multiple values</option>
                 </select>
             </div>
@@ -186,8 +186,8 @@
         </div>
 
     </fieldset>
-
+<div class="form-actions">
     <input class="btn btn-primary" type="submit" value="Add">
-
+    </div>
 </form>
 

@@ -22,7 +22,7 @@ if (isset($templateData['map'])) {
     ?>
     <div class="page-header">
         <div class="pull-right">
-        <a class="btn btn-primary" href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><i class="icon-plus-sign"></i><?php echo __('add a new data element'); ?></a></div>
+        <a class="btn btn-primary" href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><i class="icon-plus-sign"></i><?php echo __('Add data element'); ?></a></div>
     <h1><?php echo __('Data elements for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
     <table class="table table-striped table-bordered">
         <thead>
