@@ -18,41 +18,49 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
-    <script language="javascript" type="text/javascript">
-        function jumpMenu(targ, selObj, restore) {
-            eval(targ + ".location='<?php echo URL::base(); ?>questionManager/addQuestion/<?php echo $templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
-            if (restore) selObj.selectedIndex = 0;
-        }
-    </script>
+if (isset($templateData['map'])) { ?>
 <div class="page-header">
     <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1></div>
-
+    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+    <div class="pull-left question-btn-container">
+        <div class="btn-group">
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <i class="icon-plus-sign icon-white"></i>Add Question<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <?php foreach ($templateData['question_types'] as $type) { ?>
+                <li><a href="<?php echo URL::base(); ?>questionManager/question/<?php echo $templateData['map']->id; ?>/<?php echo $type->id; ?>"><?php echo $type->title; ?></a></li>
+                <?php } ?>
+            </ul>
+        </div>
+        
+        <button class="btn btn-primary" id="copyQuestionBtn">Paste question</button>
+    </div>
+    <?php } ?>
     <table class="table table-striped table-bordered">
         <thead>
-        <tr>
-            <th>Embeddable</th>
-            <th>Content</th>
-            <th>Actions</th>
-        </tr>
+            <tr>
+                <th>Embeddable</th>
+                <th>Content</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
         <?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
             <?php foreach ($templateData['questions'] as $question) { ?>
                 <tr>
                     <td>
-<label>
-                        <input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label></td>
+                        <label><input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label>
+                    </td>
                     <td>
-
-                        <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>
-                        , <?php echo $question->width; ?>, <?php echo $question->height; ?>)
+                        <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>)
                     </td>
                     <td>
                         <div class="btn-group">
                         <a class="btn btn-info"
-                           href="<?php echo URL::base() . 'questionManager/editQuestion/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
+                           href="<?php echo URL::base() . 'questionManager/question/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
+                        <a class="btn"
+                           href="<?php echo URL::base() . 'questionManager/duplicateQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-th"></i>Duplicate</a>
                         <a class="btn btn-danger"
                            href="<?php echo URL::base() . 'questionManager/deleteQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-trash"></i>Delete</a>
                         </div>
@@ -61,36 +69,43 @@ if (isset($templateData['map'])) {
             <?php } ?>
         <?php } else { ?>
             <tr class="info"><td colspan="3">There are no available questions right now. You may add a question using the menu below.</td> </tr>
-
         <?php }?>
-
-
         </tbody>
     </table>
 
-
-    <form class="form-horizontal" action="#">
-        <fieldset class="fieldset">
-            <legend>Add question</legend>
-            <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
-                <div class="control-group">
-                    <label for="qt" class="control-label"><?php echo __('Question type'); ?>
-                    </label>
-
-                    <div class="controls">
-                        <select class="span4" onchange="jumpMenu('parent',this,0)" id="qt" name="qt">
-                            <option value=""><?php echo __('select'); ?> ...</option>
-                            <?php foreach ($templateData['question_types'] as $type) { ?>
-                                <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
-                            <?php } ?>
-                        </select>
+    <div class="modal hide" id="copyQuestionModal">
+        <form class="form-horizontal question-copy-form" method="POST" action="<?php echo URL::base(); ?>questionManager/copyQuestion/<?php echo $templateData['map']->id; ?>">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Paste question</h3>
+            </div>
+            <div class="modal-body">
+                <div align="center">
+                    <div class="control-group">
+                        <label class="control-label">Question ID:</label>
+                        <div class="controls">
+                            [[QU:<input style="width:50px;" type="text" name="questionID" value=""/>]]
+                        </div>
                     </div>
+                    <?php if(isset($templateData['counters']) && count($templateData['counters']) > 0) { ?>
+                    <div class="control-group">
+                        <label class="control-label">Assign to counter:</label>
+                        <div class="controls">
+                            <select name="counterID">
+                                <option value="">Select</option>
+                                <?php foreach($templateData['counters'] as $counter) { ?>
+                                <option value="<?php echo $counter->id; ?>"><?php echo $counter->name; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </div>
-
-            <?php } ?>
-        </fieldset>
-    </form>
-
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                <button type="submit" class="btn btn-primary">Paste</button>
+            </div>
+        </form>
+    </div>
 <?php } ?>
-
-

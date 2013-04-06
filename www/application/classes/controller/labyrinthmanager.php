@@ -100,10 +100,11 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $labyrinthType = $_POST['labyrinthType'];
                 $session = Session::instance();
                 DB_ORM::model('map')->updateType($receivedMapId, $labyrinthType);
-                if($labyrinthType != 10)
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId); 
+                $skipTypes = array(7, 8, 10);
+                if(!in_array($labyrinthType, $skipTypes))
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId);
                 else
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId); 
+                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId);
                 exit;
                 break;
 

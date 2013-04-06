@@ -628,7 +628,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         
         foreach($avatars as $avatar) {
             if($avatar->image == 'ntr') continue;
-            
+
             $avatar->image = ($avatar->image == '') ? 'default.png' : $avatar->image;
             $avatarImagePath = DOCROOT . 'avatars/' . $avatar->image;
             if(file_exists($avatarImagePath) && is_dir($this->folderPath . '/media')) {

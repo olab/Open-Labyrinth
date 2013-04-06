@@ -24,7 +24,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=10,9,8" />
-        <title><?php echo (isset($templateData['title']) ? $templateData['title'] : __('OpenLabyrinth')); ?></title>
+        <title><?php Breadcrumbs::render('breadcrumbs/title'); ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery-ui-1.9.1.custom.css" />
@@ -117,10 +117,7 @@
                                         }
                                         ?>
 
-                                        <?php
-                                        if (Auth::instance()->get_user()->type->name == 'superuser') {
-                                            ?>
-
+                                        <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
                                             <li>
@@ -177,7 +174,7 @@
                     <?php if(isset($templateData['left'])) ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
-					</div>
+                    </div>
                     <?php ?>
                     <?php
                     if (isset($templateData['right'])) {
@@ -205,6 +202,5 @@
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
-
     </body>
 </html>

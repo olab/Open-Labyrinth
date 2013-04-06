@@ -136,24 +136,24 @@ class Controller_VisualManager extends Controller_Base {
 
         echo $status;
     }
-    
+
     public function action_bufferCopy() {
         $json = Arr::get($_POST, 'data', null);
-        
+
         if(Auth::instance()->logged_in()) {
             Session::instance()->set('buffer', $json);
         }
     }
-    
+
     public function action_bufferPaste() {
         $this->auto_render = false;
         $result = '';
         if(Auth::instance()->logged_in()) {
             $buffer = Session::instance()->get('buffer', NULL);
-            
+
             $result = $buffer != null ? $buffer : '';
         }
-        
+
         echo $result;
     }
 }

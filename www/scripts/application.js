@@ -218,4 +218,8 @@ jQuery(document).ready(function(){
     jQuery('#nodeCountCustom').click(function() {
         $('#nodeCount').removeAttr('disabled');
     });
+    
+    jQuery('#copyQuestionBtn').click(function() {
+        $('#copyQuestionModal').modal(); 
+    });
 });

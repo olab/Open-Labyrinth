@@ -16,6 +16,8 @@ var RightPanel = function() {
     self.deleteModal = new DeleteModal();
     
     // Data objects
+    self.$nodeIDLabel = null;
+    self.$nodeIDContainer = null;
     self.$nodeTitle = null;
     self.$nodeContent = null;
     self.$nodeSupport = null;
@@ -28,10 +30,16 @@ var RightPanel = function() {
     self.$nodeCounters = null;
     self.nodeContentId = '';
     self.nodeSupportId = '';
+    self.$unsavedDataBtnClose = null;
+    self.$unsavedDataForm = null;
     
+    self.$unsavedDataChange = null;
+    self.$unsavedDataBtnChangeClose = null;
+
     self.visualEditor = null;
     self.node = null;
     self.mode = 'node'; // mode node or link
+    self.changeNode = null;
     
     self.Init = function(parameters) {
         if('visualEditor' in parameters)
@@ -44,7 +52,9 @@ var RightPanel = function() {
         if('closeBtn' in parameters) {
             self.$closeBtn = $(parameters.closeBtn);
             if(self.$closeBtn != null)
-                self.$closeBtn.click(self.Close);
+                self.$closeBtn.click(function() {
+                    self.Close();
+                });
         }
         
         if('colorInputId' in parameters) {
@@ -55,7 +65,7 @@ var RightPanel = function() {
         if('colorPickerId' in parameters) {
             self.colorPickerId = parameters.colorPickerId;
         }
-        
+
         if('onlySaveBtn' in parameters) {
             self.$onlySaveBtn = $(parameters.onlySaveBtn);
             if(self.$onlySaveBtn != null)
@@ -65,7 +75,7 @@ var RightPanel = function() {
         if('saveBtn' in parameters) {
             self.$saveBtn = $(parameters.saveBtn);
             if(self.$saveBtn != null)
-                self.$saveBtn.click(function(){self.Save(); self.Hide();});
+                self.$saveBtn.click(function(){self.Save();self.Hide();});
         }
         
         if('accordion' in parameters) {
@@ -81,16 +91,55 @@ var RightPanel = function() {
         if('nodeDeleteBtn' in parameters) {
             self.$nodeDeleteBtn = $(parameters.nodeDeleteBtn);
             if(self.$nodeDeleteBtn != null)
-                self.$nodeDeleteBtn.click(self.DeleteNode);
+                self.$nodeDeleteBtn.click(function() { self.DeleteNode('only'); });
+        }
+
+        if('unsavedDataForm' in parameters) {
+            self.$unsavedDataForm = $(parameters.unsavedDataForm);
+        }
+
+        if('unsavedDataBtnClose' in parameters) {
+            self.$unsavedDataBtnClose = $(parameters.unsavedDataBtnClose);
+            if(self.$unsavedDataBtnClose != null)
+                self.$unsavedDataBtnClose.click(function() {
+                    self.visualEditor.unsavedData = false;
+                    self.Close();
+                });
         }
         
+        if('unsavedDataChange' in parameters) {
+            self.$unsavedDataChange = $(parameters.unsavedDataChange);
+        }
+
+        if('unsavedDataBtnChangeClose' in parameters) {
+            self.$unsavedDataBtnChangeClose = $(parameters.unsavedDataBtnChangeClose);
+            if(self.$unsavedDataBtnChangeClose != null)
+                self.$unsavedDataBtnChangeClose.click(function() {
+                    if(self.changeNode != null) {
+                        self.visualEditor.unsavedData = false;
+                        self.node.isActive = false;
+
+                        self.node = self.changeNode;
+                        self.mode = 'node';
+                        self.Show();
+                        self.$unsavedDataChange.modal('hide');
+                    }
+                });
+        }
+
         self.deleteModal.Init({
             modalId: '#visual_editor_delete', 
             applyBtn: '#deleteNode', 
             visualEditor: self.visualEditor,
             rightPanel: self
         });
+
+        if('nodeIDLabel' in parameters)
+            self.$nodeIDLabel = $(parameters.nodeIDLabel);
         
+        if('nodeIDContainer' in parameters)
+            self.$nodeIDContainer = $(parameters.nodeIDContainer);
+
         if('nodeTitle' in parameters)
             self.$nodeTitle = $(parameters.nodeTitle);
         
@@ -133,9 +182,32 @@ var RightPanel = function() {
     }
     
     self.Close = function() {
-        self.Hide();
+        if (self.visualEditor.unsavedData){
+            self.$unsavedDataForm.modal();
+        } else {
+            self.$unsavedDataForm.modal('hide');
+            self.Hide();
+        }
     }
     
+    self.TryChangeNode = function(node) {
+        if(node == null) return;
+        
+        self.changeNode = node;
+        
+        if(self.$unsavedDataChange != null && self.visualEditor.unsavedData) {
+            self.$unsavedDataChange.modal();
+        } else {
+            self.visualEditor.unsavedData = false;
+            if(self.node != null)
+                self.node.isActive = false;
+            
+            self.node = self.changeNode;
+            self.mode = 'node';
+            self.Show();
+        }
+    }
+
     self.Save = function() {
         if(self.visualEditor == null) return;
         
@@ -187,7 +259,10 @@ var RightPanel = function() {
                 }
             }
         }
-        
+        self.visualEditor.unsavedData = false;
+        var tm = tinyMCE.activeEditor;
+        tm.startContent = tm.getContent({format : 'raw'});
+
         self.visualEditor.Render();
     }
     
@@ -204,9 +279,24 @@ var RightPanel = function() {
                 
                 self.$accordion.addClass('node-panel');
                 self.$colorInput.val(self.node.color);
-                $(self.colorPickerId).farbtastic(self.colorInputId);
+                $(self.colorPickerId).farbtastic(function(changedColor) {
+                    $(self.colorInputId).val(changedColor);
+                    $(self.colorInputId).css('background-color', changedColor);
+                    if (changedColor != self.node.color){
+                        $(self.colorInputId).keyup();
+                    }
+                });
                 $.farbtastic(self.colorPickerId).setColor(self.node.color);
-                
+
+                if(self.$nodeIDContainer != null && self.$nodeIDLabel != null) {
+                    self.$nodeIDContainer.hide();
+                    var nodeIDstr = self.node.id + '';
+                    if(nodeIDstr.indexOf('g') < 0) {
+                        self.$nodeIDContainer.show();
+                        self.$nodeIDLabel.text(self.node.id);
+                    }
+                }
+
                 if(self.$nodeTitle != null)
                     self.$nodeTitle.val(self.node.title);
 
@@ -285,13 +375,15 @@ var RightPanel = function() {
         }
     }
     
-    self.DeleteNode = function() {
+    self.DeleteNode = function(mode) {
         if(self.deleteModal == null) return;
+        
+        mode = typeof mode !== 'undefined' ? mode : 'normal';
         
         var selectedNodes = new Array();
         
         var selectedRoot = false;
-        if(self.visualEditor != null && self.visualEditor.nodes != null && self.visualEditor.nodes.length > 0) {
+        if(self.visualEditor != null && self.visualEditor.nodes != null && self.visualEditor.nodes.length > 0 && mode == 'normal') {
             for(var i = 0; i < self.visualEditor.nodes.length; i++) {
                 if(self.visualEditor.nodes[i].isSelected) {
                     selectedNodes.push(self.visualEditor.nodes[i]);
@@ -300,7 +392,7 @@ var RightPanel = function() {
             }
         }
 
-        if(selectedNodes.length > 0 && self.node != null && self.node.isSelected) {
+        if(selectedNodes.length > 0 && self.node != null && self.node.isSelected && mode == 'normal') {
             self.deleteModal.selectedNodes = selectedNodes;
             self.deleteModal.selectRoot = selectedRoot;
             self.deleteModal.Show('multiple');
@@ -313,7 +405,7 @@ var RightPanel = function() {
             }
         }
     }
-    
+
     var GetRootNode = function() {
         if(self.visualEditor == null || self.visualEditor.nodes.length <= 0) return null;
         

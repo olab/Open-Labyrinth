@@ -25,11 +25,9 @@ if (isset($templateData['map'])) { ?>
     } else {
         echo __('Edit question "') . $templateData['question']->stem . '"'; }?>
 </h1></div>
-                            <?php if(isset($templateData['question'])) { ?>
-                            <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">
-                            <?php } else { ?>
-                            <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/saveNewQuestion/'.$templateData['map']->id.'/'.$templateData['questionType']; ?>">
-                            <?php } ?>
+<form class="form-horizontal" 
+      method="POST" 
+      action="<?php echo URL::base(); ?>questionManager/questionPOST/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['type']->id; ?><?php echo (isset($templateData['question']) ? ('/' . $templateData['question']->id) : ''); ?>">
                                 <fieldset class="fieldset">
                                     <div class="control-group">
                                         <label for="qstem" class="control-label"><?php echo __('Stem'); ?>

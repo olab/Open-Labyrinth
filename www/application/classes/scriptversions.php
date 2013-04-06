@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,23 +18,20 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+defined('SYSPATH') or die('No direct script access.');
+
+class ScriptVersions {
+    static function get($file_location = null){
+        if ($file_location != null){
+            if (file_exists(DOCROOT.$file_location)){
+                $filemtime = filemtime(DOCROOT.$file_location);
+            } else {
+                $filemtime = time();
+            }
+        } else {
+            $filemtime = time();
+        }
+        return $file_location.'?v='.$filemtime;
+    }
+}
 ?>
-
-<h4><?php echo __('Automated password recovery'); ?></h4>
-<div class="alert alert-info"><?php echo $templateData['passMessage']; ?></div>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#ffffff">
-
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                        <table cellspacing="10" width="100%" cellpadding="0" border="0">
-                            <tr>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </td></tr>
-            </table>
-        </td>
-    </tr>
-</table>

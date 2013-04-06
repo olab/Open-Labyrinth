@@ -48,24 +48,31 @@ class Model_Labyrinth extends Model {
 				
             $sessionId = NULL;
             if($bookmark != NULL) {
-				$b = DB_ORM::model('user_bookmark', array((int)$bookmark));
-				$sessionId = $b->session_id;
-				Session::instance()->set('session_id', $sessionId);
+                $b = DB_ORM::model('user_bookmark', array((int)$bookmark));
+                $sessionId = $b->session_id;
+                Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-			} else if ($isRoot) {
+            } else if ($isRoot) {
                 $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL) {
+                if ($sessionId == NULL && isset($_COOKIE['OL'])) {
                     $sessionId = $_COOKIE['OL'];
+                } else {
+                    if ($sessionId == NULL){
+                        $sessionId = 'notExist';
+                    }
                 }
             }
 
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-
-            $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            if ($sessionId != 'notExist'){
+                $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+            } else {
+                $traceId = 'notExist';
+            }
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
@@ -243,7 +250,7 @@ class Model_Labyrinth extends Model {
     }
 
     private function counters($traceId, $sessionId, $node, $isRoot = false) {
-        if ($traceId != null && $traceId > 0 && $node != NULL) {
+        if ($traceId != null && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
             if (count($counters) > 0) {
                 $countersArray = array();
@@ -561,26 +568,26 @@ class Model_Labyrinth extends Model {
                     }
                 }
             }
-			
-			if ($qResp == NULL) {
-				if (count($question->responses) > 0) {
-					foreach ($question->responses as $resp) {
+
+            if ($qResp == NULL) {
+                if (count($question->responses) > 0) {
+                    foreach ($question->responses as $resp) {
                         if ($resp->id == $r) {
-							$qResp = $resp;
-							$r = $resp->response;
-						}
-					}
-				}
-			}
-			
+                            $qResp = $resp;
+                            $r = $resp->response;
+                        }
+                    }
+                }
+            }
+
             DB_ORM::model('user_response')->updateResponse($sessionId, $questionId, $r);
 
             if ($question->show_answer) {
                 if ($question->type->value != 'text' and $question->type->value != 'area') {
                     if ($qResp->is_correct) {
-                        return '<p><img src="' . URL::base() . 'images/tick.jpg"> correct (' . $qResp->feedback . ')</p>';
+                        return '<p><img src="' . URL::base() . 'images/tick.jpg"> ' . ($qResp->feedback != null && strlen($qResp->feedback) > 0 ? ('(' . $qResp->feedback . ')') : '') . '</p>';
                     } else {
-                        return '<p><img src="' . URL::base() . 'images/cross.jpg"> incorrect (' . $qResp->feedback . ')</p>';
+                        return '<p><img src="' . URL::base() . 'images/cross.jpg"> ' . ($qResp->feedback != null && strlen($qResp->feedback) > 0 ? ('(' . $qResp->feedback . ')') : '') . '</p>';
                     }
                 }
             }

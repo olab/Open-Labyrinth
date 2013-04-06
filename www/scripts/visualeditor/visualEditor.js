@@ -16,6 +16,7 @@ var VisualEditor = function() {
     self.canvas = null;
     self.context = null;
     self.mouse = new Mouse();
+    self.lastMouse = new Mouse();
     self.nodes = new Array();
     self.links = new Array();
     self.linkConnector = null;
@@ -37,7 +38,15 @@ var VisualEditor = function() {
     self.turnOnPanMode = null;
     self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
+    self.unsavedData = false;
     
+    self.$aButtonsContianer = $('#ve_additionalActionButton');
+    
+    self.selectRightPanel = null;
+
+    self.preview = null;
+    self.mode = 'node';
+
     // Initialize visual editor
     self.Init = function(params) {
         if('canvasContainer' in params) {
@@ -59,30 +68,65 @@ var VisualEditor = function() {
             }
         }
         
+        if('aButtonsContianer' in params) {
+            self.$aButtonsContianer = $(params.aButtonsContianer);
+            
+            $('#deleteSNodesBtn').click(function() {
+                if(self.nodes != null && self.nodes.length > 0) {
+                    var nodeId = 0;
+                    for(var i = 0; i < self.nodes.length; i++) {
+                        if(self.nodes[i].isSelected) {
+                            nodeId = self.nodes[i].id;
+                            break;
+                        }
+                    }
+
+                    if(self.rightPanel != null) {
+                        var node = GetNodeById(nodeId);
+                        if(node != null) {
+                            self.rightPanel.node = node;
+                            self.rightPanel.DeleteNode();
+                        }
+                    }
+                }
+            });
+            
+            $('#colorSNodesBtn').click(function() {
+                if(self.selectRightPanel != null)
+                    self.selectRightPanel.Show();
+            });
+        }
+        
         CreateContext();
         CreateEvents();
         
         self.rightPanel.Init({
-           panelId: '#veRightPanel',
-           closeBtn: '.veRightPanelCloseBtn',
-           colorInputId: '#colorpickerInput',
-           colorPickerId: '#colopickerContainer',
-           onlySaveBtn: '#veRightPanelOnlySaveBtn',
-           saveBtn: '#veRightPanelSaveBtn',
-           accordion: '#veAccordionRightPanel',
-           nodeRootBtn: '#veNodeRootBtn',
-           nodeDeleteBtn: '#veDeleteNodeBtn',
-           visualEditor: self,
-           nodeTitle: '#nodetitle', 
-           nodeContent: '#nodecontent', 
-           nodeSupport: '#nodesupport', 
-           nodeSupportKeywords: '#nodesupportkeywords',
-           nodeIsExitNodePorb: '#exitNodeOptions', 
-           nodeLinkStyle: '#linkStyleOptions', 
-           nodePriority: '#nodePriorities',
-           nodeUndoLinks: '#nodeUndoLinks', 
-           endNode: '#nodeEndAndReport', 
-           nodeCounters: '#counters'
+            panelId: '#veRightPanel',
+            closeBtn: '.veRightPanelCloseBtn',
+            colorInputId: '#colorpickerInput',
+            colorPickerId: '#colopickerContainer',
+            onlySaveBtn: '#veRightPanelOnlySaveBtn',
+            saveBtn: '#veRightPanelSaveBtn',
+            accordion: '#veAccordionRightPanel',
+            nodeRootBtn: '#veNodeRootBtn',
+            nodeDeleteBtn: '#veDeleteNodeBtn',
+            visualEditor: self,
+            nodeIDLabel: '#nodeID_label',
+            nodeIDContainer: '#nodeID_container',
+            nodeTitle: '#nodetitle',
+            nodeContent: '#nodecontent',
+            nodeSupport: '#nodesupport',
+            nodeSupportKeywords: '#nodesupportkeywords',
+            nodeIsExitNodePorb: '#exitNodeOptions',
+            nodeLinkStyle: '#linkStyleOptions',
+            nodePriority: '#nodePriorities',
+            nodeUndoLinks: '#nodeUndoLinks',
+            endNode: '#nodeEndAndReport',
+            nodeCounters: '#counters',
+            unsavedDataForm: '#veRightPanel_unsaveddata',
+            unsavedDataBtnClose: '#veRightPanel_unsaveddata_close',
+            unsavedDataChange: '#veRightPanel_unsaveddataChange',
+            unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close'
         });
         
         self.deleteModal.Init({
@@ -90,6 +134,7 @@ var VisualEditor = function() {
             applyBtn: '#deleteNode', 
             visualEditor: self
         });
+        
         self.colorModal.Init({
             modalId: '#visual_editor_colorpicker', 
             inputId: '#colorpicker_input', 
@@ -97,6 +142,7 @@ var VisualEditor = function() {
             visualEditor: self, 
             colorPickerContainer: '#colopicker_container'
         });
+        
         self.linkModal.Init({
             modalId: '#visual_editor_link', 
             applyBtn: '#linkApply', 
@@ -105,7 +151,26 @@ var VisualEditor = function() {
             linkLabel: '#labelText',
             visualEditor: self
         });
-                     
+
+        if(self.mode == 'node') {
+            self.preview = new Preview();
+            self.preview.Init({
+                canvasId: '#canvasPreview',
+                visualEditor: self
+            });
+            
+            self.selectRightPanel = new SelectRightPanel();
+            self.selectRightPanel.Init({
+                panelID: '#veSelectRightPanel',
+                colorContainer: '#veSelectColorContainer',
+                inputID: '#veSelectColorInput',
+                saveBtnID: '#veSelectRightPanelOnlySaveBtn',
+                saveCloseBtnID: '#veSelectRightPanelSaveBtn',
+                closeBtnID: '#veSelectRightPanelCloseBtn',
+                visualEditor: self
+            });
+        }
+
         Resize(null);
         self.ZoomOut();
         self.ZoomOut();
@@ -133,6 +198,33 @@ var VisualEditor = function() {
         self.selectorTool.Draw(self.context, viewport);
         
         self.isChanged = true;
+
+        if(self.preview != null) {
+            self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
+        }
+        
+        if(self.$aButtonsContianer != null) {
+            if(self.IsExistSelectElements()) {
+                self.$aButtonsContianer.show();
+            } else {
+                self.$aButtonsContianer.hide();
+            }
+        }
+                    
+    }
+    
+    self.IsExistSelectElements = function() {
+        if(self.nodes == null || self.nodes.length <= 0) return false;
+        
+        for(var i = 0; i < self.nodes.length; i++)
+            if(self.nodes[i].isSelected) return true;
+        
+        if(self.links == null || self.links.length <= 0) return false;
+        
+        for(var i = 0; i < self.links.length; i++)
+            if(self.links[i].isSelected) return true;
+        
+        return false;
     }
     
     // Zoom in viewport
@@ -261,7 +353,7 @@ var VisualEditor = function() {
         if(links.length > 0) {
             var linksStr = '';
             for(var i = 0; i < links.length; i++) {
-                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + links[i].label + '", "imageId": "' + links[i].imageId + '"}, ';
+                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + encode64(links[i].label) + '", "imageId": "' + links[i].imageId + '"}, ';
             }
             
             if(linksStr.length > 2) {
@@ -366,7 +458,7 @@ var VisualEditor = function() {
                 link.id = id;
                 link.nodeA = nodeA;
                 link.nodeB = nodeB;
-                link.label = object.links[i].label;
+                link.label = decode64(object.links[i].label);
                 link.imageId = object.links[i].imageId;
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 
@@ -417,9 +509,16 @@ var VisualEditor = function() {
             if(isNaN(oldViewportPos[1])) oldViewportPos[1] = 0;
             if(isNaN(oldViewportScale[0])) oldViewportScale[0] = 1;
             if(isNaN(oldViewportScale[1])) oldViewportScale[1] = 1;
+            
+            oldViewportPos[0] = self.mouse.x / scale[0];
+            oldViewportPos[1] = self.mouse.y / scale[1];
         }
         
         if('nodes' in object && object.nodes.length > 0) {
+            DeselectAllNodes();
+            
+            var tNodes = new Array();
+            var minPos = null;
             for(var i = 0; i < object.nodes.length; i++) {
                 var node = new Node();
                 node.id = GetNewNodeId();
@@ -448,7 +547,20 @@ var VisualEditor = function() {
                 
                 var g = tr.GetPosition();
                 
-                node.transform.Translate(g[0] + rndX, g[1] + rndY);
+                var tx = g[0] + rndX;
+                var ty = g[1] + rndY;
+                
+                node.transform.Translate(tx, ty);
+                
+                if(minPos == null) {
+                    minPos = [tx, ty];
+                } else {
+                    if(minPos[0] > tx)
+                        minPos[0] = tx;
+                    
+                    if(minPos[1] > ty)
+                        minPos[1] = ty;
+                }
                 
                 var linkStyle = parseInt(object.nodes[i].linkStyle);
                 if(isNaN(linkStyle)) linkStyle = 1;
@@ -459,12 +571,34 @@ var VisualEditor = function() {
                 node.nodePriority = nodePriority;
                 
                 node.color = (object.nodes[i].color.length > 0) ? object.nodes[i].color : node.color;
+                node.isSelected = true;
                 
-                self.nodes.push(node);
+                tNodes.push(node);
+            }
+            
+            if(tNodes.length > 0 && minPos != null) {
+                var pasteTr = new Transform();
+                pasteTr.Translate(-pos[0] + self.lastMouse.x / scale[0], -pos[1] + self.lastMouse.y / scale[1]);
+
+                var pastePos = pasteTr.GetPosition();
+                var dx = pastePos[0] - minPos[0];
+                var dy = pastePos[1] - minPos[1];
+
+                for(var i = 0; i < tNodes.length; i++) {
+                    var p = tNodes[i].transform.GetPosition();
+
+                    p = [p[0] + dx, p[1] + dy];
+                    
+                    tNodes[i].transform = new Transform();
+                    tNodes[i].transform.Translate(p[0], p[1]);
+                    
+                    self.nodes.push(tNodes[i]);
+                }
             }
         }
         
         if('links' in object && object.links.length > 0) {
+            DeselectAllLinks();
             for(var i = 0; i < object.links.length; i++) {
                 var nodeAId = GetNodeFromMap(nodesMap, object.links[i].nodeA);
                 var nodeBId = GetNodeFromMap(nodesMap, object.links[i].nodeB);
@@ -482,13 +616,40 @@ var VisualEditor = function() {
                 link.id = id;
                 link.nodeA = nodeA;
                 link.nodeB = nodeB;
+                link.label = decode64(object.links[i].label);
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
+                link.isSelected = true;
                 
                 self.links.push(link);
             }
         }
     }
     
+    var DeselectAllNodes = function() {
+        if(self.nodes == null || self.nodes.length <= 0) return;
+        
+        for(var i = 0; i < self.nodes.length; i++) {
+            self.nodes[i].isSelected = false;
+        }
+    }
+    
+    var DeselectAllLinks = function() {
+        if(self.links == null || self.links.length <= 0) return;
+        
+        for(var i = 0; i < self.links.length; i++) {
+            self.links[i].isSelected = false;
+        }
+    }
+    
+    self.ChangeSelectNodesColor = function(newColor) {
+        if(self.nodes == null || self.nodes.length <= 0) return;
+        
+        for(var i = 0; i < self.nodes.length; i++) {
+            if(self.nodes[i].isSelected)
+                self.nodes[i].color = newColor;
+        }
+    }
+     
     self.DeserializeLinear = function(jsonString) {
         self.Deserialize(jsonString);
         
@@ -833,7 +994,7 @@ var VisualEditor = function() {
         if(self.$canvasContainer != null && self.$canvas != null) {
             self.$canvas.attr('width', self.$canvasContainer.width());
             var height = parseInt(window.innerHeight) - 150;
-            if (height < 400){ height = 400; }
+            if (height < 400){height = 400;}
             $(self.$canvasContainer).height(height);
             self.$canvas.attr('height', self.$canvasContainer.height());
             self.Render();
@@ -1035,6 +1196,8 @@ var VisualEditor = function() {
         //event.preventDefault();
         self.mouse.isDown = false;
         UpdateMousePosition(event);
+        self.lastMouse.x = self.mouse.x;
+        self.lastMouse.y = self.mouse.y;
         
         var isRedraw = false;
         if(self.linkConnector != null) {
@@ -1073,20 +1236,37 @@ var VisualEditor = function() {
         }
         
         if(!isRedraw && self.selectorTool != null && self.isSelectActive) {
+            var existSelect = false;
             if(self.nodes.length > 0) {
                 for(var i = self.nodes.length - 1; i >= 0; i--) {
-                    if(self.nodes[i].IsNodeInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport))
+                    if(self.nodes[i].IsNodeInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport) || self.nodes[i].isSelected) {
                         self.nodes[i].isSelected = true;
+                        
+                        if(!existSelect)
+                            existSelect = true;
+                    }
                 }
             }
             
             if(self.links.length > 0) {
                 for(var i = self.links.length - 1; i >= 0; i--) {
-                    if(self.links[i].IsLinkInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport))
+                    if(self.links[i].IsLinkInRect(self.selectorTool.x, self.selectorTool.y, self.selectorTool.width, self.selectorTool.height, viewport) || self.links[i].isSelected) {
                         self.links[i].isSelected = true;
+                        
+                        if(!existSelect)
+                            existSelect = true;
+                    }
                 }
             }
             self.selectorTool.MouseUp(self.mouse, viewport);
+            if(self.$aButtonsContianer != null) {
+                if(existSelect) {
+                    self.$aButtonsContianer.show();
+                } else {
+                    self.$aButtonsContianer.hide();
+                }
+            }
+            
             isRedraw = true;
         }
         
@@ -1230,6 +1410,11 @@ var VisualEditor = function() {
         }
     }
     
+    self.TranslateViewport = function(x, y) {
+        viewport.TranslateWithoutScale(x, y);
+        self.Render();
+    }
+
     var ShowLinkConnector = function(nodeId) {
         var node = GetNodeById(nodeId);
         if(node == null) return;
@@ -1267,12 +1452,7 @@ var VisualEditor = function() {
             if(mode == 'node') {
                 var node = GetNodeById(elementId);
                 if(node != null) {
-                    if(self.rightPanel.node != null)
-                        self.rightPanel.node.isActive = false;
-                    
-                    self.rightPanel.node = node;
-                    self.rightPanel.mode = 'node';
-                    self.rightPanel.Show();
+                    self.rightPanel.TryChangeNode(node);
                 }
             }
         }

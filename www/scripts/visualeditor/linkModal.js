@@ -73,7 +73,7 @@ var LinkModal = function() {
             }
         }
     }
-     
+
     var ApplyEvent = function() {
         if(self.link != null && $linkTypes != null && $linkLabel != null && $linkImages != null && visualEditor != null) {
             var value = $linkTypes.children().filter('.active').attr('value');

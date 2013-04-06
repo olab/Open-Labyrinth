@@ -263,6 +263,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         if ($optionNumber != NULL and $sessionId != NULL and $questionId != NULL) {
             $this->auto_render = false;
+            
             echo Model::factory('labyrinth')->question($sessionId, $questionId, $optionNumber);
         }
     }
@@ -672,6 +673,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if ($question->type->value == 'area') {
                 $result = "<textarea cols='" . $question->width . "' rows='" . $question->height . "' name='qresponse_" . $question->id . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");'>" . $question->feedback . "</textarea>";
                 $result .= "<div id='AJAXresponse'></div>";
+            } else if($question->type->value == 'pcq') {
+                if (count($question->responses) > 0) {
+                    $result = '<table>';
+                    $i = 1;
+                    $divIDS = 'new Array(';
+                    foreach ($question->responses as $responce) {
+                        $divIDS .= $responce->id . ',';
+                    }
+                    $divIDS = substr($divIDS, 0, strlen($divIDS) - 1);
+                    $divIDS .= ')';
+                    foreach ($question->responses as $responce) {
+                        $result .= "<tr><td><p>" . $responce->response . "</p></td>";
+                        $result .= "<td><div id='click" . $responce->id . "'><input type='checkbox' name='option' OnClick='ajaxMCQ(" . $question->id . "," . $responce->id . "," . count($question->responses) . "," . $question->num_tries . "," . $divIDS . ");' /></div></td>";
+                        $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
+                        $i++;
+                    }
+                    
+                    $result .= '</table>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
+                }
             } else {
                 if (count($question->responses) > 0) {
                     $result = '<table>';
@@ -689,6 +712,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $i++;
                     }
                     $result .= '</table>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
                 }
             }
 

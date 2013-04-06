@@ -25,11 +25,68 @@ class Controller_Base extends Controller_Template {
 
     public $template = 'home';
     protected $templateData = array();
+    private $unauthorizedRules = array(
+        array('controller' => 'home', 'action' => 'login'),
+        array('controller' => 'home', 'action' => 'resetPassword'),
+        array('controller' => 'home', 'action' => 'passwordMessage'),
+        array('controller' => 'home', 'action' => 'confirmLink'),
+        array('controller' => 'home', 'action' => 'updateResetPassword'),
+        array('controller' => 'reportManager', 'action' => 'showReport'),
+        array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
+    );
+    private $authorizedRules = array(
+        array('controller' => 'home', 'action' => 'login'),
+        array('controller' => 'home', 'action' => 'logout'),
+    );
+    private $learnerRules = array(
+        array('controller' => 'authoredLabyrinth', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'exportImportManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'userManager', 'action' => 'index'),
+        array('controller' => 'userManager', 'action' => 'addUser'),
+        array('controller' => 'userManager', 'action' => 'saveNewUser'),
+        array('controller' => 'userManager', 'action' => 'editUser'),
+        array('controller' => 'userManager', 'action' => 'saveOldUser'),
+        array('controller' => 'userManager', 'action' => 'deleteUser'),
+        array('controller' => 'userManager', 'action' => 'addGroup'),
+        array('controller' => 'userManager', 'action' => 'saveNewGroup'),
+        array('controlWWler' => 'userManager', 'action' => 'editGroup'),
+        array('controller' => 'userManager', 'action' => 'deleteGroup'),
+        array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
+        array('controller' => 'userManager', 'action' => 'updateGroup'),
+        array('controller' => 'userManager', 'action' => 'removeMember')
+    );
+    private $authorRules = array(
+        array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'userManager', 'action' => 'index'),
+        array('controller' => 'userManager', 'action' => 'addUser'),
+        array('controller' => 'userManager', 'action' => 'saveNewUser'),
+        array('controller' => 'userManager', 'action' => 'editUser'),
+        array('controller' => 'userManager', 'action' => 'saveOldUser'),
+        array('controller' => 'userManager', 'action' => 'deleteUser'),
+        array('controller' => 'userManager', 'action' => 'addGroup'),
+        array('controller' => 'userManager', 'action' => 'saveNewGroup'),
+        array('controller' => 'userManager', 'action' => 'editGroup'),
+        array('controller' => 'userManager', 'action' => 'deleteGroup'),
+        array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
+        array('controller' => 'userManager', 'action' => 'updateGroup'),
+        array('controller' => 'userManager', 'action' => 'removeMember')
+    );
 
     public function before() {
         parent::before();
 
         if (Auth::instance()->logged_in()) {
+            if($this->checkUserRoleRules()) {
+                Request::initial()->redirect(URL::base());   
+            }
+            
             I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username'] = Auth::instance()->get_user()->nickname;
 
@@ -75,18 +132,62 @@ class Controller_Base extends Controller_Template {
                 $this->templateData['center'] = $centerView;
             }
         } else {
-            $this->templateData['left'] = View::factory('login');
+            if ($this->request->controller() == 'home' && $this->request->action() == 'index') {
+                $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
+                Session::instance()->delete('redirectURL');
+                $this->templateData['left'] = View::factory('login');
+                $this->templateData['left']->set('templateData', $this->templateData);
+                
+                $centerView = View::factory('userMenu');
+                $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
+                $centerView->set('templateData', $this->templateData);
+                
+                $this->templateData['center'] = $centerView;
+            } else {
+                $controller = $this->request->controller();
+                $action = $this->request->action();
 
-            $centerView = View::factory('userMenu');
-
-            $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
-
-            $centerView->set('templateData', $this->templateData);
-            $this->templateData['center'] = $centerView;
+                $isRedirect = true;
+                foreach ($this->unauthorizedRules as $rule) {
+                    if ($controller == $rule['controller'] && $action == $rule['action']) {
+                        $isRedirect = false;
+                    }
+                }
+                
+                if ($isRedirect) {
+                    Session::instance()->set('redirectURL', $this->request->uri());
+                    Notice::add('Please login first.');
+                    Request::initial()->redirect(URL::base());
+                }
+            }
         }
 
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
+    }
+    
+    private function checkUserRoleRules() {
+        if(!Auth::instance()->logged_in()) return false;
+        
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+        
+        $rules = array();
+        if(Auth::instance()->get_user()->type->name == 'learner') {
+            $rules = $this->learnerRules;
+        } else if(Auth::instance()->get_user()->type->name == 'author') {
+            $rules = $this->authorRules;
+        }
+
+        foreach($rules as $rule) {
+            if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller) {
+                return true;
+            } else if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

@@ -1,6 +1,8 @@
 var Utils = function() {
     var self = this;
     
+    var $aButtonContainer = $('#ve_additionalActionButton');
+
     self.ShowMessage = function(messageForm, messageObj, messageType, message, timeOut, hideObj, hide){
         messageForm.removeClass('alert-success');
         messageForm.removeClass('alert-error');
@@ -15,6 +17,7 @@ var Utils = function() {
 
         if (hideObj != null){
             if (hide == true){
+                $aButtonContainer.hide();
                 hideObj.addClass('hide');
             } else {
                 hideObj.removeClass('hide');

@@ -116,7 +116,7 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
                 $indexes[] = $v;
             }
         }
-        
+
         $count = 1;
         foreach($indexes as $i) {
             if($count > $countOfQuestions) break;

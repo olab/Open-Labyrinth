@@ -112,9 +112,15 @@ if (isset($templateData['map'])) {
                         <?php } ?>
                     </td>
                     <td>
-                        <?php echo filesize(DOCROOT . '/' . $file->path) / 1000; ?> KB<br>last
-                        modified <?php echo date('d.m.Y H:i:s.', filemtime(DOCROOT . '/' . $file->path)); ?>
+                        <?php
+                        $currentFile = DOCROOT . '/' . $file->path;
 
+                        if (file_exists($currentFile)){
+                            echo (filesize($currentFile) / 1000).'KB<br/>last modified '.date('d.m.Y H:i:s.', filemtime($currentFile));
+                        } else {
+                            echo '<i>File not exist.</i>';
+                        }
+                        ?>
                     </td>
                     <td>
 
