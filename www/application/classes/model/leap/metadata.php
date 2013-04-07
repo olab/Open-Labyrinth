@@ -185,6 +185,25 @@ class Model_Leap_Metadata extends DB_ORM_Model
         return array();
     }
 
+    public function delete($reset = FALSE){
+
+        $records = Model_Leap_Metadata_Record::getRecordsOfMetadata($this->name);
+
+        foreach ($records as $record) {
+            $record->delete();
+        }
+
+
+        foreach ($this->mappings as $mapping){
+           $mapping->delete();
+        }
+
+
+      parent::delete($reset);
+
+
+    }
+
 
     protected function toRelationMetadata($object)
     {

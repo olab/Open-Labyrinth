@@ -18,97 +18,107 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['question_count']) and isset($templateData['chat'])) { ?>
+if (isset($templateData['map']) and isset($templateData['question_count']) and isset($templateData['chat'])) {
+    ?>
+    <div class="page-header">
+        <div class="pull-right">    <a class="btn btn-primary" href="<?php if (isset($templateData['question_count'])) {
+                echo URL::base() . 'chatManager/addEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . ($templateData['question_count'] + 1);
+            } else {
+                echo URL::base() . 'chatManager/addEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/3';
+            }?>"><i class="icon-plus-sign"></i> Add Question</a></div>
+        <h1><?php echo __('Edit Chat') . ' ' . $templateData['chat']->id . ' "' . $templateData['chat']->stem . '"'; ?></h1>
+    </div>
+    <form class="form-horizontal" id="chatForm" name="chatForm" method="post"
+          action="<?php echo URL::base() . 'chatManager/updateChat/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . $templateData['question_count']; ?>">
 
-                <h1><?php echo __('Edit Chat').' '.$templateData['chat']->id.' "'.$templateData['chat']->stem.'"'; ?></h1>
+        <fieldset class="fieldset">
+            <legend>Details</legend>
+            <div class="control-group">
+                <label for="cstem" class="control-label"><?php echo __('Stem'); ?></label>
 
-                            <form class="form-horizontal" id="chatForm" name="chatForm" method="post" action="<?php echo URL::base().'chatManager/updateChat/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/'.$templateData['question_count']; ?>">
-
-                                <fieldset class="fieldset">
-
-                                    <div class="control-group">
-                                        <label for="cstem" class="control-label"><?php echo __('Stem'); ?></label>
-
-                                        <div class="controls">
-                                            <textarea id="cstem" name="cStem" rows="3" cols="42"><?php echo $templateData['chat']->stem; ?></textarea>
-                                        </div>
-                                    </div>
-
-                                </fieldset>
-
-
-                                <?php if (isset($templateData['question_count'])) { ?>
-                                    <?php for ($i = 1; $i <= $templateData['question_count']; $i++) { ?>
-                                        <fieldset class="fieldset" id="qDiv<?php echo $i; ?>">
-                                            <legend><?php echo __("Question #") . $i ?></legend>
-
-                                            <div class="control-group">
-                                                <label for="question<?php echo $i; ?>" class="control-label"><?php echo __('Question'); ?></label>
-
-                                                <div class="controls">
-                                                    <input id="question<?php echo $i; ?>" type="text" name="question<?php echo $i; ?>"
-                                                           value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->question; ?>"/>
-                                                </div>
-                                            </div>
-                                            <div class="control-group">
-                                                <label for="response<?php echo $i; ?>"
-                                                       class="control-label"><?php echo __('Response'); ?></label>
-
-                                                <div class="controls">
-                                                    <input type="text" name="response<?php echo $i; ?>" id="response<?php echo $i; ?>"
-                                                           value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->response; ?>"/>
-                                                </div>
-                                            </div>
-                                            <div class="control-group">
-                                                <label for="counter<?php echo $i; ?>"
-                                                       class="control-label"><?php echo __('Counter'); ?></label>
-
-                                                <div class="controls">
-                                                    <input type="text" name="counter<?php echo $i; ?>" id="counter<?php echo $i; ?>"
-                                                            value="<?php if(($i-1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i-1]->function; ?>"/> <span class="help-block">type +, - or = an integer - e.g. '+1' or '=32'</span>
-                                                </div>
-                                            </div>
+                <div class="controls">
+                    <textarea id="cstem" name="cStem" rows="3"
+                              cols="42"><?php echo $templateData['chat']->stem; ?></textarea>
+                </div>
+            </div>
 
 
-                                            <a class="btn btn-danger"
-                                               href="<?php echo URL::base().'chatManager/removeEditChatQuestion/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/'.$templateData['question_count'].'/'.$i; ?>">Remove</a>
+            <div class="control-group">
+                <label for="scount"
+                       class="control-label"><?php echo __('Track score with existing counter'); ?></label>
 
-                                        </fieldset>
-                                    <?php } ?>
-                                <?php } ?>
+                <div class="controls">
+                    <select id="scount" name="scount">
+                        <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+
+                            <option value="0">no counter</option>
+                            <?php foreach ($templateData['counters'] as $counter) { ?>
+                                <option
+                                    value="<?php echo $counter->id; ?>" <?php if ($counter->id == $templateData['chat']->counter_id) echo 'selected=""'; ?>><?php echo $counter->name; ?>
+                                    [<?php echo $counter->id; ?>]
+                                </option>
+                            <?php } ?>
+
+                        <?php } ?>
+                    </select>
+                </div>
+
+        </fieldset>
+
+
+        <?php if (isset($templateData['question_count'])) { ?>
+            <?php for ($i = 1; $i <= $templateData['question_count']; $i++) { ?>
+                <fieldset class="fieldset" id="qDiv<?php echo $i; ?>">
+                    <legend><?php echo __("Question #") . $i ?></legend>
+
+                    <div class="control-group">
+                        <label for="question<?php echo $i; ?>"
+                               class="control-label"><?php echo __('Question'); ?></label>
+
+                        <div class="controls">
+                            <input id="question<?php echo $i; ?>" type="text" name="question<?php echo $i; ?>"
+                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->question; ?>"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="response<?php echo $i; ?>"
+                               class="control-label"><?php echo __('Response'); ?></label>
+
+                        <div class="controls">
+                            <input type="text" name="response<?php echo $i; ?>" id="response<?php echo $i; ?>"
+                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->response; ?>"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="counter<?php echo $i; ?>"
+                               class="control-label"><?php echo __('Counter'); ?></label>
+
+                        <div class="controls">
+                            <input type="text" name="counter<?php echo $i; ?>" id="counter<?php echo $i; ?>"
+                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->function; ?>"/>
+                            <span class="help-block">type +, - or = an integer - e.g. '+1' or '=32'</span>
+                        </div>
+                    </div>
+
+<div class="form-actions">
+                    <a class="btn btn-danger"
+                       href="<?php echo URL::base() . 'chatManager/removeEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . $templateData['question_count'] . '/' . $i; ?>"><i class="icon-minus-sign"></i> Remove</a>
+                    </div>
+                </fieldset>
+            <?php } ?>
+        <?php } ?>
 
 
 
-                                                <a class="btn btn-primary" href="<?php if(isset($templateData['question_count'])) { echo URL::base().'chatManager/addEditChatQuestion/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/'.($templateData['question_count'] + 1); }
-                                                else { echo URL::base().'chatManager/addEditChatQuestion/'.$templateData['map']->id.'/'.$templateData['chat']->id.'/3'; }?>">Add new</a>
+
+<div class="form-actions">
+    <div class="pull-right">
+        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save Changes'); ?>">
+
+    </div>
+</div>
 
 
-
-
-                                    <fieldset class="fieldset">
-                                        <div class="control-group">
-                                            <label for="scount"
-                                                   class="control-label"><?php echo __('Track score with existing counter'); ?></label>
-
-                                            <div class="controls">
-                                                <select id="scount" name="scount">
-                                                    <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-
-                                                        <option value="0">no counter</option>
-                                                        <?php foreach ($templateData['counters'] as $counter) { ?>
-                                                            <option value="<?php echo $counter->id; ?>" <?php if($counter->id == $templateData['chat']->counter_id) echo 'selected=""'; ?>><?php echo $counter->name; ?>
-                                                                [<?php echo $counter->id; ?>]
-                                                            </option>
-                                                        <?php } ?>
-
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-
-                                    </fieldset>
-
-                                            <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-
-                            </form>
+    </form>
 
 <?php } ?>

@@ -102,7 +102,10 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
             $terms = array();
 
             foreach ($result as $record) {
-                $terms[] = DB_ORM::model('vocabulary_term', array((int)$record['id']));
+                $term = DB_ORM::model('vocabulary_term', array((int)$record['id']));
+                if(!isset($terms[$term->vocabulary->namespace]))
+                    $terms[$term->vocabulary->namespace] = array();
+                $terms[$term->vocabulary->namespace][] = $term;
             }
 
             return $terms;

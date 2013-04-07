@@ -203,7 +203,10 @@ class Model_Leap_Metadata_SkosRecord extends Model_Leap_Metadata_Record
         return $html;
 
     }
-
+    public function dataType()
+    {
+        return "anyURI";
+    }
 
     public function toString(){
         return $this->uri;

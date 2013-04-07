@@ -1,20 +1,21 @@
 <div>
 <script type="text/javascript">
 
-    var properties = <?php echo json_encode($templateData["properties"]);?>
+    var properties =
+    <?php echo json_encode($templateData["properties"]);?>
 </script>
-<script type="text/javascript" src='<?php echo URL::base();?>scripts/jquery/jquery-ui-1.9.1.custom.min.js'></script>
-<script type="text/javascript" src='<?php echo URL::base();?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js'></script>
+<script type="text/javascript" src='<?php echo URL::base(); ?>scripts/jquery/jquery-ui-1.9.1.custom.min.js'></script>
+<script type="text/javascript" src='<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js'></script>
 <script type="text/javascript"
-        src='<?php echo URL::base();?>scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js'></script>
-<script type="text/javascript" src='<?php echo URL::base();?>scripts/olab/inputHandler.js'></script>
+        src='<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js'></script>
+<script type="text/javascript" src='<?php echo URL::base(); ?>scripts/olab/inputHandler.js'></script>
 
 
 <h1>Mappings Manager</h1>
 
 <h3>Class Mappings</h3>
 <table class="table table-bordered table-striped">
-<thead>
+    <thead>
     <tr>
         <th>Identifier</th>
         <th>Class Name</th>
@@ -25,32 +26,34 @@
     <tbody>
     <?php
     $classMappings = $templateData["classMappings"];
-    if(isset($classMappings)and count($classMappings)>0):
-    foreach ($classMappings as $classMapping):?>
-        <tr>
-            <td>
-                <?php echo $classMapping->id; ?>
-            </td>
-            <td>
+    if (isset($classMappings)and count($classMappings) > 0):
+        foreach ($classMappings as $classMapping):?>
+            <tr>
+                <td>
+                    <?php echo $classMapping->id; ?>
+                </td>
+                <td>
 
-                <?php echo $classMapping->class; ?>
-            </td>
-            <td>
-                <a target="_blank" href="<?php echo $classMapping->term->getFullRepresentation(); ?>">
-                    <?php echo $classMapping->term->term_label; ?></a>
+                    <?php echo $classMapping->class; ?>
+                </td>
+                <td>
+                    <a target="_blank" href="<?php echo $classMapping->term->getFullRepresentation(); ?>">
+                        <?php echo $classMapping->term->term_label; ?></a>
 
-            </td>
-            <td>
-                <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deleteclass'; ?>">
-                    <input type="hidden" name="id" value="<?php echo $classMapping->id; ?>"/>
-                    <button class="btn btn-danger" type="submit"><i class="icon-trash"></i>Delete</button>
+                </td>
+                <td>
+                    <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deleteclass'; ?>">
+                        <input type="hidden" name="id" value="<?php echo $classMapping->id; ?>"/>
+                        <button class="btn btn-danger" type="submit"><i class="icon-trash"></i>Delete</button>
 
-                </form>
-            </td>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr class="info">
+            <td colspan="4">There are no class mappings yet. You may add one by using the form below.</td>
         </tr>
-    <?php endforeach;?>
-    <?php else:?>
-<tr class="info"><td colspan="4">There are no class mappings yet. You may add one by using the form below.</td></tr>
 
 
     <?php endif; ?>
@@ -76,8 +79,8 @@
                 <div class="controls">
                     <select name='class' id="cl-class">
                         <?php foreach ($models as $key => $model): ?>
-                            <option value="<?php echo $key?>"><?php echo $model?></option>
-                        <?php endforeach;?>
+                            <option value="<?php echo $key ?>"><?php echo $model ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -87,16 +90,20 @@
 
                 <div class="controls">
                     <select name='term_id' id="cl-term">
-                        <?php foreach ($terms_classes as $id => $term): ?>
-                            <option title="<?php echo $term["uri"];?>" value="<?php echo $id?>"><?php echo $term["label"];?></option>
-                        <?php endforeach;?>
+                        <?php foreach ($terms_classes as $vocab => $terms_classes_terms) { ?>
+                            <optgroup label="<?php echo $vocab;?>">
+                            <?php foreach ($terms_classes_terms as $id => $term) { ?>
+                                <option title="<?php echo $term["uri"]; ?>"
+                                        value="<?php echo $id ?>"><?php echo $term["label"]; ?></option>
+                            <?php } ?></optgroup>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
         </fieldset>
-<div class="form-actions">
-        <input class="btn btn-primary" type="submit" value="Add">
-</div>
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="Add">
+        </div>
     </form>
 
 </div>
@@ -118,36 +125,39 @@
     <tbody>
     <?php
     $legacyPropertyMappings = $templateData["legacyPropertyMappings"];
-    if(isset($classMappings)and count($classMappings)>0):
-    foreach ($legacyPropertyMappings as $legacyPropertyMapping):?>
-        <tr>
-            <td>
-                <?php echo $legacyPropertyMapping->id; ?>
-            </td>
-            <td>
-                <?php echo $legacyPropertyMapping->class; ?>
-            </td>
-            <td>
-                <?php echo $legacyPropertyMapping->property; ?>
-            </td>
-            <td>
-                <a target="_blank" href="<?php echo $legacyPropertyMapping->term->getFullRepresentation(); ?>">
-                <?php echo $legacyPropertyMapping->term->term_label; ?></a>
-            </td>
-            <td>
-                <?php echo $legacyPropertyMapping->type; ?>
-            </td>
-            <td>
-                <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletelegacy'; ?>">
-                    <input type="hidden" name="id" value="<?php echo $legacyPropertyMapping->id; ?>"/>
-                    <button class="btn btn-danger" type="submit" ><i class="icon-trash"></i> Delete</button>
-                </form>
-            </td>
-        </tr>
-    <?php endforeach;?>
+    if (isset($classMappings)and count($classMappings) > 0):
+        foreach ($legacyPropertyMappings as $legacyPropertyMapping):?>
+            <tr>
+                <td>
+                    <?php echo $legacyPropertyMapping->id; ?>
+                </td>
+                <td>
+                    <?php echo $legacyPropertyMapping->class; ?>
+                </td>
+                <td>
+                    <?php echo $legacyPropertyMapping->property; ?>
+                </td>
+                <td>
+                    <a target="_blank" href="<?php echo $legacyPropertyMapping->term->getFullRepresentation(); ?>">
+                        <?php echo $legacyPropertyMapping->term->term_label; ?></a>
+                </td>
+                <td>
+                    <?php echo $legacyPropertyMapping->type; ?>
+                </td>
+                <td>
+                    <form method="post"
+                          action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletelegacy'; ?>">
+                        <input type="hidden" name="id" value="<?php echo $legacyPropertyMapping->id; ?>"/>
+                        <button class="btn btn-danger" type="submit"><i class="icon-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
 
-    <?php else:?>
-        <tr class="info"><td colspan="6">There are no common property mappings yet. You may add one by using the form below.</td></tr>
+    <?php else: ?>
+        <tr class="info">
+            <td colspan="6">There are no common property mappings yet. You may add one by using the form below.</td>
+        </tr>
 
 
     <?php endif; ?>
@@ -175,8 +185,8 @@
                 <div class="controls">
                     <select name='class' id="legacy-class">
                         <?php foreach ($models as $key => $model): ?>
-                            <option value="<?php echo $key?>"><?php echo $model?></option>
-                        <?php endforeach;?>
+                            <option value="<?php echo $key ?>"><?php echo $model ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -192,9 +202,14 @@
 
                 <div class="controls">
                     <select name='term_id' id="legacy-term">
-                        <?php foreach ($terms_properties as $id => $term): ?>
-                            <option title="<?php echo $term["uri"];?>" value="<?php echo $id?>"><?php echo $term["label"];?></option>
-                        <?php endforeach;?>
+                        <?php foreach ($terms_properties as $vocab => $terms_properties_terms) { ?>
+                            <optgroup label="<?php echo $vocab;?>">
+                            <?php  foreach ($terms_properties_terms as $id => $term) { ?>
+                                <option title="<?php echo $term["uri"]; ?>"
+                                        value="<?php echo $id ?>"><?php echo $term["label"]; ?></option>
+                            <?php } ?>
+                            </optgroup>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -211,9 +226,9 @@
             </div>
         </fieldset>
 
-<div class="form-actions">
-        <input class="btn btn-primary" type="submit" value="Add">
-</div>
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="Add">
+        </div>
     </form>
 
 </div>
@@ -234,34 +249,37 @@
     <tbody>
     <?php
     $metadataMappings = $templateData["metadataMappings"];
-    if(isset($classMappings)and count($classMappings)>0):
-    foreach ($metadataMappings as $metadataMapping):?>
-        <tr>
-            <td>
-                <?php echo $metadataMapping->id; ?>
-            </td>
-            <td>
-                <?php echo $metadataMapping->metadata->label; ?>
-            </td>
-            <td>
-                <a target="_blank" href="<?php echo $metadataMapping->term->getFullRepresentation(); ?>">
+    if (isset($classMappings)and count($classMappings) > 0):
+        foreach ($metadataMappings as $metadataMapping):?>
+            <tr>
+                <td>
+                    <?php echo $metadataMapping->id; ?>
+                </td>
+                <td>
+                    <?php echo $metadataMapping->metadata->label; ?>
+                </td>
+                <td>
+                    <a target="_blank" href="<?php echo $metadataMapping->term->getFullRepresentation(); ?>">
 
-                <?php echo $metadataMapping->term->term_label; ?></a>
+                        <?php echo $metadataMapping->term->term_label; ?></a>
 
-            </td>
-            <td>
-                <?php echo $metadataMapping->type; ?>
-            </td>
-            <td>
-                <form method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletemetadata'; ?>">
-                    <input type="hidden" name="id" value="<?php echo $metadataMapping->id; ?>"/>
-                    <button class="btn btn-danger" type="submit" ><i class="icon-trash"></i> Delete</button>
-                </form>
-            </td>
+                </td>
+                <td>
+                    <?php echo $metadataMapping->type; ?>
+                </td>
+                <td>
+                    <form method="post"
+                          action="<?php echo URL::base() . 'vocabulary/mappings/manager/deletemetadata'; ?>">
+                        <input type="hidden" name="id" value="<?php echo $metadataMapping->id; ?>"/>
+                        <button class="btn btn-danger" type="submit"><i class="icon-trash"></i> Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr class="info">
+            <td colspan="5">There are no metadata mappings yet. You may add one by using the form below.</td>
         </tr>
-    <?php endforeach;?>
-    <?php else:?>
-        <tr class="info"><td colspan="5">There are no metadata mappings yet. You may add one by using the form below.</td></tr>
 
 
     <?php endif; ?>
@@ -270,7 +288,8 @@
 
 
 <div>
-    <form class="form-horizontal" method="post" action="<?php echo URL::base() . 'vocabulary/mappings/manager/addmetadata'; ?>">
+    <form class="form-horizontal" method="post"
+          action="<?php echo URL::base() . 'vocabulary/mappings/manager/addmetadata'; ?>">
         <?php
 
         $models = $templateData["models"];
@@ -286,8 +305,8 @@
                 <div class="controls">
                     <select name='metadata_id' id="metadata_id">
                         <?php foreach ($metadata as $field): ?>
-                            <option value="<?php echo $field->id?>"><?php echo $field->label?></option>
-                        <?php endforeach;?>
+                            <option value="<?php echo $field->id ?>"><?php echo $field->label ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
             </div>
@@ -296,9 +315,14 @@
 
                 <div class="controls">
                     <select name='term_id' id="m-term-id">
-                        <?php foreach ($terms_properties as $id => $term): ?>
-                            <option title="<?php echo $term["uri"];?>" value="<?php echo $id?>"><?php echo $term["label"];?></option>
-                        <?php endforeach;?>
+                        <?php foreach ($terms_properties as $vocab => $terms_properties_terms) { ?>
+                        <optgroup label="<?php echo $vocab;?>">
+                            <?php foreach ($terms_properties_terms as $id => $term) { ?>
+                                <option title="<?php  echo $term["uri"]; ?>"
+                                        value="<?php echo $id ?>"><?php echo $term["label"]; ?></option>
+                            <?php } ?>
+                            </optgroup>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -314,9 +338,9 @@
                 </div>
             </div>
         </fieldset>
-<div class="form-actions">
-        <input class="btn btn-primary" type="submit" value="Add">
-</div>
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="Add">
+        </div>
     </form>
 
 </div>

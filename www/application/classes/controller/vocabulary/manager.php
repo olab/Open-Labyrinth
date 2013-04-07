@@ -42,6 +42,15 @@ class Controller_Vocabulary_Manager extends Controller_Base
         $this->template->set('templateData', $this->templateData);
     }
 
+    public function action_delete(){
+
+        $namespace = $this->request->post('uri');
+
+        $vocab = Model_Leap_Vocabulary::getVocabularyByNamespace($namespace);
+        $vocab->delete();
+        Request::initial()->redirect(URL::base() . 'vocabulary/manager');
+    }
+
     public function action_import(){
 
 

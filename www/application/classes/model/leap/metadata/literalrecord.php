@@ -140,7 +140,10 @@ abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Rec
         return $html;
     }
 
-
+    public function dataType()
+    {
+        return "string";
+    }
     public function toString(){
         return $this->value;
     }

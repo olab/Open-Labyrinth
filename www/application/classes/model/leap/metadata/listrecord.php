@@ -192,7 +192,10 @@ class Model_Leap_Metadata_ListRecord extends Model_Leap_Metadata_Record
         return $html;
 
     }
-
+    public function dataType()
+    {
+        return "string";
+    }
     public function toString(){
         return $this->term->value;
     }

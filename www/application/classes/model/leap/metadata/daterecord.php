@@ -42,6 +42,12 @@ class Model_Leap_Metadata_DateRecord extends Model_Leap_Metadata_LiteralRecord
         return $html;
     }
 
+    public function dataType()
+    {
+        return "dateTime";
+    }
+
+
     public static function table() {
 
         return 'metadata_date_fields';

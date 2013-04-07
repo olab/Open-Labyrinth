@@ -231,7 +231,10 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
         return $html;
 
     }
-
+    public function dataType()
+    {
+        return "anyURI";
+    }
     public function toString()
     {
         return Model_Leap_Vocabulary::getObjectUri($this->field->name, $this->id);

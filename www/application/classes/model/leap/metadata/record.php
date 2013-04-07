@@ -102,6 +102,27 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
         $rec->delete();
     }
 
+    public  static function getRecordsOfMetadata($metadataName){
+
+        $metadata = Model_Leap_Metadata::getMetadataByName($metadataName);
+        $builder = DB_SQL::select('default')
+            ->from(DB_ORM::model($metadata->getModelname())->table())
+            ->where('field_id', '=', $metadata->id);
+
+        $result = $builder->query();
+        if ($result->is_loaded()) {
+            $metadataRecords = array();
+
+            foreach ($result as $record) {
+                $metadataRecords[] = DB_ORM::model($metadata->getModelname(), array((int)$record['id']));
+            }
+
+            return $metadataRecords;
+        }
+        else return array();
+
+    }
+
 
     public static function getMultiEditor($name, $values = array())
     {
@@ -189,6 +210,7 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
     }
 
     public abstract function toString();
+    public abstract function dataType();
 
     public function getTriples()
     {
@@ -198,7 +220,8 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
         $triples = array();
 
         foreach ($mappings as $mapping) {
-            $triple_data = array('s' => $uri, 'p' => $mapping->term->getFullRepresentation(), 'o' => $value, 'type' => $mapping->type);
+
+            $triple_data = array('s' => $uri, 'p' => $mapping->term->getFullRepresentation(), 'o' => $value, 'type' => $mapping->type, 'data_type'=>$this->dataType());
             $triple = DB_ORM::model('vocabulary_triple');
             $triple->load($triple_data);
             $triples[] = $triple;

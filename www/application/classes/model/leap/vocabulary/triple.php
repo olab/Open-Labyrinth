@@ -37,6 +37,11 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
                 'nullable' => FALSE,
                 'savable' => FALSE,
             )),
+            'data_type' => new DB_ORM_Field_String($this, array(
+                'max_length' => 200,
+                'nullable' => True,
+                'savable' => FALSE,
+        )),
 
         );
     }
@@ -47,12 +52,19 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
         $p = $this->p;
         $o = $this->o;
 
-        if ($this->type == Model_Leap_Vocabulary_Term::Property)
-            $o = "'$o'";
-        else
-            $o = "<$o>";
+        $arc_triple = array('s'=>$s,'p'=>$p,'o'=>$o);
 
-        return "<$s> <$p> $o.";
+
+        if($this->data_type!=NULL){
+            $arc_triple['o_datatype']="http://www.w3.org/2001/XMLSchema#". $this->data_type;
+    }
+
+        if ($this->type == Model_Leap_Vocabulary_Term::Property)
+            $arc_triple['o_type'] = "literal";
+        else
+            $arc_triple['o_type'] = "uri";
+
+        return $arc_triple;
     }
 
 }

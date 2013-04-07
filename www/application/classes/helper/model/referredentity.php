@@ -12,10 +12,8 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 {
     public function __construct($uri, $source, $labelProperty=null){
         $this->uri = $uri;
-        $this->narrower = array();
-        $this->broader = array();
-        $graph = new Graphite();
-        $graph->load( $source );
+        $graph =self::initGraph($source);
+
 
         if($labelProperty===null)
             $this->label = $graph->resource($uri)->label();
@@ -24,6 +22,28 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 
 
 
+    }
+
+    private static  function initGraph($source, $id = "")
+    {
+        if(!is_dir(sys_get_temp_dir() . '/olab/'))mkdir(sys_get_temp_dir() . '/olab/');
+        $temp_file = sys_get_temp_dir() . '/olab/' . md5($source).$id;
+        $graph = new Graphite();
+        if (!file_exists($temp_file)) {
+            $graph->load($source);
+            $graph->freeze($temp_file);
+        } else{
+
+            $graph = Graphite::thaw($temp_file);
+            if(count($graph->allSubjects())<1)
+            {
+                $graph->load($source);
+                $graph->freeze($temp_file);
+            }
+
+        }
+
+        return $graph;
     }
 
     private $label;
@@ -76,8 +96,8 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 
 
     public static function getAllTermsTree($source, $name, $cardinality, $label=null, $type = NULL){
-        $graph = new Graphite();
-        $graph->load( $source );
+        $graph = self::initGraph($source);
+
         if($type==NULL)
             $terms = $graph->allSubjects();
         else
@@ -114,8 +134,7 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 
     public static function getAllTerms($source, $name, $values, $labelProperty, $type = NULL){
 
-        $graph = new Graphite();
-        $graph->load( $source );
+        $graph = self::initGraph($source);
         if($type==NULL)
             $terms = $graph->allSubjects();
         else

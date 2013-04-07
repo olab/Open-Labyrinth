@@ -72,9 +72,13 @@ if (isset($templateData['map'])) { ?>
                                     </div>
 
                                 </fieldset>
+<div class="form-actions">
+    <div class="pull-right">
+        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save'); ?>">
+    </div>
+</div>
 
 
-                                    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
                             </form>
 
 <?php } ?>

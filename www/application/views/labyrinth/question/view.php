@@ -20,23 +20,26 @@
  */
 if (isset($templateData['map'])) { ?>
 <div class="page-header">
-    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1></div>
-    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
-    <div class="pull-left question-btn-container">
+    <div class="pull-right question-btn-container">
         <div class="btn-group">
-            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+        <button class="btn btn-primary" data-toggle="dropdown">
                 <i class="icon-plus-sign icon-white"></i>Add Question<span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
+            </button> <ul class="dropdown-menu">
                 <?php foreach ($templateData['question_types'] as $type) { ?>
-                <li><a href="<?php echo URL::base(); ?>questionManager/question/<?php echo $templateData['map']->id; ?>/<?php echo $type->id; ?>"><?php echo $type->title; ?></a></li>
+                    <li><a href="<?php echo URL::base(); ?>questionManager/question/<?php echo $templateData['map']->id; ?>/<?php echo $type->id; ?>"><?php echo $type->title; ?></a></li>
                 <?php } ?>
-            </ul>
+            </ul><?php } ?>
+            <button class="btn" id="copyQuestionBtn"><i class="icon-paste"></i> Paste question</button>
         </div>
+        </div>
+    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
+
+
         
-        <button class="btn btn-primary" id="copyQuestionBtn">Paste question</button>
+
     </div>
-    <?php } ?>
+
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -76,22 +79,22 @@ if (isset($templateData['map'])) { ?>
     <div class="modal hide" id="copyQuestionModal">
         <form class="form-horizontal question-copy-form" method="POST" action="<?php echo URL::base(); ?>questionManager/copyQuestion/<?php echo $templateData['map']->id; ?>">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h3>Paste question</h3>
             </div>
             <div class="modal-body">
-                <div align="center">
+                <div>
                     <div class="control-group">
                         <label class="control-label">Question ID:</label>
-                        <div class="controls">
-                            [[QU:<input style="width:50px;" type="text" name="questionID" value=""/>]]
+                        <div class="controls"><label>
+                            [[QU:<input style="width:50px;" type="text" name="questionID" value=""/>]]</label>
                         </div>
                     </div>
                     <?php if(isset($templateData['counters']) && count($templateData['counters']) > 0) { ?>
                     <div class="control-group">
-                        <label class="control-label">Assign to counter:</label>
+                        <label for="counterID" class="control-label">Assign to counter:</label>
                         <div class="controls">
-                            <select name="counterID">
+                            <select name="counterID" id="counterID">
                                 <option value="">Select</option>
                                 <?php foreach($templateData['counters'] as $counter) { ?>
                                 <option value="<?php echo $counter->id; ?>"><?php echo $counter->name; ?></option>

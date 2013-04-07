@@ -99,7 +99,18 @@ class Model_Leap_Vocabulary extends DB_ORM_Model
          return self::getGraphUri() . "resource/".$type."/".$id;
     }
 
+    public function delete($reset = FALSE) {
+        foreach($this->terms as $term){
+            foreach($term->mappings as $mapping){
+                $mapping->delete();
+            }
+            $term->delete();
+        }
 
+
+
+        parent::delete($reset);
+    }
     public function newVocabulary($namespace,  $alt_source = NULL, $prefix = NULL){
 
         $this->namespace = $namespace;

@@ -222,7 +222,10 @@ class Model_Leap_Metadata_ReferenceRecord extends Model_Leap_Metadata_Record
         return $this->uri;
     }
 
-
+    public function dataType()
+    {
+        return "anyURI";
+    }
 
     public function handlesCardinality()
     {

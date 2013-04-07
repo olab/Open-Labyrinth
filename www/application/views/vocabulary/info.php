@@ -27,13 +27,19 @@ if (isset($templateData['vocabularies'])) {
     <?php foreach ($templateData['vocabularies'] as $vocab) { ?>
             <tr>
                 <td>
-        <?php echo $vocab->namespace; ?> [<?php echo $vocab->id; ?>]
+
+        <?php echo $vocab->namespace; ?>         <a target="_blank" href="<?php echo $vocab->namespace; ?>"><i style="text-decoration: none" class="icon-external-link"></i></a> [<?php echo $vocab->id; ?>]
             <div style="margin-left: 20px; text-align: justify">
             <?php foreach ($vocab->terms as $term) { ?>
                 <a target="_blank" title="<?php echo $term->term_label; ?>" href="<?php echo $term->getFullRepresentation(); ?>"><?php echo $term->name; ?></a> [<?php echo $term->id; ?>],
             <?php } ?>
             </div></td>
-            <td><a class="btn btn-info" target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>"><i class="icon-refresh"></i> Reimport</a></td>
+            <td><form  method="post" action="<?php echo URL::base() . 'vocabulary/manager/delete'; ?>">
+                    <input type="hidden" name="uri" id="uri" value="<?php echo $vocab->namespace;?>">
+                    <div class="btn-group-vertical"><a class="btn btn-info" target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>"><i class="icon-refresh"></i> Reimport</a>
+
+                <button class="btn btn-danger" style="width: 100%" type="submit"><i class="icon-trash"></i> Delete</button> </div></form>
+            </td>
             </tr>
         <?php } ?>
     <?php } ?>

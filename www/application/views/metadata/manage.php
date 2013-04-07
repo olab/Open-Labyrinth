@@ -59,7 +59,7 @@
 
 
     $metadata = $templateData["metadata"];
-
+if(isset($metadata) and count($metadata)>0){
     foreach ($metadata as $field):?>
         <tr>
         <td>
@@ -103,6 +103,11 @@
         </td>
         </tr>
     <?php endforeach;?>
+
+<?php } else{?>
+    <tr class="info"><td colspan="9">There are no metadata defined yet. You may add a metadata field, using the form below</td></tr>
+
+<?php } ?>
 
 
     </tbody>

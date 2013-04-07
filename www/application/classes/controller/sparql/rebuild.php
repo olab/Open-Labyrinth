@@ -34,12 +34,10 @@ class Controller_Sparql_Rebuild extends Controller_Base
             //$triples = array_merge($triples, $field_triples);
 
             foreach ($field_triples as $triple) {
-                $tripleString = $triple->toString();
-                $query =
-                    "INSERT INTO <$graph_uri> {" .
-                        $tripleString .
-                        "}";
-                $store->query($query);
+
+                $arc_triple = $triple->toString();
+
+                $store->insert(array($arc_triple),$graph_uri);
             }
         }
 
@@ -74,14 +72,9 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
 
             foreach ($class_triples as $triple) {
-                $tripleString = $triple->toString();
-                $query =
-                    "INSERT INTO <$graph_uri> {" .
-                        $tripleString .
-                        "}";
+                $arc_triple = $triple->toString();
 
-
-                $store->query($query);
+                $store->insert(array($arc_triple),$graph_uri);
             }
 
 
@@ -97,15 +90,9 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
 
             foreach ($property_triples as $triple) {
-                $tripleString = $triple->toString();
+                $arc_triple = $triple->toString();
 
-                $query =
-                    "INSERT INTO <$graph_uri> {" .
-                        $tripleString .
-                        "}";
-
-
-                $store->query($query);
+                $store->insert(array($arc_triple),$graph_uri);
             }
 
 
