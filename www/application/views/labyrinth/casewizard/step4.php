@@ -72,7 +72,7 @@
                     </ul>
                     <p style="position:absolute; top:4px; right:4px;" id="nodeID_container" class="label label-info">NodeID - <span id="nodeID_label"></span></p>
                 </div>
-                <div class="tab-content">
+                <div id="tab-content-scrollable" class="tab-content">
                     <div class="tab-pane" id="actions">
                         <div class="block" align="center">
                             <button id="veNodeRootBtn" type="button" class="btn" data-toggle="button">Set as Root</button>

@@ -265,6 +265,22 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
             $this->save();
         }
     }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $rules = array();
+            foreach($result as $record) {
+                $rules[] = $record;
+            }
+
+            return $rules;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

@@ -36,7 +36,6 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base() . 'nodeManager/sections/' . $templateData['map']->id; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>
-
             <li><a href="<?php echo URL::base() . 'chatManager/index/' . $templateData['map']->id; ?>"><i class="icon-comments-alt"></i> <?php echo __('Chats'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'questionManager/index/' . $templateData['map']->id; ?>"><i class="icon-question-sign"></i> <?php echo __('Questions'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'avatarManager/index/' . $templateData['map']->id; ?>"><i class="icon-user"></i> <?php echo __('Avatars'); ?></a></li>

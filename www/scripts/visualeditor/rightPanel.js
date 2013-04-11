@@ -260,8 +260,6 @@ var RightPanel = function() {
             }
         }
         self.visualEditor.unsavedData = false;
-        var tm = tinyMCE.activeEditor;
-        tm.startContent = tm.getContent({format : 'raw'});
 
         self.visualEditor.Render();
     }

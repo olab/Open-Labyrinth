@@ -31,6 +31,7 @@ var DeleteModal = function() {
     self.Show = function(mode) {
         dialogMode = mode;
         if($modal != null) {
+            self.Hide();
             if(mode == 'single') {
                 $('.deleteModalHeaderNode').show();
                 $('.deleteModalContentNode').show();

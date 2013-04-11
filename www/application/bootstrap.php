@@ -106,7 +106,7 @@ Kohana::modules(array(
     // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
     'leap' => MODPATH . 'leap', // Include Leap ORM
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
-     'restful' => MODPATH . 'restful', // RESTful interface
+    'restful' => MODPATH . 'restful', // RESTful interface
 ));
 
 

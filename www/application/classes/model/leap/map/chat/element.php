@@ -154,6 +154,22 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
             $builder->execute();
         }
     }
+
+    public function exportMVP($chatId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('chat_id', '=', $chatId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = $record;
+            }
+
+            return $elements;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

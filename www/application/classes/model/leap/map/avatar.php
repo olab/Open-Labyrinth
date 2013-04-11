@@ -322,6 +322,22 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
 
         return $avatarMap;
     }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $avatars = array();
+            foreach($result as $record) {
+                $avatars[] = $record;
+            }
+
+            return $avatars;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

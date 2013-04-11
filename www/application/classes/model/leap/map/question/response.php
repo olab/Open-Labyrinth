@@ -172,6 +172,22 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
             $builder->execute();
         }
     }
+
+    public function exportMVP($questionId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('question_id', '=', (int)$questionId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $responses = array();
+            foreach($result as $record) {
+                $responses[] = $record;
+            }
+
+            return $responses;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

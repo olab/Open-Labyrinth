@@ -43,7 +43,7 @@ class Controller_ClusterManager extends Controller_Base {
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            $this->templateData['title']= "Clusters";
+
             $this->templateData['left'] = $leftView;
             $this->templateData['center'] = $view;
             unset($this->templateData['right']);

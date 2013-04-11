@@ -167,7 +167,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
     public function getAllMediaFiles($mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -388,6 +388,25 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         
         return $result;
     }
-} 
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = $record;
+            }
+
+            return $elements;
+        }
+
+        return NULL;
+    }
+}
 
 ?>
