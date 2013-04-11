@@ -621,6 +621,17 @@ td[colspan*="11"] {
     width:100%;
 }
 
+
+.metadata-container .controls >div.modal{
+
+    width:auto;
+}
+
+.modal-body div{
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 .inlineobjectrecord > .control-subgroup {
     margin-left: 0;
 }

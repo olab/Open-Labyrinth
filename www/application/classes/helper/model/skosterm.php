@@ -119,7 +119,14 @@ class Helper_Model_SkosTerm extends Kohana_Object
         else {
             $cardinalityClass = "single";
         }
+        $html .= '<div id="'.$name.'_results"></div>';
 
+        $html .= '<div id="'.$name.'_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="'.$name.'Label" aria-hidden="true">';
+        $html .= '  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="'.$name.'Label">Select '.$name.'</h3>
+  </div>';
+        $html .= '  <div class="modal-body">';
         $html .= "<div id='$name' class='tree $cardinalityClass'>";
         $processed = array();
         foreach($tree as $uri=>$node){
@@ -134,6 +141,13 @@ class Helper_Model_SkosTerm extends Kohana_Object
                 $processed = self::printRecursive($html,$tree,$uri, $processed );
             }
         }
+        $html .= '</div>';
+        $html .= '  <div class="modal-footer">
+    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+
+  </div>';
+
+        $html .= '</div>';
         $html .= '</div>';
 
         return $html;

@@ -29,7 +29,21 @@ $(document).ready(function () {
             }
 
         });
+    $(".tree").on("change_state.jstree", function(event,data){
+       // alert(this.id + data.rslt.attr("id"));
 
+        var tree = jQuery.jstree._reference (this);
+
+        var checked = tree.get_checked(undefined,true);
+
+        $('#'+this.id+"_results").empty();
+
+        for(i=0; i<checked.length; i++){
+            $('#'+this.id+"_results").append(" <span class='label label-info'>"+$(checked[i]).children("a").text().trim()
+                +"</span> ")
+        }
+
+    });
 
     $(".single").on("change_state.jstree", function(event,data){
         var tree = jQuery.jstree._reference (event.target);
