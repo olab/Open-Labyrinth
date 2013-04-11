@@ -67,11 +67,11 @@ class Helper_Controller_Metadata
 
     public  static function metadataView($metadataRecord)
     {
+
         $result =array();
-        if(!isset($metadataRecord[0])){
-            var_dump($metadataRecord);
-           // return;
-        }
+
+
+        if(!$metadataRecord[0]->is_loaded())return array("label"=>"", "body"=>"");
         $label = $metadataRecord[0]->field->name;
 
         $name = $metadataRecord[0]->field->name;
@@ -82,13 +82,13 @@ class Helper_Controller_Metadata
 
 
             $id = $metadataRecord[0]->id;
+
             $html .= "<div>";
             $html .= Model_Leap_Metadata_Record::getViewer($name, $id);
             $html .= "</div>";
 
         } else {
 
-            $html .= "<div><h5>$label</h5><ul>";
 
 
             for ($i = 0; $i < $valuesCount; $i++) {
@@ -133,7 +133,9 @@ class Helper_Controller_Metadata
             }
             $html .= "<div id='$name' class=' controls $type single' >";
             if($handlesCardinality){
-                $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);
+                $multi = Model_Leap_Metadata_Record::getMultiEditor($name, $values);
+                $html .= $multi["html"] ;
+                $controls = $multi["controls"];
             }
             else{
                 $html .= Model_Leap_Metadata_Record::getEditor($name, $id);
@@ -168,8 +170,10 @@ class Helper_Controller_Metadata
                 }
                 $controls .= "<a class='add btn btn-info'><i class='icon-plus'></i>Add</a>";
             } else {
+                $multi = Model_Leap_Metadata_Record::getMultiEditor($name, $values);
+                $html .= $multi["html"] ;
+                $controls = $multi["controls"];
 
-                $html .= Model_Leap_Metadata_Record::getMultiEditor($name, $values);
             }
             $html .= "</div>";
         }

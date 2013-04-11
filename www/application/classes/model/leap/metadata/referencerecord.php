@@ -55,12 +55,6 @@ class Model_Leap_Metadata_ReferenceRecord extends Model_Leap_Metadata_Record
         );
     }
 
-    public function getPossibleTerms($metadata)
-    {
-        return Helper_Model_ReferredEntity::getAllTerms($metadata->extras["source"]);
-    }
-
-
     public static function data_source()
     {
         return 'default';
@@ -130,12 +124,14 @@ class Model_Leap_Metadata_ReferenceRecord extends Model_Leap_Metadata_Record
         $type = isset($metadata->extras['type'])?$metadata->extras['type']:null;
         $label = isset($metadata->extras['label'])?$metadata->extras['label']:null;
         $html = self::prepareViews();
-
+        $controls = "";
 
         if($metadata->cardinality==Model_Leap_Metadata::Cardinality_Many){
 
             $html .= Helper_Model_ReferredEntity::getAllTermsTree($source, $metadata->name, $metadata->cardinality, $label,$type);
-
+            $controls =  '<a href="#'.$name.'_modal" role="button" class="btn btn-info" data-toggle="modal">
+            <i class="icon-list-alt"></i>
+            Select</a>';
             if (isset($values[0])) $values_count = count($values);
             else $values_count = 0;
             for ($i = 0; $i < $values_count; $i++) {
@@ -143,17 +139,19 @@ class Model_Leap_Metadata_ReferenceRecord extends Model_Leap_Metadata_Record
                 $id = $values[$i]->id;
 
                 $html .= Model_Leap_Metadata_Record::getEditor($name, $id);
+
             }
         }
         else{
 
             $html .= Helper_Model_ReferredEntity::getAllTerms($source, $metadata->name, $values->as_array(), $label, $type);
+
+
         }
 
 
 
-
-        return $html;
+        return array("controls"=>$controls, "html"=> $html);
 
     }
 
