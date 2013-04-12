@@ -63,7 +63,7 @@
             </div>
         </div>
         
-        <div class="control-group sbumitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
+        <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Submit button text') ?></label>
             <div class="controls">
                 <input type="text" name="submitButtonText" value="<?php echo ((isset($templateData['question']) && $templateData['question']->submit_text != null) ? $templateData['question']->submit_text : 'Submit'); ?>"/>
@@ -71,7 +71,7 @@
         </div>
         
         <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
-        <div class="control-group sbumitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
+        <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Redirect Node') ?></label>
             <div class="controls">
                 <select name="redirectNode">
@@ -156,11 +156,11 @@
             <?php $index++; } ?>
         <?php } ?>
     </div>
-    
+
     <div class="form-actions">
-        <button class="btn btn-primary" type="button" id="addResponse">Add response</button>
-    </div>
-    <div class="form-actions">
+        <div class="pull-left">
+            <button class="btn btn-info" type="button" id="addResponse"><i class="icon-plus-sign"></i>Add response</button>
+        </div>
         <div class="pull-right">
             <input class="btn btn-primary btn-large" type="submit" name="Submit" value="Save changes">
         </div>

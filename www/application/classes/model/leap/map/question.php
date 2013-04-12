@@ -353,9 +353,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('feedback', Arr::get($values, 'feedback', ''))
                 ->column('show_answer', (int)Arr::get($values, 'showAnswer', 0))
                 ->column('counter_id', (int)Arr::get($values, 'counter', 0))
-                ->column('num_tries',  Arr::get($values, 'tries', -1))
+                ->column('num_tries',  (int)Arr::get($values, 'tries', -1))
                 ->column('show_submit', Arr::get($values, 'showSubmit', 0))
-                ->column('redirect_node_id', Arr::get($values, 'redirectNode', null))
+                ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
                 ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
                 ->execute();
         
