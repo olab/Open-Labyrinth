@@ -229,13 +229,22 @@ var VisualEditor = function() {
     
     // Zoom in viewport
     self.ZoomIn = function() {
-        var result = false;
-        var scale = viewport.GetScale();
-        
-        var testScale = ((scale[0] + scale[1]) * 0.5) * self.zommOutFactor;
+        var result    = false,
+            scale     = viewport.GetScale(),
+            testScale = ((scale[0] + scale[1]) * 0.5) * self.zommOutFactor,
+            oldSize = [self.canvas.width / scale[0], self.canvas.height / scale[1]],
+            newSize = [0, 0],
+            newScale = [1, 1];
+            
         if(testScale <= maxZoom) {
             result = true;
+            
             viewport.Scale(self.zoomInFactor, self.zoomInFactor);
+            newScale = viewport.GetScale();
+            
+            newSize = [self.canvas.width / newScale[0], self.canvas.height / newScale[1]];
+            
+            viewport.TranslateWithoutScale(-(oldSize[0] - newSize[0]) * 0.5, -(oldSize[1] - newSize[1]) * 0.5);
         }
         
         if(testScale * self.zoomInFactor > maxZoom)
@@ -246,12 +255,21 @@ var VisualEditor = function() {
     
     // Zoom out viewport
     self.ZoomOut = function() {
-        var result = false;
-        var scale = viewport.GetScale();
-        var testScale = ((scale[0] + scale[1]) * 0.5) / self.zommOutFactor;
+        var result = false,
+            scale = viewport.GetScale(),
+            testScale = ((scale[0] + scale[1]) * 0.5) / self.zommOutFactor,
+            oldSize = [self.canvas.width / scale[0], self.canvas.height / scale[1]],
+            newSize = [0, 0],
+            newScale = [1, 1];
+            
         if(testScale >= minZoom) {
             result = true;
+
             viewport.Scale(self.zommOutFactor, self.zommOutFactor);
+            newScale = viewport.GetScale();
+            
+            newSize = [self.canvas.width / newScale[0], self.canvas.height / newScale[1]];
+            viewport.TranslateWithoutScale((newSize[0] - oldSize[0]) * 0.5, (newSize[1] - oldSize[1]) * 0.5);
         }
     
         if(testScale / self.zoomInFactor < minZoom)
