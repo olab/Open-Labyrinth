@@ -715,10 +715,6 @@ class Controller_LabyrinthManager extends Controller_Base {
                     $this->templateData['map'] = $action;
                     $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($action);
 
-                    $saveJson = null;
-                    if($saveJson != null)
-                        $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
-
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
                     $this->templateData['mapModel'] = DB_ORM::model('map', array((int)$action));
                 }

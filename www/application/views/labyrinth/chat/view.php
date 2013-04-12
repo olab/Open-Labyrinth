@@ -51,7 +51,7 @@ if (isset($templateData['map'])) {
                     <td>
                         <div class="btn-group">
                         <a class="btn btn-info"
-                           href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id . '/' . count($chat->elements); ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
+                           href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
                         <a class="btn btn-danger"
                            href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a></div>
                     </td>
