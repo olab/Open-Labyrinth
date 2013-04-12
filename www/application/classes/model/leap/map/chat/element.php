@@ -123,8 +123,10 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
     public function updateElementsByChatId($chatId, $values) {
         $elements = $this->getAllElementsByChatId($chatId);
         $ids = array();
-        foreach($elements as $el){
-            $ids[$el->id] = 1;
+        if (count($elements) > 0){
+            foreach($elements as $el){
+                $ids[$el->id] = 1;
+            }
         }
         $qarray = Arr::get($values, 'qarray', '');
         if (count($qarray) > 0){

@@ -64,7 +64,7 @@ if (isset($templateData['map'])) {
                     <a target="_blank" class="btn btn-success" href="<?php echo URL::base() . 'renderLabyrinth/go/' . $templateData['map']->id.'/'. $node->id; ?>">
                         <i class="icon-eye-open icon-white"></i>
                         <?php echo __('View'); ?></a>
-                    <a data-toggle="modal" href="#" data-target="#delete-node-<?php echo $node->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
+                    <a data-toggle="modal" href="javascript:void(0)" data-target="#delete-node-<?php echo $node->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
                     </div>
                     <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $node->id; ?>">
                         <div class="modal-header">
