@@ -36,12 +36,14 @@ if (isset($templateData['vocabularies'])) {
             </div></td>
             <td><form  method="post" action="<?php echo URL::base() . 'vocabulary/manager/delete'; ?>">
                     <input type="hidden" name="uri" id="uri" value="<?php echo $vocab->namespace;?>">
-                    <div class="btn-group-vertical"><a class="btn btn-info" target="_blank" href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>"><i class="icon-refresh"></i> Reimport</a>
+                    <div class="btn-group-vertical"><a class="btn btn-info"  href="<?php echo URL::base() . 'vocabulary/manager/import/?uri='.$vocab->namespace; ?>"><i class="icon-refresh"></i> Reimport</a>
 
                 <button class="btn btn-danger" style="width: 100%" type="submit"><i class="icon-trash"></i> Delete</button> </div></form>
             </td>
             </tr>
         <?php } ?>
+    <?php } else{ ?>
+        <tr class="info"><td colspan="2">No vocabularies have been imported yet. You may import a new vocabulary, using the form below.</td></tr>
     <?php } ?>
         </tbody>
     </table>

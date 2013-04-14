@@ -19,7 +19,8 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
     const RDFPropertyType = "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property";
     const RDFClassType = "http://www.w3.org/2000/01/rdf-schema#Class";
     const OWLClassType = "http://www.w3.org/2002/07/owl#Class";
-
+    const OWLObjectProperty = "http://www.w3.org/2002/07/owl#ObjectProperty";
+    const OWLAnnotationProperty = "http://www.w3.org/2002/07/owl#AnnotationProperty";
     public function __construct() {
         parent::__construct();
 
@@ -142,7 +143,7 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
             $this->load();
 
             $this->term_label = $label;
-
+            $this->type = $type;
 
         }
 

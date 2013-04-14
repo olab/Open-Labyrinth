@@ -44,7 +44,8 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         }
 
         $terms_properties = array();
-        foreach (Model_Leap_Vocabulary_Term::getAll(array(Model_Leap_Vocabulary_Term::RDFPropertyType)) as $vocab => $terms) {
+        foreach (Model_Leap_Vocabulary_Term::getAll(array(Model_Leap_Vocabulary_Term::RDFPropertyType, Model_Leap_Vocabulary_Term::OWLObjectProperty, Model_Leap_Vocabulary_Term::OWLAnnotationProperty)) as $vocab => $terms) {
+
             if (!isset($terms_properties[$vocab]))
                 $terms_properties[$vocab] = array();
             foreach ($terms as $term) {
