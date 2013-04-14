@@ -91,7 +91,6 @@
                                         <li class="nav-header"><?php echo __('Create Labyrinth'); ?></li>
                                         <li><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
                                         <li><a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
-
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Import Labyrinths'); ?></li>
                                         <li><a href="<?php echo URL::base() . 'exportImportManager/importVUE'; ?>"><?php echo __('VUE'); ?></a></li>
@@ -122,16 +121,9 @@
                                             <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
                                             <li>
                                             <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Semantics'); ?></a></li>
-
-
-
-
-
                                         <?php
                                         }
                                         ?>
-
-
                                     </ul>
                                 </li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>

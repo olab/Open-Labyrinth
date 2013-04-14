@@ -140,8 +140,8 @@ class Model_Leap_Metadata_SkosRecord extends Model_Leap_Metadata_Record
 
             $html .= Model_Leap_Metadata_Record::getEditor($name, $id);
         }
-
-        return $html;
+        $controls = '<a href="#'.$name.'_modal" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-list-alt"></i>Select</a>';
+        return array("html"=> $html, "controls"=>$controls);
 
     }
 

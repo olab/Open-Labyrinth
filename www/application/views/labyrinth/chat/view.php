@@ -50,10 +50,26 @@ if (isset($templateData['map'])) {
                     <td><?php echo $chat->stem; ?></td>
                     <td>
                         <div class="btn-group">
-                        <a class="btn btn-info"
-                           href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id . '/' . count($chat->elements); ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
-                        <a class="btn btn-danger"
-                           href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><i class="icon-trash"></i><?php echo __('Delete'); ?></a></div>
+                            <a class="btn btn-info" href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id; ?>">
+                                <i class="icon-edit"></i><?php echo __('Edit'); ?>
+                            </a>
+                            <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-chat-<?php echo $chat->id; ?>">
+                                <i class="icon-trash"></i><?php echo __('Delete'); ?>
+                            </a>
+                        </div>
+                        <div class="modal hide alert alert-block alert-error fade in" id="delete-chat-<?php echo $chat->id; ?>">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                            </div>
+                            <div class="modal-body">
+                                <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $chat->stem . '" chat?'); ?></p>
+                                <p>
+                                    <a class="btn btn-danger" href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><?php echo __('Delete'); ?></a>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                </p>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             <?php } ?>

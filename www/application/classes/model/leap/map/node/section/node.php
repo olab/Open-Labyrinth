@@ -146,6 +146,22 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
             $builder->execute();
         }
     }
+
+    public function exportMVP($sectionId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $sections = array();
+            foreach($result as $record) {
+                $sections[] = $record;
+            }
+
+            return $sections;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

@@ -106,9 +106,10 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
         $this->function = Arr::get($values, 'counter', '');
         
         $this->save();
+        $this->reset();
     }
         
-    public function deleteElemtnsByNumber($chatId, $number) {
+    public function deleteElementsByNumber($chatId, $number) {
         $builder = DB_SQL::select('default')->from($this->table())->where('chat_id', '=', $chatId);
         $result = $builder->query();
         
@@ -118,29 +119,51 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
             }
         }
     }
-    
-    public function updateElementsByChatId($chatId, $chatQuestionCount, $values) {
-        $elements = $this->getAllElementsByChatId($chatId);
 
-        for($i = 0; $i < $chatQuestionCount; $i++) {
-            if($elements != NULL and $i < count($elements) and isset($elements[$i])) {
-                $elements[$i]->question = Arr::get($values, 'question'.($i+1), '');
-                $elements[$i]->response = Arr::get($values, 'response'.($i+1), '');
-                $elements[$i]->function = Arr::get($values, 'counter'.($i+1), '');
-                
-                $elements[$i]->save();
-            } else {
-                $this->addElement($chatId, array(
-                    'question' => Arr::get($values, 'question'.($i+1), ''),
-                    'response' => Arr::get($values, 'response'.($i+1), ''),
-                    'counter' => Arr::get($values, 'counter'.($i+1), ''),
+    public function updateElementsByChatId($chatId, $values) {
+        $elements = $this->getAllElementsByChatId($chatId);
+        $ids = array();
+        if (count($elements) > 0){
+            foreach($elements as $el){
+                $ids[$el->id] = 1;
+            }
+        }
+        $qarray = Arr::get($values, 'qarray', '');
+        if (count($qarray) > 0){
+            foreach($qarray as $q) {
+                if (isset($q['id'])){
+                    if (isset($ids[$q['id']])) {unset($ids[$q['id']]);}
+
+                    $this->id = $q['id'];
+                    $this->load();
+
+                    if ($this->is_loaded()){
+                        $this->question = Arr::get($q, 'question', '');
+                        $this->response = Arr::get($q, 'response', '');
+                        $this->function = Arr::get($q, 'counter', '');
+
+                        $this->save();
+                        $this->reset();
+                    }
+                } else {
+                    $this->addElement($chatId, array(
+                        'question' => Arr::get($q, 'question', ''),
+                        'response' => Arr::get($q, 'response', ''),
+                        'counter' => Arr::get($q, 'counter', ''),
                     ));
+                }
+            }
+
+            if (count($ids) > 0){
+                foreach($ids as $key => $value){
+                    DB_ORM::model('map_chat_element', array((int)$key))->delete();
+                }
             }
         }
     }
-    
+
     public function duplicateElements($fromChatId, $toChatId) {
-        $elements = $this->deleteElementsByChatId($fromChatId);
+        $elements = $this->getAllElementsByChatId($fromChatId);
         
         if($elements == null || $toChatId == null || $toChatId <= 0) return;
         
@@ -153,6 +176,22 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
             
             $builder->execute();
         }
+    }
+
+    public function exportMVP($chatId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('chat_id', '=', $chatId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = $record;
+            }
+
+            return $elements;
+        }
+
+        return NULL;
     }
 }
 

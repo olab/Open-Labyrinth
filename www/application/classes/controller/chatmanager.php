@@ -44,7 +44,7 @@ class Controller_ChatManager extends Controller_Base {
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
-            $this->templateData['title']= "Chats";
+
             $this->templateData['center'] = $chatView;
             $this->templateData['left'] = $leftView;
             unset($this->templateData['right']);
@@ -56,19 +56,15 @@ class Controller_ChatManager extends Controller_Base {
 
     public function action_addChat() {
         $mapId = $this->request->param('id', NULL);
-        $chatQuestionCount = $this->request->param('id2', NULL);
 
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
 
-            if ($chatQuestionCount != NULL) {
-                $this->templateData['question_count'] = $chatQuestionCount;
-            } else {
-                $this->templateData['question_count'] = 2;
-            }
+            $this->templateData['question_count'] = 1;
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-                    Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'chatManager/addChat/' . $mapId));
 
             $addChatView = View::factory('labyrinth/chat/add');
@@ -86,42 +82,12 @@ class Controller_ChatManager extends Controller_Base {
         }
     }
 
-    public function action_addChatQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $chatQuestionCount = $this->request->param('id2', NULL);
-
-        if ($mapId != NULL) {
-            if ($chatQuestionCount != NULL) {
-                Request::initial()->redirect(URL::base() . 'chatManager/addChat/' . $mapId . '/' . $chatQuestionCount);
-            }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_removeAddChatQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $chatQuestionCount = $this->request->param('id2', NULL);
-
-        if ($mapId != NULL) {
-            if ($chatQuestionCount != NULL) {
-                $chatQuestionCount--;
-                Request::initial()->redirect(URL::base() . 'chatManager/addChat/' . $mapId . '/' . $chatQuestionCount);
-            }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
     public function action_saveNewChat() {
         $mapId = $this->request->param('id', NULL);
-        $chatQuestionCount = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL) {
-            if ($chatQuestionCount != NULL) {
-                DB_ORM::model('map_chat')->addChat($mapId, $chatQuestionCount, $_POST);
-                Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
-            }
+            DB_ORM::model('map_chat')->addChat($mapId, $_POST);
+            Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
@@ -133,7 +99,7 @@ class Controller_ChatManager extends Controller_Base {
 
         if ($mapId != NULL and $chatId != NULL) {
             DB_ORM::model('map_chat', array((int) $chatId))->delete();
-            //DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
+            DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
             Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -143,19 +109,18 @@ class Controller_ChatManager extends Controller_Base {
     public function action_editChat() {
         $mapId = $this->request->param('id', NULL);
         $chatId = $this->request->param('id2', NULL);
-        $chatQuestionCount = $this->request->param('id3', NULL);
 
-        if ($mapId != NULL and $chatId != NULL and $chatQuestionCount != NULL) {
+        if ($mapId != NULL and $chatId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-            $this->templateData['question_count'] = $chatQuestionCount;
             $this->templateData['chat'] = DB_ORM::model('map_chat', array((int) $chatId));
+            $this->templateData['question_count'] = count($this->templateData['chat']->elements);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title( $this->templateData['chat']->stem)->set_url(URL::base().'chatManager/editChat/'. $this->templateData['map']->id.'/'.$chatId.'/'.count($this->templateData['chat']->elements)));
 
-            $this->templateData['title']= "Chat " . $this->templateData['chat']->stem;
+
             $editChatView = View::factory('labyrinth/chat/edit');
             $editChatView->set('templateData', $this->templateData);
 
@@ -171,40 +136,12 @@ class Controller_ChatManager extends Controller_Base {
         }
     }
 
-    public function action_addEditChatQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $chatId = $this->request->param('id2', NULL);
-        $chatQuestionCount = $this->request->param('id3', NULL);
-
-        if ($mapId != NULL and $chatId != NULL and $chatQuestionCount != NULL) {
-            Request::initial()->redirect(URL::base() . 'chatManager/editChat/' . $mapId . '/' . $chatId . '/' . $chatQuestionCount);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_removeEditChatQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $chatId = $this->request->param('id2', NULL);
-        $chatQuestionCount = $this->request->param('id3', NULL);
-        $senderNumber = $this->request->param('id4', NULL);
-
-        if ($mapId != NULL and $chatId != NULL and $chatQuestionCount != NULL and $senderNumber != NULL) {
-            DB_ORM::model('map_chat_element')->deleteElemtnsByNumber($chatId, $senderNumber - 1);
-            $chatQuestionCount--;
-            Request::initial()->redirect(URL::base() . 'chatManager/editChat/' . $mapId . '/' . $chatId . '/' . $chatQuestionCount);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
     public function action_updateChat() {
         $mapId = $this->request->param('id', NULL);
         $chatId = $this->request->param('id2', NULL);
-        $chatQuestionCount = $this->request->param('id3', NULL);
 
-        if ($_POST and $mapId != NULL and $chatId != NULL and $chatQuestionCount != NULL) {
-            DB_ORM::model('map_chat')->updateChat($chatId, $chatQuestionCount, $_POST);
+        if ($_POST and $mapId != NULL and $chatId != NULL) {
+            DB_ORM::model('map_chat')->updateChat($chatId, $_POST);
             Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());

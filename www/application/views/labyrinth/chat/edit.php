@@ -20,16 +20,14 @@
  */
 if (isset($templateData['map']) and isset($templateData['question_count']) and isset($templateData['chat'])) {
     ?>
+    <script type="text/javascript">
+        var questionCount = <?php echo $templateData['question_count'] ?>;
+    </script>
     <div class="page-header">
-        <div class="pull-right">    <a class="btn btn-primary" href="<?php if (isset($templateData['question_count'])) {
-                echo URL::base() . 'chatManager/addEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . ($templateData['question_count'] + 1);
-            } else {
-                echo URL::base() . 'chatManager/addEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/3';
-            }?>"><i class="icon-plus-sign"></i> Add Question</a></div>
         <h1><?php echo __('Edit Chat') . ' ' . $templateData['chat']->id . ' "' . $templateData['chat']->stem . '"'; ?></h1>
     </div>
     <form class="form-horizontal" id="chatForm" name="chatForm" method="post"
-          action="<?php echo URL::base() . 'chatManager/updateChat/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . $templateData['question_count']; ?>">
+          action="<?php echo URL::base() . 'chatManager/updateChat/' . $templateData['map']->id . '/' . $templateData['chat']->id; ?>">
 
         <fieldset class="fieldset">
             <legend>Details</legend>
@@ -64,61 +62,54 @@ if (isset($templateData['map']) and isset($templateData['question_count']) and i
                 </div>
 
         </fieldset>
-
-
-        <?php if (isset($templateData['question_count'])) { ?>
-            <?php for ($i = 1; $i <= $templateData['question_count']; $i++) { ?>
-                <fieldset class="fieldset" id="qDiv<?php echo $i; ?>">
-                    <legend><?php echo __("Question #") . $i ?></legend>
-
-                    <div class="control-group">
-                        <label for="question<?php echo $i; ?>"
-                               class="control-label"><?php echo __('Question'); ?></label>
-
-                        <div class="controls">
-                            <input id="question<?php echo $i; ?>" type="text" name="question<?php echo $i; ?>"
-                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->question; ?>"/>
+        <div id="questionContainer">
+            <?php if (count($templateData['chat']->elements) > 0) {
+                    $i = 0;
+                    foreach ($templateData['chat']->elements as $element) {
+                        $i++;
+                    ?>
+                    <fieldset class="fieldset" id="qDiv<?php echo $i; ?>">
+                        <legend><?php echo __("Question #") . $i ?></legend>
+                        <input type="hidden" name="qarray[<?php echo $i; ?>][id]" value="<?php echo $element->id; ?>"/>
+                        <div class="control-group">
+                            <label for="question<?php echo $i; ?>" class="control-label"><?php echo __('Question'); ?></label>
+                            <div class="controls">
+                                <input id="question<?php echo $i; ?>" type="text" name="qarray[<?php echo $i; ?>][question]" value="<?php echo $element->question; ?>"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <label for="response<?php echo $i; ?>"
-                               class="control-label"><?php echo __('Response'); ?></label>
+                        <div class="control-group">
+                            <label for="response<?php echo $i; ?>" class="control-label"><?php echo __('Response'); ?></label>
 
-                        <div class="controls">
-                            <input type="text" name="response<?php echo $i; ?>" id="response<?php echo $i; ?>"
-                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->response; ?>"/>
+                            <div class="controls">
+                                <input type="text" id="response<?php echo $i; ?>" name="qarray[<?php echo $i; ?>][response]" value="<?php echo $element->response; ?>"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group">
-                        <label for="counter<?php echo $i; ?>"
-                               class="control-label"><?php echo __('Counter'); ?></label>
+                        <div class="control-group">
+                            <label for="counter<?php echo $i; ?>" class="control-label"><?php echo __('Counter'); ?></label>
 
-                        <div class="controls">
-                            <input type="text" name="counter<?php echo $i; ?>" id="counter<?php echo $i; ?>"
-                                   value="<?php if (($i - 1) < count($templateData['chat']->elements)) echo $templateData['chat']->elements[$i - 1]->function; ?>"/>
-                            <span class="help-block">type +, - or = an integer - e.g. '+1' or '=32'</span>
+                            <div class="controls">
+                                <input type="text" id="counter<?php echo $i; ?>" name="qarray[<?php echo $i; ?>][counter]" value="<?php echo $element->function; ?>"/>
+                                <span class="help-block">type +, - or = an integer - e.g. '+1' or '=32'</span>
+                            </div>
                         </div>
-                    </div>
 
-<div class="form-actions">
-                    <a class="btn btn-danger"
-                       href="<?php echo URL::base() . 'chatManager/removeEditChatQuestion/' . $templateData['map']->id . '/' . $templateData['chat']->id . '/' . $templateData['question_count'] . '/' . $i; ?>"><i class="icon-minus-sign"></i> Remove</a>
-                    </div>
-                </fieldset>
+                        <div class="form-actions">
+                            <a class="btn btn-danger removeQuestionBtn" removeId="<?php echo $i; ?>" href="javascript:void(0);">
+                                <i class="icon-minus-sign"></i>Remove
+                            </a>
+                        </div>
+                    </fieldset>
+                <?php } ?>
             <?php } ?>
-        <?php } ?>
-
-
-
-
-<div class="form-actions">
-    <div class="pull-right">
-        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save Changes'); ?>">
-
-    </div>
-</div>
-
-
+        </div>
+        <div class="form-actions">
+            <div class="pull-left">
+                <a class="btn btn-info" href="javascript:void(0)" id="addNewQuestion"><i class="icon-plus-sign"></i>Add
+                    new question</a>
+            </div>
+            <div class="pull-right">
+                <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save Changes'); ?>">
+            </div>
+        </div>
     </form>
-
 <?php } ?>

@@ -117,8 +117,10 @@ class Controller_ExportImportManager extends Controller_Base {
         $mapId = $this->request->param('id', 0);
         if($mapId > 0) {
             $params = array();
+            $map = DB_ORM::model('map', array((int) $mapId));
             $params['mapId'] = $mapId;
-            $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);;
+            $params['mapName'] = $map->name;
+            $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);
             $pathInfo = pathinfo($path);
 
             header("Cache-Control: public");
@@ -427,7 +429,8 @@ class Controller_ExportImportManager extends Controller_Base {
                 $this->importMVP(DOCROOT . $fileName);
             }
         }
-        Request::initial()->redirect(URL::base());
+        Notice::add('Labyrinth has been successfully imported');
+        Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
     public function getIdFromString($string) {
@@ -467,6 +470,11 @@ class Controller_ExportImportManager extends Controller_Base {
         $tmpFolder = DOCROOT . 'files/' . $mvpFolder;
         $tmpFileName = $tmpFolder . '/metadata.xml';
         $xml = $this->parseXML($tmpFileName);
+
+        if (isset($xml->metadata->version)){
+            ImportExport_Manager::getFormatSystem('MVP')->import($tmpFolder);
+            return true;
+        }
 
         if(isset($xml->general->version))
             $version = (string)$xml->general->version;

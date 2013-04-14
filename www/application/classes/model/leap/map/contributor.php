@@ -141,5 +141,21 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
             $builder->execute();
         }
     }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $contributors = array();
+            foreach($result as $record) {
+                $contributors[] = $record;
+            }
+
+            return $contributors;
+        }
+
+        return NULL;
+    }
 }
 

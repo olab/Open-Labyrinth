@@ -6,7 +6,7 @@ $(function() {
        scoreOptions;
 
     $container = $('#responsesContainer');
-    $redirectContainer = $('.sbumitSettingsContainer');
+    $redirectContainer = $('.submitSettingsContainer');
     currentCount = $container.children('fieldset').length;
     currentIndex = 0;
     

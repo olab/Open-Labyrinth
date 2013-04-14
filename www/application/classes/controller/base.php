@@ -61,7 +61,6 @@ class Controller_Base extends Controller_Template {
     );
     private $authorRules = array(
         array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'userManager', 'action' => 'index'),

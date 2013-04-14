@@ -213,12 +213,14 @@ class Model_Leap_Metadata_InlineObjectRecord extends Model_Leap_Metadata_Record
 
 
 
+
         foreach ($inlineMetadata as $inline) {
             //Model_Leap_Metadata_Record::getEditor($inline->name);
 
             $name = $inline->name;
             if (!$this->is_relation($name)) break;
-            if(empty($this->$name ))break;
+
+
             $rendered_obj = Helper_Controller_Metadata::metadataView($this->$name);
 
             $html .= $rendered_obj["label"].": " . $rendered_obj["body"];
