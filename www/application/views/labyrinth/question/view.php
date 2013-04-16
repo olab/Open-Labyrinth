@@ -40,7 +40,8 @@ if (isset($templateData['map'])) { ?>
         <thead>
             <tr>
                 <th>Embeddable</th>
-                <th>Content</th>
+                <th>Stem</th>
+                <th>Type</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -52,7 +53,10 @@ if (isset($templateData['map'])) { ?>
                         <label><input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label>
                     </td>
                     <td>
-                        <?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>)
+                        <?php echo $question->stem; ?>
+                    </td>
+                    <td>
+                        <?php echo $question->type->title; ?>
                     </td>
                     <td>
                         <div class="btn-group">

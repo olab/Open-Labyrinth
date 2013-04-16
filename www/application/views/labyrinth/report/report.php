@@ -149,8 +149,10 @@ function getRandomColor(){
                                             <td><?php echo $question->type->title; ?></td>
                                             <td><?php echo $question->stem; ?></td>
                                             <td><?php if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
-                                                        if($templateData['responses'][$question->id]->response != '') {
-                                                            echo $templateData['responses'][$question->id]->response;
+                                                        if(count($templateData['responses'][$question->id]) > 0){
+                                                            foreach($templateData['responses'][$question->id] as $response){
+                                                                echo '<p>'.$response->response.'</p>';
+                                                            }
                                                         } else {
                                                             echo 'no response';
                                                         }
@@ -160,8 +162,8 @@ function getRandomColor(){
                                                 <?php if($question->type->value != 'text' and $question->type->value != 'area') { ?>
                                                     <?php if(count($question->responses) > 0) { ?>
                                                         <?php foreach($question->responses as $resp) { ?>
-                                                            <?php if($resp->is_correct) { ?>
-                                                                <?php echo $resp->response; ?>
+                                                            <?php if($resp->is_correct == 1) { ?>
+                                                                <?php echo '<p>'.$resp->response.'</p>'; ?>
                                                             <?php } ?>
                                                         <?php } ?>
                                                     <?php } else { echo 'n/a'; } ?>

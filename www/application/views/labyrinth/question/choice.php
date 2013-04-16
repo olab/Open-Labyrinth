@@ -39,25 +39,60 @@
             <label class="control-label"><?php echo __('Show answer to user') ?></label>
             <div class="controls">
                 <label class="radio">
-                    <input type="radio" name="showAnswer" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->show_answer == 1) ? 'checked=""' : '') ?>/> 
+                    <input autocomplete="off" type="radio" name="showAnswer" value="1"
+                    <?php if (isset($templateData['question'])){
+                        echo ($templateData['question']->show_answer == 1) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                    ?>
+                    />
                     <?php echo __('show'); ?>
                 </label>
                 <label class="radio">
-                    <input type="radio" name="showAnswer" value="0" <?php echo ((isset($templateData['question']) && $templateData['question']->show_answer == 0) ? 'checked=""' : '') ?>/> 
+                    <input autocomplete="off" type="radio" name="showAnswer" value="0" <?php echo ((isset($templateData['question']) && $templateData['question']->show_answer == 0) ? 'checked="checked"' : '') ?>/>
                     <?php echo __('do not show'); ?>
                 </label>
             </div>
         </div>
-        
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Layout of answers') ?></label>
+            <div class="controls">
+                <label class="radio">
+                    <input autocomplete="off" type="radio" name="typeDisplay" value="0"
+                        <?php if (isset($templateData['question'])){
+                        echo ($templateData['question']->type_display == 0) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                        ?>
+                            />
+                    <?php echo __('vertical'); ?>
+                </label>
+                <label class="radio">
+                    <input autocomplete="off" type="radio" name="typeDisplay" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->type_display == 1) ? 'checked="checked"' : '') ?>/>
+                    <?php echo __('horizontal'); ?>
+                </label>
+            </div>
+        </div>
+
         <div class="control-group">
             <label class="control-label"><?php echo __('Show submit button') ?></label>
             <div class="controls">
                 <label class="radio">
-                    <input type="radio" id="showSubmit" name="showSubmit" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? 'checked=""' : '') ?>/> 
+                    <input autocomplete="off" type="radio" id="showSubmit" name="showSubmit" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? 'checked="checked"' : '') ?>/>
                     <?php echo __('show'); ?>
                 </label>
                 <label class="radio">
-                    <input type="radio" id="hideSubmit" name="showSubmit" value="0" <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 0) ? 'checked=""' : '') ?>/> 
+                    <input autocomplete="off" type="radio" id="hideSubmit" name="showSubmit" value="0"
+                    <?php if (isset($templateData['question'])){
+                        echo ($templateData['question']->show_submit == 0) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                    ?>
+                    />
                     <?php echo __('do not show'); ?>
                 </label>
             </div>
@@ -66,7 +101,7 @@
         <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Submit button text') ?></label>
             <div class="controls">
-                <input type="text" name="submitButtonText" value="<?php echo ((isset($templateData['question']) && $templateData['question']->submit_text != null) ? $templateData['question']->submit_text : 'Submit'); ?>"/>
+                <input autocomplete="off" type="text" name="submitButtonText" value="<?php echo ((isset($templateData['question']) && $templateData['question']->submit_text != null) ? $templateData['question']->submit_text : 'Submit'); ?>"/>
             </div>
         </div>
         
@@ -74,7 +109,7 @@
         <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Redirect Node') ?></label>
             <div class="controls">
-                <select name="redirectNode">
+                <select autocomplete="off" name="redirectNode">
                     <option value="">Select</option>
                     <?php foreach($templateData['nodes'] as $node) { ?>
                     <option value="<?php echo $node->id; ?>" <?php echo ((isset($templateData['question']) && $templateData['question']->redirect_node_id == $node->id) ? 'selected=""' : ''); ?>><?php echo $node->title; ?></option>
@@ -87,11 +122,11 @@
         <div class="control-group">
             <label for="counter" class="control-label"><?php echo __('Track score with existing counter'); ?></label>
             <div class="controls">
-                <select id="counter" name="counter">
+                <select autocomplete="off" id="counter" name="counter">
                     <option value="0">no counter</option>
                     <?php if(isset($templateData['counters']) && count($templateData['counters']) > 0) { ?>
                         <?php foreach($templateData['counters'] as $counter) { ?>
-                            <option value="<?php echo $counter->id; ?>" <?php echo ((isset($templateData['question']) && $templateData['question']->counter_id == $counter->id) ? 'selected=""' : ''); ?>>
+                            <option value="<?php echo $counter->id; ?>" <?php echo ((isset($templateData['question']) && $templateData['question']->counter_id == $counter->id) ? 'selected="selected"' : ''); ?>>
                                 <?php echo $counter->name; ?>
                             </option>
                         <?php } ?>
@@ -101,8 +136,24 @@
         </div>
         
         <div class="control-group">
-            <label for="tries" class="control-label"><?php echo __('Number of tries allowed'); ?></label>
-            <div class="controls"><input type="text" id="tries" name="tries" value="<?php echo (isset($templateData['question']) ? $templateData['question']->num_tries : ''); ?>"/></div>
+            <label class="control-label"><?php echo __('Number of tries allowed'); ?></label>
+            <div class="controls">
+                <label class="radio">
+                    <input autocomplete="off" type="radio" name="tries" value="1"
+                    <?php if (isset($templateData['question'])){
+                        echo ($templateData['question']->num_tries == 1) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                    ?>
+                    />
+                    <?php echo __('one'); ?>
+                </label>
+                <label class="radio">
+                    <input autocomplete="off" type="radio" name="tries" value="2" <?php echo ((isset($templateData['question']) && $templateData['question']->num_tries == 2) ? 'checked="checked"' : '') ?>/>
+                    <?php echo __('many'); ?>
+                </label>
+            </div>
         </div>
         
         <div class="control-group">
@@ -118,22 +169,25 @@
                     <legend class="legend-title"><?php echo __('Response #') . $index; ?></legend>
                     <div class="control-group">
                         <label for="response_<?php echo $response->id; ?>" class="control-label"><?php echo __('Response'); ?></label>
-                        <div class="controls"><input type="text" id="response_<?php echo $response->id; ?>" name="response_<?php echo $response->id; ?>" value="<?php echo $response->response; ?>"/></div>
+                        <div class="controls"><input autocomplete="off" type="text" id="response_<?php echo $response->id; ?>" name="response_<?php echo $response->id; ?>" value="<?php echo $response->response; ?>"/></div>
                     </div>
                     
                     <div class="control-group">
-                        <label for="feedback_<?php echo $response->id; ?>" class="control-label"><?php echo __('Feedback'); ?></label>
-                        <div class="controls"><input type="text" id="feedback_<?php echo $response->id; ?>" name="feedback_<?php echo $response->id; ?>" value="<?php echo $response->feedback; ?>"/></div>
+                        <label for="feedback_<?php echo $response->id; ?>" class="control-label"><?php echo __('Prompt text'); ?></label>
+                        <div class="controls"><input autocomplete="off" type="text" id="feedback_<?php echo $response->id; ?>" name="feedback_<?php echo $response->id; ?>" value="<?php echo $response->feedback; ?>"/></div>
                     </div>
                     
                     <div class="control-group">
                         <label class="control-label"><?php echo __('Correctness'); ?></label>
                         <div class="controls">
                             <label class="radio">
-                                <input type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 1 ? 'checked=""' : ''); ?>/> <?php echo __('correct'); ?>
+                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 1) ? 'checked="checked"' : ''; ?>/> <?php echo __('correct'); ?>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 0 ? 'checked=""' : ''); ?>/> <?php echo __('incorrect'); ?>
+                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="2" <?php echo ($response->is_correct == 2) ? 'checked="checked"' : ''; ?>/> <?php echo __('neutral'); ?>
+                            </label>
+                            <label class="radio">
+                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="0" <?php echo ($response->is_correct == 0) ? 'checked="checked"' : ''; ?>/> <?php echo __('incorrect'); ?>
                             </label>
                         </div>
                     </div>
@@ -141,7 +195,7 @@
                     <div class="control-group">
                         <label for="score_<?php echo $response->id;  ?>" class="control-label"><?php echo __('Score'); ?></label>
                         <div class="controls">
-                            <select id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
+                            <select autocomplete="off" id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
                                 <?php for ($j = -10; $j <= 10; $j++) { ?>
                                     <option value="<?php echo $j; ?>" <?php echo ($response->score == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
                                 <?php } ?>

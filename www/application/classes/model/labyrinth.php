@@ -260,6 +260,10 @@ class Model_Labyrinth extends Model {
                 $remoteCounterString = '';
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($node->map_id);
                 $redirect = NULL;
+
+                $questionChoices = Session::instance()->get('questionChoices');
+                $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
+
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
                     $currentCountersState = '';
@@ -305,6 +309,38 @@ class Model_Labyrinth extends Model {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
                         } else if ($counterFunction[0] == '+') {
                             $thisCounter += substr($counterFunction, 1, strlen($counterFunction));
+                        }
+                    }
+
+                    if (($questionChoices != NULL) && (isset($questionChoices['counter_ids']) > 0)){
+                        $qID = array();
+                        if (count($questionChoices['counter_ids']) > 0){
+                            foreach($questionChoices['counter_ids'] as $key => $cID){
+                                if ($cID == $counter->id){
+                                    $qID[] = $key;
+                                }
+                            }
+                        }
+
+                        if (count($qID) > 0){
+                            foreach($qID as $questionID){
+                                if (isset($questionChoices[$questionID])){
+                                    if (count($questionChoices[$questionID]) > 0){
+                                        foreach($questionChoices[$questionID] as $value){
+                                            $value = trim($value['score']);
+                                            if ($value[0] == '=') {
+                                                $thisCounter = substr($value, 1, strlen($value));
+                                            } else if ($value[0] == '-') {
+                                                $thisCounter -= substr($value, 1, strlen($value));
+                                            } else {
+                                                $thisCounter += $value;
+                                                $value = '+'.$value;
+                                            }
+                                            $countersArray[$counter->id]['func'][] = $value;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -366,6 +402,21 @@ class Model_Labyrinth extends Model {
                         }
                     }
                 }
+
+                if (isset($questionChoices['counter_ids'])){
+                    unset($questionChoices['counter_ids']);
+                }
+                if (count($questionChoices) > 0){
+                    foreach($questionChoices as $qID => $questions){
+                        if (count($questions) > 0){
+                            foreach($questions as $q){
+                                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
+                            }
+                        }
+                    }
+                }
+
+                Session::instance()->delete('questionChoices');
 
                 $redirect = NULL;
                 $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
@@ -532,63 +583,60 @@ class Model_Labyrinth extends Model {
         return '';
     }
 
-    public function question($sessionId, $questionId, $response) {
+    public function question($questionId, $response, $questionStatus) {
         $question = DB_ORM::model('map_question', array((int) $questionId));
 
         if ($question) {
-            $r = $response;
-            $qResp = NULL;
-            if ($question->type->value != 'text' and $question->type->value != 'area') {
-                if ($question->counter_id > 0) {
-                    $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $question->map_id);
-                    $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
-                    if ($currentCountersState != '') {
-                        $s = strpos($currentCountersState, '[CID=' . $question->counter_id . ',') + 1;
-                        $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
-                        $e = strpos($tmp, ']') + 1;
-                        $tmp = substr($tmp, 0, $e - 1);
-                        $tmp = str_replace('CID=' . $question->counter_id . ',V=', '', $tmp);
-                        if (is_numeric($tmp)) {
-                            $thisCounter = $tmp;
-                            if (count($question->responses) > 0) {
-                                foreach ($question->responses as $resp) {
-                                    if ($resp->id == $r) {
-                                        $r = $resp->response;
-                                        $newValue = $thisCounter;
-                                        $newValue += $resp->score;
-
-                                        $newCountersState = str_replace('[CID=' . $question->counter_id . ',V=' . $thisCounter . ']', '[CID=' . $question->counter_id . ',V=' . $newValue . ']', $currentCountersState);
-                                        $qResp = $resp;
-                                        DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $newCountersState);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+            $responseObj = null;
+            if (($question->type->value != 'text') && ($question->type->value != 'area')) {
+                foreach ($question->responses as $resp) {
+                    if ($resp->id == $response) {
+                        $responseObj = $resp;
+                        break;
                     }
                 }
             }
 
-            if ($qResp == NULL) {
-                if (count($question->responses) > 0) {
-                    foreach ($question->responses as $resp) {
-                        if ($resp->id == $r) {
-                            $qResp = $resp;
-                            $r = $resp->response;
-                        }
+            $qChoices = json_decode(Session::instance()->get('questionChoices'), true);
+
+            if (($question->type->value == 'text') || ($question->type->value == 'area')) {
+                $qChoices[$questionId] = array();
+                $qChoices[$questionId][$response]['response'] = $response;
+            }
+
+            if ($question->type->value == 'mcq'){
+                $qChoices[$questionId] = array();
+                $qChoices[$questionId][$response]['score'] = $responseObj->score;
+                $qChoices[$questionId][$response]['response'] = $responseObj->response;
+            }
+
+            if ($question->type->value == 'pcq') {
+                if ($questionStatus == 1){
+                    $qChoices[$questionId][$response]['score'] = $responseObj->score;
+                    $qChoices[$questionId][$response]['response'] = $responseObj->response;
+                } else {
+                    if (isset($qChoices[$questionId][$response])){
+                        unset($qChoices[$questionId][$response]);
                     }
                 }
             }
+            $qChoices['counter_ids'][$questionId] = $question->counter_id;
 
-            DB_ORM::model('user_response')->updateResponse($sessionId, $questionId, $r);
+            Session::instance()->set('questionChoices', json_encode($qChoices));
 
             if ($question->show_answer) {
                 if ($question->type->value != 'text' and $question->type->value != 'area') {
-                    if ($qResp->is_correct) {
-                        return '<p><img src="' . URL::base() . 'images/tick.jpg"> ' . ($qResp->feedback != null && strlen($qResp->feedback) > 0 ? ('(' . $qResp->feedback . ')') : '') . '</p>';
-                    } else {
-                        return '<p><img src="' . URL::base() . 'images/cross.jpg"> ' . ($qResp->feedback != null && strlen($qResp->feedback) > 0 ? ('(' . $qResp->feedback . ')') : '') . '</p>';
+                    $returnStr = '';
+                    switch ($responseObj->is_correct){
+                        case 0:
+                            $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
+                            break;
+                        case 1:
+                            $returnStr .= '<img src="' . URL::base() . 'images/tick.jpg"> ';
+                            break;
                     }
+                    $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('(' . $responseObj->feedback . ')') : '');
+                    return $returnStr;
                 }
             }
         }

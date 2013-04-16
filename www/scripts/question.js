@@ -30,22 +30,25 @@ $(function() {
                         '<legend class="legend-title">Response #' + currentCount + '</legend>'+ 
                         '<div class="control-group">'+
                             '<label for="response_' + currentIndex + '_n" class="control-label">Response</label>'+
-                            '<div class="controls"><input type="text" id="response_' + currentIndex + '_n" name="response_' + currentIndex + '_n" value=""/></div>'+
+                            '<div class="controls"><input autocomplete="off" type="text" id="response_' + currentIndex + '_n" name="response_' + currentIndex + '_n" value=""/></div>'+
                         '</div>'+
 
                         '<div class="control-group">'+
-                            '<label for="feedback_' + currentIndex + '_n" class="control-label">Feedback</label>'+
-                            '<div class="controls"><input type="text" id="feedback_' + currentIndex + '_n" name="feedback_' + currentIndex + '_n" value=""/></div>'+
+                            '<label for="feedback_' + currentIndex + '_n" class="control-label">Prompt text</label>'+
+                            '<div class="controls"><input autocomplete="off" type="text" id="feedback_' + currentIndex + '_n" name="feedback_' + currentIndex + '_n" value=""/></div>'+
                         '</div>'+
 
                         '<div class="control-group">'+
                             '<label class="control-label">Correctness</label>'+
                             '<div class="controls">'+
                                 '<label class="radio">'+
-                                    '<input type="radio" name="correctness_' + currentIndex + '_n" value="1"/> correct'+
+                                    '<input autocomplete="off" type="radio" name="correctness_' + currentIndex + '_n" value="1"/> correct'+
                                 '</label>'+
                                 '<label class="radio">'+
-                                    '<input type="radio" name="correctness_' + currentIndex + '_n" value="1" /> incorrect'+
+                                    '<input autocomplete="off" type="radio" checked="checked" name="correctness_' + currentIndex + '_n" value="2"/> neutral'+
+                                '</label>'+
+                                '<label class="radio">'+
+                                    '<input autocomplete="off" type="radio" name="correctness_' + currentIndex + '_n" value="0" /> incorrect'+
                                 '</label>'+
                             '</div>'+
                         '</div>'+

@@ -72,48 +72,38 @@
     }
 
     function ajaxFunction(qid) {
-        var xmlhttp;
-        var qref1 = "qresponse_" + qid;
-        var qref2 = document.getElementById(qref1);
-        var qresp = qref2.value;
-        var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
-        ;
-        var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + labsess + "/" + qid;
-        if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp = new XMLHttpRequest();
-        }
-        else if (window.ActiveXObject) {// code for IE6, IE5
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        else {
-            alert("Your browser does not support XMLHTTP for AJAX!");
-        }
-        xmlhttp.open("GET", URL, false);
-        xmlhttp.send(null);
-        document.getElementById("AJAXresponse").innerHTML = xmlhttp.responseText;
+        var qresp = $("#qresponse_" + qid).val();
+
+        var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + qid;
+
+        var $response = $('#AJAXresponse' + qid);
+        $.get(URL, function(data) {
+            if(data != '') {
+                $response.html(data);
+            }
+        });
     }
 
-    function ajaxMCQ(qid, qqq, qqx, qnts, divids) {
-        //alert("qid="+qid+", qqq="+qqq+", qqx="+qqx+", qnts="+qnts);
-        //qid = questionID
-        //qqq = option number
-        //qqx = total number of options
-        //qnts = number of tries - 0 or 1
-        //script should: a) update database of the question submitted, b) update screen of the response given, c) update counter if this has been set
-        
-        var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
-        var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qqq + "/" + labsess + "/" + qid;
-        
-        var $response = $('#AJAXresponse' + qqq);
-        
-        if(!$response.hasClass('sended')) {
-            $.get(URL, function(data) {
-                if(data != '') {
-                    $response.addClass('sended');
-                    $response.html(data);
-                }
-            });
+    function ajaxQU(obj, qid, qresp, qnts) {
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponce/' + qresp + '/' + qid;
+        var check = $(obj).is(':checked');
+        if (check){
+            URL += '/1';
+        } else {
+            URL += '/0';
         }
+
+        var $response = $('#AJAXresponse' + qresp);
+        if (qnts == 1){
+            $('.questionForm_'+qid+' .click').remove();
+        }
+
+        $.get(URL, function(data) {
+            if(data != '') {
+                $response.html(data);
+            }
+        });
+
     }
 
     function ajaxBookmark() {

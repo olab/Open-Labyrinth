@@ -51,8 +51,8 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'is_correct' => new DB_ORM_Field_Boolean($this, array(
-                'default' => TRUE,
+            'is_correct' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 4,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),

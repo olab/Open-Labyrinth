@@ -130,3 +130,14 @@ div.scroll {
     background-color: #cccccc;
     padding: 8px;
 }
+.questionResponces span {
+    margin-right:5px;
+}
+
+.questionResponces.horizontal li {
+    float:left;
+}
+
+.questionResponces .questionSubmitButton {
+    margin-top:15px;
+}
