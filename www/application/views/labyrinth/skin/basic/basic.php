@@ -34,7 +34,17 @@
     }
 </SCRIPT>
 
-<script language="JavaScript">
+<script language="javascript">
+    $(document).ready(function(){
+        $(".clearQuestionPrompt").focus(function(){
+            if (!$(this).hasClass('cleared')){
+                $(this).val('');
+                $(this).text('');
+                $(this).addClass('cleared');
+            }
+        });
+    });
+
     function Populate(form) {
         var myarray = new Array(<?php if (isset($templateData['alinkfil'])) echo $templateData['alinkfil']; ?>);
         var mynodes = new Array(<?php if (isset($templateData['alinknod'])) echo $templateData['alinknod']; ?>);
@@ -73,15 +83,16 @@
 
     function ajaxFunction(qid) {
         var qresp = $("#qresponse_" + qid).val();
+        if (qresp != ''){
+            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + qid;
 
-        var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + qid;
-
-        var $response = $('#AJAXresponse' + qid);
-        $.get(URL, function(data) {
-            if(data != '') {
-                $response.html(data);
-            }
-        });
+            var $response = $('#AJAXresponse' + qid);
+            $.get(URL, function(data) {
+                if(data != '') {
+                    $response.html(data);
+                }
+            });
+        }
     }
 
     function ajaxQU(obj, qid, qresp, qnts) {

@@ -669,10 +669,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = '<input type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
-                $result = '<textarea cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');"></textarea>';
+                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if($question->type->value == 'pcq') {
                 if (count($question->responses) > 0) {

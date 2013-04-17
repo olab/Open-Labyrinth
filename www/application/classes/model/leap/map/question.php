@@ -200,7 +200,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 $this->updateAreaQuestion($values);
                 break;
             default:
-                $this->updateResponseQuestion($values);
+                $this->updateResponseQuestion($values, $type->id);
                 break;
         }
     }
@@ -222,7 +222,10 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->save();
     }
     
-    private function updateResponseQuestion($values) {
+    private function updateResponseQuestion($values, $typeID = null) {
+        if($typeID != null){
+            $this->entry_type_id = $typeID;
+        }
         $this->stem = Arr::get($values, 'stem', $this->stem);
         $this->feedback = Arr::get($values, 'feedback', $this->feedback);
         $this->show_answer = Arr::get($values, 'showAnswer', $this->show_answer);

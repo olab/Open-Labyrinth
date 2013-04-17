@@ -96,7 +96,7 @@ class Controller_QuestionManager extends Controller_Base {
     
     public function action_questionPOST() {
         $mapId = $this->request->param('id', 0);
-        $typeId = $this->request->param('id2', 0);
+        $typeId = Arr::get($_POST, 'question_type', NULL);
         $questionId = $this->request->param('id3', 0);
         
         $map = DB_ORM::model('map', array((int)$mapId));

@@ -859,3 +859,13 @@ input[readonly].code, textarea[readonly].code{
 .question-copy-form {
     margin-bottom: 0;
 }
+
+.radio_extended.btn-group input[type="radio"] {
+    display: none;
+}
+
+.radio_extended.btn-group > label:first-of-type {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    margin-left: 0;
+}

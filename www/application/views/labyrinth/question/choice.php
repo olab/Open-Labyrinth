@@ -31,6 +31,23 @@
       action="<?php echo URL::base(); ?>questionManager/questionPOST/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['type']->id; ?><?php echo (isset($templateData['question']) ? ('/' . $templateData['question']->id) : ''); ?>">
     <fieldset class="fieldset">
         <div class="control-group">
+            <label class="control-label"><?php echo __('Question type'); ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="question_type_mcq" type="radio" value="3" name="question_type"
+                    <?php if (isset($templateData['type'])){
+                        echo ($templateData['type']->id == 3) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                    ?> />
+                    <label data-class="btn-info" class="btn" for="question_type_mcq">Multiple choice</label>
+                    <input autocomplete="off" id="question_type_pcq" type="radio" value="4" name="question_type" <?php echo ((isset($templateData['type']) && $templateData['type']->id == 4) ? 'checked="checked"' : '') ?> />
+                    <label data-class="btn-info" class="btn" for="question_type_pcq">Pick choice</label>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
             <label for="stem" class="control-label"><?php echo __('Stem'); ?></label>
             <div class="controls"><textarea id="stem" name="stem"><?php echo (isset($templateData['question']) ? $templateData['question']->stem : ''); ?></textarea></div>
         </div>
@@ -38,8 +55,8 @@
         <div class="control-group">
             <label class="control-label"><?php echo __('Show answer to user') ?></label>
             <div class="controls">
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="showAnswer" value="1"
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="showAnswer1" type="radio" name="showAnswer" value="1"
                     <?php if (isset($templateData['question'])){
                         echo ($templateData['question']->show_answer == 1) ? 'checked="checked"' : '';
                     } else {
@@ -47,44 +64,39 @@
                     }
                     ?>
                     />
-                    <?php echo __('show'); ?>
-                </label>
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="showAnswer" value="0" <?php echo ((isset($templateData['question']) && $templateData['question']->show_answer == 0) ? 'checked="checked"' : '') ?>/>
-                    <?php echo __('do not show'); ?>
-                </label>
+                    <label data-class="btn-info" class="btn" for="showAnswer1"><?php echo __('Show'); ?></label>
+                    <input autocomplete="off" id="showAnswer0" type="radio" name="showAnswer" value="0" <?php echo ((isset($templateData['question']) && $templateData['question']->show_answer == 0) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="showAnswer0"><?php echo __('Do not show'); ?></label>
+                </div>
             </div>
         </div>
 
         <div class="control-group">
             <label class="control-label"><?php echo __('Layout of answers') ?></label>
             <div class="controls">
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="typeDisplay" value="0"
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="typeDisplay0" type="radio" name="typeDisplay" value="0"
                         <?php if (isset($templateData['question'])){
-                        echo ($templateData['question']->type_display == 0) ? 'checked="checked"' : '';
-                    } else {
-                        echo 'checked="checked"';
-                    }
+                            echo ($templateData['question']->type_display == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
                         ?>
-                            />
-                    <?php echo __('vertical'); ?>
-                </label>
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="typeDisplay" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->type_display == 1) ? 'checked="checked"' : '') ?>/>
-                    <?php echo __('horizontal'); ?>
-                </label>
+                        />
+                    <label data-class="btn-info" class="btn" for="typeDisplay0"><?php echo __('Vertical'); ?></label>
+                    <input autocomplete="off" id="typeDisplay1" type="radio" name="typeDisplay" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->type_display == 1) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="typeDisplay1"><?php echo __('Horizontal'); ?></label>
+                </div>
             </div>
         </div>
 
         <div class="control-group">
             <label class="control-label"><?php echo __('Show submit button') ?></label>
             <div class="controls">
-                <label class="radio">
+                <div class="radio_extended btn-group">
                     <input autocomplete="off" type="radio" id="showSubmit" name="showSubmit" value="1" <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? 'checked="checked"' : '') ?>/>
-                    <?php echo __('show'); ?>
-                </label>
-                <label class="radio">
+                    <label data-class="btn-info" class="btn" for="showSubmit"><?php echo __('Show'); ?></label>
+
                     <input autocomplete="off" type="radio" id="hideSubmit" name="showSubmit" value="0"
                     <?php if (isset($templateData['question'])){
                         echo ($templateData['question']->show_submit == 0) ? 'checked="checked"' : '';
@@ -93,11 +105,11 @@
                     }
                     ?>
                     />
-                    <?php echo __('do not show'); ?>
-                </label>
+                    <label data-class="btn-info" class="btn" for="hideSubmit"><?php echo __('Do not show'); ?></label>
+                </div>
             </div>
         </div>
-        
+
         <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Submit button text') ?></label>
             <div class="controls">
@@ -138,8 +150,8 @@
         <div class="control-group">
             <label class="control-label"><?php echo __('Number of tries allowed'); ?></label>
             <div class="controls">
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="tries" value="1"
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="tries1" type="radio" name="tries" value="1"
                     <?php if (isset($templateData['question'])){
                         echo ($templateData['question']->num_tries == 1) ? 'checked="checked"' : '';
                     } else {
@@ -147,15 +159,13 @@
                     }
                     ?>
                     />
-                    <?php echo __('one'); ?>
-                </label>
-                <label class="radio">
-                    <input autocomplete="off" type="radio" name="tries" value="2" <?php echo ((isset($templateData['question']) && $templateData['question']->num_tries == 2) ? 'checked="checked"' : '') ?>/>
-                    <?php echo __('many'); ?>
-                </label>
+                    <label data-class="btn-info" class="btn" for="tries1"><?php echo __('One'); ?></label>
+                    <input autocomplete="off" id="tries2" type="radio" name="tries" value="2" <?php echo ((isset($templateData['question']) && $templateData['question']->num_tries == 2) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="tries2"><?php echo __('Many'); ?></label>
+                </div>
             </div>
         </div>
-        
+
         <div class="control-group">
             <label for="feedback" class="control-label"><?php echo __('Feedback'); ?></label>
             <div class="controls"><textarea id="feedback" name="feedback"><?php echo (isset($templateData['question']) ? $templateData['question']->feedback : ''); ?></textarea></div>
@@ -173,22 +183,21 @@
                     </div>
                     
                     <div class="control-group">
-                        <label for="feedback_<?php echo $response->id; ?>" class="control-label"><?php echo __('Prompt text'); ?></label>
+                        <label for="feedback_<?php echo $response->id; ?>" class="control-label"><?php echo __('Feedback'); ?></label>
                         <div class="controls"><input autocomplete="off" type="text" id="feedback_<?php echo $response->id; ?>" name="feedback_<?php echo $response->id; ?>" value="<?php echo $response->feedback; ?>"/></div>
                     </div>
                     
                     <div class="control-group">
                         <label class="control-label"><?php echo __('Correctness'); ?></label>
                         <div class="controls">
-                            <label class="radio">
-                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 1) ? 'checked="checked"' : ''; ?>/> <?php echo __('correct'); ?>
-                            </label>
-                            <label class="radio">
-                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="2" <?php echo ($response->is_correct == 2) ? 'checked="checked"' : ''; ?>/> <?php echo __('neutral'); ?>
-                            </label>
-                            <label class="radio">
-                                <input autocomplete="off" type="radio" name="correctness_<?php echo $response->id; ?>" value="0" <?php echo ($response->is_correct == 0) ? 'checked="checked"' : ''; ?>/> <?php echo __('incorrect'); ?>
-                            </label>
+                            <div class="radio_extended btn-group">
+                                <input autocomplete="off" id="correctness1_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 1) ? 'checked="checked"' : ''; ?>/>
+                                <label data-class="btn-success" class="btn" for="correctness1_<?php echo $response->id; ?>"><?php echo __('Correct'); ?></label>
+                                <input autocomplete="off" id="correctness2_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="2" <?php echo ($response->is_correct == 2) ? 'checked="checked"' : ''; ?>/>
+                                <label class="btn" for="correctness2_<?php echo $response->id; ?>"><?php echo __('Neutral'); ?></label>
+                                <input autocomplete="off" id="correctness0_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="0" <?php echo ($response->is_correct == 0) ? 'checked="checked"' : ''; ?>/>
+                                <label data-class="btn-danger" class="btn" for="correctness0_<?php echo $response->id; ?>"><?php echo __('Incorrect'); ?></label>
+                            </div>
                         </div>
                     </div>
                     
