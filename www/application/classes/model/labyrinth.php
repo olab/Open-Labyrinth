@@ -604,13 +604,13 @@ class Model_Labyrinth extends Model {
                 $qChoices[$questionId][$response]['response'] = $response;
             }
 
-            if ($question->type->value == 'mcq'){
+            if ($question->type->value == 'pcq'){
                 $qChoices[$questionId] = array();
                 $qChoices[$questionId][$response]['score'] = $responseObj->score;
                 $qChoices[$questionId][$response]['response'] = $responseObj->response;
             }
 
-            if ($question->type->value == 'pcq') {
+            if ($question->type->value == 'mcq') {
                 if ($questionStatus == 1){
                     $qChoices[$questionId][$response]['score'] = $responseObj->score;
                     $qChoices[$questionId][$response]['response'] = $responseObj->response;

@@ -674,7 +674,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if ($question->type->value == 'area') {
                 $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
-            } else if($question->type->value == 'pcq') {
+            } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
@@ -694,7 +694,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
                     }
                 }
-            } else {
+            } else if($question->type->value == 'pcq') {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces questionForm_'.$question->id.' ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
