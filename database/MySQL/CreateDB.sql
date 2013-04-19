@@ -1464,7 +1464,7 @@ ADD `resetAttempt` INT NULL ,
 ADD `resetTimestamp` DATETIME NULL;
 
 
-ALTER TABLE `map_skins` ADD `user_id` INT NULL AFTER `path`
+ALTER TABLE `map_skins` ADD `user_id` INT NULL AFTER `path`;
 ALTER TABLE `map_skins` ADD `enabled` TINYINT( 1 ) NOT NULL DEFAULT '1';
 
 UPDATE `map_securities` SET `name` = 'keys (a key is required to access this Labyrinth)' WHERE `id` = 4 LIMIT 1 ;
