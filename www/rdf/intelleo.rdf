@@ -1,0 +1,1839 @@
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY ns9 "http://rdfs.org/sioc/ns#" >
+    <!ENTITY foaf "http://xmlns.com/foaf/0.1/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY ns5 "http://www.intelleo.eu/ontologies/quiz/ns/" >
+    <!ENTITY ns10 "http://intelleo.eu/ontologies/workflow/ns/" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY ns3 "http://www.intelleo.eu/ontologies/workflow/ns/" >
+    <!ENTITY ns6 "http://www.intelleo.eu/ontologies/user-model/ns/" >
+    <!ENTITY ns "http://www.intelleo.eu/ontologies/activities/ns#" >
+    <!ENTITY ns7 "http://www.intelleo.eu/ontologies/annotations/ns/" >
+    <!ENTITY ns8 "http://www.intelleo.eu/ontologies/competences/ns/" >
+    <!ENTITY ns2 "http://www.intelleo.eu/ontologies/organization/ns/" >
+    <!ENTITY ns4 "http://jelenajovanovic.net/ontologies/loco/alocom-core/ns/" >
+]>
+
+
+<rdf:RDF xmlns="http://www.intelleo.eu/ontologies/activities/ns#"
+     xml:base="http://www.intelleo.eu/ontologies/activities/ns"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:ns="http://www.intelleo.eu/ontologies/activities/ns#"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:ns9="http://rdfs.org/sioc/ns#"
+     xmlns:ns5="http://www.intelleo.eu/ontologies/quiz/ns/"
+     xmlns:ns6="http://www.intelleo.eu/ontologies/user-model/ns/"
+     xmlns:ns10="http://intelleo.eu/ontologies/workflow/ns/"
+     xmlns:ns7="http://www.intelleo.eu/ontologies/annotations/ns/"
+     xmlns:ns8="http://www.intelleo.eu/ontologies/competences/ns/"
+     xmlns:ns2="http://www.intelleo.eu/ontologies/organization/ns/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ns4="http://jelenajovanovic.net/ontologies/loco/alocom-core/ns/"
+     xmlns:ns3="http://www.intelleo.eu/ontologies/workflow/ns/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="http://www.intelleo.eu/ontologies/activities/ns">
+        <dc:date xml:lang="en">2011-08-25</dc:date>
+        <dc:title xml:lang="en">Activities Ontology</dc:title>
+        <dc:creator xml:lang="en">Jelena Jovanovic</dc:creator>
+        <dc:description xml:lang="en">Ontology for representing differen kinds of working and learning activities in Intelligent Extended Learning Organizations (IntelLEOs).</dc:description>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&dc;creator"/>
+    <owl:AnnotationProperty rdf:about="&dc;date"/>
+    <owl:AnnotationProperty rdf:about="&rdfs;label"/>
+    <owl:AnnotationProperty rdf:about="&dc;description"/>
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    <owl:AnnotationProperty rdf:about="&dc;title"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#loggingStateType -->
+
+    <rdfs:Datatype rdf:about="http://www.intelleo.eu/ontologies/activities/ns#loggingStateType">
+        <owl:equivalentClass>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">loggedIn</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">loggedOut</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </owl:equivalentClass>
+    </rdfs:Datatype>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#subscriptionStateType -->
+
+    <rdfs:Datatype rdf:about="http://www.intelleo.eu/ontologies/activities/ns#subscriptionStateType">
+        <owl:equivalentClass>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">turnedOff</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">turnedOn</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </owl:equivalentClass>
+    </rdfs:Datatype>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#achievedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#achievedBy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">achieved by</rdfs:label>
+        <rdfs:comment xml:lang="en">The user who made the achievement (e.g., acquired a competence or reached a learning goal) </rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AchievementEvent"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#performedBy"/>
+        <rdfs:range rdf:resource="&ns6;User"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#achievement -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#achievement">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">achievement</rdfs:label>
+        <rdfs:comment xml:lang="en">The property relates the a:AchievementEvent with the resource (e.g., a competence, a learning goal) that represent the user’s achievement</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AchievementEvent"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#addedTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#addedTo">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">addedTo</rdfs:label>
+        <rdfs:comment xml:lang="en">The resource to which another resource was added to (during the Add event); for example, a competence was added to a learning goal, or an activity is added to a learning path</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Add"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#annotationRef -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#annotationRef">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">annotationRef</rdfs:label>
+        <rdfs:comment xml:lang="en">The property establishes a relation between an annotation event and the annotation that was generated during the event.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+        <rdfs:range rdf:resource="&ns7;Annotation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#collaborationMode -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#collaborationMode">
+        <rdfs:label xml:lang="en">collaborationMode</rdfs:label>
+        <rdfs:comment xml:lang="en">The mode of collaboration supported by an online environment; possible values include: Synchronous, Asynchronous, Multi-synchronous</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#contentRef -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#contentRef">
+        <rdfs:label xml:lang="en">contentRef</rdfs:label>
+        <rdfs:comment xml:lang="en">The content that was created/used/reaused/shared/... during an activity</rdfs:comment>
+        <rdfs:range rdf:resource="&ns4;ContentUnit"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#detachedFrom -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#detachedFrom">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">detached from</rdfs:label>
+        <rdfs:comment xml:lang="en">The resource from which another resource was removed (during the Detach event); for example, a competence was removed from a learning goal, or an activity was removed from a learning path</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DetachEvent"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#exchangedMessage -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#exchangedMessage">
+        <rdfs:label xml:lang="en">exchangedMessage</rdfs:label>
+        <rdfs:comment xml:lang="en">The message that was exchanged during a discussion activity or a discussion event.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#hasAttachment -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#hasAttachment">
+        <rdfs:label xml:lang="en">hasAttachment</rdfs:label>
+        <rdfs:comment xml:lang="en">The attachment to a message exchanged in communication channel</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:range rdf:resource="&foaf;Document"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#hasEvent -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#hasEvent">
+        <rdfs:label xml:lang="en">hasEvent</rdfs:label>
+        <rdfs:comment xml:lang="en">The property estableshes a relation between an activity and an its event(s).</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#helpForResource -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#helpForResource">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">help for resource</rdfs:label>
+        <rdfs:comment xml:lang="en">The resource that the given help request refers to; it can be a competence, an activity or a knowledge asset</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#helpRequest -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#helpRequest">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">help request</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the event of submitting a request for help with the actual request that was submitted.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequestEvent"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#inChannel -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#inChannel">
+        <rdfs:label xml:lang="en">inChannel</rdfs:label>
+        <rdfs:comment xml:lang="en">The property relates a message with the communication channel it was submitted to/receaved from.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Channel"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#joinedGroup -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#joinedGroup">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">joined group</rdfs:label>
+        <rdfs:comment xml:lang="en">The relationship between the event of joining a group and the actual group that the user has joined.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#JoinGroupEvent"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+        <rdfs:range rdf:resource="&foaf;Group"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#leftGroup -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#leftGroup">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">left group</rdfs:label>
+        <rdfs:comment xml:lang="en">The relationship between the event of (someone) leaving a group and the actual group that someone has left.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#LeaveGroupEvent"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+        <rdfs:range rdf:resource="&foaf;Group"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#occursIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#occursIn">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">The online environment where the activity has taken place</rdfs:label>
+        <rdfs:label xml:lang="en">occursIn</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#participant -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#participant">
+        <rdfs:label xml:lang="en">participant</rdfs:label>
+        <rdfs:comment xml:lang="en">The property estableshes a relationship between an online discussion and its participants.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+        <rdfs:range rdf:resource="&ns6;User"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#performedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#performedBy">
+        <rdfs:label xml:lang="en">performedBy</rdfs:label>
+        <rdfs:comment xml:lang="en">The Agent who took the part in the given Event</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:range rdf:resource="&foaf;Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#progressScaleUsed -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#progressScaleUsed">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">progressScaleUsed</rdfs:label>
+        <rdfs:comment xml:lang="en">The scale used for measuring and representing the user’s progress.</rdfs:comment>
+        <rdfs:range rdf:resource="&ns10;ProgressScale"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ChangeProgressEvent"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#quizResult -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#quizResult">
+        <rdfs:label xml:lang="en">quizResult</rdfs:label>
+        <rdfs:comment xml:lang="en">The result of the quizzing (assessment) activity</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Quizzing"/>
+        <rdfs:range rdf:resource="&ns5;QuizResult"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#recommendedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#recommendedBy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">recommended by</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the recommendation with the user who has made/given it.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Recommendation"/>
+        <rdfs:range rdf:resource="&ns6;User"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#recommendedResource -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#recommendedResource">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">recommended resource</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the recommendation with the resource (e.g., a learning goal, competence, activity, etc) that was recommended</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Recommendation"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#recommendedTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#recommendedTo">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">recommended to</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the recommendation with the user whom it was intended for (i.e., to whom the resource was recommended)</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Recommendation"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+        <rdfs:range rdf:resource="&foaf;Agent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#relatedToGoal -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#relatedToGoal">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">related to goal</rdfs:label>
+        <rdfs:comment xml:lang="en">The learning goal that the given help request is related to</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:range rdf:resource="&ns6;LearningGoal"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#resourceRef -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#resourceRef">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">resourceRef</rdfs:label>
+        <rdfs:comment xml:lang="en">Reference to the resource that was affected by or resulted from the given event</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#responseToRequest -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#responseToRequest">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">response to request</rdfs:label>
+        <rdfs:comment xml:lang="en">The response that someone has submitted to the given help request.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpResponse"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#rootPosting -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#rootPosting">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">root post</rdfs:label>
+        <rdfs:comment xml:lang="en">The property which establishes a relationship between a post (i.e. an asynchronous message) and the root post (of the discussion thread) this one refers to.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ForumPost"/>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ForumPost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#sentBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#sentBy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">sent by</rdfs:label>
+        <rdfs:comment xml:lang="en">The property establishes a relationship between the meassage (synchronous or asynchronous) that was sent and the user who has sent it.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:range rdf:resource="&ns6;User"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#sharedResource -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#sharedResource">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">shared resource</rdfs:label>
+        <rdfs:comment xml:lang="en">The resource (e.g., a piece of content, a competence, a learning goal, etc) that was shared, during the considered sharing event.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#SharingEvent"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#sharedWith -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#sharedWith">
+        <rdfs:label xml:lang="en">shared with</rdfs:label>
+        <rdfs:comment xml:lang="en">User(s) and/or group(s) with whom some resource was shared during the considered sharing event.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#SharingEvent"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&ns6;User"/>
+                    <rdf:Description rdf:about="&foaf;Group"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#startedFollowing -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#startedFollowing">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">started following</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the given following event (i.e., the event of starting following someone) with the person who is followed. </rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#FollowEvent"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#stoppedFollowing -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#stoppedFollowing">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">stopped following</rdfs:label>
+        <rdfs:comment xml:lang="en">This property relates the given un-follow event with the person who has stopped being followed (by the given user).</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#UnfollowEvent"/>
+        <rdfs:range rdf:resource="&rdf;Resource"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#submittedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#submittedBy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">submitted by</rdfs:label>
+        <rdfs:comment xml:lang="en">The user who submitted the given help request/response</rdfs:comment>
+        <rdfs:range rdf:resource="&ns6;User"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#HelpResponse"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#usingChannel -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#usingChannel">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">usingChannel</rdfs:label>
+        <rdfs:comment xml:lang="en">The property estableshes a relationship between a discussion activity and the channel (e.g. chatroom) it went through.</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Channel"/>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#visibilitySetTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#visibilitySetTo">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">visibility set to</rdfs:label>
+        <rdfs:comment xml:lang="en">The level of visibility set for a (learning) resource</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#SetVisibilityEvent"/>
+        <rdfs:range rdf:resource="&ns2;Visibility"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topObjectProperty -->
+
+    <owl:ObjectProperty rdf:about="&owl;topObjectProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#active -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#active">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">active</rdfs:label>
+        <rdfs:comment xml:lang="en">keeps the status of the help request - if it is still active (opened)</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#browser -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#browser">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">browser</rdfs:label>
+        <rdfs:comment xml:lang="en">The browser that was used for accessing the given Website</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Website"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#browserVersion -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#browserVersion">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">browserVersion</rdfs:label>
+        <rdfs:comment xml:lang="en">The version of the browser that was used for accessing the given Website</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Website"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#dateTimeEnd -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#dateTimeEnd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">dateTimeEnd</rdfs:label>
+        <rdfs:comment xml:lang="en">The date and time when the activity has ended.</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#dateTimeSent -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#dateTimeSent">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">dateTimeSent</rdfs:label>
+        <rdfs:comment xml:lang="en">The date and time when the message was sent</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#dateTimeStart -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#dateTimeStart">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">dateTimeStart</rdfs:label>
+        <rdfs:comment xml:lang="en">The date and time when the activity has started</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#href -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#href">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">href</rdfs:label>
+        <rdfs:comment xml:lang="en">The URL of the link that was followed during the FollowedLinkEvent</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#FollowedLinkEvent"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#loggingState -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#loggingState">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">loggingState</rdfs:label>
+        <rdfs:comment xml:lang="en">This property characterizes the change of the user&#39;s logging status caused by the given event; possible values include: loggedIn and loggedOut</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Logging"/>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#loggingStateType"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#newProgressValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#newProgressValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">newProgressValue</rdfs:label>
+        <rdfs:comment xml:lang="en">The new value of the user’s progress, i.e., the value set during the ChangeProgressEvent</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ChangeProgressEvent"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#os -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#os">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">OS</rdfs:label>
+        <rdfs:comment xml:lang="en">Operating system</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#query -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#query">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">query</rdfs:label>
+        <rdfs:comment xml:lang="en">The query string used in the given search event (i.e., for performing a search)</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Search"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#requestTxt -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#requestTxt">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">request text</rdfs:label>
+        <rdfs:comment xml:lang="en">The content of the submitted help request</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#screenHeight -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#screenHeight">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">screenHeight</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#screenWidth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#screenWidth">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">screenWidth</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#subscriptionState -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#subscriptionState">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">subscriptionState</rdfs:label>
+        <rdfs:comment xml:lang="en">The change in the state of the user&#39;s subscription to the changes of a certain page caused by the given event; it can have two possible values: turnedOn or turnedOff</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#SubscribeToChanges"/>
+        <rdfs:range rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#subscriptionStateType"/>
+        <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#timestamp -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#timestamp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">timestamp</rdfs:label>
+        <rdfs:comment xml:lang="en">The date and time when the event took place</rdfs:comment>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#viewportHeight -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#viewportHeight">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">viewportHeight</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#viewportWidth -->
+
+    <owl:DatatypeProperty rdf:about="http://www.intelleo.eu/ontologies/activities/ns#viewportWidth">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:label xml:lang="en">viewportWidth</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:range rdf:resource="&xsd;int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#topDataProperty -->
+
+    <owl:DatatypeProperty rdf:about="&owl;topDataProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://intelleo.eu/ontologies/workflow/ns/ProgressScale -->
+
+    <owl:Class rdf:about="&ns10;ProgressScale"/>
+    
+
+
+    <!-- http://jelenajovanovic.net/ontologies/loco/alocom-core/ns/ContentUnit -->
+
+    <owl:Class rdf:about="&ns4;ContentUnit"/>
+    
+
+
+    <!-- http://rdfs.org/sioc/ns#Forum -->
+
+    <owl:Class rdf:about="&ns9;Forum"/>
+    
+
+
+    <!-- http://rdfs.org/sioc/ns#Post -->
+
+    <owl:Class rdf:about="&ns9;Post"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#RecognitionEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#RecognitionEvent">
+        <rdfs:label xml:lang="en">Recognition Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event that occurs when one user gives a Recogntion (Kudos) to some other user(s)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#AcceptRecommendationEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AcceptRecommendationEvent">
+        <rdfs:label xml:lang="en">AcceptRecommendationEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of explicitly accepting a recommendation thus acknowledging its usefulness.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#AchievementEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AchievementEvent">
+        <rdfs:label xml:lang="en">AchievementEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of achieving/completing a (learning) activity, a competence, or a learning goal.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Activity -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Activity">
+        <rdfs:label xml:lang="en">Activity</rdfs:label>
+        <rdfs:comment xml:lang="en">An activity that a user undertook while interacting with a piece of content and/or other users.
+The Activity class represents any kind of online activity.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Add -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Add">
+        <rdfs:label xml:lang="en">Add</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of adding a new or an existing resource to another resource; e.g., adding a competence to a learning goal, or a knowlegde asset to an activity</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#AddAnnotationEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AddAnnotationEvent">
+        <rdfs:label xml:lang="en">AddAnnotationEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+        <rdfs:comment xml:lang="en">An event of adding an annotation to a resource.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent">
+        <rdfs:label xml:lang="en">AnnotationEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">An event of annotating a piece of a content.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#AssessmentEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AssessmentEvent">
+        <rdfs:label xml:lang="en">Assessment Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of assessing some piece of content (e.g., a blog post, a wiki page), or an annotation (e.g., a comment).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Authoring -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Authoring">
+        <rdfs:label xml:lang="en">Authoring</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity"/>
+        <rdfs:comment xml:lang="en">The activity of auhoring a content item (e.g., a blog, a wiki article, a software model); it is an intrinsic part of modern teaching/learning approaches.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#BookmarkEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#BookmarkEvent">
+        <rdfs:label xml:lang="en">Bookmark Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+        <rdfs:comment xml:lang="en">The event of bookmarking a resource (e.g., a web page, a document) for the purpose of facilitating its later search and retrieval.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ChangeProgressEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ChangeProgressEvent">
+        <rdfs:label xml:lang="en">ChangeProgressEvent</rdfs:label>
+        <rdfs:label xml:lang="en">This event occurs when a user’s progress changes; the progress can be related to an activity, a learning path, achievement of a competence, etc. </rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Channel -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Channel">
+        <rdfs:label xml:lang="en">Channel</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&ns9;Forum"/>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+        <rdfs:comment xml:lang="en">Channel for online discussions, either synchronous or asynchronous.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ChatMessage -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ChatMessage">
+        <rdfs:label rdf:datatype="&xsd;string">ChatMessage</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#inChannel"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ChatRoom"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">Message exchanged in a synchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ChatRoom -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ChatRoom">
+        <rdfs:label xml:lang="en">chatroom</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Channel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#collaborationMode"/>
+                <owl:hasValue rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Synchronous"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Channel for synchronous online discussions, i.e. chats</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Click -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Click">
+        <rdfs:label xml:lang="en">Click</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event generated when by a user clicking on an active component (e.g., a button) of the user interface (e.g., a web form) </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode">
+        <rdfs:label xml:lang="en">CollaborationMode</rdfs:label>
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Asynchronous"/>
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MultiSynchronous"/>
+                    <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Synchronous"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment xml:lang="en">Collaboration mode typical for a collaborative online software environment </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Create -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Create">
+        <rdfs:label xml:lang="en">Create</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">Tbe event of creating a new resource; e.g., the creation of a new competence or a new learning goal, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Delete -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Delete">
+        <rdfs:label xml:lang="en">Delete</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of deleting a resource (e.g., a page in the wiki)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#DetachEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DetachEvent">
+        <rdfs:label xml:lang="en">Detach Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of detaching (removing) one resource from another one; e.g., removing a competence from a learning goal, or a knowledge asset from an activity.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#DiscussAsynchronously -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussAsynchronously">
+        <rdfs:label xml:lang="en">DiscussAsynchronously</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#exchangedMessage"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ForumPost"/>
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MicroblogPost"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#usingChannel"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionForum"/>
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Microblog"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussSynchronously"/>
+        <rdfs:comment xml:lang="en">The activity of interacting asynchronously with other members of an online community (e.g., via discussion forums)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#DiscussSynchronously -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussSynchronously">
+        <rdfs:label xml:lang="en">DiscussSynchronously</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#exchangedMessage"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ChatMessage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#usingChannel"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#ChatRoom"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">The activity of interacting synchronously with other members of an online community (e.g., via chat messages)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Discussing -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Discussing">
+        <rdfs:label xml:lang="en">Discussing</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#hasEvent"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">The activity of interacting with other participants of an online community via software communication tools.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent">
+        <rdfs:label rdf:datatype="&xsd;string">DiscussionEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#exchangedMessage"/>
+                <owl:onClass rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">The common superclass for events typical for an asynchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#DiscussionForum -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionForum">
+        <rdfs:label xml:lang="en">Discussion Forum</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Channel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#collaborationMode"/>
+                <owl:hasValue rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Asynchronous"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Channel for asynchronous online discussions, i.e. a discussion forum</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Edit -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Edit">
+        <rdfs:label xml:lang="en">Edit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of editing a resource (e.g., a wiki page or a learning goal)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Environment -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Environment">
+        <rdfs:label xml:lang="en">Environment</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment xml:lang="en">The environment where the activity takes place. It is typically an online interaction space, such as social networking platform, communication tool/service, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Event -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Event">
+        <rdfs:label xml:lang="en">Event</rdfs:label>
+        <rdfs:comment xml:lang="en">An event that can occur witin an activity. Each activity consists of zero or more events. 
+This class is aimed to serve as the common super class for different kinds of events.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#FlaggingMsg -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FlaggingMsg">
+        <rdfs:label xml:lang="en">FlaggingMsg</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+        <rdfs:comment rdf:datatype="&xsd;string">The event of marking as relevant a post sent or received in an asynchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#FollowEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FollowEvent">
+        <rdfs:label xml:lang="en">FollowEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of starting following someone or something. The notion of following considered here fully complies with the widely adopted one on Twitter-like apps.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#FollowedLinkEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FollowedLinkEvent">
+        <rdfs:label xml:lang="en">FollowedLinkEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of following a link to another resource that is either part of or external to the content currently in use.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ForumPost -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ForumPost">
+        <rdfs:label rdf:datatype="&xsd;string">Post</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#inChannel"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussionForum"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="&xsd;string">Message exchanged in an asynchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#HelpRequest -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#HelpRequest">
+        <rdfs:label xml:lang="en">Help Request</rdfs:label>
+        <rdfs:comment xml:lang="en">A request for help regarding certain resource (e.g., a competence, an activity or a piece of content)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#HelpRequestEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#HelpRequestEvent">
+        <rdfs:label xml:lang="en">Help Request Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of submitting a request for help</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#HelpResponse -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#HelpResponse">
+        <rdfs:label xml:lang="en">Help Response</rdfs:label>
+        <rdfs:comment xml:lang="en">A response to a help request</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#IgnoreRecommendationEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#IgnoreRecommendationEvent">
+        <rdfs:label xml:lang="en">IgnoreRecommendationEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of explicitly ignoring/rejecting a recommendation thus clearly indicating that the recommended resource is not of relevance for the given user.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ImportEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ImportEvent">
+        <rdfs:label xml:lang="en">Import Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of importing a file</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity">
+        <rdfs:label xml:lang="en">InterpretedActivity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:comment xml:lang="en">The common super-class for activities with Ã¢â‚¬Å“interpretedÃ¢â‚¬ï¿½ meaning (i.e., semantically enhanced activity classes). It is an abstract class, i.e., not meant to be instantiated.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#JoinGroupEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#JoinGroupEvent">
+        <rdfs:label xml:lang="en">Join Group Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event occurs when a new user joins a group.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#LCMS -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#LCMS">
+        <rdfs:label xml:lang="en">Learning Content Management System</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#LeaveGroupEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#LeaveGroupEvent">
+        <rdfs:label xml:lang="en">Leave Group Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event occurs when a member of a group leaves the group.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#LikeEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#LikeEvent">
+        <rdfs:label xml:lang="en">LikeEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of &quot;liking&quot; a certain resource. It acts as the Facebook&#39;s like feature.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Listening -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Listening">
+        <rdfs:label xml:lang="en">Listening</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Logging -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Logging">
+        <rdfs:label xml:lang="en">Logging</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of logging in or out the given application</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#MarkAsFavourite -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MarkAsFavourite">
+        <rdfs:label xml:lang="en">Mark as Favourite</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of marking certain resource (e.g., a competence, a topic, a learning goal) as a favourite resource (i.e., as a resource to be included in the user&#39;s preferences).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Message -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Message">
+        <rdfs:label rdf:datatype="&xsd;string">Message</rdfs:label>
+        <rdfs:subClassOf rdf:resource="&ns4;ContentUnit"/>
+        <rdfs:subClassOf rdf:resource="&ns9;Post"/>
+        <rdfs:comment rdf:datatype="&xsd;string">This class is aimed at represening common properties of messages exchanged in both synchronous and asynchronous discussion modes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Microblog -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Microblog">
+        <rdfs:label xml:lang="en">Microblog</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Channel"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#collaborationMode"/>
+                <owl:hasValue rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Asynchronous"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">Microblogging channel, such as Twitter, Jaiku, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#MicroblogPost -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MicroblogPost">
+        <rdfs:label xml:lang="en">MicroblogPost</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Message"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#inChannel"/>
+                <owl:allValuesFrom rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Microblog"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A meesage sent over a microblog, e.g., a twit</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#MonitoredActivity -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MonitoredActivity">
+        <rdfs:label xml:lang="en">MonitoredActivity</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Activity"/>
+        <rdfs:comment xml:lang="en">The common super-class for Ã¢â‚¬Å“rowÃ¢â‚¬ï¿½ activities identified by the User Monitoring service. It is an abstract class, i.e., not meant to be instantiated.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent">
+        <rdfs:label xml:lang="en">MonitoredEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The common subclass for all the kinds of events that are monitored during user&#39;s interaction with the system</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Quizzing -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Quizzing">
+        <rdfs:label xml:lang="en">Quizzing</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity"/>
+        <rdfs:comment xml:lang="en">The activity of knowledge or skill assessment; often in the form of quizzes (tests).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Reading -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Reading">
+        <rdfs:label xml:lang="en">Reading</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#InterpretedActivity"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#hasEvent"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+                            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FollowedLinkEvent"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">The activity of reading some digital content.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#ReadingMsg -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ReadingMsg">
+        <rdfs:label xml:lang="en">ReadingMsg</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+        <rdfs:comment rdf:datatype="&xsd;string">The event of reading a post received in an asynchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Recommendation -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Recommendation">
+        <rdfs:label xml:lang="en">Recommendation</rdfs:label>
+        <rdfs:comment xml:lang="en">This class represents a recommendation of a resource (e.g., a learning goal, competence, activity, etc) made by one user for another user</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#RecommendationEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#RecommendationEvent">
+        <rdfs:label xml:lang="en">Recommendation Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event when one user recommends a resource (e.g., a learning goal, competence, activity, etc) to another user</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Restore -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Restore">
+        <rdfs:label xml:lang="en">Restore</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of restoring a resource (e.g., wiki page) that was previously deleted (during a Delete event)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Search -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Search">
+        <rdfs:label xml:lang="en">Search</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event generated by a user submitting a search query to the system. </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Select -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Select">
+        <rdfs:label xml:lang="en">Select</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event generated by a user making a selection from the provided set/list of items (e.g., choosing a document to be read from the list of available ones)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#SetVisibilityEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#SetVisibilityEvent">
+        <rdfs:label xml:lang="en">Set visibility event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+        <rdfs:comment xml:lang="en">The event of setting the visibility of a resource (e.g., a piece of content, a competence, a learning goal) in order to selectively share it with others (i.e., define who has the right to see it).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#SharingEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#SharingEvent">
+        <rdfs:label xml:lang="en">Sharing Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event of sharing a resource with another user or a group.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Submit -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Submit">
+        <rdfs:label xml:lang="en">Submit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#SubmittingMsg -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#SubmittingMsg">
+        <rdfs:label xml:lang="en">SubmittingMsg</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+        <rdfs:comment rdf:datatype="&xsd;string">The event of submitting a post in an asynchronous discussion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#SubscribeToChanges -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#SubscribeToChanges">
+        <rdfs:label xml:lang="en">SubscribeToChanges</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of subscribing to the changes in a certain page (e.g., in a wiki, those are watch/unwatch events)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#TaggingEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#TaggingEvent">
+        <rdfs:label xml:lang="en">TaggingEvent</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+        <rdfs:comment xml:lang="en">The event of adding a tag to a resource. Tags are considered here as free form keywords/keyphrases that people use to annotate different kinds of resources.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#UnfollowEvent -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#UnfollowEvent">
+        <rdfs:label xml:lang="en">Unfollow Event</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Event"/>
+        <rdfs:comment xml:lang="en">The event when someone stops following another person. The notion of following considered here fully complies with the widely adopted one on Twitter-like apps.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Upload -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Upload">
+        <rdfs:label xml:lang="en">Upload</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredEvent"/>
+        <rdfs:comment xml:lang="en">The event of uploading a resource (e.g., to a shared document repository)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Viewing -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Viewing">
+        <rdfs:label xml:lang="en">Viewing</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#MonitoredActivity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Website -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Website">
+        <rdfs:label xml:lang="en">Website</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Wiki -->
+
+    <owl:Class rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Wiki">
+        <rdfs:label xml:lang="en">Wiki</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#Environment"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/annotations/ns/Annotation -->
+
+    <owl:Class rdf:about="&ns7;Annotation"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/competences/ns/Competence -->
+
+    <owl:Class rdf:about="&ns8;Competence"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/organization/ns/IntelLEO -->
+
+    <owl:Class rdf:about="&ns2;IntelLEO"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/organization/ns/Organization -->
+
+    <owl:Class rdf:about="&ns2;Organization"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/organization/ns/Visibility -->
+
+    <owl:Class rdf:about="&ns2;Visibility"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/quiz/ns/QuizResult -->
+
+    <owl:Class rdf:about="&ns5;QuizResult"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/user-model/ns/LearningGoal -->
+
+    <owl:Class rdf:about="&ns6;LearningGoal"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/user-model/ns/TargetCompetence -->
+
+    <owl:Class rdf:about="&ns6;TargetCompetence"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/user-model/ns/User -->
+
+    <owl:Class rdf:about="&ns6;User"/>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/workflow/ns/LearningTask -->
+
+    <owl:Class rdf:about="&ns3;LearningTask"/>
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#Resource -->
+
+    <owl:Class rdf:about="&rdf;Resource"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Agent -->
+
+    <owl:Class rdf:about="&foaf;Agent"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Document -->
+
+    <owl:Class rdf:about="&foaf;Document"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Group -->
+
+    <owl:Class rdf:about="&foaf;Group"/>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/Person -->
+
+    <owl:Class rdf:about="&foaf;Person"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Asynchronous -->
+
+    <owl:Thing rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Asynchronous">
+        <rdf:type rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label xml:lang="en">Asynchronous</rdfs:label>
+        <rdfs:comment xml:lang="en">Asynchronous collaboration mode</rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#MultiSynchronous -->
+
+    <owl:Thing rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MultiSynchronous">
+        <rdf:type rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label xml:lang="en">Multi-synchronous</rdfs:label>
+        <rdfs:comment xml:lang="en">Multi-synchronous collaboration mode</rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.intelleo.eu/ontologies/activities/ns#Synchronous -->
+
+    <owl:Thing rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Synchronous">
+        <rdf:type rdf:resource="http://www.intelleo.eu/ontologies/activities/ns#CollaborationMode"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <rdfs:label xml:lang="en">Synchronous</rdfs:label>
+        <rdfs:comment xml:lang="en">Synchronous collaboration mode</rdfs:comment>
+    </owl:Thing>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Authoring"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Discussing"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Quizzing"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Reading"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FlaggingMsg"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ReadingMsg"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#SubmittingMsg"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#AnnotationEvent"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionEvent"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#FollowedLinkEvent"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ChatRoom"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#DiscussionForum"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#Microblog"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ChatMessage"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#ForumPost"/>
+            <rdf:Description rdf:about="http://www.intelleo.eu/ontologies/activities/ns#MicroblogPost"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.2.1789) http://owlapi.sourceforge.net -->

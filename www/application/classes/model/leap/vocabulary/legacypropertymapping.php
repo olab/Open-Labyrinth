@@ -125,12 +125,22 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
             if($object->is_field($this->property))
                 $value = $object->{$this->property};
             else {
-                $className = get_class($object->{$this->property});
 
+
+                $property = $object->{$this->property};
+
+               if(is_a($property, "DB_ResultSet"))
+                if($property->count()>0)
+                   $property = $property[0];
+                else {break;}
+
+                $className = get_class($property);
                 $modelName = strtolower(str_replace("Model_Leap_","",$className));
-                $rel_pkeys = $object->{$this->property}->primary_key();
 
-                $value = Model_Leap_Vocabulary::getObjectUri($modelName,$object->{$this->property}->{$rel_pkeys[0]});
+                    $rel_pkeys = $property->primary_key();
+
+
+                $value = Model_Leap_Vocabulary::getObjectUri($modelName,$property->{$rel_pkeys[0]});
 
             }
 
