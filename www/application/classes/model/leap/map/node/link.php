@@ -311,6 +311,24 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
             $builder->execute();
         }
     }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $links = array();
+            foreach($result as $record) {
+                $links[] = $record;
+            }
+
+            return $links;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

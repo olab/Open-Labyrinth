@@ -29,43 +29,40 @@ if (isset($templateData['map'])) { ?>
       method="POST" 
       action="<?php echo URL::base(); ?>questionManager/questionPOST/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['type']->id; ?><?php echo (isset($templateData['question']) ? ('/' . $templateData['question']->id) : ''); ?>">
 
-                                <fieldset>
-                                    <div class="control-group">
-                                        <label for="qstem" class="control-label"><?php echo __('Stem'); ?>
-                                        </label>
-                                        <div class="controls">
-                                            <textarea id="qstem" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label for="qwidth" class="control-label"><?php echo __('Width'); ?>
-                                        </label>
-                                        <div class="controls">
-                                            <select  id="qwidth" name="qwidth">
-                                                <?php for($i = 10; $i <= 60; $i += 10) { ?>
-                                                    <option value="<?php echo $i; ?>" <?php if(isset($templateData['question']) and $templateData['question']->width == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="control-group">
-                                        <label for="fback" class="control-label"><?php echo __('Feedback'); ?>
-                                        </label>
-                                        <div class="controls">
+    <fieldset>
+        <div class="control-group">
+            <label for="qstem" class="control-label"><?php echo __('Stem'); ?>
+            </label>
+            <div class="controls">
+                <textarea id="qstem" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="qwidth" class="control-label"><?php echo __('Width'); ?>
+            </label>
+            <div class="controls">
+                <select  id="qwidth" name="qwidth">
+                    <?php for($i = 10; $i <= 60; $i += 10) { ?>
+                        <option value="<?php echo $i; ?>" <?php if(isset($templateData['question']) and $templateData['question']->width == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="fback" class="control-label"><?php echo __('Prompt text'); ?>
+            </label>
+            <div class="controls">
 
-                                            <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
-                                        </div>
-                                    </div>
-                                </fieldset>
-
-
-
-<div class="form-actions">
-<div class="pull-right">
-                                   <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Save">
-                                </div></div>
-                            </form>
-
+                <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-actions">
+        <div class="pull-right">
+            <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Save">
+        </div>
+    </div>
+</form>
 <?php } ?>
 
 

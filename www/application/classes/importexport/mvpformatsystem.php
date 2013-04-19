@@ -27,6 +27,8 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
     
     private $folderName;
     private $folderPath;
+    private $mediaElements;
+    private $manifest;
     
     /**
      * Export map to mvp format
@@ -36,28 +38,134 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         $mapId = (int)$parameters['mapId'];
         if($mapId <= 0) return '';
         
-        $this->makeTempFolder();
-        
-        $map = DB_ORM::model('map', array($mapId));
-        $counters = DB_ORM::model('map_counter')->getCountersByMap($map->id);
-        $nodes = DB_ORM::model('map_node')->getNodesByMap($map->id);
-        $links = DB_ORM::model('map_node_link')->getLinksByMap($map->id);
-        $sections = DB_ORM::model('map_node_section')->getAllSectionsByMap($map->id);
-        $avatars = DB_ORM::model('map_avatar')->getAvatarsByMap($map->id);
-        $questions = DB_ORM::model('map_question')->getQuestionsByMap($map->id);
-        $vpds = DB_ORM::model('map_vpd')->getAllVpdByMap($map->id);
-        $elements = DB_ORM::model('map_element')->getAllMediaFiles($map->id);
-        
-        $this->generateMetadata($map);
-        $this->generateActivityModel($counters, $nodes, $sections, $links);
-        $this->generateVPD($nodes, $avatars, $questions, $vpds);
-        $this->generateImsmanifest($elements);
-        
+        $this->makeTempFolder($parameters['mapName']);
+
+        $metadata['version'] = 3;
+        $this->createXMLFile('metadata', $metadata, false, false);
+
+        $map = DB_ORM::model('map')->exportMVP($mapId);
+        $this->createXMLFile('map', $map);
+
+        $elements = DB_ORM::model('map_element')->exportMVP($map['id']);
+        $this->createXMLFile('map_element', $elements);
+        $this->copyResourcesFiles($elements);
+
+        $counters = DB_ORM::model('map_counter')->exportMVP($map['id']);
+        $this->createXMLFile('map_counter', $counters);
+
+        $counter_commonrules = DB_ORM::model('map_counter_commonrules')->exportMVP($map['id']);
+        $this->createXMLFile('map_counter_commonrules', $counter_commonrules);
+
+        $avatars = DB_ORM::model('map_avatar')->exportMVP($map['id']);
+        $this->createXMLFile('map_avatar', $avatars);
+        $this->copyAvatarsImages($avatars);
+
+        $chats = DB_ORM::model('map_chat')->exportMVP($map['id']);
+        $this->createXMLFile('map_chat', $chats);
+        $elementsArray = $this->mergeArraysFromDB($chats, 'map_chat_element');
+        $this->createXMLFile('map_chat_element', $elementsArray);
+
+        $nodes = DB_ORM::model('map_node')->exportMVP($map['id']);
+        $this->createXMLFile('map_node', $nodes);
+
+        $questions = DB_ORM::model('map_question')->exportMVP($map['id']);
+        $this->createXMLFile('map_question', $questions);
+        $elementsArray = $this->mergeArraysFromDB($questions, 'map_question_response');
+        $this->createXMLFile('map_question_response', $elementsArray);
+
+        $contributor = DB_ORM::model('map_contributor')->exportMVP($map['id']);
+        $this->createXMLFile('map_contributor', $contributor);
+
+        $feedback_rules = DB_ORM::model('map_feedback_rule')->exportMVP($map['id']);
+        $this->createXMLFile('map_feedback_rule', $feedback_rules);
+
+        $key = DB_ORM::model('map_key')->exportMVP($map['id']);
+        $this->createXMLFile('map_key', $key);
+
+        $vpds = DB_ORM::model('map_vpd')->exportMVP($map['id']);
+        $this->createXMLFile('map_vpd', $vpds);
+        $elementsArray = $this->mergeArraysFromDB($vpds, 'map_vpd_element');
+        $this->createXMLFile('map_vpd_element', $elementsArray);
+
+        $dams = DB_ORM::model('map_dam')->exportMVP($map['id']);
+        $this->createXMLFile('map_dam', $dams);
+        $elementsArray = $this->mergeArraysFromDB($dams, 'map_dam_element');
+        $this->createXMLFile('map_dam_element', $elementsArray);
+
+        $node_counters = DB_ORM::model('map_node_counter')->exportMVP($map['id']);
+        $this->createXMLFile('map_node_counter', $node_counters);
+        $links = DB_ORM::model('map_node_link')->exportMVP($map['id']);
+        $this->createXMLFile('map_node_link', $links);
+        $sections = DB_ORM::model('map_node_section')->exportMVP($map['id']);
+        $this->createXMLFile('map_node_section', $sections);
+        $elementsArray = $this->mergeArraysFromDB($sections, 'map_node_section_node');
+        $this->createXMLFile('map_node_section_node', $elementsArray);
+
+        //$users = DB_ORM::model('map_user')->exportMVP($map['id']);
+        //$this->createXMLFile('map_user', $users);
+
+        $elementsArray = $this->mergeArraysFromDB($counters, 'map_counter_rule');
+        $this->createXMLFile('map_counter_rule', $elementsArray);
+
+        $this->createXMLFile('media_elements', $this->mediaElements, false, true);
+        $this->createXMLFile('manifest', $this->manifest, false, true);
+
         $result = $this->createZipArchive();
         
         $this->removeDir();
         
         return $result ? (DOCROOT . 'tmp/' . $this->folderName . '.zip') : '';
+    }
+
+    private function createXMLFile($name, $array, $addToManifest = true, $decode = true){
+        if (count($array) > 0){
+            $xml = new SimpleXMLElement('<xml />');
+            $arrayXml = $xml->addChild($name);
+            $this->createXMLTree($arrayXml, $name, $array, $decode);
+
+            $filePath = $this->folderPath . '/'.$name.'.xml';
+            $f = fopen($filePath, 'w');
+            $dom = dom_import_simplexml($xml)->ownerDocument;
+            $dom->formatOutput = true;
+            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $dom->saveXML());
+            fwrite($f, $outputXML);
+            fclose($f);
+
+            if ($addToManifest){
+                $index = 'file_'.count($this->manifest['files']);
+                $this->manifest['files'][$index] = $name;
+            }
+        }
+    }
+
+    private function mergeArraysFromDB($rootElements, $model, $key = 'id'){
+        $elementsArray = array();
+        if (count($rootElements) > 0){
+            foreach($rootElements as $element){
+                $array = DB_ORM::model($model)->exportMVP($element[$key]);
+                if (count($array) > 0){
+                    $elementsArray = array_merge($elementsArray, $array);
+                }
+            }
+        }
+        return $elementsArray;
+    }
+
+    private function createXMLTree($xml, $name, $array, $decode){
+        if (count($array) > 0){
+            foreach($array as $key => $value){
+                if(is_array($value)){
+                    $this->createXMLTree($xml->addChild($name.'_'.$key), $name.'_'.$key, $value, $decode);
+                }else{
+                    if (!is_numeric($value)){
+                        if ($decode){
+                            $value = base64_encode($value);
+                        }
+                    }
+                    $xml->addChild($key, $value);
+                }
+            }
+        }
     }
     
     /**
@@ -137,19 +245,255 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
      * Import map from mvp format
      * @param array $parameters 
      */
-    public function import($parameters) {
-        echo 'import';
+    var $labyrinthArray = array();
+    public function import($tmpFolder) {
+        $manifest = $this->xml2array($tmpFolder, 'manifest');
+        if (count($manifest['manifest_files']) > 0){
+            foreach($manifest['manifest_files'] as $file){
+                $this->labyrinthArray[$file] = $this->xml2array($tmpFolder, $file);
+                if (count($this->labyrinthArray[$file]) > 0){
+                    $this->labyrinthArray[$file] = $this->addToDB($file, $this->labyrinthArray[$file]);
+                }
+            }
+        }
+
+        $nodeContentElements = array('MR' => 'map_element',
+            'CHAT' => 'map_chat',
+            'DAM' => 'map_dam',
+            'AV' => 'map_avatar',
+            'VPD' => 'map_vpd',
+            'QU' => 'map_question');
+
+        $searchArray = array();
+        $replaceArray = array();
+        foreach($nodeContentElements as $modelKey => $model){
+            if (isset($this->labyrinthArray[$model])){
+                if (count($this->labyrinthArray[$model]) > 0){
+                    foreach($this->labyrinthArray[$model] as $key => $array){
+                        $searchArray[] = '[['.$modelKey.':'.$key.']]';
+                        $replaceArray[] = '[['.$modelKey.':'.$array['database_id'].']]';
+                    }
+                }
+            }
+        }
+        if (isset($this->labyrinthArray['map_node'])){
+            if (count($this->labyrinthArray['map_node']) > 0){
+                foreach($this->labyrinthArray['map_node'] as $key => $node){
+                    $md5Text = md5($node['text']);
+                    $node['text'] = str_replace($searchArray, $replaceArray, $node['text']);
+                    $node['text'] = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
+                    $newMd5Text = md5($node['text']);
+                    if ($md5Text != $newMd5Text){
+                        $nodeDB = DB_ORM::model('map_node', array((int) $node['database_id']));
+                        if ($nodeDB->is_loaded()){
+                            $nodeDB->text = $node['text'];
+                            $nodeDB->save();
+                        }
+                    }
+                }
+            }
+        }
+
+
+        $mediaElements = $this->xml2array($tmpFolder, 'media_elements');
+        if (isset($mediaElements['media_elements_avatars'])){
+            if (count($mediaElements['media_elements_avatars']) > 0){
+                foreach($mediaElements['media_elements_avatars'] as $avatar){
+                    $filePath = $tmpFolder . 'media/' . $avatar;
+                    if (file_exists($filePath)){
+                        copy($filePath, DOCROOT . 'avatars/' . $avatar);
+                    }
+                }
+            }
+        }
+
+        if (isset($mediaElements['media_elements_files'])){
+            if (count($mediaElements['media_elements_files']) > 0){
+                foreach($mediaElements['media_elements_files'] as $file){
+                    $filePath = $tmpFolder . 'media/' . $file;
+                    if (file_exists($filePath)){
+                        copy($filePath, DOCROOT . 'files/' . $file);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private function xml2array($filePath, $fileName){
+        $array = null;
+        $globalPath = $filePath.'/'.$fileName.'.xml';
+        if (file_exists($globalPath)){
+            $xmlfile = file_get_contents($globalPath);
+            $ob = simplexml_load_string($xmlfile);
+            $json = json_encode($ob);
+            $array = json_decode($json, true);
+            $array = $this->convertValuesInArray($array[$fileName]);
+        }
+        return $array;
+    }
+
+    private function addToDB($modelName, $data){
+        $returnData = null;
+        if (isset($data[$modelName.'_0']) && (is_array($data[$modelName.'_0']))){
+            foreach($data as $d){
+                $returnData[$d['id']] = $d;
+                $returnData[$d['id']]['database_id'] = $this->insertInDB($modelName, $d);
+            }
+        } else {
+            $returnData['database_id'] = $this->insertInDB($modelName, $data);
+        }
+        return $returnData;
+    }
+
+    private function insertInDB($modelName, $data){
+        $builder = DB_ORM::insert($modelName);
+        $skipColumns = array('id');
+
+        if ($modelName == 'map'){
+            $data['name'] = DB_ORM::model('map')->getMapName($data['name']);
+            $data['author_id'] = Auth::instance()->get_user()->id;
+            $data['skin_id'] = 1;
+        }
+
+        if ($modelName == 'map_node'){
+            $data['x'] = ($data['x'] == '') ? NULL : (int) $data['x'];
+            $data['y'] = ($data['y'] == '') ? NULL : (int) $data['y'];
+            $data['rgb'] = ($data['rgb'] == '') ? NULL : $data['rgb'];
+        }
+
+        if ($modelName == 'map_dam_element'){
+            if (isset($this->labyrinthArray['map_dam'][$data['dam_id']])){
+                $data['dam_id'] = $this->labyrinthArray['map_dam'][$data['dam_id']]['database_id'];
+            }
+
+            switch ($data['element_type']){
+                case 'vpd':
+                    if (isset($this->labyrinthArray['map_vpd'][$data['element_id']])){
+                        $data['element_id'] = $this->labyrinthArray['map_vpd'][$data['element_id']]['database_id'];
+                    }
+                    break;
+                case 'mr':
+                    if (isset($this->labyrinthArray['map_element'][$data['element_id']])){
+                        $data['element_id'] = $this->labyrinthArray['map_element'][$data['element_id']]['database_id'];
+                    }
+                    break;
+                case 'dam':
+                    if (isset($this->labyrinthArray['map_dam'][$data['element_id']])){
+                        $data['element_id'] = $this->labyrinthArray['map_dam'][$data['element_id']]['database_id'];
+                    }
+                    break;
+            }
+        }
+
+        if ($modelName == 'map_node_link'){
+            if (isset($this->labyrinthArray['map_node'][$data['node_id_1']])){
+                $data['node_id_1'] = $this->labyrinthArray['map_node'][$data['node_id_1']]['database_id'];
+            }
+
+            if (isset($this->labyrinthArray['map_node'][$data['node_id_2']])){
+                $data['node_id_2'] = $this->labyrinthArray['map_node'][$data['node_id_2']]['database_id'];
+            }
+        }
+
+        if ($modelName == 'map_node_section_node'){
+            if (isset($this->labyrinthArray['map_node_section'][$data['section_id']])){
+                $data['section_id'] = $this->labyrinthArray['map_node_section'][$data['section_id']]['database_id'];
+            }
+        }
+
+        if (isset($data['map_id'])){
+            $data['map_id'] = $this->labyrinthArray['map']['database_id'];
+        }
+
+        if (isset($data['chat_id'])){
+            if (isset($this->labyrinthArray['map_chat'][$data['chat_id']])){
+                $data['chat_id'] = $this->labyrinthArray['map_chat'][$data['chat_id']]['database_id'];
+            }
+        }
+
+        if (isset($data['counter_id'])){
+            if (isset($this->labyrinthArray['map_counter'][$data['counter_id']])){
+                $data['counter_id'] = $this->labyrinthArray['map_counter'][$data['counter_id']]['database_id'];
+            } else {
+                $data['counter_id'] = NULL;
+            }
+        }
+
+        if (isset($data['node_id'])){
+            if (isset($this->labyrinthArray['map_node'][$data['node_id']])){
+                $data['node_id'] = $this->labyrinthArray['map_node'][$data['node_id']]['database_id'];
+            }
+        }
+
+        if (isset($data['question_id'])){
+            if (isset($this->labyrinthArray['map_question'][$data['question_id']])){
+                $data['question_id'] = $this->labyrinthArray['map_question'][$data['question_id']]['database_id'];
+            }
+        }
+
+        if (isset($data['vpd_id'])){
+            if (isset($this->labyrinthArray['map_vpd'][$data['vpd_id']])){
+                $data['vpd_id'] = $this->labyrinthArray['map_vpd'][$data['vpd_id']]['database_id'];
+            }
+        }
+
+        if (isset($data['redirect_node_id'])){
+            if ($data['redirect_node_id'] == ''){
+                $data['redirect_node_id'] = NULL;
+            } else if (isset($this->labyrinthArray['map_node'][$data['redirect_node_id']])) {
+                $data['redirect_node_id'] = $this->labyrinthArray['map_node'][$data['redirect_node_id']]['database_id'];
+            }
+        }
+
+        foreach($data as $key => $value){
+            if (!in_array($key, $skipColumns)){
+                $builder->column($key, $value);
+            }
+        }
+
+        return $builder->execute();
+    }
+
+    private function convertValuesInArray($array){
+        if (count($array) > 0){
+            foreach($array as $key => $value){
+                if (count($value) > 0){
+                    if (is_array($value)){
+                        $value = $this->convertValuesInArray($value);
+                    } else if (!is_numeric($value)){
+                        $value = base64_decode($value);
+                    } else {
+                        if (is_numeric($value[0])){
+                            if (is_float($value)){
+                                $value = floatval($value);
+                            } else {
+                                $value = intval($value);
+                            }
+                        }
+                    }
+                } else {
+                    $value = '';
+                }
+                $array[$key] = $value;
+            }
+        }
+        return $array;
     }
     
     /**
      * Create temp folder 
      */
-    private function makeTempFolder() {
+    private function makeTempFolder($mapName = null) {
         $this->folderPath = DOCROOT . 'tmp/';
-        $this->folderName = 'mvp_' . rand();
+        if ($mapName != null){
+            $this->folderName = preg_replace("/[^A-Za-z0-9?!]/","",$mapName) . '_mvp_' . rand();
+        } else {
+            $this->folderName = 'mvp_' . rand();
+        }
         
         if(is_dir($this->folderPath . $this->folderName)) {
-            $this->folderName .= '_' . rand() . '_' . rand();
+            $this->folderName .= '_' . rand();
         }
         
         $this->folderPath .= $this->folderName;
@@ -169,454 +513,6 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
     }
     
     /**
-     * Remove temp folder 
-     */
-    private function removeTempFolder() {
-        
-    }
-    
-    /**
-     * Create meradata.xml file
-     * @param Model_map $map
-     */
-    private function generateMetadata($map) {
-        if(!is_dir($this->folderPath) || $map == null) return;
-        
-        $filePath = $this->folderPath . '/metadata.xml';
-        $f = fopen($filePath, 'w');
-        
-        $language = $map->language_id == 1 ? 'en' : 'fr';
-        
-        $content = '<?xml version="1.0" encoding="UTF-8"?>
-                    <lom xmlns="http://ltsc.ieee.org/xsd/LOM" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xmlns:hx="http://ns.medbiq.org/lom/extend/v1/"
-                        xsi:schemaLocation="http://ltsc.ieee.org/xsd/LOM healthcarelom.xsd">
-                        <general>
-                            <version>3</version>
-                            <title>
-                                <string language="' . $language . '">' . $map->name . '</string>
-                            </title>
-                            <language>' . $language . '</language>
-                            <description>
-                                <string language="' . $language . '"'. (strlen($map->abstract) > 0 ? '>' . $map->abstract . '</string>' : '/>') . '
-                            </description>
-                            <keyword>
-                                <string language="' . $language . '"' . (strlen($map->keywords) > 0 ? '>' . $map->keywords . '</string>' : '/>') . '
-                            </keyword>
-                            <startScore>' . $map->startScore . '</startScore>
-                            <threshold>' . $map->threshold . '</threshold>
-                            <type_id>' . $map->type_id . '</type_id>
-                            <units>' . $map->units . '</units>
-                            <security_id>' . $map->security_id . '</security_id>
-                            <guid>
-                                <string language="' . $language . '"' . (strlen($map->guid) > 0 ? '>' . $map->guid . '</string>' : '/>') . '
-                            </guid>
-                            <timing>' . $map->timing . '</timing>
-                            <delta_time>' . $map->delta_time . '</delta_time>
-                            <show_bar>' . $map->show_bar . '</show_bar>
-                            <show_score>' . $map->show_score . '</show_score>
-                            <skin_id>' . $map->skin_id . '</skin_id>
-                            <enabled>' . $map->enabled . '</enabled>
-                            <section_id>' . $map->section_id . '</section_id>
-                            <source_id>' . $map->source_id . '</source_id>
-                            <feedback>
-                                <string language="' . $language . '"' . (strlen($map->feedback) > 0 ? '>' . $map->feedback . '</string>' : '/>') . '
-                            </feedback>
-                            <dev_notes>
-                                <string language="' . $language . '"' . (strlen($map->dev_notes) > 0 ? '>' . $map->dev_notes . '</string>' : '/>') . '
-                            </dev_notes>
-                            <source>
-                                <string language="' . $language . '"' . (strlen($map->source) > 0 ? '>' . $map->source . '</string>' : '/>') . '
-                            </source>
-                        </general>
-                    </lom>';
-        
-        fwrite($f, $content);
-        fclose($f);
-    }
-    
-    /**
-     * Create activitymodel.xml file
-     * @param array(map_counter) $counters
-     * @param array(map_node) $nodes
-     * @param array(map_node_section) $sections
-     * @param array(map_node_link) $links
-     */
-    private function generateActivityModel($counters, $nodes, $sections, $links) {
-        if(!is_dir($this->folderPath)) return;
-        
-        $filePath = $this->folderPath . '/activitymodel.xml';
-        $f = fopen($filePath, 'w');
-        
-        $content = '<?xml version="1.0" encoding="UTF-8" ?>
-                    <ActivityModel xmlns="http://ns.medbiq.org/activitymodel/v1/" 
-                                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                                   xsi:schemaLocation="http://ns.medbiq.org/activitymodel/v1/activitymodel.xsd" 
-                                   xmlns:ol="http://www.w3.org/2001/XMLSchema-instance">';
-        
-        $content .= $this->generateProperties($counters);
-        $content .= $this->generateActivityNodes($nodes, $sections);
-        $content .= $this->generateLinks($links);
-        $content .= $this->generateActivityModelXtensibleInfo($nodes);
-        
-        $content .= '</ActivityModel>';
-        
-        fwrite($f, $content);
-        fclose($f);
-    }
-    
-    /**
-     * Create virtualpatientdata.xml file
-     * @param array(map_node) $nodes
-     * @param array(map_avatar) $avatars
-     * @param array(map_question) $questions 
-     * @param array(map_vpd) $questions 
-     */
-    private function generateVPD($nodes, $avatars, $questions, $vpds) {
-        if(!is_dir($this->folderPath)) return;
-        
-        $filePath = $this->folderPath . '/virtualpatientdata.xml';
-        $f = fopen($filePath, 'w');
-        
-        $content = '<?xml version="1.0" encoding="UTF-8" ?> 
-                    <VirtualPatientData xmlns="http://ns.medbiq.org/virtualpatientdata/v1/" 
-                                        xmlns:xsi="http://ns.medbiq.org/virtualpatientdata/v1/XMLSchema-instance" 
-                                        xmlns:ol="http://www.w3.org/2001/XMLSchema-instance" 
-                                        ol:schemaLocation="">';
-        
-        $content .= $this->generateVPDText($nodes, $vpds);
-        $content .= $this->generateVPDXtensibleInfo($avatars, $questions);
-        $content .= $this->generateVPDPatientDemographics($vpds);
-        $content .= $this->generateVPDMedication($vpds);
-        $content .= $this->generateVPDInterviewItem($vpds);
-        $content .= $this->generateVPDPhysicalExam($vpds);
-        $content .= $this->genenrateVPDIntervention($vpds);
-        
-        $content .= '</VirtualPatientData>';
-        
-        fwrite($f, $content);
-        fclose($f);
-    }
-    
-    /**
-     * Generate activity model properties section
-     * @param array(map_counter) $counters
-     * @return string 
-     */
-    private function generateProperties($counters) {
-        if(count($counters) <= 0) return '';
-        
-        $result = '<Properties>
-                        <Counters>';
-        
-        foreach($counters as $counter) {
-            $result .= '<Counter id="' . $counter->id . '" isVisible="' . ($counter->visible == 1 ? 'true' : 'false') . '">
-                            <CounterLabel>' . $counter->name . '</CounterLabel> 
-                            <CounterInitValue>' . $counter->start_value . '</CounterInitValue>';
-            
-            $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
-            if(count($rules) > 0) {
-                $result .= '<CounterRules>';
-                foreach($rules as $rule) {
-                    $result .= '<Rule>
-                                    <Relation>' . $rule->relation->value . '</Relation> 
-                                    <Value>' . $rule->value . '</Value> 
-                                    <RuleRedirect>/ActivityModel/ActivityNodes/NodeSection/ActivityNode[@id=\'' . $rule->redirect_node_id . '\']</RuleRedirect> 
-                                    <RuleMessage>' . ($rule->message != null && strlen($rule->message) > 0 ? $rule->message : 'no message') . '</RuleMessage>
-                                    <Counter>' . $rule->counter . '</Counter>
-                                    ' . (strlen($rule->counter_value) > 0 ? ('<CounterValue>' . $rule->counter_value . '</CounterValue>') : '') . '
-                                </Rule>';
-                }
-                $result .= '</CounterRules>';
-            }
-            
-            $result .= '</Counter>';
-        }
-        
-        $result .= '    </Counters>
-                    </Properties>';
-        
-        return $result;
-    }
-    
-    /**
-     * Generate activity model activity nodes section
-     * @param array(map_node) $nodes
-     * @param array(map_node_section) $sections
-     * @return string 
-     */
-    private function generateActivityNodes($nodes, $sections) {
-        if(count($nodes) <= 0) return '';
-        
-        $result = '<ActivityNodes>';
-        
-        if(count($sections) > 0) {
-            foreach($sections as $section) {
-                $result .= '<NodeSection id="' . $section->id . '" label="' . $section->name . '">';
-                if(count($section->nodes) > 0) {
-                    foreach($section->nodes as $sectionNode) {
-                        $result .= '<ActivityNode id="" label="' . $sectionNode->node->title . '">
-                                        <Content>/DataAvailabilityModel/DAMNode[@id=\'OLNode_' . $sectionNode->node_id . '\']</Content> 
-                                        <Rules>
-                                            <Probability>' . ($sectionNode->node->probability ? 'on' : 'off') . '</Probability> 
-                                            <NavigateGlobal>on</NavigateGlobal>
-                                            ' . ($sectionNode->order > 0 ? ('<order>' . $sectionNode->order . '</order>') : '') . '
-                                        </Rules>
-                                    </ActivityNode>';
-                    }
-                }     
-                $result .= '</NodeSection>';
-            }
-        }
-        
-        $result .= '<NodeSection id="" label="unallocated">';
-        foreach($nodes as $node) {
-            $result .= '<ActivityNode id="' . $node->id . '" label="' . $node->title . '">
-                            <Content>/DataAvailabilityModel/DAMNode[@id=\'OLNode_' . $node->id . '\']</Content> 
-                            <Rules>';
-            if(count($node->counters) > 0) {
-                foreach($node->counters as $nodeCounter) {
-                    $function = $this->parseCounterFunction($nodeCounter->function);
-                    if(isset($function['operator']) && isset($function['value'])) {
-                        $result .= '<CounterActionRule>
-                                        <CounterOperator>' . $function['operator'] . '</CounterOperator> 
-                                        <CounterRuleValue>' . $function['value'] . '</CounterRuleValue> 
-                                        <CounterPath>/ActivityModel/Properties/Counters/Counter[@id=\'' . $nodeCounter->counter_id . '\']</CounterPath> 
-                                        <CounterRuleEnabled>' . ($nodeCounter->display <= 0 ? 'off' : 'on') . '</CounterRuleEnabled> 
-                                    </CounterActionRule>';
-                    }
-                }
-                                
-            }
-            $result .= '        <Probability>' . ($node->probability ? 'on' : 'off') . '</Probability> 
-                                <NavigateGlobal>on</NavigateGlobal> 
-                                ' . (strlen($node->conditional) > 0 ? ('<Conditional>' . $node->conditional . '</Conditional>') : '') . '
-                                ' . (strlen($node->conditional_message) > 0 ? ('<ConditionalMessage>' . $node->conditional_message . '</ConditionalMessage>') : '') . '
-                                ' . (strlen($node->info) > 0 ? ('<Info>' . $node->info . '</Info>') : '') . '
-                            </Rules>
-                        </ActivityNode>';
-        }
-        $result .= '    </NodeSection>
-                    </ActivityNodes>';
-        
-        return $result;
-    }
-    
-    /**
-     * Generate activity model links section
-     * @param array(map_node_link) $links
-     * @return string 
-     */
-    private function generateLinks($links) {
-        if(count($links) <= 0) return '';
-        
-        $result = '<Links>';
-        foreach($links as $link) {
-            $result .= '<Link label="' . $link->text . '" display="true">
-                            <ActivityNodeA>/ActivityModel/ActivityNodes/NodeSection/ActivityNode[@id=\'' . $link->node_id_1 . '\']</ActivityNodeA> 
-                            <ActivityNodeB>/ActivityModel/ActivityNodes/NodeSection/ActivityNode[@id=\'' . $link->node_id_2 . '\']</ActivityNodeB> 
-                            ' . ($link->image_id > 0 ? ('<ImageID>' . $link->image_id . '</ImageID>') : '') . '
-                            ' . ($link->order > 0 ? ('<Order>' . $link->order . '</Order>') : '') . '
-                            ' . ($link->probability > 0 ? ('<Probability>' . $link->probability . '</Probability>') : '') . '
-                        </Link>';
-        }
-        $result .= '</Links>';
-        
-        return $result;
-    }
-    
-    /**
-     * Generate activity model XtensibleInfo section
-     * @param array(map_node) $nodes
-     * @return string 
-     */
-    private function generateActivityModelXtensibleInfo($nodes) {
-        if(count($nodes) <= 0) return '';
-        
-        $result = '<XtensibleInfo>
-                        <ol:OL_xtensible>';
-        foreach($nodes as $node) {
-            $result .= '<ol:OL_node ID="' . $node->id . '" 
-                                    undoLinks="' . ($node->undo ? 'y' : 'n') . '" 
-                                    nodeProbs="' . ($node->probability ? 'y' : 'n') . '" 
-                                    nodePriority="' . ($node->priority_id == 1 ? '' : ($node->priority_id == 2 ? 'neg' : 'pos')) . '" 
-                                    linkSorting="' . ($node->link_type_id == 1 ? 'o' : ($node->link_type_id == 3 ? '1' : 'r')) . '" 
-                                    linkPresentation="' . ($node->link_style_id == 2 ? 'drop' : ($node->link_style_id == 3 ? 'conf' : ($node->link_style_id == 4 ? 'fill' : ''))) . '" 
-                                    mnodeType="' . ($node->type_id == 1 ? 'root' : ($node->end ? 'end' : 'child')) . '" 
-                                    mnodeX="' . $node->x . '" 
-                                    mnodeY="' . $node->y . '" 
-                                    mnodeRGB="' . $node->rgb . '">
-                            <ol:OL_infoText>
-                                <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($node->info) > 0 ? ('>' . $node->info . '</div>') : '/>') . ' 
-                            </ol:OL_infoText>
-                        </ol:OL_node>';
-        }
-        $result .= '    </ol:OL_xtensible>
-                    </XtensibleInfo>';
-        
-        return $result;
-    }
-    
-    /**
-     * Parse counter node function
-     * @param string $function
-     * @return array 
-     */
-    private function parseCounterFunction($function) {
-        if(strlen($function) <= 0 || strlen($function) < 2) return array();
-        
-        $operator = substr($function, 0, 1);
-        $value = substr($function, 1, strlen($function) - 1);
-        
-        return array('operator' => $operator, 'value' => $value);
-    }
-    
-    /**
-     * Generate VPD VPDText section
-     * @param array(map_node) $nodes
-     * @param array(map_vpd) $vpds
-     * @return string 
-     */
-    private function generateVPDText($nodes, $vpds) {
-        if(count($nodes) <= 0 && count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($nodes as $node) {
-            $result .= '<VPDText id="NGR_' . $node->id . '" textType="narrative">
-                            <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($node->text) > 0 ? ('>' . base64_encode($node->text) . '</div>') : '/>' ) . ' 
-                        </VPDText>';
-        }
-        
-        if(count($vpds) > 0) {
-            foreach($vpds as $vpd) {
-                if($vpd->vpd_type_id != 1) continue;
-
-                $elements = $this->parseVPDTextElements($vpd->elements);   
-                if(isset($elements['type']) && isset($elements['text'])) {
-                    $result .= '<VPDText id="TEXT_' . $vpd->id . '" textType="' . $elements['type'] . '">
-                                    <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($elements['text']) > 0 ? ('>' . $elements['text'] . '</div>') : '/>' ) . ' 
-                                </VPDText>';
-                }
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Parse vpd text elements 
-     * @param array(map_vpd_element) $vpdElements
-     * @return array 
-     */
-    private function parseVPDTextElements($vpdElements) {
-        if(count($vpdElements) <= 0) return array();
-        
-        $result = array();
-        foreach($vpdElements as $e) {
-            switch($e->key) {
-                case 'VPDTextType':
-                    $result['type'] = $e->value;
-                    break;
-                case 'VPDText':
-                    $result['text'] = $e->value;
-                    break;
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD XtensibleInfo section
-     * @param array(map_avatar) $avatars
-     * @param array(map_question) $questions
-     * @return string 
-     */
-    private function generateVPDXtensibleInfo($avatars, $questions) {
-        if(count($avatars) <= 0 && count($questions) <= 0) return '';
-        
-        $result = '<XtensibleInfo>
-                        <ol:OL_xtensible>';
-        
-        $result .= $this->generateVPDXtensibleInfoAvatars($avatars);
-        $this->copyAvatarsImages($avatars);
-        $result .= $this->generateVPDXtensibleInfoQuestions($questions);
-        
-        $result .= '    </ol:OL_xtensible>
-                    </XtensibleInfo>';
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD XtensibleInfo OL_avatar section
-     * @param array(map_avatar) $avatars
-     * @return string 
-     */
-    private function generateVPDXtensibleInfoAvatars($avatars) {
-        if(count($avatars) <= 0) return '';
-        
-        $avatarNoseMap = array('' => '', 'nostrils' => 'A', 'petit' => 'B', 'wide' => 'C');
-        $avatarHairMap = array('' => 'A', 'none' => 'A', 'shaved' => 'B', 'longblonde' => 'C', 'short' => 'D', 
-                               'curly' => 'E', 'bob' => 'F', 'longred' => 'G', 'grandpa' => 'H', 'granny' => 'I', 
-                               'youngman' => 'K', 'long' => 'L');
-        $avatarEnvironmentMap = array('' => 'A', 'none' => 'A', 'ambulancebay' => 'B', 'bedpillow' => 'F', 'hospital' => 'G', 
-                                      'waitingroom' => 'H', 'insideambulance' => 'J', 'xray' => 'O', 'ca' => 'R', 'medivachelicopter' => 'S', 
-                                      'heartmonitor' => 'V', 'stopsign' => 'BB', 'bedside' => 'CC', 'ambulance2' => 'DD', 'machine' => 'FF',
-                                      'livingroom' => 'D', 'basicoffice' => 'K', 'basicroom' => 'N', 'corridor' => 'Y', 'room' => 'AA', 
-                                      'pillowb' => 'GG', 'concourse' => 'JJ', 'officecubicle' => 'KK', 'residentialstreet' => 'C', 'highstreet' => 'E',
-                                      'cityskyline' => 'I', 'lakeside' => 'L', 'suburbs' => 'M', 'summer' => 'T', 'longroad' => 'U',
-                                      'downtown' => 'P', 'winter' => 'Q', 'outsidelake' => 'W', 'field' => 'X', 'roadside' => 'Z',
-                                      'forestriver' => 'HH', 'parkinglot' => 'II', 'stopsign' => 'BB', 'yieldsign' => 'EE');
-        $avatarSexMap = array('' => '', 'male' => 'A', 'female' => 'B');
-        $avatarMouthMap = array('' => '', 'smile' => 'A', 'indifferent' => 'B', 'frown' => 'C');
-        $avatarOutfitMap = array('' => '', 'none' => 'A', 'woolyjumper' => 'B', 'shirtandtie' => 'C', 'nurse' => 'D',
-                                 'scrubs_blue' => 'E', 'scrubs_green' => 'F', 'vest' => 'G', 'gown' => 'H', 'pyjamas_female' => 'I',
-                                 'pyjamas_male' => 'J', 'doctor_male' => 'K', 'doctor_female' => 'L', 'neck' => 'M', 'blackshirt' => 'N',
-                                 'winterjacket' => 'O', 'vneck' => 'P', 'fleece' => 'Q', 'sweater' => 'R');
-        $avatarBubbleMap = array('' => 'A', 'none' => 'A', 'normal' => 'B', 'think' => 'C', 'shout' => 'D');
-        $avatarAccessoryMap = array('' => '', 'none' => 'A', 'glasses' => 'B', 'sunglasses' => 'T', 'bindi' => 'C',
-                                    'moustache' => 'D', 'freckles' => 'E', 'blusher' => 'G', 'earrings' => 'H', 'beads' => 'I',
-                                    'neckerchief' => 'J', 'redscarf' => 'V', 'beanie' => 'Y', 'buttonscarf' => 'AA', 'baseballcap' => 'CC',
-                                    'winterhat' => 'DD', 'mask' => 'F', 'stethoscope' => 'K', 'oxygenmask' => 'L', 'surgeoncap' => 'M',
-                                    'eyepatch' => 'N', 'scratches' => 'O', 'splitlip' => 'P', 'blackeyeleft' => 'Q', 'blackeyeright' => 'R',
-                                    'headbandage' => 'S', 'sunglasses' => 'T', 'neckbrace' => 'U', 'tearssmall' => 'W', 'tearslarge' => 'BB', 
-                                    'sweat' => 'X');
-        $avatarAgeMap = array('' => '', '20' => 'A', '40' => 'B', '60' => 'C');
-        $avatarEyesMap = array('' => '', 'open' => 'A', 'close' => 'B');
-        
-        $result = '<ol:OL_avatars>';
-        foreach($avatars as $avatar) {
-            $result .= '<ol:OL_avatar ID="' . $avatar->id . '" 
-                                      AvatarSkin1="' . $avatar->skin_1 . '" 
-                                      AvatarSkin2="' . $avatar->skin_2 . '" 
-                                      AvatarCloth="' . $avatar->cloth . '" 
-                                      AvatarNose="' . (isset($avatarNoseMap[$avatar->nose]) ? $avatarNoseMap[$avatar->nose] : $avatar->nose) . '" 
-                                      AvatarHair="' . (isset($avatarHairMap[$avatar->hair]) ? $avatarHairMap[$avatar->hair] : $avatar->hair) . '" 
-                                      AvatarEnvironment="' . (isset($avatarEnvironmentMap[$avatar->environment]) ? $avatarEnvironmentMap[$avatar->environment] : $avatar->environment) . '" 
-                                      AvatarBkd="' . $avatar->bkd . '" 
-                                      AvatarSex="' . (isset($avatarSexMap[$avatar->sex]) ? $avatarSexMap[$avatar->sex] : $avatar->sex) . '" 
-                                      AvatarMouth="' . (isset($avatarMouthMap[$avatar->mouth]) ? $avatarMouthMap[$avatar->mouth] : $avatar->mouth) . '" 
-                                      AvatarOutfit="' . (isset($avatarOutfitMap[$avatar->outfit]) ? $avatarOutfitMap[$avatar->outfit] : $avatar->outfit) . '" 
-                                      AvatarBubble="' . (isset($avatarBubbleMap[$avatar->bubble]) ? $avatarBubbleMap[$avatar->bubble] : $avatar->bubble) . '" 
-                                      AvatarAccessory1="' . (isset($avatarAccessoryMap[$avatar->accessory_1]) ? $avatarAccessoryMap[$avatar->accessory_1] : $avatar->accessory_1) . '" 
-                                      AvatarAccessory2="' . (isset($avatarAccessoryMap[$avatar->accessory_2]) ? $avatarAccessoryMap[$avatar->accessory_2] : $avatar->accessory_2) . '" 
-                                      AvatarAccessory3="' . (isset($avatarAccessoryMap[$avatar->accessory_3]) ? $avatarAccessoryMap[$avatar->accessory_3] : $avatar->accessory_3) . '" 
-                                      AvatarAge="' . (isset($avatarAgeMap[$avatar->age]) ? $avatarAgeMap[$avatar->age] : $avatar->age) . '" 
-                                      AvatarEyes="' . (isset($avatarEyesMap[$avatar->eyes]) ? $avatarEyesMap[$avatar->eyes] : $avatar->eyes) . '" 
-                                      AvatarHairColor="' . $avatar->hair_color . '" 
-                                      AvatarImage="' . (strlen($avatar->image) > 0 ? ('avatar_' . $avatar->image) : '' ) . '">
-                            <ol:OL_AvatarBubbleText>
-                                <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($avatar->bubble_text) > 0 ? ('>' . $avatar->bubble_text . '</div>') : '/>') . ' 
-                            </ol:OL_AvatarBubbleText>
-                        </ol:OL_avatar>';
-        }
-        $result .= '</ol:OL_avatars>';
-        
-        return $result;
-    }
-    
-    /**
      * Copy all exist avatars generated images
      * @param array(map_avatar) $avatars
      * @return none 
@@ -625,449 +521,18 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         if(!is_dir($this->folderPath) || count($avatars) <= 0) return;
         
         $this->makeMediaFolder();
-        
         foreach($avatars as $avatar) {
-            if($avatar->image == 'ntr') continue;
-
-            $avatar->image = ($avatar->image == '') ? 'default.png' : $avatar->image;
-            $avatarImagePath = DOCROOT . 'avatars/' . $avatar->image;
-            if(file_exists($avatarImagePath) && is_dir($this->folderPath . '/media')) {
-                copy($avatarImagePath, $this->folderPath . '/media/' . 'avatar_' . $avatar->image);
-            }
-        }
-    }
-    
-    /**
-     * Generate VPD XtensibleInfo OL_question section
-     * @param array(map_question) $questions
-     * @return string 
-     */
-    private function generateVPDXtensibleInfoQuestions($questions) {
-        if(count($questions) <= 0) return '';
-        
-        $result = '<ol:OL_questions>';
-        foreach($questions as $question) {
-            $result .= '<ol:OL_question ID="' . $question->id . '" 
-                                        QuestionEntryType="' . $question->type->value . '" 
-                                        QuestionWidth="' . $question->width . '"
-                                        QuestionHeight="' . $question->height . '" 
-                                        Feedback="' . $question->feedback . '" 
-                                        ShowAnswer="' . ($question->show_answer ? 'y' : 'n') . '" 
-                                        ScoreCounter="' . $question->counter_id . '" 
-                                        NumTries="' . $question->num_tries . '">
-                            <ol:OL_QuestionStem>
-                                <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($question->stem) > 0 ? ('>' . $question->stem . '</div>') : '/>') . '
-                            </ol:OL_QuestionStem>';
-            if(count($question->responses) > 0) {
-                $i = 1;;
-                foreach($question->responses as $response) {
-                    $result .= '<ol:Resp' . $i . 't>
-                                    <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($response->response) > 0 ? ('>' . $response->response . '</div>') : '/>') . '
-                                </ol:Resp' . $i . 't>
-                                <ol:Resp' . $i . 'y>
-                                    <div xmlns="http://www.w3.org/1999/xhtml"' . ($response->is_correct ? '>c</div>' : '/>') . '
-                                </ol:Resp' . $i . 'y>
-                                <ol:Resp' . $i . 's>
-                                    <div xmlns="http://www.w3.org/1999/xhtml">' . ($response->score != null ? $response->score : 0) . '</div>
-                                </ol:Resp' . $i . 's>
-                                <ol:Resp' . $i . 'f>
-                                    <div xmlns="http://www.w3.org/1999/xhtml"' . (strlen($response->feedback) > 0 ? ('>' . $response->feedback . '</div>') : '/>') . '
-                                </ol:Resp' . $i . 'f>';
-                    $i++;
+            if (($avatar['image'] != 'ntr') && ($avatar['image'] != '')){
+                $avatarImagePath = DOCROOT . 'avatars/' . $avatar['image'];
+                if(file_exists($avatarImagePath) && is_dir($this->folderPath . '/media')) {
+                    copy($avatarImagePath, $this->folderPath . '/media/' . $avatar['image']);
+                    $index = (isset($this->mediaElements['avatars'])) ? count($this->mediaElements['avatars']) : 0;
+                    $this->mediaElements['avatars']['avatar_'.$index] = $avatar['image'];
                 }
             }
-            $result .= '</ol:OL_question>';
         }
-        $result .= '</ol:OL_questions>';
-        
-        return $result;
     }
-    
-    /**
-     * Generate PatientDemographics section
-     * @param array(map_vpd) $vpds
-     * @return string 
-     */
-    private function generateVPDPatientDemographics($vpds) {
-        if(count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($vpds as $vpd) {
-            if($vpd->vpd_type_id != 2) continue;
-            
-            $values = $this->parseVPDPatientDemographicElements($vpd->elements);
-            
-            if(isset($values['title']) && isset($values['desc'])) {
-                $result .= '<PatientDemographic id="' . $vpd->id . '">
-                                <DemographicCharacteristic>
-                                    <Title>' . $values['title'] . '</Title>
-                                    <Description>' . $values['desc'] . '</Description>
-                                </DemographicCharacteristic>
-                            </PatientDemographic>';
-            }
-        }
-        
-        return strlen($result) > 0 ? ('<PatientDemographics>' . $result . '</PatientDemographics>') : '';
-    }
-    
-    /**
-     * Parse PatientDemographics elements
-     * @param array(map_vpd_element) $elements
-     * @return array 
-     */
-    private function parseVPDPatientDemographicElements($elements) {
-        if(count($elements) <= 0 || count($elements) < 2) return array();
-        
-        $result = array();
-        foreach($elements as $e) {
-            switch($e->key) {
-                case 'DemogTitle':
-                    $result['title'] = $e->value;
-                    break;
-                case 'DemogDesc':
-                    $result['desc'] = $e->value;
-                    break;
-            }                
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD Medication section
-     * @param array(map_vpd) $vpds 
-     * @return string
-     */
-    private function generateVPDMedication($vpds) {
-        if(count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($vpds as $vpd) {
-            if($vpd->vpd_type_id != 4) continue;
-            
-            $values = $this->parseVPDMedicationElements($vpd->elements);
-            $result .= '<Medication id="' . $vpd->id . '">
-                            <MedicationName source="' . $values['source'] . '" sourceID="' . $values['sourceID'] . '">' . $values['title'] . '</MedicationName>
-                            <Dose>' . $values['dose'] . '</Dose>
-                            <Route>' . $values['route'] . '</Route>
-                            <Frequency>' . $values['freq'] . '</Frequency>
-                        </Medication>';
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Parse VPD Medication Elements
-     * @param array(map_vpd_element) $elements
-     * @return array 
-     */
-    private function parseVPDMedicationElements($elements) {
-        $result = array('title' => '', 'dose' => '', 'route' => '', 'freq' => '', 'source' => '', 'sourceID' => '');
-        
-        if(count($elements) <= 0) return $result;
-        
-        foreach($elements as $e) {
-            switch($e->key) {
-                case 'MedicTitle':
-                    $result['title'] = $e->value;
-                    break;
-                case 'MedicDose':
-                    $result['dose'] = $e->value;
-                    break;
-                case 'MedicRoute':
-                    $result['route'] = $e->value;
-                    break;
-                case 'MedicFreq':
-                    $result['freq'] = $e->value;
-                    break;
-                case 'MedicSource':
-                    $result['source'] = $e->value;
-                    break;
-                case 'MedicSourceID':
-                    $result['sourceID'] = $e->value;
-                    break;
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD InterviewItem sections
-     * @param array(map_vpd) $vpds
-     * @return string 
-     */
-    private function generateVPDInterviewItem($vpds) {
-        if(count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($vpds as $vpd) {
-            if($vpd->vpd_type_id != 5) continue;
-            
-            $values = $this->parseVPDInterviewItemElements($vpd->elements);
-            
-            $result .= '<InterviewItem id="' . $vpd->id . '" mediaID="' . $values['media'] . '" trigger="' . $values['trigger'] . '">
-                            <Question>' . $values['question'] . '</Question>
-                            <Response>' . $values['answer'] . '</Response>
-                        </InterviewItem>';
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Parse VPD InterviewItem Elements
-     * @param array(map_vpd_element) $elements
-     * @return array 
-     */
-    private function parseVPDInterviewItemElements($elements) {
-        $result = array('question' => '', 'answer' => '', 'media' => '', 'trigger' => '');
-        
-        if(count($elements) <= 0) return $result;
-        
-        foreach($elements as $e) {
-            switch($e->key) {
-                case 'QAQuestion':
-                    $result['question'] = $e->value;
-                    break;
-                case 'QAAnswer':
-                    $result['answer'] = $e->value;
-                    break;
-                case 'QAMedia':
-                    $result['media'] = $e->value;
-                    break;
-                case 'trigger':
-                    $result['trigger'] = $e->value;
-                    break;
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD PhysicalExam sections
-     * @param array(map_vpd) $vpds
-     * @return string 
-     */
-    private function generateVPDPhysicalExam($vpds) {
-        if(count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($vpds as $vpd) {
-            if($vpd->vpd_type_id != 6) continue;
-            
-            $values = $this->parseVPDPhysicalExamElements($vpd->elements);
-            
-            $result .= '<PhysicalExam id="' . $vpd->id . '">
-                            <ExamName>' . $values['ExamName'] . '</ExamName>
-                            <ExamDesc>' . $values['ExamDesc'] . '</ExamDesc>
-                            <Action>' . $values['Action'] . '</Action>
-                            <LocationOnBody>
-                                <ProximalOrDistal>' . $values['ProxDist'] . '</ProximalOrDistal>
-                            </LocationOnBody>
-                            <Finding>' . $values['FindName'] . '</Finding>
-                            <Description>' . $values['FindDesc'] . '</Description>
-                            <FindMedia>' . $values['FindMedia'] . '</FindMedia>
-                        </PhysicalExam>';
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Parse VPD PhysicalExam Elements
-     * @param array(map_vpd_element) $elements
-     * @return array 
-     */
-    private function parseVPDPhysicalExamElements($elements) {
-        $result = array('ExamName' => '', 'ExamDesc' => '', 'BodyPart' => '', 'Action' => '', 'ProxDist' => '', 
-                        'FindName' => '', 'FindDesc' => '', 'FindMedia' => '');
-        
-        if(count($elements) <= 0) return $result;
-        
-        foreach($elements as $e) {
-            switch($e->key) {
-                case 'ExamName':
-                    $result['ExamName'] = $e->value;
-                    break;
-                case 'ExamDesc':
-                    $result['ExamDesc'] = $e->value;
-                    break;
-                case 'BodyPart':
-                    $result['BodyPart'] = $e->value;
-                    break;
-                case 'Action':
-                    $result['Action'] = $e->value;
-                    break;
-                case 'ProxDist':
-                    $result['ProxDist'] = $e->value;
-                    break;
-                case 'FindName':
-                    $result['FindName'] = $e->value;
-                    break;
-                case 'FindDesc':
-                    $result['FindDesc'] = $e->value;
-                    break;
-                case 'FindMedia':
-                    $result['FindMedia'] = $e->value;
-                    break;
-                
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Generate VPD Intervention sections
-     * @param array(map_vpd) $vpds
-     * @return string 
-     */
-    private function genenrateVPDIntervention($vpds) {
-        if(count($vpds) <= 0) return '';
-        
-        $result = '';
-        foreach($vpds as $vpd) {
-            if($vpd->vpd_type_id != 9) continue;
-            
-            $values = $this->parseVPDInterventionElements($vpd->elements);
-            
-            $result .= '<Intervention id="' . $vpd->id . '">
-                            <InterventionName>' . $values['IntervTitle'] . '-'. $values['IntervDesc'] . '</InterventionName>
-                            <Medication source="' . $values['iMedicSource'] . '"
-                                        sourceID="' . $values['iMedicSourceID'] . '"
-                                        Appropriateness="' . $values['Appropriateness'] . '"
-                                        Results="' . $values['ResultTitle'] . '">
-                                <MedicationName>' . $values['iMedicTitle'] . '</MedicationName>
-                                <Dose>' . $values['iMedicDose'] . '</Dose>
-                                <Route>' . $values['iMedicRoute'] . '</Route>
-                                <Frequency>' . $values['iMedicFreq'] . '</Frequency>
-                            </Medication>
-                            <iTestMedia>' . $values['iTestMedia'] . '</iTestMedia>
-                            <Submit>' . $values['Submit'] . '</Submit>
-                        </Intervention>';
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Parse VPD Intervention Elements
-     * @param array(map_vpd_element) $elements
-     * @return array 
-     */
-    private function parseVPDInterventionElements($elements) {
-        $result = array('IntervTitle' => '', 'IntervDesc' => '', 'iMedicTitle' => '', 'iMedicDose' => '', 'iMedicRoute' => '',
-                        'iMedicFreq' => '', 'iMedicSource' => '', 'iMedicSourceID' => '', 'Appropriateness' => '', 'ResultTitle' => '',
-                        'iTestMedia' => '', 'Submit' => '');
-        
-        if(count($elements) <= 0) return $result;
-        
-        foreach($elements as $e) {
-            switch($e->key) {
-                case 'IntervTitle':
-                    $result['IntervTitle'] = $e->value;
-                    break;
-                case 'IntervDesc':
-                    $result['IntervDesc'] = $e->value;
-                    break;
-                case 'iMedicTitle':
-                    $result['iMedicTitle'] = $e->value;
-                    break;
-                case 'iMedicDose':
-                    $result['iMedicDose'] = $e->value;
-                    break;
-                case 'iMedicRoute':
-                    $result['iMedicRoute'] = $e->value;
-                    break;
-                case 'iMedicFreq':
-                    $result['iMedicFreq'] = $e->value;
-                    break;
-                case 'iMedicSource':
-                    $result['iMedicSource'] = $e->value;
-                    break;
-                case 'iMedicSourceID':
-                    $result['iMedicSourceID'] = $e->value;
-                    break;
-                case 'Appropriateness':
-                    $result['Appropriateness'] = $e->value;
-                    break;
-                case 'ResultTitle':
-                    $result['ResultTitle'] = $e->value;
-                    break;
-                case 'iTestMedia':
-                    $result['iTestMedia'] = $e->value;
-                    break;
-                case 'Submit':
-                    $result['Submit'] = $e->value;
-                    break;
-            }
-        }
-        
-        return $result;
-    }
-    
-    /**
-     * Create imsmanifest.xml file
-     * @param array(map_element) $elements
-     */
-    private function generateImsmanifest($elements) {
-        if(!is_dir($this->folderPath)) return;
-        
-        $filePath = $this->folderPath . '/imsmanifest.xml';
-        $f = fopen($filePath, 'w');
-        
-        $content = '<?xml version="1.0" encoding="UTF-8" ?> 
-                    <manifest xmlns="http://www.imsglobal.org/xsd/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/LOM"
-                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                              xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
-                              xmlns:imsss="http://www.imsglobal.org/xsd/imsss"
-                              xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3">';
 
-        $content .= $this->generateResources($elements);
-        $this->copyResourcesFiles($elements);
-        
-        $content .= '</manifest>';
-        
-        fwrite($f, $content);
-        fclose($f);
-    }
-    
-    /**
-     * Generate VPD Resources section
-     * @param array(map_element) $vpds 
-     * @return string
-     */
-    private function generateResources($elements) {
-        if(count($elements) <= 0) return '';
-        
-        $result = '<resources>';
-        foreach($elements as $e) {
-            $path = DOCROOT . $e->path;
-            
-            $pathInfo = pathinfo($path);
-            
-            $result .= '<resource identifier="' . $e->id . '" 
-                                  type="' . $e->mime . '" 
-                                  href="media/' . $pathInfo['filename'] . '.' . $pathInfo['extension'] . '"
-                                  adlcp:scormType="asset"
-                                  width="' . $e->width . '" 
-                                  height="' . $e->height . '" 
-                                  h_align="' . $e->h_align . '" 
-                                  v_align="' . $e->v_align . '" 
-                                  width_type="' . $e->width_type . '" 
-                                  height_type="' . $e->height_type . '">
-                            <file href="media/' . $pathInfo['filename'] . '.' . $pathInfo['extension'] . '"/>
-                            <args>' . $e->args . '</args>
-                        </resource>';
-        }
-        $result .= '</resources>';
-        
-        return $result;
-    }
-    
     /**
      * Copy all resource file to media folder
      * @param array(map_element) $elements
@@ -1079,10 +544,12 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         $this->makeMediaFolder();
         
         foreach($elements as $e) {
-            $elementPath = DOCROOT . $e->path;
-            $pathInfo = pathinfo($elementPath);
+            $elementPath = DOCROOT . $e['path'];
             if(file_exists($elementPath) && is_dir($this->folderPath . '/media')) {
+                $pathInfo = pathinfo($elementPath);
                 copy($elementPath, $this->folderPath . '/media/' . $pathInfo['filename'] . '.' . $pathInfo['extension']);
+                $index = (isset($this->mediaElements['files'])) ? count($this->mediaElements['files']) : 0;
+                $this->mediaElements['files']['file_'.$index] = $pathInfo['filename'] . '.' . $pathInfo['extension'];
             }
         }
     }

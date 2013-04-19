@@ -46,6 +46,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
             if ($continue) {
+                Session::instance()->delete('questionChoices');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -258,13 +259,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_questionResponce() {
         $optionNumber = $this->request->param('id', NULL);
-        $sessionId = $this->request->param('id2', NULL);
-        $questionId = $this->request->param('id3', NULL);
+        $questionId = $this->request->param('id2', NULL);
+        $questionStatus = $this->request->param('id3', NULL);
 
-        if ($optionNumber != NULL and $sessionId != NULL and $questionId != NULL) {
+        if ($optionNumber != NULL and $questionId != NULL) {
             $this->auto_render = false;
             
-            echo Model::factory('labyrinth')->question($sessionId, $questionId, $optionNumber);
+            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus);
         }
     }
 
@@ -668,57 +669,52 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = "<input type='text' size='" . $question->width . "' name='qresponse_" . $question->id . "' value='" . $question->feedback . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");' />";
-                $result .= "<div id='AJAXresponse'></div>";
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
+                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
-                $result = "<textarea cols='" . $question->width . "' rows='" . $question->height . "' name='qresponse_" . $question->id . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");'>" . $question->feedback . "</textarea>";
-                $result .= "<div id='AJAXresponse'></div>";
-            } else if($question->type->value == 'pcq') {
+                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
+                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
+            } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
-                    $result = '<table>';
+                    $result = '<div class="questionResponces ';
+                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
+                    $result .= '"><ul>';
                     $i = 1;
-                    $divIDS = 'new Array(';
                     foreach ($question->responses as $responce) {
-                        $divIDS .= $responce->id . ',';
-                    }
-                    $divIDS = substr($divIDS, 0, strlen($divIDS) - 1);
-                    $divIDS .= ')';
-                    foreach ($question->responses as $responce) {
-                        $result .= "<tr><td><p>" . $responce->response . "</p></td>";
-                        $result .= "<td><div id='click" . $responce->id . "'><input type='checkbox' name='option' OnClick='ajaxMCQ(" . $question->id . "," . $responce->id . "," . count($question->responses) . "," . $question->num_tries . "," . $divIDS . ");' /></div></td>";
-                        $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
+                        $result .= '<li>';
+                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span class="text">' . $responce->response . '</span>';
+                        $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
+                        $result .= '</li>';
                         $i++;
                     }
                     
-                    $result .= '</table>';
+                    $result .= '</ul></div>';
                     if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
-                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
                     }
                 }
-            } else {
+            } else if($question->type->value == 'pcq') {
                 if (count($question->responses) > 0) {
-                    $result = '<table>';
+                    $result = '<div class="questionResponces questionForm_'.$question->id.' ';
+                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
+                    $result .= '"><ul>';
                     $i = 1;
-                    $divIDS = 'new Array(';
                     foreach ($question->responses as $responce) {
-                        $divIDS .= $responce->id . ',';
-                    }
-                    $divIDS = substr($divIDS, 0, strlen($divIDS) - 1);
-                    $divIDS .= ')';
-                    foreach ($question->responses as $responce) {
-                        $result .= "<tr><td><p>" . $responce->response . "</p></td>";
-                        $result .= "<td><div id='click" . $responce->id . "'><input type='radio' name='option' OnClick='ajaxMCQ(" . $question->id . "," . $responce->id . "," . count($question->responses) . "," . $question->num_tries . "," . $divIDS . ");' /></div></td>";
-                        $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
+                        $result .= '<li>';
+                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span>' . $responce->response . '</span>';
+                        $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
+                        $result .= '</li>';
                         $i++;
                     }
-                    $result .= '</table>';
                     if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
-                        $result .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
                     }
                 }
             }
 
-            $result = "<table bgcolor='#eeeeee' width='100%'><tr><td><p>" . $question->stem . "</p><p><form onsubmit='return false;'>" . $result . "</form></p></td></tr></table>";
+            $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
 
             return $result;
         }

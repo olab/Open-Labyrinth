@@ -1,4 +1,7 @@
 jQuery(document).ready(function(){
+    var browserUpdateWarning = new BrowserUpdateWarning();
+    browserUpdateWarning.Check();
+    
     //------------------Case Wizard--------------------//
     var wizard_button = jQuery('.wizard_body .wizard_button');
     if (wizard_button.length){
@@ -137,20 +140,41 @@ jQuery(document).ready(function(){
     jQuery('#bgcolor').blur(function() {
         $('#avBgPickerContainer').hide();
     });
-    
-    var $chatFrom = $('#chatForm');
+
     var $chatQCont = $('#questionContainer');
     var gQuestionCounter = (typeof questionCount != 'undefined') ? questionCount : 0;
+    var qHtml = null;
     jQuery('#addNewQuestion').click(function() {
-        if (typeof questionCount == 'undefined') return false;
+        questionCount++;
+        gQuestionCounter++;
         
-        ++questionCount;
-        ++gQuestionCounter;
-        
-        var qHtml = '<fieldset class="fieldset" id="qDiv' + gQuestionCounter + '"><input type="hidden" name="questionIndex' + gQuestionCounter + '" value="' + gQuestionCounter + '"/><legend>Question #' + questionCount + '</legend><div class="control-group"><label for="question' + gQuestionCounter + '" class="control-label">Question</label><div class="controls"><input id="question' + gQuestionCounter + '" type="text" name="question' + gQuestionCounter + '" value=""/></div></div><div class="control-group"><label for="response' + gQuestionCounter + '" class="control-label">Response</label><div class="controls"><input type="text" name="response' + gQuestionCounter + '" id="response' + gQuestionCounter + '" value=""/></div></div><div class="control-group"><label for="counter' + gQuestionCounter + '" class="control-label">Counter</label><div class="controls"><input type="text" name="counter' + gQuestionCounter + '" id="counter' + questionCount + '" value=""/>&nbsp;type +, - or = an integer - e.g. \'+1\' or \'=32\'</div></div><a class="btn btn-danger removeQuestionBtn" removeId="' + gQuestionCounter + '" href="#"><i class="icon-minus-sign"></i>Remove</a></fieldset>';
-        if($chatFrom != null)
-            $chatFrom.attr('action', formAction + questionCount);
-        
+        qHtml = '<fieldset class="fieldset" id="qDiv'+gQuestionCounter+'">'+
+            '<legend>Question #'+questionCount+'</legend>'+
+            '<div class="control-group cQuestion">'+
+                '<label for="question'+gQuestionCounter+'" class="control-label">Question</label>'+
+                '<div class="controls question">'+
+                    '<input id="question'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][question]" value=""/>'+
+                '</div>'+
+            '</div>'+
+            '<div class="control-group cResponce">'+
+                '<label for="response'+gQuestionCounter+'" class="control-label">Response</label>'+
+                '<div class="controls responce">'+
+                    '<input id="response'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][response]" value=""/>'+
+                '</div>'+
+            '</div>'+
+            '<div class="control-group cCounter">'+
+                '<label for="counter'+gQuestionCounter+'" class="control-label">Counter</label>'+
+                '<div class="controls counter">'+
+                    '<input id="counter'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][counter]" value=""/>'+
+                    '<span class="help-block">type +, - or = an integer - e.g. \'+1\' or \'=32\'</span>'+
+                '</div>'+
+            '</div>'+
+            '<div class="form-actions">'+
+                '<a class="btn btn-danger removeQuestionBtn" removeId="'+gQuestionCounter+'" href="javascript:void(0);">'+
+                    '<i class="icon-minus-sign"></i>Remove</a>'+
+            '</div>'+
+        '</fieldset>';
+
         if($chatQCont != null)
             $chatQCont.append(qHtml);
         
@@ -159,23 +183,21 @@ jQuery(document).ready(function(){
     
     jQuery('.removeQuestionBtn').live('click', function() {
         var id = $(this).attr('removeId');
-        if($chatQCont != null && id > 0) 
-            $('#qDiv' + id).remove();
-        
-        --questionCount;
-        
-        if($chatQCont != null) {
-            var i = 1;
-            $.each($chatQCont.children('fieldset'), function(index, obj) {
-                $(obj).children('legend').text('Question #' + i);
-                
-                i++;
+        if($chatQCont != null && id > 0) {
+            $('#qDiv' + id).fadeOut(function(){
+                $(this).remove();
+
+                questionCount--;
+
+                if($chatQCont != null) {
+                    var i = 1;
+                    $.each($chatQCont.children('fieldset'), function(index, obj) {
+                        $(obj).children('legend').text('Question #' + i);
+                        i++;
+                    });
+                }
             });
         }
-        
-        if($chatFrom != null)
-            $chatFrom.attr('action', formAction + questionCount);
-        
         return false;
     });
     

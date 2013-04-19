@@ -229,13 +229,22 @@ var VisualEditor = function() {
     
     // Zoom in viewport
     self.ZoomIn = function() {
-        var result = false;
-        var scale = viewport.GetScale();
-        
-        var testScale = ((scale[0] + scale[1]) * 0.5) * self.zommOutFactor;
+        var result    = false,
+            scale     = viewport.GetScale(),
+            testScale = ((scale[0] + scale[1]) * 0.5) * self.zommOutFactor,
+            oldSize = [self.canvas.width / scale[0], self.canvas.height / scale[1]],
+            newSize = [0, 0],
+            newScale = [1, 1];
+
         if(testScale <= maxZoom) {
             result = true;
+
             viewport.Scale(self.zoomInFactor, self.zoomInFactor);
+            newScale = viewport.GetScale();
+
+            newSize = [self.canvas.width / newScale[0], self.canvas.height / newScale[1]];
+
+            viewport.TranslateWithoutScale(-(oldSize[0] - newSize[0]) * 0.5, -(oldSize[1] - newSize[1]) * 0.5);
         }
         
         if(testScale * self.zoomInFactor > maxZoom)
@@ -246,12 +255,21 @@ var VisualEditor = function() {
     
     // Zoom out viewport
     self.ZoomOut = function() {
-        var result = false;
-        var scale = viewport.GetScale();
-        var testScale = ((scale[0] + scale[1]) * 0.5) / self.zommOutFactor;
+        var result = false,
+            scale = viewport.GetScale(),
+            testScale = ((scale[0] + scale[1]) * 0.5) / self.zommOutFactor,
+            oldSize = [self.canvas.width / scale[0], self.canvas.height / scale[1]],
+            newSize = [0, 0],
+            newScale = [1, 1];
+
         if(testScale >= minZoom) {
             result = true;
+
             viewport.Scale(self.zommOutFactor, self.zommOutFactor);
+            newScale = viewport.GetScale();
+
+            newSize = [self.canvas.width / newScale[0], self.canvas.height / newScale[1]];
+            viewport.TranslateWithoutScale((newSize[0] - oldSize[0]) * 0.5, (newSize[1] - oldSize[1]) * 0.5);
         }
     
         if(testScale / self.zoomInFactor < minZoom)
@@ -382,8 +400,10 @@ var VisualEditor = function() {
         var object = evalJson(jsonString);
         if(object == null) return;
         
+        var copyNodes = null;
         if('nodes' in object && object.nodes.length > 0) {
             self.nodes = new Array();
+            copyNodes = new Array();
             for(var i = 0; i < object.nodes.length; i++) {
                 var node = new Node();
                 node.id = object.nodes[i].id;
@@ -425,6 +445,7 @@ var VisualEditor = function() {
                     node.counters.push.apply(node.counters, object.nodes[i].counters);
                 }
                 
+                copyNodes.push(node);
                 self.nodes.push(node);
             }
         }
@@ -466,6 +487,8 @@ var VisualEditor = function() {
             }
         }
         
+        ScatterNodes(copyNodes);
+
         if(self.isViewportInit) {
             self.isViewportInit = false;
             var rootNode = GetRootNode();
@@ -484,6 +507,70 @@ var VisualEditor = function() {
             generateIdLinkCounter++;
     }
     
+    var ScatterNodes = function(nodes) {
+        if(nodes == null || nodes.length <= 0) return;
+
+        var i,
+            j,
+            max,
+            max2,
+            pairList,
+            posA,
+            posB,
+            x,
+            y,
+            rnd,
+            rnd2;
+
+        max = nodes.length;
+
+        for(i = 0; i < max; i += 1) {
+            for(j = 0, max2 = max - 1; j < max2; j += 1) {
+                posA = nodes[j].transform.GetPosition();
+                posB = nodes[j+1].transform.GetPosition();
+
+                if(posA[0] > posB[0]) {
+                    var t = nodes[j];
+                    nodes[j] = nodes[j+1];
+                    nodes[j+1] = t;
+                }
+            }
+        }
+
+        pairList = new Array();
+        for(i = 0; i < max - 1; i += 1) {
+            posA = nodes[i].transform.GetPosition();
+            for(j = i + 1; j < max; j += 1) {
+                posB = nodes[j].transform.GetPosition();
+                if(posB[0] >= posA[0] && posB[0] <= (posA[0] + 230)) {
+                    if(posB[1] >= (posA[1] - 125) && posB[1] <= (posA[1] + 125))
+                        pairList.push({nodeA: nodes[i], nodeB: nodes[j]});
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if(pairList.length > 0) {
+            max2 = pairList.length;
+
+            for(i = 0; i < max2; i += 1) {
+                rnd = GetRandomArbitary(0, 1);
+                rnd2 = GetRandomArbitary(0, 1);
+                x = (rnd > 0.5) ? 230 : -250;
+                y = (rnd2 > 0.5) ? 125 : -150;
+
+                pairList[i].nodeB.transform.Translate(x, y);
+            }
+
+            ScatterNodes(nodes);
+        }
+    }
+
+    var GetRandomArbitary = function(min, max){
+        return Math.random() * (max - min) + min;
+    }
+
     self.DeserializeFromPaste = function(jsonString) {
         if(jsonString.length <= 0) return;
         
@@ -992,11 +1079,22 @@ var VisualEditor = function() {
     
     var Resize = function() {
         if(self.$canvasContainer != null && self.$canvas != null) {
-            self.$canvas.attr('width', self.$canvasContainer.width());
-            var height = parseInt(window.innerHeight) - 150;
-            if (height < 400){height = 400;}
-            $(self.$canvasContainer).height(height);
-            self.$canvas.attr('height', self.$canvasContainer.height());
+            var h = window.innerHeight;
+            var w = window.innerWidth;
+            if (!$("#fullScreen").hasClass('active')){
+                self.$canvas.attr('width', self.$canvasContainer.width());
+                h = parseInt(h) - 150;
+                if (h < 400){h = 400;}
+                $(self.$canvasContainer).height(h);
+                self.$canvas.attr('height', self.$canvasContainer.height());
+            } else {
+                $(self.$canvasContainer).height(h);
+                if (h > 545) h = 545;
+                $('#tab-content-scrollable').css('height', (h - 115) + 'px');
+                $(self.$canvasContainer).width(w);
+                self.$canvas.attr('height', self.$canvasContainer.height());
+                self.$canvas.attr('width', self.$canvasContainer.width());
+            }
             self.Render();
         }
     }
@@ -1165,6 +1263,10 @@ var VisualEditor = function() {
         if(self.links.length > 0 && !isRedraw) {
             for(var i = 0; i < self.links.length; i++) {
                 if(self.links[i].MouseClick(self.mouse, viewport)) {
+                    for(var j = 0; j < self.links.length; j++)
+                        self.links[j].isActive = false;
+
+                    self.links[i].isActive = true;
                     isRedraw = true;
                     ShowLinkManagetDialog(self.links[i].id);
                     self.mouse.isDown = false;

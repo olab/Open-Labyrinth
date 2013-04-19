@@ -41,11 +41,8 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
         $openView->set('templateData', $this->templateData);
 
         $this->templateData['center'] = $openView;
-        $this->templateData['title']= "My Labyrinths";
-
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
-
     }
 
     public function action_info() {
@@ -60,7 +57,6 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
 
             $this->templateData['center'] = $infoView;
             unset($this->templateData['right']);
-            $this->templateData['title']= "Labyrinth Details";
             $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base() . 'openLabyrinth');

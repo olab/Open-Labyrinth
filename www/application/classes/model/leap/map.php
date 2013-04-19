@@ -659,7 +659,7 @@ class Model_Leap_Map extends DB_ORM_Model
         DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avartMap, $chatMap, $questionMap, $damsMap);
     }
 
-    private function getMapName($mapName, $mapId = 0)
+    public function getMapName($mapName, $mapId = 0)
     {
         $result = $mapName;
         $builder = DB_SQL::select('default')
@@ -765,6 +765,20 @@ class Model_Leap_Map extends DB_ORM_Model
         } else if($oldNode != null && $node != null) {
             DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
         }
+    }
+
+    public function exportMVP($mapId){
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            return $result[0];
+        }
+
+        return NULL;
     }
 }
 

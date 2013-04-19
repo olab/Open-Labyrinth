@@ -100,6 +100,11 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'nullable' => TRUE,
                 'savable' => TRUE,
             )),
+
+            'type_display' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
         );
         
         $this->relations = array(
@@ -195,7 +200,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 $this->updateAreaQuestion($values);
                 break;
             default:
-                $this->updateResponseQuestion($values);
+                $this->updateResponseQuestion($values, $type->id);
                 break;
         }
     }
@@ -217,7 +222,10 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->save();
     }
     
-    private function updateResponseQuestion($values) {
+    private function updateResponseQuestion($values, $typeID = null) {
+        if($typeID != null){
+            $this->entry_type_id = $typeID;
+        }
         $this->stem = Arr::get($values, 'stem', $this->stem);
         $this->feedback = Arr::get($values, 'feedback', $this->feedback);
         $this->show_answer = Arr::get($values, 'showAnswer', $this->show_answer);
@@ -226,7 +234,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
         $this->redirect_node_id = Arr::get($values, 'redirectNode', $this->redirect_node_id);
         $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
-        
+        $this->type_display = Arr::get($values, 'typeDisplay', $this->submit_text);
+
         $this->save();
         
         DB_ORM::model('map_question_response')->updateResponses($this->id, $values);
@@ -297,8 +306,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                     ->column('num_tries', $question->num_tries)
                     ->column('show_submit', $question->show_submit)
                     ->column('redirect_node_id', $question->redirect_node_id)
-                    ->column('submit_text', $question->submit_text);
-            
+                    ->column('submit_text', $question->submit_text)
+                    ->column('type_display', $question->type_display);
+
             if(isset($counterMap[$question->counter_id]))
                 $builder = $builder->column ('counter_id', $counterMap[$question->counter_id]);
             
@@ -328,8 +338,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column ('counter_id', $question->counter_id)
                 ->column('show_submit', $question->show_submit)
                 ->column('redirect_node_id', $question->redirect_node_id)
-                ->column('submit_text', $question->submit_text);
-        
+                ->column('submit_text', $question->submit_text)
+                ->column('type_display', $question->type_display);
+
         $newId = $builder->execute();
         
         if(count($question->responses) > 0) {
@@ -353,10 +364,11 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('feedback', Arr::get($values, 'feedback', ''))
                 ->column('show_answer', (int)Arr::get($values, 'showAnswer', 0))
                 ->column('counter_id', (int)Arr::get($values, 'counter', 0))
-                ->column('num_tries',  Arr::get($values, 'tries', -1))
-                ->column('show_submit', Arr::get($values, 'showSubmit', 0))
-                ->column('redirect_node_id', Arr::get($values, 'redirectNode', null))
+                ->column('num_tries',  (int)Arr::get($values, 'tries', 1))
+                ->column('show_submit', (int)Arr::get($values, 'showSubmit', 0))
+                ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
                 ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
+                ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0))
                 ->execute();
         
         $responses = array();
@@ -382,8 +394,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('question_id', $newQuestionId)
                         ->column('response', Arr::get($response, 'response', ''))
                         ->column('feedback', Arr::get($response, 'feedback', ''))
-                        ->column('is_correct', Arr::get($response, 'correctness', 0))
-                        ->column('score', Arr::get($response, 'score', 0))
+                        ->column('is_correct', (int) Arr::get($response, 'correctness', 0))
+                        ->column('score', (int) Arr::get($response, 'score', 0))
                         ->execute();
             }
         }
@@ -400,12 +412,16 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
             $builder = DB_ORM::insert('map_question')
                     ->column('map_id', $mapId)
-                    ->column('entry_type_id', 7)
+                    ->column('entry_type_id', 4)
                     ->column('stem', Arr::get($values, 'qstem', ''))
                     ->column('feedback', Arr::get($values, 'fback', ''))
                     ->column('show_answer', (int)Arr::get($values, 'qshow', 1))
                     ->column('counter_id', (int)Arr::get($values, 'scount', 0))
-                    ->column('num_tries',  Arr::get($values, 'numtries', -1));
+                    ->column('num_tries',  Arr::get($values, 'numtries', 1))
+                    ->column('show_submit', (int)Arr::get($values, 'showSubmit', 0))
+                    ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
+                    ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
+                    ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0));
 
             $newQuestionId = $builder->execute();
 
@@ -447,6 +463,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('show_submit', 0)
                         ->column('redirect_node_id', null)
                         ->column('submit_text', 'Submit')
+                        ->column('type_display', $question->type_display)
                         ->execute();
                 
                 if(count($question->responses) > 0) {
@@ -462,6 +479,25 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 }
             }
         }
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $questions = array();
+            foreach($result as $record) {
+                $questions[] = $record;
+            }
+
+            return $questions;
+        }
+
+        return NULL;
     }
 }
 

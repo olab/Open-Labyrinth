@@ -136,8 +136,6 @@ class Controller_LabyrinthManager extends Controller_Base {
 
                     Model::factory('visualEditor')->updateFromJSON($mapId, $data);
                     $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-                    if(Auth::instance()->logged_in())
-                        DB_ORM::model('visualeditorsave')->deleteSave($mapId, Auth::instance()->get_user()->id);
                 }
                 echo Model::factory('visualEditor')->generateJSON($mapId);
                 exit;
@@ -716,13 +714,6 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if ($action != NULL) {
                     $this->templateData['map'] = $action;
                     $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($action);
-
-                    $saveJson = '';
-                    if(Auth::instance()->logged_in())
-                        $saveJson = DB_ORM::model('visualeditorsave')->getSave($action, Auth::instance()->get_user()->id);
-
-                    if($saveJson != null)
-                        $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
                     $this->templateData['mapModel'] = DB_ORM::model('map', array((int)$action));
