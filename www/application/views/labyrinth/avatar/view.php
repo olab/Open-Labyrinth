@@ -19,46 +19,61 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('avatars for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
+  <div class="page-header">
+       <div class="pull-right">    <a class="btn btn-primary" href="<?php echo URL::base().'avatarManager/addAvatar/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i>Add avatar</a>
+       </div>
+                <h1><?php echo __('Avatars for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
                 <p>The following avatars have been created for this Labyrinth. Click the [edit] link to change their appearance. Copy and paste the wiki link (that looks like [[AV:1234567]]) into the content for a node.</p>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff">
-                        <td>
-                            <?php if (isset($templateData['avatars']) and count($templateData['avatars']) > 0) { ?>
-                                <table>
-                                    <?php foreach($templateData['avatars'] as $avatar) {
-                                    if ($avatar->image != null) {
-                                        $image = URL::base().'avatars/'.$avatar->image;
-                                    }else{
-                                        $image = URL::base().'avatars/default.png';
-                                    }
-                                    ?>
+
+
+                                <table class="table table-bordered  table-striped">
+                                    <thead>
                                     <tr>
-                                        <td>
-                                            <input type="text" size="20" value="[[AV:<?php echo $avatar->id; ?>]]">
-                                        </td>
-                                        <td align="center" valign="middle">
-                                            <p><img src="<?php echo $image; ?>" /></p>
-                                        </td>
-                                        <td>
-                                            <p>[<a href="<?php echo URL::base().'avatarManager/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">edit</a>] [<a href="<?php echo URL::base().'avatarManager/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">duplicate</a>] [<a href="<?php echo URL::base().'avatarManager/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">delete</a>]</p></td>
+                                        <th>Embeddable</th>
+                                        <th>Avatar</th>
+                                        <th>Actions</th>
                                     </tr>
-                                    <tr><td colspan="3"><hr></td></tr>
+                                    </thead>
+                                    <tbody>
+    <?php if (isset($templateData['avatars']) and count($templateData['avatars']) > 0) { ?>
+
+                                    <?php foreach($templateData['avatars'] as $avatar) {
+                                        if ($avatar->image != null) {
+                                            $image = URL::base().'avatars/'.$avatar->image;
+                                        }else{
+                                            $image = URL::base().'avatars/default.png';
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <label>
+                                                    <input type="text"  class="code" readonly="readonly" value="[[AV:<?php echo $avatar->id; ?>]]"></label>
+                                            </td>
+                                            <td>
+                                                <p><img src="<?php echo $image; ?>" /></p>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                <a class="btn btn-info" href="<?php echo URL::base().'avatarManager/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-edit"></i>Edit</a>
+
+                                                <a class="btn" href="<?php echo URL::base().'avatarManager/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-copy"></i> Duplicate</a>
+                                                <a class="btn btn-danger" href="<?php echo URL::base().'avatarManager/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-trash"></i>Delete</a></div>
+                                            </td>
+                                        </tr>
+
                                     <?php } ?>
+    <?php } else { ?>
+        <tr class="info">
+            <td colspan="3">There are no avatars in this Labyrinth. You may add one, clicking the button above.</td>
+            </tr>
+
+    <?php } ?>
+                                    </tbody>
+
                                 </table>
-                            <?php } else { ?>
-                                <p>there are no avatars in this Labyrinth</p>
-                            <?php } ?>
-                            <p><a href="<?php echo URL::base().'avatarManager/addAvatar/'.$templateData['map']->id; ?>">add an avatar</a></p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
+
+
 <?php } ?>
 
 

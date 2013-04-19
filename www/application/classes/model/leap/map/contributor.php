@@ -125,6 +125,37 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
             }
         }
     }
+
+    public function duplicateContributors($fromMapId, $toMapId) {
+        $contributors = $this->getAllContributors($fromMapId);
+
+        if($contributors == null || $toMapId == null || $toMapId <= 0) return;
+
+        foreach($contributors as $contributor) {
+            $builder = DB_ORM::insert('map_Contributor')
+                    ->column('map_id', $toMapId)
+                    ->column('role_id', $contributor->role_id)
+                    ->column('name', $contributor->name)
+                    ->column('organization', $contributor->organization);
+
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $contributors = array();
+            foreach($result as $record) {
+                $contributors[] = $record;
+            }
+
+            return $contributors;
+        }
+
+        return NULL;
+    }
 }
 
-?>

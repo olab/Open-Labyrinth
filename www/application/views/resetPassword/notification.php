@@ -19,15 +19,18 @@
  *
  */
 ?>
+
+<h4><?php echo __('Automated password recovery'); ?></h4>
+<div class="alert alert-info"><?php echo $templateData['passMessage']; ?></div>
 <table width="100%" height="100%" cellpadding='6'>
     <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Automated password recovery'); ?></h4>
+        <td valign="top" bgcolor="#ffffff">
+
             <table width="100%" cellpadding="6">
                 <tr bgcolor="#ffffff"><td>
                         <table cellspacing="10" width="100%" cellpadding="0" border="0">
                             <tr>
-                                <td><?php echo $templateData['passMessage']; ?></td>
+                                <td></td>
                             </tr>
                         </table>
                     </td></tr>

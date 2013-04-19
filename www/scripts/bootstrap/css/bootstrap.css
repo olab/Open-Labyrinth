@@ -1914,6 +1914,25 @@ input.search-query {
   margin-bottom: 10px;
 }
 
+
+div.tipsy{
+    font-size: 12px;
+}
+
+.control-subgroup {
+    float:left;
+    margin-left: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #E3E3E3;
+    background-color: #FBFBFB;
+}
+
+.control-groupper{
+    display: table;
+
+}
+
 legend + .control-group {
   margin-top: 20px;
   -webkit-margin-top-collapse: separate;
@@ -1987,7 +2006,7 @@ table {
   padding: 8px;
   line-height: 20px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
   border-top: 1px solid #dddddd;
 }
 
@@ -5624,6 +5643,17 @@ a.badge:hover {
   position: relative;
   top: -1px;
 }
+
+.control-label span{
+    float:right;
+}
+
+.control-label .pull-right{
+    clear: both;
+    margin-top: 10px;
+}
+
+
 
 .btn-mini .label,
 .btn-mini .badge {

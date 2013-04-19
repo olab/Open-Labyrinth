@@ -19,36 +19,36 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('MVP to Labyrinth upload'); ?></h4>
-            <table width="100%" bgcolor="#ffffff"><tbody><tr><td>
-                <form action="<?php echo URL::base(); ?>exportImportManager/uploadMVP" enctype="multipart/form-data" method="POST">
-                    <table width="20%" border="0">
-                        <tbody>
-                        <tr>
-                            <td>
-                                <input type="file" name="filename" size="50">
-                            </td>
-                            <td align="center">
-                                <input type="submit" value="<?php echo __('submit'); ?>" name="Submit">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="center"><span style="font-size: 14px; color: #333333;"><?php echo __('The maximum file upload size is 20.00 MB.'); ?></span></td>
-                            <td></td>
-                        </tr>
-                        </tbody></table>
+
+            <h1><?php echo __('MVP to Labyrinth upload'); ?></h1>
+
+                <form class="form-horizontal" action="<?php echo URL::base(); ?>exportImportManager/uploadMVP" enctype="multipart/form-data" method="POST">
+                    <?php if(count(Notice::get()) > 0) { ?>
+                    <div class="alert alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <?php $m = Notice::get(); echo $m[0]; ?>
+                    </div>
+                    <?php } ?>
+                    <fieldset class="fieldset">
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('File to upload'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="file" name="filename">
+                                <div><span style="font-size: 14px; color: #333333;"><?php echo __('The maximum file upload size is 20.00 MB.'); ?></span></div>
+                            </div>
+                        </div>
+
+
+                    </fieldset>
+
+                                <input class="btn btn-primary" type="submit" value="<?php echo __('submit'); ?>" name="Submit">
+
                 </form>
-                <hr>
-                <table><tbody><tr><td>
-                    <img width="105" height="47" border="0" align="absmiddle" id="Img2" alt="MVP" src="<?php echo URL::base(); ?>images/medbiq_logo.gif">
-                </td><td align="left"><p><?php echo __('OpenLabyrinth imports and exports to the MedBiquitous virtual patient data specification. For more information see'); ?> <a target="_blank" style="text-decoration: underline;" href="http://www.medbiq.org/working_groups/virtual_patient/index.html"><?php echo __('MedBiquitous VPWG'); ?></a>.
-                </p></td></tr></tbody></table>
-            </td></tr></tbody></table>
-        </td>
-    </tr>
-</table>
+
+                    <img width="105" height="47" id="Img2" alt="MVP" src="<?php echo URL::base(); ?>images/medbiq_logo.gif">
+              <p><?php echo __('OpenLabyrinth imports and exports to the MedBiquitous virtual patient data specification. For more information see'); ?> <a target="_blank" style="text-decoration: underline;" href="http://www.medbiq.org/working_groups/virtual_patient/index.html"><?php echo __('MedBiquitous VPWG'); ?></a>.
+                </p>
+
 
 

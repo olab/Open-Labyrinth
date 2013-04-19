@@ -42,6 +42,7 @@ abstract class Base_DB_MySQL_Connection_Standard extends DB_SQL_Connection_Stand
 			$host = $this->data_source->host;
 			$username = $this->data_source->username;
 			$password = $this->data_source->password;
+
 			$this->link_id = ($this->data_source->is_persistent())
 				? @mysql_pconnect($host, $username, $password)
 				: @mysql_connect($host, $username, $password, TRUE);
@@ -49,6 +50,7 @@ abstract class Base_DB_MySQL_Connection_Standard extends DB_SQL_Connection_Stand
 				$this->error = 'Message: Failed to establish connection. Reason: ' . mysql_error();
 				throw new Kohana_Database_Exception($this->error, array(':dsn' => $this->data_source->id));
 			}
+            mysql_set_charset($this->data_source->charset,$this->link_id);
 			$database = @mysql_select_db($this->data_source->database, $this->link_id);
 			if ($database === FALSE) {
 				$this->error = 'Message: Failed to connect to database. Reason: ' . mysql_error($this->link_id);
@@ -93,11 +95,13 @@ abstract class Base_DB_MySQL_Connection_Standard extends DB_SQL_Connection_Stand
 			$this->sql = $sql;
 			return $result_set;
 		}
+
 		$resource_id = @mysql_query($sql, $this->link_id);
 		if ($resource_id === FALSE) {
 			$this->error = 'Message: Failed to query SQL statement. Reason: ' . mysql_error($this->link_id);
 			throw new Kohana_SQL_Exception($this->error, array(':sql' => $sql, ':type' => $type));
 		}
+
 		$records = array();
 		$size = 0;
 		while ($record = mysql_fetch_assoc($resource_id)) {

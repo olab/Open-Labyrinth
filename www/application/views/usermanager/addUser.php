@@ -19,41 +19,78 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Create user account'); ?></h4>
-            <table width="100%" cellpadding="6">
-                <tr bgcolor="#ffffff"><td>
-                        <form action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
-                            <table>
-                                <tr><td align="left"><p><?php echo __('username'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uid" size="20" value="<?php echo $templateData['post']['uid']; ?>"></td></tr>
-                                <tr><td align="left"><p><?php echo __('password'); ?></p></td><td align="left"><input type="password" name="upw" size="20" value="<?php echo $templateData['post']['upw']; ?>"></td></tr>
-                                <tr><td align="left"><p><?php echo __('name'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uname" size="50" value="<?php echo $templateData['post']['uname']; ?>"></td></tr>
-                                <tr><td align="left"><p><?php echo __('e-mail'); ?></p></td><td align="left"><input class="not-autocomplete" type="text" name="uemail" size="50" value="<?php echo $templateData['post']['uemail']; ?>"></td></tr>
+<div class="page-header">
+    <h1>Add new user</h1>
+</div>
+                        <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
+                            <fieldset class="fieldset">
+                                <legend>User details</legend>
+                                <div class="control-group">
+                                    <label for="uid" class="control-label"><?php echo __('User name'); ?></label>
 
-                                <tr><td align="left"><p>
-                                            <?php echo __('user type'); ?>
-                                        </p></td><td align="left">
-                                        <select name="usertype">
+                                    <div class="controls">
+                                        <input id="uid"  type="text" name="uid" value="">
+
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="upw" class="control-label"><?php echo __('Password'); ?></label>
+
+                                    <div class="controls">
+                                        <input id="upw"  type="password" name="upw" value="">
+
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="uname" class="control-label"><?php echo __('Nickname'); ?></label>
+
+                                    <div class="controls">
+                                        <input id="uname" class="not-autocomplete" type="text" name="uname" >
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="uemail" class="control-label"><?php echo __('e-mail'); ?></label>
+
+                                    <div class="controls">
+                                        <input class="not-autocomplete" id="uemail" type="text" name="uemail">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label"><?php echo __('language'); ?></label>
+
+                                    <div class="controls">
+                                        <label class="radio">
+                                            english   <input checked="checked" type="radio" name="langID" value="1" >
+                                        </label>
+                                        <label class="radio">
+                                            francais <input type="radio" name="langID" value="2" >
+                                        </label>
+
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="usertype" class="control-label"><?php echo __('user type'); ?></label>
+
+                                    <div class="controls">
+                                        <select id="usertype" name="usertype">
                                             <?php if(isset($templateData['types'])) { ?>
                                                 <?php foreach($templateData['types'] as $type) { ?>
-                                                    <option <?php if ($templateData['post']['usertype'] == $type->id) echo 'selected="selected"'; ?> value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
+                                                    <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
-                                    </td></tr>
+                                    </div>
+                                </div>
+                            </fieldset>
 
-                                <tr><td align="left"><p><?php echo __('language'); ?></p></td><td align="left"><p>[english <input type="radio" name="langID" <?php if ($templateData['post']['langID'] == 1) echo 'checked="checked"'; ?> value="1">] [francais <input type="radio" name="langID" <?php if ($templateData['post']['langID'] == 2) echo 'checked="checked"'; ?> value="2">] </p></td></tr>
-                                <?php if ($templateData['errorMsg'] != NULL){ ?>
-                                <tr><td colspan="2" align="left"><p style="color:red;"><?php echo $templateData['errorMsg']; ?></p></td></tr>
+                            <?php if ($templateData['errorMsg'] != NULL){ ?>
+                              <?php echo $templateData['errorMsg']; ?>
                                 <?php } ?>
-                                <tr><td align="left"><p>&nbsp;</p></td><td align="left"><input type="submit" name="SaveNewUserSubmit" value="<?php echo __('submit'); ?>"></td></tr>
-                            </table>
+
+                            <div class="form-actions">
+                                <div class="pull-right">
+                                <input class="btn btn-large btn-primary" type="submit" name="SaveNewUserSubmit" value="<?php echo __('Save'); ?>">
+                            </div>
+                            </div>
+
                         </form>
-                        <p><a href=<?php echo URL::base().'usermanager'; ?>><?php echo __('users'); ?></a></p>
-                    </td></tr>
-            </table>
-        </td>
-    </tr>
-</table>

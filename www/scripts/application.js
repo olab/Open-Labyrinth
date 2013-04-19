@@ -1,4 +1,7 @@
 jQuery(document).ready(function(){
+    var browserUpdateWarning = new BrowserUpdateWarning();
+    browserUpdateWarning.Check();
+    
     //------------------Case Wizard--------------------//
     var wizard_button = jQuery('.wizard_body .wizard_button');
     if (wizard_button.length){
@@ -17,119 +20,6 @@ jQuery(document).ready(function(){
     jQuery("#step2_w_button").click(function() {
         jQuery("#step2_form").submit();
     });
-
-    jQuery("textarea, input[type=text]:not('.not-autocomplete')")
-        // don't navigate away from the field on tab when selecting an item
-        .bind( "keydown", function( event ) {
-            if ( event.keyCode === jQuery.ui.keyCode.TAB &&
-                jQuery( this ).data( "autocomplete" ).menu.active ) {
-                event.preventDefault();
-            }
-        })
-        .autocomplete({
-            source: function( request, response ) {
-                var term = extractTerm( this );
-                if (term){
-                    jQuery.getJSON( "/dictionaryManager/getjson/", {
-                        term: term
-                    }, response );
-                }
-            },
-            search: function() {
-                // custom minLength
-                var term = extractTerm( this );
-                if ( term.length < 2 ) {
-                    return false;
-                }
-            },
-            focus: function() {
-                // prevent value inserted on focus
-                return false;
-            },
-            select: function( event, ui ) {
-                var term = extractTerm( this );
-                var caretPos = GetCaretPosition(this);
-                insertAtCursor(this, ui.item.value, term.length);
-                setCaretPosition(this, caretPos + (ui.item.value.length - term.length));
-                return false;
-            }
-        });
-
-    function extractTerm(el) {
-        if (!el.value){
-            el = el.element[0];
-        }
-        var caretPos = GetCaretPosition(el);
-        var value = el.value;
-        var char = value.charAt(caretPos);
-        if ((value.length == caretPos) || (char == ' ')){
-            var word = ReturnWord(el.value, caretPos);
-            if (word != null) {
-                return word;
-            }
-        }
-        return false;
-    }
-
-    function setCaretPosition(el, caretPos) {
-        if(el.createTextRange) {
-            var range = el.createTextRange();
-            range.move('character', caretPos);
-            range.select();
-        }
-        else {
-            if(el.selectionStart) {
-                el.focus();
-                el.setSelectionRange(caretPos, caretPos);
-            }
-            else
-                el.focus();
-        }
-    }
-
-    function GetCaretPosition(ctrl) {
-        var CaretPos = 0;   // IE Support
-        if (document.selection) {
-            ctrl.focus();
-            var Sel = document.selection.createRange();
-            Sel.moveStart('character', -ctrl.value.length);
-            CaretPos = Sel.text.length;
-        }
-        // Firefox support
-        else if (ctrl.selectionStart || ctrl.selectionStart == '0')
-            CaretPos = ctrl.selectionStart;
-        return (CaretPos);
-    }
-
-    function ReturnWord(text, caretPos) {
-        var preText = text.substring(0, caretPos);
-        if (preText.indexOf(" ") > 0) {
-            var words = preText.split(" ");
-            return words[words.length - 1]; //return last word
-        }
-        else {
-            return preText;
-        }
-    }
-
-    function insertAtCursor(myField, myValue, deleteChars) {
-        //IE support
-        if (document.selection) {
-            myField.focus();
-            var sel = document.selection.createRange();
-            sel.text = myValue;
-        }
-        //MOZILLA and others
-        else if (myField.selectionStart || myField.selectionStart == '0') {
-            var startPos = myField.selectionStart;
-            var endPos = myField.selectionEnd;
-            myField.value = myField.value.substring(0, startPos - deleteChars)
-                + myValue
-                + myField.value.substring(endPos, myField.value.length);
-        } else {
-            myField.value += myValue;
-        }
-    }
 
     jQuery("#dialog-confirm").dialog({
         autoOpen: false,
@@ -162,4 +52,196 @@ jQuery(document).ready(function(){
 
 	// Datepicker
 	jQuery(".datepicker").datepicker();
+
+
+
+    jQuery('input:radio#timing-on').change(function(){
+        $('#delta_time').prop('disabled', false);
+    });
+    jQuery('input:radio#timing-off').change(function(){
+        $('#delta_time').prop('disabled', true);
+    });
+
+    jQuery('input:radio[name=security]').change(function(){
+        if(this.value==4)$("#edit_keys").show();
+        else $("#edit_keys").hide();
+    });
+
+    jQuery('.toggle-all-on').click(function() {
+        var id = jQuery(this).attr("id");
+        jQuery(".chk_"+id).attr('checked', 'checked');
+    });
+
+    jQuery('.toggle-all-off').click(function() {
+        var id = jQuery(this).attr("id");
+        jQuery(".chk_"+id).removeAttr('checked');
+    });
+
+    jQuery('.toggle-reverse').click(function() {
+        var id = jQuery(this).attr("id");
+        var chk = jQuery(".chk_"+id);
+        chk.each(function() {
+            var check_value = jQuery(this).attr("checked");
+            if (check_value){
+                jQuery(this).removeAttr("checked");
+            } else {
+                jQuery(this).attr("checked", "checked");
+            }
+        });
+
+    });
+    
+    function changeClothColor(changedColor) {
+        var color = 'FFFFFF';
+        var val = changedColor;
+        if(val.length > 2) {
+            color = val.substr(1, val.length - 1);
+        }
+
+        $('#clothcolor').val(color);
+        $('#clothcolor').change();
+    }
+    
+    function changeBgColor(changedColor) {
+        var color = 'FFFFFF';
+        var val = changedColor;
+        if(val.length > 2) {
+            color = val.substr(1, val.length - 1);
+        }
+        
+        $('#bgcolor').val(color);
+        $('#bgcolor').change();
+    }
+
+    jQuery('#clothcolor').click(function() {
+        $('#clothColorContainer').show();
+        $('#clothColorContainer').farbtastic(changeClothColor);
+        var val = $(this).val();
+        if(val.length > 0) {
+            var picker = $.farbtastic('#clothColorContainer');
+            picker.setColor('#' + val);
+        }
+    });
+
+    jQuery('#clothcolor').blur(function() {
+        $('#clothColorContainer').hide();
+    });
+
+    jQuery('#bgcolor').click(function() {
+        $('#avBgPickerContainer').show();
+        $('#avBgPickerContainer').farbtastic(changeBgColor);
+        var val = $(this).val();
+        if(val.length > 0) {
+            var picker = $.farbtastic('#avBgPickerContainer');
+            picker.setColor('#' + val);
+        }
+    });
+
+    jQuery('#bgcolor').blur(function() {
+        $('#avBgPickerContainer').hide();
+    });
+
+    var $chatQCont = $('#questionContainer');
+    var gQuestionCounter = (typeof questionCount != 'undefined') ? questionCount : 0;
+    var qHtml = null;
+    jQuery('#addNewQuestion').click(function() {
+        questionCount++;
+        gQuestionCounter++;
+        
+        qHtml = '<fieldset class="fieldset" id="qDiv'+gQuestionCounter+'">'+
+            '<legend>Question #'+questionCount+'</legend>'+
+            '<div class="control-group cQuestion">'+
+                '<label for="question'+gQuestionCounter+'" class="control-label">Question</label>'+
+                '<div class="controls question">'+
+                    '<input id="question'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][question]" value=""/>'+
+                '</div>'+
+            '</div>'+
+            '<div class="control-group cResponce">'+
+                '<label for="response'+gQuestionCounter+'" class="control-label">Response</label>'+
+                '<div class="controls responce">'+
+                    '<input id="response'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][response]" value=""/>'+
+                '</div>'+
+            '</div>'+
+            '<div class="control-group cCounter">'+
+                '<label for="counter'+gQuestionCounter+'" class="control-label">Counter</label>'+
+                '<div class="controls counter">'+
+                    '<input id="counter'+gQuestionCounter+'" type="text" name="qarray['+gQuestionCounter+'][counter]" value=""/>'+
+                    '<span class="help-block">type +, - or = an integer - e.g. \'+1\' or \'=32\'</span>'+
+                '</div>'+
+            '</div>'+
+            '<div class="form-actions">'+
+                '<a class="btn btn-danger removeQuestionBtn" removeId="'+gQuestionCounter+'" href="javascript:void(0);">'+
+                    '<i class="icon-minus-sign"></i>Remove</a>'+
+            '</div>'+
+        '</fieldset>';
+
+        if($chatQCont != null)
+            $chatQCont.append(qHtml);
+        
+        return false;
+    });
+    
+    jQuery('.removeQuestionBtn').live('click', function() {
+        var id = $(this).attr('removeId');
+        if($chatQCont != null && id > 0) {
+            $('#qDiv' + id).fadeOut(function(){
+                $(this).remove();
+
+                questionCount--;
+
+                if($chatQCont != null) {
+                    var i = 1;
+                    $.each($chatQCont.children('fieldset'), function(index, obj) {
+                        $(obj).children('legend').text('Question #' + i);
+                        i++;
+                    });
+                }
+            });
+        }
+        return false;
+    });
+    
+    $('#forgot-password-submit').click(function() {
+        $('#forgot-password-form').submit();
+    });
+
+
+    $('a.toggles').click(function() {
+        $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
+
+        $('#sidebar').animate({
+            width: 'toggle'
+        }, 0);
+        $('#content').toggleClass('span12 span10');
+        $('.to-hide').toggleClass('hide');
+    });
+
+ /*
+    $('#content').toggle(
+
+        function() {
+
+        }, function() {
+
+        });
+*/
+    $(".code").mouseup(function() {
+        $(this).select();
+    });
+
+    $('[data-toggle=tooltip]').tooltip({placement:"top"});
+
+
+    jQuery('#nodeCountContainer button').click(function() {
+        if($(this).attr('id') != 'applyCount')
+            $('#nodeCount').attr('disabled', 'disabled');
+    });
+    
+    jQuery('#nodeCountCustom').click(function() {
+        $('#nodeCount').removeAttr('disabled');
+    });
+    
+    jQuery('#copyQuestionBtn').click(function() {
+        $('#copyQuestionModal').modal(); 
+    });
 });

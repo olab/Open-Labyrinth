@@ -19,37 +19,69 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
+    <div class="page-header">   <div class="pull-right">
+            <div class="btn-group">
+                <a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">
+                    <i class="icon-plus-sign"></i>
+                    <?php echo __('Add counter'); ?></a>
+              </div>
+        </div>
+<h1><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?></h1>
+     </div>
+<table class="table table-striped table-bordered">
+    <colgroup>
+        <col style="width: 5%">
+        <col style="width: 55%">
+        <col style="width: 40%">
+    </colgroup>
+    <thead>
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('counters') . ' "' . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff">
-                        <td>
-                            <table border="0" width="100%" cellpadding="1">
-                                <tr>
-                                    <td>
-                                        <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                            <?php foreach($templateData['counters'] as $counter) { ?>
-                                                <p>
-                                                    <?php echo $counter->name; ?> 
-                                                    [<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('edit'); ?></a> 
-                                                    - <a href="<?php echo URL::base().'counterManager/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('preview'); ?></a> 
-                                                    - <a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id.'/'.$counter->id; ?>">grid</a>  
-                                                    - <a href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('delete'); ?></a>]
-                                                </p>
-                                            <?php } ?>
-                                        <?php } ?>
-                                        <hr>
-                                        <p><a href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>"><?php echo __('add counter'); ?></a></p>
-                                        <p><a href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id; ?>"><?php echo __('counter grid'); ?></a></p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+            <th><?php echo __("#"); ?></th>
+            <th><?php echo __("Name"); ?></th>
+            <th><?php echo __("Actions"); ?></th>
+        </tr>
+    </thead>
+<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+    <?php foreach($templateData['counters'] as $counter) { ?>
+        <tr>
+            <td><?php echo $counter->id; ?></td>
+            <td><?php echo $counter->name; ?></td>
+            <td>
+                <div class="btn-group">
+                <a class="btn btn-info" href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">
+                    <i class="icon-pencil icon-white"></i>
+                    <?php echo __('Edit'); ?>
+                </a>
+                <a class="btn btn-success" href="<?php echo URL::base().'counterManager/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>">
+                    <i class="icon-play icon-white"></i>
+                    <?php echo __('Preview'); ?>
+                </a>
+                <a class="btn btn-info" href="<?php echo URL::base().'counterManager/grid/'.$templateData['map']->id.'/'.$counter->id; ?>">
+                    <i class="icon-th icon-white"></i>
+                    <?php echo __('Grid'); ?>
+                </a>
+                <a data-toggle="modal" href="#" data-target="#delete-counter-<?php echo $counter->id; ?>" class="btn btn-danger" href="javascript:void(0);">
+                    <i class="icon-trash icon-white"></i>
+                    <?php echo __('Delete'); ?>
+                </a></div>
+                <div class="modal hide alert alert-block alert-error fade in" id="delete-counter-<?php echo $counter->id; ?>">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                    </div>
+                    <div class="modal-body">
+                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $counter->name . '" counter?'); ?></p>
+                        <p>
+                            <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>                        </p>
+                    </div>
+                </div>
             </td>
         </tr>
-    </table>
+        <?php } ?>
+    <?php } else{ ?>
+        <tr class="info">
+            <td colspan="3">There are no counters in this labyrinth, yet. You may add one, clicking the button above.</td>
+        </tr>
+    <?php } ?>
+
 <?php } ?>

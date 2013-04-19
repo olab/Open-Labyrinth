@@ -19,67 +19,124 @@
  *
  */
 if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Edit Counter') . ' ' . $templateData['counter']->id . ' "' . $templateData['counter']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td align="left">
-                            <form id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCounter/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
-                                <table bgcolor="#ffffff" cellpadding="6" width="80%">
-                                    <tr><td><p><?php echo __('counter name'); ?></p></td><td colspan="2"><input type="text" name="cName" size="40" value="<?php echo $templateData['counter']->name; ?>"></td></tr>
-                                    <tr><td><p><?php echo __('counter description (optional)'); ?></p></td><td colspan="2"><textarea name="cDesc" rows="6" cols="40"><?php echo $templateData['counter']->description; ?></textarea></td></tr>
-                                    <tr><td><p><?php echo __('counter image (optional)'); ?></p></td><td colspan="2">
-                                            <select name="cIconId">
-                                                <?php if($templateData['counter']->icon_id == 0) echo '<option value="0" selected="">no image</option>'; ?>
-                                                <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                                                    <?php foreach($templateData['images'] as $image) { ?>
-                                                        <option value="<?php echo $image->id; ?>" <?php if($templateData['counter']->icon_id == $image->id) echo 'selected=""'; ?>><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
-                                                    <?php } ?>
-                                                <?php } ?>
-                                            </select></td></tr>
-                                    <tr><td><p><?php echo __('starting value (optional)'); ?></p></td><td><input type="text" name="cStartV" size="4" value="<?php echo $templateData['counter']->start_value; ?>"></td><td></td></tr>
-                                    <tr><td><p>visible</p></td><td><select name="cVisible"><option value="1" <?php if($templateData['counter']->visible) echo 'selected=""'; ?>>show</option><option value="0" <?php if(!$templateData['counter']->visible) echo 'selected=""'; ?>>don't show</option></select></td><td></td></tr>
-                                    <tr><td colspan="3"><input type="submit" name="Submit" value="submit"></td></tr>
-                                </table>
-                            </form>
-                            <hr>
-                            <p><strong><?php echo __('counter rules'); ?></strong></p>
-                            <?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
-                                <?php foreach($templateData['rules'] as $rule) { ?>
-                                    <p><img src="<?php echo URL::base(); ?>images/rule.gif" align="absmiddle" alt="rule"> rule: if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') and reset counter '<?php echo $rule->counter_value; ?>' - <a href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>">delete</a></p>
-                                <?php } ?>
-                            <?php } ?>
-                            <hr>
-                            <form id="form2" name="form1" method="post" action="<?php echo URL::base().'counterManager/addRule/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
-                                <p><strong><?php echo __('add counter rule'); ?></strong></p>
-                                <p><?php echo __('if value of counter'); ?>
-                                    <?php if(isset($templateData['relations']) and count($templateData['relations']) > 0) { ?>
-                                    <select name="relation">
-                                        <?php foreach($templateData['relations'] as $relation) { ?>
-                                            <option value="<?php echo $relation->id; ?>"><?php echo $relation->title ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php } ?>
-                                     <input type="text" name="rulevalue"></p>
+    <div class="page-header">
+<h1><?php echo __('Edit Counter') . ' ' . $templateData['counter']->id . ' "' . $templateData['counter']->name . '"'; ?></h1></div>
+<form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCounter/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
+    <fieldset class="fieldset">
+        <legend><?php echo __('Counter Content'); ?></legend>
+        <div class="control-group">
+            <label for="cName" class="control-label"><?php echo __('Counter name'); ?></label>
+            <div class="controls">
+                <input id="cName" type="text" name="cName" value="<?php echo $templateData['counter']->name; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label  for="cDesc" class="control-label"><?php echo __('Counter description (optional)'); ?></label>
+            <div class="controls">
+                <textarea id="cDesc" name="cDesc" rows="6" cols="40"><?php echo $templateData['counter']->description; ?></textarea>
+            </div>
+        </div>
+        <div class="control-group">
+            <label  for="cIconId" class="control-label"><?php echo __('Counter image (optional)'); ?></label>
+            <div class="controls">
+                <select id="cIconId" name="cIconId">
+                    <?php if($templateData['counter']->icon_id == 0) echo '<option value="0" selected="">no image</option>'; ?>
+                    <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
+                    <?php foreach($templateData['images'] as $image) { ?>
+                        <option value="<?php echo $image->id; ?>" <?php if($templateData['counter']->icon_id == $image->id) echo 'selected=""'; ?>><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
+                        <?php } ?>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label  for="cStartV" class="control-label"><?php echo __('Starting value (optional)'); ?></label>
+            <div class="controls">
+                <input id="cStartV" type="text" name="cStartV" size="4" value="<?php echo $templateData['counter']->start_value; ?>" />
+            </div>
+        </div>
+        <div class="control-group">
+            <label  for="cVisible" class="control-label"><?php echo __('Visible'); ?></label>
+            <div class="controls">
+                <select id="cVisible" name="cVisible">
+                    <option value="1" <?php if($templateData['counter']->visible == 1) echo 'selected=""'; ?>><?php echo __('show'); ?></option>
+                    <option value="0" <?php if($templateData['counter']->visible == 0) echo 'selected=""'; ?>><?php echo __("don't show"); ?></option>
+                    <option value="2" <?php if($templateData['counter']->visible == 2) echo 'selected=""'; ?>><?php echo __('custom'); ?></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" name="Submit" value="Submit" />
+        </div>
+    </fieldset>
+</form>
 
-                                <p><?php echo __('then go to node'); ?>&nbsp;
-                                    <?php if(isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
-                                    <select name="node">
-                                        <?php foreach($templateData['nodes'] as $node) { ?>
-                                            <option value="<?php echo $node->id; ?>"><?php echo $node->title; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                    <?php } ?>
-                                    </p>
-                                <p><?php echo __('reset counter'); ?>&nbsp;<input type="text" name="ctrval" value="" size="4">&nbsp;<?php echo __('type +, - or = an integer - e.g. +1 or =32'); ?>&nbsp;<?php echo __('you need to change the value of the counter or it will loop'); ?></p>
-                                <input type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-                                <br>
-                            </form>
-                            <br>
-                        </td></tr>
-                </table>
-            </td>
+    <h4><?php echo __('Counter rules'); ?></h4>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Rule</th>
+            <th>Actions</th>
         </tr>
+        </thead>
+        <tbody>
+        <?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
+            <?php foreach($templateData['rules'] as $rule) { ?>
+                <tr>
+
+                   <td>
+                        if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') and reset counter '<?php echo $rule->counter_value; ?>' </td>
+                    <td>
+                        <div class="control-group">
+                        <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>"><i class="icon-trash"></i>Delete</a></div></td>
+                    </tr>
+            <?php } ?>
+        <?php } else{?>
+            <tr class="info"><td colspan="2">There are no counter rules yet. You may add a rule, using the form below.</td></tr>
+        <?php } ?>
+
+        </tbody>
+
     </table>
+
+
+
+<form class="form-horizontal" id="form2" name="form1" method="post" action="<?php echo URL::base().'counterManager/addRule/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
+    <fieldset class="fieldset">
+        <legend><?php echo __('Add counter rule'); ?></legend>
+    </fieldset>
+    <div class="control-group">
+        <label class="control-label" for="relation"><?php echo __('if value of counter'); ?></label>
+<div class="controls">
+        <?php if(isset($templateData['relations']) and count($templateData['relations']) > 0) { ?>
+        <select id="relation" name="relation">
+            <?php foreach($templateData['relations'] as $relation) { ?>
+                <option value="<?php echo $relation->id; ?>"><?php echo $relation->title ?></option>
+            <?php } ?>
+        </select>
+        <?php } ?>
+         <input id="rulevalue" type="text" name="rulevalue"></div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="node"><?php echo __('then go to node'); ?></label>
+        <div class="controls">
+        <?php if(isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
+        <select id="node" name="node">
+            <?php foreach($templateData['nodes'] as $node) { ?>
+                <option value="<?php echo $node->id; ?>"><?php echo $node->title; ?></option>
+            <?php } ?>
+        </select>
+        <?php } ?>
+    </div></div>
+    <div class="control-group">
+        <label class="control-label" for="ctrval"><?php echo __('reset counter'); ?></label>
+        <div class="controls">
+        <input id="ctrval" type="text" name="ctrval" value="" size="4">
+        <?php echo __('type +, - or = an integer - e.g. +1 or =32'); ?><?php echo __(' - you need to change the value of the counter or it will loop'); ?>
+        </div>
+    </div>
+    <div class="form-actions">
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Add rule'); ?>">
+    </div>
+</form>
 <?php } ?>

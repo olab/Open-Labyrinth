@@ -37,7 +37,17 @@ class Controller_VisualManager extends Controller_Base {
     public function action_index() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base() . 'visualManager/index/' . $this->mapId));
 
-        Model::factory('visualEditor')->generateXML($this->mapId);
+        $saveJson = '';
+
+        $this->templateData['node'] = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
+
+        $json = Model::factory('visualEditor')->generateJSON($this->mapId);
+
+        $this->templateData['mapJSON'] = $json;
+
+        if($saveJson != null)
+            $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
         $visualView = View::factory('labyrinth/visual');
         $visualView->set('templateData', $this->templateData);
@@ -97,4 +107,34 @@ class Controller_VisualManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
+    public function action_updateJSON() {
+        $mapId = Arr::get($_POST, 'id', null);
+        $json = Arr::get($_POST, 'data', null);
+
+        $this->auto_render = false;
+        Model::factory('visualEditor')->updateFromJSON($mapId, $json);
+
+        echo Model::factory('visualEditor')->generateJSON($mapId);
+    }
+
+
+    public function action_bufferCopy() {
+        $json = Arr::get($_POST, 'data', null);
+
+        if(Auth::instance()->logged_in()) {
+            Session::instance()->set('buffer', $json);
+        }
+    }
+
+    public function action_bufferPaste() {
+        $this->auto_render = false;
+        $result = '';
+        if(Auth::instance()->logged_in()) {
+            $buffer = Session::instance()->get('buffer', NULL);
+
+            $result = $buffer != null ? $buffer : '';
+        }
+
+        echo $result;
+    }
 }

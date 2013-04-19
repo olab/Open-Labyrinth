@@ -29,14 +29,10 @@ function getRandomColor() {
 }
 ?>
 <?php if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff" align="left">
-                        <td align="left">
-                            <p><a href="#">back to reports</a></p>
+<div class="page-header">
+                <h1><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    </div>
+
                             <p>number of sessions: <?php if(isset($templateData['sessions'])) echo count($templateData['sessions']); ?> (more than <?php if(isset($templateData['minClicks'])) echo count($templateData['minClicks']); ?> clicks):</p>
 
                             <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
@@ -192,29 +188,27 @@ function getRandomColor() {
                             <?php } ?>
                             <?php } ?> 
                             <p>data table:</p>
-                            <table border="1">
+                            <table class="table table-bordered table-striped">
+                                <thead>
                                 <tr>
-                                    <td><p>sessionID</p></td>
-                                    <td><p>number of nodes</p></td>
-                                    <td><p>time taken (s)</p></td>
-                                    <td><p>last node</p></td>
-                                </tr>
+                                    <td>sessionID</td>
+                                    <td>number of nodes</td>
+                                    <td>time taken (s)</td>
+                                    <td>last node</td>
+                                </tr></thead>
+                                <tbody>
                                 <?php if(isset($templateData['sessions']) and count($templateData['sessions']) > 0) { ?>
                                 <?php foreach($templateData['sessions'] as $session) { ?>
                                 <tr>
-                                    <td><p><?php echo $session->id; ?></p></td>
-                                    <td><p><?php echo count($session->traces); ?></p></td>
-                                    <td><p><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></p></td>
-                                    <td><p><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></p></td>
+                                    <td><?php echo $session->id; ?></td>
+                                    <td><?php echo count($session->traces); ?></td>
+                                    <td><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
+                                    <td><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
                                 </tr>
                                 <?php } ?>
                                 <?php } ?>
+                                </tbody>
                             </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>
 

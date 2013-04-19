@@ -71,6 +71,9 @@ class Controller_ElementManager extends Controller_Base {
 
             $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'elementManager/addNewElement/' . $mapId));
             $view = View::factory('labyrinth/element/add');
             $view->set('templateData', $this->templateData);
 
@@ -135,6 +138,9 @@ class Controller_ElementManager extends Controller_Base {
 
             $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['vpd']->id)->set_url(URL::base() . 'elementManager/editVpd/'  . '/'.$this->templateData['vpd']->id));
             $view = View::factory('labyrinth/element/edit');
             $view->set('templateData', $this->templateData);
 
@@ -152,4 +158,3 @@ class Controller_ElementManager extends Controller_Base {
 
 }
 
-?>

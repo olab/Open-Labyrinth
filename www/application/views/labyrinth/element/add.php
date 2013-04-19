@@ -18,180 +18,592 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
+if (isset($templateData['map'])) {
+    ?>
     <script type="text/javascript">
-        function jumpMenu(targ,selObj,restore) { 
-            eval(targ+".location='"+selObj.options[selObj.selectedIndex].value+"'");
-            if (restore) selObj.selectedIndex=0;
+        function jumpMenuGo(targ, selObj, restore) {
+            eval(targ + ".location='" + selObj.options[selObj.selectedIndex].value + "'");
+            if (restore) selObj.selectedIndex = 0;
         }
+        $('[name="demtype"]').live('click', function () {
+            $('.patdem').attr('disabled', 'disabled');
+            $(this).next(".patdem").removeAttr('disabled');
+            $('[name="radio1"]').each(function () {
+                $(this).attr('disabled', 'disabled').checkboxradio('refresh');
+            });
+        });
+
     </script>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('add data element to labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" border="0" cellspacing="6">
-                    <tr>
-                        <td align="right"><p>VPD Element Type</p></td>
-                        <td align="left">
-                            <select name="jumpMenu" id="jumpMenu" onchange="jumpMenu('parent',this,0)">
-                                <option value="<?php echo URL::base(); ?>elementManager/index/<?php echo $templateData['map']->id; ?>">select ...</option>
-                                <?php if (isset($templateData['types']) and count($templateData['types']) > 0) { ?>
-                                    <?php foreach ($templateData['types'] as $type) { ?>
-                                        <option value="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>/<?php echo $type->name; ?>" <?php if (isset($templateData['add_type']) and $templateData['add_type'] == $type->name) echo 'selected=""'; ?>><?php echo $type->label; ?></option>
-                                    <?php } ?>
-                                <?php } ?>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-                <form action="<?php echo URL::base(); ?>elementManager/saveElement/<?php echo $templateData['map']->id; ?><?php if(isset($templateData['add_type'])) echo '/'.$templateData['add_type']; ?>" method="post">
-                    <table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                        <tr><td align="left"><p>Type: <?php if(isset($templateData['add_type'])) echo $templateData['add_type']; ?></p></td><td align="left"><p>ID: </p></td></tr>
-                        <?php if (isset($templateData['add_type'])) { ?>
-                            <?php
-                            $filesString = '<option value="">Select ...</option>';
-                            if (isset($templateData['files']) and count($templateData['files']) > 0) {
-                                foreach ($templateData['files'] as $file) {
-                                    $filesString .= '<option value="' . $file->id . '">' . $file->name . '</option>';
-                                }
-                            }
-                            switch ($templateData['add_type']) {
-                                case 'VPDText':
-                                    echo '<tr>
-                                            <td align="left"><p>VPDText type:</p></td>
-                                            <td align="left">
-                                                <select name="VPDTextType">
+<div class="page-header">
+    <h1><?php echo __('Add data element to labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    </div>
+    <form class="form-horizontal">
+        <fieldset class="fieldset">
+            <div class="control-group">
+                <label for="jumpMenu" class="control-label"><?php echo __('VPD Element Type'); ?></label>
+
+                <div class="controls">
+                    <select name="jumpMenu" id="jumpMenu" onchange="jumpMenuGo('parent',this,0);">
+                        <option
+                            value="<?php echo URL::base(); ?>elementManager/index/<?php echo $templateData['map']->id; ?>">
+                            select ...
+                        </option>
+                        <?php if (isset($templateData['types']) and count($templateData['types']) > 0) { ?>
+                            <?php foreach ($templateData['types'] as $type) { ?>
+                                <option
+                                    value="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>/<?php echo $type->name; ?>" <?php if (isset($templateData['add_type']) and $templateData['add_type'] == $type->name) echo 'selected=""'; ?>><?php echo $type->label; ?></option>
+                            <?php } ?>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+  <?php if (isset($templateData['add_type'])) { ?>
+    <form class="form-horizontal"
+          action="<?php echo URL::base(); ?>elementManager/saveElement/<?php echo $templateData['map']->id; ?><?php if (isset($templateData['add_type'])) echo '/' . $templateData['add_type']; ?>"
+          method="post">
+    <h2>Type: <?php if (isset($templateData['add_type'])) echo $templateData['add_type']; ?></h2>
+
+        <?php
+        $filesString = '<option value="">Select ...</option>';
+        if (isset($templateData['files']) and count($templateData['files']) > 0) {
+            foreach ($templateData['files'] as $file) {
+                $filesString .= '<option value="' . $file->id . '">' . $file->name . '</option>';
+            }
+        }
+        switch ($templateData['add_type']) {
+            case 'VPDText':
+                echo '
+                         <fieldset class="fieldset">
+
+                            <div class="control-group">
+                                <label for="VPDTextType" class="control-label">VPD Text type</label>
+
+                                <div class="controls">
+
+
+                                                <select name="VPDTextType" id="VPDTextType">
                                                     <option value="narrative">narrative</option>
                                                     <option value="chief complaint">chief complaint</option>
                                                     <option value="history">history</option>
                                                     <option value="problem">problem</option>
                                                     <option value="allergy">allergy</option>
                                                 </select>
-                                            </td>
-                                            </tr>
-                                            <tr>
-                                                <td align="left"><p>VPDText:</p></td>
-                                                <td align="left">
-                                                    <textarea name="VPDText" cols="50" rows="8"></textarea>
-                                                </td>
-                                            </tr>
-                                            <tr><td colspan="2" align="left"><input type="submit" value="Submit"></td></tr></table></form>';
-                                    break;
-                                case 'PatientDiagnoses':
-                                    echo '<tr><td align="left" colspan="2"><p>Structured demographic ...</p></td></tr>
-                                          <tr><td align="left"><p>Demographics Type:</p></td>
-                                          <td align="left"><select name="CoreDemogType">
-                                          <option value="">Select ...</option>  
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="VPDText" class="control-label">VPD Text</label>
+
+                                <div class="controls">
+
+
+                                               <textarea name="VPDText" id="VPDText" cols="50" rows="8"></textarea>
+                                </div>
+                            </div>
+                             </fieldset>';
+                break;
+            case 'PatientDiagnoses':
+                echo '
+
+   <input name="demtype" checked type="radio">
+
+   <fieldset class="fieldset patdem">
+
+
+                            <legend>Structured demographic</legend>
+                            <div class="control-group">
+                                <label for="CoreDemogType" class="control-label">Demographics Type</label>
+
+                                <div class="controls">
+                                              <select name="CoreDemogType" id="CoreDemogType">
+                                          <option value="">Select ...</option>
                                           <option value="PatientID">Patient ID</option>
-                                          <option value="Name>Name</option>
+                                          <option value="Name">Name</option>
                                           <option value="Age">Age</option>
                                           <option value="Sex">Sex</option>
                                           <option value="Race">Race</option>
                                           <option value="Species">Species</option>
                                           <option value="Breed">Breed</option>
-                                          </select></td></tr>
-                                          <tr><td align="left"><p>Demographic Text:</p></td>
-                                          <td align="left"><input type="text" name="DemogText" value="" size="20"></td></tr>
-                                          <tr><td colspan="2" align="left"><input type="submit" value="Submit" /></td></tr>
-                                          </table></form><form method="post" action="'.URL::base().'elementManager/saveElement/'.$templateData['map']->id.'/'.$templateData['add_type'].'"><table width="100%" border="0" cellspacing="6" bgcolor="#ffffff">
-                                          <tr><td align="left" colspan="2"><p>Or unstructured demographic ...</p></td></tr>
-                                          <tr><td align="left"><p>Title:</p></td><td align="left"><input type="text" name="DemogTitle" value="" size="40"></p></td></tr>
-                                          <tr><td align="left"><p>Description:</p></td><td align="left"><input type="text" name="DemogDesc" value="" size="60"></p></td></tr>
-                                          <tr><td colspan="2" align="left"><input type="submit" value="Submit"/></td></tr></table></form>';
-                                    break;
-                                case 'AuthorDiagnoses':
-                                    echo '<tr><td align="left"><p>Diagnosis title:</p></td><td align="left"><input type="text" name="aDiagTitle" value="" size="40"></td></tr>
-                                          <tr><td align="left"><p>Diagnosis description:</p></td><td align="left"><input type="text" name="aDiagDesc" value="" size="60"></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit"/></td></tr></table></form>';
-                                    break;
-                                case 'Medication':
-                                    echo '<tr><td align="left"><p>Medication title:</p></td><td align="left"><input type="text" value="" name="MedicTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Dose:</p></td><td align="left"><input type="text" value="" name="MedicDose" size="40"></td></tr> 
-                                          <tr><td align="left"><p>Route:</p></td><td align="left"><input type="text" value="" name="MedicRoute" size="40"></td></tr>
-                                          <tr><td align="left"><p>Frequency:</p></td><td align="left"><input type="text" value="" name="MedicFreq" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source:</p></td><td align="left"><input type="text" value="" name="MedicSource" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source ID:</p></td><td align="left"><input type="text" value="" name="MedicSourceID" size="40"></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                                case 'InterviewItem':
-                                    echo '<tr><td align="left"><p>Question:</p></td><td align="left"><input type="text" name="QAQuestion" value="" size="60"></td></tr>
-                                          <tr><td align="left"><p>Answer:</p></td><td align="left"><input type="text" name="QAAnswer" value="" size="40"></td></tr>  
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="QAMedia">' . $filesString . '</select></td></tr>
-                                          <tr><td align="left"><p>Trigger:</p></td><td align="left"><input type="checkbox" name="trigger" checked /></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                                case 'PhysicalExam':
-                                    echo '<tr><td align="left"><p>Examination Name:</p></td><td align="left"><input type="text" value="" name="ExamName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Examination Description:</p></td><td align="left"><input type="text" value="" name="ExamDesc" size="60"></td></tr>
-                                          <tr><td align="left"><p>Location on body - part/area:</p></td><td align="left"><input type="text" value="" name="BodyPart" size="60"></td></tr>
-                                          <tr><td align="left"><p>Action:</p></td><td align="left"><input type="text" value="" name="Action" size="60" /></td></tr>
+                                          </select>
 
-                                          <tr><td align="left"><p>Orientation:</p></td><td align="left">
-                                          <table width="100%"><tr><td align="left"><p><input type="radio" value="Proximal" name="ProxDist" /> Proximal</p></td><td align="left"><p><input type="radio" value="Distal" name="ProxDist" /> Distal</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Right" name="RightLeft" /> Right</p></td><td align="left"><p><input type="radio" value="Left" name="RightLeft" /> Left</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Front" name="FrontBack" /> Front</p></td><td align="left"><p><input type="radio" value="Back" name="FrontBack" /> Back</p></td><td align="left"></td></tr>
-                                          <tr><td align="left"><p><input type="radio" value="Inferior" name="InfSup" /> Inferior</p></td><td align="left"><p><input type="radio" value="Superior" name="InfSup" /> Superior</p></td><td align="left"></td></tr></table>
-                                          </td></tr>
+                                </div>
+                            </div>
 
-                                          <tr><td align="left"><p>Finding Name:</p></td><td align="left"><input type="text" value="" name="FindName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Finding Description:</p></td><td align="left"><input type="text" value="" name="FindDesc" size="60"></td></tr>
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="FindMedia">' . $filesString . '</select></td></tr>"
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                                case 'DiagnosticTest':
-                                    echo '<tr><td align="left"><p>Test Name:</p></td><td align="left"><input type="text" value="" name="TestName" size="60"></td></tr>
-                                          <tr><td align="left"><p>Test Description:</p></td><td align="left"><input type="text" value="" name="TestDesc" size="60"></td></tr>
+                                <div class="control-group">
+                                <label for="DemogText" class="control-label">Demographic Text</label>
 
-                                          <tr><td align="left"><p>Units:</p></td><td align="left"><input type="text" value="" name="TestUnits" size="60"></td></tr>
-                                          <tr><td align="left"><p>Result:</p></td><td align="left"><input type="text" value="" name="TestResult" size="60"></td></tr>
-                                          <tr><td align="left"><p>Normal value:</p></td><td align="left"><input type="text" value="" name="TestNorm" size="60"></td></tr>
+                                <div class="controls">
+                                           <input type="text" name="DemogText" id="DemogText" value="" >
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="TestMedia">'.$filesString.'</select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                                case 'DifferentialDiagnostic':
-                                    echo '<tr><td align="left"><p>Diagnosis title:</p></td><td align="left"><input type="text" value="" name="DiagTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Diagnosis description:</p></td><td align="left"><input type="text" value="" name="DiagDesc" size="60"></td></tr>
-                                          <tr><td align="left"><p>Likelihood</p></td><td align="left"><select name="Likelihood">
+                                </div>
+                            </div></fieldset>
+</input>
+
+
+
+<input name="demtype" type="radio">
+<fieldset disabled class="fieldset patdem">
+                                     <legend>
+                                          Unstructured demographic</legend>
+                                                                    <div class="control-group">
+                                <label for="DemogTitle" class="control-label">Title</label>
+
+                                <div class="controls">
+                                            <input type="text" name="DemogTitle" value="" id="DemogTitle">
+
+                                </div>
+                            </div>
+
+                                                                                                        <div class="control-group">
+                                <label for="DemogDesc" class="control-label">Description</label>
+
+                                <div class="controls">
+                                           <input type="text" name="DemogDesc" id="DemogDesc" value="">
+
+                                </div>
+                            </div>
+
+</input>
+
+
+                                          </fieldset>
+                                          ';
+                break;
+            case 'AuthorDiagnoses':
+                echo '
+<fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="aDiagTitle" class="control-label">Diagnosis title</label>
+
+                                <div class="controls">
+                                           <input type="text" name="aDiagTitle" id="aDiagTitle" value="" >
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="aDiagDesc" class="control-label">Diagnosis description</label>
+
+                                <div class="controls">
+                                           <input type="text" name="aDiagDesc" id="aDiagDesc" value="" >
+
+                                </div>
+                            </div>
+</fieldset>';
+                break;
+            case 'Medication':
+                echo '
+<fieldset class="fieldset">
+
+                           <div class="control-group">
+                                <label for="MedicTitle" class="control-label">Medication title</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" id="MedicTitle" name="MedicTitle">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicDose" class="control-label">Dose</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" id="MedicDose" name="MedicDose">
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicRoute" class="control-label">Route</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" id="MedicRoute" name="MedicRoute">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicFreq" class="control-label">Frequency</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" name="MedicFreq" id="MedicFreq">
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicSource" class="control-label">Medication item source</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" name="MedicSource" id="MedicSource">
+
+                                </div>
+                            </div>
+                                                       <div class="control-group">
+                                <label for="MedicSourceID" class="control-label">Medication item source ID</label>
+
+                                <div class="controls">
+                                           <input type="text" value="" name="MedicSourceID" id="MedicSourceID">
+
+                                </div>
+                            </div>
+
+</fieldset> ';
+                break;
+            case 'InterviewItem':
+                echo '<fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="QAQuestion" class="control-label">Question</label>
+
+                                <div class="controls">
+                                          <input type="text" name="QAQuestion" value="" id="QAQuestion"/>
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="QAAnswer" class="control-label">Answer</label>
+
+                                <div class="controls">
+                                          <input type="text" name="QAAnswer" id="QAAnswer" value=""/>
+
+                                </div>
+                            </div>
+
+                                                        <div class="control-group">
+                                <label for="QAMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                          <select name="QAMedia" id="QAMedia">' . $filesString . '</select>
+
+                                </div>
+                            </div>
+
+                                                        <div class="control-group">
+                                <label for="trigger" class="control-label">Trigger</label>
+
+                                <div class="controls">
+                                          <input type="checkbox" id="trigger" name="trigger" checked />
+
+                                </div>
+                            </div>
+
+                </fieldset>';
+                break;
+            case 'PhysicalExam':
+                echo '
+                <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="ExamName" class="control-label">Examination Name</label>
+
+                                <div class="controls">
+                                          <input type="text" value="" name="ExamName" id="ExamName">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="ExamDesc" class="control-label">Examination Description</label>
+
+                                <div class="controls">
+                                          <input type="text" value="" name="ExamDesc" id="ExamDesc">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="BodyPart" class="control-label">Location on body - part/area</label>
+
+                                <div class="controls">
+                                          <input type="text" value="" name="BodyPart" id="BodyPart">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="Action" class="control-label">Action</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="Action" id="Action" />
+                                </div>
+                            </div>
+                            <h5>Orientation</h5>
+                 <div class="control-group">
+                    <label class="control-label">Proximity</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" value="Proximal" name="ProxDist" />
+                            Proximal
+                        </label>
+                        <label class="radio">
+                            <input type="radio" value="Distal" name="ProxDist" />
+                            Distal
+                        </label>
+
+                    </div>
+                </div>
+
+                                <div class="control-group">
+                    <label class="control-label">Sagittal Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" value="Right" name="RightLeft" />
+                            Right
+                        </label>
+                        <label class="radio">
+                            <input type="radio" value="Left" name="RightLeft" />
+                            Left
+                        </label>
+
+                    </div>
+                </div>
+
+
+                                <div class="control-group">
+                    <label class="control-label">Coronal Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" value="Front" name="FrontBack" />
+                            Front
+                        </label>
+                        <label class="radio">
+                            <input type="radio" value="Back" name="FrontBack" />
+                            Back
+                        </label>
+
+                    </div>
+                </div>
+
+                                <div class="control-group">
+                    <label class="control-label">Transverse Plane</label>
+
+                    <div class="controls">
+
+                        <label class="radio">
+                            <input type="radio" value="Inferior" name="InfSup" />
+                            Inferior
+                        </label>
+                        <label class="radio">
+                            <input type="radio" value="Superior" name="InfSup" />
+                            Superior
+                        </label>
+
+                    </div>
+                </div>
+
+
+                            <div class="control-group">
+                                <label for="FindName" class="control-label">Finding Name</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="FindName" id="FindName">
+                                </div>
+                            </div>
+                                                        <div class="control-group">
+                                <label for="FindDesc" class="control-label">Finding Description</label>
+
+                                <div class="controls">
+                                        <input type="text" value="" name="FindDesc" id="FindDesc">
+                                </div>
+                            </div>
+                                                        <div class="control-group">
+                                <label for="FindMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                         <select id="FindMedia" name="FindMedia">' . $filesString . '</select>
+                                </div>
+                            </div>
+
+
+     </fieldset>';
+                break;
+            case 'DiagnosticTest':
+                echo '
+            <fieldset class="fieldset">
+
+                <div class="control-group">
+                                <label for="TestName" class="control-label">Test Name</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="TestName" id="TestName">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestDesc" class="control-label">Test Description</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="TestDesc" id="TestDesc">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestUnits" class="control-label">Units</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="TestUnits" id="TestUnits">
+                                </div>
+                </div>
+
+                <div class="control-group">
+                                <label for="TestResult" class="control-label">Result</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" id="TestResult" name="TestResult">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestNorm" class="control-label">Normal value</label>
+
+                                <div class="controls">
+                                         <input type="text" value="" name="TestNorm" id="TestNorm">
+                                </div>
+                </div>
+                <div class="control-group">
+                                <label for="TestMedia" class="control-label">Media ID</label>
+
+                                <div class="controls">
+                                         <select id="TestMedia" name="TestMedia">' . $filesString . '</select>
+                                </div>
+                 </div>
+            </fieldset>';
+                break;
+            case 'DifferentialDiagnostic':
+                echo '
+<fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="DiagTitle" class="control-label">Diagnosis title</label>
+
+                                <div class="controls">
+                                          <input type="text" value="" id="DiagTitle" name="DiagTitle" >
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="DiagDesc" class="control-label">Diagnosis description</label>
+
+                                <div class="controls">
+                                        <input type="text" id="DiagDesc" value="" name="DiagDesc">
+                                </div>
+                            </div>
+                           <div class="control-group">
+                                <label for="Likelihood" class="control-label">Likelihood</label>
+
+                                <div class="controls">
+                                          <select name="Likelihood" id="Likelihood">
                                           <option value=""/>Select ...</option>
                                           <option value="high"/>high</option>
                                           <option value="medium"/>medium</option>
                                           <option value="low"/>low</option>
                                           <option value="none"/>none</option>
-                                          </select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                                case 'Intervention':
-                                    echo '<tr><td align="left"><p>Intervention title:</p></td><td align="left"><input type="text" value="" name="IntervTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Intervention description:</p></td><td align="left"><input type="text" value="" name="IntervDesc" size="60"></td></tr>
+                                          </select>
+                                </div>
+                            </div>
+                          </fieldset>
 
-                                          <tr><td align="left"><p>Medication title:</p></td><td align="left"><input type="text" value="" name="iMedicTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Dose:</p></td><td align="left"><input type="text" value="" name="iMedicDose" size="40"></td></tr>
-                                          <tr><td align="left"><p>Route:</p></td><td align="left"><input type="text" value="" name="iMedicRoute" size="40"></td></tr>
-                                          <tr><td align="left"><p>Frequency:</p></td><td align="left"><input type="text" value="" name="iMedicFreq" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source:</p></td><td align="left"><input type="text" value="" name="iMedicSource" size="40"></td></tr>
-                                          <tr><td align="left"><p>Medication item source ID:</p></td><td align="left"><input type="text" value="" name="iMedicSourceID" size="40"></td></tr>
+                                     ';
+                break;
+            case 'Intervention':
+                echo '
 
-                                          <tr><td align="left"><p>Appropriateness</p></td><td align="left"><select name="Appropriateness">
+                <fieldset>
+                             <div class="control-group">
+                                <label for="IntervTitle" class="control-label">Intervention title</label>
+
+                                <div class="controls">
+                                       <input type="text" value="" name="IntervTitle" id="IntervTitle">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="IntervDesc" class="control-label">Intervention description</label>
+
+                                <div class="controls">
+                                        <input type="text" id="IntervDesc" value="" name="IntervDesc">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicTitle" class="control-label">Medication title</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicTitle" value="" name="iMedicTitle">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicDose" class="control-label">Dose</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicDose" value="" name="iMedicDose">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicRoute" class="control-label">Route</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicRoute" value="" name="iMedicRoute">
+                                </div>
+                            </div>
+                                                                                                                                                                       <div class="control-group">
+                                <label for="iMedicFreq" class="control-label">Frequency</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicFreq" value="" name="iMedicFreq">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicSource" class="control-label">Medication item source</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicSource" value="" name="iMedicSource">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="iMedicSourceID" class="control-label">Medication item source ID</label>
+
+                                <div class="controls">
+                                        <input type="text" id="iMedicSourceID" value="" name="iMedicSourceID">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="Appropriateness" class="control-label">Appropriateness</label>
+
+                                <div class="controls">
+                                        <select name="Appropriateness" id="Appropriateness">
                                           <option value=""/>select ...</option>
                                           <option value="always"/>always</option>
                                           <option value="ok"/>ok</option>
                                           <option value="never"/>never</option>
                                           <option value="none"/>none</option>
-                                          </select></td></tr>
+                                          </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="ResultTitle" class="control-label">Results title</label>
 
-                                          <tr><td align="left"><p>Results title:</p></td><td align="left"><input type="text" value="" name="ResultTitle" size="40"></td></tr>
-                                          <tr><td align="left"><p>Results description:</p></td><td align="left"><input type="text" name="" name="ResultDesc" size="60"></td></tr>
+                                <div class="controls">
+                                        <input type="text" id="ResultTitle" value="" name="ResultTitle">
+                                </div>
+                            </div>
+                                                                                                                                                                       <div class="control-group">
+                                <label for="ResultDesc" class="control-label">Results description</label>
 
-                                          <tr><td align="left"><p>Media ID:</p></td><td align="left"><select name="iTestMedia">'.$filesString.'</select></td></tr>
-                                          <tr><td align="left" colspan="2"><input type="submit" name="Submit" value="Submit" /></td></tr></table></form>';
-                                    break;
-                            }
-                            ?>
-                        <?php } ?>
+                                <div class="controls">
+                                        <input type="text" id="ResultDesc" value="" name="ResultDesc">
+                                </div>
+                            </div>
+                <div class="control-group">
+                                <label for="iTestMedia" class="control-label">Media ID</label>
 
-                        </td>
-                        </tr>
-                    </table>
-                <?php } ?>
+                                <div class="controls">
+                                         <select id="iTestMedia" name="iTestMedia">' . $filesString . '</select>
+                                </div>
+                 </div>
+
+
+                </fieldset>';
+                break;
+        }
+        ?>
+    <div class="form-actions">
+        <div class="pull-right">
+        <input class="btn btn-primary btn-large" type="submit" value="Add"></div></div>
+    </form>
+    <?php } ?>
+
+
+
+<?php } ?>

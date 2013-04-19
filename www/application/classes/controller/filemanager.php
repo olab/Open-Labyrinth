@@ -87,6 +87,9 @@ class Controller_FileManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData["file"]->name)->set_url(URL::base() . 'fileManager/editFile/' . $mapId.'/'.$fileId));
             $fileView = View::factory('labyrinth/file/edit');
             $fileView->set('templateData', $this->templateData);
 
@@ -282,4 +285,3 @@ class Controller_FileManager extends Controller_Base {
 
 }
 
-?>

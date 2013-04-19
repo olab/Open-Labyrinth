@@ -18,32 +18,71 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
+
+
+if (isset($templateData['map'])) {
+    ?>
+
+    <script type="text/javascript">
+
+    </script>
+    <div class="page-header">
+        <div class="pull-right"><a class="btn btn-primary"
+                                   href="<?php echo URL::base() . 'chatManager/addChat/' . $templateData['map']->id; ?>"><i
+                    class="icon-plus-sign"></i><?php echo __('Add Chat'); ?></a>
+        </div>
+        <h1><?php echo __('Chats "') . $templateData['map']->name . '"'; ?></h1></div>
+    <table class="table table-striped table-bordered" id="my-labyrinths">
+        <thead>
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Chats "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff">
-                        <td>
-                            <table border="0" width="100%" cellpadding="1">
-                                <tr>
-                                    <td align="left">
-                                        <?php if(isset($templateData['chats']) and count($templateData['chats']) > 0) { ?>
-                                        <?php foreach($templateData['chats'] as $chat) { ?>
-                                            <p><input type="text" value="[[CHAT:<?php echo $chat->id; ?>]]"> <?php echo $chat->stem; ?> 
-                                                [<a href="<?php echo URL::base().'chatManager/editChat/'.$templateData['map']->id.'/'.$chat->id.'/'.count($chat->elements); ?>"><?php echo __('edit'); ?></a> 
-                                                - <a href="<?php echo URL::base().'chatManager/deleteChat/'.$templateData['map']->id.'/'.$chat->id; ?>"><?php echo __('delete'); ?></a>]</p>
-                                        <?php } ?>
-                                        <?php } ?>
-                                    </td>
-                                </tr>
-                                <tr><td align="left"><p><a href="<?php echo URL::base().'chatManager/addChat/'.$templateData['map']->id.'/2'; ?>"><?php echo __('Add Chat'); ?></a></p></td></tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
+            <th>Code</th>
+            <th>Stem</th>
+            <th>Actions</th>
         </tr>
+        </thead>
+
+        <tbody>
+        <?php if (isset($templateData['chats']) and count($templateData['chats']) > 0) { ?>
+            <?php foreach ($templateData['chats'] as $chat) { ?>
+                <tr>
+                    <td><label><input readonly="readonly" class="span6 code" type="text"
+                                      value="[[CHAT:<?php echo $chat->id; ?>]]"> </label></td>
+                    <td><?php echo $chat->stem; ?></td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-info" href="<?php echo URL::base() . 'chatManager/editChat/' . $templateData['map']->id . '/' . $chat->id; ?>">
+                                <i class="icon-edit"></i><?php echo __('Edit'); ?>
+                            </a>
+                            <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-chat-<?php echo $chat->id; ?>">
+                                <i class="icon-trash"></i><?php echo __('Delete'); ?>
+                            </a>
+                        </div>
+                        <div class="modal hide alert alert-block alert-error fade in" id="delete-chat-<?php echo $chat->id; ?>">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                            </div>
+                            <div class="modal-body">
+                                <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $chat->stem . '" chat?'); ?></p>
+                                <p>
+                                    <a class="btn btn-danger" href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><?php echo __('Delete'); ?></a>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php } ?>
+        <?php } else { ?>
+<tr class="info">
+<td colspan="3">There are no chats yet. Please click the button above to add one.</td>
+</tr>
+
+
+        <?php } ?>
+        </tbody>
     </table>
+
+
+
 <?php } ?>

@@ -20,13 +20,17 @@
  */
 ?>
 <h3>Login</h3>
-<form method="post" action="<?php echo URL::base() . 'home/login' ?>">
+<form id="loginForm" name="loginForm" method="post" action="<?php echo URL::base() . 'home/login' ?>">
     <label for="username"><?php echo __('Username'); ?></label>
     <input class="not-autocomplete" type="text" id="username" name="username" placeholder="<?php echo __('Your Username'); ?>" />
 
     <label for="password"><?php echo __('Password'); ?></label>
     <input class="not-autocomplete" type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
     <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span>
+    
+    <?php if(isset($templateData['redirectURL'])) { ?>
+    <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/>
+    <?php } ?>
 
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
 </form>
@@ -57,3 +61,9 @@
         <button id="forgot-password-submit" class="btn btn-primary">Reset Password</button>
     </div>
 </div>
+<?php if(count(Notice::get()) > 0) { ?>
+<div class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <?php $m = Notice::get(); echo $m[0]; ?>
+</div>
+<?php } ?>

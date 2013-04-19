@@ -19,52 +19,106 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript">
-        function jumpMenu(targ,selObj,restore){ 
-            eval(targ+".location='<?php echo URL::base(); ?>questionManager/addQuestion/<?php echo $templateData['map']->id; ?>/"+selObj.options[selObj.selectedIndex].value+"'");
-            if (restore) selObj.selectedIndex=0;
-        }
-    </script>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('questions "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td>
-                            <table border="0" width="100%" cellpadding="1">
-                                <?php if(isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
-                                    <?php foreach($templateData['questions'] as $question) { ?>
-                                        <tr>
-                                            <td>
-                                                <p>
-                                                    <input type="text" value="[[QU:<?php echo $question->id; ?>]]"><?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>) 
-                                                    [<a href="<?php echo URL::base().'questionManager/editQuestion/'.$templateData['map']->id.'/'.$question->entry_type_id.'/'.$question->id; ?>">edit</a> 
-                                                    - <a href="<?php echo URL::base().'questionManager/deleteQuestion/'.$templateData['map']->id.'/'.$question->id; ?>">delete</a>]
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } ?>
-                                <tr>
-                                    <td>
-                                        <p>add question 
-                                            <?php if(isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
-                                            <select onchange="jumpMenu('parent',this,0)" name="qt">
-                                                <option value=""><?php echo __('select'); ?> ...</option>
-                                                <?php foreach($templateData['question_types'] as $type) { ?>
-                                                    <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
-                                                <?php } ?>
-                                            </select>
-                                            <?php } ?>
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td></tr>
-                </table>
-            </td>
-        </tr>
+<div class="page-header">
+    <div class="pull-right question-btn-container">
+        <div class="btn-group">
+    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+        <button class="btn btn-primary" data-toggle="dropdown">
+                <i class="icon-plus-sign icon-white"></i>Add Question<span class="caret"></span>
+            </button> <ul class="dropdown-menu">
+                <?php foreach ($templateData['question_types'] as $type) { ?>
+                    <li><a href="<?php echo URL::base(); ?>questionManager/question/<?php echo $templateData['map']->id; ?>/<?php echo $type->id; ?>"><?php echo $type->title; ?></a></li>
+                <?php } ?>
+            </ul><?php } ?>
+            <button class="btn" id="copyQuestionBtn"><i class="icon-paste"></i> Paste question</button>
+        </div>
+        </div>
+    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Embeddable</th>
+                <th>Stem</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
+            <?php foreach ($templateData['questions'] as $question) { ?>
+                <tr>
+                    <td>
+                        <label><input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label>
+                    </td>
+                    <td>
+                        <?php echo $question->stem; ?>
+                    </td>
+                    <td>
+                        <?php echo $question->type->title; ?>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-info" href="<?php echo URL::base() . 'questionManager/question/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
+                            <a class="btn" href="<?php echo URL::base() . 'questionManager/duplicateQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-th"></i>Duplicate</a>
+                            <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-question-<?php echo $question->id; ?>"><i class="icon-trash"></i>Delete</a>
+                        </div>
+                        <div class="modal hide alert alert-block alert-error fade in" id="delete-question-<?php echo $question->id; ?>">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                            </div>
+                            <div class="modal-body">
+                                <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $question->stem . '" question?'); ?></p>
+                                <p>
+                                    <a class="btn btn-danger" href="<?php echo URL::base() . 'questionManager/deleteQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><?php echo __('Delete'); ?></a>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <?php } ?>
+        <?php } else { ?>
+            <tr class="info"><td colspan="3">There are no available questions right now. You may add a question using the menu below.</td> </tr>
+        <?php }?>
+        </tbody>
     </table>
+
+    <div class="modal hide" id="copyQuestionModal">
+        <form class="form-horizontal question-copy-form" method="POST" action="<?php echo URL::base(); ?>questionManager/copyQuestion/<?php echo $templateData['map']->id; ?>">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3>Paste question</h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="control-group">
+                        <label class="control-label">Question ID:</label>
+                        <div class="controls"><label>
+                            [[QU:<input style="width:50px;" type="text" name="questionID" value=""/>]]</label>
+                        </div>
+                    </div>
+                    <?php if(isset($templateData['counters']) && count($templateData['counters']) > 0) { ?>
+                    <div class="control-group">
+                        <label for="counterID" class="control-label">Assign to counter:</label>
+                        <div class="controls">
+                            <select name="counterID" id="counterID">
+                                <option value="">Select</option>
+                                <?php foreach($templateData['counters'] as $counter) { ?>
+                                <option value="<?php echo $counter->id; ?>"><?php echo $counter->name; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                <button type="submit" class="btn btn-primary">Paste</button>
+            </div>
+        </form>
+    </div>
 <?php } ?>
-
-

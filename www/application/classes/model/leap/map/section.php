@@ -85,4 +85,3 @@ class Model_Leap_Map_Section extends DB_ORM_Model {
     }
 }
 
-?>

@@ -18,7 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
+?>    <div class="page-header">
 <div class="pull-right">
     <div class="btn-group">
         <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -36,13 +36,15 @@
 <?php
 if (isset($templateData['maps'])) {
     ?>
-    <h1><?php echo __('My Labyrinths'); ?></h1>
 
-    <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="my-labyrinths">
+    <h1><?php echo __('My Labyrinths'); ?></h1>
+    </div>
+    <table  class="table table-striped table-bordered" id="my-labyrinths">
         <colgroup>
             <col style="width: 50%" />
-            <col style="width: 30%" />
             <col style="width: 20%" />
+            <col style="width: 30%" />
+            </colgroup>
         <thead>
             <tr>
                 <th><?php echo __('Labyrinth Title'); ?></th>
@@ -56,7 +58,8 @@ if (isset($templateData['maps'])) {
             ?>
             <tr>
                 <td>
-                    <?php echo $map->name; ?>
+                    <a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a>
+
                 </td>
                 <td>
                 <?php
@@ -70,6 +73,7 @@ if (isset($templateData['maps'])) {
                 ?>
                 </td>
                 <td class="center">
+                    <div class="btn-group">
                     <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
                         <i class="icon-play icon-white"></i>
                         Play
@@ -78,15 +82,30 @@ if (isset($templateData['maps'])) {
                         <i class="icon-edit icon-white"></i>
                         Edit
                     </a>
+                    <a class="btn" data-toggle="modal" data-target="#duplicate_labyrinth<?php echo $map->id; ?>" href="#">
+                        <i class="icon-th icon-white"></i>
+                        Duplicate
+                    </a></div>
+                    <div class="modal hide fade in" id="duplicate_labyrinth<?php echo $map->id; ?>">
+                        <div class="modal-header block">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4><?php echo __('Are you sure want to duplicate Case?'); ?></h4>
+                        </div>
+                        <div class="modal-body">
+                            <p><?php echo __('You have just clicked the duplicate button, are you certain that you wish to proceed with duplicate "'.$map->name.'" labyrinth?'); ?></p>
+                            <p>
+                                <a class="btn confirm-link" href="<?php echo URL::base(); ?>authoredLabyrinth/duplicate/<?php echo $map->id; ?>"><?php echo __('Duplicate Case'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            </p>
+                        </div>
+                    </div>
                 </td>
-
-
             </tr>
             <?php
         }
         ?>
         </tbody>
     </table>
+    </div>
     <?php
 } else {
     ?>

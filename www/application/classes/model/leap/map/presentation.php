@@ -154,12 +154,12 @@ class Model_Leap_Map_Presentation extends DB_ORM_Model {
             $this->access = Arr::get($values, 'access', 1);
             $this->skin_id = Arr::get($values, 'skin', 1);
             $this->tries = Arr::get($values, 'tries', 0);
-
-            if(($startDate = mktime(0, 0, 0,Arr::get($values, 'startmonth', 01), Arr::get($values, 'startday', 01), Arr::get($values, 'startyear', 1990))) != FALSE) {
+            
+            if(($startDate = mktime(0, 0, 0, $this->getValue(Arr::get($values, 'startmonth', 1), 1), $this->getValue(Arr::get($values, 'startday', 1), 1), $this->getValue(Arr::get($values, 'startyear', 1), 1990))) != FALSE) {
                 $this->start_date = $startDate;
             }
             
-            if(($endDate = mktime(0, 0, 0,Arr::get($values, 'endmonth', 01), Arr::get($values, 'endday', 01), Arr::get($values, 'endyear', 1990))) != FALSE) {
+            if(($endDate = mktime(0, 0, 0, $this->getValue(Arr::get($values, 'endmonth', 1), 1), $this->getValue(Arr::get($values, 'endday', 1), 1), $this->getValue(Arr::get($values, 'endyear', 1), 1990))) != FALSE) {
                 $this->end_date = $endDate;
             }
             
@@ -179,16 +179,24 @@ class Model_Leap_Map_Presentation extends DB_ORM_Model {
             $this->skin_id = Arr::get($values, 'skin', $this->skin_id);
             $this->tries = Arr::get($values, 'tries', $this->tries);
             
-            if(($startDate = mktime(0, 0, 0,Arr::get($values, 'startmonth', ''), Arr::get($values, 'startday', ''), Arr::get($values, 'startyear', ''))) != FALSE) {
+            if(($startDate = mktime(0, 0, 0, $this->getValue(Arr::get($values, 'startmonth', 1), 1), $this->getValue(Arr::get($values, 'startday', 1), 1), $this->getValue(Arr::get($values, 'startyear', 1), 1990))) != FALSE) {
                 $this->start_date = $startDate;
             }
 
-            if(($endDate = mktime(0, 0, 0,Arr::get($values, 'endmonth', ''), Arr::get($values, 'endday', ''), Arr::get($values, 'endyear', ''))) != FALSE) {
+            if(($endDate = mktime(0, 0, 0, $this->getValue(Arr::get($values, 'endmonth', 1), 1), $this->getValue(Arr::get($values, 'endday', 1), 1), $this->getValue(Arr::get($values, 'endyear', 1), 1990))) != FALSE) {
                 $this->end_date = $endDate;
             }
             
             $this->save();
         }
+    }
+    
+    private function getValue($value, $defaultValue = null) {
+        $result = $defaultValue;
+        if(!empty($value))
+            $result = $value;
+        
+        return $result;
     }
     
     public function getPresentationsByUserId($userId) {

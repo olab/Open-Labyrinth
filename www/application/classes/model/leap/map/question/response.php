@@ -51,8 +51,8 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'is_correct' => new DB_ORM_Field_Boolean($this, array(
-                'default' => TRUE,
+            'is_correct' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 4,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -106,14 +106,47 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
     public function updateResponses($questionId, $values) {
         $responses = $this->getResponsesByQuestion($questionId);
         
-        if($responses != NULL) {
-            for($i = 0; $i < count($responses); $i++) {
-                $responses[$i]->response = Arr::get($values, 'qresp'.($i + 1).'t', '');
-                $responses[$i]->feedback = Arr::get($values, 'qfeed'.($i + 1), '');
-                $responses[$i]->is_correct = Arr::get($values, 'qresp'.($i + 1).'y', 0);
-                $responses[$i]->score = Arr::get($values, 'qresp'.($i + 1).'s', 0);
-            
-                $responses[$i]->save();
+        if($responses != NULL && count($responses) > 0) {
+            foreach($responses as $response) {
+                if(isset($values['response_' . $response->id])) {
+                    $response->response = Arr::get($values, 'response_' . $response->id, '');
+                    $response->feedback = Arr::get($values, 'feedback_' . $response->id, '');
+                    $response->is_correct = Arr::get($values, 'correctness_' . $response->id, 0);
+                    $response->score = Arr::get($values, 'score_' . $response->id, 0);
+                    
+                    $response->save();
+                } else {
+                    $response->delete();
+                }
+            }
+        }
+        
+        $newResponses = array();
+        foreach($values as $key => $value) {
+            if(!(strpos($key, 'response_') === FALSE) && !(strpos($key, '_n') === FALSE)) {
+                $id = str_replace('response_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['response'] = $value;
+            } else if(!(strpos($key, 'feedback_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
+                $id = str_replace('feedback_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['feedback'] = $value;
+            } else if(!(strpos($key, 'correctness_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
+                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['correctness'] = $value;
+            } else if(!(strpos($key, 'score_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
+                $id = str_replace('score_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['score'] = $value;
+            }
+        }
+
+        if(count($newResponses) > 0) {
+            foreach($newResponses as $response) {
+                DB_ORM::insert('map_question_response')
+                        ->column('question_id', $questionId)
+                        ->column('response', Arr::get($response, 'response', ''))
+                        ->column('feedback', Arr::get($response, 'feedback', ''))
+                        ->column('is_correct', Arr::get($response, 'correctness', 0))
+                        ->column('score', Arr::get($response, 'score', 0))
+                        ->execute();
             }
         }
     }
@@ -122,7 +155,39 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
         $builder = DB_ORM::delete('map_question_response')->where('question_id', '=', (int)$questionId);
         $builder->execute();
     }
- 
+    
+    public function duplicateResponses($fromQuestionId, $toQuestionId) {
+        $resp = $this->getResponsesByQuestion($fromQuestionId);
+        
+        if($resp == null || $toQuestionId == null || $toQuestionId <= 0) return;
+        
+        foreach($resp as $r) {
+            $builder = DB_ORM::insert('map_question_response')
+                    ->column('question_id', $toQuestionId)
+                    ->column('response', $r->response)
+                    ->column('feedback', $r->feedback)
+                    ->column('is_correct', $r->is_correct)
+                    ->column('score', $r->score);
+            
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($questionId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('question_id', '=', (int)$questionId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $responses = array();
+            foreach($result as $record) {
+                $responses[] = $record;
+            }
+
+            return $responses;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

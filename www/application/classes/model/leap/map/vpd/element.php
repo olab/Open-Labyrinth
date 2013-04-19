@@ -114,6 +114,37 @@ class Model_Leap_Map_Vpd_Element extends DB_ORM_Model {
             }
         }
     }
+    
+    public function duplicateElement($fromVpdId, $toVpdId) {
+        $elements = $this->getValuesByVpdId($fromVpdId);
+        
+        if($elements == null || $toVpdId == null || $toVpdId <= 0) return;
+        
+        foreach($elements as $element) {
+            $builder = DB_ORM::insert('map_vpd_element')
+                    ->column('vpd_id', $toVpdId)
+                    ->column('key', $element->key)
+                    ->column('value', $element->value);
+            
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($vpdId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('vpd_id', '=', $vpdId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = $record;
+            }
+
+            return $elements;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

@@ -58,6 +58,11 @@ class Controller_ClusterManager extends Controller_Base {
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'clusterManager/addDam/' . $mapId));
+
             $addView = View::factory('labyrinth/cluster/add');
             $addView->set('templateData', $this->templateData);
 
@@ -107,6 +112,10 @@ class Controller_ClusterManager extends Controller_Base {
             $this->templateData['dams'] = DB_ORM::model('map_dam')->getDamNotAdded((int) $damId);
             $this->templateData['preview'] = Controller_RenderLabyrinth::parseText('[[DAM:' . $damId . ']]');
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['dam']->name)->set_url(URL::base() . 'clusterManager/index/' . $mapId. '/'. $this->templateData['dam']->id));
             $editView = View::factory('labyrinth/cluster/edit');
             $editView->set('templateData', $this->templateData);
 

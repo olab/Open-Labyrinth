@@ -68,7 +68,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             )),
             
             'show_answer' => new DB_ORM_Field_Boolean($this, array(
-                'default' => TRUE,
+                'default' => FALSE,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -79,6 +79,29 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             )),
             
             'num_tries' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            
+            'show_submit' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+            
+            'redirect_node_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => TRUE,
+                'unsigned' => TRUE,
+            )),
+            
+            'submit_text' => new DB_ORM_Field_String($this, array(
+                'max_length' => 200,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+
+            'type_display' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
@@ -177,7 +200,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 $this->updateAreaQuestion($values);
                 break;
             default:
-                $this->updateResponseQuestion($values);
+                $this->updateResponseQuestion($values, $type->id);
                 break;
         }
     }
@@ -199,13 +222,20 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->save();
     }
     
-    private function updateResponseQuestion($values) {
-        $this->stem = Arr::get($values, 'qstem', $this->stem);
-        $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        $this->show_answer = Arr::get($values, 'qshow', $this->show_answer);
-        $this->counter_id = Arr::get($values, 'scount', $this->counter_id);
-        $this->num_tries = Arr::get($values, 'numtries', $this->num_tries);
-        
+    private function updateResponseQuestion($values, $typeID = null) {
+        if($typeID != null){
+            $this->entry_type_id = $typeID;
+        }
+        $this->stem = Arr::get($values, 'stem', $this->stem);
+        $this->feedback = Arr::get($values, 'feedback', $this->feedback);
+        $this->show_answer = Arr::get($values, 'showAnswer', $this->show_answer);
+        $this->counter_id = Arr::get($values, 'counter', $this->counter_id);
+        $this->num_tries = Arr::get($values, 'tries', $this->num_tries);
+        $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
+        $this->redirect_node_id = Arr::get($values, 'redirectNode', $this->redirect_node_id);
+        $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
+        $this->type_display = Arr::get($values, 'typeDisplay', $this->submit_text);
+
         $this->save();
         
         DB_ORM::model('map_question_response')->updateResponses($this->id, $values);
@@ -257,29 +287,217 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
         return NULL;
     }
+    
+    public function duplicateQuestions($fromMapId, $toMapId, $counterMap) {
+        $questions = $this->getQuestionsByMap($fromMapId);
+        
+        if($questions == null || $toMapId == null || $toMapId <= 0) return array();
+        
+        $questionMap = array();
+        foreach($questions as $question) {
+            $builder = DB_ORM::insert('map_question')
+                    ->column('map_id', $toMapId)
+                    ->column('stem', $question->stem)
+                    ->column('entry_type_id', $question->entry_type_id)
+                    ->column('width', $question->width)
+                    ->column('height', $question->height)
+                    ->column('feedback', $question->feedback)
+                    ->column('show_answer', $question->show_answer)
+                    ->column('num_tries', $question->num_tries)
+                    ->column('show_submit', $question->show_submit)
+                    ->column('redirect_node_id', $question->redirect_node_id)
+                    ->column('submit_text', $question->submit_text)
+                    ->column('type_display', $question->type_display);
+
+            if(isset($counterMap[$question->counter_id]))
+                $builder = $builder->column ('counter_id', $counterMap[$question->counter_id]);
+            
+            $questionMap[$question->id] = $builder->execute();
+            
+            DB_ORM::model('map_question_response')->duplicateResponses($question->id, $questionMap[$question->id]);
+        }
+        
+        return $questionMap;
+    }
+    
+    public function duplicateQuestion($questionId) {
+        if($questionId == null || $questionId <= 0) return;
+        
+        $question = DB_ORM::model('map_question', array((int)$questionId));
+        if($question == null) return;
+        
+        $builder = DB_ORM::insert('map_question')
+                ->column('map_id', $question->map_id)
+                ->column('stem', $question->stem)
+                ->column('entry_type_id', $question->entry_type_id)
+                ->column('width', $question->width)
+                ->column('height', $question->height)
+                ->column('feedback', $question->feedback)
+                ->column('show_answer', $question->show_answer)
+                ->column('num_tries', $question->num_tries)
+                ->column ('counter_id', $question->counter_id)
+                ->column('show_submit', $question->show_submit)
+                ->column('redirect_node_id', $question->redirect_node_id)
+                ->column('submit_text', $question->submit_text)
+                ->column('type_display', $question->type_display);
+
+        $newId = $builder->execute();
+        
+        if(count($question->responses) > 0) {
+            foreach($question->responses as $response) {
+                DB_ORM::insert('map_question_response')
+                        ->column('question_id', $newId)
+                        ->column('response', $response->response)
+                        ->column('feedback', $response->feedback)
+                        ->column('is_correct', $response->is_correct)
+                        ->column('score', $response->score)
+                        ->execute();
+            }
+        }
+    }
 
     private function saveResponceQuestion($mapId, $type, $values) {
-        $builder = DB_ORM::insert('map_question')
+        $newQuestionId = DB_ORM::insert('map_question')
                 ->column('map_id', $mapId)
                 ->column('entry_type_id', $type->id)
-                ->column('stem', Arr::get($values, 'qstem', ''))
-                ->column('feedback', Arr::get($values, 'fback', ''))
-                ->column('show_answer', (int)Arr::get($values, 'qshow', 1))
-                ->column('counter_id', (int)Arr::get($values, 'scount', 0))
-                ->column('num_tries',  Arr::get($values, 'numtries', -1));
-        $newQuestionId = $builder->execute();
+                ->column('stem', Arr::get($values, 'stem', ''))
+                ->column('feedback', Arr::get($values, 'feedback', ''))
+                ->column('show_answer', (int)Arr::get($values, 'showAnswer', 0))
+                ->column('counter_id', (int)Arr::get($values, 'counter', 0))
+                ->column('num_tries',  (int)Arr::get($values, 'tries', 1))
+                ->column('show_submit', (int)Arr::get($values, 'showSubmit', 0))
+                ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
+                ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
+                ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0))
+                ->execute();
         
-        $respCount = (int)$type->template_args;
-        for($i = 1; $i <= $respCount; $i++) {
-            $responce = DB_ORM::model('map_question_response');
-            $responce->question_id = $newQuestionId;
-            $responce->response = Arr::get($values, 'qresp'.$i.'t', '');
-            $responce->feedback = Arr::get($values, 'qfeed'.$i, '');
-            $responce->is_correct = Arr::get($values, 'qresp'.$i.'y', 0);
-            $responce->score = Arr::get($values, 'qresp'.$i.'s', 0);
-            
-            $responce->save();
+        $responses = array();
+        foreach($values as $key => $value) {
+            if(!(strpos($key, 'response_') === FALSE )) {
+                $id = str_replace('response_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['response'] = $value;
+            } else if(!(strpos($key, 'feedback_') === FALSE )) {
+                $id = str_replace('feedback_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['feedback'] = $value;
+            } else if(!(strpos($key, 'correctness_') === FALSE )) {
+                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['correctness'] = $value;
+            } else if(!(strpos($key, 'score_') === FALSE )) {
+                $id = str_replace('score_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['score'] = $value;
+            }
         }
+        
+        if(count($responses) > 0) {
+            foreach($responses as $response) {
+                DB_ORM::insert('map_question_response')
+                        ->column('question_id', $newQuestionId)
+                        ->column('response', Arr::get($response, 'response', ''))
+                        ->column('feedback', Arr::get($response, 'feedback', ''))
+                        ->column('is_correct', (int) Arr::get($response, 'correctness', 0))
+                        ->column('score', (int) Arr::get($response, 'score', 0))
+                        ->execute();
+            }
+        }
+    }
+
+    public function addPickQuestion($mapId, $values) {
+        if($mapId == null || $mapId <= 0) return;
+
+        if($values != null && count($values) > 0) {
+            $questionIDs = Arr::get($values, 'questionsIDs', null);
+            if($questionIDs == null) return;
+
+            $ids = explode(' ', $questionIDs);
+
+            $builder = DB_ORM::insert('map_question')
+                    ->column('map_id', $mapId)
+                    ->column('entry_type_id', 4)
+                    ->column('stem', Arr::get($values, 'qstem', ''))
+                    ->column('feedback', Arr::get($values, 'fback', ''))
+                    ->column('show_answer', (int)Arr::get($values, 'qshow', 1))
+                    ->column('counter_id', (int)Arr::get($values, 'scount', 0))
+                    ->column('num_tries',  Arr::get($values, 'numtries', 1))
+                    ->column('show_submit', (int)Arr::get($values, 'showSubmit', 0))
+                    ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
+                    ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
+                    ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0));
+
+            $newQuestionId = $builder->execute();
+
+            if($ids != null && count($ids) > 0 && $newQuestionId > 0) {
+                foreach($ids as $id) {
+                    if($id == null) continue;
+
+                    $builder = DB_ORM::insert('map_question_response')
+                            ->column('question_id', $newQuestionId)
+                            ->column('response', Arr::get($values, 'qresp' . $id . 't', ''))
+                            ->column('feedback', Arr::get($values, 'qfeed'.$id, ''))
+                            ->column('is_correct', Arr::get($values, 'qresp'.$id.'y', 0))
+                            ->column('score', Arr::get($values, 'qresp'.$id.'s', 0));
+
+                    $builder->execute();
+                }
+            }
+        }
+    }
+    
+    public function copyQuestion($mapId, $values) {
+        $questionID = Arr::get($values, 'questionID', null);
+        $counterID = Arr::get($values, 'counterID', null);
+
+        if($questionID != null && is_numeric($questionID) && $questionID > 0) {
+            $question = DB_ORM::model('map_question', array((int)$questionID));
+            if($question != null) {
+                if ($counterID == '') $counterID = NULL;
+                $newQuestionID = DB_ORM::insert('map_question')
+                        ->column('map_id', $mapId)
+                        ->column('stem', $question->stem)
+                        ->column('entry_type_id', $question->entry_type_id)
+                        ->column('width', $question->width)
+                        ->column('height', $question->height)
+                        ->column('feedback', $question->feedback)
+                        ->column('show_answer', $question->show_answer)
+                        ->column('counter_id', $counterID)
+                        ->column('num_tries', $question->num_tries)
+                        ->column('show_submit', 0)
+                        ->column('redirect_node_id', null)
+                        ->column('submit_text', 'Submit')
+                        ->column('type_display', $question->type_display)
+                        ->execute();
+                
+                if(count($question->responses) > 0) {
+                    foreach($question->responses as $response) {
+                        DB_ORM::insert('map_question_response')
+                                ->column('question_id', $newQuestionID)
+                                ->column('response', $response->response)
+                                ->column('feedback', $response->feedback)
+                                ->column('is_correct', $response->is_correct)
+                                ->column('score', $response->score)
+                                ->execute();
+                    }
+                }
+            }
+        }
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $questions = array();
+            foreach($result as $record) {
+                $questions[] = $record;
+            }
+
+            return $questions;
+        }
+
+        return NULL;
     }
 }
 

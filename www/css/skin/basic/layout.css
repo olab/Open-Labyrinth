@@ -8,11 +8,11 @@
 *
 * Open Labyrinth is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with Open Labyrinth.  If not, see <http://www.gnu.org/licenses/>.
+* along with Open Labyrinth. If not, see <http://www.gnu.org/licenses/>.
 *
 * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
 *
@@ -49,13 +49,20 @@ h5 {
     font-size: 60%;
     font-weight: normal;
 }
-li {
-    font-size: 60%;
+ul {
+    list-style-type: none;
+    padding:0;
 }
-a:link{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;  text-decoration:none}
-a:visited{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;  text-decoration:none}
+.links a {
+    font-size: 12px;
+}
+li {
+    font-size: 80%;
+}
+a:link{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
+a:visited{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111; text-decoration:none}
 a:hover{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111;}
-a:active{font-family: Arial, Helvetica, sans-serif;  font-style: normal; font-weight: normal; color: #111111;}
+a:active{font-family: Arial, Helvetica, sans-serif; font-style: normal; font-weight: normal; color: #111111;}
 #outer {
     text-align:left;
     border:1px solid #ffffff;
@@ -122,4 +129,15 @@ div.scroll {
     border: 1px solid #666666;
     background-color: #cccccc;
     padding: 8px;
+}
+.questionResponces span {
+    margin-right:5px;
+}
+
+.questionResponces.horizontal li {
+    float:left;
+}
+
+.questionResponces .questionSubmitButton {
+    margin-top:15px;
 }

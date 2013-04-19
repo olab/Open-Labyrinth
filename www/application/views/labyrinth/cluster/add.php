@@ -19,21 +19,23 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('data clusters for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table bgcolor='#ffffff'>
-                    <tr>
-                        <td>
-                            <form method='post' action='<?php echo URL::base(); ?>clusterManager/saveNewDam/<?php echo $templateData['map']->id; ?>'>
-                            <p>Data cluster name: <input type='text' name='damname'><input type='submit' value='add' /></p>
+   <div class="page-header"><h1><?php echo __('Add a new Labyrinth Data Cluster');?></h1></div>
+                            <form class="form-horizontal" method='post' action='<?php echo URL::base(); ?>clusterManager/saveNewDam/<?php echo $templateData['map']->id; ?>'>
+                                <fieldset class="fieldset">
+                                    <div class="control-group">
+                                        <label class="control-label" for="damname">Data cluster name</label>
+                                        <div class="controls">
+                                            <input type='text' class="span6" id="damname" name='damname'/>
+                                        </div>
+                                    </div>
+                                </fieldset>
+<div class="form-actions">
+    <div class="pull-right">
+        <input class="btn btn-primary btn-large" type='submit' value='Add' />
+    </div>
+</div>
+
                             </form>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
 <?php } ?>
 

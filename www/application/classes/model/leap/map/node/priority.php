@@ -78,4 +78,3 @@ class Model_Leap_Map_Node_Priority extends DB_ORM_Model {
     }
 }
 
-?>

@@ -19,34 +19,51 @@
  *
  */
 if (isset($templateData['map']) && isset($templateData['node'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('conditional rules for "') . $templateData['node']->title . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff"><td>
+
+                <h1><?php echo __('Conditional rules for "') . $templateData['node']->title . '"'; ?></h1>
+
                             <p>previously: <?php echo $templateData['node']->conditional; ?></p>
-                            <form action="<?php echo URL::base().'nodeManager/saveConditional/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>" method="post">
-                                <table width="100%" cellpadding="6" border="0">
-                                    <tr><td align="right" width="30%"><p>first add enough nodes</p></td><td><p></p><p>currently=<?php echo $templateData['countOfCondidtionFiled']; ?>, [<a href="<?php echo URL::base().'nodeManager/addConditionalCount/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>"><?php echo __('add'); ?></a>] <?php if($templateData['countOfCondidtionFiled'] > 0) { ?>[<a href="<?php echo URL::base().'nodeManager/deleteConditionalCount/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>"><?php echo __('delete'); ?></a>]<?php } ?></p><p></p></td></tr>
-                                    <tr><td align="right" width="30%"><p>then select which nodes are required</p></td><td><p></p><p>this node requires user to have visited<br>
-                                                <?php if(count($templateData['nodes']) > 0) { ?>
-                                                <?php for($i = 0; $i < $templateData['countOfCondidtionFiled']; $i++) { ?>
-                                                <select name="el_<?php echo $i; ?>">
+                            <form action="<?php echo URL::base().'nodeManager/saveConditional/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>" class="form-horizontal" method="post">
+                                <fieldset>
+                                    <div class="control-group">
+                                        <label  class="control-label"><?php echo __('First add enough nodes'); ?><br/>Currently: <?php echo $templateData['countOfCondidtionFiled']; ?> nodes</label>
+
+                                        <div class="controls">
+                                            <a class="btn btn-primary" href="<?php echo URL::base().'nodeManager/addConditionalCount/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>"><?php echo __('add one'); ?></a> <?php if($templateData['countOfCondidtionFiled'] > 0) { ?><a class="btn btn-primary" href="<?php echo URL::base().'nodeManager/deleteConditionalCount/'.$templateData['node']->id.'/'.$templateData['countOfCondidtionFiled']; ?>"><?php echo __('remove one'); ?></a><?php } ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label  class="control-label"><?php echo __('then select which nodes are required'); ?></label>
+
+                                        <?php if(count($templateData['nodes']) > 0) { ?>
+                                            <?php for($i = 0; $i < $templateData['countOfCondidtionFiled']; $i++) { ?>
+                                        <div class="controls"><label><select name="el_<?php echo $i; ?>">
                                                     <?php foreach($templateData['nodes'] as $node) { ?>
-                                                    <option value="<?php echo $node->id; ?>"><?php echo $node->title; ?> [<?php echo $node->id; ?>]</option>
+                                                        <option value="<?php echo $node->id; ?>"><?php echo $node->title; ?> [<?php echo $node->id; ?>]</option>
                                                     <?php } ?>
-                                                </select>
-                                                <br/>
-                                                <?php } } ?>
-                                                </p><p></p></td></tr>
-                                    <tr><td align="right" width="30%"><p>then select the Boolean operator 'and' or 'or' - note that 'and' means all of these nodes must already have been visited and 'or' means that at least one of these nodes should have been visited</p></td><td><p><select name="operator"><option value="and">and</option><option value="or">or</option></select></p></td></tr>
-                                    <tr><td align="right" width="30%"><p>then add the message given to the user if they haven't met these conditions</p></td><td><p><textarea name="abs" cols="50" rows="4"><?php echo $templateData['node']->conditional_message; ?></textarea></p></td></tr>
-                                    <tr><td align="right" width="30%"><p>and then ...</p></td><td><p><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></p></td></tr>
-                                </table>
-                            </form></td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                                                </select></label></div>
+
+                                            <?php } } ?>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="operator" class="control-label"><?php echo __('then select the Boolean operator \'and\' or \'or\' - note that \'and\' means all of these nodes must already have been visited and \'or\' means that at least one of these nodes should have been visited'); ?></label>
+
+                                        <div class="controls">
+                                            <select id="operator" name="operator"><option value="and">and</option><option value="or">or</option></select>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="abs" class="control-label"><?php echo __('and finally add the message given to the user if they haven\'t met these conditions'); ?></label>
+
+                                        <div class="controls">
+                                            <textarea name="abs" id="abs"><?php echo $templateData['node']->conditional_message; ?></textarea>
+                                        </div>
+                                    </div>
+
+
+
+                                </fieldset>
+<input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+                            </form>
 <?php } ?>

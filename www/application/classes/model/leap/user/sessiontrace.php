@@ -113,13 +113,14 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     }
     
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
-        $this->session_id= $sessionId;
-        $this->user_id = $userId;
-        $this->map_id = $mapId;
-        $this->node_id = $nodeId;
-        $this->date_stamp = time();
+        $builder = DB_ORM::insert('user_sessionTrace')
+                ->column('session_id', $sessionId)
+                ->column('user_id', $userId)
+                ->column('map_id', $mapId)
+                ->column('node_id', $nodeId)
+                ->column('date_stamp', time());
         
-        $this->save();
+        return $builder->execute();
     }
     
     public function getTopTraceBySessionId($sessionId) {
@@ -183,12 +184,22 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return NULL;
     }
     
-    public function updateCounter($sessionId, $mapId, $nodeId, $newCounters) {
+    public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null) {
         $builder = DB_ORM::update('user_sessionTrace')
                 ->set('counters', $newCounters)
                 ->where('session_id', '=', $sessionId, 'AND')
-                ->where('map_id', '=', $mapId, 'AND')
-                ->where('node_id', '=', $nodeId);
+                ->where('map_id', '=', $mapId, 'AND');
+
+        if($traceId != null) {
+            $builder = $builder->where('id', '=', $traceId, 'AND');
+            $builder = $builder->where('node_id', '=', $nodeId);
+        } else  {
+            $builder = $builder->where('node_id', '=', $nodeId);
+        }
+
+        $builder->order_by('id', 'ASC');
+        $builder->limit(1);
+
         $builder->execute();
     }
     

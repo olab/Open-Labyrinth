@@ -19,15 +19,11 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('export Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" border="0" cellspacing="6" cellpadding="4" bgcolor="#ffffff">
-                    <tr align="left">
-                        <td nowrap="">
+
+                <h1><?php echo __('export Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
+
                             <p><strong>MedBiquitous Virtual Patient Export</strong></p>
-                            <form>
+                            <form class="form-horizontal">
                                 <p>To export to a MVP package first select a licence for this package:</p>
                                 <select name="licence">
                                     <option value="">select from the following ...</option>

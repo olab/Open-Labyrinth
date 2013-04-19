@@ -18,69 +18,98 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('edit node sections for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff">
-                        <td align="left">
-                            <table border="0" width="100%" cellpadding="1">
-                                <tr>
-                                    <td>
-                                        <?php if(isset($templateData['node_sections'])) { ?>
-                                        <table border="0" width="100%" cellpadding="1">
-                                            <?php foreach($templateData['node_sections'] as $nodeSection) { ?>
-                                            <tr>
-                                                <td bgcolor="#ddddee" colspan="3" align="left">
-                                                    <p>
-                                                        <a name=""><br><strong>Section: <?php echo $nodeSection->name; ?></strong> [</a>
-                                                        <a href="<?php echo URL::base().'nodeManager/editSection/'.$templateData['map']->id.'/'.$nodeSection->id; ?>">edit</a>]
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                                <?php if(count($nodeSection->nodes) > 0) { ?>
-                                            <tr>
-                                                <td>
-                                                    <p>
-                                                    <?php foreach($nodeSection->nodes as $node) { ?>
-                                                        "<?php echo $node->node->title; ?>" - ID:<?php echo $node->node->id; ?> - order:<?php echo $node->order; ?><br>
-                                                    <?php } ?>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                                <?php } ?>
-                                            <?php } ?>
-                                        </table>
-                                        <?php } ?>
-                                        <hr>
-                                        <p><?php echo __('add a node section'); ?>:</p>
-                                        <form action="<?php echo URL::base().'nodeManager/addNodeSection/'.$templateData['map']->id; ?>" method="post">
-                                            <input type="text" name="sectionname" size="20">
-                                            <input type="submit" value="add a node section">
-                                        </form>
+if (isset($templateData['map'])) {
+    ?>
+    <div class="page-header">
+        <h1><?php echo __('Edit node sections for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+    </div>
+    <?php if (isset($templateData['node_sections'])) { ?>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Section title</th>
+                <th>Nodes</th>
+                <th>Operations</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($templateData['node_sections'] as $nodeSection) { ?>
 
-                                        <hr>
+                <tr>
+                    <td>
+                        <?php echo $nodeSection->name; ?>
+                    </td>
+                    <td>
+                        <?php if (count($nodeSection->nodes) > 0) { ?>
 
-                                        <form action="<?php echo URL::base().'nodeManager/updateSection/'.$templateData['map']->id; ?>" method="post">
-                                            <?php if(isset($templateData['sections'])) { ?>
-                                            <p>  
-                                            <?php foreach($templateData['sections'] as $section) { ?>
-                                                <?php echo $section->name; ?> <input type="radio" name="sectionview" value="<?php echo $section->id; ?>" <?php if($templateData['map']->section->id == $section->id) echo 'checked=""'; ?>> |
-                                            <?php } ?>
-                                                <input type="submit" value="<?php echo __('update'); ?>">
-                                            <?php } ?>
-                                            </p>
-                                        </form>
-                                        <br>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+
+                            <?php foreach ($nodeSection->nodes as $node) { ?>
+                                "<?php echo $node->node->title; ?>" - ID:<?php echo $node->node->id; ?> - order:<?php echo $node->order; ?>
+
+                            <?php } ?><?php } ?>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-info"
+                               href="<?php echo URL::base() . 'nodeManager/editSection/' . $templateData['map']->id . '/' . $nodeSection->id; ?>">
+                                <i class="icon-edit"></i>
+                                Edit</a>
+                            <a class="btn btn-danger"
+                               href="<?php echo URL::base() . 'nodeManager/deleteNodeSection/' . $templateData['map']->id . '/' . $nodeSection->id; ?>">
+                                <i class="icon-trash"></i>
+                                <?php echo __('delete'); ?></a></div>
+                    </td>
+                </tr>
+
+            <?php } ?>
+            </tbody>
+        </table>
+    <?php } ?>
+
+
+    <form class="form-horizontal"
+          action="<?php echo URL::base() . 'nodeManager/addNodeSection/' . $templateData['map']->id; ?>" method="post">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Add a node section'); ?></legend>
+            <div class="control-group">
+                <label for="sectionname" class="control-label"><?php echo __('Title'); ?></label>
+
+                <div class="controls">
+                    <input type="text" id="sectionname" class="span6" name="sectionname">
+                </div>
+            </div>
+
+        </fieldset>
+
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" value="Add section"></div>
+    </form>
+
+
+
+    <form class="form-horizontal"
+          action="<?php echo URL::base() . 'nodeManager/updateSection/' . $templateData['map']->id; ?>" method="post">
+        <fieldset class="fieldset">
+            <legend>Section Headers Visibility</legend>
+            <?php if (isset($templateData['sections'])) { ?>
+
+                <div class="control-group">
+                    <label class="control-label"> <?php echo __('Visibility'); ?></label>
+
+                    <div class="controls">
+                        <?php foreach ($templateData['sections'] as $section) { ?>
+
+                            <label class="radio"><?php echo $section->name; ?>
+                                <input type="radio" name="sectionview"
+                                       value="<?php echo $section->id; ?>" <?php if ($templateData['map']->section->id == $section->id) echo 'checked=""'; ?>/>
+                            </label>
+                        <?php } ?>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <input class="btn btn-primary" type="submit" value="<?php echo __('Save options'); ?>"></div>
+            <?php } ?>
+        </fieldset>
+    </form>
+
 <?php } ?>

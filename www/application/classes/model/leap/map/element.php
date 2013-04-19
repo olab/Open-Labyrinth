@@ -167,7 +167,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
     public function getAllMediaFiles($mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -278,16 +278,22 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->id = $fileId;
         $this->load();
         $this->delete();
-        unlink(DOCROOT.'/'.$this->path);
+        $filePath = DOCROOT.'/'.$this->path;
+        if (file_exists($filePath)){
+            unlink($filePath);
+        }
     }
-    
+
     public function getFilesSize($filesArray) {
         $totalsize = 0;
         $total['size'] = 0;
         $total['count'] = 0;
         if (count($filesArray) > 0){
             foreach($filesArray as $file){
-                $totalsize += filesize(DOCROOT.$file->path);
+                $filePath = DOCROOT.$file->path;
+                if(file_exists($filePath)){
+                    $totalsize += filesize($filePath);
+                }
             }
 
             $total['size'] = $totalsize;
@@ -333,6 +339,73 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->height_type = Arr::get($values, 'hv', $this->height_type);
         
         $this->save();
+    }
+    
+    public function duplicateElements($fromMapId, $toMapId) {
+        $elements = $this->getAllFilesByMap($fromMapId);
+        
+        if($elements == null || $toMapId == null || $toMapId <= 0) return null;
+        
+        $elementMap = array();
+        foreach($elements as $element) {
+            $newFileName = $this->duplicateFile(DOCROOT.'/'.$element->path, $toMapId);
+            if($newFileName == null) continue;
+            
+            $newPath = 'files/' . $newFileName;
+            
+            $builder = DB_ORM::insert('map_element')
+                    ->column('map_id', $toMapId)
+                    ->column('mime', $element->mime)
+                    ->column('name', $newFileName)
+                    ->column('path', $newPath)
+                    ->column('args', $element->args)
+                    ->column('width', $element->width)
+                    ->column('height', $element->height)
+                    ->column('h_align', $element->h_align)
+                    ->column('v_align', $element->v_align)
+                    ->column('width_type', $element->width_type)
+                    ->column('height_type', $element->height_type);
+            
+            $elementMap[$element->id] = $builder->execute();
+        }
+        
+        return $elementMap;
+    }
+    
+    private function duplicateFile($srcPath, $addName) {
+        if(strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
+        
+        if(!file_exists($srcPath)) return null;
+        
+        $pathinfo = pathinfo($srcPath);
+        $newFileName = $pathinfo['filename'] . '_' . $addName;
+        
+        $dstPath = $pathinfo['dirname'] . '/' . $newFileName . '.' . $pathinfo['extension'];
+        
+        $result = null;
+        if(copy($srcPath, $dstPath))
+            $result = $newFileName . '.' . $pathinfo['extension'];
+        
+        return $result;
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $elements = array();
+            foreach($result as $record) {
+                $elements[] = $record;
+            }
+
+            return $elements;
+        }
+
+        return NULL;
     }
 }
 

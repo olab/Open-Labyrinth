@@ -109,6 +109,12 @@ class Controller_NodeManager extends Controller_Base {
             $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['node']->map_id);
 
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $this->templateData['map']->id));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Nodes'))->set_url(URL::base() . 'nodeManager/index/' .  $this->templateData['map']->id));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base() . 'nodeManager/editNode/' . $this->templateData['node']->id));
+
+
             $editNodeView = View::factory('labyrinth/node/editNode');
             $editNodeView->set('templateData', $this->templateData);
 
@@ -128,12 +134,24 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $nodeId) {
             $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
+            Model_Leap_Metadata_Record::updateMetadata("map_node",$nodeId,$_POST);
             if ($node) {
                 DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
                 Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $node->map_id);
             } else {
                 Request::initial()->redirect(URL::base());
             }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_deleteNode(){
+        $mapId = (int) $this->request->param('id', 0);
+        $nodeId = (int) $this->request->param('id2', 0);
+        if ($nodeId){
+            DB_ORM::model('map_node')->deleteNode($nodeId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
@@ -310,7 +328,10 @@ class Controller_NodeManager extends Controller_Base {
         if ($sectionId && $mapId) {
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['section'] = DB_ORM::model('map_node_section', array($sectionId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection();
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection($mapId);
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['section']->name)->set_url(URL::base() . 'nodeManager/editSection/' . $mapId. '/'. $sectionId));
 
             $editSectionsView = View::factory('labyrinth/node/editSection');
             $editSectionsView->set('templateData', $this->templateData);

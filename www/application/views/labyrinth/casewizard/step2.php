@@ -19,68 +19,57 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Step 2. Add global information'); ?></h4>
-            <div style="width:100%; min-height:400px; background:#FFFFFF; position: relative;">
-                <div class="wizard_body">
-                    <form id="step2_form" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/2/addNewLabyrinth' ?>">
-                    <table width="100%" cellspacing="0" cellpadding="4" border="0">
-                        <tbody><tr>
-                            <td width="33%" align="right"><p>Title: </p></td>
-                            <td width="50%"><p><input type="text" value="" size="40" id="mtitle" name="title"></p></td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Description: </p></td>
-                            <td align="left"><p><textarea id="mdesc" rows="5" cols="40" name="description"></textarea></p></td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Keywords: </p></td>
-                            <td align="left"><p>
-                                <input type="text" value="" size="40" id="keywords" name="keywords">
-                            </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Timing: </p></td>
-                            <td align="left"><p>
-                                timing off<input type="radio" checked="" value="0" name="timing"> : timing on<input type="radio" value="1" name="timing">
-                                <br><br>
-                                time delta (seconds)<input type="text" size="6" value="" id="delta_time" name="delta_time">
-                            </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Security: </p></td>
-                            <td align="left">
-                                <p>
-                                    <input type="radio" value="1" name="security">open access<br>
-                                    <input type="radio" value="2" name="security">closed (only logged in Labyrinth users can see it)<br>
-                                    <input type="radio" value="3" name="security">private (only registered authors and users can see it)<br>
-                                    <input type="radio" value="4" name="security">keys (a key is required to access this Labyrinth) - <a href="editKeys">edit</a>
-                                    </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right"><p>Section browsing: </p></td>
-                            <td align="left">
-                                <p>
-                                don't show<input type="radio" value="1" name="section"> |
-                                visible<input type="radio" value="2" name="section"> |
-                                navigable<input type="radio" value="3" name="section"> |
-                                </p>
-                            </td>
-                        </tr>
-                        </tbody></table>
-                    </form>
-                </div>
-                <div class="wizard_footer">
-                    <a id="step2_w_button" href="javascript:void(0)" style="float:right;" class="wizard_button">Step 3 - Add your story</a>
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
-                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/1'; ?>" style="float:left;" class="wizard_button">Return to step 1.</a>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+
+<h1><?php echo __('Step 2. What kind of VP do you what?'); ?></h1>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="wizard_body span9">
+
+            <div class="row-fluid">
+                <div class="span4">
+                    <a href="javascript:void(0);" id="6" class="wizard_button li <?php if (isset($templateData['map']) && $templateData['map']->type_id == 6) echo 'selected'; ?>"><h2>Linear</h2>
+                        <img src="<?php echo URL::base(); ?>images/labyrinth_preview/leniar.png" />
+                    </a>
+
+                </div><!--/span-->
+                <div class="span4">
+                    <a href="javascript:void(0);" id="7" class="wizard_button li <?php if (isset($templateData['map']) && $templateData['map']->type_id == 7) echo 'selected'; ?>"><h2>HEIDR</h2>
+                        <img  src="<?php echo URL::base(); ?>images/labyrinth_preview/heidr.png" />
+                    </a>
+
+                </div><!--/span-->
+                <div class="span4">
+                    <a href="javascript:void(0);" id="8" class="wizard_button li <?php if (isset($templateData['map']) && $templateData['map']->type_id == 8) echo 'selected'; ?>"><h2>Semi-linear</h2>
+                        <img  src="<?php echo URL::base(); ?>images/labyrinth_preview/semi-leniar.png" />
+                    </a>
+
+                </div><!--/span-->
+            </div><!--/row-->
+            <div class="row-fluid">
+                <div class="span4">
+                    <a href="javascript:void(0);" id="9" class="wizard_button li <?php if (isset($templateData['map']) && $templateData['map']->type_id == 9) echo 'selected'; ?>"><h2>Branched</h2>
+                        <img src="<?php echo URL::base(); ?>images/labyrinth_preview/branch.png" />
+                    </a>
+                </div><!--/span-->
+                <div class="span4">
+                    <a href="javascript:void(0);" id="10" class="wizard_button li <?php if (isset($templateData['map']) && $templateData['map']->type_id == 10) echo 'selected'; ?>"><h2>Make My Own</h2>
+                        <img src="<?php echo URL::base(); ?>images/labyrinth_preview/own.png" />
+                    </a>
+
+                </div><!--/span-->
+            </div><!--/row-->
+        </div><!--/span-->
+    </div><!--/row-->
+
+    <footer>
+        <div class="pull-right">
+            <form class="form-horizontal" id="step1_form" action="<?php echo URL::base() . 'labyrinthManager/caseWizard/2/labyrinthType/' . $templateData['map']->id ?>" method="post">
+                <input autocomplete="off" type="hidden" name="labyrinthType" id="labyrinthType" value="" />
+                <a href="javascript:void(0)"  id="step1_w_button" class="btn btn-primary wizard_button">Step 3(4) - Add Story</a>
+            </form>
+        </div>
+        <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/1/' . $templateData['map']->id; ?>" style="float:left;" class="btn btn-primary wizard_button">Return to step 1</a>
+    </footer>
+
+</div><!--/.fluid-container-->

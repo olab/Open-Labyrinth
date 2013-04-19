@@ -127,4 +127,3 @@ class Controller_CollectionManager extends Controller_Base {
 
 }
 
-?>

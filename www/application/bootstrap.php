@@ -77,6 +77,7 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
 Kohana::init(array(
+
     'base_url' => '/',
 ));
 
@@ -94,6 +95,7 @@ Kohana::$config->attach(new Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
+
     'auth' => MODPATH . 'auth', // Basic authentication
     // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
     // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
@@ -104,12 +106,60 @@ Kohana::modules(array(
     // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
     'leap' => MODPATH . 'leap', // Include Leap ORM
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
+    'restful' => MODPATH . 'restful', // RESTful interface
 ));
+
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+
+
+Route::set('sparql', '<directory>(/<controller>(/<action>(/<id>)))',
+    array(
+        'directory' => '(sparql)'
+    ))
+    ->defaults(array(
+    'controller' => 'endpoint',
+    'action' => 'index',
+));
+
+Route::set('metadata', '<directory>(/<controller>(/<action>(/<id>)))',
+    array(
+        'directory' => '(metadata/api|metadata)'
+    ))
+    ->defaults(array(
+    'controller' => 'manager',
+    'action' => 'index',
+));
+
+Route::set('rdf', '<controller>/<type>/<id>',
+        array(
+            'controller'=>'resource|data'
+        )
+    )
+   ;
+
+Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/mappings'
+    ))
+    ->defaults(array(
+        'controller' => 'manager',
+        'action' => 'index',
+    ));
+
+Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary'
+    ))
+    ->defaults(array(
+    'controller' => 'manager',
+    'action' => 'index',
+));
+
+
 Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<id5>)(/<id6>)))')
         ->defaults(array(
             'controller' => 'home',

@@ -153,7 +153,8 @@ class Kohana_Database_MySQL extends Database {
 		}
 		else
 		{
-			// PHP is compiled against MySQL 5.x
+
+            // PHP is compiled against MySQL 5.x
 			$status = mysql_set_charset($charset, $this->_connection);
 		}
 

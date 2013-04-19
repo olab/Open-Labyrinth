@@ -18,41 +18,64 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
-        <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('counter grid'); ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff">
+if (isset($templateData['map']) and isset($templateData['nodes'])) {
+?>
+
+<h3><?php echo __('counter grid'); ?></h3>
+
+
+<?php if (isset($templateData['oneCounter'])) { ?>
+<form class="form-horizontal"
+      action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateGrid/' . $templateData['map']->id . '/' . $templateData['counters'][0]->id; ?>"
+      method="POST">
+    <?php } else { ?>
+    <form class="form-horizontal"
+          action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateGrid/' . $templateData['map']->id; ?>"
+          method="POST">
+        <?php } ?>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (count($templateData['nodes']) > 0) { ?>
+                <?php foreach ($templateData['nodes'] as $node) { ?>
+                    <tr>
+                        <td><?php echo $node->title; ?></p></td>
                         <td>
-                            <?php if(isset($templateData['oneCounter'])) { ?>
-                                <form action="<?php echo URL::base().'labyrinthManager/caseWizard/4/updateGrid/'.$templateData['map']->id.'/'.$templateData['counters'][0]->id; ?>" method="POST">
-                            <?php } else { ?>
-                                <form action="<?php echo URL::base().'labyrinthManager/caseWizard/4/updateGrid/'.$templateData['map']->id; ?>" method="POST">
+                            <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+                                <?php foreach ($templateData['counters'] as $counter) { ?>
+                                    <fieldset>
+                                        <div class="control-group">
+                                            <label for="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"
+                                                   class="control-label"><?php echo $counter->name; ?>
+                                            </label>
+
+                                            <div class="controls">
+                                                <input type="text"
+                                                     id="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"  name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"
+                                                       value="<?php $c = $node->getCounter($counter->id); if ($c != NULL) echo $c->function; ?>"/>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+
+
+                                <?php } ?>
                             <?php } ?>
-                                <table border="0" width="50%" cellpadding="1">
-                                    <?php if (count($templateData['nodes']) > 0) { ?>
-                                        <?php foreach ($templateData['nodes'] as $node) { ?>
-                                            <tr>
-                                                <td><p><?php echo $node->title; ?> [<?php echo $node->id; ?>]</p></td>
-                                                <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                                    <?php foreach($templateData['counters'] as $counter) { ?>
-                                                        <td>
-                                                            <p><?php echo $counter->name; ?> <input type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" 
-                                                                                                    value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"></p>
-                                                        </td>
-                                                    <?php } ?>
-                                                <?php } ?>
-                                            </tr>
-                                        <?php } ?>
-                                    <?php } ?>
-                                    <tr><td colspan="1"><input type="submit" name="Submit" value="<?php echo __('submit'); ?>"></td></tr>
-                                </table>
-                            </form>
-                        </td></tr>
-                </table> 
-            </td>
-        </tr>
-    </table>
-<?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            <?php } ?>
+            </tbody>
+        </table>
+
+
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+
+    </form>
+
+    <?php } ?>

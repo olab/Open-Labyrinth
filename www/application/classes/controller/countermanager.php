@@ -59,6 +59,10 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap($mapId);
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters'))->set_url(URL::base() . 'counterManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Counter'))->set_url(URL::base() . 'counterManager/addCounter/' . $mapId));
+
             $addCounterView = View::factory('labyrinth/counter/add');
             $addCounterView->set('templateData', $this->templateData);
 
@@ -94,6 +98,10 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['rules'] = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counterId);
             $this->templateData['relations'] = DB_ORM::model('map_counter_relation')->getAllRealtions();
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters'))->set_url(URL::base() . 'counterManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['counter']->name)->set_url(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId));
 
             $editCounterView = View::factory('labyrinth/counter/edit');
             $editCounterView->set('templateData', $this->templateData);
@@ -220,6 +228,188 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 
-}
-?>
+    public function action_rules(){
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['rules'] = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($mapId);
 
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+
+            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $nodes = array();
+            $ids = array();
+            if (count($nodesArray) > 0){
+                foreach($nodesArray as $node){
+                    $word = html_entity_decode($node->title, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $nodes[] = $word;
+                    $ids[] = '[[NODE:'.$node->id.']]';
+                }
+            }
+            $this->templateData['nodes']['text'] = json_encode($nodes);
+            $this->templateData['nodes']['id'] = json_encode($ids);
+
+            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $counters = array();
+            $ids = array();
+            if (count($countersArray) > 0){
+                foreach($countersArray as $counter){
+                    $word = html_entity_decode($counter->name, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $counters[] = $word;
+                    $ids[] = '[[CR:'.$counter->id.']]';
+                }
+            }
+            $this->templateData['counters']['text'] = json_encode($counters);
+            $this->templateData['counters']['id'] = json_encode($ids);
+
+            $rulesView = View::factory('labyrinth/counter/rules');
+            $rulesView->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $rulesView;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_addCommonRule(){
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $nodes = array();
+            $ids = array();
+            if (count($nodesArray) > 0){
+                foreach($nodesArray as $node){
+                    $word = html_entity_decode($node->title, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $nodes[] = $word;
+                    $ids[] = '[[NODE:'.$node->id.']]';
+                }
+            }
+            $this->templateData['nodes']['text'] = json_encode($nodes);
+            $this->templateData['nodes']['id'] = json_encode($ids);
+
+            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $counters = array();
+            $ids = array();
+            if (count($countersArray) > 0){
+                foreach($countersArray as $counter){
+                    $word = html_entity_decode($counter->name, ENT_QUOTES);
+                    $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                    $counters[] = $word;
+                    $ids[] = '[[CR:'.$counter->id.']]';
+                }
+            }
+            $this->templateData['counters']['text'] = json_encode($counters);
+            $this->templateData['counters']['id'] = json_encode($ids);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Rule'))->set_url(URL::base() . 'counterManager/addCommonRule/' . $mapId));
+
+            $view = View::factory('labyrinth/counter/actionCommonRule');
+            $view->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $view;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_createCommonRule(){
+        $mapId = $this->request->param('id', NULL);
+        if ($_POST & $mapId != NULL) {
+            DB_ORM::model('map_counter_commonrules')->addRule($mapId, $_POST['commonRule']);
+            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_editCommonRule(){
+        $mapId = $this->request->param('id', NULL);
+        $ruleId = $this->request->param('id2', NULL);
+        if ($mapId != NULL & $ruleId != NULL) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['commonRule'] = DB_ORM::model('map_counter_commonrules', array((int) $ruleId));
+            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $nodes = array();
+            $ids = array();
+            foreach($nodesArray as $node){
+                $word = html_entity_decode($node->title, ENT_QUOTES);
+                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                $nodes[] = $word;
+                $ids[] = '[[NODE:'.$node->id.']]';
+
+            }
+            $this->templateData['nodes']['text'] = json_encode($nodes);
+            $this->templateData['nodes']['id'] = json_encode($ids);
+
+            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $counters = array();
+            $ids = array();
+            foreach($countersArray as $counter){
+                $word = html_entity_decode($counter->name, ENT_QUOTES);
+                $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                $counters[] = $word;
+                $ids[] = '[[CR:'.$counter->id.']]';
+            }
+            $this->templateData['counters']['text'] = json_encode($counters);
+            $this->templateData['counters']['id'] = json_encode($ids);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Rule'))->set_url(URL::base() . 'counterManager/editCommonRule/' . $mapId));
+
+            $view = View::factory('labyrinth/counter/actionCommonRule');
+            $view->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $view;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_saveCommonRule(){
+        $mapId = $this->request->param('id', NULL);
+        $ruleId = $this->request->param('id2', NULL);
+        if ($_POST & $mapId != NULL & $ruleId != NULL) {
+            DB_ORM::model('map_counter_commonrules')->editRule($ruleId, $_POST['commonRule']);
+            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_deleteCommonRule(){
+        $mapId = $this->request->param('id', NULL);
+        $ruleId = $this->request->param('id2', NULL);
+        if ($mapId != NULL & $ruleId != NULL) {
+            DB_ORM::model('map_counter_commonrules', array((int) $ruleId))->delete();
+            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+}

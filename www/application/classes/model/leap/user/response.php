@@ -100,9 +100,14 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $result = $builder->query();
         
         if($result->is_loaded()) {
-            return DB_ORM::model('user_response', array((int)$result[0]['id']));
+            $responces = array();
+            foreach($result as $record){
+                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
+            }
+
+            return $responces;
         }
-        
+
         return NULL;
     }
 }

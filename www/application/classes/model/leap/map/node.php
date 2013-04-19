@@ -186,6 +186,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'parent_key' => array('id'),
             )),
         );
+        self::initialize_metadata($this);
+    }
+
+    private static function initialize_metadata($object)
+    {
+        $metadata = Model_Leap_Metadata::getMetadataRelations("map_node", $object);
+        $object->relations = array_merge($object->relations, $metadata);
     }
 
     public static function data_source() {
@@ -235,25 +242,19 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     public function createNode($values) {
         $mapId = Arr::get($values, 'map_id', NULL);
         if($mapId != NULL) {
-            $this->map_id = $mapId;
-            $this->title = Arr::get($values, 'mnodetitle', '');
-            $this->text = Arr::get($values, 'mnodetext', '');
-            $this->info = Arr::get($values, 'mnodeinfo', '');
-            $this->probability = Arr::get($values, 'mnodeprobability', FALSE);
-            $this->link_style_id = Arr::get($values, 'linkstyle', 1);
-            $this->link_type_id = 2;
-            $this->priority_id = Arr::get($values, 'priority', 1);
-            $this->undo = Arr::get($values, 'mnodeUndo', FALSE);
-            $this->end = Arr::get($values, 'ender', FALSE);
-            if (Arr::get($values, 'type_id', FALSE)){
-                $this->type_id = Arr::get($values, 'type_id', FALSE);
-            }else{
-                $this->type_id = 2; // Child type id
-            }
-
-            $this->save();
-            
-            return $this;
+            return DB_ORM::model('map_node', array(DB_ORM::insert('map_node')
+                    ->column('map_id', $mapId)
+                    ->column('title', Arr::get($values, 'mnodetitle', ''))
+                    ->column('text', Arr::get($values, 'mnodetext', ''))
+                    ->column('info', Arr::get($values, 'mnodeinfo', ''))
+                    ->column('probability', Arr::get($values, 'mnodeprobability', FALSE))
+                    ->column('link_style_id', Arr::get($values, 'linkstyle', 1))
+                    ->column('link_type_id', 2)
+                    ->column('priority_id', Arr::get($values, 'priority', 1))
+                    ->column('undo', Arr::get($values, 'mnodeUndo', FALSE))
+                    ->column('end', Arr::get($values, 'ender', FALSE))
+                    ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                    ->execute()));
         }
         
         return NULL;
@@ -282,6 +283,48 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
 
         return NULL;
+    }
+
+    public function createNodeFromJSON($mapId, $values) {
+        if($mapId == null) return null;
+
+        $builder = DB_ORM::insert('map_node')
+                ->column('map_id', $mapId)
+                ->column('title', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', '')))))
+                ->column('text', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', '')))))
+                ->column('info', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', '')))))
+                ->column('probability', (Arr::get($values, 'isExit', 'false') == 'true'))
+                ->column('type_id', (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2)
+                ->column('link_style_id', Arr::get($values, 'linkStyle', 1))
+                ->column('priority_id', Arr::get($values, 'nodePriority', 1))
+                ->column('undo', (Arr::get($values, 'undo', 'false') == 'true'))
+                ->column('end', (Arr::get($values, 'isEnd', 'false') == 'true'))
+                ->column('x', Arr::get($values, 'x', 0))
+                ->column('y', Arr::get($values, 'y', 0))
+                ->column('rgb', Arr::get($values, 'color', '#FFFFFF'));
+
+        return $builder->execute();
+    }
+
+    public function updateNodeFromJSON($nodeId, $values) {
+        $this->id = $nodeId;
+        $this->load();
+        if($this) {
+            $this->title = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
+            $this->text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
+            $this->info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $this->probability = Arr::get($values, 'isExit', 'false') == 'true';
+            $this->type_id = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
+            $this->link_style_id = Arr::get($values, 'linkStyle', 1);
+            $this->priority_id = Arr::get($values, 'nodePriority', 1);
+            $this->undo = Arr::get($values, 'undo', 'false') == 'true';
+            $this->end = Arr::get($values, 'isEnd', 'false') == 'true';
+            $this->x = Arr::get($values, 'x', 0);
+            $this->y = Arr::get($values, 'y', 0);
+            $this->rgb = Arr::get($values, 'color', '#FFFFFF');
+
+            $this->save();
+        }
     }
 
     public function getLastAddedNode($mapId){
@@ -395,12 +438,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    public function getAllNodesNotInSection() {
+    public function getAllNodesNotInSection($mapId = null) {
         $tableName = DB_ORM::model('map_node_section_node');
         $builder = DB_SQL::select('default')
                 ->from($tableName::table())
                 ->column('node_id');
-        
+
         $allNodeInSectionresult = $builder->query();
         
         $ids = array();
@@ -415,7 +458,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         } else {
             $builder = DB_SQL::select('default')->from($this->table());
         }
-        
+        if(isset($mapId))$builder->where("map_id","=",$mapId);
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -534,6 +577,118 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $this->end = FALSE;
         
         $this->save();
+    }
+    
+    public function duplicateNodes($fromMapId, $toMapId) {
+        $nodes = $this->getNodesByMap($fromMapId);
+        
+        if($nodes == null) return array();
+        
+        $nodeMap = array();
+        foreach($nodes as $node) {
+            $values = array('title' => $node->title,
+                            'text' => $node->title,
+                            'info' => $node->info,
+                            'probability' => $node->probability,
+                            'link_style_id' => $node->link_style_id,
+                            'link_type_id' => $node->link_type_id,
+                            'priority_id' => $node->priority_id,
+                            'undo' => $node->undo,
+                            'end' => $node->end,
+                            'type_id' => $node->type_id,
+                            'x' => $node->x,
+                            'y' => $node->y,
+                            'rgb' => $node->rgb);
+            
+            $newNode = $this->createFullNode($toMapId, $values);
+            
+            $nodeMap[$node->id] = $newNode->id;
+        }
+        
+        return $nodeMap;
+    }
+    
+    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+        foreach($nodeMap as $k => $v) {
+            $this->id = $v;
+            $this->load();
+            
+            $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            
+            $this->save();
+        }
+    }
+    
+    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+        $result = $text;
+
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
+
+        foreach ($codes as $code) {
+            $regExp = '/[\[' . $code . ':\d\]]+/';
+            if (preg_match_all($regExp, $text, $matches)) {
+                foreach ($matches as $match) {
+                    foreach ($match as $value) {
+                        if (stristr($value, '[[' . $code . ':')) {
+                            $m = explode(':', $value);
+                            $id = substr($m[1], 0, strlen($m[1]) - 2);
+                            if (is_numeric($id)) {
+                                $replaceString = '';
+                                switch ($code) {
+                                    case 'MR':
+                                        if(isset($elemMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $elemMap[(int)$id] . ']]';
+                                        break;
+                                    case 'AV':
+                                        if(isset($avatarMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $avatarMap[(int)$id] . ']]';
+                                        break;
+                                    case 'CHAT':
+                                        if(isset($chatMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $chatMap[(int)$id] . ']]';
+                                        break;
+                                    case 'QU':
+                                        if(isset($questionMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $questionMap[(int)$id] . ']]';
+                                        break;
+                                    case 'VPD':
+                                        if(isset($vpdMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $vpdMap[(int)$id] . ']]';
+                                        break;
+                                    case 'DAM':
+                                        if(isset($damMap[(int)$id]))
+                                            $replaceString = '[[' . $code . ':' . $damMap[(int)$id] . ']]';
+                                        break;
+                                    case 'INFO':
+                                        break;
+                                }
+
+                                $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $nodes = array();
+            foreach($result as $record) {
+                $nodes[] = $record;
+            }
+
+            return $nodes;
+        }
+
+        return NULL;
     }
 }
 

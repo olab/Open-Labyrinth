@@ -30,12 +30,15 @@ class Controller_Home extends Controller_Base {
     public function action_login() {
         if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
-            if ($status) {
-                Request::initial()->redirect(URL::base());
+            $redirectURL = URL::base();
+            if (!$status) {
+                Session::instance()->set('redirectURL', (Arr::get($_POST, 'redirectURL', '')));
+                Notice::add('You have entered the wrong username/password combination. Please try again.');
             } else {
-                $this->templateData['error'] = 'Invalid username or password';
-                $this->template->set('templateData', $this->templateData);
+                $redirectURL = URL::base() . Arr::get($_POST, 'redirectURL', '');
             }
+            
+            Request::initial()->redirect($redirectURL);
         }
     }
 
@@ -143,16 +146,24 @@ class Controller_Home extends Controller_Base {
                         //send mail end
                         Session::instance()->set('passMessage', __('A unique link to recover your password has been sent to your registered email address. This link will only be active for 30 minutes.'));
                         Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                    } else {
+                        Request::initial()->redirect(URL::base());
                     }
                 } else {
                     $attempt = Session::instance()->get('passAttempt') + 1;
                     Session::instance()->set('passAttempt', $attempt);
+                    $isError = false;
                     if ($attempt >= 3) {
                         Session::instance()->set('passAttemptTimeStamp', time());
+                        $isError = true;
                     }
                     Session::instance()->set('passError', __('The email addresses you entered do not match.'));
 
-                    Request::initial()->redirect(URL::base() . 'home/resetPassword');
+                    if($isError) {
+                        Request::initial()->redirect(URL::base() . 'home/resetPassword');
+                    } else {
+                        Request::initial()->redirect(URL::base());
+                    }
                 }
             }
         } else {
@@ -171,7 +182,7 @@ class Controller_Home extends Controller_Base {
                     Session::instance()->delete('passAttempt');
                     Session::instance()->delete('passAttemptTimeStamp');
                     Session::instance()->delete('passError');
-                    Request::initial()->redirect(URL::base() . 'home/resetPassword');
+                    Request::initial()->redirect(URL::base());
                 }
             } else {
                 $this->templateData['passError'] = Session::instance()->get('passError');

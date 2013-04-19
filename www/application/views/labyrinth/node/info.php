@@ -25,18 +25,12 @@
         <link rel="stylesheet" type="text/css" href="<?php echo URL::base() ?>css/basic.css" />
     </head>
     <body>
-        <center>
-            <table bgcolor='#ffffff' cellpadding='6' width='80%'>
-                <tr>
-                    <td valign="top">
+
                         <img src='<?php echo URL::base(); ?>images/info_blak.gif' border='0' alt='info'>
                             <p>
                                 <?php if(isset($info)) echo $info; ?>
                             </p>
                             <p><a href="javascript:window.close();"><?php echo __('close window'); ?></a></p>
-                    </td>
-                </tr>
-            </table>
-        </center>
+
     </body>
 </html>

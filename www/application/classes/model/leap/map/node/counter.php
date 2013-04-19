@@ -83,8 +83,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
-    
+
     public function getAllNodeCounters() {
         $builder = DB_SQL::select('default')->from($this->table());
         $result = $builder->query();
@@ -131,6 +130,22 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         return NULL;
     }
     
+    public function getNodeCounters($nodeId) {
+        $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('node_id', '=', $nodeId);
+        $records = $builder->query();
+
+        $result = array();
+        if($records->is_loaded()) {
+            foreach($records as $r) {
+                $result[] = DB_ORM::model('map_node_counter', array((int)$r['id']));
+            }
+        }
+
+        return $result;
+    }
+
     public function addNodeCounter($nodeId, $counterId, $function, $display = 1) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -197,7 +212,44 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             }
         }
     }
-    
+
+    public function updateVisibleForCounters($mapId, $counterId, $visible){
+        $existingCounterNode = array();
+        $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('counter_id', '=', $counterId);
+
+        $result = $builder->query();
+
+        if ($result->is_loaded()){
+            if (count($result) > 0){
+                foreach($result as $r){
+                    $this->id = $r['id'];
+                    $this->load();
+
+                    if($this) {
+                        $existingCounterNode[$this->node_id] = 1;
+                        $this->display = $visible;
+                        $this->save();
+                    }
+                }
+            }
+        }
+
+        if (count($nodes) > 0){
+            foreach($nodes as $node){
+                if (Arr::get($existingCounterNode, $node->id, 0) != 1){
+                    $newMapCounter = DB_ORM::model('map_node_counter');
+                    $newMapCounter->counter_id = $counterId;
+                    $newMapCounter->node_id = $node->id;
+                    $newMapCounter->display = $visible;
+                    $newMapCounter->save();
+                }
+            }
+        }
+    }
+
     public function updateNodeCounterByNode($nodeId, $map_id, $values) {
         $counters = DB_ORM::model('map_counter')->getCountersByMap($map_id);
         if(count($counters) > 0) {
@@ -215,40 +267,65 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
     }
     
     public function updateNodeCounters($values, $counterId = NULL, $mapId = NULL) {
+        $changeToCustom = array();
         $counters = DB_ORM::model('map_node_counter')->getNodeCountersByMap($mapId);
         if(count($counters) > 0) {
             foreach($counters as $counter) {
+                $inputName = '';
                 if($counterId != NULL) {
                     if($counterId == $counter->counter_id) {
                         $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
                         $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
                         $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
-                        if (Arr::get($values, $chName) == NULL){
+                        if (Arr::get($values, $chName, NULL) == NULL){
                             $counter->display = 0;
                         }else{
                             $counter->display = 1;
                         }
+                        $changeToCustom[$counter->counter_id][$counter->display] = true;
                         $counter->save();
                     }
                 } else {
                     $inputName = 'nc_'.$counter->node_id.'_'.$counter->counter_id;
                     $chName = 'ch_'.$counter->node_id.'_'.$counter->counter_id;
                     $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
-                    if (Arr::get($values, $chName) == NULL){
+                    if (Arr::get($values, $chName, NULL) == NULL){
                         $counter->display = 0;
                     }else{
                         $counter->display = 1;
                     }
+                    $changeToCustom[$counter->counter_id][$counter->display] = true;
                     $counter->save();
                 }
-                unset($values[$inputName]);
+                if ($inputName){
+                    unset($values[$inputName]);
+                }
             }
 
             foreach($values as $key => $value){
-                if ((strpos($key, 'nc_') !== false) & ($value != NULL)){
+                if ((strpos($key, 'nc_') !== false)){
                     $array = explode('_', $key);
-                    $display = $values['ch_'.$array[1].'_'.$array[2]];
+                    $display = Arr::get($values, 'ch_'.$array[1].'_'.$array[2], 0);
+                    $changeToCustom[$array[2]][$display] = true;
                     $this->addNodeCounter($array[1], $array[2], $value, $display);
+                }
+            }
+
+            if (count($changeToCustom) > 0){
+                foreach($changeToCustom as $counterId => $array){
+                    if (count($array) == 2){
+                        $array['cVisible'] = 2;
+                        DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
+                    } else {
+                        if (isset($array[0])){
+                            $array['cVisible'] = 0;
+                            DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
+                        } else {
+                            $array['cVisible'] = 1;
+                            DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
+                        }
+                    }
+
                 }
             }
         } else {
@@ -272,6 +349,22 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
                 $this->updateNodeCounters($values, $counterId, $mapId);
             }
         }
+    }
+
+    public function exportMVP($map_id) {
+        $builder = DB_SQL::select('default', array('map_node_counters.id', 'map_node_counters.node_id', 'map_node_counters.counter_id', 'map_node_counters.function', 'map_node_counters.display'))->from('map_counters')->join('RIGHT', 'map_node_counters')->on('map_node_counters.counter_id', '=', 'map_counters.id')->where('map_id', '=', $map_id);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $counters = array();
+            foreach($result as $record) {
+                $counters[] = $record;
+            }
+
+            return $counters;
+        }
+
+        return NULL;
     }
 }
 

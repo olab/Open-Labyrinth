@@ -655,12 +655,12 @@
 		},
 
 		/**
-		 * Converts the most common bullet and number formats in Office into a real semantic UL/LI list.
+		 * Converts the most common bullet and number formats in Office into a real vocabulary UL/LI list.
 		 */
 		_convertLists : function(pl, o) {
 			var dom = pl.editor.dom, listElm, li, lastMargin = -1, margin, levels = [], lastType, html;
 
-			// Convert middot lists into real semantic lists
+			// Convert middot lists into real vocabulary lists
 			each(dom.select('p', o.node), function(p) {
 				var sib, val = '', type, html, idx, parents;
 

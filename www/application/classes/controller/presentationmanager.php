@@ -67,7 +67,7 @@ class Controller_PresentationManager extends Controller_Base {
             } else {
                 $this->templateData['maps'] = DB_ORM::model('map')->getAllMap();
             }
-
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['presentation']->title)->set_url(URL::base() . 'presentationmanager/editPresentation'.$presentationId));
             $userIDs = array();
             $userIDs[] = $this->templateData['presentation']->author->id;
             foreach ($this->templateData['presentation']->users as $user) {
@@ -226,4 +226,3 @@ class Controller_PresentationManager extends Controller_Base {
 
 }
 
-?>

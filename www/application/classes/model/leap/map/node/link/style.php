@@ -78,5 +78,3 @@ class Model_Leap_Map_Node_Link_Style extends DB_ORM_Model {
     }
 }
 
-?>
-

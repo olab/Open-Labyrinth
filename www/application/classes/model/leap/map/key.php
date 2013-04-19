@@ -112,6 +112,36 @@ class Model_Leap_Map_Key extends DB_ORM_Model {
         }
         return false;
     }
+    
+    public function duplicateKeys($fromMapId, $toMapId) {
+        $keys = $this->getKeysByMap($fromMapId);
+        
+        if($keys == null || $toMapId == null || $toMapId <= 0) return;
+        
+        foreach($keys as $key) {
+            $builder = DB_ORM::insert('map_key')
+                    ->column('map_id', $toMapId)
+                    ->column('key', $key->key);
+            
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $keys = array();
+            foreach($result as $record) {
+                $keys[] = $record;
+            }
+
+            return $keys;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

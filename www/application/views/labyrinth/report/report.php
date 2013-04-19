@@ -29,145 +29,184 @@ function getRandomColor(){
 } 
 ?>
 <?php if (isset($templateData['session'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
+
+                <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+
+    <table class="table  table-striped table-bordered">
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h4>
-                <table width="100%" cellpadding="6">
-                    <tr bgcolor="#ffffff" align="left"><td align="left">
-                            <p><?php echo __('user'); ?>:&nbsp;<?php echo $templateData['session']->user->nickname; ?><br>
-                                session:&nbsp;<?php echo $templateData['session']->id; ?><br>
-                                Labyrinth:&nbsp;<?php echo $templateData['session']->map->name; ?> (<?php echo $templateData['session']->map->id; ?>)<br>
-                                start time:&nbsp;<?php echo date('Y.m.d H:i:s', $templateData['session']->start_time); ?><br>
-                                time taken:&nbsp;
-                                <?php
-                                if (count($templateData['session']->traces) > 0) {
-                                    $max = $templateData['session']->start_time;
-                                    foreach($templateData['session']->traces as $val) {
-                                        if($val->date_stamp > $max) {
-                                            $max = $val->date_stamp;
-                                        }
-                                    }
-                                    $t = $max - $templateData['session']->start_time;
-                                    echo date('i:s', $t);
-                                }
-                                ?>
-                                <br>
-                                <?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
-                                <?php if(count($templateData['session']->traces) > 0) {
-                                    $nodesIDs = array();
-                                    foreach($templateData['session']->traces as $val) {
-                                        $nodesIDs[] = $val->node_id;
-                                    }
-                                    
-                                    if(isset($templateData['nodes'])) {
-                                        echo count($templateData['nodes']) - count($nodesIDs);
-                                    }
-                                }
-                                ?>&nbsp;<?php echo __('avoid nodes visited'); ?></p>
+            <td><?php echo __('user'); ?></td>
+            <td><?php echo $templateData['session']->user->nickname; ?></td>
+        </tr>
+        <tr>
+            <td>session</td>
+            <td><?php echo $templateData['session']->id; ?></td>
+        </tr>
+        <tr>
+            <td>Labyrinth</td>
+            <td><?php echo $templateData['session']->map->name; ?> (<?php echo $templateData['session']->map->id; ?>)</td>
+        </tr>
+        <tr>
+            <td>start time</td>
+            <td><?php echo date('Y.m.d H:i:s', $templateData['session']->start_time); ?></td>
+        </tr>
+        <tr>
+            <td>time taken</td>
+            <td><?php
+                if (count($templateData['session']->traces) > 0) {
+                    $max = $templateData['session']->start_time;
+                    foreach($templateData['session']->traces as $val) {
+                        if($val->date_stamp > $max) {
+                            $max = $val->date_stamp;
+                        }
+                    }
+                    $t = $max - $templateData['session']->start_time;
+                    echo date('i:s', $t);
+                }
+                ?></td>
+        </tr>
+        <tr>
+            <td>nodes visited</td>
+            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
+                <?php if(count($templateData['session']->traces) > 0) {
+                    $nodesIDs = array();
+                    foreach($templateData['session']->traces as $val) {
+                        $nodesIDs[] = $val->node_id;
+                    }
 
-                            <hr>
-                            <p><?php echo __('general feedback'); ?>: <?php if(isset($templateData['feedbacks']['general'])) echo $templateData['feedbacks']['general']; ?></p>
-                            <?php if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
-                            <p><?php echo __('feedback for time taken'); ?>:<br/>
-                                <?php foreach($templateData['feedbacks']['timeTaken'] as $msg) { echo $msg.'<br/>'; } ?>
-                            </p>
-                            <?php } ?>
-                            
-                            <?php if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
-                            <p><?php echo __('feedback for nodes visit'); ?>:<br/>
-                                <?php foreach($templateData['feedbacks']['nodeVisit'] as $msg) { echo $msg.'<br/>'; } ?>
-                            </p>
-                            <?php } ?>
-                            
-                            <?php if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
-                            <p><?php echo __('feedback for must visit'); ?>:<br/>
-                                <?php foreach($templateData['feedbacks']['mustVisit'] as $msg) { echo $msg.'<br/>'; } ?>
-                            </p>
-                            <?php } ?>
-                            
-                            <?php if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
-                            <p><?php echo __('feedback for must avoid'); ?>:<br/>
-                                <?php foreach($templateData['feedbacks']['mustAvoid'] as $msg) { echo $msg.'<br/>'; } ?>
-                            </p>
-                            <?php } ?>
-                            
-                            <?php if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
-                            <p><?php echo __('feedback for counters'); ?>:<br/>
-                                <?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?>
-                            </p>
-                            <?php } ?>
-                            <hr>
+                    if(isset($templateData['nodes'])) {
+                        echo count($templateData['nodes']) - count($nodesIDs);
+                    }
+                }
+                ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
+        </tr>
+    </table>
 
-                            <hr>
-                            <p><strong><?php echo __('Questions'); ?></strong></p>
-                            <table border="1" cellpadding="4" width="100%">
+
+    <?php if(isset($templateData['feedbacks']['general'])){?>
+    <table class="table table-striped table-bordered">
+
+        <tr>
+            <td><?php echo __('general feedback'); ?></td>
+            <td><?php echo $templateData['feedbacks']['general']; ?></td>
+        </tr>
+    <?php }?>
+
+    <?php if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
+        <tr>
+            <td><?php echo __('feedback for time taken'); ?></td>
+            <td><?php foreach($templateData['feedbacks']['timeTaken'] as $msg) { echo $msg.'<br/>'; } ?></td>
+        </tr>
+
+        <?php } ?>
+
+
+    <?php if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
+        <tr>
+            <td><?php echo __('feedback for nodes visit'); ?></td>
+            <td> <?php foreach($templateData['feedbacks']['nodeVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
+        </tr>
+        <?php } ?>
+    <?php if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
+        <tr>
+            <td><?php echo __('feedback for must visit'); ?></td>
+            <td><?php foreach($templateData['feedbacks']['mustVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
+        </tr>
+        <?php } ?>
+    <?php if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
+        <tr>
+            <td><?php echo __('feedback for must avoid'); ?></td>
+            <td><?php foreach($templateData['feedbacks']['mustAvoid'] as $msg) { echo $msg.'<br/>'; } ?></td>
+        </tr>
+        <?php } ?>
+    <?php if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
+        <tr>
+        <td><?php echo __('feedback for counters'); ?></td>
+        <td><?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?></td>
+    </tr>
+
+    </table>
+<?php } ?>
+
+
+             
+                            <h3><?php echo __('Questions'); ?></h3>
+                            <table class="table table-striped table-bordered">
+                                <thead>
                                 <tr>
-                                    <td><p>ID</p></td>
-                                    <td><p>type</p></td>
-                                    <td><p>stem</p></td>
-                                    <td><p>response</p></td>
-                                    <td><p>correct</p></td>
-                                    <td><p><?php echo __('feedback'); ?></p></td>
+                                    <td>ID</td>
+                                    <td>type</td>
+                                    <td>stem</td>
+                                    <td>response</td>
+                                    <td>correct</td>
+                                    <td><?php echo __('feedback'); ?></td>
                                 </tr>
+                                </thead>
+                                <tbody>
                                 <?php if($templateData['questions'] != NULL) { ?>
                                     <?php foreach($templateData['questions'] as $question) { ?>
-                                <tr>
-                                        <td><p><?php echo $question->id; ?></p></td>
-                                        <td><p><?php echo $question->type->title; ?></p></td>
-                                        <td><p><?php echo $question->stem; ?></p></td>
-                                        <td><p><?php if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) { 
-                                            if($templateData['responses'][$question->id]->response != '') {
-                                                echo $templateData['responses'][$question->id]->response;
-                                            } else {
-                                                echo 'no response';
-                                            }
-                                        } else { echo 'no response'; }
-                                        ?></p></td>
-                                        <td>
-                                            <?php if($question->type->value != 'text' and $question->type->value != 'area') { ?>
-                                                <?php if(count($question->responses) > 0) { ?>
-                                                    <?php foreach($question->responses as $resp) { ?>
-                                                        <?php if($resp->is_correct) { ?>
-                                                            <p><?php echo $resp->response; ?></p>
+                                        <tr>
+                                            <td><?php echo $question->id; ?></td>
+                                            <td><?php echo $question->type->title; ?></td>
+                                            <td><?php echo $question->stem; ?></td>
+                                            <td><?php if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
+                                                        if(count($templateData['responses'][$question->id]) > 0){
+                                                            foreach($templateData['responses'][$question->id] as $response){
+                                                                echo '<p>'.$response->response.'</p>';
+                                                            }
+                                                        } else {
+                                                            echo 'no response';
+                                                        }
+                                                    } else { echo 'no response'; }
+                                                    ?></td>
+                                            <td>
+                                                <?php if($question->type->value != 'text' and $question->type->value != 'area') { ?>
+                                                    <?php if(count($question->responses) > 0) { ?>
+                                                        <?php foreach($question->responses as $resp) { ?>
+                                                            <?php if($resp->is_correct == 1) { ?>
+                                                                <?php echo '<p>'.$resp->response.'</p>'; ?>
+                                                            <?php } ?>
                                                         <?php } ?>
-                                                    <?php } ?>
-                                                <?php } else { echo '<p>n/a</p>'; } ?>
-                                            <?php } else { echo '<p>n/a</p>'; } ?>
-                                            
-                                        </td>
-                                        <td><p>
-                                                <?php echo $question->feedback; ?>
-                                            </p></td>
-                                </tr>
+                                                    <?php } else { echo 'n/a'; } ?>
+                                                <?php } else { echo 'n/a'; } ?>
+
+                                            </td>
+                                            <td>
+                                                    <?php echo $question->feedback; ?>
+                                                </td>
+                                        </tr>
                                     <?php } ?>
                                 <?php } ?>
+                                </tbody>
+
+
                             </table>
-                            <hr>
-                            <table border="0" width="100%" cellpadding="4" cellspacing="2">
+
+
+
+                            <table class="table table-striped table-bordered">
+                                <thead>
                                 <tr>
-                                    <td><p>node</p></td>
-                                    <td><p><?php echo __('time elapsed (in seconds)'); ?></p></td>
-                                    <td><p><?php echo __('time spent on node'); ?></p></td>
+                                    <td>node</td>
+                                    <td><?php echo __('time elapsed (in seconds)'); ?></td>
+                                    <td><?php echo __('time spent on node'); ?></td>
                                 </tr>
+                                </thead>
+                                <tbody>
+
                                 <?php if (count($templateData['session']->traces) > 0) {
                                     $flag = true; ?>
                                 <?php for ($i = 0; $i < count($templateData['session']->traces); $i++) { ?>
-                                                                <tr bgcolor="<?php if ($flag) {
-                                        echo '#BBBBDB';
-                                        $flag = false;
-                                    } else {
-                                        echo '#DDDDFD';
-                                        $flag = true;
-                                    } ?>">
-                                            <td><p><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</p></td>
-                                            <td><p><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></p></td>
-                                            <td><p><?php if ($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; ?></p></td>
+                                                                <tr>
+                                            <td><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</td>
+                                            <td><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></td>
+                                            <td><?php if ($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; ?></td>
                                         </tr>
                         <?php } ?>
                     <?php } ?>
-                    </tr></table>
-                <br><br>
+                    </tr>
+                                </tbody>
+                            </table>
+
                 
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
                     <param name="FlashVars" value="&dataXML=<graph bgcolor='FFFFFF' canvasbgcolor='FFFFFF' xaxisname='node path (node IDs)' yaxisname='time on node (s)' caption='Node Path Analysis'>
@@ -202,7 +241,10 @@ function getRandomColor(){
                         <?php } ?>
                            </graph>" quality="high" bgcolor="#FFFFFF" name="Line" align="" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
-                <br><br><p><strong>Counters Track</strong></p>
+
+
+
+                <h3>Counters Track</h3>
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
                     <param name="FlashVars" value="&dataXML=<graph caption='Counters' lineThickness='2' showValues='1' formatNumberScale='1' rotateNames='1' decimalPrecision='2' anchorRadius='2' anchorBgAlpha='50' showAlternateVGridColor='1' anchorAlpha='100' animation='1' limitsDecimalPrecision='0' divLineDecimalPrecision='1'>
                            <categories>
@@ -252,11 +294,8 @@ function getRandomColor(){
                                 </dataset>
                            <?php } ?>
                            <?php } ?>
-                           </graph>" quality="high" bgcolor="#FFFFFF" name="Line" align="" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+                           </graph>"  name="Line" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
-            </td></tr>
-    </table>
-    </td>
-    </tr>
-    </table>
+
+
 <?php } ?>

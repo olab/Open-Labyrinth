@@ -88,4 +88,3 @@ class Model_Leap_User_Type extends DB_ORM_Model {
     }
 }
 
-?>

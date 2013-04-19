@@ -114,6 +114,54 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         $builder->execute();
     }
     
+    public function getSectionNodes($sectionId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
+        $result = $builder->query();
+        
+        if($result->is_loaded()) {
+            $sections = array();
+            foreach($result as $record) {
+                $sections[] = DB_ORM::model('map_node_section_node', array((int)$record['id']));
+            }
+            
+            return $sections;
+        }
+        
+        return NULL;
+    }
+    
+    public function duplicateSectionNodes($fromSectionId, $toSectionId, $nodeMap) {
+        $nodes = $this->getSectionNodes($fromSectionId);
+        
+        if($nodes == null || $toSectionId == null || $toSectionId <= 0) return;
+        
+        foreach($nodes as $node) {
+            $builder = DB_ORM::insert('map_node_section_node')
+                    ->column('section_id', $toSectionId)
+                    ->column('order', $node->order);
+            
+            if(isset($nodeMap[$node->node_id]))
+                $builder = $builder->column ('node_id', $nodeMap[$node->node_id]);
+            
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($sectionId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $sections = array();
+            foreach($result as $record) {
+                $sections[] = $record;
+            }
+
+            return $sections;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

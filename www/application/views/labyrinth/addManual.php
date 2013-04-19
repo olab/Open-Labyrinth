@@ -92,7 +92,7 @@
             <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
             <div class="controls">
                 <input type="text" class="span1" id="delta_time" name="delta_time" value="" />
-                <span class="help-inline"><?php echo __('Seconds'); ?></span>
+                <span class="help-inline"><?php echo __('seconds'); ?></span>
             </div>
         </div>
     </fieldset>

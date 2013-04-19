@@ -103,25 +103,28 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         return NULL;
     }
     
-    public function addChat($mapId, $countOfQuestions, $values) {
+    public function addChat($mapId, $values) {
         $builder = DB_ORM::insert('map_chat')
                 ->column('map_id', $mapId)
                 ->column('stem', Arr::get($values, 'cStem', ''))
                 ->column('counter_id', Arr::get($values, 'scount', 0));
         $newChatId = $builder->execute();
         
-        for($i = 1; $i <= $countOfQuestions; $i++) {
-            $element = DB_ORM::model('map_chat_element');
-            $element->chat_id = $newChatId;
-            $element->question = Arr::get($values, 'question'.$i, '');
-            $element->response = Arr::get($values, 'response'.$i, '');
-            $element->function = Arr::get($values, 'counter'.$i, '');
-            
-            $element->save();
+        $qarray = Arr::get($values, 'qarray', '');
+        if (count($qarray) > 0){
+            foreach($qarray as $q) {
+                $element = DB_ORM::model('map_chat_element');
+                $element->chat_id = $newChatId;
+                $element->question = Arr::get($q, 'question', '');
+                $element->response = Arr::get($q, 'response', '');
+                $element->function = Arr::get($q, 'counter', '');
+
+                $element->save();
+            }
         }
     }
-    
-    public function updateChat($chatId, $chatQuestionCount, $values) {
+
+    public function updateChat($chatId, $values) {
         $this->id = $chatId;
         $this->load();
         
@@ -129,7 +132,47 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         $this->counter_id = Arr::get($values, 'scount', $this->counter_id);
         $this->save();
         
-        DB_ORM::model('map_chat_element')->updateElementsByChatId($chatId, $chatQuestionCount, $values);
+        DB_ORM::model('map_chat_element')->updateElementsByChatId($chatId, $values);
+    }
+
+    public function duplicateChats($fromMapId, $toMapId, $counterMap) {
+        $chats = $this->getChatsByMap($fromMapId);
+
+        if($chats == null || $toMapId == null || $toMapId <= 0) return array();
+
+        $chatMap = array();
+        foreach($chats as $chat) {
+            $builder = DB_ORM::insert('map_chat')
+                    ->column('map_id', $toMapId)
+                    ->column('stem', $chat->stem);
+            if(isset($counterMap[$chat->counter_id]))
+                $builder = $builder->column ('counter_id', $counterMap[$chat->counter_id]);
+
+            $chatMap[$chat->id] = $builder->execute();
+
+            DB_ORM::model('map_chat_element')->duplicateElements($chat->id, $chatMap[$chat->id]);
+        }
+
+        return $chatMap;
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $chats = array();
+            foreach($result as $record) {
+                $chats[] = $record;
+            }
+
+            return $chats;
+        }
+
+        return NULL;
     }
 }
 

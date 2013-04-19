@@ -19,43 +19,66 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding='6'>
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Step 5. Edit Skin'); ?></h4>
-            <div style="width:100%; min-height:400px; background:#FFFFFF; position: relative;">
-                <div class="wizard_header">
-                    <ul>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'createSkin') echo 'selected'; ?>">Create a new skin</a></li>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/listSkins/'.$templateData['map']->id.'/'.$templateData['map']->skin_id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'listSkins') echo 'selected'; ?>">Select from a list of existing skins</a></li>
-                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadSkin/'.$templateData['map']->id; ?>" class="wizard_button small width_auto <?php if ($templateData['action'] == 'uploadSkin') echo 'selected'; ?>">Upload a new skin</a></li>
+<h1><?php echo __('Step 4. Add elements'); ?></h1>
+<div>
+    <div>
+        <ul class="nav nav-pills">
+            <li class="<?php if ($templateData['action'] == 'editNode') echo 'active'; ?>"><a
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map']; ?>">Edit
+                    nodes</a></li>
+            <li class="<?php if ($templateData['action'] == 'addFile') echo 'active'; ?>"><a
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addFile/' . $templateData['map']; ?>">Add
+                    image or file</a></li>
+            <li class="<?php if ($templateData['action'] == 'addQuestion') echo 'active'; ?>"><a
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addQuestion/' . $templateData['map']; ?>">Add
+                    question</a></li>
+            <li class="<?php if ($templateData['action'] == 'addAvatar') echo 'active'; ?>"><a
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addAvatar/' . $templateData['map']; ?>">Add
+                    avatar</a></li>
+            <li class="<?php if ($templateData['action'] == 'addCounter') echo 'active'; ?>"><a
+                    href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/addCounter/' . $templateData['map']; ?>">Add
+                    counter</a></li>
+        </ul>
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <?php if ($templateData['type'] == 'editNode') { ?>
+                <div class="span2">
+                    <p class="header">Nodes:</p>
+                    <ul class="nav nav-tabs nav-stacked">
+                        <?php if($templateData['nodes'] != null && count($templateData['nodes']) > 0) { ?>
+                        <?php foreach ($templateData['nodes'] as $node) { ?>
+                            <li>
+                                <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map'] . '/' . $node->id ?>"
+                                   class="
+                            <?php if (isset($templateData['nodeId'])) {
+                                       if ($templateData['nodeId'] == $node->id) echo 'selected';
+                                   }
+                                   ?>
+                            "><?php echo $node->title; ?> <?php if ($node->type->name == 'root') echo '[root]'; ?>
+                                    (<?php echo $node->id; ?>)</a></li>
+                        <?php } ?>
+                        <?php } ?>
                     </ul>
                 </div>
-                <div class="wizard_body">
-                    <?php
-                    if ($templateData['action'] == 'createSkin'){
-                        if ($templateData['result'] == 'done'){
-                    ?>
-                    <div style="text-align: center; position: relative; top:100px;">
-                        Creating of a new skin is complited successfully. Click "Save & Finish"
-                    </div>
-                    <?php }else{ ?>
-                    <div style="text-align: center; position: relative; top:100px;">
-                        Click <a style="text-decoration: underline;" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/createNewSkin/'.$templateData['map']->id; ?>">here</a> to create new skin
-                    </div>
-                    <?php
-                        }
-                    }else{
-                        echo $templateData['content'];
-                    }
-                    ?>
+                <div class="node-editor span10">
+                    <?php if (isset($templateData['nodeData'])) {
+                        echo $templateData['nodeData'];
+                    } else {
+                        echo 'Choose some node in left column.';
+                    } ?>
                 </div>
-                <div class="wizard_footer">
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & Finish</a>
-                    <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
-                    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editNode/'.$templateData['map']->id; ?>" style="float:left;" class="wizard_button">Return to step 4.</a>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+            <?php
+            } else {
+                echo $templateData['content'];
+            } ?>
+        </div>
+        <div class="controls">
+            <a  href="<?php echo URL::base() . 'labyrinthManager/caseWizard/6/createSkin/' . $templateData['map']; ?>"
+               style="float:right;" class="btn btn-primary">Step 6 - Edit Skin</a>
+            <a class="btn btn-primary" href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button">Save & return later</a>
+            <a class="btn btn-primary" href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/' . $templateData['map']; ?>"
+               style="float:left;" class="wizard_button">Return to step 4.</a>
+        </div>
+    </div>
+</div>

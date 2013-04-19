@@ -18,34 +18,56 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding='6'>
+if (isset($templateData['map'])) {
+    ?>
+    <div class="page-header">
+        <div class="pull-right">
+        <a class="btn btn-primary" href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><i class="icon-plus-sign"></i><?php echo __('Add data element'); ?></a></div>
+    <h1><?php echo __('Data elements for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
+    <table class="table table-striped table-bordered">
+        <thead>
         <tr>
-            <td valign="top" bgcolor="#bbbbcb">
-                <h4><?php echo __('data elements for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
-                <table bgcolor="#ffffff" width="100%"><tr><td align="left">
-                            <?php if(isset($templateData['vpds']) and count($templateData['vpds']) > 0) { ?>
-                            <p>data elements:</p>
-                            <?php foreach($templateData['vpds'] as $vpd) { ?>
-                                <p>
-                                    <strong><img src="<?php echo URL::base(); ?>images/OL_element_wee.gif" alt="elements" align="absmiddle" border="0">&nbsp;<?php echo $vpd->type->label; ?> (<?php echo $vpd->id; ?>)</strong> 
-                                    - <a href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('edit'); ?></a> 
-                                    - <a href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><?php echo __('delete'); ?></a>
-                                    <br>
-                                    <?php if(count($vpd->elements) > 0) { ?>
-                                        <?php foreach($vpd->elements as $element) { ?>
-                                            <?php echo $element->key; ?> = <?php echo $element->value; ?><br>
-                                        <?php } ?>
-                                    <?php } ?>
-                                </p>
-                                <hr>
-                            <?php } ?>
-                            <?php } ?>
-                            <hr>
-                            <p><a href="<?php echo URL::base(); ?>elementManager/addNewElement/<?php echo $templateData['map']->id; ?>"><?php echo __('add a new data element'); ?></a></p>
-                        </td></tr>
-                </table>
-            </td>
+            <th>Element</th>
+
+            <th>Properties</th>
+            <th>Actions</th>
         </tr>
+        </thead>
+        <tbody>
+        <?php if (isset($templateData['vpds']) and count($templateData['vpds']) > 0) { ?>
+
+            <?php foreach ($templateData['vpds'] as $vpd) { ?>
+                <tr>
+                    <td>
+                    <?php echo $vpd->type->label; ?>
+                        (<?php echo $vpd->id; ?>)</td>
+                    <td>
+                        <?php if (count($vpd->elements) > 0) { ?>
+                            <?php foreach ($vpd->elements as $element) { ?>
+                                <?php echo $element->key; ?> = <?php echo $element->value; ?><br>
+                            <?php } ?>
+                        <?php } ?>
+
+                    </td>
+                   <td>
+<div class="btn-group">
+                       <a class="btn btn-info"
+                           href="<?php echo URL::base(); ?>elementManager/editVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><i class="icon-edit"></i><?php echo __('Edit'); ?></a>
+                       <a class="btn btn-danger"
+                           href="<?php echo URL::base(); ?>elementManager/deleteVpd/<?php echo $templateData['map']->id; ?>/<?php echo $vpd->id; ?>"><i class="icon-edit"></i><?php echo __('Delete'); ?></a>
+
+                       </div>
+                    </td>
+                <tr>
+            <?php } ?>
+        <?php } else{ ?>
+            <tr class="info"><td colspan="3">There are no elements yet. You may add an element by clicking the button below</td></tr>
+        <?php } ?>
+
+
+
+        </tbody>
+
     </table>
+
 <?php } ?>

@@ -78,4 +78,3 @@ class Controller_PlayedLabyrinth extends Controller_Base {
 
 }
 
-?>

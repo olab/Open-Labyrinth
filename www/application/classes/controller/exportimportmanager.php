@@ -95,6 +95,47 @@ class Controller_ExportImportManager extends Controller_Base {
         Request::initial()->redirect(URL::base());
     }
 
+    public function action_exportMVP() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Export Medbiquitous ANSI'))->set_url(URL::base() . 'exportimportmanager/exportMVP'));
+        if (Auth::instance()->get_user()->type->name == 'superuser') {
+            $maps = DB_ORM::model('map')->getAllEnabledMap();
+        } else {
+            $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+        }
+        $this->templateData['maps'] = $maps;
+
+        $this->templateData['center'] = View::factory('labyrinth/export/mvp');
+        $this->templateData['center']->set('templateData', $this->templateData);
+
+        unset($this->templateData['left']);
+        unset($this->templateData['right']);
+
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_exportMVPMap() {
+        $mapId = $this->request->param('id', 0);
+        if($mapId > 0) {
+            $params = array();
+            $map = DB_ORM::model('map', array((int) $mapId));
+            $params['mapId'] = $mapId;
+            $params['mapName'] = $map->name;
+            $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);
+            $pathInfo = pathinfo($path);
+
+            header("Cache-Control: public");
+            header("Content-Description: File Transfer");
+            header("Content-Disposition: attachment; filename=".$pathInfo['basename']);
+            header("Content-Type: application/zip");
+            header("Content-Transfer-Encoding: binary");
+
+            readfile($path);
+        } else {
+            Request::initial()->redirect(URL::base() . 'exportimportmanager/exportMVP');
+        }
+
+    }
+
     public function exportVUE($mapId) {
         if ($mapId != NULL) {
             $header = '';
@@ -388,7 +429,8 @@ class Controller_ExportImportManager extends Controller_Base {
                 $this->importMVP(DOCROOT . $fileName);
             }
         }
-        Request::initial()->redirect(URL::base());
+        Notice::add('Labyrinth has been successfully imported');
+        Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
     public function getIdFromString($string) {
@@ -424,9 +466,19 @@ class Controller_ExportImportManager extends Controller_Base {
     }
 
     public function parseMVPFile($mvpFolder) {
-        $tmpFolder = DOCROOT . '/files/' . $mvpFolder;
+        $version = null;
+        $tmpFolder = DOCROOT . 'files/' . $mvpFolder;
         $tmpFileName = $tmpFolder . '/metadata.xml';
         $xml = $this->parseXML($tmpFileName);
+
+        if (isset($xml->metadata->version)){
+            ImportExport_Manager::getFormatSystem('MVP')->import($tmpFolder);
+            return true;
+        }
+
+        if(isset($xml->general->version))
+            $version = (string)$xml->general->version;
+
         $findElement = array();
         $replaceElement = array();
         $map = array();
@@ -704,7 +756,24 @@ class Controller_ExportImportManager extends Controller_Base {
                 $avatarsArray[$id]['avbubble'] = $array[(string) $avatarAttr->AvatarBubble];
                 $avatarsArray[$id]['avbubbletext'] = (string) $avatar->OL_AvatarBubbleText->div;
 
-                $avatarsArray[$id]['image_data'] = 'ntr'; //need to reload
+                if (isset($avatarAttr->AvatarImage)){
+                    $avatarImageName = (string) $avatarAttr->AvatarImage;
+                    if($avatarImageName != 'ntr') {
+                        if($avatarImageName != '') {
+                            $avatarsArray[$id]['image_data'] = $avatarImageName;
+                            $avatarFile = $tmpFolder.'media/'.$avatarImageName;
+                            if (file_exists($avatarFile)){
+                                copy($avatarFile, DOCROOT . '/avatars/' . $avatarImageName);
+                            }
+                        }else {
+                            $avatarsArray[$id]['image_data'] = '';
+                        }
+                    } else {
+                        $avatarsArray[$id]['image_data'] = 'ntr';
+                    }
+                } else {
+                    $avatarsArray[$id]['image_data'] = 'ntr'; //need to reload
+                }
 
                 DB_ORM::model('map_avatar')->addAvatar($map->id);
                 $avatarDB = DB_ORM::model('map_avatar')->getLastAddedAvatar($map->id);
@@ -889,7 +958,11 @@ class Controller_ExportImportManager extends Controller_Base {
                 $vpdTextAttr = $vpdText->attributes();
                 if (strstr((string) $vpdTextAttr->id, 'NGR')) {
                     $id = 'ctt_' . $this->getIdFromString($vpdTextAttr->id);
-                    $nodeContentsArray[$id]['div'] = (string) $vpdText->div;
+                    if($version == '3') {
+                        $nodeContentsArray[$id]['div'] = (string) base64_decode($vpdText->div);
+                    }else {
+                        $nodeContentsArray[$id]['div'] = (string) $vpdText->div;
+                    }
                 } else {
                     $id = (int) $vpdTextAttr->id;
                     $elementsArray[$id]['type'] = 1;
@@ -972,7 +1045,7 @@ class Controller_ExportImportManager extends Controller_Base {
     public function parseXML($tmpFileName) {
         $content = file_get_contents($tmpFileName);
         $searchArray = array('<ol:', '</ol:', '&#034;');
-        $replaceArray = array('<', '</', '"');
+        $replaceArray = array('<', '</', "'");
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
         return simplexml_load_string($xmlString);

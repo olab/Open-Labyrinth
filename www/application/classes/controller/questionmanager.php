@@ -34,6 +34,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
             $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
@@ -54,98 +55,60 @@ class Controller_QuestionManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
+    
+    public function action_question() {
+        $mapId = $this->request->param('id', 0);
+        $typeId = $this->request->param('id2', 0);
+        $questionId = $this->request->param('id3', 0);
 
-    public function action_addQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $templateType = $this->request->param('id2', NULL);
-
-        if ($mapId != NULL and $templateType != NULL) {
-            $type = DB_ORM::model('map_question_type', array((int) $templateType));
-
-            if ($type) {
-                $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-                $this->templateData['questionType'] = $templateType;
-                $this->templateData['args'] = $type->template_args;
-                $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-
-
-                $editView = View::factory('labyrinth/question/' . $type->template_name);
-                $editView->set('templateData', $this->templateData);
-
-                $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-                $leftView->set('templateData', $this->templateData);
-
-                $this->templateData['center'] = $editView;
-                $this->templateData['left'] = $leftView;
-                unset($this->templateData['right']);
-                $this->template->set('templateData', $this->templateData);
+        $map = DB_ORM::model('map', array((int)$mapId));
+        $type = DB_ORM::model('map_question_type', array((int) $typeId));
+        if($map != null && $type != null) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+            $this->templateData['type'] = DB_ORM::model('map_question_type', array((int) $typeId));
+            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+            
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
+            
+            if($questionId != null) {
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
+                $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
+            } else {
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
             }
+            
+            $view = View::factory('labyrinth/question/' . $type->template_name);
+            $view->set('templateData', $this->templateData);
+            
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+            
+            $this->templateData['center'] = $view;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
-
-    public function action_editQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $templateType = $this->request->param('id2', NULL);
-        $questionId = $this->request->param('id3', NULL);
-
-        if ($mapId != NULL and $templateType != NULL and $questionId != NULL) {
-            $type = DB_ORM::model('map_question_type', array((int) $templateType));
-
-            if ($type) {
-                $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-                $this->templateData['questionType'] = $templateType;
-                $this->templateData['args'] = $type->template_args;
-                $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-                $this->templateData['question'] = DB_ORM::model('map_question', array((int) $questionId));
-
-
-                $editView = View::factory('labyrinth/question/' . $type->template_name);
-                $editView->set('templateData', $this->templateData);
-
-                $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-                $leftView->set('templateData', $this->templateData);
-
-                $this->templateData['center'] = $editView;
-                $this->templateData['left'] = $leftView;
-                unset($this->templateData['right']);
-                $this->template->set('templateData', $this->templateData);
-            }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_updateQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $templateType = $this->request->param('id2', NULL);
-        $questionId = $this->request->param('id3', NULL);
-
-        if ($_POST and $mapId != NULL and $templateType != NULL and $questionId != NULL) {
-            $type = DB_ORM::model('map_question_type', array((int) $templateType));
-
-            if ($type) {
+    
+    public function action_questionPOST() {
+        $mapId = $this->request->param('id', 0);
+        $postType = Arr::get($_POST, 'question_type', NULL);
+        $typeId = ($postType != NULL) ? $postType : $this->request->param('id2', 0);
+        $questionId = $this->request->param('id3', 0);
+        
+        $map = DB_ORM::model('map', array((int)$mapId));
+        $type = DB_ORM::model('map_question_type', array((int) $typeId));
+        if($_POST != null && $map != null && $type != null) {
+            if($questionId == null || $questionId <= 0) {
+                DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
+            } else {
                 DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
             }
-
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_saveNewQuestion() {
-        $mapId = $this->request->param('id', NULL);
-        $templateType = $this->request->param('id2', NULL);
-
-        if ($_POST and $mapId != NULL and $templateType != NULL) {
-            $type = DB_ORM::model('map_question_type', array((int) $templateType));
-
-            if ($type) {
-                DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
-            }
-
+            
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -165,7 +128,27 @@ class Controller_QuestionManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-
+    
+    public function action_duplicateQuestion() {
+        $mapId = $this->request->param('id', null);
+        $questionId = $this->request->param('id2', null);
+        
+        if($mapId != null && $questionId != null) {
+            DB_ORM::model('map_question')->duplicateQuestion($questionId);
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+    
+    public function action_copyQuestion() {
+        $mapId = $this->request->param('id', null);
+        
+        if($mapId != null && $_POST != null) {
+            DB_ORM::model('map_question')->copyQuestion($mapId, $_POST);
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
 }
-
-?>

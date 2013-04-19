@@ -1,0 +1,248 @@
+/**
+* Open Labyrinth [ http://www.openlabyrinth.ca ]
+*
+* Open Labyrinth is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Open Labyrinth is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Open Labyrinth.  If not, see <http://www.gnu.org/licenses/>.
+*
+* @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
+*
+*/
+/* Layout Stylesheet */
+body {
+    margin:0px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000000;
+    background:#EEE;
+    padding:0;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    color: #000000
+}
+h1 {
+    font-size: 262.5%;
+}
+h2 {
+    font-size: 187.5%;
+}
+h3 {
+    font-size: 150%;
+}
+h4 {
+    font-size: 125%;
+}
+h5 {
+    font-size: 60%;
+    font-weight: normal;
+}
+
+#outer {
+    text-align:left;
+    border:1px solid #ffffff;
+    width:100%;
+    margin:auto;
+}
+#hdr {
+    background:#ffffff;
+    color: #ffffff;
+    border:solid #ffffff;
+    border-width:1px 0 1px 0;
+}
+#bar {
+    height:25px;
+    background:#ffffff;
+    color: #ffffff;
+    border:solid #ffffff;
+    border-width:1px 0 1px 0;
+}
+#bodyblock {
+    position:relative;
+    background: #ffffff;
+    color: #ffffff;
+    padding:0;
+}
+#l-col {
+    float:left;
+    background:#ffffff;
+    color: #ffffff;
+    width:145px;
+    border:#ffffff;
+    border-width:0 0px 0 0;
+}
+#cont {
+    width:75%;
+    background:#ffffff;
+    color: #333333;
+    border:10px solid #ffffff;
+    border-width:8 8 8 8px;
+    text-align:left;
+}
+#trace {
+    height:30px;
+    background:#ffffff;
+    color: #ffffff;
+    border:#ffffff;
+    border-width:1px 0 0 0;
+    margin:0;
+}
+#ftr {
+    height:30px;
+    background:#ffffff;
+    color: #ffffff;
+    border:#ffffff;
+    border-width:1px 0 0 0;
+    margin:0;
+    padding-bottom:20px;
+}
+div.scroll {
+    height: 95%;
+    width: 95%;
+    overflow: auto;
+    border: 1px solid #666666;
+    background-color: #cccccc;
+    padding: 8px;
+}
+
+
+
+
+.container-fluid > .row-fluid{
+
+    margin: 0 auto;
+    width:68%;
+
+}
+
+div#nodetext{
+    font-size: 1em;
+    line-height: 1.64em;
+    text-align: justify;
+
+}
+
+div#content{
+
+    max-width:40em;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.sidebar-nav-fixed {
+    position:fixed;
+    top:40px;
+    width:21.97%;
+}
+
+#counters-desktop ul{
+    padding: 0;
+    margin-left: 0;
+    list-style: none;
+}
+
+#counters-desktop li{
+    margin-left: 0;
+    padding-left: 0;
+    background: #e3e3e3;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+
+}
+
+div#sidebar{
+    border:none;
+}
+
+div#score, div#timer{
+    background: #e3e3e3;
+    text-align: center;
+    padding: 10px;
+
+}
+
+.btn{
+    box-sizing: border-box;
+}
+div#node-info{
+    padding:0px;
+}
+
+div#node-info div{
+    padding:10px;
+}
+div#node-info, div#navigation{
+
+
+    margin-top: 10px;
+}
+
+#map-title{
+    font-size: small;
+    line-height: 1em;
+}
+
+
+@media (max-width: 767px) {
+    .sidebar-nav-fixed {
+        position:static;
+        width:auto;
+    }
+}
+
+@media (max-width: 979px) {
+    .sidebar-nav-fixed {
+        top:70px;
+    }
+}
+
+/* for demo purposes (fixed top navbar placement in the fiddle. Ok to remove */
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 979px) {
+    body {
+        padding-top: 0;
+    }
+}
+#footer-logo {
+
+
+    font-size: .8em;
+}
+
+.icon-cardio{
+    background: url("glyphicons_282_cardio.png") 0 0;
+}
+
+#branding{
+    font-size: small;
+    line-height: 1em;
+}
+
+.pane-title{
+    margin-top:15px;
+    font-weight: bolder;
+    padding: 10px;
+    background: #e3e3e3;
+}
+
+#navigation li{
+    list-style-image:  url("glyphicons_072_bookmark.png") ;;
+}

@@ -46,6 +46,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
             if ($continue) {
+                Session::instance()->delete('questionChoices');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -56,8 +57,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($data['node']->link_style->name == 'type in text') {
                             $result = $this->generateLinks($data['node'], $data['node_links']);
                             $data['links'] = $result['links']['display'];
-                            $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                            $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            }
                         } else {
                             $result = $this->generateLinks($data['node'], $data['node_links']);
                             $data['links'] = $result['links'];
@@ -138,11 +141,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data['node']->link_style->name == 'type in text') {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
                         $data['links'] = $result['links']['display'];
-                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                             $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                             $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        }
                     } else {
                         $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links'];
+                        if(!empty($result['links']))
+                            $data['links'] = $result['links'];
+                        else $data['links'] = "";
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
@@ -187,6 +194,23 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $infoView->set('info', $node->info);
 
             $this->template = $infoView;
+        }
+    }
+
+    public function action_mapinfo()
+    {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+
+            $infoView = View::factory('labyrinth/labyrinthInfo');
+            $infoView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $infoView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base() . 'openLabyrinth');
         }
     }
 
@@ -235,12 +259,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_questionResponce() {
         $optionNumber = $this->request->param('id', NULL);
-        $sessionId = $this->request->param('id2', NULL);
-        $questionId = $this->request->param('id3', NULL);
+        $questionId = $this->request->param('id2', NULL);
+        $questionStatus = $this->request->param('id3', NULL);
 
-        if ($optionNumber != NULL and $sessionId != NULL and $questionId != NULL) {
+        if ($optionNumber != NULL and $questionId != NULL) {
             $this->auto_render = false;
-            echo Model::factory('labyrinth')->question($sessionId, $questionId, $optionNumber);
+            
+            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus);
         }
     }
 
@@ -412,9 +437,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 switch ($node->link_style->name) {
                     case 'text (default)':
                         if ($link->image_id != 0) {
-                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></p>';
+                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
                         } else {
-                            $result['links'] .= '<p><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></p>';
+                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></li>';
                         }
                         break;
                     case 'dropdown':
@@ -436,6 +461,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             switch ($node->link_style->name) {
+                case 'text (default)':
+                    $result['links'] = '<ul class="links">'.$result['links'].'</ul>';
+                    break;
                 case 'dropdown':
                     $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
                     break;
@@ -455,18 +483,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
             }
 
             return $result;
         } else {
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                if(!isset($result['links']['display']))
+                    $result['links']['display'] = '';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<p><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></p>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
                 return $result;
             }
 
@@ -479,21 +509,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function generateNavigation($sections) {
         if (count($sections) > 0) {
-            $result = '';
+            $result = '<ul>';
             foreach ($sections as $section) {
                 if ($section->map->section->name == 'visible') {
-                    $result .= "<p>" . $section->name . "</p>";
+                    $result .= "<li>" . $section->name . "</li>";
                 } else if ($section->map->section->name == 'navigable') {
-                    $result .= '<p><a href="';
+                    $result .= '<li><a href="';
                     if (count($section->nodes) > 0) {
                         $result .= URL::base() . 'renderLabyrinth/go/' . $section->map_id . '/' . $section->nodes[0]->node->id;
                     } else {
                         $result .= URL::base() . 'renderLabyrinth/index/' . $section->map_id;
                     }
-                    $result .= '">' . $section->name . '</a></p>';
+                    $result .= '">' . $section->name . '</a></li>';
                 }
             }
-
+            $result .= '</ul>';
             return $result;
         }
 
@@ -639,32 +669,52 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = "<input type='text' size='" . $question->width . "' name='qresponse_" . $question->id . "' value='" . $question->feedback . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");' />";
-                $result .= "<div id='AJAXresponse'></div>";
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
+                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
-                $result = "<textarea cols='" . $question->width . "' rows='" . $question->height . "' name='qresponse_" . $question->id . "' id='qresponse_" . $question->id . "' onblur='ajaxFunction(" . $question->id . ");'>" . $question->feedback . "</textarea>";
-                $result .= "<div id='AJAXresponse'></div>";
-            } else {
+                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
+                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
+            } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
-                    $result = '<table>';
+                    $result = '<div class="questionResponces ';
+                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
+                    $result .= '"><ul>';
                     $i = 1;
-                    $divIDS = 'new Array(';
                     foreach ($question->responses as $responce) {
-                        $divIDS .= $responce->id . ',';
-                    }
-                    $divIDS = substr($divIDS, 0, strlen($divIDS) - 1);
-                    $divIDS .= ')';
-                    foreach ($question->responses as $responce) {
-                        $result .= "<tr><td><p>" . $responce->response . "</p></td>";
-                        $result .= "<td><div id='click" . $responce->id . "'><input type='radio' name='option' OnClick='ajaxMCQ(" . $question->id . "," . $responce->id . "," . count($question->responses) . "," . $question->num_tries . "," . $divIDS . ");' /></div></td>";
-                        $result .= "<td><div id='AJAXresponse" . $responce->id . "'></div></td></tr>";
+                        $result .= '<li>';
+                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span class="text">' . $responce->response . '</span>';
+                        $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
+                        $result .= '</li>';
                         $i++;
                     }
-                    $result .= '</table>';
+                    
+                    $result .= '</ul></div>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
+                }
+            } else if($question->type->value == 'pcq') {
+                if (count($question->responses) > 0) {
+                    $result = '<div class="questionResponces questionForm_'.$question->id.' ';
+                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
+                    $result .= '"><ul>';
+                    $i = 1;
+                    foreach ($question->responses as $responce) {
+                        $result .= '<li>';
+                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span>' . $responce->response . '</span>';
+                        $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
+                        $result .= '</li>';
+                        $i++;
+                    }
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
+                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
                 }
             }
 
-            $result = "<table bgcolor='#eeeeee' width='100%'><tr><td><p>" . $question->stem . "</p><p><form onsubmit='return false;'>" . $result . "</form></p></td></tr></table>";
+            $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
 
             return $result;
         }
@@ -749,7 +799,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
                     $result .= '</p></td></tr></table>';
@@ -774,7 +824,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
 
@@ -846,7 +896,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($mediaElement->mime == 'application/x-shockwave-flash') {
                             $result .= Controller_RenderLabyrinth::getSwfHTML($id);
                         } else {
-                            $result .= $this->getImageHTML($mId);
+                            $result .= self::getImageHTML($mId);
                         }
                     }
 
@@ -915,12 +965,29 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     private function generateReviewLinks($traces) {
+        /*
+         *                             {
+                                "startDate":"2011,12,10",
+                                "endDate":"2011,12,11",
+                                "headline":"Headline Goes Here",
+                            }
+         *
+         */
         if ($traces != NULL and count($traces) > 0) {
-            $result = '';
+            //$result = array();
+            $result = '<ul class="links">';
+            $i = 0;
             foreach ($traces as $trace) {
-                $result .= '<p><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></p>';
+                //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
+//                if($i>0)
+//                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
+//                $i++;
+
+                $result .= '<li><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></li>';
             }
 
+            //$result =json_encode($result);
+            $result .= '</ul>';
             return $result;
         }
 
@@ -929,4 +996,3 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
 }
 
-?>

@@ -19,83 +19,107 @@
  *
  */
 ?>
-<table width="100%" height="100%" cellpadding="6">
-    <tr>
-        <td valign="top" bgcolor="#bbbbcb">
-            <h4><?php echo __('Dictionary manager '); ?></h4>
-            <table width="100%" cellpadding="6" bgcolor="#ffffff">
-                <tr>
-                    <td>
-                        <p><?php echo __('Upload a file to dictionary:'); ?></p>
-                        <?php if ($templateData['result'] == 'success'){
-                            echo '<p style="color:green">File successfully uploaded to dictionary</p>';
-                        } ?>
-                        <?php if ($templateData['result'] == 'error'){
-                        echo '<p style="color:red">Error occurred while loading file</p>';
-                        } ?>
-                        <form method="POST" enctype="multipart/form-data" action="<?php echo URL::base().'dictionaryManager/uploadFile'; ?>">
-                            <table width="100%" border="0" cellspacing="6">
-                                <tr>
-                                    <td nowrap="">
-                                        <p>
-                                            <?php echo __('Select file to upload:'); ?>
-                                            <input type="file" size="50" name="filename" />
-                                            <input type="submit" name="Submit" value="<?php echo __('submit'); ?>" />
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        <hr/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <form method="POST" action="<?php echo URL::base().'dictionaryManager/addWord'; ?>">
-                            <p>
-                                <?php echo __('Add word to dictionary:'); ?>
-                                <input class="not-autocomplete" type="text" name="word" size="50" />
-                                <input type="submit" name="Search" value="<?php echo __('add'); ?>">
-                            </p>
-                        </form>
-                        <hr/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <form method="POST" action="<?php echo URL::base().'dictionaryManager/search'; ?>">
-                            <p>
-                            <?php echo __('Search word in dictionary (enter the beginning of a word):'); ?>
-                            <input class="not-autocomplete" type="text" name="search_value" value="<?php if (isset($_POST['search_value'])){ echo $_POST['search_value'];} ?>" size="50" />
-                            <input type="submit" name="Search" value="<?php echo __('search'); ?>">
-                            </p>
-                        </form>
-                        <?php if (isset($templateData['search_results'])){
-                        if ((count($templateData['search_results']) > 0)){
-                            echo '<p>'.__('Results:').'</p>';
-                            echo '<form method="POST" action="'.URL::base().'dictionaryManager/wordsChanges">';
-                            echo '<table style="color:#000; text-align: center; border:1px solid #000;" width="100%" border="0" cellspacing="6">';
-                            echo '<tr><td>№</td><td>Word</td><td>Delete</td></tr>';
-                            $i = 1;
-                            foreach($templateData['search_results'] as $value){
-                                echo '<tr>
-                                <td>'.$i.'</td>
-                                <td><input class="not-autocomplete" type="text" style="width:100%" name="word_value['.$value['id'].']" value="'.$value['word'].'" /></td>
-                                <td><input type="checkbox" name="word_ch['.$value['id'].']" value="1" /></td>
-                                </tr>';
-                                $i++;
-                            }
-                            echo '</table>';
-                            echo '<input type="submit" value="'.__('Submit changes').'" />';
-                            echo '</form>';
-                        }else{
-                            echo '<p>'.__('No words was found').'</p>';
-                        }
-                        } ?>
 
-                    </td>
+    <h1><?php echo __('Dictionary manager '); ?></h1>
+    <p></p>
+<?php if ($templateData['result'] == 'success') {
+    echo '<p style="color:green">File successfully uploaded to dictionary</p>';
+} ?>
+<?php if ($templateData['result'] == 'error') {
+    echo '<p style="color:red">Error occurred while loading file</p>';
+} ?>
+    <form method="POST" enctype="multipart/form-data"
+          action="<?php echo URL::base() . 'dictionaryManager/uploadFile'; ?>" class="form-horizontal">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Upload a file to dictionary:'); ?></legend>
+            <div class="control-group">
+                <label class="control-label">
+                    <?php echo __('Select file to upload:'); ?>
+                </label>
+
+                <div class="controls">
+                    <input type="file" size="50" name="filename"/>
+                </div>
+            </div>
+            <div>
+                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Upload'); ?>"/>
+            </div>
+        </fieldset>
+
+
+    </form>
+    <form class="form-horizontal" method="POST" action="<?php echo URL::base() . 'dictionaryManager/addWord'; ?>">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Add word to dictionary:'); ?></legend>
+            <div class="control-group">
+                <label for="word" class="control-label">Word literal</label>
+
+                <div class="controls">
+
+                    <input class="not-autocomplete span6" type="text" id="word" name="word"/>
+
+                </div>
+
+            </div>
+        </fieldset>
+        <input class="btn btn-primary" type="submit" name="Search" value="<?php echo __('Add'); ?>">
+    </form>
+
+
+    <form class="form-horizontal" method="POST" action="<?php echo URL::base() . 'dictionaryManager/search'; ?>">
+        <fieldset class="fieldset">
+            <legend><?php echo __('Search word in dictionary'); ?></legend>
+            <div class="control-group">
+                <label for="search_value" class="control-label">
+                    <?php echo __('Enter the beginning of a word'); ?>
+                </label>
+
+                <div class="controls">
+                    <input class="span6 not-autocomplete" id="search_value" type="text" name="search_value"
+                           value="<?php if (isset($_POST['search_value'])) {
+                               echo $_POST['search_value'];
+                           } ?>" />
+                </div>
+            </div>
+        </fieldset>
+
+        <input class="btn btn-primary" type="submit" name="Search" value="<?php echo __('search'); ?>">
+    </form>
+
+
+<?php if (isset($templateData['search_results'])) {
+    if ((count($templateData['search_results']) > 0)) {
+        ?>
+
+        <h4><?php echo __('Search Results');?></h4>
+        <form method="POST" action="<?php echo URL::base() . 'dictionaryManager/wordsChanges';?>"
+              class="form-horizontal">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th><?php echo __("Word"); ?></th>
+                    <th><?php echo __("Delete?"); ?></th>
                 </tr>
+                </thead>
+                <tbody>
+                <?php
+                $i = 1;
+                foreach ($templateData['search_results'] as $value) {
+                    ?>
+                    <tr>
+                        <td><?php echo $i; $i++;?></td>
+                        <td><label><input class="not-autocomplete" type="text" name="word_value[<?php echo $value['id'];?>]"
+                                   value="<?php echo $value['word'];?>"/></label></td>
+                        <td><label><input type="checkbox" name="word_ch[<?php echo $value['id'];?>]" value="1"/></label></td>
+                    </tr>
+
+                <?php } ?>
+
+                </tbody>
             </table>
-        </td>
-    </tr>
-</table>
+            <input type="submit" value="<?php echo __('Save changes'); ?>" class="btn btn-primary"/>
+        </form>
+
+    <?php } else echo __('No words were found');
+} ?>

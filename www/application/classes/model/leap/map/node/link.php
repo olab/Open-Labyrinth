@@ -98,6 +98,13 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                 'child_model' => 'map_element',
             )),
         );
+        self::initialize_metadata($this);
+    }
+
+    private static function initialize_metadata($object)
+    {
+        $metadata = Model_Leap_Metadata::getMetadataRelations("map_node_link", $object);
+        $object->relations = array_merge($object->relations, $metadata);
     }
 
     public static function data_source() {
@@ -152,6 +159,9 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $this->text = Arr::get($values, 'text', '');
         $this->node_id_1 = Arr::get($values, 'node_id_1', '');
         $this->node_id_2 = Arr::get($values, 'node_id_2', '');
+        $this->image_id = Arr::get($values, 'image_id', null);
+        $this->order = Arr::get($values, 'order', 0);
+        $this->probability = Arr::get($values, 'probability', 0);
 
         $this->save();
     }
@@ -275,6 +285,49 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         
         $builder = DB_SQL::delete('default')->from($this->table())->where('node_id_2', '=', $nodeA, 'AND')->where('node_id_1', '=', $nodeB);
         $builder->execute();
+    }
+    
+    public function duplicateLinks($fromMapId, $toMapId, $nodeMap, $elementMap) {
+        $links = $this->getLinksByMap($fromMapId);
+        
+        if($links == null || $toMapId == null || $toMapId <= 0) return;
+        
+        foreach($links as $link) {
+            $builder = DB_ORM::insert('map_node_link')
+                    ->column('map_id', $toMapId)
+                    ->column('text', $link->text)
+                    ->column('order', $link->order)
+                    ->column('probability', $link->probability);
+                    
+            if(isset($nodeMap[$link->node_id_1]))
+                $builder = $builder->column ('node_id_1', $nodeMap[$link->node_id_1]);
+            
+            if(isset($nodeMap[$link->node_id_2]))
+                $builder = $builder->column ('node_id_2', $nodeMap[$link->node_id_2]);
+   
+            if(isset($elementMap[$link->image_id]))
+                $builder = $builder->column ('image_id', $elementMap[$link->image_id]);
+            
+            $builder->execute();
+        }
+    }
+
+    public function exportMVP($mapId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $links = array();
+            foreach($result as $record) {
+                $links[] = $record;
+            }
+
+            return $links;
+        }
+
+        return NULL;
     }
 }
 
