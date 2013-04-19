@@ -1,4 +1,7 @@
 jQuery(document).ready(function(){
+    var browserUpdateWarning = new BrowserUpdateWarning();
+    browserUpdateWarning.Check();
+    
     //------------------Case Wizard--------------------//
     var wizard_button = jQuery('.wizard_body .wizard_button');
     if (wizard_button.length){
