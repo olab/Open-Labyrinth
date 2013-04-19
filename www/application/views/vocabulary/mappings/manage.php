@@ -125,7 +125,7 @@
     <tbody>
     <?php
     $legacyPropertyMappings = $templateData["legacyPropertyMappings"];
-    if (isset($classMappings)and count($classMappings) > 0):
+    if (isset($legacyPropertyMappings)and count($legacyPropertyMappings) > 0):
         foreach ($legacyPropertyMappings as $legacyPropertyMapping):?>
             <tr>
                 <td>
@@ -249,7 +249,7 @@
     <tbody>
     <?php
     $metadataMappings = $templateData["metadataMappings"];
-    if (isset($classMappings)and count($classMappings) > 0):
+    if (isset($metadataMappings)and count($metadataMappings) > 0):
         foreach ($metadataMappings as $metadataMapping):?>
             <tr>
                 <td>

@@ -58,6 +58,8 @@ class Controller_Vocabulary_Manager extends Controller_Base
         $uri = $this->request->query('uri');
 
         $graph = new Graphite();
+        if (!parse_url($uri, PHP_URL_SCHEME) != '') $uri  = Model_Leap_Vocabulary::getGraphUri().$uri;
+
         $graph->load( $uri );
 
         $terms =  $graph->allSubjects();

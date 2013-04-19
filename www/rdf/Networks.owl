@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rss="http://purl.org/rss/1.0/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:prop="http://wow.sfsu.edu/ontology/rich/Properties.owl#"
+    xmlns="http://wow.sfsu.edu/ontology/rich/Networks.owl#"
+    xmlns:res="http://wow.sfsu.edu/ontology/rich/Resources.owl#"
+    xmlns:jms="http://jena.hpl.hp.com/2003/08/jms#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#"
+    xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:units="http://wow.sfsu.edu/ontology/rich/Units.owl#"
+    xmlns:mb="http://wow.sfsu.edu/ontology/rich/MeasurementBase.owl#"
+  xml:base="http://wow.sfsu.edu/ontology/rich/Networks.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl"/>
+    <owl:imports rdf:resource="http://wow.sfsu.edu/ontology/rich/MeasurementBase.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="DirectedNode">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Node"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A node in a network that is connected by directed links</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#DirectedLink"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#linkedTo"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DirectedNetwork">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasNode"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#DirectedNode"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A network where all links are directed</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasLink"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#DirectedLink"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Network"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DirectedLink">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="#originNode"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#DirectedNode"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#destinationNode"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="#DirectedNode"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Link"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A link directed from an origin to a destination</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="UndirectedNetwork">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A network where all links are undirected</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#UndirectedNode"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasNode"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Network"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="#UndirectedLink"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#hasLink"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NodeTrait">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NetworkThing"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/MeasurementBase.owl#Trait"/>
+  </owl:Class>
+  <owl:Class rdf:ID="UndirectedLink">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Link"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An undirected connection between two nodes</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >2</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="#linkedNode"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Network">
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#Composite"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NetworkThing"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A network is a composite object, made of nodes and links (connections between nodes)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="UndirectedNode">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A node in a network that is connected by undirected links</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Node"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Link">
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#CompositePart"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A link in a network</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NetworkThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NetworkTrait">
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/MeasurementBase.owl#Trait"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#NetworkThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="NetworkThing">
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#EcoOntThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LinkTrait">
+    <rdfs:subClassOf rdf:resource="#NetworkThing"/>
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/MeasurementBase.owl#Trait"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Node">
+    <rdfs:subClassOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#CompositePart"/>
+    <rdfs:subClassOf rdf:resource="#NetworkThing"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A node in a network</rdfs:comment>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="linkedNode">
+    <rdfs:range rdf:resource="#UndirectedNode"/>
+    <rdfs:domain rdf:resource="#UndirectedLink"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="networkOf">
+    <rdfs:range rdf:resource="#Network"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Link"/>
+          <owl:Class rdf:about="#Node"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:subPropertyOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#partOf"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="destinationNode">
+    <rdfs:range rdf:resource="#Node"/>
+    <rdfs:domain rdf:resource="#DirectedLink"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Node that is the destination of a directed connection</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasNode">
+    <rdfs:subPropertyOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#hasPart"/>
+    <rdfs:domain rdf:resource="#Network"/>
+    <rdfs:range rdf:resource="#Node"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="linkedTo">
+    <rdfs:range rdf:resource="#Link"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Directed links that originate at this node</rdfs:comment>
+    <rdfs:domain rdf:resource="#DirectedNode"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasLink">
+    <rdfs:subPropertyOf rdf:resource="http://wow.sfsu.edu/ontology/rich/Properties.owl#hasPart"/>
+    <rdfs:domain rdf:resource="#Network"/>
+    <rdfs:range rdf:resource="#Link"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasConnections">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The two nodes that are connected by an undirected connection</rdfs:comment>
+    <rdfs:domain rdf:resource="#UndirectedNode"/>
+    <rdfs:range rdf:resource="#UndirectedLink"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="linkedFrom">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Directed links that terminate at this node</rdfs:comment>
+    <rdfs:domain rdf:resource="#DirectedNode"/>
+    <rdfs:range rdf:resource="#DirectedLink"/>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:ID="originNode">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Node that is the origin of a directed connection</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#DirectedLink"/>
+    <rdfs:range rdf:resource="#Node"/>
+  </owl:FunctionalProperty>
+  <LinkTrait rdf:ID="LinkCertainty">
+    <rdfs:label>certainty</rdfs:label>
+  </LinkTrait>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 1.2 beta, Build 139)  http://protege.stanford.edu -->

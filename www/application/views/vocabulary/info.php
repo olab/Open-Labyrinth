@@ -42,6 +42,8 @@ if (isset($templateData['vocabularies'])) {
             </td>
             </tr>
         <?php } ?>
+    <?php } else{ ?>
+        <tr class="info"><td colspan="2">There are no imporeted vocabularies, yet. You may import one, by using the form below.</td></tr>
     <?php } ?>
         </tbody>
     </table>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xml:base="http://purl.org/meducator/licenses#" xmlns:mdc="http://purl.org/meducator/ns/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:cc="http://creativecommons.org/ns#">
+	
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution">
+	<rdfs:label>Attribution</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by/3.0/"/>
+	</mdc:IPRType>
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution-Share-Alike">
+	<rdfs:label>Attribution-Share-Alike</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/"/> 
+	</mdc:IPRType>
+	
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution-No-Derivatives">
+	<rdfs:label>Attribution-No-Derivatives</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by-nd/3.0/"/> 
+	</mdc:IPRType>
+	
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution-Non-Commercial">
+	<rdfs:label>Attribution-Non-Commercial</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by-nc/3.0/"/> 	
+	</mdc:IPRType>
+	
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution-Non-Commercial-Share-Alike">
+	<rdfs:label>Attribution-Non-Commercial-Share-Alike</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/3.0/"/> 
+	</mdc:IPRType>
+	
+	<mdc:IPRType rdf:about="http://purl.org/meducator/licenses#Attribution-Non-Commercial-No-Derivatives">
+	<rdfs:label>Attribution-Non-Commercial-No-Derivatives</rdfs:label>
+	<cc:license rdf:resource="http://creativecommons.org/licenses/by-nc-nd/3.0/"/> 
+	</mdc:IPRType>
+	
+</rdf:RDF>

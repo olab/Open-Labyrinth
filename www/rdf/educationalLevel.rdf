@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xml:base="http://purl.org/meducator/educationalLevel"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<skos:Concept rdf:about="http://purl.org/meducator/educationalLevel">
+<skos:narrower rdf:resource="http://purl.org/meducator/educationalLevel#Undergraduate"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/educationalLevel#Post-graduate"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/educationalLevel#Continuing Education"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/educationalLevel#Patient-General Public Education"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://purl.org/meducator/educationalLevel#Undergraduate">
+<rdfs:label> Undergraduate Level</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/educationalLevel"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://purl.org/meducator/educationalLevel#Post-graduate">
+<rdfs:label> Post-graduate</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/educationalLevel"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://purl.org/meducator/educationalLevel#Continuing Education">
+<rdfs:label> Continuing Education</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/educationalLevel"/>
+</skos:Concept>
+<skos:Concept rdf:about="http://purl.org/meducator/educationalLevel#Patient-General Public Education">
+<rdfs:label> Patient-General Public Education</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/educationalLevel"/>
+</skos:Concept>
+</rdf:RDF>

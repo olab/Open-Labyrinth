@@ -11,11 +11,11 @@ require_once(Kohana::find_file('vendor', 'Graphite'));
 class Helper_Model_SkosTerm extends Kohana_Object
 {
     public function __construct($uri, $source){
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source = URL::base().$source;
         $this->uri = $uri;
         $this->narrower = array();
         $this->broader = array();
-        $graph = new Graphite();
-        $graph->load( $source );
+        $graph = self::initGraph($source);
         $this->label = $graph->resource($uri)->label();
         $this->broader =  $graph->resource($uri)->all("skos:broader");
         $this->narrower =  $graph->resource($uri)->all("skos:narrower");
@@ -100,9 +100,11 @@ class Helper_Model_SkosTerm extends Kohana_Object
 
 
     public static function getAllTermsTree($source, $name, $cardinality){
-        $graph = new Graphite();
-        $graph->load( $source );
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source  = Model_Leap_Vocabulary::getGraphUri().$source;
+
+        $graph = self::initGraph($source);
         $terms = $graph->allOfType( "skos:Concept" );
+
         $tree = self::buildTree($terms);
 
         $html = "";
@@ -153,9 +155,32 @@ class Helper_Model_SkosTerm extends Kohana_Object
         return $html;
     }
 
-    public static function getAllTerms($source){
+    private static  function initGraph($source, $id = "")
+    {
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source = URL::base().$source;
+        if(!is_dir(sys_get_temp_dir() . '/olab/'))mkdir(sys_get_temp_dir() . '/olab/');
+        $temp_file = sys_get_temp_dir() . '/olab/' . md5($source).$id;
         $graph = new Graphite();
-        $graph->load( $source );
+        if (!file_exists($temp_file)) {
+            $graph->load($source);
+            $graph->freeze($temp_file);
+        } else{
+
+            $graph = Graphite::thaw($temp_file);
+            if(count($graph->allSubjects())<1)
+            {
+                $graph->load($source);
+                $graph->freeze($temp_file);
+            }
+
+        }
+
+        return $graph;
+    }
+
+    public static function getAllTerms($source){
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source = URL::base().$source;
+        $graph = self::initGraph($source);
         $terms = $graph->allOfType( "skos:Concept" );
 
         $pairs = array();
