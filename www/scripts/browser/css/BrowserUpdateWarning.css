@@ -1,0 +1,153 @@
+/* ------------------------------------------------------------------------------------------------------------------------------
+ *	Browser Update Warning Popup
+ * ------------------------------------------------------------------------------------------------------------------------------ */
+
+	#BrowserUpdateWarningShade {
+		position: fixed;
+		left:0;
+		right:0;
+		top:0;
+		bottom:0;
+		z-index:100000;
+		background-color:#000;
+                opacity: 0.5;
+                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+                filter: alpha(opacity=50);
+	}
+	
+	#BrowserUpdateWarningWrapper {
+		position: fixed;
+		z-index:100001;
+		left:0;
+		right:0;
+		top:0;
+		bottom:0;
+		
+		overflow:auto;
+	}
+	
+	#BrowserUpdateWarningContent {
+		width:700px;
+		margin: 30px auto 0 auto;
+		padding:25px;
+		background-color:#333;
+		border: solid 1px #444;
+		position:relative;
+	}
+	
+	#BrowserUpdateWarningContent * {
+		font-family: Arial, sans-serif;
+	}
+
+	
+	#BrowserUpdateWarningContent h1,
+	#BrowserUpdateWarningContent h2,
+	#BrowserUpdateWarningContent .yourBrowser a {
+		margin:0px;
+	}
+	
+	#BrowserUpdateWarningContent h1 {
+		margin-bottom:16px;
+		color:#fff;
+		font-size:32px;
+	}
+	
+	#BrowserUpdateWarningContent h2 {
+		color:#ddd;
+		font-size: 18px;
+	}
+	
+	#BrowserUpdateWarningContent .yourBrowser {
+		margin-bottom:15px;
+		padding:12px 12px 6px 12px;
+		background-color: #272727;
+	}
+	
+	#BrowserUpdateWarningContent .yourBrowser img {
+		width:60px;
+		height:60px;
+	}
+	
+	#BrowserUpdateWarningContent .yourBrowser a {
+		vertical-align:25px;
+		color:#bbb;
+		text-decoration: none;
+		font-weight:bold;
+		padding: 20px 0px;
+		margin-left:10px;
+		display: inline-block;
+		width: 600px;
+	}
+	
+	#BrowserUpdateWarningContent .yourBrowser a:hover {
+		color:#ddd;
+	}
+	
+	#BrowserUpdateWarningContent .whyUpgrade {
+		width:300px;
+		float:right;
+		padding-left:12px;
+	}
+	
+	#BrowserUpdateWarningContent .whyUpgrade ul {
+		list-style: disc;
+		-webkit-margin-before: 0;
+		-webkit-margin-after: 0;
+		
+	}
+	
+	#BrowserUpdateWarningContent .whyUpgrade ul li {
+		font-size:14px;
+		color:#aaa;
+	}
+	
+	#BrowserUpdateWarningContent .otherBrowsers {
+		float:left;
+		width:380px;
+	}
+	
+	#BrowserUpdateWarningContent .otherBrowsers a {
+		display:block;
+		color:#bbb;
+		text-decoration: none;
+		padding:4px;
+		background-color:#272727;
+		margin-bottom:7px;
+                text-align:left;
+	}
+	
+	#BrowserUpdateWarningContent .otherBrowsers a:hover {
+		background-color:#2c2c2c;
+		color:#ddd;
+	}
+	
+	#BrowserUpdateWarningContent .otherBrowsers a img {
+		border: 0;
+		vertical-align:-15px;
+		margin-right:10px;
+		width:40px;
+		height:40px;
+	}
+	
+	#BrowserUpdateWarningContent .continueToSite {
+		position: absolute;
+		bottom:15px;
+		right:15px;
+		padding: 5px 12px;
+		background-color:#555;
+		border: solid 1px #444;
+		font-size:14px;
+		font-weight:bold;
+		color:#fff;
+		text-decoration:none;
+		display:block;
+	}
+	
+	#BrowserUpdateWarningContent .continueToSite:hover {
+		background-color: #666;
+	}
+	
+	
+	
+	
+	
