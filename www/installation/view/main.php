@@ -46,6 +46,31 @@
                 $("#div_email_passwords").addClass('hide');
             }
         });
+
+        var parent;
+        var id;
+        var button;
+        $(".radio_extended input[type=radio]").each(function(){
+            if ($(this).is(':checked')){
+                parent = $(this).parent('.radio_extended');
+                id = $(this).attr('id');
+                button = $(parent).find('label[for=' + id + ']');
+                changeRadioBootstrap(button);
+            }
+        });
+
+        $(".radio_extended .btn").live("click", function() {
+            changeRadioBootstrap(this);
+        });
+
+        function changeRadioBootstrap(obj){
+            $(obj).parent(".radio_extended").find(".btn").removeAttr('class').addClass('btn');
+            $(obj).addClass('active');
+            var additionClass = $(obj).attr('data-class');
+            if (additionClass !== null){
+                $(obj).addClass(additionClass);
+            }
+        }
     });
 </script>
 <div class="installation" style="">
