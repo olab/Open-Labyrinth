@@ -14,7 +14,14 @@ if ($changeBootstrap){
         echo 'Installation error: Please make "application/bootstrap.php" writable.';
         die();
     }
-    $docrootArray = explode('\\', DOCROOT);
+
+    $docrootArrayWindow = explode('\\', DOCROOT);
+    $docrootArrayLinux = explode('/', DOCROOT);
+    if (count($docrootArrayWindow) > count($docrootArrayLinux)){
+        $docrootArray = $docrootArrayWindow;
+    } else {
+        $docrootArray = $docrootArrayLinux;
+    }
     $url = parse_url($_SERVER['REQUEST_URI']);
     $parts = explode('/', $url['path']);
     $baseUrl = '/';
