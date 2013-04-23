@@ -182,7 +182,7 @@ class Installation {
 
 
         $temp['item'] = 'System Directory';
-        if (is_dir(SYSPATH) AND is_file(SYSPATH.'classes/Kohana'.EXT)){
+        if (is_dir(SYSPATH) AND is_file(SYSPATH.'classes/kohana'.EXT)){
             $temp['label'] = 'success';
             $temp['status'] = 'Yes';
         } else {
