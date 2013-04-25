@@ -8,7 +8,8 @@ class Security {
             $key = (string)rand(0,100);
         }
         if ($host == null){
-            $host = $_SERVER['HTTP_HOST'];
+            $url = parse_url($_SERVER['HTTP_HOST']);
+            $host = $url['host'];
         }
 
         $secret_key = 0;
