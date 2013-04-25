@@ -95,13 +95,21 @@
     ?>
     <ul class="nav nav-tabs">
         <?php
-        $steps = array(1 => 'Configuration', 2 => 'Database', 3 => 'Overview');
+        $steps = array(1 => 'Pre-Installation Check', 2 => 'Configuration', 3 => 'Database', 4 => 'Overview');
         foreach($steps as $key => $step){
             echo '<li class="step ';
             if ($templateData['stepIndex'] == $key){
-                echo 'active"><a href="javascript:void(0);"><span class="badge">' . $key . '</span> ' . $step . '</a>';
+                echo 'active"><a href="javascript:void(0);">';
+                if ($key != 1){
+                    echo '<span class="badge">' . ($key - 1) . '</span> ';
+                }
+                echo $step . '</a>';
             } else {
-                echo '"><span><span class="badge">' . $key . '</span> ' . $step . '</span>';
+                echo '"><span>';
+                if ($key != 1){
+                    echo '<span class="badge">' . ($key - 1) . '</span> ';
+                }
+                echo $step . '</span>';
             }
             echo '</li>';
         }

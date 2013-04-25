@@ -62,7 +62,7 @@ class Installation {
 
                 Session::set('installationConfiguration', json_encode($olab));
                 if (!$errorFound){
-                    Session::set('installationStep', '2');
+                    Session::set('installationStep', '3');
                 }
             }
         }
@@ -107,8 +107,40 @@ class Installation {
 
                 Session::set('installationDatabase', json_encode($olab));
                 if (!$errorFound){
-                    Session::set('installationStep', '3');
+                    Session::set('installationStep', '4');
                 }
+            }
+        }
+        Installation::redirect(URL::base() . 'installation/index.php');
+    }
+
+    public static function action_systemOverview(){
+        $token = Arr::get($_POST, 'token', NULL);
+        if (Security::check($token)) {
+            $errorFound = false;
+            if (!Installation::getPreCheckResult(true)){
+                Notice::add('Pre-installation check is not passed.');
+                $errorFound = true;
+            }
+
+            if (!Installation::getFileObjectsResult(true)){
+                Notice::add('Access to file system objects is not passed.');
+                $errorFound = true;
+            }
+
+            if (!$errorFound){
+                $baseUrl = URL::base();
+                if ($baseUrl != '/'){
+                    $content = '';
+                    $handle = fopen(DOCROOT . 'application/bootstrap.php', 'r');
+                    while (($buffer = fgets($handle)) !== false) {
+                        $content .= $buffer;
+                    }
+
+                    $content = str_replace("'base_url' => '/',", "'base_url' => '".$baseUrl."',", $content);
+                    file_put_contents(DOCROOT . 'application/bootstrap.php', $content);
+                }
+                Session::set('installationStep', '2');
             }
         }
         Installation::redirect(URL::base() . 'installation/index.php');
@@ -129,7 +161,7 @@ class Installation {
             }
 
             if (!$errorFound){
-                Session::set('installationStep', '4');
+                Session::set('installationStep', '5');
             }
         }
         Installation::redirect(URL::base() . 'installation/index.php');
@@ -303,6 +335,40 @@ class Installation {
     public static function getFileObjectsResult($returnStatus = false){
         $array = array();
         $status = true;
+
+        $temp['item'] = URL::base().'application/bootstrap.php';
+        if (is_dir(APPPATH) AND is_writable(APPPATH.'bootstrap.php')){
+            $temp['label'] = 'success';
+            $temp['status'] = 'Writable';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'Not writable';
+            $status = false;
+        }
+        $array[] = $temp;
+
+        $temp['item'] = URL::base().'install.php';
+        if (is_writable(DOCROOT.'install.php')){
+            $temp['label'] = 'success';
+            $temp['status'] = 'Writable';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'Not writable';
+            $status = false;
+        }
+        $array[] = $temp;
+
+        $temp['item'] = URL::base().'installation';
+        if (is_dir(DOCROOT.'installation') AND is_writable(DOCROOT.'installation')){
+            $temp['label'] = 'success';
+            $temp['status'] = 'Writable';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'Not writable';
+            $status = false;
+        }
+        $array[] = $temp;
+
         $temp['item'] = URL::base().'application/cache';
         if (is_dir(APPPATH) AND is_dir(APPPATH.'cache') AND is_writable(APPPATH.'cache')){
             $temp['label'] = 'success';
@@ -343,6 +409,7 @@ class Installation {
         } else {
             $temp['label'] = 'important';
             $temp['status'] = 'Not writable';
+            $status = false;
         }
         $array[] = $temp;
 
@@ -506,8 +573,6 @@ class Installation {
             $temp['ac-status'] = $limit;
         }
         $array[] = $temp;
-
-
 
         return $array;
     }
@@ -696,10 +761,16 @@ class Installation {
     }
 
     public static function terminate(){
-        unlink(DOCROOT . 'install.php');
-        Installation::deleteDir(DOCROOT . 'installation');
-        $baseUrl = URL::base();
-        session_destroy();
-        Installation::redirect($baseUrl);
+        if ((is_writable(DOCROOT.'install.php')) AND (is_dir(DOCROOT.'installation') AND is_writable(DOCROOT.'installation'))){
+            unlink(DOCROOT . 'install.php');
+            Installation::deleteDir(DOCROOT . 'installation');
+            $baseUrl = URL::base();
+            session_destroy();
+            Installation::redirect($baseUrl);
+        } else {
+            Notice::add('Please make <b><i>install.php</i></b> file and <b><i>installation</i></b> folder writable or delete them by yourself');
+            Session::set('installationStep', '1');
+            Installation::redirect(URL::base() . 'installation/index.php');
+        }
     }
 }

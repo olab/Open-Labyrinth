@@ -19,92 +19,57 @@
  *
  */
 ?>
-<form class="hide" id="previousStep" method="post" action="<?php echo URL::base(); ?>installation/index.php">
-    <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
-    <input type="hidden" name="previousStep" value="1" />
-</form>
+
+<div class="btn-toolbar">
+    <div class="btn-group pull-right">
+        <a title="Next" rel="next" id="next-step" class="btn btn-primary" href="javascript:void(0)"><i class="icon-arrow-right icon-white"></i> Next</a>
+    </div>
+</div>
 <form class="form-validate form-horizontal" id="adminForm" method="post" action="<?php echo URL::base(); ?>installation/index.php">
-    <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
-    <div class="btn-toolbar">
-        <div class="btn-group pull-right">
-            <a title="Previous" id="previous-step" rel="prev" href="javascript:void(0);" class="btn"><i class="icon-arrow-left"></i> Previous</a>
-            <a title="Next" id="next-step" rel="next" href="javascript:void(0);" class="btn btn-primary"><i class="icon-arrow-right icon-white"></i> Next</a>
-        </div>
-    </div>
-    <h3>Database Configuration</h3>
+    <h3>Main Configuration</h3>
     <hr class="hr-condensed">
-    <div class="control-group">
-        <div class="control-label">
-            <label class=" required" for="db_type" id="db_type-lbl">Database Type<span class="star">&nbsp;*</span></label>		</div>
-        <div class="controls">
-            <select class="inputbox" name="olab[db_type]" id="db_type">
-                <option selected="selected" value="mysql">MySQL</option>
-            </select>
-            <p class="help-block">This is probably "MySQL"</p>
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label for="db_host" id="db_host-lbl">Host Name<span class="star">&nbsp;*</span></label>
-        </div>
-        <div class="controls">
-            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_host : 'localhost'); ?>" id="db_host" name="olab[db_host]" />
-            <p class="help-block">This is usually "localhost"</p>
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label for="db_port" id="db_port-lbl">Port</label>
-        </div>
-        <div class="controls">
-            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_port : ''); ?>" id="db_port" name="olab[db_port]" />
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label for="db_user" id="db_user-lbl">Username<span class="star">&nbsp;*</span></label>
-        </div>
-        <div class="controls">
-            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_user : ''); ?>" id="db_user" name="olab[db_user]" />
-            <p class="help-block">Either something as "root" or a username given by the host</p>
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label for="db_pass" id="db_pass-lbl">Password</label>
-        </div>
-        <div class="controls">
-            <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_pass : ''); ?>" id="db_pass" name="olab[db_pass]">
-            <p class="help-block">For site security using a password for the database account is mandatory</p>
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label for="db_name" id="db_name-lbl">Database Name<span class="star">&nbsp;*</span></label>
-        </div>
-        <div class="controls">
-            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_name : ''); ?>" id="db_name" name="olab[db_name]" />
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="control-label">
-            <label id="db_old-lbl">Old Database Process<span class="star">&nbsp;*</span></label>
-        </div>
-        <div class="controls">
-            <div class="radio_extended btn-group">
-                <input autocomplete="off" type="radio"
-                    <?php
-                        if (isset($templateData['data'])){
-                            if ($templateData['data']->db_old == 'backup') echo 'checked="checked"';
-                        } else {
-                            echo 'checked="checked"';
-                        }
-                    ?> value="backup" name="olab[db_old]" id="db_old0">
-                <label data-class="btn-success" for="db_old0" class="btn">Backup</label>
-                <input autocomplete="off" type="radio" <?php echo ((isset($templateData['data']) && ($templateData['data']->db_old == 'remove')) ? 'checked="checked"' : ''); ?> value="remove" name="olab[db_old]" id="db_old1">
-                <label data-class="btn-danger" for="db_old1" class="btn">Remove</label>
+
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="control-group">
+                <div class="control-label">
+                    <label class=" required" for="admin_email" id="admin_email-lbl">Admin Email<span class="star">&nbsp;*</span></label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="text" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_email : ''); ?>" id="admin_email" class="inputbox" name="olab[admin_email]" />
+                    <p class="help-block">Enter an email address.</p>
+                </div>
             </div>
-            <p class="help-block">Any existing backup tables from former OpenLabyrinth installations will be replaced</p>
+            <div class="control-group">
+                <div class="control-label">
+                    <label class=" required" for="admin_user" id="admin_user-lbl">Admin Username<span class="star">&nbsp;*</span></label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_user : 'admin'); ?>" id="admin_user" name="olab[admin_user]" />
+                    <p class="help-block">You may change the default username <strong>admin</strong>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="span6">
+            <div class="control-group">
+                <div class="control-label">
+                    <label class=" required" for="admin_password" id="admin_password-lbl">Admin Password<span class="star">&nbsp;*</span></label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_password : ''); ?>" id="admin_password" name="olab[admin_password]" />
+                    <p class="help-block">Set the password for your Administrator account and confirm it in the field below.</p>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <label class=" required" for="admin_password2" id="admin_password2-lbl">Confirm Admin Password<span class="star">&nbsp;*</span></label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_password2 : ''); ?>" id="admin_password2" name="olab[admin_password2]" />
+                </div>
+            </div>
         </div>
     </div>
+    <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
 </form>
+

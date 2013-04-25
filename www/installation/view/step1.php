@@ -19,79 +19,68 @@
  *
  */
 ?>
-
-<div class="btn-toolbar">
-    <div class="btn-group pull-right">
-        <a title="Next" rel="next" id="next-step" class="btn btn-primary" href="javascript:void(0)"><i class="icon-arrow-right icon-white"></i> Next</a>
+<div class="modal hide fade in" id="skipInstallationPopUp">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="alert-heading">Caution! Are you sure?</h4>
+    </div>
+    <div class="modal-body">
+        <p>You have just clicked the skip installation button, are you certain that you wish to skip installation?</p>
+        <p>
+            <a class="btn btn-primary" id="skipInstallation" href="javascript:void(0);">Skip</a>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </p>
     </div>
 </div>
-<form class="form-validate form-horizontal" id="adminForm" method="post" action="<?php echo URL::base(); ?>installation/index.php">
-    <h3>Main Configuration</h3>
-    <hr class="hr-condensed">
-
-    <div class="row-fluid">
-        <div class="span6">
-            <div class="control-group">
-                <div class="control-label">
-                    <label class=" required" for="admin_email" id="admin_email-lbl">Admin Email<span class="star">&nbsp;*</span></label>
-                </div>
-                <div class="controls">
-                    <input autocomplete="off" type="text" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_email : ''); ?>" id="admin_email" class="inputbox" name="olab[admin_email]" />
-                    <p class="help-block">Enter an email address.</p>
-                </div>
-            </div>
-            <div class="control-group">
-                <div class="control-label">
-                    <label class=" required" for="admin_user" id="admin_user-lbl">Admin Username<span class="star">&nbsp;*</span></label>
-                </div>
-                <div class="controls">
-                    <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_user : 'admin'); ?>" id="admin_user" name="olab[admin_user]" />
-                    <p class="help-block">You may change the default username <strong>admin</strong>.</p>
-                </div>
-            </div>
-        </div>
-        <div class="span6">
-            <div class="control-group">
-                <div class="control-label">
-                    <label class=" required" for="admin_password" id="admin_password-lbl">Admin Password<span class="star">&nbsp;*</span></label>
-                </div>
-                <div class="controls">
-                    <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_password : ''); ?>" id="admin_password" name="olab[admin_password]" />
-                    <p class="help-block">Set the password for your Administrator account and confirm it in the field below.</p>
-                </div>
-            </div>
-            <div class="control-group">
-                <div class="control-label">
-                    <label class=" required" for="admin_password2" id="admin_password2-lbl">Confirm Admin Password<span class="star">&nbsp;*</span></label>
-                </div>
-                <div class="controls">
-                    <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->admin_password2 : ''); ?>" id="admin_password2" name="olab[admin_password2]" />
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div style="margin:0 auto; width:440px;">
-            <a id="skipInstallationButton" title="Skip" class="btn btn-primary" href="javascript:void(0)">Skip installation, I have already setup instance of OpenLabyrinth</a>
-        </div>
-
-        <div class="modal hide fade in" id="skipInstallationPopUp">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="alert-heading">Caution! Are you sure?</h4>
-            </div>
-            <div class="modal-body">
-                <p>You have just clicked the skip installation button, are you certain that you wish to skip installation?</p>
-                <p>
-                    <a class="btn btn-primary" id="skipInstallation" href="javascript:void(0);">Skip</a>
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-                </p>
-            </div>
-        </div>
-    </div>
-    <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
-</form>
 <form class="hide" id="skipInstallationForm" method="post" action="<?php echo URL::base(); ?>installation/index.php">
     <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
     <input type="hidden" name="skipInstallation" value="1" />
+</form>
+<form class="form-validate form-horizontal" id="adminForm" method="post" action="<?php echo URL::base(); ?>installation/index.php">
+    <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
+    <div class="btn-toolbar">
+        <div class="btn-group pull-right">
+            <a id="skipInstallationButton" title="Skip" class="btn" href="javascript:void(0)">Skip installation, I have already setup instance of OpenLabyrinth</a>
+            <a title="Start installation" id="next-step" rel="next" href="javascript:void(0);" class="btn btn-primary"><i class="icon-arrow-right icon-white"></i> Start installation</a>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span6">
+            <h3>Pre-Installation Check</h3>
+            <hr class="hr-condensed">
+            <table class="table table-striped table-condensed">
+                <tbody>
+                <?php
+                if (isset($templateData['pre-check']) && (count($templateData['pre-check']) > 0)){
+                    foreach($templateData['pre-check'] as $preCheck){
+                        echo '<tr>
+                        <td class="item">'.$preCheck['item'].'</td>
+                        <td><span class="label label-'.$preCheck['label'].'">'.$preCheck['status'].'</span></td>
+                        </tr>';
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="span6">
+            <h3>Access to file system objects</h3>
+            <hr class="hr-condensed">
+            <p class="install-text">All of the next files and directories should be writable:</p>
+            <table class="table table-striped table-condensed">
+                <tbody>
+                <?php
+                if (isset($templateData['file_objects']) && (count($templateData['file_objects']) > 0)){
+                    foreach($templateData['file_objects'] as $file_objects){
+                        echo '<tr>
+                        <td class="item">'.$file_objects['item'].'</td>
+                        <td><span class="label label-'.$file_objects['label'].'">'.$file_objects['status'].'</span></td>
+                        </tr>';
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </form>

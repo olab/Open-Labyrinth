@@ -8,7 +8,8 @@ class Security {
             $key = (string)rand(0,100);
         }
         if ($host == null){
-            $url = parse_url($_SERVER['HTTP_HOST']);
+            $pageHttp = (@$_SERVER['HTTPS']) ? 'https://' : 'http://';
+            $url = parse_url($pageHttp.$_SERVER['HTTP_HOST']);
             $host = $url['host'];
         }
 

@@ -28,215 +28,83 @@
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
             <a title="Previous" id="previous-step" rel="prev" href="javascript:void(0);" class="btn"><i class="icon-arrow-left"></i> Previous</a>
-            <a title="Next" id="next-step" rel="next" href="javascript:void(0);" class="btn btn-primary"><i class="icon-arrow-right icon-white"></i> Install and go to the login page</a>
+            <a title="Next" id="next-step" rel="next" href="javascript:void(0);" class="btn btn-primary"><i class="icon-arrow-right icon-white"></i> Next</a>
         </div>
     </div>
-<!--    <h3>Overview</h3>-->
-<!--    <hr class="hr-condensed">-->
-<!---->
-<!--    <div id="summary_email" class="control-group">-->
-<!--        <div class="control-label">-->
-<!--            <label class="" for="summary_email" id="summary_email-lbl">Email Configuration</label>-->
-<!--        </div>-->
-<!--        <div class="controls">-->
-<!--            <div class="radio_extended btn-group">-->
-<!--                <input type="radio" class="summary_email" checked="checked" value="0" name="olab[summary_email]" id="summary_email0" />-->
-<!--                <label data-class="btn-danger" for="summary_email0" class="btn">No</label>-->
-<!--                <input type="radio" class="summary_email" value="1" name="olab[summary_email]" id="summary_email1" />-->
-<!--                <label data-class="btn-success" for="summary_email1" class="btn">Yes</label>-->
-<!--            </div>-->
-<!--            <p class="help-block">Send configuration settings to <span class="label">--><?php //echo $templateData['configuration']->admin_email; ?><!--</span> by email after installation.</p>-->
-<!--        </div>-->
-<!--    </div>-->
-<!---->
-<!--    <div class="hide" id="div_email_passwords" class="control-group">-->
-<!--        <div class="control-label">-->
-<!--            <label class="" id="email_passwords-lbl">Include Passwords in Email</label>-->
-<!--        </div>-->
-<!--        <div class="controls">-->
-<!--            <div class="radio_extended btn-group">-->
-<!--                <input type="radio" checked="checked" value="0" name="olab[summary_email_passwords]" id="email_passwords0">-->
-<!--                <label data-class="btn-danger" for="email_passwords0" class="btn">No</label>-->
-<!--                <input type="radio" value="1" name="olab[summary_email_passwords]" id="email_passwords1">-->
-<!--                <label data-class="btn-success" for="email_passwords1" class="btn">Yes</label>-->
-<!--            </div>-->
-<!--            <p class="help-block">Warning! It is recommended to not send and store your passwords in emails.</p>-->
-<!--        </div>-->
-<!--    </div>-->
-
-    <div class="row-fluid">
-        <div class="span6">
-            <h3>Main Configuration</h3>
-            <hr class="hr-condensed">
-            <table class="table table-striped table-condensed">
-                <tbody>
-                <tr>
-                    <td class="item">
-                        Admin Email
-                    </td>
-                    <td>
-                        <span class="label"><?php echo $templateData['configuration']->admin_email; ?></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Admin Username
-                    </td>
-                    <td>
-                        <span class="label"><?php echo $templateData['configuration']->admin_user; ?></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Admin Password
-                    </td>
-                    <td>
-                        ***
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <h3>Database Configuration</h3>
+    <hr class="hr-condensed">
+    <div class="control-group">
+        <div class="control-label">
+            <label class=" required" for="db_type" id="db_type-lbl">Database Type<span class="star">&nbsp;*</span></label>		</div>
+        <div class="controls">
+            <select class="inputbox" name="olab[db_type]" id="db_type">
+                <option selected="selected" value="mysql">MySQL</option>
+            </select>
+            <p class="help-block">This is probably "MySQL"</p>
         </div>
-        <div class="span6">
-            <h3>Database Configuration</h3>
-            <hr class="hr-condensed">
-            <table class="table table-striped table-condensed">
-                <tbody>
-                <tr>
-                    <td class="item">
-                        Database Type
-                    </td>
-                    <td>
-                        mysql
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Host Name
-                    </td>
-                    <td>
-                        <?php echo $templateData['database']->db_host; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Port
-                    </td>
-                    <td>
-                        <?php echo $templateData['database']->db_port; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Username
-                    </td>
-                    <td>
-                        <?php echo $templateData['database']->db_user; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Password
-                    </td>
-                    <td>
-                        <?php echo ($templateData['database']->db_pass != '') ? '***' : ''; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Database Name
-                    </td>
-                    <td>
-                        <?php echo $templateData['database']->db_name; ?>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="item">
-                        Old Database Process
-                    </td>
-                    <td>
-                        <?php
-                        if ($templateData['database']->db_old == 'backup'){
-                            echo '<span class="label label-success">Backup</span>';
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="db_host" id="db_host-lbl">Host Name<span class="star">&nbsp;*</span></label>
+        </div>
+        <div class="controls">
+            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_host : 'localhost'); ?>" id="db_host" name="olab[db_host]" />
+            <p class="help-block">This is usually "localhost"</p>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="db_port" id="db_port-lbl">Port</label>
+        </div>
+        <div class="controls">
+            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_port : ''); ?>" id="db_port" name="olab[db_port]" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="db_user" id="db_user-lbl">Username<span class="star">&nbsp;*</span></label>
+        </div>
+        <div class="controls">
+            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_user : ''); ?>" id="db_user" name="olab[db_user]" />
+            <p class="help-block">Either something as "root" or a username given by the host</p>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="db_pass" id="db_pass-lbl">Password</label>
+        </div>
+        <div class="controls">
+            <input autocomplete="off" type="password" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_pass : ''); ?>" id="db_pass" name="olab[db_pass]">
+            <p class="help-block">For site security using a password for the database account is mandatory</p>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label for="db_name" id="db_name-lbl">Database Name<span class="star">&nbsp;*</span></label>
+        </div>
+        <div class="controls">
+            <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->db_name : ''); ?>" id="db_name" name="olab[db_name]" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="control-label">
+            <label id="db_old-lbl">Old Database Process<span class="star">&nbsp;*</span></label>
+        </div>
+        <div class="controls">
+            <div class="radio_extended btn-group">
+                <input autocomplete="off" type="radio"
+                    <?php
+                        if (isset($templateData['data'])){
+                            if ($templateData['data']->db_old == 'backup') echo 'checked="checked"';
                         } else {
-                            echo '<span class="label label-important">Remove</span>';
+                            echo 'checked="checked"';
                         }
-                        ?>
-
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    ?> value="backup" name="olab[db_old]" id="db_old0">
+                <label data-class="btn-success" for="db_old0" class="btn">Backup</label>
+                <input autocomplete="off" type="radio" <?php echo ((isset($templateData['data']) && ($templateData['data']->db_old == 'remove')) ? 'checked="checked"' : ''); ?> value="remove" name="olab[db_old]" id="db_old1">
+                <label data-class="btn-danger" for="db_old1" class="btn">Remove</label>
+            </div>
+            <p class="help-block">Any existing backup tables from former OpenLabyrinth installations will be replaced</p>
         </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span6">
-            <h3>Pre-Installation Check</h3>
-            <hr class="hr-condensed">
-            <table class="table table-striped table-condensed">
-                <tbody>
-                <?php
-                if (isset($templateData['pre-check']) && (count($templateData['pre-check']) > 0)){
-                    foreach($templateData['pre-check'] as $preCheck){
-                        echo '<tr>
-                        <td class="item">'.$preCheck['item'].'</td>
-                        <td><span class="label label-'.$preCheck['label'].'">'.$preCheck['status'].'</span></td>
-                        </tr>';
-                    }
-                }
-                ?>
-                </tbody>
-            </table>
-        </div>
-        <div class="span6">
-            <h3>Access to file system objects</h3>
-            <hr class="hr-condensed">
-            <p class="install-text">All of the next files and directories should be writable:</p>
-            <table class="table table-striped table-condensed">
-                <tbody>
-                <?php
-                if (isset($templateData['file_objects']) && (count($templateData['file_objects']) > 0)){
-                    foreach($templateData['file_objects'] as $file_objects){
-                        echo '<tr>
-                        <td class="item">'.$file_objects['item'].'</td>
-                        <td><span class="label label-'.$file_objects['label'].'">'.$file_objects['status'].'</span></td>
-                        </tr>';
-                    }
-                }
-                ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span6">
-            <h3>Recommended settings:</h3>
-            <hr class="hr-condensed">
-            <p class="install-text">
-                These settings are recommended for PHP in order to ensure full compatibility with OpenLabyrinth.<br>However, OpenLabyrinth will still operate if your settings do not quite match the recommended configuration.</p>
-            <table class="table table-striped table-condensed">
-                <thead>
-                <tr>
-                    <th>Directive</th>
-                    <th>Recommended</th>
-                    <th>Actual</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php
-                if (isset($templateData['recommended']) && (count($templateData['recommended']) > 0)){
-                    foreach($templateData['recommended'] as $recommended){
-                        echo '<tr>
-                        <td class="item">'.$recommended['item'].'</td>
-                        <td><span class="label label-'.$recommended['label'].'">'.$recommended['status'].'</span></td>
-                        <td><span class="label label-'.$recommended['ac-label'].'">'.$recommended['ac-status'].'</span></td>
-                        </tr>';
-                    }
-                }
-                ?>
-                </tbody>
-            </table>
-        </div>
-        <div class="span6"></div>
     </div>
 </form>

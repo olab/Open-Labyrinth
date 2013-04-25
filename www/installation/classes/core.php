@@ -35,12 +35,14 @@ if ($token != NULL){
     } else {
         switch ($stepIndex){
             case 1:
+                Installation::action_systemOverview();
+            case 2:
                 Installation::action_configuration();
                 break;
-            case 2:
+            case 3:
                 Installation::action_database();
                 break;
-            case 3:
+            case 4:
                 Installation::action_overview();
                 break;
         }
@@ -48,15 +50,23 @@ if ($token != NULL){
 }
 switch ($stepIndex){
     case 1:
+        $templateData['pre-check'] = Installation::getPreCheckResult();
+        $templateData['file_objects'] = Installation::getFileObjectsResult();
+        if ((is_writable(DOCROOT.'install.php')) AND (is_dir(DOCROOT.'installation') AND is_writable(DOCROOT.'installation'))){
+            $templateData['MskipInstallation'] = true;
+        } else {
+            $templateData['skipInstallation'] = false;
+        }
+    case 2:
         $olab = Session::get('installationConfiguration');
         $templateData['data'] = ($olab != null) ? json_decode($olab) : null;
         break;
-    case 2:
+    case 3:
         $olab = Session::get('installationDatabase');
         $templateData['data'] = ($olab != null) ? json_decode($olab) : null;
         break;
         break;
-    case 3:
+    case 4:
         $olab = Session::get('installationConfiguration');
         $templateData['configuration'] = ($olab != null) ? json_decode($olab) : null;
         $olab = Session::get('installationDatabase');
@@ -65,7 +75,7 @@ switch ($stepIndex){
         $templateData['file_objects'] = Installation::getFileObjectsResult();
         $templateData['recommended'] = Installation::getRecommendedResult();
         break;
-    case 4:
+    case 5:
         Installation::proceed();
         exit;
         break;
