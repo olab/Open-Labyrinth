@@ -483,9 +483,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
             }
 
             return $result;
@@ -493,10 +494,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($node->end and $node->link_style->name == 'type in text') {
                 if(!isset($result['links']['display']))
                     $result['links']['display'] = '';
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
                 return $result;
             }
 
