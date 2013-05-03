@@ -425,6 +425,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function generateLinks($node, $links) {
         $result = NULL;
         $result['links'] = '';
+        $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
         if (is_array($links) and count($links) > 0) {
             $result['remote_links'] = '';
             $result['links'] = '';
@@ -483,10 +484,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+                $result['links']['display'] .= $endNodeTemplate;
+                $result['links']['display'] .= $endNodeTemplate;
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+                $result['links'] .= $endNodeTemplate;
             }
 
             return $result;
@@ -494,10 +495,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($node->end and $node->link_style->name == 'type in text') {
                 if(!isset($result['links']['display']))
                     $result['links']['display'] = '';
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+                $result['links']['display'] .= $endNodeTemplate;
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+                $result['links'] .= $endNodeTemplate;
                 return $result;
             }
 
