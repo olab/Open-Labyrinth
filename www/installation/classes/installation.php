@@ -457,6 +457,17 @@ class Installation {
         }
         $array[] = $temp;
 
+        $temp['item'] = URL::base().'updates';
+        if (is_dir(DOCROOT.'updates') AND is_writable(DOCROOT.'updates')){
+            $temp['label'] = 'success';
+            $temp['status'] = 'Writable';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'Not writable';
+            $status = false;
+        }
+        $array[] = $temp;
+
         return ($returnStatus) ? $status : $array;
     }
 
