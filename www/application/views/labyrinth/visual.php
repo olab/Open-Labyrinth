@@ -244,7 +244,7 @@ if (isset($templateData['map'])) { ?>
 
             <div class="modal-body block">
                 <div class="control-group block">
-                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Autosave time (sec)</strong></label>
+                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Autosave time (sec, minimum 10 sec)</strong></label>
                     <div class="controls">
                         <input type="text" id="autosaveTime" name="autosaveTime" value="">
                     </div>

@@ -269,6 +269,10 @@ $(function () {
     $('#veSaveSettings').click(function() {
         var value = $('#autosaveTime').val();
         if(value != null && value > 0) {
+            if(value < 10) {
+                value = 10;
+            }
+
             autosaveInterval = value * 1000;
             $.post(settingsURL, {
                 time: autosaveInterval
@@ -366,7 +370,7 @@ $(function () {
         visualEditor.isSelectActive = true;
     }
 
-    setInterval(checkForAutoSave, 1000);
+    setInterval(checkForAutoSave, 5000);
 
     var autoSaveTimerNotSet = true;
     var autoSaveTimer = null;
