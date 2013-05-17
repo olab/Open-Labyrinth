@@ -46,7 +46,7 @@ if (isset($templateData['map'])) { ?>
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = null;
         var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
-        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime / 1000 : 50; ?>;
+        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>

@@ -263,7 +263,7 @@ $(function () {
 
     $('#settings').click(function() {
         $('#veSettings').modal();
-        $('#autosaveTime').val(autosaveInterval);
+        $('#autosaveTime').val(autosaveInterval * 0.001);
     });
 
     $('#veSaveSettings').click(function() {
@@ -366,7 +366,7 @@ $(function () {
         visualEditor.isSelectActive = true;
     }
 
-    setInterval(checkForAutoSave, 5000);
+    setInterval(checkForAutoSave, 1000);
 
     var autoSaveTimerNotSet = true;
     var autoSaveTimer = null;
