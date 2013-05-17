@@ -207,15 +207,66 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getNodesByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+    public function getNodesByMap($mapId, $orderBy = null, $logicSort = null) {
+        $builder = DB_SQL::select('default')->from($this->table(), 't')->column('t.id', 'id')->where('map_id', '=', $mapId);
+        switch($orderBy) {
+            case 1:
+                $builder = $builder->order_by('id', 'ASC');
+                break;
+            case 2:
+                $builder = $builder->order_by('id', 'DESC');
+                break;
+            case 3:
+                $builder = $builder->order_by('title', 'ASC');
+                break;
+            case 4:
+                $builder = $builder->order_by('title', 'DESC');
+                break;
+            case 5:
+                $builder = $builder->order_by('x', 'ASC');
+                break;
+            case 6:
+                $builder = $builder->order_by('x', 'DESC');
+                break;
+            case 7:
+                $builder = $builder->order_by('y', 'ASC');
+                break;
+            case 8:
+                $builder = $builder->order_by('y', 'DESC');
+                break;
+            case 9:
+                $builder = $builder->join('left', 'map_node_section_nodes', 'r')->on('r.node_id', '=', 't.id')->order_by('r.id', 'ASC');
+                break;
+            case 10:
+                $builder = $builder->join('left', 'map_node_section_nodes', 'r')->on('r.node_id', '=', 't.id')->order_by('r.id', 'DESC');
+                break;
+            default:
+                $builder = $builder->order_by('id', 'ASC');
+        }
+        
         $result = $builder->query();
         
         if($result->is_loaded()) {
             $nodes = array();
+            $rootNodes = array();
+            $endNodes = array();
             foreach($result as $record) {
-                $nodes[] = DB_ORM::model('map_node', array((int)$record['id']));
+                $tmp = DB_ORM::model('map_node', array((int)$record['id']));
+                if($logicSort != null && $logicSort == 1) {
+                    if($tmp->type_id == 1) {
+                        $rootNodes[] = $tmp;
+                    } else if($tmp->end) {
+                        $endNodes[] = $tmp;
+                    } else {
+                        $nodes[] = $tmp;
+                    }
+                } else {
+                    $nodes[] = $tmp;
+                }
             }
+            
+            $nodes = array_merge($rootNodes, $nodes);
+            $nodes = array_merge($nodes, $endNodes);
             
             return $nodes;
         }
@@ -223,8 +274,11 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllNode() {
+    public function getAllNode($mapId = null) {
         $builder = DB_SQL::select('default')->from($this->table());
+        if($mapId != null)
+            $builder = $builder->where ('map_id', '=', $mapId);
+        
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -428,11 +482,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    public function updateAllNode($values) {
-        $nodes = $this->getAllNode();
+    public function updateAllNode($values, $mapId = null) {
+        $nodes = $this->getAllNode($mapId);
         foreach($nodes as $node) {
             $node->title = Arr::get($values, 'title_'.$node->id, $node->title);
             $node->text = Arr::get($values, 'text_'.$node->id, $node->text);
+            $node->info = Arr::get($values, 'info_'.$node->id, $node->info);
             
             $node->save();
         }

@@ -18,67 +18,102 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
-            xmlns="http://www.w3.org/1999/html"></script>
-    <script language="javascript">
-        tinyMCE.init({
-            // General options
-            mode: "textareas",
-            relative_urls: false,
-            theme: "advanced",
-            skin: "bootstrap",
-            entity_encoding: "raw",
-            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
-            // Theme options
-            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
-            theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
-            theme_advanced_buttons3: "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
-            theme_advanced_buttons4: "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,imgmap",
-            theme_advanced_toolbar_location: "top",
-            theme_advanced_toolbar_align: "left",
-            theme_advanced_statusbar_location: "bottom",
-            theme_advanced_resizing: true,
-            editor_selector: "mceEditor"
-        });
-    </script>
+if (isset($templateData['map'])) { ?>
     <div class="page-header">
     <h1><?php echo __('NodeGrid "') . $templateData['map']->name . '"'; ?></h1></div>
-    <form class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
 
-        <?php if (isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
-
-
-                <?php foreach ($templateData['nodes'] as $node) { ?>
-    <fieldset class="fieldset">
-        <legend>Node with ID <?php echo $node->id; ?> <?php if ($node->type->name == 'root') echo __('(root)'); ?></legend>
-            <div class="control-group">
-                <label for="title_<?php echo $node->id; ?>" class="control-label"><?php echo __('Title'); ?></label>
-
-                <div class="controls">
-                    <input class="span6" type="text" id="title_<?php echo $node->id; ?>" name="title_<?php echo $node->id; ?>"
-                           value="<?php echo $node->title; ?>">
+    <div class="main-edit-panel">
+        <div class="header"></div>
+        <div class="edit-content">
+            <div class="edit-controls">
+                <div class="edit-row">
+                    <div class="edit-cell">Find What:</div>
+                    <div class="edit-cell"><input type="text" id="findWhat" value=""/></div>
+                    <div class="edit-cell">
+                        <button class="btn previous-btn"><i class="icon-arrow-left icon-white"></i>Previous</button>
+                        <button class="btn next-btn"><i class="icon-arrow-right icon-white"></i>Next</button>
+                    </div>
+                </div>
+                <div class="edit-row">
+                    <div class="edit-cell">Replace With:</div>
+                    <div class="edit-cell"><input type="text" id="replaceWith" value=""/></div>
+                    <div class="edit-cell">
+                        <button class="btn replace-btn">Replace</button>
+                        <button class="btn replace-all-btn">Replace All</button>
+                    </div>
                 </div>
             </div>
-        <div class="control-group">
-            <label for="text_<?php echo $node->id; ?>" class="control-label"><?php echo __('Description'); ?></label>
-
-            <div class="controls" >
-                <textarea class="span6 mceEditor" id="text_<?php echo $node->id; ?>"
-                          name="text_<?php echo $node->id; ?>"><?php echo $node->text; ?></textarea>
-            </div>
         </div>
-    </fieldset>
+    </div>
 
+    <form id="grid_from" class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
+        <input type="hidden" id="orderBy" name="orderBy" value="<?php if(isset($templateData['orderBy'])) echo $templateData['orderBy']; ?>"/>
+        <input type="hidden" id="logicSort" name="logicSort" value="<?php if(isset($templateData['logicSort'])) echo $templateData['logicSort']; ?>"/>
+        
+        <button class="btn logic-btn <?php if(isset($templateData['logicSort']) && $templateData['logicSort'] == 1) echo 'active'; ?>" data-toggle="buttons-checkbox" type="button">Logic sort</button>
+        <table class="table table-striped table-bordered persist-area">
+            <thead>
+                <tr class="persist-header">
+                    <th>
+                        <a href="javascript:void(0)" class="sort-btn" orderBy="<?php echo isset($templateData['orderBy']) && $templateData['orderBy'] == 1 ? '2' : '1'; ?>">
+                            Node ID <div class="pull-right"><i class="icon-chevron-<?php if(isset($templateData['orderBy']) && $templateData['orderBy'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" class="sort-btn" orderBy="<?php echo isset($templateData['orderBy']) && $templateData['orderBy'] == 3 ? '4' : '3'; ?>">
+                            Title <div class="pull-right"><i class="icon-chevron-<?php if(isset($templateData['orderBy']) && $templateData['orderBy'] == 3) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        </a>
+                    </th>
+                    <th>Text</th>
+                    <th>Info</th>
+                    <th>
+                        <a href="javascript:void(0)" class="sort-btn" orderBy="<?php echo isset($templateData['orderBy']) && $templateData['orderBy'] == 5 ? '6' : '5'; ?>">
+                            X <div class="pull-right"><i class="icon-chevron-<?php if(isset($templateData['orderBy']) && $templateData['orderBy'] == 5) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" class="sort-btn" orderBy="<?php echo isset($templateData['orderBy']) && $templateData['orderBy'] == 7 ? '8' : '7'; ?>">
+                            Y <div class="pull-right"><i class="icon-chevron-<?php if(isset($templateData['orderBy']) && $templateData['orderBy'] == 7) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="javascript:void(0)" class="sort-btn" orderBy="<?php echo isset($templateData['orderBy']) && $templateData['orderBy'] == 9 ? '10' : '9'; ?>">
+                            Section ID <div class="pull-right"><i class="icon-chevron-<?php if(isset($templateData['orderBy']) && $templateData['orderBy'] == 9) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <?php if (isset($templateData['nodes']) and count($templateData['nodes']) > 0) { ?>
+                <?php foreach ($templateData['nodes'] as $node) { ?>
+                <tr>
+                    <td><?php echo $node->id; ?> <?php if ($node->type->name == 'root') echo __('(root)'); ?></td>
+                    <td><textarea class="search-textarea" id="title_<?php echo $node->id; ?>" name="title_<?php echo $node->id; ?>"><?php echo $node->title; ?></textarea></td>
+                    <td><textarea class="search-textarea" id="text_<?php echo $node->id; ?>" name="text_<?php echo $node->id; ?>"><?php echo $node->text; ?></textarea></td>
+                    <td><textarea class="search-textarea" id="info_<?php echo $node->id; ?>" name="info_<?php echo $node->id; ?>"><?php echo $node->info; ?></textarea></td>
+                    <td><?php echo $node->x; ?></td>
+                    <td><?php echo $node->y; ?></td>
+                    <td>
+                        <?php if(count($node->sections) > 0) { ?>
+                        <?php foreach($node->sections as $section) { ?>
+                        <div><?php echo $section->section_id; ?> </div>
+                        <?php } ?>
+                        <?php } ?>
+                    </td>
+                </tr>
                 <?php } ?>
-        <?php } ?>
+                <?php } ?>
+            </tbody>
+        </table>
+        
+        
         <div class="form-actions">
             <div class="pull-right">
-        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>"></div>
+                <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>">
+            </div>
         </div>
-
     </form>
 
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/replacer.js'); ?>"></script>
 <?php } ?>

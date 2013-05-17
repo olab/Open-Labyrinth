@@ -245,9 +245,13 @@ class Controller_NodeManager extends Controller_Base {
 
     public function action_grid() {
         $mapId = (int) $this->request->param('id', 0);
+        $orderBy = $this->request->param('id2', null);
+        $logicSort = $this->request->param('id3', 0);
         if ($mapId) {
+            $this->templateData['orderBy'] = $orderBy;
+            $this->templateData['logicSort'] = $logicSort;
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId, $orderBy, $logicSort);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Node Grid'))->set_url(URL::base() . 'nodeManager/grid/' . $mapId));
@@ -270,8 +274,8 @@ class Controller_NodeManager extends Controller_Base {
     public function action_saveGrid() {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $mapId) {
-            DB_ORM::model('map_node')->updateAllNode($_POST);
-            Request::initial()->redirect(URL::base() . 'nodeManager/grid/' . $mapId);
+            DB_ORM::model('map_node')->updateAllNode($_POST, $mapId);
+            Request::initial()->redirect(URL::base() . 'nodeManager/grid/' . $mapId . '/' . Arr::get($_POST, 'orderBy', 0) . '/' . Arr::get($_POST, 'logicSort', 0));
         } else {
             Request::initial()->redirect(URL::base());
         }

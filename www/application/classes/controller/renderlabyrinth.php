@@ -485,7 +485,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             if ($node->end and $node->link_style->name == 'type in text') {
                 $result['links']['display'] .= $endNodeTemplate;
-                $result['links']['display'] .= $endNodeTemplate;
             } else if ($node->end) {
                 $result['links'] .= $endNodeTemplate;
             }
