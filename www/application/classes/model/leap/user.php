@@ -76,6 +76,11 @@ class Model_Leap_User extends DB_ORM_Model {
             'resetTimestamp' => new DB_ORM_Field_DateTime($this, array(
                 'nullable' => TRUE,
             )),
+            'visualEditorAutosaveTime' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'default' => 60000
+            )),
         );
 
         $this->relations = array(
@@ -296,6 +301,10 @@ private static function initialize_metadata($object)
         }
         
         return NULL;
+    }
+
+    public function updateSettings($userId, $settings) {
+        DB_ORM::update('user')->set('visualEditorAutosaveTime', Arr::get($settings, 'time', 50000))->where('id', '=', $userId)->execute();
     }
 }
 

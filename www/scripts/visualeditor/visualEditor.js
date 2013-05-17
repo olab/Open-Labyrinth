@@ -39,6 +39,7 @@ var VisualEditor = function() {
     self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
     self.unsavedData = false;
+    self.save = null;
     
     self.$aButtonsContianer = $('#ve_additionalActionButton');
     
@@ -1165,6 +1166,9 @@ var VisualEditor = function() {
             if(self.zoomOut != null)
                 self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
+            if(self.save!= null)
+                self.save();
+        } else if((altKeyPressed && event.keyCode == 85)) {
             if(self.update!= null)
                 self.update();
         } else if(event.keyCode == 46) {

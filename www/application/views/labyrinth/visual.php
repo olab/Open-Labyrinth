@@ -45,6 +45,8 @@ if (isset($templateData['map'])) { ?>
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = null;
+        var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
+        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime / 1000 : 50; ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -60,6 +62,7 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
+                <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="icon-cog icon-white"></i></button></p>
             </div>
             
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px; display: none;">
@@ -230,6 +233,27 @@ if (isset($templateData['map'])) { ?>
                         <a href="javascript:void(0)" class="btn" id="veSelectRightPanelCloseBtn">Close panel</a>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="modal hide block" id="veSettings">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Settings</h3>
+            </div>
+
+            <div class="modal-body block">
+                <div class="control-group block">
+                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Autosave time (sec)</strong></label>
+                    <div class="controls">
+                        <input type="text" id="autosaveTime" name="autosaveTime" value="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="veSaveSettings">Save</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
             </div>
         </div>
 
@@ -419,6 +443,22 @@ if (isset($templateData['map'])) { ?>
                 <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
                 <a href="javascript:void(0);" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
                 <a href="javascript:void(0);" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+            </div>
+        </div>
+
+        <div class="modal hide block" id="leaveBox">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="closeLeaveBox">&times;</button>
+                <h3>Unsaved data</h3>
+            </div>
+
+            <div class="modal-body block" align="center">
+                <p>You have unsaved data</p>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="uploadUnsaved">Save</a>
+                <a href="javascript:void(0);" class="btn" id="leave">Leave without saving</a>
             </div>
         </div>
     </div>

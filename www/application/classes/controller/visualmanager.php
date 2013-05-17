@@ -49,6 +49,13 @@ class Controller_VisualManager extends Controller_Base {
         if($saveJson != null)
             $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
+        if(Auth::instance()->logged_in()) {
+            $user = Auth::instance()->get_user();
+            if($user != null) {
+                $this->templateData['user'] = DB_ORM::model('user', array($user->id));
+            }
+        }
+
         $visualView = View::factory('labyrinth/visual');
         $visualView->set('templateData', $this->templateData);
 
@@ -136,5 +143,18 @@ class Controller_VisualManager extends Controller_Base {
         }
 
         echo $result;
+    }
+
+    public function action_updateSettings() {
+        $this->auto_render = false;
+
+        $time = Arr::get($_POST, 'time', 50000);
+        if(Auth::instance()->logged_in()) {
+            $user = Auth::instance()->get_user();
+            if($user != null) {
+                DB_ORM::model('user')->updateSettings($user->id, array('time' => $time));
+                Auth::instance()->login($user->username, $user->password);
+            }
+        }
     }
 }

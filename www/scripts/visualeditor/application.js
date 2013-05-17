@@ -30,6 +30,7 @@ $(function () {
         }
     });
 
+    var autoSaveData = null;
     var visualEditor = new VisualEditor();
     visualEditor.Init(params);
     visualEditor.copyFunction = copy;
@@ -39,6 +40,7 @@ $(function () {
     visualEditor.update = update;
     visualEditor.turnOnPanMode = turnOnPanMode;
     visualEditor.turnOnSelectMode = turnOnSelectMode;
+    visualEditor.save = save;
 
     function copy() {
         var data = visualEditor.SerializeSelected();
@@ -151,6 +153,8 @@ $(function () {
         var data = visualEditor.Serialize();
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
         visualEditor.isChanged = false;
+        autoSaveData = null;
+        $('#leaveBox').modal('hide');
 
         $.post(sendURL, {
             data:data.substring(0, data.length - 1),
@@ -162,11 +166,49 @@ $(function () {
 
                 utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
 
+                if(leaveLink != null) {
+                    $(location).attr('href', leaveLink);
+                }
+
                 visualEditor.Deserialize(data);
                 visualEditor.Render();
             }
         });
     }
+
+    $('.breadcrumb a').click(function() { return leaveBox($(this)); });
+    $('.navbar-inner .dropdown-menu a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
+    $('.navbar-inner .nav a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
+    $('.nav-list a').click(function() { return leaveBox($(this)); });
+
+    var leaveLink = null;
+
+    $('#closeLeaveBox').click(function() {
+        leaveLink = null;
+    });
+
+    function leaveBox($object) {
+        if(autoSaveData != null) {
+            if($object != null) {
+                leaveLink = $object.attr('href');
+            }
+            $('#leaveBox').modal();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    $('#uploadUnsaved').click(function() {
+        update();
+    });
+
+    $('#leave').click(function() {
+        if(leaveLink != null) {
+            $(location).attr('href', leaveLink);
+        }
+    });
 
     $('#update').click(function () {
         update();
@@ -217,6 +259,23 @@ $(function () {
 
     $('#veTemplate').click(function () {
         $('#visual_editor_template').modal();
+    });
+
+    $('#settings').click(function() {
+        $('#veSettings').modal();
+        $('#autosaveTime').val(autosaveInterval);
+    });
+
+    $('#veSaveSettings').click(function() {
+        var value = $('#autosaveTime').val();
+        if(value != null && value > 0) {
+            autosaveInterval = value * 1000;
+            $.post(settingsURL, {
+                time: autosaveInterval
+            }, function(data) {
+                $('#veSettings').modal('hide');
+            });
+        }
     });
 
     $('#update').tooltip();
@@ -307,7 +366,7 @@ $(function () {
         visualEditor.isSelectActive = true;
     }
 
-    setInterval(checkForAutoSave, 10000);
+    setInterval(checkForAutoSave, 5000);
 
     var autoSaveTimerNotSet = true;
     var autoSaveTimer = null;
@@ -315,24 +374,27 @@ $(function () {
         if (visualEditor.isChanged) {
             if (autoSaveTimerNotSet){
                 autoSaveTimerNotSet = false;
-                autoSaveTimer = setTimeout(autoSave, 50000);
+                autoSaveTimer = setTimeout(autoSave, autosaveInterval);
             }
         }
     }
 
     function autoSave() {
         if (autoSaveTimer != null) {clearTimeout(autoSaveTimer)};
+
+        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Autosaving...', null, $veActionButton, false);
         visualEditor.isChanged = false;
         autoSaveTimerNotSet = true;
-        var data = visualEditor.Serialize();
-        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Autosaving...', null, $veActionButton, false);
+        autoSaveData = visualEditor.Serialize();
+        utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Autosave has been completed.', 3000, $veActionButton, false);
+    }
 
-        $.post(sendURL, {
-            data:data.substring(0, data.length - 1),
-            id:mapId
-        }, function (data) {
-            utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Autosave has been completed.', 3000, $veActionButton, false);
-        });
+    function save() {
+        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Saving...', null, $veActionButton, false);
+        visualEditor.isChanged = false;
+        autoSaveTimerNotSet = true;
+        autoSaveData = visualEditor.Serialize();
+        utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Save has been completed.', 3000, $veActionButton, false);
     }
 
     var canvasWidth;
