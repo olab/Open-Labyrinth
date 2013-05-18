@@ -805,6 +805,13 @@ input[readonly].code, textarea[readonly].code{
     width: 15px;
 }
 
+.ve-icon-settings {
+    background-position: -207px 0;
+    margin-top: -3px;
+    margin-left: 0;
+    width: 16px;
+}
+
 .visual-editor-right-panel-tabs {
     padding-top: 5px;
     background-color: #a1a1a1;

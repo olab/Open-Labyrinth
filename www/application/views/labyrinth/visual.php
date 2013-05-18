@@ -62,7 +62,7 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
-                <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="icon-cog icon-white"></i></button></p>
+                <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="ve-icon-settings"></i></button></p>
             </div>
             
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px; display: none;">
