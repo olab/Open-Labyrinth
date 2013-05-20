@@ -180,6 +180,7 @@ $(function () {
     $('.navbar-inner .dropdown-menu a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.navbar-inner .nav a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.nav-list a').click(function() { return leaveBox($(this)); });
+    $('.wizard-next-buttons a').click(function() { return leaveBox($(this)); })
 
     var leaveLink = null;
 
