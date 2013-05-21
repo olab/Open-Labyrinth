@@ -32,7 +32,7 @@ if (isset($templateData['map'])) {
             <li class="nav-header">Core Layout</li>
             <li><a href="<?php echo URL::base() . 'visualManager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open"></i> <?php echo __('Visual Editor'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>"><i class="icon-circle-blank"></i> <?php echo __('Nodes'); ?></a></li>
-            <li><a href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>/1"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base() . 'nodeManager/sections/' . $templateData['map']->id; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>
