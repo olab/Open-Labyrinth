@@ -59,8 +59,8 @@ if (isset($templateData['map'])) { ?>
                 <p class="text">Build</p>
                 <p><button type="button" class="round-btn" id="addNode" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Add node</div>" data-placement="right"><i class="ve-icon-add"></i></button></p>
                 <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Add mini template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
-                <p class="left"><button type="button" class="round-btn disabled" id="undo" data-toggle="tooltip" data-original-title="Undo" data-placement="left"><i class="icon-share-alt icon-white flip-h"></i></button></p>
-                <p><button type="button" class="round-btn disabled" id="redo" data-toggle="tooltip" data-original-title="Redo" data-placement="right"><i class="icon-share-alt icon-white"></i></button></p>
+                <p class="left"><button type="button" class="round-btn disabled" id="undo" data-toggle="tooltip" data-original-title="Undo" data-placement="left"><i class="ve-icon-undo"></i></button></p>
+                <p><button type="button" class="round-btn disabled" id="redo" data-toggle="tooltip" data-original-title="Redo" data-placement="right"><i class="ve-icon-redo"></i></button></p>
                 <p class="text">Move</p>
                 <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Grab+Pan</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
                 <p><button type="button" class="round-btn" id="veSelect" data-toggle="tooltip" data-original-title="Select" data-placement="right"><i class="ve-icon-select"></i></button></p>

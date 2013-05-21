@@ -812,6 +812,18 @@ input[readonly].code, textarea[readonly].code{
     width: 16px;
 }
 
+.ve-icon-redo {
+    background-position: -242px 0;
+    margin-top: -3px;
+    width: 16px;
+}
+
+.ve-icon-undo {
+    background-position: -225px 0;
+    margin-top: -3px;
+    width: 16px;
+}
+
 .visual-editor-right-panel-tabs {
     padding-top: 5px;
     background-color: #a1a1a1;
