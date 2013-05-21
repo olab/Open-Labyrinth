@@ -50,6 +50,12 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][1] = __('Media Upload - Copyright Notice');
         $this->templateData['tabs'][1] = $viewCopyright;
 
+        $this->templateData['support'] = Kohana::$config->load('support');
+        $viewSupport = View::factory('systemmanager/support');
+        $viewSupport->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][2] = __("Support");
+        $this->templateData['tabs'][2] = $viewSupport;
+
         $view = View::factory('systemmanager/view');
         $view->set('templateData', $this->templateData);
 
@@ -118,7 +124,30 @@ class Controller_SystemManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
+     
+    public function action_updateSupportEmails() {
+        if($_POST) {
+            if(Security::check($_POST['token'])) {
+                unset($_POST['token']);
+                $emails = Arr::get($_POST, 'emails', '');
+                $content = '';
+                $handle = fopen(DOCROOT . 'application/config/support.php', 'r');
+                while (($buffer = fgets($handle)) !== false) {
+                    $content .= $buffer;
+                }
 
+                $content = preg_replace("/'email' => '[\w\s\.,_@]*'/", "'email' => '" . $emails . "'", $content);
+
+                file_put_contents(DOCROOT . 'application/config/support.php', $content);
+
+                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+            } else {
+                Request::initial()->redirect(URL::base());
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
 }
 
 ?>
