@@ -283,6 +283,7 @@ $(function () {
         }
     });
 
+    $('#fullScreen').tooltip();
     $('#update').tooltip();
     $('#addNode').tooltip({html:true});
     $('#vePan').tooltip({html:true});
@@ -290,6 +291,8 @@ $(function () {
     $('#veTemplate').tooltip({html:true});
     $('#zoomIn').tooltip({html:true});
     $('#zoomOut').tooltip({html:true});
+    $('#undo').tooltip({html: true});
+    $('#redo').tooltip({html: true});
 
     $('#veTemplateSaveBtn').click(function () {
         var value = $('#veCountContainer').children().filter('.active').attr('value');

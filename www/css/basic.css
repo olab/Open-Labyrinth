@@ -964,3 +964,34 @@ input[readonly].code, textarea[readonly].code{
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
+
+.canvas-action-buttons-container {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 70px;
+}
+
+.canvas-action-buttons-container p {
+    text-align: center;
+}
+
+.canvas-action-buttons-container p.left {
+    float: left;
+    margin-right: 8px;
+}
+
+.canvas-action-buttons-container p.text {
+    color: #ffffff;
+    font-size: 16px;
+    text-shadow: 1px 1px 1px #4F4E4E;
+}
+
+.flip-h {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: 'FlipH';
+}
