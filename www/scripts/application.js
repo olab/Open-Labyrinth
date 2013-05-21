@@ -216,15 +216,6 @@ jQuery(document).ready(function(){
         $('.to-hide').toggleClass('hide');
     });
 
- /*
-    $('#content').toggle(
-
-        function() {
-
-        }, function() {
-
-        });
-*/
     $(".code").mouseup(function() {
         $(this).select();
     });
@@ -287,15 +278,42 @@ jQuery(document).ready(function(){
         $('#orderBy').val($(this).attr('orderBy'));
         $('#grid_from').submit();
     });
-    
+
+    var $gridFrom = $('#grid_from');
     $('.logic-btn').click(function() {
-        if($(this).hasClass('active')) {
+        if($(this).attr('on') == 'off') {
             $('#logicSort').val(0);
         } else {
             $('#logicSort').val(1);
         }
+
+        $gridFrom.submit();
     });
     
     $('.main-edit-panel').draggable({handle: '.main-edit-panel .header', cursor: 'move', scroll: false});
-    
+
+    var parent;
+    var id;
+    var button;
+    $(".radio_extended input[type=radio]").each(function(){
+        if ($(this).is(':checked')){
+            parent = $(this).parent('.radio_extended');
+            id = $(this).attr('id');
+            button = $(parent).find('label[for=' + id + ']');
+            changeRadioBootstrap(button);
+        }
+    });
+
+    $(".radio_extended .btn").live("click", function() {
+        changeRadioBootstrap(this);
+    });
+
+    function changeRadioBootstrap(obj){
+        $(obj).parent(".radio_extended").find(".btn").removeAttr('class').addClass('btn');
+        $(obj).addClass('active');
+        var additionClass = $(obj).attr('data-class');
+        if (additionClass !== null){
+            $(obj).addClass(additionClass);
+        }
+    }
 });

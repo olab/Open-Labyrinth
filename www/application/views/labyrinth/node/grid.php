@@ -49,8 +49,19 @@ if (isset($templateData['map'])) { ?>
     <form id="grid_from" class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
         <input type="hidden" id="orderBy" name="orderBy" value="<?php if(isset($templateData['orderBy'])) echo $templateData['orderBy']; ?>"/>
         <input type="hidden" id="logicSort" name="logicSort" value="<?php if(isset($templateData['logicSort'])) echo $templateData['logicSort']; ?>"/>
-        
-        <button class="btn logic-btn <?php if(isset($templateData['logicSort']) && $templateData['logicSort'] == 1) echo 'active'; ?>" data-toggle="buttons-checkbox" type="button">Logic sort</button>
+
+        <div class="control-group">
+            <label class="control-label" style="text-align: left;width: 80px;"><b>Logic sort:</b></label>
+            <div class="controls" style="margin-left: 80px;">
+                <div class="radio_extended btn-group">
+                    <input type="radio" id="logicSortRadioOn" name="logicSortRadio" value="1" <?php if(isset($templateData['logicSort']) && $templateData['logicSort'] == 1) echo 'checked="checked"'; ?>>
+                    <label data-class="btn-info" class="btn logic-btn" on="on" for="logicSortRadioOn">On</label>
+                    <input type="radio" id="logicSortRadioOff" name="logicSortRadio" value="0" <?php if(!isset($templateData['logicSort']) || $templateData['logicSort'] == 0) echo 'checked="checked"'; ?>>
+                    <label data-class="btn-danger" class="btn logic-btn off" on="off" for="logicSortRadioOff">Off</label>
+                </div>
+            </div>
+        </div>
+
         <table class="table table-striped table-bordered persist-area">
             <thead>
                 <tr class="persist-header">

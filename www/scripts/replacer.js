@@ -213,7 +213,8 @@ var Replacer = function() {
             value = null,
             regexp = /(^|>)[^><]+?(?=<|$)/gi,
             match = null,
-            indexOf = -1;
+            indexOf = -1,
+            isFind = false;
         
         RemoveAllSelections();
         
@@ -239,12 +240,15 @@ var Replacer = function() {
                         
                         currentSearchedElementIndex = index;
                         currentSearchedIndexOf = match.index + indexOf;
-                        
+
+                        isFind = true;
                         return false;
                     }
                 }
             }
         });
+
+        $(findInputObj).css('border', (!isFind) ? '1px solid red' : '');
     }
     
     var ReverseString = function(s){
