@@ -3,4 +3,5 @@ www/application/cache/*
 www/application/logs/*
 www/files/*
 www/export/visual_editor/*.xml
+www/application/config/database.php
 .idea
