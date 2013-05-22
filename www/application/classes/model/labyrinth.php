@@ -67,31 +67,34 @@ class Model_Labyrinth extends Model {
                 }
             }
 
+            $conditional = $this->conditional($sessionId, $node);
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-            if ($sessionId != 'notExist'){
-                $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
-            } else {
-                $traceId = 'notExist';
-            }
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
+            if($conditional == null) {
+                if ($sessionId != 'notExist'){
+                    $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+                } else {
+                    $traceId = 'notExist';
+                }
 
-            $conditional = $this->conditional($sessionId, $node);
-            if ($conditional != NULL) {
-                $result['node_text'] = $conditional['message'];
-                $result['node_links'] = $conditional['linker'];
-            }
+                if (substr($result['node_text'], 0, 3) != '<p>') {
+                    $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
+                }
 
-            if (substr($result['node_text'], 0, 3) != '<p>') {
-                $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
-            }
-
-            $c = $this->counters($traceId, $sessionId, $node, $isRoot);
-            if ($c != NULL) {
-                $result['counters'] = $c['counterString'];
-                $result['redirect'] = $c['redirect'];
-                $result['remoteCounters'] = $c['remote'];
+                $c = $this->counters($traceId, $sessionId, $node, $isRoot);
+                if ($c != NULL) {
+                    $result['counters'] = $c['counterString'];
+                    $result['redirect'] = $c['redirect'];
+                    $result['remoteCounters'] = $c['remote'];
+                } else {
+                    $result['counters'] = '';
+                    $result['redirect'] = NULL;
+                    $result['remoteCounters'] = '';
+                }
             } else {
+                $result['node_text'] = '<p>' . $conditional['message'] . '</p>';
+                $result['node_links'] = $conditional['linker'];
                 $result['counters'] = '';
                 $result['redirect'] = NULL;
                 $result['remoteCounters'] = '';
@@ -236,11 +239,11 @@ class Model_Labyrinth extends Model {
             }
 
             if ($mode == 'a') {
-                if ($count >= count($nodes)) {
+                if ($count < count($nodes)) {
                     return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
                 }
             } else if ($mode == 'o') {
-                if ($count >= 1) {
+                if ($count <= 0) {
                     return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
                 }
             }
