@@ -129,6 +129,7 @@ class Controller_SystemManager extends Controller_Base {
         if($_POST) {
             if(Security::check($_POST['token'])) {
                 unset($_POST['token']);
+                $fromEmail = Arr::get($_POST, 'supportEmail', '');
                 $emails = Arr::get($_POST, 'emails', '');
                 $content = '';
                 $handle = fopen(DOCROOT . 'application/config/support.php', 'r');
@@ -137,6 +138,7 @@ class Controller_SystemManager extends Controller_Base {
                 }
 
                 $content = preg_replace("/'email' => '[\w\s\.,_@]*'/", "'email' => '" . $emails . "'", $content);
+                $content = preg_replace("/'main_support_email' => '[\w\s\.,_@]*'/", "'main_support_email' => '" . $fromEmail . "'", $content);
 
                 file_put_contents(DOCROOT . 'application/config/support.php', $content);
 
