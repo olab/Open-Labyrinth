@@ -519,7 +519,7 @@ class Model_Labyrinth extends Model {
 
     public function review($nodeId) {
         $sessionId = Session::instance()->get('session_id', NULL);
-        if ($sessionId == NULL) {
+        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
             $sessionId = $_COOKIE['OL'];
         }
 
