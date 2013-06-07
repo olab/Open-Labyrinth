@@ -13,8 +13,12 @@ var Replacer = function() {
         $editors = null,
         
         currentSearchedElementIndex = -1,
-        currentSearchedIndexOf = -1;
-    
+        currentSearchedMatchCount = 0,
+        currentSearchedIndexOf = -1,
+        scrollTop = 0,
+
+        showHelpNext = true;
+
     this.Init = function(options) {
         if('findInputId' in options) {
             findInputId = options.findInputId;
@@ -32,6 +36,7 @@ var Replacer = function() {
                 $('<div contenteditable="true" textareadId="#' + $(obj).attr('id') + '" class="editable-text">' + $(obj).val() + '</div>').insertBefore($(obj));
                 $(obj).hide();
             });
+            $('<div id="temp_div" class="hide"></div>').appendTo($('body'));
             
             $editors = $('.editable-text');
             $editors.live('keyup', function() {EditableTextKeyUp(this);});
@@ -58,8 +63,10 @@ var Replacer = function() {
     
     var BindEvents = function() {
         if($findInput != null) {
-            $findInput.keyup(function() {FindKeyupEvent(this);});
+            $findInput.bind('focus' , function() {focusOnFindInput()});
         }
+
+        $('body').keyup(function(e) {BodyKeyupEvent(e);});
         
         if($nextButton != null) {
             $nextButton.click(function() {NextButtonClick(this);});
@@ -85,74 +92,121 @@ var Replacer = function() {
         if(replaceValue == null || replaceValue.length <= 0) return;
         
         var $currentSelected = $('.selected-text');
+        var parent = $('.selected-text').parent('.editable-text');
         $.each($currentSelected, function(index, object) {
             $(object).after(replaceValue);
         });
-        
+
         $currentSelected.remove();
-        NextButtonClick(null);
+        EditableTextKeyUp(parent);
+        if (!NextButtonClick(null)){
+            currentSearchedElementIndex = -1;
+            NextButtonClick(null);
+        }
     } 
     
     var ReplaceAllButton = function(button) {
         if($replaceInput == null) return;
         
         var replaceValue = $replaceInput.val(),
-            $currentSelected = null;
+            $currentSelected = null,
+            parent;
         if(replaceValue == null || replaceValue.length <= 0) return;
         
         currentSearchedElementIndex = -1;
         while(NextButtonClick(null)) {
             $currentSelected = $('.selected-text');
+            parent = $('.selected-text').parent('.editable-text');
             $.each($currentSelected, function(index, object) {
                 $(object).after(replaceValue);
             });
 
             $currentSelected.remove();
+            EditableTextKeyUp(parent);
         }
     }
     
     var NextButtonClick = function(button) {
+        if (showHelpNext){
+            $('#tipsForNextButton').tooltip('hide');
+            showHelpNext = false;
+        }
         var searchValue = $findInput.val(),
             value = null,
+            textarea = null,
             regexp = /(^|>)[^><]+?(?=<|$)/gi,
             match = null,
+            startSearch = 0,
+            matchCount = 0,
             indexOf = -1,
             result = false;
-            
-        if(searchValue == null || searchValue.length <= 0 || currentSearchedElementIndex >= $editors.length) return false;
-        
-        RemoveAllSelections();
-        
+
+        if(searchValue == null || searchValue.length <= 0 || currentSearchedElementIndex >= $editors.length) {
+            RemoveAllSelections();
+            var countEditable = $('.editable-text').length;
+            currentSearchedElementIndex = countEditable;
+            $($findInput).css('background', '#ff6666');
+            return false;
+        }
+
         $.each($editors, function(index, editor) {
             if(index < currentSearchedElementIndex) return;
-            
-            value = $(editor).html();
+
+            textarea = $(editor).next();
+            value = textarea.val();
+
             if(value != null && value.length > 0) {
+                startSearch = 0;
+                matchCount = 0;
                 while((match = regexp.exec(value.toLowerCase())) != null) {
-                    indexOf = match[0].indexOf(searchValue.toLowerCase(), (currentSearchedElementIndex == index) ? (currentSearchedIndexOf + 1) : 0);
+                    if (currentSearchedElementIndex == index) {
+                        if (matchCount >= currentSearchedMatchCount){
+                            if (matchCount == currentSearchedMatchCount){
+                                startSearch = currentSearchedIndexOf + 1;
+                            } else {
+                                startSearch = 0;
+                            }
+                        } else {
+                            matchCount++;
+                            continue;
+                        }
+                    }
+
+                    indexOf = match[0].indexOf(searchValue.toLowerCase(), startSearch);
 
                     if(indexOf >= 0) {
-                        value = value.substring(0, match.index + indexOf) + 
+                        RemoveAllSelections();
+
+                        value = value.substring(0, match.index + indexOf) +
                                 '<span class="selected-text">' + 
-                                value.substring(match.index + indexOf, match.index + indexOf + searchValue.length) + 
+                                value.substring(match.index + indexOf, match.index + indexOf + searchValue.length) +
                                 '</span>' + 
                                 value.substring(match.index + indexOf + searchValue.length, value.length);
 
                         $(editor).html(value);
-                        $(editor).focus();
-                        $findInput.focus();
-                        
+
+                        openDivAndScroll(editor);
+
                         currentSearchedElementIndex = index;
                         currentSearchedIndexOf = indexOf;
-                        
+                        currentSearchedMatchCount = matchCount;
+
                         result = true;
-                        
+
                         return false;
                     }
+
+                    matchCount++;
                 }
             }
         });
-        
+        if (!result){
+            RemoveAllSelections();
+            var countEditable = $('.editable-text').length;
+            currentSearchedElementIndex = countEditable;
+        }
+        $($findInput).css('background', (!result) ? '#ff6666' : '#FFFFFF');
+
         return result;
     }
     
@@ -163,20 +217,27 @@ var Replacer = function() {
             regexp = /(^|>)[^><]+?(?=<|$)/gi,
             match = null,
             indexOf = -1,
-            i = 0;
+            i = 0,
+            textarea = null,
+            result = false;
             
-        if(searchValue == null || searchValue.length <= 0 || currentSearchedElementIndex <= 0) return;
+        if(searchValue == null || searchValue.length <= 0 || currentSearchedElementIndex <= 0) {
+            RemoveAllSelections();
+            currentSearchedElementIndex = -1;
+            $($findInput).css('background', '#ff6666');
+            return;
+        }
         
         searchValue        = searchValue.toLowerCase();
         reverseSearchValue = ReverseString(searchValue);
         
-        RemoveAllSelections();
-        
         i = currentSearchedElementIndex + 1;
         for(;i--;) {
             if(i > currentSearchedElementIndex) continue;
-            
-            value = $($editors.get(i)).html();
+
+            textarea = $($editors.get(i)).next();
+            value = textarea.val();
+
             if(value != null && value.length > 0) {
                 while((match = regexp.exec(value.toLowerCase())) != null) {
                     indexOf = (currentSearchedElementIndex == i) ? 
@@ -184,6 +245,8 @@ var Replacer = function() {
                                GetMaxIndex(match[0], reverseSearchValue);
                     
                     if(indexOf >= 0) {
+                        RemoveAllSelections();
+
                         value = value.substring(0, match.index + indexOf) + 
                                 '<span class="selected-text">' + 
                                 value.substring(match.index + indexOf, match.index + indexOf + searchValue.length) + 
@@ -191,21 +254,41 @@ var Replacer = function() {
                                 value.substring(match.index + indexOf + searchValue.length, value.length);
 
                         $($editors.get(i)).html(value);
-                        $($editors.get(i)).focus();
-                        $findInput.focus();
+
+                        openDivAndScroll($editors.get(i));
                         
                         currentSearchedElementIndex = i;
                         currentSearchedIndexOf = indexOf;
-                        
-                        return;
+
+                        result = true;
+
+                        break;
                     }
                 }
             }
+
+            if (result) break;
         }
+
+        if (!result){
+            RemoveAllSelections();
+            currentSearchedElementIndex = -1;
+        }
+        $($findInput).css('background', (!result) ? '#ff6666' : '#FFFFFF');
     }
     
     var EditableTextKeyUp = function(element) {
-        $($(element).attr('textareadId')).val($(element).text());
+        var textareadId = $(element).attr('textareadId');
+        $('#temp_div').html($(element).html());
+
+        var $selectedText = $('#temp_div .selected-text');
+        $.each($selectedText, function(index, object){
+            $(object).after($(object).html());
+        });
+
+        $selectedText.remove();
+
+        $(textareadId).val($('#temp_div').html());
     }
     
     var FindKeyupEvent = function(findInputObj) {
@@ -214,20 +297,24 @@ var Replacer = function() {
             regexp = /(^|>)[^><]+?(?=<|$)/gi,
             match = null,
             indexOf = -1,
+            matchCount = 0,
             isFind = false;
-        
-        RemoveAllSelections();
-        
+
         if(searchValue == null || searchValue.length <= 0) return;
         
         searchValue = searchValue.toLowerCase();
 
         $.each($editors, function(index, editor) {
             value = $(editor).html();
+            matchCount = 0;
             if(value != null && value.length > 0) {
                 while((match = regexp.exec(value.toLowerCase())) != null) {
+
+
                     indexOf = match[0].indexOf(searchValue);
                     if(indexOf >= 0) {
+                        RemoveAllSelections();
+
                         value = value.substring(0, match.index + indexOf) + 
                                 '<span class="selected-text">' + 
                                 value.substring(match.index + indexOf, match.index + indexOf + searchValue.length) + 
@@ -235,20 +322,25 @@ var Replacer = function() {
                                 value.substring(match.index + indexOf + searchValue.length, value.length);
 
                         $(editor).html(value);
-                        $(editor).focus();
-                        $(findInputObj).focus();
-                        
+
+                        openDivAndScroll(editor);
+
                         currentSearchedElementIndex = index;
-                        currentSearchedIndexOf = match.index + indexOf;
+                        currentSearchedIndexOf = indexOf;
+                        currentSearchedMatchCount = matchCount;
 
                         isFind = true;
                         return false;
                     }
+                    matchCount++;
                 }
             }
         });
 
-        $(findInputObj).css('border', (!isFind) ? '1px solid red' : '');
+        if (!isFind){
+            RemoveAllSelections();
+        }
+        $(findInputObj).css('background', (!isFind) ? '#ff6666' : '#FFFFFF');
     }
     
     var ReverseString = function(s){
@@ -289,6 +381,40 @@ var Replacer = function() {
         });
         
         $selectedText.remove();
+    }
+
+    var openDivAndScroll = function(editor){
+        if (currentSearchedElementIndex != -1){
+            $($editors.get(currentSearchedElementIndex)).css({'height':'50px', 'width':'220px'});
+        }
+
+        $(editor).css({'height':'auto', 'width':'auto', 'min-height':'50px'});
+
+        scrollTop = $(".selected-text").offset().top - (screen.height / 2);
+        $('html, body').stop().animate({
+            scrollTop: scrollTop
+        }, 1000);
+    }
+
+    var BodyKeyupEvent = function(e){
+        if (e.keyCode == 27){
+            clearAllSelections();
+        }
+    }
+
+    var focusOnFindInput = function() {
+        if (showHelpNext){
+            $('#tipsForNextButton').tooltip('show');
+        }
+        clearAllSelections();
+    }
+
+    var clearAllSelections = function(){
+        RemoveAllSelections();
+        currentSearchedElementIndex = 0;
+        currentSearchedMatchCount = 0;
+        currentSearchedIndexOf = 0;
+        $findInput.css('background', '#FFFFFF');
     }
 }
 

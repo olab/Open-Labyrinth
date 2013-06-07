@@ -913,7 +913,7 @@ input[readonly].code, textarea[readonly].code{
 }
 
 .main-edit-panel {
-    width: 400px;
+    width: 370px;
     height: 112px;
     position: fixed;
     top: 52px;
@@ -954,7 +954,7 @@ input[readonly].code, textarea[readonly].code{
 }
 
 .selected-text {
-    background-color: #E2E26F;
+    background-color: #38d878;
 }
 
 .editable-text {

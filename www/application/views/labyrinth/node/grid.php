@@ -27,15 +27,15 @@ if (isset($templateData['map'])) { ?>
         <div class="edit-content">
             <div class="edit-controls">
                 <div class="edit-row">
-                    <div class="edit-cell">Find What:</div>
+                    <div class="edit-cell">Find:</div>
                     <div class="edit-cell"><input type="text" id="findWhat" value=""/></div>
                     <div class="edit-cell">
                         <button class="btn previous-btn"><i class="icon-arrow-left icon-white"></i>Previous</button>
-                        <button class="btn next-btn"><i class="icon-arrow-right icon-white"></i>Next</button>
+                        <button id="tipsForNextButton" class="btn next-btn" data-placement="bottom" data-trigger="manual" title="Then click on this button to find something."><i class="icon-arrow-right icon-white"></i>Next</button>
                     </div>
                 </div>
                 <div class="edit-row">
-                    <div class="edit-cell">Replace With:</div>
+                    <div class="edit-cell">Replace:</div>
                     <div class="edit-cell"><input type="text" id="replaceWith" value=""/></div>
                     <div class="edit-cell">
                         <button class="btn replace-btn">Replace</button>
