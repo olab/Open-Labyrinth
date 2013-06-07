@@ -17,7 +17,9 @@ var Replacer = function() {
         currentSearchedIndexOf = -1,
         scrollTop = 0,
 
-        showHelpNext = true;
+        showHelpNext = true,
+        leaveLink = null,
+        unSaveData = false;
 
     this.Init = function(options) {
         if('findInputId' in options) {
@@ -93,9 +95,12 @@ var Replacer = function() {
         
         var $currentSelected = $('.selected-text');
         var parent = $('.selected-text').parent('.editable-text');
-        $.each($currentSelected, function(index, object) {
-            $(object).after(replaceValue);
-        });
+        if ($currentSelected.length > 0){
+            $.each($currentSelected, function(index, object) {
+                $(object).after(replaceValue);
+            });
+            unSaveData = true;
+        }
 
         $currentSelected.remove();
         EditableTextKeyUp(parent);
@@ -117,9 +122,12 @@ var Replacer = function() {
         while(NextButtonClick(null)) {
             $currentSelected = $('.selected-text');
             parent = $('.selected-text').parent('.editable-text');
-            $.each($currentSelected, function(index, object) {
-                $(object).after(replaceValue);
-            });
+            if ($currentSelected.length > 0){
+                $.each($currentSelected, function(index, object) {
+                    $(object).after(replaceValue);
+                });
+                unSaveData = true;
+            }
 
             $currentSelected.remove();
             EditableTextKeyUp(parent);
@@ -289,58 +297,7 @@ var Replacer = function() {
         $selectedText.remove();
 
         $(textareadId).val($('#temp_div').html());
-    }
-    
-    var FindKeyupEvent = function(findInputObj) {
-        var searchValue = $(findInputObj).val(),
-            value = null,
-            regexp = /(^|>)[^><]+?(?=<|$)/gi,
-            match = null,
-            indexOf = -1,
-            matchCount = 0,
-            isFind = false;
-
-        if(searchValue == null || searchValue.length <= 0) return;
-        
-        searchValue = searchValue.toLowerCase();
-
-        $.each($editors, function(index, editor) {
-            value = $(editor).html();
-            matchCount = 0;
-            if(value != null && value.length > 0) {
-                while((match = regexp.exec(value.toLowerCase())) != null) {
-
-
-                    indexOf = match[0].indexOf(searchValue);
-                    if(indexOf >= 0) {
-                        RemoveAllSelections();
-
-                        value = value.substring(0, match.index + indexOf) + 
-                                '<span class="selected-text">' + 
-                                value.substring(match.index + indexOf, match.index + indexOf + searchValue.length) + 
-                                '</span>' + 
-                                value.substring(match.index + indexOf + searchValue.length, value.length);
-
-                        $(editor).html(value);
-
-                        openDivAndScroll(editor);
-
-                        currentSearchedElementIndex = index;
-                        currentSearchedIndexOf = indexOf;
-                        currentSearchedMatchCount = matchCount;
-
-                        isFind = true;
-                        return false;
-                    }
-                    matchCount++;
-                }
-            }
-        });
-
-        if (!isFind){
-            RemoveAllSelections();
-        }
-        $(findInputObj).css('background', (!isFind) ? '#ff6666' : '#FFFFFF');
+        unSaveData = true;
     }
     
     var ReverseString = function(s){
@@ -416,6 +373,32 @@ var Replacer = function() {
         currentSearchedIndexOf = 0;
         $findInput.css('background', '#FFFFFF');
     }
+
+    $('.breadcrumb a').click(function() { return leaveBox($(this)); });
+    $('.navbar-inner .dropdown-menu a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
+    $('.navbar-inner .nav a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
+    $('.nav-list a').click(function() { return leaveBox($(this)); });
+
+    function leaveBox($object) {
+        if(unSaveData) {
+            if($object != null) {
+                leaveLink = $object.attr('href');
+            }
+            $('#leaveBox').modal();
+            return false;
+        }
+        return true;
+    }
+
+    $('#uploadUnsaved').click(function() {
+        $('#grid_from').submit();
+    });
+
+    $('#leave').click(function() {
+        if(leaveLink != null) {
+            $(location).attr('href', leaveLink);
+        }
+    });
 }
 
 var replacer = new Replacer();
@@ -428,3 +411,4 @@ replacer.Init({
     replaceButtonId: '.replace-btn',
     replaceAllButtonId: '.replace-all-btn'
 });
+

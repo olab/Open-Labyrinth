@@ -46,6 +46,22 @@ if (isset($templateData['map'])) { ?>
         </div>
     </div>
 
+    <div class="modal hide block" id="leaveBox">
+        <div class="modal-header block">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="closeLeaveBox">&times;</button>
+            <h3>Unsaved data</h3>
+        </div>
+
+        <div class="modal-body block" align="center">
+            <p>You have unsaved data</p>
+        </div>
+
+        <div class="modal-footer block">
+            <a href="javascript:void(0);" class="btn" id="uploadUnsaved">Save</a>
+            <a href="javascript:void(0);" class="btn" id="leave">Leave without saving</a>
+        </div>
+    </div>
+
     <form id="grid_from" class="form-horizontal" action="<?php echo URL::base() . 'nodeManager/saveGrid/' . $templateData['map']->id; ?>" method="POST">
         <input type="hidden" id="orderBy" name="orderBy" value="<?php if(isset($templateData['orderBy'])) echo $templateData['orderBy']; ?>"/>
         <input type="hidden" id="logicSort" name="logicSort" value="<?php if(isset($templateData['logicSort'])) echo $templateData['logicSort']; ?>"/>
