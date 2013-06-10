@@ -53,7 +53,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'deleteUser'),
         array('controller' => 'userManager', 'action' => 'addGroup'),
         array('controller' => 'userManager', 'action' => 'saveNewGroup'),
-        array('controlWWler' => 'userManager', 'action' => 'editGroup'),
+        array('controller' => 'userManager', 'action' => 'editGroup'),
         array('controller' => 'userManager', 'action' => 'deleteGroup'),
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
