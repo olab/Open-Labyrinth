@@ -44,6 +44,11 @@ class Model_Leap_OAuthProvider extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'icon' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
         );
     }
 

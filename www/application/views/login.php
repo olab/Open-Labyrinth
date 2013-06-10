@@ -32,12 +32,15 @@
     <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/>
     <?php } ?>
 
+    <div style="margin-bottom: 10px;">
     <?php if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) { ?>
         <?php foreach($templateData['oauthProviders'] as $provider) { ?>
-            <div><a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>">Login with "<?php echo $provider->name; ?>"</a><br/></div>
+            <?php if($provider->icon != null) { ?>
+                <a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>"><img width="32" src="<?php echo URL::base(); ?>images/<?php echo $provider->icon; ?>"></a>&nbsp;
+            <?php } ?>
         <?php } ?>
     <?php } ?>
-
+    </div>
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
 </form>
 
