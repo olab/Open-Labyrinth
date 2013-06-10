@@ -27,6 +27,8 @@ class Controller_Base extends Controller_Template {
     protected $templateData = array();
     private $unauthorizedRules = array(
         array('controller' => 'home', 'action' => 'login'),
+        array('controller' => 'home', 'action' => 'loginOAuth'),
+        array('controller' => 'home', 'action' => 'loginOAuthCallback'),
         array('controller' => 'home', 'action' => 'resetPassword'),
         array('controller' => 'home', 'action' => 'passwordMessage'),
         array('controller' => 'home', 'action' => 'confirmLink'),
@@ -53,7 +55,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'deleteUser'),
         array('controller' => 'userManager', 'action' => 'addGroup'),
         array('controller' => 'userManager', 'action' => 'saveNewGroup'),
-        array('controlWWler' => 'userManager', 'action' => 'editGroup'),
+        array('controller' => 'userManager', 'action' => 'editGroup'),
         array('controller' => 'userManager', 'action' => 'deleteGroup'),
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
@@ -133,6 +135,7 @@ class Controller_Base extends Controller_Template {
         } else {
             if ($this->request->controller() == 'home' && $this->request->action() == 'index') {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
+                $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
                 Session::instance()->delete('redirectURL');
                 $this->templateData['left'] = View::factory('login');
                 $this->templateData['left']->set('templateData', $this->templateData);

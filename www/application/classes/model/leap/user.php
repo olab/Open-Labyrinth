@@ -81,6 +81,15 @@ class Model_Leap_User extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'default' => 60000
             )),
+            'oauth_provider_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
+            'oauth_id' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -142,6 +151,34 @@ private static function initialize_metadata($object)
         }else{
             return false;
         }
+    }
+
+    public function getUserByOAuth($oauthProvider, $oauthId) {
+        $builder = DB_SQL::select('default')
+                            ->from($this->table())
+                            ->where('oauth_provider_id', '=', $oauthProvider, 'AND')
+                            ->where('oauth_id', '=', $oauthId);
+        $result = $builder->query();
+
+        $user = null;
+        if ($result->is_loaded()) {
+            $user = DB_ORM::model('user', array((int)$result[0]['id']));
+        }
+
+        return $user;
+    }
+
+    public function createOAuthUser($oauthProviderId, $oauthId, $nickname) {
+        return DB_ORM::insert('user')
+                        ->column('username', $oauthId . 'username')
+                        ->column('password', Auth::instance()->hash($oauthId . 'password'))
+                        ->column('email', $oauthId . '@email.generated')
+                        ->column('nickname', $nickname)
+                        ->column('language_id', 1)
+                        ->column('type_id', 1)
+                        ->column('oauth_provider_id', $oauthProviderId)
+                        ->column('oauth_id', $oauthId)
+                        ->execute();
     }
 
     public function getUserByEmail($email) {
