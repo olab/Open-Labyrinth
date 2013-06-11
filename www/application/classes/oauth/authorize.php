@@ -50,6 +50,9 @@ abstract class OAuth_Authorize {
             case 'google':
                 $oauthAuthorize = new OAuth_Authorize_Google();
                 break;
+            case 'tumblr':
+                $oauthAuthorize = new OAuth_Authorize_Tumblr();
+                break;
         }
 
         return $oauthAuthorize;

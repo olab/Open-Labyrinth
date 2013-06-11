@@ -28,7 +28,7 @@ class OAuth {
      * @return null|OAuth_Provider_Facebook|OAuth_Provider_Github|OAuth_Provider_Twitter
      */
     public static function factory($provider) {
-        if($provider == null) return null;
+        if($provider == null || $provider->appId == null || $provider->secret == null) return null;
 
         $oauthProvider = null;
         switch($provider->name) {
@@ -36,10 +36,19 @@ class OAuth {
                 $oauthProvider = new OAuth_Provider_Github();
                 break;
             case 'facebook':
-                $oauthProvider = new OAuth_Provider_Facebook();
+                $oauthProvider = new OAuth_Provider_Facebook($provider->appId, $provider->secret);
                 break;
             case 'twitter':
-                $oauthProvider = new OAuth_Provider_Twitter();
+                $oauthProvider = new OAuth_Provider_Twitter($provider->appId, $provider->secret);
+                break;
+            case 'linkedin':
+                $oauthProvider = new OAuth_Provider_Linkedin($provider->appId, $provider->secret);
+                break;
+            case 'google':
+                $oauthProvider = new OAuth_Provider_Google($provider->appId, $provider->secret);
+                break;
+            case 'tumblr':
+                $oauthProvider = new OAuth_Provider_Tumblr($provider->appId, $provider->secret);
                 break;
         }
 

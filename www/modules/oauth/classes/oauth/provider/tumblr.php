@@ -21,21 +21,26 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Class OAuth_Provider_Twitter - Twitter OAuth provider
+ * Class OAuth_Provider_Tumblr - Tumblr OAuth provider
  */
-class OAuth_Provider_Twitter extends OAuth_Provider {
+class OAuth_Provider_Tumblr extends OAuth_Provider {
     /**
      * Name of provider
      *
      * @var string
      */
-    protected $name = 'twitter';
+    protected $name = 'tumblr';
+
+    const TUMBLR_REQUEST_TOKEN        = 'tumblr_request_token';
+    const TUMBLR_REQUEST_TOKEN_SECRET = 'tumblr_request_token_secret';
+    const TUMBLR_REQUEST_TOKEN_NONCE  = 'tumblr_request_token_nonce';
+    const TUMBLR_REQUEST_TOKEN_TIME   = 'tumblr_request_token_time';
 
     private $DOMAIN_MAP = array(
-        'request'   => 'https://api.twitter.com/oauth/request_token',
-        'authorize' => 'https://api.twitter.com/oauth/authenticate',
-        'access'    => 'https://api.twitter.com/oauth/access_token',
-        'api'       => 'https://api.twitter.com/1'
+        'request'   => 'http://www.tumblr.com/oauth/request_token',
+        'authorize' => 'http://www.tumblr.com/oauth/authorize',
+        'access'    => 'http://www.tumblr.com/oauth/access_token',
+        'api'       => 'http://api.tumblr.com'
     );
 
     private $id     = null;
@@ -153,7 +158,7 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
     private function getUserInfo(OAuth_Token $token) {
         if($token == null) return null;
 
-        $signature = OAuth_Signature::factory('sha1', 'GET', $this->DOMAIN_MAP['api'] . '/account/verify_credentials.json', array(
+        $signature = OAuth_Signature::factory('sha1', 'GET', $this->DOMAIN_MAP['api'] . '/v2/user/info', array(
             'consumerKey'    => $this->id,
             'consumerSecret' => $this->secret,
             'token'          => $token->getToken(),
@@ -172,7 +177,7 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
             'oauth_signature'        => $signatureData['signature']
         );
 
-        $request = new OAuth_Request('GET', $this->DOMAIN_MAP['api'] . '/account/verify_credentials.json', $params);
+        $request = new OAuth_Request('GET', $this->DOMAIN_MAP['api'] . '/v2/user/info', $params);
 
         return $request->execute();
     }

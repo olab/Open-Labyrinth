@@ -21,20 +21,22 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Class OAuth_Provider_Facebook - Facebook OAuth provider
+ * Class OAuth_Provider_Linkedin - LinkedIn OAuth provider
  */
-class OAuth_Provider_Facebook extends OAuth_Provider {
+class OAuth_Provider_Linkedin extends OAuth_Provider {
     /**
      * Name of provider
      *
      * @var string
      */
-    protected $name = 'facebook';
+    protected $name = 'linkedin';
+
+    private $state  = '';
 
     private $DOMAIN_MAP = array(
-        'authorize' => 'https://www.facebook.com/dialog/oauth',
-        'access'    => 'https://graph.facebook.com/oauth/access_token',
-        'api'       => 'https://graph.facebook.com'
+        'authorize' => 'https://www.linkedin.com/uas/oauth2/authorization',
+        'access'    => 'https://www.linkedin.com/uas/oauth2/accessToken',
+        'api'       => 'https://api.linkedin.com'
     );
 
     private $id     = null;
@@ -56,8 +58,11 @@ class OAuth_Provider_Facebook extends OAuth_Provider {
      */
     public function getAuthorizeURL($redirectURL = null) {
         return $this->DOMAIN_MAP['authorize'] . '?' . http_build_query(array(
-            'client_id'    => $this->id,
-            'redirect_uri' => $redirectURL
+            'response_type' => 'code',
+            'client_id'     => $this->id,
+            'redirect_uri'  => $redirectURL,
+            'state'         => $this->state,
+            'scope'         => 'r_basicprofile'
         ));
     }
 
@@ -72,10 +77,11 @@ class OAuth_Provider_Facebook extends OAuth_Provider {
         if($code == null) return null;
 
         $request = new OAuth_Request('POST', $this->DOMAIN_MAP['access'], array(
-            'redirect_uri'  => $redirectURL,
+            'grant_type'    => 'authorization_code',
             'code'          => $code,
             'client_id'     => $this->id,
-            'client_secret' => $this->secret
+            'client_secret' => $this->secret,
+            'redirect_uri'  => $redirectURL
         ));
 
         $response = $request->execute();
@@ -104,37 +110,26 @@ class OAuth_Provider_Facebook extends OAuth_Provider {
         return $result;
     }
 
-    /**
-     * Return user info
-     *
-     * @param OAuth_Token $token
-     * @return mixed|null
-     */
     private function getUserInfo(OAuth_Token $token) {
         if($token == null) return null;
 
         $params = array(
-            'access_token' => $token->getToken()
+            'oauth2_access_token' => $token->getToken()
         );
 
-        $request = new OAuth_Request('GET', $this->DOMAIN_MAP['api'] . '/me', $params);
+        $request = new OAuth_Request('GET', $this->DOMAIN_MAP['api'] . '/v1/people/~', $params);
 
         return $request->execute();
     }
 
-    /**
-     * Parse access token from string
-     *
-     * @param $response
-     * @return null|OAuth_Token
-     */
     private function parseAccessToken($response) {
         $result = null;
         if($response == null) return $result;
 
-        $params = OAuth::parseStringParams($response);
-        if(isset($params['access_token'])) {
-            $result = new OAuth_Token($params['access_token']);
+        if($object = json_decode($response)) {
+            if(property_exists($object, 'access_token')) {
+                $result = new OAuth_Token($object->access_token);
+            }
         }
 
         return $result;

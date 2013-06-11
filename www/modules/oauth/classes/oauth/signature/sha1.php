@@ -24,36 +24,23 @@ defined('SYSPATH') or die('No direct script access.');
  * Class OAuth_Signature_SHA1 - OAuth signature SHA1
  */
 class OAuth_Signature_SHA1 extends OAuth_Signature {
-    protected $name            = 'sha1';
-    protected $version         = '1.0';
-    protected $nonce           = null;
-    protected $timeStamp       = null;
-    protected $signatureMethod = 'HMAC-SHA1';
+    protected $name     = 'sha1';
 
-    private $consumerKey       = null;
-    private $secret            = null;
-    private $url               = null;
-    private $method            = null;
-    private $token             = null;
+    private $httpMethod = null;
+    private $url        = null;
+    private $params     = null;
 
     /**
      * Default constructor
      *
-     * @param string $consumerKey
-     * @param string $secret
-     * @param string $url
-     * @param string $method
-     * @param string $token
+     * @param $method
+     * @param $url
+     * @param $params
      */
-    public function __construct($consumerKey, $secret, $url, $method, $token = null) {
-        $this->nonce       = time();
-        $this->timeStamp   = time();
-
-        $this->consumerKey = $consumerKey;
-        $this->secret      = $secret;
-        $this->url         = $url;
-        $this->method      = $method;
-        $this->token       = $token;
+    public function __construct($method, $url, $params) {
+        $this->httpMethod = $method;
+        $this->url        = $url;
+        $this->params     = $params;
     }
 
     /**
@@ -62,27 +49,41 @@ class OAuth_Signature_SHA1 extends OAuth_Signature {
      * @return string
      */
     public function getSignature() {
-        $secret = $this->secret . '&';
+        $params           = $this->getMainParams();
+        $normalizedParams = OAuth::normalizeParams($params);
 
-        if($this->token != null) {
-            $secret .= $this->token->getSecret();
+        $baseString       = $this->httpMethod . '&' . OAuth::urlencode($this->url) . '&' . OAuth::urlencode($normalizedParams);
+
+        $key              = OAuth::urlencode(Arr::get($this->params, 'consumerSecret', '')) . '&';
+        $key2             = Arr::get($this->params, 'tokenSecret', null);
+        if($key2 != null && !empty($key2)) {
+            $key .= OAuth::urlencode($key2);
         }
 
-        $params = array(
-            'oauth_version'          => $this->version,
-            'oauth_nonce'            => $this->nonce,
-            'oauth_timestamp'        => $this->timeStamp,
-            'oauth_consumer_key'     => $this->consumerKey,
-            'oauth_signature_method' => 'HMAC-SHA1'
+        return array('signature' => base64_encode(hash_hmac('sha1', $baseString, $key, true)),
+                     'timeStamp' => $params['oauth_timestamp'],
+                     'nonce'     => $params['oauth_nonce']);
+    }
+
+    private function getMainParams() {
+        $params = array (
+            'oauth_consumer_key'     => Arr::get($this->params, 'consumerKey', ''         ),
+            'oauth_nonce'            => Arr::get($this->params, 'nonce'      , md5(time())),
+            'oauth_signature_method' => Arr::get($this->params, 'method'     , 'HMAC-SHA1'),
+            'oauth_timestamp'        => Arr::get($this->params, 'timeStamp'  , time()     ),
+            'oauth_version'          => Arr::get($this->params, 'version'    , '1.0'      )
         );
 
-        if($this->token != null) {
-            $params['oauth_token'] = $this->token->getToken();
+        $token = Arr::get($this->params, 'token', null);
+        if($token != null) {
+            $params['oauth_token'] = $token;
         }
 
-        $normalizedParams = OAuth::normalizeParams($params);
-        $baseString       = $this->method . '&' . OAuth::urlencode($this->url) . '&' . OAuth::urlencode($normalizedParams);
+        $verifier = Arr::get($this->params, 'verifier', null);
+        if($verifier != null) {
+            $params['oauth_verifier'] = $verifier;
+        }
 
-        return OAuth::urlencode(base64_encode(hash_hmac('sha1', $baseString, $secret, true)));
+        return $params;
     }
 }

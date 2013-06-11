@@ -27,85 +27,17 @@ abstract class OAuth_Signature {
     protected $name = null;
 
     /**
-     * Version
-     *
-     * @var string
-     */
-    protected $version         = null;
-
-    /**
-     * Nonce
-     *
-     * @var string
-     */
-    protected $nonce           = null;
-
-    /**
-     * Time stamp
-     *
-     * @var string
-     */
-    protected $timeStamp       = null;
-
-    /**
-     * Signature method
-     *
-     * @var string
-     */
-    protected $signatureMethod = null;
-
-    /**
-     * Get nonce
-     *
-     * @return string
-     */
-    public function getNonce() {
-        return $this->nonce;
-    }
-
-    /**
-     * Get time stamp
-     *
-     * @return string
-     */
-    public function getTimeStamp() {
-        return $this->timeStamp;
-    }
-
-    /**
-     * Get version
-     *
-     * @return string
-     */
-    public function getVersion() {
-        return $this->version;
-    }
-
-    /**
-     * Get signature method
-     *
-     * @return string
-     */
-    public function getSignatureMethod() {
-        return $this->signatureMethod;
-    }
-
-    /**
      * Return signature builder
      *
      * @param string $name
      * @param array $params
      * @return OAuth_Signature
      */
-    public static function factory($name, array $params = null) {
+    public static function factory($name, $method, $url, array $params = null) {
         $signature = null;
         switch($name) {
             case 'sha1':
-                $signature = new OAuth_Signature_SHA1(Arr::get($params, 'consumerKey', ''),
-                                                      Arr::get($params, 'secret', ''),
-                                                      Arr::get($params, 'url', ''),
-                                                      Arr::get($params, 'method', 'GET'),
-                                                      Arr::get($params, 'token', null));
+                $signature = new OAuth_Signature_SHA1($method, $url, $params);
                 break;
         }
 
