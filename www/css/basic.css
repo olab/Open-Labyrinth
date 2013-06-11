@@ -1007,3 +1007,34 @@ input[readonly].code, textarea[readonly].code{
     filter: FlipH;
     -ms-filter: 'FlipH';
 }
+
+.oauth-line {
+    width: 220px;
+    display: table;
+}
+
+.oauth-line div {
+    display: table-cell;
+}
+
+.oauth-line div.line {
+    width: 100px;
+    vertical-align: middle;
+}
+
+.oauth-line div.text {
+    padding: 0px 5px;
+    color: #555555;
+}
+
+.oauth-line div.line div {
+    width: 100px;
+    border-bottom: 1px solid #555555;
+    padding: 0px 5px;
+}
+
+.oauth-icon-line {
+    width: 220px;
+    text-align: center;
+    margin-bottom: 10px;
+}

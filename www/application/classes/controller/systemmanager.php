@@ -56,6 +56,12 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][2] = __("Support");
         $this->templateData['tabs'][2] = $viewSupport;
 
+        $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
+        $viewSupport = View::factory('systemmanager/oauth');
+        $viewSupport->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][3] = __("OAuth");
+        $this->templateData['tabs'][3] = $viewSupport;
+
         $view = View::factory('systemmanager/view');
         $view->set('templateData', $this->templateData);
 
@@ -149,6 +155,22 @@ class Controller_SystemManager extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function action_saveOAuth() {
+        if($_POST) {
+            $providers = DB_ORM::model('oauthprovider')->getAll();
+            if($providers != null && count($providers) > 0) {
+                foreach($providers as $provider) {
+                    $appId  = Arr::get($_POST, 'appId'  . $provider->id, null);
+                    $secret = Arr::get($_POST, 'secret' . $provider->id, null);
+
+                    DB_ORM::model('oauthprovider')->updateData($provider->id, $appId, $secret);
+                }
+            }
+        }
+
+        Request::initial()->redirect(URL::base() . 'systemManager');
     }
 }
 

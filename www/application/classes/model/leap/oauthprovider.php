@@ -49,6 +49,16 @@ class Model_Leap_OAuthProvider extends DB_ORM_Model {
                 'nullable' => TRUE,
                 'savable' => TRUE,
             )),
+            'appId' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+            'secret' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
         );
     }
 
@@ -82,5 +92,27 @@ class Model_Leap_OAuthProvider extends DB_ORM_Model {
         }
 
         return $providers;
+    }
+
+    /**
+     * Return provider by name
+     *
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getByName($name) {
+        $builder   = DB_SQL::select('default')->column('id')->from($this->table())->where('name', '=', $name)->limit(1);
+        $query     = $builder->query();
+
+        $provider = null;
+        if($query->is_loaded()) {
+            $provider = DB_ORM::model('OAuthProvider', array((int)$query[0]['id']));
+        }
+
+        return $provider;
+    }
+
+    public function updateData($id, $appId, $secret) {
+        DB_ORM::update('OAuthProvider')->set('appId', $appId)->set('secret', $secret)->where('id', '=', $id)->execute();
     }
 }

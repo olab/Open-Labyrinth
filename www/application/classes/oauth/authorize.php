@@ -44,6 +44,12 @@ abstract class OAuth_Authorize {
             case 'twitter':
                 $oauthAuthorize = new OAuth_Authorize_Twitter();
                 break;
+            case 'linkedin':
+                $oauthAuthorize = new OAuth_Authorize_Linkedin();
+                break;
+            case 'google':
+                $oauthAuthorize = new OAuth_Authorize_Google();
+                break;
         }
 
         return $oauthAuthorize;
