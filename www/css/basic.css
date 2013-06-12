@@ -1043,3 +1043,238 @@ input[readonly].code, textarea[readonly].code{
     margin-bottom: 3px;
     margin-top: 3px;
 }
+
+.visual-display-panel {
+    width: 100%;
+}
+
+.visual-display-panel .panel-title {
+    margin-bottom: 20px;
+    font-size: 21px;
+    line-height: 40px;
+    color: #333333;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.visual-display-panel .block {
+    float: left;
+    margin-right: 10px;
+}
+
+.visual-display-panel .block:last-child {
+    clear: both;
+}
+
+.panel-control-group {
+    display: table;
+    margin-bottom: 10px;
+}
+
+.panel-control-group .row {
+    display: table-row;
+}
+
+.panel-control-group .panel-control-label {
+    display: table-cell;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 10px;
+    text-align: right;
+}
+
+.panel-control-group .panel-control {
+    display: table-cell;
+    padding-bottom: 10px;
+}
+
+.panel-control-group .panel-control input[type="text"] {
+    margin-bottom: 0;
+    width: 80px;
+}
+
+.panel-control-group .panel-control select {
+    width: 100px;
+    margin-bottom: 0;
+}
+
+.vusial-display {
+    width: 100%;
+    height: 1000px;
+    position: relative;
+}
+
+.visual-display-images-container {
+    min-height: 140px;
+    /*max-width: 500px;*/
+    overflow-x: auto;
+}
+
+.visual-display-images-container .images {
+    display: table;
+}
+
+.visual-display-images-container .images div {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px;
+}
+
+.visual-display-images-container .images div:hover {
+    cursor: pointer;
+    background-color: #eeeeee;
+}
+
+.visual-display-images-container .images div img {
+    max-width: 70px;
+}
+
+.visual-display-counter-container {
+    min-height: 140px;
+    overflow-x: auto;
+}
+
+.visual-display-counter-container .counters {
+    display: table;
+}
+
+.visual-display-counter-container .counters .counter-container {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px;
+}
+
+.visual-display-counter-container .counters .counter-container:hover {
+    cursor: pointer;
+    background-color: #eeeeee;
+}
+
+.clear {
+    clear: both;
+}
+
+.visual-display-layout-panel {
+    max-height: 1000px;
+    overflow-y: auto;
+}
+
+.visual-diplay-layout {
+    width: 100px;
+    height: 100px;
+    background-color: #fbfbfb;
+    margin: 0 auto;
+    position: relative;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+}
+
+.visual-diplay-layout .couter-layout-delete-btn {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.visual-diplay-layout .couter-layout-delete-btn:hover {
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.visual-diplay-layout .couter-layout-eye-btn {
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.visual-diplay-layout .couter-layout-eye-btn:hover {
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.visual-diplay-layout .title {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    height: 26px;
+    line-height: 26px;
+    background-color: #ddd;
+    color: #7d7d7d;
+}
+
+.visual-diplay-layout.panel .content {
+    border: 1px solid #999;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 23px;
+    left: 35px;
+}
+
+.visual-diplay-layout.image .content {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 23px;
+    left: 35px;
+    text-align: center;
+}
+
+.visual-diplay-layout.image .content img {
+    max-width: 30px;
+    max-height: 30px;
+}
+
+.visual-diplay-layout.counter .content {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+}
+
+.visual-diplay-layout.counter .content .icon {
+    width: 30px;
+    height: 24px;
+    background: url('../images/counter-layout.png');
+    background-repeat: no-repeat;
+    margin: 0 auto;
+}
+
+.visual-diplay-layout.counter .content .name {
+    font-size: 10px;
+    color: #7d7d7d;
+    margin: 0 auto;
+    text-align: center;
+} 
+
+.file-upload-btn {
+    position: relative;
+}
+
+.file-upload-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 108px;
+    
+}
+
+.fileinput-button {
+    margin-bottom: 10px;
+}
+
+#mainDisplayImageContianer {
+    width: 80%;
+}
+
+#mainCounterContainer {
+    width: 65%;
+}
