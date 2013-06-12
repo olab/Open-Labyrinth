@@ -26,16 +26,45 @@ defined('SYSPATH') or die('No direct script access.');
 class OAuth_Signature_SHA1 extends OAuth_Signature {
     protected $name     = 'sha1';
 
+    /**
+     * HTTP Method (GET, POST, etc.)
+     *
+     * @var string
+     */
     private $httpMethod = null;
+
+    /**
+     * URL address
+     *
+     * @var string
+     */
     private $url        = null;
+
+    /**
+     * Main parameters for signature
+     *
+     * Array(
+     *  'consumerKey',
+     *  'consumerSecret',
+     *  'nonce',
+     *  'method',
+     *  'timeStamp',
+     *  'version',
+     *  'verifier',
+     *  'tokenSecret',
+     *  'token'
+     * )
+     *
+     * @var array
+     */
     private $params     = null;
 
     /**
      * Default constructor
      *
-     * @param $method
-     * @param $url
-     * @param $params
+     * @param string $method
+     * @param string $url
+     * @param array $params
      */
     public function __construct($method, $url, $params) {
         $this->httpMethod = $method;
@@ -46,7 +75,7 @@ class OAuth_Signature_SHA1 extends OAuth_Signature {
     /**
      * Return signature
      *
-     * @return string
+     * @return array with signature values Array('signature', 'timeStamp', 'nonce')
      */
     public function getSignature() {
         $params           = $this->getMainParams();
@@ -65,6 +94,11 @@ class OAuth_Signature_SHA1 extends OAuth_Signature {
                      'nonce'     => $params['oauth_nonce']);
     }
 
+    /**
+     * Return basic parameters for generating signature
+     *
+     * @return array
+     */
     private function getMainParams() {
         $params = array (
             'oauth_consumer_key'     => Arr::get($this->params, 'consumerKey', ''         ),

@@ -31,7 +31,7 @@ class OAuth_Provider_Linkedin extends OAuth_Provider {
      */
     protected $name = 'linkedin';
 
-    private $state  = '';
+    private $state  = 'DCEEFWF45453sdffef4242324rwer';
 
     private $DOMAIN_MAP = array(
         'authorize' => 'https://www.linkedin.com/uas/oauth2/authorization',
@@ -39,7 +39,18 @@ class OAuth_Provider_Linkedin extends OAuth_Provider {
         'api'       => 'https://api.linkedin.com'
     );
 
+    /**
+     * LinkedIn appId
+     *
+     * @var string
+     */
     private $id     = null;
+
+    /**
+     * LinkedIn secret key
+     *
+     * @var string
+     */
     private $secret = null;
 
     /**
@@ -81,7 +92,8 @@ class OAuth_Provider_Linkedin extends OAuth_Provider {
             'code'          => $code,
             'client_id'     => $this->id,
             'client_secret' => $this->secret,
-            'redirect_uri'  => $redirectURL
+            'redirect_uri'  => $redirectURL,
+            'state'         => $this->state
         ));
 
         $response = $request->execute();

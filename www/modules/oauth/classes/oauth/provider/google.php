@@ -39,7 +39,18 @@ class OAuth_Provider_Google extends OAuth_Provider {
         'api'       => 'https://www.googleapis.com/oauth2'
     );
 
+    /**
+     * Google appId
+     *
+     * @var string
+     */
     private $id     = null;
+
+    /**
+     * Google secret key
+     *
+     * @var string
+     */
     private $secret = null;
 
     /**

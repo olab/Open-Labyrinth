@@ -37,7 +37,18 @@ class OAuth_Provider_Facebook extends OAuth_Provider {
         'api'       => 'https://graph.facebook.com'
     );
 
+    /**
+     * Facebook appId
+     *
+     * @var string
+     */
     private $id     = null;
+
+    /**
+     * Facebook secret key
+     *
+     * @var string
+     */
     private $secret = null;
 
     /**

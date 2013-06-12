@@ -24,7 +24,6 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_Home extends Controller_Base {
 
     public function action_index() {
-
     }
 
     public function action_login() {
@@ -61,10 +60,12 @@ class Controller_Home extends Controller_Base {
             $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
             if($provider != null) {
                 $token     = $provider->getAccessToken($_REQUEST, URL::base(true, false) . 'home/loginOAuthCallback');
-                $userInfo  = $provider->get($token, 'user-info');
-                $authorize = OAuth_Authorize::factory($provider->getName());
-                if($authorize != null) {
-                    $authorize->login($providerId, $userInfo);
+                if($token != null) {
+                    $userInfo  = $provider->get($token, 'user-info');
+                    $authorize = OAuth_Authorize::factory($provider->getName());
+                    if($authorize != null) {
+                        $authorize->login($providerId, $userInfo);
+                    }
                 }
             }
         }

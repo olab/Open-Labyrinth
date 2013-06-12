@@ -53,6 +53,9 @@ abstract class OAuth_Authorize {
             case 'tumblr':
                 $oauthAuthorize = new OAuth_Authorize_Tumblr();
                 break;
+            case 'flickr':
+                $oauthAuthorize = new OAuth_Authorize_Flickr();
+                break;
         }
 
         return $oauthAuthorize;

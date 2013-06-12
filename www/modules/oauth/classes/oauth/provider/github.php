@@ -37,30 +37,26 @@ class OAuth_Provider_Github extends OAuth_Provider {
         'api'       => 'https://api.github.com'
     );
 
+    /**
+     * Github appId
+     *
+     * @var string
+     */
     private $id     = null;
+
+    /**
+     * Github secret key
+     *
+     * @var string
+     */
     private $secret = null;
 
     /**
      * Default constructor
      */
-    public function __construct() {
-        $config = Kohana::$config->load('oauth');
-
-        if(!property_exists($config, 'github')) {
-            throw new Kohana_Exception('Can\'t load configuration for Github provider');
-        }
-
-
-        if(!isset($config->github['id'])) {
-            throw new Kohana_Exception('Please set in configuration file Github client id');
-        }
-
-        if(!isset($config->github['secret'])) {
-            throw new Kohana_Exception('Please set in configuration file Github secret');
-        }
-
-        $this->id     = $config->github['id'];
-        $this->secret = $config->github['secret'];
+    public function __construct($id, $secret) {
+        $this->id     = $id;
+        $this->secret = $secret;
     }
 
     /**

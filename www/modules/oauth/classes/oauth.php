@@ -33,7 +33,7 @@ class OAuth {
         $oauthProvider = null;
         switch($provider->name) {
             case 'github':
-                $oauthProvider = new OAuth_Provider_Github();
+                $oauthProvider = new OAuth_Provider_Github($provider->appId, $provider->secret);
                 break;
             case 'facebook':
                 $oauthProvider = new OAuth_Provider_Facebook($provider->appId, $provider->secret);
@@ -49,6 +49,9 @@ class OAuth {
                 break;
             case 'tumblr':
                 $oauthProvider = new OAuth_Provider_Tumblr($provider->appId, $provider->secret);
+                break;
+            case 'flickr':
+                $oauthProvider = new OAuth_Provider_Flickr($provider->appId, $provider->secret);
                 break;
         }
 

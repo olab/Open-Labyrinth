@@ -21,32 +21,35 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Class OAuth_Provider_Twitter - Twitter OAuth provider
+ * Class OAuth_Provider_Flickr - Flickr OAuth provider
  */
-class OAuth_Provider_Twitter extends OAuth_Provider {
+class OAuth_Provider_Flickr extends OAuth_Provider {
     /**
      * Name of provider
      *
      * @var string
      */
-    protected $name = 'twitter';
+    protected $name = 'flickr';
+
+    const FLICKR_REQUEST_TOKEN_SECRET = 'flickr_request_token_secret';
+    const FLICKR_USER_INFO            = 'flickr_user_info';
 
     private $DOMAIN_MAP = array(
-        'request'   => 'https://api.twitter.com/oauth/request_token',
-        'authorize' => 'https://api.twitter.com/oauth/authenticate',
-        'access'    => 'https://api.twitter.com/oauth/access_token',
-        'api'       => 'https://api.twitter.com/1.1'
+        'request'   => 'http://www.flickr.com/services/oauth/request_token',
+        'authorize' => 'http://www.flickr.com/services/oauth/authorize',
+        'access'    => 'http://www.flickr.com/services/oauth/access_token',
+        'api'       => 'http://www.flickr.com/services/rest'
     );
 
     /**
-     * Twitter appId
+     * Flickr appId
      *
      * @var string
      */
     private $id     = null;
 
     /**
-     * Twitter secret key
+     * Flickr secret key
      *
      * @var string
      */
@@ -55,8 +58,8 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
     /**
      * Default constructor
      */
-    public function __construct($id, $secret) {
-        $this->id     = $id;
+    public function __construct($appId, $secret) {
+        $this->id     = $appId;
         $this->secret = $secret;
     }
 
@@ -90,12 +93,9 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
 
         $authorizeURL = URL::base();
         if(isset($requestTokenParams['oauth_token'])) {
-            $authorizeURL = $this->DOMAIN_MAP['authorize'] . '?' . http_build_query(array('oauth_token' => $requestTokenParams['oauth_token']));
+            $authorizeURL = $this->DOMAIN_MAP['authorize'] . '?' . http_build_query(array('oauth_token' => $requestTokenParams['oauth_token'], 'perms' => 'read'));
 
-            Session::instance()->set(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN, $requestTokenParams['oauth_token']);
-            Session::instance()->set(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_SECRET, $requestTokenParams['oauth_token_secret']);
-            Session::instance()->set(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_NONCE, $signatureData['nonce']);
-            Session::instance()->set(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_TIME, $signatureData['timeStamp']);
+            Session::instance()->set(OAuth_Provider_Flickr::FLICKR_REQUEST_TOKEN_SECRET, $requestTokenParams['oauth_token_secret']);
         }
 
         return $authorizeURL;
@@ -117,17 +117,15 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
             'consumerSecret' => $this->secret,
             'verifier'       => $oauthVerifier,
             'token'          => $oauthToken,
-            'tokenSecret'    => Session::instance()->get(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_SECRET, null),
-            'nonce'          => Session::instance()->get(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_NONCE),
-            'timeStamp'      => Session::instance()->get(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_TIME)
+            'tokenSecret'    => Session::instance()->get(OAuth_Provider_Flickr::FLICKR_REQUEST_TOKEN_SECRET, null)
         ));
 
         $signatureData = $signature->getSignature();
 
         $params = array(
             'oauth_consumer_key'     => $this->id,
-            'oauth_nonce'            => Session::instance()->get(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_NONCE),
-            'oauth_timestamp'        => Session::instance()->get(OAuth_Provider_Tumblr::TUMBLR_REQUEST_TOKEN_TIME),
+            'oauth_nonce'            => $signatureData['nonce'],
+            'oauth_timestamp'        => $signatureData['timeStamp'],
             'oauth_version'          => '1.0',
             'oauth_signature_method' => 'HMAC-SHA1',
             'oauth_signature'        => $signatureData['signature'],
@@ -143,11 +141,20 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
         $accessToken        = null;
         if(isset($accessTokenParams['oauth_token'])) {
             $accessToken = new OAuth_Token($accessTokenParams['oauth_token'], $accessTokenParams['oauth_token_secret']);
+            Session::instance()->set(OAuth_Provider_Flickr::FLICKR_USER_INFO, json_encode($accessTokenParams));
         }
 
         return $accessToken;
     }
 
+    /**
+     * Get information from oauth system
+     *
+     * @param OAuth_Token $token
+     * @param string $name
+     * @param array $params
+     * @return mixed|null
+     */
     public function get(OAuth_Token $token, $name, $params = null) {
         if($token == null || $name == null) return null;
 
@@ -161,30 +168,13 @@ class OAuth_Provider_Twitter extends OAuth_Provider {
         return $result;
     }
 
+    /**
+     * Return basic user info
+     *
+     * @param OAuth_Token $token
+     * @return mixed
+     */
     private function getUserInfo(OAuth_Token $token) {
-        if($token == null) return null;
-
-        $signature = OAuth_Signature::factory('sha1', 'GET', $this->DOMAIN_MAP['api'] . '/account/verify_credentials.json', array(
-            'consumerKey'    => $this->id,
-            'consumerSecret' => $this->secret,
-            'token'          => $token->getToken(),
-            'tokenSecret'    => $token->getSecret()
-        ));
-
-        $signatureData = $signature->getSignature();
-
-        $params = array(
-            'oauth_token'            => $token->getToken(),
-            'oauth_consumer_key'     => $this->id,
-            'oauth_nonce'            => $signatureData['nonce'],
-            'oauth_timestamp'        => $signatureData['timeStamp'],
-            'oauth_version'          => '1.0',
-            'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_signature'        => $signatureData['signature']
-        );
-
-        $request = new OAuth_Request('GET', $this->DOMAIN_MAP['api'] . '/account/verify_credentials.json', $params);
-
-        return $request->execute();
+        return Session::instance()->get(OAuth_Provider_Flickr::FLICKR_USER_INFO);
     }
 }

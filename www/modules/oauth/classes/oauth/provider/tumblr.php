@@ -43,7 +43,18 @@ class OAuth_Provider_Tumblr extends OAuth_Provider {
         'api'       => 'http://api.tumblr.com'
     );
 
+    /**
+     * Tumblr appId
+     *
+     * @var string
+     */
     private $id     = null;
+
+    /**
+     * Tumblr secret key
+     *
+     * @var string
+     */
     private $secret = null;
 
     /**
