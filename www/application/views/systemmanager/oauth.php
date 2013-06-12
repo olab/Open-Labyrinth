@@ -20,17 +20,26 @@
  */
 ?>
 
-<form method="POST" action="<?php echo URL::base(); ?>systemManager/saveOAuth">
-    <legend><?php echo __('OAuth providers'); ?></legend>
+<form class="form-horizontal" method="POST" action="<?php echo URL::base(); ?>systemManager/saveOAuth">
+    <h3><?php echo __('OAuth providers'); ?></h3>
+
     <?php if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) { ?>
         <?php foreach($templateData['oauthProviders'] as $provider) { ?>
+        <fieldset class="fieldset">
+            <legend><img width="32" src="<?php echo URL::base(); ?>images/oauth/<?php echo $provider->icon; ?>">&nbsp;<?php echo $provider->name; ?></legend>
             <div class="control-group">
-                <label class="control-label" for="fromname<?php echo $provider->id; ?>"><?php echo $provider->name; ?> (id, secret)</label>
+                <label class="control-label" for="id-<?php echo $provider->id; ?>">ID</label>
                 <div class="controls">
-                    <input type="text" class="span3" id="fromname<?php echo $provider->id; ?>" name="appId<?php echo $provider->id; ?>" value="<?php echo $provider->appId; ?>" placeholder="" />
-                    <input type="text" class="span5" id="mailfrom<?php echo $provider->id; ?>" name="secret<?php echo $provider->id; ?>" value="<?php echo $provider->secret; ?>" placeholder=""/>
+                    <input type="text" class="span5" id="id-<?php echo $provider->id; ?>" name="appId<?php echo $provider->id; ?>" value="<?php echo $provider->appId; ?>" placeholder="" />
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="secret-<?php echo $provider->id; ?>">Secret</label>
+                <div class="controls">
+                    <input type="text" class="span5" id="secret-<?php echo $provider->id; ?>" name="secret<?php echo $provider->id; ?>" value="<?php echo $provider->secret; ?>" placeholder=""/>
+                </div>
+            </div>
+        </fieldset>
         <?php } ?>
     <?php } ?>
 

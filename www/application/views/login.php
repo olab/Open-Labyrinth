@@ -53,7 +53,7 @@
         <?php if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) { ?>
             <?php foreach($templateData['oauthProviders'] as $provider) { ?>
                 <?php if($provider->icon != null && $provider->appId != null && $provider->secret != null) { ?>
-                    <a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>"><img width="32" src="<?php echo URL::base(); ?>images/<?php echo $provider->icon; ?>"></a>&nbsp;
+                    <a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>"><img width="32" src="<?php echo URL::base(); ?>images/oauth/<?php echo $provider->icon; ?>"></a>&nbsp;
                 <?php } ?>
             <?php } ?>
         <?php } ?>

@@ -1038,3 +1038,8 @@ input[readonly].code, textarea[readonly].code{
     text-align: center;
     margin-bottom: 10px;
 }
+
+.oauth-icon-line img {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
