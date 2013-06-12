@@ -96,7 +96,7 @@ class Controller_Base extends Controller_Template {
 
             if (Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
                 $centerView = View::factory('adminMenu');
-
+                $this->templateData['todayTip'] = Kohana::$config->load('today_tip');
                 /*
                  * Fetch the latest authored labyrinths.
                  */
@@ -123,8 +123,8 @@ class Controller_Base extends Controller_Template {
                     $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
                 }
 
-                $this->templateData['center'] = $centerView;
                 $centerView->set('templateData', $this->templateData);
+                $this->templateData['center'] = $centerView;
             } else {
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));

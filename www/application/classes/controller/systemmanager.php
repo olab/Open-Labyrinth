@@ -62,6 +62,12 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][3] = __("OAuth");
         $this->templateData['tabs'][3] = $viewSupport;
 
+        $this->templateData['todayTip'] = Kohana::$config->load('today_tip');
+        $viewTodayTip = View::factory('systemmanager/todayTip');
+        $viewTodayTip->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][4] = __("Today's Tip");
+        $this->templateData['tabs'][4] = $viewTodayTip;
+
         $view = View::factory('systemmanager/view');
         $view->set('templateData', $this->templateData);
 
@@ -171,6 +177,37 @@ class Controller_SystemManager extends Controller_Base {
         }
 
         Request::initial()->redirect(URL::base() . 'systemManager');
+    }
+
+    public function action_updateTodayTip() {
+        if ($_POST) {
+            if (Security::check($_POST['token'])) {
+                unset($_POST['token']);
+                $string = 'return array (';
+                foreach ($_POST as $key => $value) {
+                    $value = str_replace('"', '\"', $value);
+                    $string .= '"' . $key . '" => "' . $value . '", ';
+                }
+                $string .= ');';
+
+                $content = '';
+                $handle = fopen(DOCROOT . 'application/config/today_tip.php', 'r');
+                while (($buffer = fgets($handle)) !== false) {
+                    $content .= $buffer;
+                }
+
+                $position = strpos($content, 'return array');
+                $header = substr($content, 0, $position);
+
+                file_put_contents(DOCROOT . 'application/config/today_tip.php', $header . $string);
+
+                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+            } else {
+                Request::initial()->redirect(URL::base());
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
     }
 }
 
