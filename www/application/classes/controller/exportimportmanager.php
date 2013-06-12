@@ -961,7 +961,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     if($version == '3') {
                         $nodeContentsArray[$id]['div'] = (string) base64_decode($vpdText->div);
                     }else {
-                        $nodeContentsArray[$id]['div'] = (string) $vpdText->div;
+                        $nodeContentsArray[$id]['div'] = $vpdText->div->asXML();
                     }
                 } else {
                     $id = (int) $vpdTextAttr->id;
@@ -1032,7 +1032,11 @@ class Controller_ExportImportManager extends Controller_Base {
             foreach ($countersArray as $counter) {
                 if (isset($counter['rules'])) {
                     foreach ($counter['rules'] as $rules) {
-                        $rules['node'] = $nodeArray[$rules['node']]['database_id'];
+                        if ($rules['node'] != ''){
+                            $rules['node'] = $nodeArray[$rules['node']]['database_id'];
+                        } else {
+                            $rules['node'] = '';
+                        }
                         DB_ORM::model('map_counter_rule')->addRule($counter['database_id'], $rules);
                     }
                 }

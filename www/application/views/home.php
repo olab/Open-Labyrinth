@@ -84,6 +84,7 @@
                         <div class="nav-collapse">
                             <ul class="nav">
                                 <li><a href="<?php echo URL::base(); ?>"><?php echo __('Home'); ?></a></li>
+                                <?php if(Auth::instance()->get_user()->type->name != 'learner') { ?>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Labyrinths'); ?> <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
@@ -103,6 +104,7 @@
                                         <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous ANSI'); ?></a></li>
                                     </ul>
                                 </li>
+                                <?php if(Auth::instance()->get_user()->type->name != 'author') { ?>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?> <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
@@ -128,6 +130,8 @@
                                         ?>
                                     </ul>
                                 </li>
+                                <?php } ?>
+                                <?php } ?>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>
                             </ul>
                         </div>

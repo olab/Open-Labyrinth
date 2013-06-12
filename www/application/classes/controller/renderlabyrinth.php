@@ -54,16 +54,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data) {
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                        if ($data['node']->link_style->name == 'type in text') {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
-                            $data['links'] = $result['links']['display'];
-                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        if (!isset($data['node_links']['linker'])){
+                            if ($data['node']->link_style->name == 'type in text') {
+                                $result = $this->generateLinks($data['node'], $data['node_links']);
+                                $data['links'] = $result['links']['display'];
+                                if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                     $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                     $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                                }
+                            } else {
+                                $result = $this->generateLinks($data['node'], $data['node_links']);
+                                $data['links'] = $result['links'];
                             }
                         } else {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
-                            $data['links'] = $result['links'];
+                            $data['links'] = $data['node_links']['linker'];
                         }
 
                         if ($editOn != NULL and $editOn == 1) {
@@ -138,18 +142,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
-                    if ($data['node']->link_style->name == 'type in text') {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links']['display'];
-                        if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                             $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                             $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                    if (!isset($data['node_links']['linker'])){
+                        if ($data['node']->link_style->name == 'type in text') {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links']['display'];
+                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            }
+                        } else {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            if(!empty($result['links']))
+                                $data['links'] = $result['links'];
+                            else $data['links'] = "";
                         }
                     } else {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        if(!empty($result['links']))
-                            $data['links'] = $result['links'];
-                        else $data['links'] = "";
+                        $data['links'] = $data['node_links']['linker'];
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
@@ -329,16 +337,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                    if ($data['node']->link_style->name == 'type in text') {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links']['display'];
-                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
-                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                    if (!isset($data['node_links']['linker'])){
+                        if ($data['node']->link_style->name == 'type in text') {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links']['display'];
+                            $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                            $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        } else {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links'];
+                            $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        }
                     } else {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links'];
-                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        $data['links'] = $data['node_links']['linker'];
                     }
 
                     $data['node_text'] = $this->parseText($data['node_text']);

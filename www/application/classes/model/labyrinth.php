@@ -94,7 +94,7 @@ class Model_Labyrinth extends Model {
                 }
             } else {
                 $result['node_text'] = '<p>' . $conditional['message'] . '</p>';
-                $result['node_links'] = $conditional['linker'];
+                $result['node_links']['linker'] = $conditional['linker'];
                 $result['counters'] = '';
                 $result['redirect'] = NULL;
                 $result['remoteCounters'] = '';
@@ -240,11 +240,11 @@ class Model_Labyrinth extends Model {
 
             if ($mode == 'a') {
                 if ($count < count($nodes)) {
-                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
+                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                 }
             } else if ($mode == 'o') {
                 if ($count <= 0) {
-                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
+                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                 }
             }
         }
