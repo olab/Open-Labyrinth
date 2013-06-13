@@ -527,6 +527,18 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         
         return NULL;
     }
+
+    public function setLinkStyle($linkStyleId) {
+        $linkStyles = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        if($linkStyles != null && count($linkStyles) > 0) {
+            foreach($linkStyles as $style) {
+                if($style->id == $linkStyleId) {
+                    DB_ORM::update('map_node')->set('link_style_id', $linkStyleId)->execute();
+                    break;
+                }
+            }
+        }
+    }
     
     public function getNodesWithoutLink($nodeId) {
         $this->id = $nodeId;

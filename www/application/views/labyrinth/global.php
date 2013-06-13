@@ -306,6 +306,25 @@ if (isset($templateData['map'])) {
             </div>
         <?php } ?>
     </fieldset>
+
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Link Function Style'); ?></legend>
+        <?php if (isset($templateData['linkStyles'])) { ?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Link Function Style'); ?></label>
+                <div class="controls">
+                    <?php $isFirst = true; foreach ($templateData['linkStyles'] as $linkStyle) { ?>
+                        <label class="radio">
+                            <input type="radio"
+                                   name="linkStyle"
+                                   value=<?php echo $linkStyle->id; ?>>
+                            <?php echo $linkStyle->name; ?>
+                        </label>
+                    <?php } ?>
+                </div>
+            </div>
+        <?php } ?>
+    </fieldset>
     <?php
     echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
 

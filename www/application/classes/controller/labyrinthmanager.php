@@ -784,6 +784,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
             $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
             $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
+            $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
@@ -858,7 +859,10 @@ class Controller_LabyrinthManager extends Controller_Base {
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
 
-
+                $linkStyleId = Arr::get($_POST, 'linkStyle', null);
+                if($linkStyleId != null) {
+                    DB_ORM::model('map_node')->setLinkStyle($linkStyleId);
+                }
 
                 Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
                 Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
