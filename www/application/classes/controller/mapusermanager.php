@@ -31,11 +31,22 @@ class Controller_MapUserManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
+        $authorOrder = $this->request->param('id2', 0);
+        $learnerOrder = $this->request->param('id3', 0);
+
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
             $userIds = DB_ORM::model('map_user')->getAllUsersIds((int) $mapId);
-            $this->templateData['existUsers'] = DB_ORM::model('map_user')->getAllUsers((int) $mapId);
+
+            $authorOrder = $authorOrder == 0 ? 'ASC' : 'DESC';
+            $learnerOrder = $learnerOrder == 0 ? 'ASC' : 'DESC';
+
+            $this->templateData['authorOrder']  = $authorOrder  == 'ASC' ? 0 : 1;
+            $this->templateData['learnerOrder'] = $learnerOrder == 'ASC' ? 0 : 1;
+
+            $this->templateData['existAuthors'] = DB_ORM::model('map_user')->getAllAuthors((int) $mapId, $authorOrder);
+            $this->templateData['existLearners'] = DB_ORM::model('map_user')->getAllLearners((int) $mapId, $learnerOrder);
 
             $this->templateData['admins'] = DB_ORM::model('user')->getUsersByTypeName('superuser', $userIds);
             $this->templateData['authors'] = DB_ORM::model('user')->getUsersByTypeName('author', $userIds);
@@ -74,6 +85,50 @@ class Controller_MapUserManager extends Controller_Base {
         $userId = $this->request->param('id2', NULL);
         if ($mapId != NULL) {
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_addAllLearners() {
+        $mapId = $this->request->param('id', NULL);
+        $authorOrder = $this->request->param('id2', 0);
+        $learnerOrder = $this->request->param('id3', 0);
+        if ($mapId != NULL) {
+            DB_ORM::model('map_user')->addAllLearners($mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_removeAllLearners() {
+        $mapId = $this->request->param('id', NULL);
+        $authorOrder = $this->request->param('id2', 0);
+        $learnerOrder = $this->request->param('id3', 0);
+        if ($mapId != NULL) {
+            DB_ORM::model('map_user')->removeAllLearners($mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_addAllAuthors() {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL) {
+            DB_ORM::model('map_user')->addAllAuthors($mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_removeAllAuthors() {
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL) {
+            DB_ORM::model('map_user')->removeAllAuthors($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());

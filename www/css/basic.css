@@ -1278,3 +1278,7 @@ input[readonly].code, textarea[readonly].code{
 #mainCounterContainer {
     width: 65%;
 }
+
+.btn-group select {
+    margin-bottom: 0;
+}
