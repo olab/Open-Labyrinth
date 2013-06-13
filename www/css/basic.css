@@ -1252,7 +1252,7 @@ input[readonly].code, textarea[readonly].code{
     color: #7d7d7d;
     margin: 0 auto;
     text-align: center;
-} 
+}
 
 .file-upload-btn {
     position: relative;
@@ -1264,7 +1264,7 @@ input[readonly].code, textarea[readonly].code{
     left: 0;
     opacity: 0;
     width: 108px;
-    
+
 }
 
 .fileinput-button {

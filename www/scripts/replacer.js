@@ -94,7 +94,7 @@ var Replacer = function() {
         if(replaceValue == null || replaceValue.length <= 0) return;
         
         var $currentSelected = $('.selected-text');
-        var parent = $('.selected-text').parent('.editable-text');
+        var parent = $('.selected-text').parents('.editable-text');
         if ($currentSelected.length > 0){
             $.each($currentSelected, function(index, object) {
                 $(object).after(replaceValue);
