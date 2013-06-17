@@ -539,7 +539,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             }
         }
     }
-    
+
     public function getNodesWithoutLink($nodeId) {
         $this->id = $nodeId;
         $this->load();

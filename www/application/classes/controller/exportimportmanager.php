@@ -808,16 +808,16 @@ class Controller_ExportImportManager extends Controller_Base {
                         $hasAnswers = false;
                         break;
                     case 'mcq2':
-                        $questionsArray[$id]['entry_type_id'] = 3;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq3':
                         $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq5':
-                        $questionsArray[$id]['entry_type_id'] = 5;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq9':
-                        $questionsArray[$id]['entry_type_id'] = 6;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     default:
                         $questionsArray[$id]['entry_type_id'] = 1;

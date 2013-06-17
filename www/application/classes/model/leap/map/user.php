@@ -173,7 +173,7 @@ class Model_Leap_Map_User extends DB_ORM_Model {
 
         return $ids;
     }
-    
+
     public function checkUser($users, $userId) {
         if(count($users) > 0) {
             foreach($users as $record) {
