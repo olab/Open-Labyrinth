@@ -197,7 +197,7 @@ if ($templateData['skin_path'] != NULL) {
     $doc_file = DOCROOT . 'css/skin/' . $templateData['skin_path'] . '/default.css';
     if (file_exists($doc_file)) {
         $css_file = URL::base() . 'css/skin/' . $templateData['skin_path'] . '/default.css';
-        echo '<link rel="stylesheet" type="text/css" href="' . $css_file . '" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . ScriptVersions::get($css_file) . '" />';
     }
 }
 ?>

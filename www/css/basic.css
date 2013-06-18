@@ -1331,3 +1331,7 @@ input[readonly].code, textarea[readonly].code{
     overflow:hidden;
     white-space:nowrap;
 }
+
+.farbtastic-container div {
+    margin: 0 auto;
+}
