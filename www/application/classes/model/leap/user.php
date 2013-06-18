@@ -209,8 +209,8 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId() {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id');
+    public function getAllUsersId($order = 'DESC') {
+        $builder = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order);
         $result = $builder->query();
         
         
@@ -224,9 +224,9 @@ private static function initialize_metadata($object)
         return $ids;
     }
     
-    public function getAllUsers() {
+    public function getAllUsers($order = 'DESC') {
         $result = array();
-        $ids = $this->getAllUsersId();
+        $ids = $this->getAllUsersId($order);
         
         foreach($ids as $id) {
             $result[] = DB_ORM::model('user', array($id));
@@ -310,12 +310,14 @@ private static function initialize_metadata($object)
         return NULL;
     }
     
-    public function getUsersByTypeName($typeName, $ids = NULL) {
+    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC') {
         $users = array();
         if($ids != NULL) {
             $builder = DB_SQL::select('default')
                     ->from($this->table())
-                    ->where('id', 'NOT IN', $ids);
+                    ->where('id', 'NOT IN', $ids)
+                    ->order_by('nickname', $order);
+
             $result = $builder->query();
             if($result->is_loaded()) {
                 foreach($result as $record) {
@@ -323,7 +325,7 @@ private static function initialize_metadata($object)
                 }
             }
         } else {
-            $users = $this->getAllUsers();
+            $users = $this->getAllUsers($order);
         }
         
         if($users != NULL and count($users) > 0) {
