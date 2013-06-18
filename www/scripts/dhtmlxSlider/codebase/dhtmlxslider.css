@@ -1,0 +1,427 @@
+/* Default skin */
+.dhtmlxSlider { 	
+  	position:relative;
+	overflow:hidden;
+  	height:14px;
+	left:10px; 
+}
+
+.dhtmlxSlider .selector {
+	position:absolute;
+	overflow:hidden;
+  	height:100%;
+	width:31px;
+	left:5px;
+}
+
+.dhtmlxSlider .leftSide {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:3px;
+  height:100%;
+}
+
+.dhtmlxSlider .leftZone {
+	position:absolute;
+	top:0px;
+	left:3px;
+  height:100%;
+}
+
+.dhtmlxSlider .rightSide {
+  position:absolute;
+  right:0px;
+  top:0px;
+  width:3px;
+  height:100%;
+}
+
+.dhtmlxSlider .rightZone {
+  position:absolute;
+	left:3px;
+	top:0px;
+  height:100%;
+}
+/* End default skin */
+
+/* Ball skin */
+.dhtmlxSlider_ball {
+  position:relative;
+	overflow:hidden;
+  height:16px;
+	left:10px; 
+}
+
+.dhtmlxSlider_ball .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:16px;
+	left:5px;
+}
+
+.dhtmlxSlider_ball .leftSide {
+  	position:absolute;
+  	left:0px;
+  	top:0px;
+  	width:3px;
+  	height:100%;
+}
+
+.dhtmlxSlider_ball .leftZone {
+	position:absolute;
+	top:0px;
+	left:3px;
+ 	height:100%;
+}
+
+.dhtmlxSlider_ball .rightSide {
+  	position:absolute;
+  	right:0px;
+  	top:0px;
+  	width:4px;
+  	height:100%;
+}
+
+.dhtmlxSlider_ball .rightZone {
+	position:absolute;
+	left:3px;
+	top:0px;
+ 	height:100%;
+}
+/* End ball skin */
+
+/* Zipper skin */
+.dhtmlxSlider_zipper {
+  position:relative;
+	overflow:hidden;
+  height:17px;
+	left:10px; 
+}
+
+.dhtmlxSlider_zipper .selector {
+
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:17px;
+	left:0px;
+}
+
+.dhtmlxSlider_zipper .leftSide {
+  	position:absolute;
+  	left:0px;
+  	top:0px;
+  	width:3px;
+  	height:100%;
+}
+
+.dhtmlxSlider_zipper .leftZone {
+	position:absolute;
+	top:0px;
+	left:0px;
+  height:100%;
+
+}
+
+.dhtmlxSlider_zipper .rightSide {
+  	position:absolute;
+  	right:0px;
+  	top:0px;
+  	width:4px;
+  	height:100%;
+}
+
+.dhtmlxSlider_zipper .rightZone {
+	position:absolute;
+	left:3px;
+	top:0px;
+  height:100%;
+}
+/* End zipper skin */
+
+/* Silverskin skin */
+.dhtmlxSlider_simplesilver {
+  position:relative;
+	overflow:hidden;
+  height:16px;
+	left:10px; 
+}
+
+.dhtmlxSlider_simplesilver .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:15px;
+	left:0px;
+}
+
+.dhtmlxSlider_simplesilver .leftSide {
+  position:absolute;
+  left:0px;
+  top:0px;
+  width:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_simplesilver .leftZone {
+	position:absolute;
+	top:0px;
+	left:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_simplesilver .rightSide {
+  position:absolute;
+  right:0px;
+  top:0px;
+  width:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_simplesilver .rightZone {
+	position:absolute;
+	left:3px;
+	top:0px;
+  height:100%;
+}
+/* End simplesilver skin */
+
+/* Simplegray skin */
+.dhtmlxSlider_simplegray {
+  position:relative;
+	overflow:hidden;
+  height:16px;
+	left:10px; 
+}
+
+.dhtmlxSlider_simplegray .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:15px;
+	left:0px;
+}
+
+.dhtmlxSlider_simplegray .leftSide {
+  	position:absolute;
+  	left:0px;
+  	top:0px;
+  	width:1px;
+  	height:100%;
+}
+
+.dhtmlxSlider_simplegray .leftZone {
+	position:absolute;
+	top:0px;
+	left:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_simplegray .rightSide {
+
+  	position:absolute;
+  	right:0px;
+  	top:0px;
+  	width:1px;
+  	height:100%;
+}
+
+.dhtmlxSlider_simplegray .rightZone {
+	position:absolute;
+	left:3px;
+	top:0px;
+  height:100%;
+}
+/* End silver skin */
+
+/* Simplegray skin */
+.dhtmlxSlider_bar {
+  position:relative;
+	overflow:hidden;
+  height:21px;
+	left:10px; 
+}
+
+.dhtmlxSlider_bar .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:15px;
+	left:17px;
+}
+
+.dhtmlxSlider_bar .leftSide {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:17px;
+	height:100%;
+}
+
+.dhtmlxSlider_bar .leftZone {
+	position:absolute;
+	top:0px;
+	left:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_bar .rightSide {
+	position:absolute;
+	right:0px;
+	top:0px;
+	width:17px;
+	height:100%;
+}
+
+.dhtmlxSlider_bar .rightZone {
+	position:absolute;
+	left:3px;
+	top:0px;
+  height:100%;
+}
+/* End silver skin */
+
+/* Arrow skin */
+.dhtmlxSlider_arrow {
+  position:relative;
+	overflow:hidden;
+  height:14px;
+	left:10px; 
+}
+
+.dhtmlxSlider_arrow .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:7px;
+	left:1px;
+}
+
+.dhtmlxSlider_arrow .leftSide {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:1px;
+	height:100%;
+}
+
+.dhtmlxSlider_arrow .leftZone {
+	position:absolute;
+	top:0px;
+	left:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_arrow .rightSide {
+	position:absolute;
+	right:0px;
+	top:0px;
+	width:1px;
+	height:100%;
+}
+
+.dhtmlxSlider_arrow .rightZone {
+	position:absolute;
+	left:1px;
+	top:0px;
+  height:100%;
+}
+/* End arrow skin */
+
+/* Arrow green skin */
+.dhtmlxSlider_arrowgreen {
+  position:relative;
+	overflow:hidden;
+  height:21px;
+	left:10px; 
+}
+
+.dhtmlxSlider_arrowgreen .selector {
+	position:absolute;
+	overflow:hidden;
+  height:100%;
+	width:11px;
+	left:1px;
+}
+
+.dhtmlxSlider_arrowgreen .leftSide {
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:1px;
+	height:100%;
+}
+
+.dhtmlxSlider_arrowgreen .leftZone {
+	position:absolute;
+	top:0px;
+	left:1px;
+  height:100%;
+}
+
+.dhtmlxSlider_arrowgreen .rightSide {
+	position:absolute;
+	right:0px;
+	top:0px;
+	width:1px;
+	height:100%;
+}
+
+.dhtmlxSlider_arrowgreen .rightZone {
+	position:absolute;
+	left:1px;
+	top:0px;
+  height:100%;
+}
+/* End arrow skin */
+
+/* Skyblue skin */
+.dhtmlxSlider_dhx_skyblue {
+  position:relative;
+  overflow:hidden;
+  height:15px;
+  left:10px; 
+}
+
+.dhtmlxSlider_dhx_skyblue .selector {
+
+  position:absolute;
+  overflow:hidden;
+  height:15px;
+  width:15px;
+  left:0px;
+}
+
+.dhtmlxSlider_dhx_skyblue .leftSide {
+    position:absolute;
+    left:0px;
+    top:0px;
+    width:0px;
+    height:100%;
+}
+
+.dhtmlxSlider_dhx_skyblue .leftZone {
+  position:absolute;
+  top:0px;
+  left:0px;
+  height:100%;
+
+}
+
+.dhtmlxSlider_dhx_skyblue .rightSide {
+    position:absolute;
+    right:0px;
+    top:0px;
+    width:0px;
+    height:100%;
+}
+
+.dhtmlxSlider_dhx_skyblue .rightZone {
+  position:absolute;
+  left:3px;
+  top:0px;
+  height:100%;
+}
+/* End zipper skin */

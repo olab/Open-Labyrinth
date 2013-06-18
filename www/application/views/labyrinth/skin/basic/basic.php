@@ -24,7 +24,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
+
 <SCRIPT LANGUAGE="JavaScript">
+    window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
+
     function toggle_visibility(id) {
         var e = document.getElementById(id);
         if (e.style.display == 'none')
@@ -117,6 +125,11 @@
 
     }
 
+    function sendSliderValue(qid, rqid, value) {
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/saveSliderQuestionResponse/' + qid + '/' + rqid;
+        $.post(URL, {value: value}, function(data) {});
+    }
+
     function ajaxBookmark() {
         var xmlhttp;
         var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
@@ -157,6 +170,27 @@
         document.getElementById("ChatAnswer" + ChatElementId).innerHTML = "<p><b>&nbsp;&nbsp;&nbsp;&nbsp;" + xmlhttp.responseText + "</b></p>";
         document.getElementById("ChatQuestion" + ChatElementId).style.color = "grey";
     }
+    
+    $(function() {
+        $.each($('.visual-display-container'), function(index, object) {
+            var maxHeight = 0,
+                children = $(object).children(),
+                top = 0,
+                height = 0,
+                img = null,
+                p = 1,
+                d = 1;
+            $.each(children, function(index, child) {
+                top = parseInt($(child).css('top').replace('px', ''));
+                height = parseInt($(child).css('height').replace('px', ''));           
+                if(maxHeight < (top + height)) {
+                    maxHeight = top + height;
+                }
+            });
+            
+            $(object).css('height', maxHeight);
+        });
+    });
 </script>
 <?php
 if ($templateData['skin_path'] != NULL) {

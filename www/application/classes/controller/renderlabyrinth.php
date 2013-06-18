@@ -277,6 +277,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_saveSliderQuestionResponse() {
+        $this->auto_render = false;
+
+        $questionId = $this->request->param('id', null);
+        $responseId = $this->request->param('id2', null);
+        $value      = Arr::get($_POST, 'value', 0);
+
+        $responses = Session::instance()->get('sliderQuestionResponses');
+        $responses[$questionId][$responseId] = $value;
+
+        Session::instance()->set('sliderQuestionResponses', $responses);
+    }
+
     public function action_remote() {
         $mapId = $this->request->param('id', NULL);
         $mode = $this->request->param('id2', NULL);
@@ -549,7 +562,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public static function parseText($text) {
         $result = $text;
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD');
 
         foreach ($codes as $code) {
             $regExp = '/[\[' . $code . ':\d\]]+/';
@@ -589,6 +602,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                     case 'INFO':
                                         $replaceString = Controller_RenderLabyrinth::getInfoHTML($id);
+                                        break;
+                                    case 'VD':
+                                        $replaceString = Controller_RenderLabyrinth::getVisualDisplayHTML($id);
                                         break;
                                 }
 
@@ -726,6 +742,55 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                     if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
                         $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    }
+                }
+            } else if($question->type->value == 'slr') {
+                if($question->settings != null) {
+                    $settings = json_decode($question->settings);
+                    if (count($question->responses) > 0) {
+                        foreach ($question->responses as $responce) {
+                            if($settings->showValue == 1) {
+                                $result .= '<div style="margin-bottom: 10px">
+                                            <input type="text" id="sliderQuestionR_' . $responce->id . '" value="' . $responce->from . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                            <script>
+                                                var slider' . $responce->id . ' = new dhtmlxSlider({
+                                                    size: 300,
+                                                    value: '    . $settings->minValue                       . ',
+                                                    min: '      . $settings->minValue                       . ',
+                                                    max: '      . $settings->maxValue                       . ',
+                                                    skin: "'    . $settings->sliderSkin                     . '",
+                                                    step: '     . $settings->stepValue                      . ',
+                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                    onChange: function(n) { $("#sliderQuestionR_' . $responce->id . '").val(n); },
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $responce->id . ', value); }
+                                                });
+                                                slider' . $responce->id . '.init();
+
+                                                sendSliderValue(' . $question->id . ', ' . $responce->id . ', ' . $settings->minValue . ');
+                                                $("#sliderQuestionR_' . $responce->id . '").change(function() {
+                                                    slider' . $responce->id . '.setValue($(this).val());
+                                                });
+                                            </script>
+                                        </div>';
+                            } else {
+                                $result .= '<div style="margin-bottom: 10px">
+                                            <script>
+                                                var slider = new dhtmlxSlider({
+                                                    size: 300,
+                                                    value: '    . $settings->minValue                       . ',
+                                                    min: '      . $settings->minValue                       . ',
+                                                    max: '      . $settings->maxValue                       . ',
+                                                    skin: "'    . $settings->sliderSkin                     . '",
+                                                    step: '     . $settings->stepValue                      . ',
+                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $responce->id . ', value); }
+                                                });
+                                                slider.init();
+                                                sendSliderValue(' . $question->id . ', ' . $responce->id . ', ' . $settings->minValue . ');
+                                            </script>
+                                        </div>';
+                            }
+                        }
                     }
                 }
             }
@@ -948,6 +1013,115 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
         }
 
+        return $result;
+    }
+
+    private static function getVisualDisplayHTML($visualDisplayId) {
+        $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
+        $result = '';
+        
+        $traceId = Session::instance()->get('trace_id');
+        $trace = DB_ORM::model('user_sessiontrace', array((int)$traceId));
+        $traceCountersValues = Session::instance()->get('traceCountersValues');
+        
+        if($visualDisplay != null) {
+            $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
+            
+            if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
+                foreach($visualDisplay->panels as $panel) {
+                    $result .= '<div style="        position: absolute;
+                                                         top: ' . $panel->y . 'px;
+                                                        left: ' . $panel->x . 'px;
+                                                     z-index: ' . $panel->z_index . ';
+                                            background-color: ' . $panel->background_color . ';
+                                                       width: ' . $panel->width . '; 
+                                                      height: ' . $panel->height . '; 
+                                                border-width: ' . $panel->border_size . 'px;
+                                                border-style: solid;
+                                                border-color: ' . $panel->border_color . ';
+                                               border-radius: ' . $panel->border_radius . 'px;
+                                       -webkit-border-radius: ' . $panel->border_radius . 'px;
+                                          -moz-border-radius: ' . $panel->border_radius . 'px;
+                                              -moz-transform: rotate(' . $panel->angle . 'deg);
+                                           -webkit-transform: rotate(' . $panel->angle . 'deg);
+                                                -o-transform: rotate(' . $panel->angle . 'deg);
+                                               -ms-transform: rotate(' . $panel->angle . 'deg);
+                                                   transform: rotate(' . $panel->angle . 'deg);">
+                                </div>';
+                }
+            }
+            
+            if($visualDisplay->images != null && count($visualDisplay->images) > 0) {
+                foreach($visualDisplay->images as $image) {
+                    if(!file_exists(DOCROOT . '/files/' . $visualDisplay->map_id . '/vdImages/' . $image->name)) continue;
+                    
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $image->y . 'px;
+                                                left: ' . $image->x . 'px;
+                                               width: ' . $image->width . 'px;
+                                              height: ' . $image->height . 'px;
+                                             z-index: ' . $image->z_index . ';
+                                      -moz-transform: rotate(' . $image->angle . 'deg);
+                                   -webkit-transform: rotate(' . $image->angle . 'deg);
+                                        -o-transform: rotate(' . $image->angle . 'deg);
+                                       -ms-transform: rotate(' . $image->angle . 'deg);
+                                           transform: rotate(' . $image->angle . 'deg);
+                                ">
+                                    <img style="width: 100%" src="' . URL::base() . 'files/' . $visualDisplay->map_id . '/vdImages/' . $image->name . '" />
+                                </div>';
+                }
+            }
+            
+            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0 && $traceCountersValues != null) {
+                foreach($visualDisplay->counters as $counter) {
+                    $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
+                    $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
+                    $e = strpos($tmp, ']') + 1;
+                    $tmp = substr($tmp, 0, $e - 1);
+                    $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
+                    $thisCounter = $tmp;
+                    
+                    $labelFont = explode('%#%', $counter->label_font_style);
+                    $valueFont = explode('%#%', $counter->value_font_style);
+                    
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $counter->label_y . ';
+                                                left: ' . $counter->label_x . ';
+                                             z-index: ' . $counter->label_z_index . ';
+                                      -moz-transform: rotate(' . $counter->label_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->label_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->label_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->label_angle . 'deg);
+                                           transform: rotate(' . $counter->label_angle . 'deg);
+                                         font-family: \'' . $labelFont[0] . '\';
+                                           font-size: ' . $labelFont[1] . 'px;
+                                         font-weight: \'' . $labelFont[2] . '\';
+                                               color: ' . $labelFont[3] . ';
+                                          font-style: \'' . $labelFont[4] . '\';
+                                     text-decoration: \'' . $labelFont[5] . '\';
+                                ">' . $counter->label_text . '</div>
+                                <div style="position: absolute;
+                                                 top: ' . $counter->value_y . ';
+                                                left: ' . $counter->value_x . ';
+                                             z-index: ' . $counter->value_z_index . ';
+                                      -moz-transform: rotate(' . $counter->value_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->value_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->value_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->value_angle . 'deg);
+                                           transform: rotate(' . $counter->value_angle . 'deg);
+                                         font-family: \'' .  $valueFont[0] . '\';
+                                           font-size: ' . $valueFont[1] . 'px;
+                                         font-weight: \'' . $valueFont[2] . '\';
+                                               color: ' . $valueFont[3] . ';
+                                          font-style: \'' . $valueFont[4] . '\';
+                                     text-decoration: \'' . $valueFont[5] . '\';
+                                ">' . $thisCounter . '</div>';
+                }
+            }
+            
+            $result .= '</div>';
+        }
+        
         return $result;
     }
 

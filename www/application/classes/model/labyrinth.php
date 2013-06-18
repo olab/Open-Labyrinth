@@ -267,6 +267,9 @@ class Model_Labyrinth extends Model {
                 $questionChoices = Session::instance()->get('questionChoices');
                 $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
 
+                $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
+                Session::instance()->set('sliderQuestionResponses', array());
+
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
                     $currentCountersState = '';
@@ -340,6 +343,22 @@ class Model_Labyrinth extends Model {
                                                 $value = '+'.$value;
                                             }
                                             $countersArray[$counter->id]['func'][] = $value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
+                        foreach($sliderQuestionChoices as $questionId => $responses) {
+                            $question = DB_ORM::model('map_question', array((int)$questionId));
+                            if($question != null && count($question->responses) > 0 && count($responses) > 0) {
+                                foreach($responses as $responseId => $sliderValue) {
+                                    $responseModel = null;
+                                    foreach($question->responses as $questionResponse) {
+                                        if($questionResponse->id == $responseId && $sliderValue >= $questionResponse->from && $sliderValue <= $questionResponse->to) {
+                                            $thisCounter += $questionResponse->score;
                                         }
                                     }
                                 }
