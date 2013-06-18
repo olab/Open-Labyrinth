@@ -750,8 +750,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if (count($question->responses) > 0) {
                         foreach ($question->responses as $responce) {
                             if($settings->showValue == 1) {
-                                $result .= '<div style="margin-bottom: 10px">
-                                            <input type="text" id="sliderQuestionR_' . $responce->id . '" value="' . $responce->from . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                $result .= '<div style="margin-bottom: 22px;position:relative">
+                                            <input autocomplete="off" type="text" id="sliderQuestionR_' . $responce->id . '" value="' . $responce->from . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 51px;" : "top: 2px;left: 74px;") . '">' . $settings->minValue . '</div>
                                             <script>
                                                 var slider' . $responce->id . ' = new dhtmlxSlider({
                                                     size: 300,
@@ -765,15 +766,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                     onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $responce->id . ', value); }
                                                 });
                                                 slider' . $responce->id . '.init();
-
+                                                $("#sliderQuestionR_' . $responce->id . '").val(' . $settings->minValue . ');
                                                 sendSliderValue(' . $question->id . ', ' . $responce->id . ', ' . $settings->minValue . ');
                                                 $("#sliderQuestionR_' . $responce->id . '").change(function() {
                                                     slider' . $responce->id . '.setValue($(this).val());
                                                 });
                                             </script>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 330px;" : "top: 284px;left: 74px;") . '">' . $settings->maxValue . '</div>
                                         </div>';
                             } else {
-                                $result .= '<div style="margin-bottom: 10px">
+                                $result .= '<div style="margin-bottom: 22px;position:relative">
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 5px;" : "top: 2px;left: 34px;") . '">' . $settings->minValue . '</div>
                                             <script>
                                                 var slider = new dhtmlxSlider({
                                                     size: 300,
@@ -788,6 +791,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                 slider.init();
                                                 sendSliderValue(' . $question->id . ', ' . $responce->id . ', ' . $settings->minValue . ');
                                             </script>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
                                         </div>';
                             }
                         }
