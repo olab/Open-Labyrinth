@@ -169,10 +169,11 @@ if (isset($templateData['map'])) { ?>
                                         <label class="control-label"><strong>Link Function Style</strong></label>
 
                                         <div class="controls" id="linkStyleOptions">
-                                            <label class="radio"><input name="style" type="radio" value="1" checked="">text (default)</label>
-                                            <label class="radio"><input name="style" type="radio" value="2">dropdown</label>
-                                            <label class="radio"><input name="style" type="radio" value="3">dropdown + confidence</label>
-                                            <label class="radio"><input name="style" type="radio" value="4">type in text</label>
+                                            <?php if (isset($templateData['linkStyles'])) { ?>
+                                                <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
+                                                    <label class="radio"><input type="radio" name="style" value="<?php echo $linkStyle->id ?>"><?php echo __($linkStyle->name); ?></label>
+                                                <?php } ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -183,9 +184,11 @@ if (isset($templateData['map'])) { ?>
                                         <label class="control-label"><strong>Node Priorities</strong></label>
 
                                         <div class="controls" id="nodePriorities">
-                                            <label class="radio"><input name="priority" type="radio" value="1" checked="">normal (default)</label>
-                                            <label class="radio"><input name="priority" type="radio" value="2">must avoid</label>
-                                            <label class="radio"><input name="priority" type="radio" value="3">must visit</label>
+                                            <?php if (isset($templateData['priorities'])) { ?>
+                                                <?php foreach ($templateData['priorities'] as $priority) { ?>
+                                                    <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label>
+                                                <?php } ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>

@@ -41,6 +41,8 @@ class Controller_VisualManager extends Controller_Base {
 
         $this->templateData['node'] = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
         $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
+        $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
 
         $json = Model::factory('visualEditor')->generateJSON($this->mapId);
 

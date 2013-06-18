@@ -717,6 +717,8 @@ class Controller_LabyrinthManager extends Controller_Base {
 
                     $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$action);
                     $this->templateData['mapModel'] = DB_ORM::model('map', array((int)$action));
+                    $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+                    $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
                 }
                 break;
             case '5':
