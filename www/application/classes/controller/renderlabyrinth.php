@@ -1072,14 +1072,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
             
-            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0 && $traceCountersValues != null) {
+            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
                 foreach($visualDisplay->counters as $counter) {
-                    $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
-                    $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
-                    $e = strpos($tmp, ']') + 1;
-                    $tmp = substr($tmp, 0, $e - 1);
-                    $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
-                    $thisCounter = $tmp;
+                    $thisCounter = $counter->counter->start_value;
+
+                    if($traceCountersValues != null) {
+                        $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
+                        $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
+                        $e = strpos($tmp, ']') + 1;
+                        $tmp = substr($tmp, 0, $e - 1);
+                        $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
+                        $thisCounter = $tmp;
+                    }
                     
                     $labelFont = explode('%#%', $counter->label_font_style);
                     $valueFont = explode('%#%', $counter->value_font_style);
