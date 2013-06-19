@@ -350,7 +350,7 @@ class Model_Labyrinth extends Model {
                         }
                     }
 
-                    if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0 && $node->type_id != 1) {
+                    if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0 && !$isRoot) {
                         foreach($sliderQuestionChoices as $questionId => $sliderValue) {
                             $question = DB_ORM::model('map_question', array((int)$questionId));
                             if($question != null && count($question->responses) > 0) {

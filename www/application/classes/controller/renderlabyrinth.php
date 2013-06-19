@@ -766,7 +766,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                 $("#sliderQuestionR_' . $question->id . '").val(' . $settings->minValue . ');
                                                 sendSliderValue(' . $question->id . ', ' . $settings->minValue . ');
                                                 $("#sliderQuestionR_' . $question->id . '").change(function() {
-                                                    slider' . $question->id . '.setValue($(this).val());
+                                                    var value = $(this).val();
+                                                    if(value > ' . $settings->maxValue . ') {
+                                                        value = ' . $settings->maxValue . ';
+                                                        $(this).val(value);
+                                                    } else if(value < ' . $settings->minValue . ') {
+                                                        value = ' . $settings->minValue . ';
+                                                        $(this).val(value);
+                                                    }
+
+                                                    slider' . $question->id . '.setValue(value);
+                                                    sendSliderValue(' . $question->id . ', value);
                                                 });
                                             </script>
                                             <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 330px;" : "top: 284px;left: 74px;") . '">' . $settings->maxValue . '</div>
