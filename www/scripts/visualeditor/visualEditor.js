@@ -893,6 +893,8 @@ var VisualEditor = function() {
     }
     
     self.AddNewNode = function() {
+        self.history.HistoryJSON();
+
         var node = new Node();
         node.id = GetNewNodeId();
         node.title = 'new node';
@@ -912,6 +914,8 @@ var VisualEditor = function() {
     
     self.AddDandelion = function(count) {
         if(count <= 0) return;
+
+        self.history.HistoryJSON();
         
         var pos = viewport.GetPosition();
         var scale = viewport.GetScale();
@@ -989,6 +993,8 @@ var VisualEditor = function() {
     
     self.AddLinear = function(count) {
         if(count <= 0) return;
+
+        self.history.HistoryJSON();
         
         var nodes = new Array();
         var tNode = null;
@@ -1020,6 +1026,8 @@ var VisualEditor = function() {
     
     self.AddBranched = function(count) {
         if(count <= 0) return;
+
+        self.history.HistoryJSON();
         
         var nodes = new Array();
         
@@ -1076,6 +1084,8 @@ var VisualEditor = function() {
     
     self.AddNode = function(node) {
         if(node == null) return;
+
+        self.history.HistoryJSON();
         
         node.id = GetNewNodeId();
         if(self.$canvas != null) {
