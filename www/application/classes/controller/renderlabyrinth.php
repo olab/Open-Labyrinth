@@ -746,7 +746,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if($question->type->value == 'slr') {
                 if($question->settings != null) {
                     $settings = json_decode($question->settings);
-                    if (count($question->responses) > 0) {
                         if($settings->showValue == 1) {
                             $result .= '<div style="margin-bottom: 22px;position:relative">
                                             <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
@@ -792,7 +791,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
                                         </div>';
                         }
-                    }
                 }
             }
 
