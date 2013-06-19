@@ -351,17 +351,16 @@ class Model_Labyrinth extends Model {
                     }
 
                     if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
-                        foreach($sliderQuestionChoices as $questionId => $responses) {
+                        foreach($sliderQuestionChoices as $questionId => $sliderValue) {
                             $question = DB_ORM::model('map_question', array((int)$questionId));
-                            if($question != null && count($question->responses) > 0 && count($responses) > 0) {
-                                foreach($responses as $responseId => $sliderValue) {
-                                    $responseModel = null;
-                                    foreach($question->responses as $questionResponse) {
-                                        if($questionResponse->id == $responseId && $sliderValue >= $questionResponse->from && $sliderValue <= $questionResponse->to) {
-                                            $thisCounter += $questionResponse->score;
-                                        }
+                            if($question != null && count($question->responses) > 0) {
+                                foreach($question->responses as $response) {
+                                    if($sliderValue >= $response->from && $sliderValue <= $response->to) {
+                                        $thisCounter += $response->score;
                                     }
                                 }
+                            } else {
+                                $thisCounter = $sliderValue;
                             }
                         }
                     }

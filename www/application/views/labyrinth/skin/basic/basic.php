@@ -125,8 +125,8 @@
 
     }
 
-    function sendSliderValue(qid, rqid, value) {
-        var URL = '<?php echo URL::base(); ?>renderLabyrinth/saveSliderQuestionResponse/' + qid + '/' + rqid;
+    function sendSliderValue(qid, value) {
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/saveSliderQuestionResponse/' + qid;
         $.post(URL, {value: value}, function(data) {});
     }
 
