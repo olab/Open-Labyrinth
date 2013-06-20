@@ -121,7 +121,7 @@ var Replacer = function() {
         currentSearchedElementIndex = -1;
         while(NextButtonClick(null)) {
             $currentSelected = $('.selected-text');
-            parent = $('.selected-text').parent('.editable-text');
+            parent = $('.selected-text').parents('.editable-text');
             if ($currentSelected.length > 0){
                 $.each($currentSelected, function(index, object) {
                     $(object).after(replaceValue);
