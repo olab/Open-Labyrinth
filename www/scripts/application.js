@@ -316,4 +316,26 @@ jQuery(document).ready(function(){
             $(obj).addClass(additionClass);
         }
     }
+
+    var $rootNodeMessage = jQuery('#rootNodeMessage'),
+        rootAlertTimeout = null;
+    jQuery('.show-root-error').click(function() {
+        if(rootAlertTimeout != null) {
+            clearTimeout(rootAlertTimeout);
+        }
+
+        if($rootNodeMessage != null) {
+            $rootNodeMessage.removeClass('hide');
+            rootAlertTimeout = setTimeout(function() { $rootNodeMessage.addClass('hide'); }, 5000);
+        }
+    });
+
+    jQuery('.root-error-close').click(function() {
+        if($rootNodeMessage != null) {
+            $rootNodeMessage.addClass('hide');
+            if(rootAlertTimeout != null) {
+                clearTimeout(rootAlertTimeout);
+            }
+        }
+    });
 });

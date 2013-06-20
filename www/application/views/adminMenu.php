@@ -63,11 +63,17 @@
                                     <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                        <i class="icon-play icon-white"></i>
-                                        Play
-                                    </a>
-
+                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } else { ?>
+                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </li>
@@ -94,11 +100,17 @@
                                     <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                        <i class="icon-play icon-white"></i>
-                                        Play
-                                    </a>
-
+                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } else { ?>
+                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </li>

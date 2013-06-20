@@ -1341,3 +1341,18 @@ input[readonly].code, textarea[readonly].code{
     line-height: 10px;
     color: #A0A0A0;
 }
+
+.root-error-container {
+    z-index: 1500;
+    text-align: center;
+    position: fixed;
+    top: 57px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.root-error-container .root-alert {
+    min-width: 220px;
+    max-width: 940px;
+    margin: 0 auto;
+}

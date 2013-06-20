@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -107,6 +106,20 @@ class Controller_Base extends Controller_Template {
                 }
 
                 $this->templateData['latestAuthoredLabyrinths'] = $maps;
+                    $rooNodesMap = array();
+                    $rootNodeMaps = null;
+                    if (Auth::instance()->get_user()->type->name == 'superuser') {
+                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledMap();
+                    } else {
+                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+                    }
+                    if($rootNodeMaps != null && count($rootNodeMaps) > 0) {
+                        foreach($rootNodeMaps as $map) {
+                            $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                        }
+                    }
+
+                    $this->templateData['rootNodeMap'] = $rooNodesMap;
 
                 /*
                  * Fetch the latest played labyrinths.
@@ -140,11 +153,25 @@ class Controller_Base extends Controller_Template {
                 Session::instance()->delete('redirectURL');
                 $this->templateData['left'] = View::factory('login');
                 $this->templateData['left']->set('templateData', $this->templateData);
+
+                $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
+                $rooNodesMap = array();
+                if($maps != null && count($maps) > 0) {
+                    foreach($maps as $map) {
+                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+
+                $this->templateData['rootNodeMap'] = $rooNodesMap;
                 
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
                 $centerView->set('templateData', $this->templateData);
-                
+
+                $centerView->set('openLabyrinths', $maps);
+                $centerView->set('rootNodesMap', $rooNodesMap);
+
+                $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
             } else {
                 $controller = $this->request->controller();

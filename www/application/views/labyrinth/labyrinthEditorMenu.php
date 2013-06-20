@@ -23,7 +23,13 @@ if (isset($templateData['map'])) {
     <div class="well" style="padding: 8px 0;">
         <ul class="nav nav-list">
             <li class="nav-header">Labyrinth</li>
-            <li><a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><i class="icon-play"></i> <?php echo __('Play'); ?></a></li>
+            <li class="top">
+                <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$templateData['map']->id]) && $templateData['rootNodeMap'][$templateData['map']->id] != null) { ?>
+                    <a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><i class="icon-play icon-white"></i> <?php echo __('Play'); ?></a><div class="pull-right arrow"></div>
+                <?php } else { ?>
+                    <a class="show-root-error" href="javascript:void(0)"><i class="icon-play icon-white"></i> <?php echo __('Play'); ?></a><div class="pull-right arrow"></div>
+                <?php } ?>
+            </li>
             <li><a href="<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a></li>
             <li><a data-toggle="modal" href="#" data-target="#delete-labyrinth"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'labyrinthManager/info/' . $templateData['map']->id; ?>"><i class="icon-info-sign"></i> <?php echo __('Information'); ?></a></li>
