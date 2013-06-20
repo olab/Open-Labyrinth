@@ -746,6 +746,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if($question->type->value == 'slr') {
                 if($question->settings != null) {
                     $settings = json_decode($question->settings);
+                    $sliderValue = $settings->minValue;
+
+                    if($question->counter_id > 0) {
+                        $sliderValue = Controller_RenderLabyrinth::getCurrentCounterValue($question->map_id, $question->counter_id);
+                    } else if(property_exists($settings, 'defaultValue')) {
+                        $sliderValue = $settings->defaultValue;
+                    }
+
+                    if($sliderValue > $settings->maxValue) {
+                        $sliderValue = $settings->maxValue;
+                    } else if($sliderValue < $settings->minValue) {
+                        $sliderValue = $settings->minValue;
+                    }
+
                         if($settings->showValue == 1) {
                             $result .= '<div style="margin-bottom: 22px;position:relative">
                                             <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
@@ -753,7 +767,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             <script>
                                                 var slider' . $question->id . ' = new dhtmlxSlider({
                                                     size: 300,
-                                                    value: '    . $settings->minValue                       . ',
+                                                    value: '    . $sliderValue                       . ',
                                                     min: '      . $settings->minValue                       . ',
                                                     max: '      . $settings->maxValue                       . ',
                                                     skin: "'    . $settings->sliderSkin                     . '",
@@ -763,8 +777,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                     onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
                                                 });
                                                 slider' . $question->id . '.init();
-                                                $("#sliderQuestionR_' . $question->id . '").val(' . $settings->minValue . ');
-                                                sendSliderValue(' . $question->id . ', ' . $settings->minValue . ');
+                                                $("#sliderQuestionR_' . $question->id . '").val(' . $sliderValue . ');
                                                 $("#sliderQuestionR_' . $question->id . '").change(function() {
                                                     var value = $(this).val();
                                                     if(value > ' . $settings->maxValue . ') {
@@ -787,7 +800,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             <script>
                                                 var slider = new dhtmlxSlider({
                                                     size: 300,
-                                                    value: '    . $settings->minValue                       . ',
+                                                    value: '    . $sliderValue                       . ',
                                                     min: '      . $settings->minValue                       . ',
                                                     max: '      . $settings->maxValue                       . ',
                                                     skin: "'    . $settings->sliderSkin                     . '",
@@ -796,7 +809,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                     onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $question->id . ', value); }
                                                 });
                                                 slider.init();
-                                                sendSliderValue(' . $question->id . ', ' . $settings->minValue . ');
                                             </script>
                                             <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
                                         </div>';
@@ -810,6 +822,37 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return '';
+    }
+
+    private static function getCurrentCounterValue($mapId, $counterId) {
+        $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+        $counter  = DB_ORM::model('map_counter', array((int)$counterId));
+
+        $sessionId = Session::instance()->get('session_id', NULL);
+        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
+            $sessionId = $_COOKIE['OL'];
+        } else {
+            if ($sessionId == NULL){
+                $sessionId = 'notExist';
+            }
+        }
+
+        $currentCountersState = '';
+        if ($rootNode != NULL) {
+            $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+        }
+
+        $thisCounter = null;
+        if ($currentCountersState != '') {
+            $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+            $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+            $e = strpos($tmp, ']') + 1;
+            $tmp = substr($tmp, 0, $e - 1);
+            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+            $thisCounter = $tmp;
+        }
+
+        return $thisCounter != null ? $thisCounter : 0;
     }
 
     public static function getVpdHTML($id) {

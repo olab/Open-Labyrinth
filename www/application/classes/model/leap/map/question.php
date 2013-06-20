@@ -227,7 +227,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'orientation' => Arr::get($values, 'question_orientation', 'hor'),
                 'showValue' => Arr::get($values, 'question_chosen_value', 0),
                 'sliderSkin' => Arr::get($values, 'sliderSkin', ''),
-                'abilityValue' => Arr::get($values, 'question_ability_input', 0)
+                'abilityValue' => Arr::get($values, 'question_ability_input', 0),
+                'defaultValue' => Arr::get($values, 'defaultValue', 0)
             )))
             ->where('id', '=', $questionId)
             ->execute();
@@ -443,7 +444,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                             'orientation' => Arr::get($values, 'question_orientation', 'hor'),
                             'showValue' => Arr::get($values, 'question_chosen_value', 0),
                             'sliderSkin' => Arr::get($values, 'sliderSkin', ''),
-                            'abilityValue' => Arr::get($values, 'question_ability_input', 0)
+                            'abilityValue' => Arr::get($values, 'question_ability_input', 0),
+                            'defaultValue' => Arr::get($values, 'defaultValue', 0)
                         )))
                 ->execute();
 

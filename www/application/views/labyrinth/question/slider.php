@@ -44,6 +44,12 @@
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label"><?php echo __('Default value'); ?></label>
+            <div class="controls">
+                <input id="defaultValue" type="text" name="defaultValue" value="<?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && property_exists($templateData['questionSettings'], 'defaultValue') ? $templateData['questionSettings']->defaultValue : ''); ?>"/>
+            </div>
+        </div>
+        <div class="control-group">
             <label class="control-label"><?php echo __('Step value'); ?></label>
             <div class="controls">
                 <input id="stepValue" type="text" name="stepValue" value="<?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) ? $templateData['questionSettings']->stepValue : ''); ?>"/>
@@ -57,9 +63,9 @@
             <label class="control-label"><?php echo __('Orientation'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">
-                    <input autocomplete="off" id="question_orientation_hor" type="radio" value="hor" name="question_orientation" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->orientation == 'hor') ? 'checked="checked"' : ''; ?>/>
+                    <input autocomplete="off" id="question_orientation_hor" type="radio" value="hor" name="question_orientation" <?php echo isset($templateData['questionSettings']) ? $templateData['questionSettings']->orientation == 'hor' ? 'checked="checked"' : '' : 'checked="checked"'; ?>/>
                     <label data-class="btn-info" class="btn" for="question_orientation_hor">horizontal</label>
-                    <input autocomplete="off" id="question_orientation_ver" type="radio" value="ver" name="question_orientation" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->orientation == 'ver') ? 'checked="checked"' : ''; ?> />
+                    <input autocomplete="off" id="question_orientation_ver" type="radio" value="ver" name="question_orientation" <?php echo (isset($templateData['questionSettings']) && $templateData['questionSettings']->orientation == 'ver') ? 'checked="checked"' : ''; ?> />
                     <label data-class="btn-info" class="btn" for="question_orientation_ver">vertical</label>
                 </div>
             </div>
@@ -68,9 +74,9 @@
             <label class="control-label"><?php echo __('Show/hide chosen value'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">
-                    <input autocomplete="off" id="question_scv" type="radio" value="1" name="question_chosen_value" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->showValue == 1) ? 'checked="checked"' : ''; ?>/>
+                    <input autocomplete="off" id="question_scv" type="radio" value="1" name="question_chosen_value" <?php echo (isset($templateData['questionSettings']) && $templateData['questionSettings']->showValue == 1) ? 'checked="checked"' : ''; ?>/>
                     <label data-class="btn-success" class="btn" for="question_scv">Show</label>
-                    <input autocomplete="off" id="question_hcv" type="radio" value="0" name="question_chosen_value" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->showValue == 0) ? 'checked="checked"' : ''; ?> />
+                    <input autocomplete="off" id="question_hcv" type="radio" value="0" name="question_chosen_value" <?php echo isset($templateData['questionSettings']) ? $templateData['questionSettings']->showValue == 0 ? 'checked="checked"' : '' : 'checked="checked"'; ?> />
                     <label data-class="btn-danger" class="btn" for="question_hcv">Hide</label>
                 </div>
             </div>
@@ -95,9 +101,9 @@
             <label class="control-label"><?php echo __('Ability to directly input value'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">
-                    <input autocomplete="off" id="question_ability_yes" type="radio" value="1" name="question_ability_input" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->abilityValue == 1) ? 'checked="checked"' : ''; ?>/>
+                    <input autocomplete="off" id="question_ability_yes" type="radio" value="1" name="question_ability_input" <?php echo (isset($templateData['questionSettings']) && $templateData['questionSettings']->abilityValue == 1) ? 'checked="checked"' : ''; ?>/>
                     <label data-class="btn-success" class="btn" for="question_ability_yes">Yes</label>
-                    <input autocomplete="off" id="question_ability_no" type="radio" value="0" name="question_ability_input" <?php echo (isset($templateData['question']) && isset($templateData['questionSettings']) && $templateData['questionSettings']->abilityValue == 0) ? 'checked="checked"' : ''; ?> />
+                    <input autocomplete="off" id="question_ability_no" type="radio" value="0" name="question_ability_input" <?php echo isset($templateData['questionSettings']) ? $templateData['questionSettings']->abilityValue == 0 ? 'checked="checked"' : '' : 'checked="checked"'; ?> />
                     <label data-class="btn-danger" class="btn" for="question_ability_no">No</label>
                 </div>
             </div>
