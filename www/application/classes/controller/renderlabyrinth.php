@@ -700,10 +700,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" /><button  onclick="ajaxFunction(' . $question->id . ');">Submit</button>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
-                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
+                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '">' . $question->feedback . '</textarea><p><button onclick="ajaxFunction(' . $question->id . ');">Submit</button></p>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
