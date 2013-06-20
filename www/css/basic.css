@@ -1335,3 +1335,9 @@ input[readonly].code, textarea[readonly].code{
 .farbtastic-container div {
     margin: 0 auto;
 }
+
+.question-info-box {
+    font-size: 10px;
+    line-height: 10px;
+    color: #A0A0A0;
+}
