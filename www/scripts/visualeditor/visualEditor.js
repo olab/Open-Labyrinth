@@ -916,7 +916,7 @@ var VisualEditor = function() {
         if(count <= 0) return;
 
         self.history.HistoryJSON();
-        
+
         var pos = viewport.GetPosition();
         var scale = viewport.GetScale();
         var x0 = self.canvas.width / scale[0] * 0.5 - pos[0];
@@ -995,7 +995,7 @@ var VisualEditor = function() {
         if(count <= 0) return;
 
         self.history.HistoryJSON();
-        
+
         var nodes = new Array();
         var tNode = null;
         for(var  i = 0; i < count; i++) {
@@ -1028,7 +1028,7 @@ var VisualEditor = function() {
         if(count <= 0) return;
 
         self.history.HistoryJSON();
-        
+
         var nodes = new Array();
         
         var sNode = new Node();
@@ -1086,7 +1086,7 @@ var VisualEditor = function() {
         if(node == null) return;
 
         self.history.HistoryJSON();
-        
+
         node.id = GetNewNodeId();
         if(self.$canvas != null) {
             var pos = viewport.GetPosition();

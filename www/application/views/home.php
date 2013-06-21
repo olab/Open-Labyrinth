@@ -144,7 +144,7 @@
         <div class="root-error-container">
             <div id="rootNodeMessage" class="alert alert-error root-alert hide">
                 <button type="button" class="root-error-close close">×</button>
-                <?php echo __('You have not set a root node, so your case will not play. Please return to the visual editor, and click on the starting node -> Actions -> Set as Root'); ?>
+                <?php echo __('You have not set a root node, so your labyrinth will not play. Please return to the visual editor, and click on the starting node -> Actions -> Set as Root'); ?>
             </div>
         </div>
         <div class="container-fluid">

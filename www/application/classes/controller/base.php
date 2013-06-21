@@ -163,7 +163,7 @@ class Controller_Base extends Controller_Template {
                 }
 
                 $this->templateData['rootNodeMap'] = $rooNodesMap;
-                
+
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
                 $centerView->set('templateData', $this->templateData);

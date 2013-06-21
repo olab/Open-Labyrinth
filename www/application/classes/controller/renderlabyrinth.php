@@ -1071,14 +1071,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private static function getVisualDisplayHTML($visualDisplayId) {
         $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
         $result = '';
-        
+
         $traceId = Session::instance()->get('trace_id');
         $trace = DB_ORM::model('user_sessiontrace', array((int)$traceId));
         $traceCountersValues = Session::instance()->get('traceCountersValues');
-        
+
         if($visualDisplay != null) {
             $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
-            
+
             if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
                 foreach($visualDisplay->panels as $panel) {
                     $result .= '<div style="        position: absolute;
@@ -1086,8 +1086,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                         left: ' . $panel->x . 'px;
                                                      z-index: ' . $panel->z_index . ';
                                             background-color: ' . $panel->background_color . ';
-                                                       width: ' . $panel->width . '; 
-                                                      height: ' . $panel->height . '; 
+                                                       width: ' . $panel->width . ';
+                                                      height: ' . $panel->height . ';
                                                 border-width: ' . $panel->border_size . 'px;
                                                 border-style: solid;
                                                 border-color: ' . $panel->border_color . ';
@@ -1102,11 +1102,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                 </div>';
                 }
             }
-            
+
             if($visualDisplay->images != null && count($visualDisplay->images) > 0) {
                 foreach($visualDisplay->images as $image) {
                     if(!file_exists(DOCROOT . '/files/' . $visualDisplay->map_id . '/vdImages/' . $image->name)) continue;
-                    
+
                     $result .= '<div style="position: absolute;
                                                  top: ' . $image->y . 'px;
                                                 left: ' . $image->x . 'px;
@@ -1123,7 +1123,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                 </div>';
                 }
             }
-            
+
             if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
                 foreach($visualDisplay->counters as $counter) {
                     $thisCounter = $counter->counter->start_value;
@@ -1136,10 +1136,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
                         $thisCounter = $tmp;
                     }
-                    
+
                     $labelFont = explode('%#%', $counter->label_font_style);
                     $valueFont = explode('%#%', $counter->value_font_style);
-                    
+
                     $result .= '<div style="position: absolute;
                                                  top: ' . $counter->label_y . ';
                                                 left: ' . $counter->label_x . ';
@@ -1174,10 +1174,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                 ">' . $thisCounter . '</div>';
                 }
             }
-            
+
             $result .= '</div>';
         }
-        
+
         return $result;
     }
 

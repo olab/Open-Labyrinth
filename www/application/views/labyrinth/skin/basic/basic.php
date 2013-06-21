@@ -170,7 +170,7 @@
         document.getElementById("ChatAnswer" + ChatElementId).innerHTML = "<p><b>&nbsp;&nbsp;&nbsp;&nbsp;" + xmlhttp.responseText + "</b></p>";
         document.getElementById("ChatQuestion" + ChatElementId).style.color = "grey";
     }
-    
+
     $(function() {
         $.each($('.visual-display-container'), function(index, object) {
             var maxHeight = 0,
@@ -182,12 +182,12 @@
                 d = 1;
             $.each(children, function(index, child) {
                 top = parseInt($(child).css('top').replace('px', ''));
-                height = parseInt($(child).css('height').replace('px', ''));           
+                height = parseInt($(child).css('height').replace('px', ''));
                 if(maxHeight < (top + height)) {
                     maxHeight = top + height;
                 }
             });
-            
+
             $(object).css('height', maxHeight);
         });
     });

@@ -279,7 +279,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             }
         }
     }
-    
+
     private function updateTextQuestion($values) {
         $this->stem = Arr::get($values, 'qstem', $this->stem);
         $this->width = Arr::get($values, 'qwidth', $this->width);
