@@ -28,6 +28,7 @@
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
 
 <SCRIPT LANGUAGE="JavaScript">
@@ -92,7 +93,8 @@
     function ajaxFunction(qid) {
         var qresp = $("#qresponse_" + qid).val();
         if (qresp != ''){
-            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + qid;
+            qresp = B64.encode(qresp);
+            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid;
 
             var $response = $('#AJAXresponse' + qid);
             $.get(URL, function(data) {
@@ -104,7 +106,7 @@
     }
 
     function ajaxQU(obj, qid, qresp, qnts) {
-        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponce/' + qresp + '/' + qid;
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/' + qresp + '/' + qid;
         var check = $(obj).is(':checked');
         if (check){
             URL += '/1';

@@ -71,6 +71,7 @@ class Model_Labyrinth extends Model {
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
+            $this->addQuestionResponses($sessionId);
             if($conditional == null) {
                 if ($sessionId != 'notExist'){
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
@@ -99,6 +100,8 @@ class Model_Labyrinth extends Model {
                 $result['redirect'] = NULL;
                 $result['remoteCounters'] = '';
             }
+
+            $this->clearQuestionResponses();
 
             $result['traces'] = $this->getReviewLinks($sessionId);
             $result['sessionId'] = $sessionId;
@@ -252,6 +255,37 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
+    private function addQuestionResponses($sessionId){
+        $questionChoices = Session::instance()->get('questionChoices');
+        $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
+
+        if (isset($questionChoices['counter_ids'])){
+            unset($questionChoices['counter_ids']);
+        }
+
+        if (count($questionChoices) > 0){
+            foreach($questionChoices as $qID => $questions){
+                if (count($questions) > 0){
+                    foreach($questions as $q){
+                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
+                    }
+                }
+            }
+        }
+
+        $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
+        if(count($sliderQuestionChoices) > 0) {
+            foreach($sliderQuestionChoices as $qID => $sliderValue) {
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue);
+            }
+        }
+    }
+
+    private function clearQuestionResponses(){
+        Session::instance()->delete('questionChoices');
+        Session::instance()->delete('sliderQuestionResponses');
+    }
+
     private function counters($traceId, $sessionId, $node, $isRoot = false) {
         if ($traceId != null && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
@@ -268,7 +302,6 @@ class Model_Labyrinth extends Model {
                 $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
 
                 $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
-                Session::instance()->set('sliderQuestionResponses', array());
 
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
@@ -424,21 +457,6 @@ class Model_Labyrinth extends Model {
                     }
                 }
 
-                if (isset($questionChoices['counter_ids'])){
-                    unset($questionChoices['counter_ids']);
-                }
-                if (count($questionChoices) > 0){
-                    foreach($questionChoices as $qID => $questions){
-                        if (count($questions) > 0){
-                            foreach($questions as $q){
-                                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
-                            }
-                        }
-                    }
-                }
-
-                Session::instance()->delete('questionChoices');
-
                 $redirect = NULL;
                 $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
                 if (count($commonRules) > 0){
@@ -507,7 +525,6 @@ class Model_Labyrinth extends Model {
 
                 return array('counterString' => $counterString, 'redirect' => $redirect, 'remote' => $remoteCounterString);
             }
-
             return '';
         }
 

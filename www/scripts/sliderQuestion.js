@@ -35,7 +35,7 @@ $(function() {
                         '<div class="control-group">'+
                             '<label for="score_' + currentIndex + '" class="control-label">Score</label>'+
                             '<div class="controls">'+
-                                '<input type="text" name="score_' + currentIndex + '_n" id="score_' + currentIndex + '" value="0" selectBoxOptions="-10;-9;-8;-7;-6;-5;-4;-3;-2;-1;0;1;2;3;4;5;6;7;8;9;10">'+
+                                '<input type="text" name="score_' + currentIndex + '_n" id="score_' + currentIndex + '" value="0" selectBoxOptions="-10;-9;-8;-7;-6;-5;-4;-3;-2;-1;0;+1;+2;+3;+4;+5;+6;+7;+8;+9;+10">'+
                             '</div>'+
                         '</div>'+
 
