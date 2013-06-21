@@ -633,6 +633,8 @@ class Model_Labyrinth extends Model {
                         break;
                     }
                 }
+            } else {
+                $response = htmlspecialchars(base64_decode($response));
             }
 
             $qChoices = json_decode(Session::instance()->get('questionChoices'), true);

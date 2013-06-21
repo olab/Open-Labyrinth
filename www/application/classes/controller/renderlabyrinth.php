@@ -266,7 +266,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     public function action_questionResponse() {
-        $optionNumber = htmlspecialchars(base64_decode($this->request->param('id', NULL)));
+        $optionNumber = $this->request->param('id', NULL);
         $questionId = $this->request->param('id2', NULL);
         $questionStatus = $this->request->param('id3', NULL);
 
