@@ -49,7 +49,7 @@ h5 {
     font-size: 60%;
     font-weight: normal;
 }
-ul {
+ul.navigation {
     list-style-type: none;
     padding:0;
 }

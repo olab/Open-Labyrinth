@@ -490,7 +490,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             switch ($node->link_style->name) {
                 case 'hyperlinks (default)':
-                    $result['links'] = '<ul class="links">'.$result['links'].'</ul>';
+                    $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
                 case 'dropdown':
                     $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
