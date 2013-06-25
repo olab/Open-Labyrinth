@@ -537,7 +537,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function generateNavigation($sections) {
         if (count($sections) > 0) {
-            $result = '<ul>';
+            $result = '<ul class="navigation">';
             foreach ($sections as $section) {
                 if ($section->map->section->name == 'visible') {
                     $result .= "<li>" . $section->name . "</li>";
@@ -709,7 +709,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul>';
+                    $result .= '"><ul class="navigation">';
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
@@ -729,7 +729,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces questionForm_'.$question->id.' ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul>';
+                    $result .= '"><ul class="navigation">';
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
@@ -1221,7 +1221,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
          */
         if ($traces != NULL and count($traces) > 0) {
             //$result = array();
-            $result = '<ul class="links">';
+            $result = '<ul class="links navigation">';
             $i = 0;
             foreach ($traces as $trace) {
                 //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);

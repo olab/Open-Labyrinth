@@ -488,7 +488,7 @@ class Model_Labyrinth extends Model {
                         }
                     }
                 }
-                $counterString .="<ul>";
+                $counterString .="<ul class=\"navigation\">";
                 foreach($countersArray as $key => $counter){
                     if (isset($counter['func'])){
                         if (count($counter['func']) > 0) {
