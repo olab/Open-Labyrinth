@@ -73,7 +73,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($editOn != NULL and $editOn == 1) {
                             $data['node_edit'] = TRUE;
                         } else {
-                            $data['node_text'] = $this->parseText($data['node_text']);
+                            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
@@ -163,7 +163,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($editOn != NULL and $editOn == 1) {
                         $data['node_edit'] = TRUE;
                     } else {
-                        $data['node_text'] = $this->parseText($data['node_text']);
+                        $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
@@ -365,7 +365,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['links'] = $data['node_links']['linker'];
                     }
 
-                    $data['node_text'] = $this->parseText($data['node_text']);
+                    $data['node_text'] = $this->parseText($data['node_text'], $mapId);
 
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
 
@@ -558,10 +558,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return NULL;
     }
 
-    public static function parseText($text) {
+    public static function parseText($text, $mapId = NULL) {
         $result = $text;
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD', 'CR');
 
         foreach ($codes as $code) {
             $regExp = '/[\[' . $code . ':\d\]]+/';
@@ -604,6 +604,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                     case 'VD':
                                         $replaceString = Controller_RenderLabyrinth::getVisualDisplayHTML($id);
+                                        break;
+                                    case 'CR':
+                                        $replaceString = Controller_RenderLabyrinth::getCounterHTML($mapId, $id);
                                         break;
                                 }
 
@@ -865,7 +868,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $vpdText = Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'VPDText');
                     switch ($vpdType) {
                         case 'narrative':
-                            $result .= '<p>' . $vpdText . '</p>';
+                            $result .= $vpdText;
                             break;
                         case 'chief complaint':
                             $result .= '<p>Chief complaint: ' . $vpdText . '</p>';
@@ -1179,6 +1182,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return $result;
+    }
+
+    private static function getCounterHTML($mapId, $id){
+        $counterValue = Model::factory('labyrinth')->getCounterValueBydID($mapId, $id);
+        return $counterValue;
     }
 
     private static function getValueByElementKey($elements, $name) {

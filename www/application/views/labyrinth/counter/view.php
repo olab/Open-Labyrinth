@@ -36,7 +36,7 @@ if (isset($templateData['map'])) { ?>
     </colgroup>
     <thead>
         <tr>
-            <th><?php echo __("#"); ?></th>
+            <th><?php echo __("Embeddable"); ?></th>
             <th><?php echo __("Name"); ?></th>
             <th><?php echo __("Actions"); ?></th>
         </tr>
@@ -44,7 +44,9 @@ if (isset($templateData['map'])) { ?>
 <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
     <?php foreach($templateData['counters'] as $counter) { ?>
         <tr>
-            <td><?php echo $counter->id; ?></td>
+            <td>
+                <label><input class="code" readonly="readonly" type="text" value="[[CR:<?php echo $counter->id; ?>]]"></label>
+            </td>
             <td><?php echo $counter->name; ?></td>
             <td>
                 <div class="btn-group">

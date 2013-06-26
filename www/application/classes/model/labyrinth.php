@@ -330,12 +330,12 @@ class Model_Labyrinth extends Model {
                     }
 
                     $counterFunction = '';
-                    $apperOnNode = 1;
+                    $appearOnNode = 1;
                     if (count($node->counters) > 0) {
                         foreach ($node->counters as $nodeCounter) {
                             if ($counter->id == $nodeCounter->counter->id) {
                                 $counterFunction = $nodeCounter->function;
-                                $apperOnNode = $nodeCounter->display;
+                                $appearOnNode = $nodeCounter->display;
                                 break;
                             }
                         }
@@ -403,7 +403,7 @@ class Model_Labyrinth extends Model {
                         $countersArray[$counter->id]['func'][] = $counterFunction;
                     }
 
-                    if (($counter->visible != 0) & ($apperOnNode == 1)) {
+                    if (($counter->visible != 0) & ($appearOnNode == 1)) {
                         $countersArray[$counter->id]['visible'] = true;
 
                     } else {
@@ -800,6 +800,45 @@ class Model_Labyrinth extends Model {
             default:
                 return FALSE;
         }
+    }
+
+    public function getCounterValueBydID($mapId, $id){
+        $result = NULL;
+        if ($mapId != NULL){
+            $sessionId = Session::instance()->get('session_id', NULL);
+            if ($sessionId == NULL && isset($_COOKIE['OL'])) {
+                $sessionId = $_COOKIE['OL'];
+            } else {
+                if ($sessionId == NULL){
+                    $sessionId = 'notExist';
+                }
+            }
+
+            $counter = DB_ORM::model('map_counter', array($id));
+
+            if (($sessionId != NULL) && ($sessionId != 'notExist')){
+                $currentCountersState = '';
+                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+                if ($rootNode != NULL){
+                    $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+                }
+
+                if ($currentCountersState != ''){
+                    $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+                    $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+                    $e = strpos($tmp, ']') + 1;
+                    $tmp = substr($tmp, 0, $e - 1);
+                    $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+                    $result = $tmp;
+                } else {
+                    $result = $counter->start_value;
+                }
+            } else {
+                $result = $counter->start_value;
+            }
+        }
+
+        return $result;
     }
 }
 
