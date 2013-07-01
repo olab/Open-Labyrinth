@@ -32,20 +32,23 @@
                     by a group of enthusiasts who love the capability of
                     OpenLabyrinth for virtual patients.'); ?>
         </p>
-        <?php if (isset($templateData['todayTip'])) {
-            if (!empty($templateData['todayTip']->text)) { ?>
-        <div class="box">
-            <h4 class="box-header round-top"><?php echo (!empty($templateData['todayTip']->title)) ? __($templateData['todayTip']->title) : ''; ?></h4>
-            <div class="box-container-toggle">
-                <div class="box-content">
-                    <div>
-                        <?php echo $templateData['todayTip']->text; ?>
+        <?php if(isset($templateData['todayTip']) && count($templateData['todayTip']) > 0) { ?>
+            <?php foreach($templateData['todayTip'] as $tip) { ?>
+                <div class="box">
+                    <h4 class="box-header round-top">TODAY TIP's</h4>
+                    <div class="box-container-toggle">
+                        <div class="box-content">
+                            <div>
+                                <b><?php echo $tip->title; ?></b>
+                            </div>
+                            <div>
+                                <?php echo $tip->text; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <?php }
-        } ?>
+            <?php } ?>
+        <?php } ?>
     </div>
     <div class="span4">
         <?php if (isset($templateData['latestAuthoredLabyrinths'])) : ?>
