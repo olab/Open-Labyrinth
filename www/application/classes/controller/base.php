@@ -95,7 +95,7 @@ class Controller_Base extends Controller_Template {
 
             if (Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
                 $centerView = View::factory('adminMenu');
-                $this->templateData['todayTip'] = DB_ORM::model('TodayTip')->getTodayTips();//Kohana::$config->load('today_tip');
+                $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();//Kohana::$config->load('today_tip');
                 /*
                  * Fetch the latest authored labyrinths.
                  */

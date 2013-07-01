@@ -35,7 +35,7 @@
         <?php if(isset($templateData['todayTip']) && count($templateData['todayTip']) > 0) { ?>
             <?php foreach($templateData['todayTip'] as $tip) { ?>
                 <div class="box">
-                    <h4 class="box-header round-top">TODAY TIP's</h4>
+                    <h4 class="box-header round-top">OpenLabyrinth Tips-of-the-Day</h4>
                     <div class="box-container-toggle">
                         <div class="box-content">
                             <div>
