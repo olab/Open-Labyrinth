@@ -57,7 +57,7 @@
                 <td>
                     <div class="btn-group">
                         <a class="btn btn-info" href="<?php echo URL::base(); ?>TodayTipManager/editTip/<?php echo $tip->id; ?>"><i class="icon-edit icon-white"></i><?php echo __('Edit'); ?></a>
-                        <a class="btn" href="<?php echo URL::base(); ?>TodayTipManager/unarchive/<?php echo $tip->id; ?>">Unarchive</a>
+                        <a class="btn" href="<?php echo URL::base(); ?>TodayTipManager/unarchive/<?php echo $tip->id; ?>"><i class="icon-folder-open icon-white"></i>Unarchive</a>
                         <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-tip-<?php echo $tip->id; ?>"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
                     </div>
                     <div class="modal hide alert alert-block alert-error fade in" id="delete-tip-<?php echo $tip->id; ?>">
