@@ -75,7 +75,7 @@
         <?php } ?>
     <?php } else { ?>
         <tr class="info">
-            <td colspan="5"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
+            <td colspan="6"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
         </tr>
     <?php } ?>
     </body>
