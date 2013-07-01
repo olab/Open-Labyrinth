@@ -48,7 +48,8 @@
     <div class="pull-right">
         <div class="btn-group">
             <a class="btn" href="<?php echo URL::base(); ?>TodayTipManager/archive/<?php echo $templateData['tip']->id; ?>">
-                <?php echo __('Archive a tip'); ?></a>
+                <i class="icon-folder-close icon-white"></i>
+                <?php echo __('Move to archive'); ?></a>
         </div>
     </div>
     <?php } ?>

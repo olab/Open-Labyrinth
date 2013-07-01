@@ -34,12 +34,13 @@
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
-        <th>Id</th>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Weight</th>
-        <th>Active</th>
-        <th>Actions</th>
+        <th><?php echo __('Id'); ?></php></th>
+        <th><?php echo __('Title'); ?></th>
+        <th><?php echo __('Start Date'); ?></th>
+        <th><?php echo __('End Date'); ?></th>
+        <th><?php echo __('Weight'); ?></th>
+        <th><?php echo __('Active'); ?></th>
+        <th><?php echo __('Actions'); ?></th>
     </tr>
     </thead>
 
@@ -50,12 +51,13 @@
                 <td><?php echo $tip->id; ?></td>
                 <td><?php echo $tip->title; ?></td>
                 <td><?php echo $tip->start_date; ?></td>
+                <td><?php echo $tip->end_date; ?></td>
                 <td><?php echo $tip->weight; ?></td>
                 <td><?php echo $tip->is_active ? 'Active' : 'Inactive'; ?></td>
                 <td>
                     <div class="btn-group">
                         <a class="btn btn-info" href="<?php echo URL::base(); ?>TodayTipManager/editTip/<?php echo $tip->id; ?>"><i class="icon-edit icon-white"></i><?php echo __('Edit'); ?></a>
-                        <a class="btn" href="<?php echo URL::base(); ?>TodayTipManager/archive/<?php echo $tip->id; ?>">Archive</a>
+                        <a class="btn" href="<?php echo URL::base(); ?>TodayTipManager/archive/<?php echo $tip->id; ?>"><i class="icon-folder-close icon-white"></i><?php echo __('Move to archive'); ?></a>
                         <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-tip-<?php echo $tip->id; ?>"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
                     </div>
                     <div class="modal hide alert alert-block alert-error fade in" id="delete-tip-<?php echo $tip->id; ?>">
@@ -75,7 +77,7 @@
         <?php } ?>
     <?php } else { ?>
         <tr class="info">
-            <td colspan="6"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
+            <td colspan="7"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
         </tr>
     <?php } ?>
     </body>

@@ -34,12 +34,13 @@
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
-        <th>Id</th>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Weight</th>
-        <th>Active</th>
-        <th>Actions</th>
+        <th><?php echo __('Id'); ?></th>
+        <th><?php echo __('Title'); ?></th>
+        <th><?php echo __('Start Date'); ?></th>
+        <th><?php echo __('End Date'); ?></th>
+        <th><?php echo __('Weight'); ?></th>
+        <th><?php echo __('Active'); ?></th>
+        <th><?php echo __('Actions'); ?></th>
     </tr>
     </thead>
 
@@ -50,6 +51,7 @@
                 <td><?php echo $tip->id; ?></td>
                 <td><?php echo $tip->title; ?></td>
                 <td><?php echo $tip->start_date; ?></td>
+                <td><?php echo $tip->end_date; ?></td>
                 <td><?php echo $tip->weight; ?></td>
                 <td><?php echo $tip->is_active ? 'Active' : 'Inactive'; ?></td>
                 <td>
@@ -75,7 +77,7 @@
         <?php } ?>
     <?php } else { ?>
         <tr class="info">
-            <td colspan="6"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
+            <td colspan="7"><?php echo __('There are no tips yet. Please click the button above to add one.'); ?></td>
         </tr>
     <?php } ?>
     </body>
