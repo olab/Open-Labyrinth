@@ -482,7 +482,11 @@ class Controller_ExportImportManager extends Controller_Base {
         $findElement = array();
         $replaceElement = array();
         $map = array();
-        $map['title'] = (string) $xml->general->title->string;
+        $map['title'] =(string) $xml->general->title->string;
+        $map['title'] = preg_replace_callback('~&#([0-9a-fA-F]+)~i', array($this,"qm_fix_callback"), $map['title']);
+
+      $map['title'] = $this->html_entity_decode_numeric($map['title']);
+
         $map['author'] = Auth::instance()->get_user()->id;
         $map['language'] = (string) $xml->general->language;
         if ($map['language'] == 'en') {
@@ -503,7 +507,7 @@ class Controller_ExportImportManager extends Controller_Base {
             foreach ($xml->resources->resource as $resource) {
                 $attr = $resource->attributes();
                 if (!strstr($attr->href, 'xml')) {
-                    $id = (int) $attr->identifier;
+                    $id = (string) $attr->identifier;
                     $elements[$id]['href'] = (string) $attr->href;
                     $fileName = $this->endc(explode('/', (string) $attr->href));
                     copy($tmpFolder . (string) $attr->href, DOCROOT . '/files/' . $fileName);
@@ -600,7 +604,7 @@ class Controller_ExportImportManager extends Controller_Base {
                         foreach ($section->ActivityNode as $node) {
                             $nodeAttr = $node->attributes();
                             $id = (int) $nodeAttr->id;
-                            $nodeArray[$id]['title'] = html_entity_decode((string) $nodeAttr->label);
+                            $nodeArray[$id]['title'] = $this->html_entity_decode_numeric(((string) $nodeAttr->label)) ;
 
                             $nodeArray[$id]['text'] = $this->getIdFromString($node->Content);
                             $nodeArray[$id]['rules_probability'] = (string) $node->Rules->Probability;
@@ -983,11 +987,14 @@ class Controller_ExportImportManager extends Controller_Base {
         }
 
         if (count($nodeArray) > 0) {
+
             foreach ($nodeArray as $key => $node) {
                 $id = 'ctt_' . $node['text'];
                 if (isset($nodeContentsArray[$id]['div'])) {
                     $string = html_entity_decode((string) $nodeContentsArray[$id]['div']);
                     $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, $string);
+                    $nodeArray[$key]['text'] = $this->html_entity_decode_numeric($nodeArray[$key]['text']);
+
                 } else {
                     $nodeArray[$key]['text'] = '';
                 }
@@ -1052,6 +1059,8 @@ class Controller_ExportImportManager extends Controller_Base {
         $replaceArray = array('<', '</', "'");
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
+
+        libxml_use_internal_errors(true);
         return simplexml_load_string($xmlString);
     }
 
@@ -1071,7 +1080,53 @@ class Controller_ExportImportManager extends Controller_Base {
                 unlink($file);
             }
         }
-        rmdir($dirPath);
+        //rmdir($dirPath);
+    }
+
+
+    private function html_entity_decode_numeric($string, $quote_style = ENT_COMPAT, $charset = "utf-8")
+    {
+        $string = html_entity_decode($string, $quote_style, $charset);
+        $string = preg_replace_callback('~&#x([0-9a-fA-F]+);~i', array($this,"chr_utf8_callback"), $string);
+          $string = html_entity_decode($string, $quote_style, $charset);
+        $string = preg_replace('~&#([0-9]+);~e', $this->chr_utf8("\\1"), $string);
+        return $string;
+    }
+
+
+    /**
+     * Callback helper
+     */
+
+    private function qm_fix_callback($matches)
+    {
+
+        return $matches[0].';';
+    }
+
+    /**
+     * Callback helper
+     */
+
+    private function chr_utf8_callback($matches)
+    {
+        return $this->chr_utf8(hexdec($matches[1]));
+    }
+
+    /**
+     * Multi-byte chr(): Will turn a numeric argument into a UTF-8 string.
+     *
+     * @param mixed $num
+     * @return string
+     */
+
+    private function chr_utf8($num)
+    {
+        if ($num < 128) return chr($num);
+        if ($num < 2048) return chr(($num >> 6) + 192) . chr(($num & 63) + 128);
+        if ($num < 65536) return chr(($num >> 12) + 224) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+        if ($num < 2097152) return chr(($num >> 18) + 240) . chr((($num >> 12) & 63) + 128) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+        return '';
     }
 
 }
