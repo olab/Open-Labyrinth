@@ -28,7 +28,7 @@
                 <?php echo __('Add a tip'); ?></a>
         </div>
     </div>
-    <h1><?php echo __('Today Tips'); ?></h1>
+    <h1><?php echo __('Today\'s Tips'); ?></h1>
 </div>
 
 <table class="table table-striped table-bordered">

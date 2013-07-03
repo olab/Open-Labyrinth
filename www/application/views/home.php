@@ -120,7 +120,7 @@
                                         }
                                         ?>
 
-                                        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today tip's</a></li>
+                                        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
 
                                         <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
                                             <li class="divider"></li>

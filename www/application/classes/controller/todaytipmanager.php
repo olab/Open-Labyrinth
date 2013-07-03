@@ -30,7 +30,7 @@ class Controller_TodayTipManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Today tip manager'))->set_url(URL::base() . 'TodayTipManager/index'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Today\'s tip manager'))->set_url(URL::base() . 'TodayTipManager/index'));
 
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
@@ -49,7 +49,7 @@ class Controller_TodayTipManager extends Controller_Base {
         $view = View::factory('todaytip/view');
         $menuView = View::factory('todaytip/leftMenu');
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Current')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Current Tips')));
 
         $this->templateData['activeTips'] = DB_ORM::model('TodayTip')->getActiveTips();
 
@@ -61,7 +61,7 @@ class Controller_TodayTipManager extends Controller_Base {
         $view = View::factory('todaytip/archived');
         $menuView = View::factory('todaytip/leftMenu');
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Archived')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Archived Tips')));
 
         $this->templateData['archivedTips'] = DB_ORM::model('TodayTip')->getArchivedTips();
 
@@ -73,7 +73,7 @@ class Controller_TodayTipManager extends Controller_Base {
         $view = View::factory('todaytip/tip');
         $menuView = View::factory('todaytip/leftMenu');
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Create')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Create Tip')));
 
         $this->templateData['left'] = $menuView;
         $this->templateData['center'] = $view;
@@ -82,7 +82,7 @@ class Controller_TodayTipManager extends Controller_Base {
     public function action_editTip() {
         $tipId = $this->request->param('id', null);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Tip')));
 
         $view = View::factory('todaytip/tip');
         $menuView = View::factory('todaytip/leftMenu');

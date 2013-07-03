@@ -22,8 +22,8 @@
 
 <div class="well" style="padding: 8px 0;">
     <ul class="nav nav-list">
-        <li class="nav-header">Today tip's</li>
-        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Current tip's</a></li>
-        <li><a href="<?php echo URL::base(); ?>TodayTipManager/archived">Archived tip's</a></li>
+        <li class="nav-header">Today's tips</li>
+        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Current Tips</a></li>
+        <li><a href="<?php echo URL::base(); ?>TodayTipManager/archived">Archived Tips</a></li>
     </ul>
 </div>

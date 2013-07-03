@@ -178,7 +178,12 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
     public function saveTip($id, $values) {
         $query = null;
 
-        $dateString = Arr::get($values, 'date', '') . ' ' . Arr::get($values, 'hours', '') . ':' . Arr::get($values, 'minute', '') . ':00';
+        $hours = Arr::get($values, 'hours', '');
+        if ($hours == '') $hours = '12';
+        $minute = Arr::get($values, 'minute', '');
+        if ($minute == '') $minute = '00';
+
+        $dateString = Arr::get($values, 'date', '') . ' ' . $hours . ':' . $minute . ':00';
         $date = null;
         if(strlen($dateString) > 5) {
             $date = new DateTime($dateString);
@@ -187,7 +192,12 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
             }
         }
 
-        $endDateString = Arr::get($values, 'dateEnd', '') . ' ' . Arr::get($values, 'hoursEnd', '') . ':' . Arr::get($values, 'minuteEnd', '') . ':00';
+        $hoursEnd = Arr::get($values, 'hoursEnd', '');
+        if ($hoursEnd == '') $hoursEnd = '12';
+        $minuteEnd = Arr::get($values, 'minuteEnd', '');
+        if ($minuteEnd == '') $minuteEnd = '00';
+
+        $endDateString = Arr::get($values, 'dateEnd', '') . ' ' . $hoursEnd . ':' . $minuteEnd . ':00';
         $endDate = null;
         if(strlen($endDateString) > 5) {
             $endDate = new DateTime($endDateString);
@@ -210,7 +220,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
                                  ->set('text'      , Arr::get($values, 'text'  , $tip->text))
                                  ->set('start_date', $date != null ? $dateString : $tip->start_date)
                                  ->set('end_date'  , $endDate != null ? $endDateString : $tip->end_date)
-                                 ->set('weight'    , Arr::get($values, 'weight', $tip->weight))
+                                 ->set('weight'    , (int) Arr::get($values, 'weight', $tip->weight))
                                  ->set('is_active' , Arr::get($values, 'active', $tip->is_active))
                                  ->where('id', '=', $id);
             }
@@ -220,7 +230,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
                              ->column('text'        , Arr::get($values, 'text'  , ''))
                              ->column('start_date'  , $dateString)
                              ->column('end_date'    , $endDateString)
-                             ->column('weight'      , Arr::get($values, 'weight', 0))
+                             ->column('weight'      , (int) Arr::get($values, 'weight', 0))
                              ->column('is_active'   , Arr::get($values, 'active', 0))
                              ->column('is_archived' , 0);
         }
