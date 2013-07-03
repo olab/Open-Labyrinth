@@ -62,12 +62,6 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][3] = __("OAuth");
         $this->templateData['tabs'][3] = $viewSupport;
 
-        $this->templateData['todayTip'] = Kohana::$config->load('today_tip');
-        $viewTodayTip = View::factory('systemmanager/todayTip');
-        $viewTodayTip->set('templateData', $this->templateData);
-        $this->templateData['tabsName'][4] = __("Today's Tip");
-        $this->templateData['tabs'][4] = $viewTodayTip;
-
         $view = View::factory('systemmanager/view');
         $view->set('templateData', $this->templateData);
 

@@ -120,6 +120,8 @@
                                         }
                                         ?>
 
+                                        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today tip's</a></li>
+
                                         <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
