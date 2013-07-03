@@ -23,8 +23,8 @@ defined('SYSPATH') or die('No direct access allowed.');
 $config = array();
 
 $config['support'] = array(
-    'main_support_email' => 'larjohn@gmail.com',
-    'email' => 'larjohn@gmail.com',
+    'main_support_email' => '',
+    'email' => '',
     'mail_settings' => array(
         'subject' => 'OpenLabyrinth: Support: #error_type#',
         'message' => 'Hi,
