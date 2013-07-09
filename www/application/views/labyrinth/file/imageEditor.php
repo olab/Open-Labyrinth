@@ -20,7 +20,8 @@
  */
 if (isset($templateData['map']) && isset($templateData['file']) && (strstr($templateData['file']->mime, 'image'))) {
     $src = URL::base().$templateData['file']->path;
-    $size = getimagesize(DOCROOT . $src);
+    //echo   $_SERVER["DOCUMENT_ROOT"].$src;die;
+    $size = getimagesize($_SERVER["DOCUMENT_ROOT"] . $src);
     ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery.cropzoom.js"></script>
 <script type="text/javascript">
