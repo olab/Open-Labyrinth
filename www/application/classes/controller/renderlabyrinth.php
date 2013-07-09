@@ -716,7 +716,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
-                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option-'.$id.'" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
                         $result .= '<span class="text">' . $responce->response . '</span>';
                         $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
                         $result .= '</li>';
@@ -736,7 +736,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
-                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option-'.$id.'" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
                         $result .= '<span>' . $responce->response . '</span>';
                         $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
                         $result .= '</li>';
