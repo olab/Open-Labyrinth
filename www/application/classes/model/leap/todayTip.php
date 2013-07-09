@@ -99,18 +99,34 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
 
         $records = DB_SQL::select('default')
                            ->from($this->table())
-                           ->where('start_date' , '<=', $date, 'AND')
-                           ->where('end_date'   , '>=', $date, 'AND')
+                           ->where('is_archived', '=', 0, 'AND')
                            ->where('is_active'  , '=', 1, 'AND')
-                           ->where('is_archived', '=', 0)
+                           ->where('start_date' , '<=', $date, 'AND')
+                           ->where('end_date'   , '=' , null , 'OR')
+                           ->where('end_date'   , '>=', $date)
                            ->order_by('weight', 'DESC')
                            ->column('id')
                            ->query();
 
         $result = null;
         if($records->is_loaded()) {
+            $result  = array();
+            $weights = array();
             foreach($records as $record) {
-                $result[] = DB_ORM::model('TodayTip', array((int)$record['id']));
+                $tip       = DB_ORM::model('TodayTip', array((int)$record['id']));
+                $result[]  = $tip;
+                $weights[] = $tip->weight;
+            }
+
+            if(count($result) > 0) {
+                list($lockups, $totalWeight) = $this->calculateLockups($weights);
+                $tip = $this->weightedRandom($result, $weights, $lockups, $totalWeight);
+
+                if($tip != null) {
+                    $result = array($tip);
+                } else {
+                    $result = array();
+                }
             }
         }
 
@@ -178,12 +194,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
     public function saveTip($id, $values) {
         $query = null;
 
-        $hours = Arr::get($values, 'hours', '');
-        if ($hours == '') $hours = '12';
-        $minute = Arr::get($values, 'minute', '');
-        if ($minute == '') $minute = '00';
-
-        $dateString = Arr::get($values, 'date', '') . ' ' . $hours . ':' . $minute . ':00';
+        $dateString = Arr::get($values, 'date', '') . ' 00:00';
         $date = null;
         if(strlen($dateString) > 5) {
             $date = new DateTime($dateString);
@@ -192,24 +203,24 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
             }
         }
 
-        $hoursEnd = Arr::get($values, 'hoursEnd', '');
-        if ($hoursEnd == '') $hoursEnd = '12';
-        $minuteEnd = Arr::get($values, 'minuteEnd', '');
-        if ($minuteEnd == '') $minuteEnd = '00';
-
-        $endDateString = Arr::get($values, 'dateEnd', '') . ' ' . $hoursEnd . ':' . $minuteEnd . ':00';
+        $endDateString = Arr::get($values, 'dateEnd', '') . ' 24:00';
+        $withoutEndDate = Arr::get($values, 'withoutDate', null);
         $endDate = null;
-        if(strlen($endDateString) > 5) {
-            $endDate = new DateTime($endDateString);
-            if($endDate != null) {
-                $endDateString = $endDate->format('Y-m-d H:i:s');
+        if($withoutEndDate == null) {
+            if(strlen($endDateString) > 5) {
+                $endDate = new DateTime($endDateString);
+                if($endDate != null) {
+                    $endDateString = $endDate->format('Y-m-d H:i:s');
+                } else if($date != null) {
+                    $endDate = $date->add(new DateInterval('P1D'));
+                    $endDateString = $endDate->format('Y-m-d H:i:s');
+                }
             } else if($date != null) {
                 $endDate = $date->add(new DateInterval('P1D'));
                 $endDateString = $endDate->format('Y-m-d H:i:s');
             }
-        } else if($date != null) {
-            $endDate = $date->add(new DateInterval('P1D'));
-            $endDateString = $endDate->format('Y-m-d H:i:s');
+        } else {
+            $endDateString = null;
         }
 
         if($id != null && $id > 0) {
@@ -219,7 +230,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
                                  ->set('title'     , Arr::get($values, 'title' , $tip->title))
                                  ->set('text'      , Arr::get($values, 'text'  , $tip->text))
                                  ->set('start_date', $date != null ? $dateString : $tip->start_date)
-                                 ->set('end_date'  , $endDate != null ? $endDateString : $tip->end_date)
+                                 ->set('end_date'  , $endDate != null ? $endDateString : ($withoutEndDate != null) ? null : $tip->end_date)
                                  ->set('weight'    , (int) Arr::get($values, 'weight', $tip->weight))
                                  ->set('is_active' , Arr::get($values, 'active', $tip->is_active))
                                  ->where('id', '=', $id);
@@ -236,6 +247,53 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
         }
 
         return $query->execute();
+    }
+
+    private function calculateLockups($weights) {
+        $lockups     = array();
+        $totalWeight = 0;
+
+        for($i = 0; $i < count($weights); $i++) {
+            $totalWeight += $weights[$i];
+            $lockups[$i] = $totalWeight;
+        }
+
+        return array($lockups, $totalWeight);
+    }
+
+    private function weightedRandom($values, $weights, $lookup = null, $total_weight = null){
+        if ($lookup == null) {
+            list($lookup, $total_weight) = $this->calculateLockups($weights);
+        }
+
+        $r = mt_rand(0, $total_weight);
+        return $values[$this->binarySearch($r, $lookup)];
+    }
+
+    private function binarySearch($needle, $haystack) {
+        $high = count($haystack)-1;
+        $low  = 0;
+
+        while ( $low < $high ) {
+            $probe = (int)(($high + $low) / 2);
+            if ($haystack[$probe] < $needle){
+                $low = $probe + 1;
+            } else if ($haystack[$probe] > $needle) {
+                $high = $probe - 1;
+            } else {
+                return $probe;
+            }
+        }
+
+        if ( $low != $high ){
+            return $probe;
+        } else {
+            if ($haystack[$low] >= $needle) {
+                return $low;
+            } else {
+                return $low+1;
+            }
+        }
     }
 }
 ?>

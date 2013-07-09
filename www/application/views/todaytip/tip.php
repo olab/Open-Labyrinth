@@ -94,8 +94,7 @@
             <?php $date = isset($templateData['tip']) && $templateData['tip']->start_date != null ? date_parse($templateData['tip']->start_date) : null; ?>
 
             <div class="controls">
-                <input class="datepicker" type="text" name="date" id="date" value="<?php if($date != null && isset($date['year']) && isset($date['month']) && isset($date['day'])) echo $date['month'] . '/' . $date['day'] . '/' . $date['year']; ?>"/>
-                <?php echo __('Time'); ?> <input class="span1" type="text" name="hours" id="hours" value="<?php if($date != null && isset($date['hour'])) echo $date['hour'] < 10 ? '0' . $date['hour'] : $date['hour']; ?>"/>:<input class="span1" type="text" name="minute" id="minute" value="<?php if($date != null && isset($date['minute'])) echo $date['minute'] < 10 ? '0' . $date['minute'] : $date['minute']; ?>"/>
+                <input class="datepicker" type="text" name="date" id="date" value="<?php if($date != null && isset($date['year']) && isset($date['month']) && isset($date['day'])) { echo $date['month'] . '/' . $date['day'] . '/' . $date['year']; } else { echo date('m/d/Y'); } ?>"/>
             </div>
         </div>
     </fieldset>
@@ -107,7 +106,7 @@
 
             <div class="controls">
                 <input class="datepicker" type="text" name="dateEnd" id="dateEnd" value="<?php if($date != null && isset($date['year']) && isset($date['month']) && isset($date['day'])) echo $date['month'] . '/' . $date['day'] . '/' . $date['year']; ?>"/>
-                <?php echo __('Time'); ?> <input class="span1" type="text" name="hoursEnd" id="hoursEnd" value="<?php if($date != null && isset($date['hour'])) echo $date['hour'] < 10 ? '0' . $date['hour'] : $date['hour']; ?>"/>:<input class="span1" type="text" name="minuteEnd" id="minuteEnd" value="<?php if($date != null && isset($date['minute'])) echo $date['minute'] < 10 ? '0' . $date['minute'] : $date['minute']; ?>"/>
+                <input type="checkbox" name="withoutDate" value="1" <?php if($date == null) echo 'checked="checked"'; ?>/> without end date
             </div>
         </div>
     </fieldset>
