@@ -987,13 +987,23 @@ class Controller_ExportImportManager extends Controller_Base {
         }
 
         if (count($nodeArray) > 0) {
-
+            $config = array(
+                'indent'         => true,
+                'output-xhtml'   => true,
+                'clean'          => true,
+                'wrap'           => 200);
+            if(extension_loaded('tidy'))$tidy = new tidy;
             foreach ($nodeArray as $key => $node) {
                 $id = 'ctt_' . $node['text'];
                 if (isset($nodeContentsArray[$id]['div'])) {
                     $string = html_entity_decode((string) $nodeContentsArray[$id]['div']);
                     $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, $string);
                     $nodeArray[$key]['text'] = $this->html_entity_decode_numeric($nodeArray[$key]['text']);
+
+                    if(extension_loaded('tidy')){
+                    // Specify configuration
+                        $nodeArray[$key]['text']= $tidy->repairString($nodeArray[$key]['text'], $config, 'utf8');
+                    }
 
                 } else {
                     $nodeArray[$key]['text'] = '';
