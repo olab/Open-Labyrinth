@@ -203,7 +203,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
             }
         }
 
-        $endDateString = Arr::get($values, 'dateEnd', '') . ' 24:00';
+        $endDateString = Arr::get($values, 'dateEnd', '') . ' 23:59';
         $withoutEndDate = Arr::get($values, 'withoutDate', null);
         $endDate = null;
         if($withoutEndDate == null) {
@@ -226,11 +226,18 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
         if($id != null && $id > 0) {
             $tip = DB_ORM::model('TodayTip', array((int)$id));
             if($tip != null) {
+                $updateEndDateString = $tip->end_date;
+                if($endDateString != null) {
+                    $updateEndDateString = $endDateString;
+                } else if($endDate == null) {
+                    $updateEndDateString = null;
+                }
+
                 $query = DB_ORM::update('TodayTip')
                                  ->set('title'     , Arr::get($values, 'title' , $tip->title))
                                  ->set('text'      , Arr::get($values, 'text'  , $tip->text))
                                  ->set('start_date', $date != null ? $dateString : $tip->start_date)
-                                 ->set('end_date'  , $endDate != null ? $endDateString : ($withoutEndDate != null) ? null : $tip->end_date)
+                                 ->set('end_date'  , $updateEndDateString)
                                  ->set('weight'    , (int) Arr::get($values, 'weight', $tip->weight))
                                  ->set('is_active' , Arr::get($values, 'active', $tip->is_active))
                                  ->where('id', '=', $id);
