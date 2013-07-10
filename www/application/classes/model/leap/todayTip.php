@@ -194,7 +194,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
     public function saveTip($id, $values) {
         $query = null;
 
-        $dateString = Arr::get($values, 'date', '') . ' 00:00';
+        $dateString = Arr::get($values, 'date', '') . ' 00:00:00';
         $date = null;
         if(strlen($dateString) > 5) {
             $date = new DateTime($dateString);
@@ -203,7 +203,7 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
             }
         }
 
-        $endDateString = Arr::get($values, 'dateEnd', '') . ' 23:59';
+        $endDateString = Arr::get($values, 'dateEnd', '') . ' 23:59:59';
         $withoutEndDate = Arr::get($values, 'withoutDate', null);
         $endDate = null;
         if($withoutEndDate == null) {
