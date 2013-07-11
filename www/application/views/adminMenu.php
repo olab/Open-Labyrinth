@@ -32,22 +32,20 @@
                     by a group of enthusiasts who love the capability of
                     OpenLabyrinth for virtual patients.'); ?>
         </p>
-        <?php if(isset($templateData['todayTip']) && count($templateData['todayTip']) > 0) { ?>
-            <?php foreach($templateData['todayTip'] as $tip) { ?>
+        <?php if(isset($templateData['todayTip']) && $templateData['todayTip'] != null) { ?>
                 <div class="box">
                     <h4 class="box-header round-top">OpenLabyrinth Tips-of-the-Day</h4>
                     <div class="box-container-toggle">
                         <div class="box-content">
                             <div>
-                                <b><?php echo $tip->title; ?></b>
+                                <b><?php echo $templateData['todayTip']->title; ?></b>
                             </div>
                             <div>
-                                <?php echo $tip->text; ?>
+                                <?php echo $templateData['todayTip']->text; ?>
                             </div>
                         </div>
                     </div>
                 </div>
-            <?php } ?>
         <?php } ?>
     </div>
     <div class="span4">

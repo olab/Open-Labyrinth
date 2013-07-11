@@ -108,29 +108,28 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
                            ->column('id')
                            ->query();
 
-        $result = null;
+        $todayTip = null;
         if($records->is_loaded()) {
-            $result  = array();
-            $weights = array();
+            $tips = array();
+            $weightedTips = array();
             foreach($records as $record) {
-                $tip       = DB_ORM::model('TodayTip', array((int)$record['id']));
-                $result[]  = $tip;
-                $weights[] = $tip->weight;
+                $tip = DB_ORM::model('TodayTip', array((int)$record['id']));
+                $tips[$tip->id] = $tip;
+                $weight = $tip->weight <= 0 ? 1 : $tip->weight;
+
+                for($i = 0; $i < $weight; $i++) {
+                    $weightedTips[] = $tip->id;
+                }
             }
 
-            if(count($result) > 0) {
-                list($lockups, $totalWeight) = $this->calculateLockups($weights);
-                $tip = $this->weightedRandom($result, $weights, $lockups, $totalWeight);
+            shuffle($weightedTips);
 
-                if($tip != null) {
-                    $result = array($tip);
-                } else {
-                    $result = array();
-                }
+            if(count($weightedTips) > 0) {
+                $todayTip = $tips[$weightedTips[0]];
             }
         }
 
-        return $result;
+        return $todayTip;
     }
 
     /**
@@ -254,53 +253,6 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
         }
 
         return $query->execute();
-    }
-
-    private function calculateLockups($weights) {
-        $lockups     = array();
-        $totalWeight = 0;
-
-        for($i = 0; $i < count($weights); $i++) {
-            $totalWeight += $weights[$i];
-            $lockups[$i] = $totalWeight;
-        }
-
-        return array($lockups, $totalWeight);
-    }
-
-    private function weightedRandom($values, $weights, $lookup = null, $total_weight = null){
-        if ($lookup == null) {
-            list($lookup, $total_weight) = $this->calculateLockups($weights);
-        }
-
-        $r = mt_rand(0, $total_weight);
-        return $values[$this->binarySearch($r, $lookup)];
-    }
-
-    private function binarySearch($needle, $haystack) {
-        $high = count($haystack)-1;
-        $low  = 0;
-
-        while ( $low < $high ) {
-            $probe = (int)(($high + $low) / 2);
-            if ($haystack[$probe] < $needle){
-                $low = $probe + 1;
-            } else if ($haystack[$probe] > $needle) {
-                $high = $probe - 1;
-            } else {
-                return $probe;
-            }
-        }
-
-        if ( $low != $high ){
-            return $probe;
-        } else {
-            if ($haystack[$low] >= $needle) {
-                return $low;
-            } else {
-                return $low+1;
-            }
-        }
     }
 }
 ?>
