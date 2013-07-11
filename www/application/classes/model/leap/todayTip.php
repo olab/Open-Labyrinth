@@ -101,11 +101,10 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
                            ->from($this->table())
                            ->where('is_archived', '=', 0, 'AND')
                            ->where('is_active'  , '=', 1, 'AND')
-                           ->where('start_date' , '<=', $date, 'AND')
-                           ->where('end_date'   , '=' , null , 'OR')
-                           ->where('end_date'   , '>=', $date)
+                           ->where('start_date' , '<=', $date)
                            ->order_by('weight', 'DESC')
                            ->column('id')
+                           ->column('end_date')
                            ->query();
 
         $todayTip = null;
@@ -113,6 +112,14 @@ class Model_Leap_TodayTip extends DB_ORM_Model {
             $tips = array();
             $weightedTips = array();
             foreach($records as $record) {
+                if($record['end_date'] != null) {
+                    $endDateTime = strtotime($record['end_date']);
+                    $dateTime = strtotime($date);
+                    if($endDateTime < $dateTime) {
+                        continue;
+                    }
+                }
+
                 $tip = DB_ORM::model('TodayTip', array((int)$record['id']));
                 $tips[$tip->id] = $tip;
                 $weight = $tip->weight <= 0 ? 1 : $tip->weight;
