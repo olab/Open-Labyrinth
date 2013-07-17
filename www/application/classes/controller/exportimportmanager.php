@@ -426,10 +426,11 @@ class Controller_ExportImportManager extends Controller_Base {
             if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
                 move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
                 $fileName = 'files/' . $_FILES['filename']['name'];
-                $this->importMVP(DOCROOT . $fileName);
+                $data = $this->importMVP(DOCROOT . $fileName);
+
             }
         }
-        Notice::add('Labyrinth has been successfully imported');
+        Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.');
         Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
@@ -456,13 +457,17 @@ class Controller_ExportImportManager extends Controller_Base {
             $folderPath = DOCROOT . 'files/' . $folderName;
             $zip->extractTo($folderPath);
             $zip->close();
-            $this->parseMVPFile($folderName);
+            $data = $this->parseMVPFile($folderName);
             $this->deleteDir($folderPath);
+
         } else {
             echo 'failed'; //TODO: redirect to error
             Request::initial()->redirect(URL::base());
+            return false;
         }
+
         unlink($file);
+        return $data;
     }
 
     public function parseMVPFile($mvpFolder) {
@@ -1059,8 +1064,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 }
             }
         }
-
-        return true;
+        return array("title"=>$map->name, "id"=>$map->id);
     }
 
     public function parseXML($tmpFileName) {

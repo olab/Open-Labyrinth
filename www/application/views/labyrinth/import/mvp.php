@@ -41,8 +41,13 @@
 
 
                     </fieldset>
+                    <div class="form-actions">
+                        <div class="pull-right">
+                            <input class="btn btn-large btn-primary" type="submit" value="<?php echo __('Upload'); ?>" name="Submit">
+                        </div>
+                    </div>
 
-                                <input class="btn btn-primary" type="submit" value="<?php echo __('submit'); ?>" name="Submit">
+
 
                 </form>
 
