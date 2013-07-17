@@ -284,7 +284,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->stem = Arr::get($values, 'qstem', $this->stem);
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        
+        $this->settings = Arr::get($values, 'settings', $this->feedback);
+
         $this->save();
     }
     
@@ -293,7 +294,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->height = Arr::get($values, 'qheight', $this->height);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        
+        $this->settings = Arr::get($values, 'settings', $this->feedback);
+
         $this->save();
     }
     
@@ -322,7 +324,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->stem = Arr::get($values, 'qstem', '');
         $this->width = Arr::get($values, 'qwidth', 0);
         $this->feedback = Arr::get($values, 'fback', '');
-        
+        $this->settings = Arr::get($values, 'settings', '');
+
         $this->save();
     }
     
@@ -333,7 +336,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', 0);
         $this->height = Arr::get($values, 'qheight', 0);
         $this->feedback = Arr::get($values, 'fback', '');
-        
+        $this->settings = Arr::get($values, 'settings', '');
+
         $this->save();
     }
 

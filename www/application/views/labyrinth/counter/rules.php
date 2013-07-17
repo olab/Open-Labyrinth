@@ -22,7 +22,7 @@ if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
 <div class="page-header">
     <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add rule'); ?></a></div>
-    <h1><?php echo __('Counters Rules for ') . ' "' . $templateData['map']->name . '"'; ?></h1></div>
+    <h1><?php echo __('Rules for ') . ' "' . $templateData['map']->name . '"'; ?></h1></div>
 
 
 <table class="table table-striped table-bordered">
