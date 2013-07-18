@@ -197,9 +197,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId = $this->request->param('id', NULL);
         if ($nodeId != NULL) {
             $node = DB_ORM::model('map_node', array((int) $nodeId));
-
+            $info = self::parseText( $node->info);
             $infoView = View::factory('labyrinth/node/info');
-            $infoView->set('info', $node->info);
+            $infoView->set('info', $info);
 
             $this->template = $infoView;
         }
