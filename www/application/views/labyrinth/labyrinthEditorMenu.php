@@ -48,7 +48,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>"><i class="icon-dashboard"></i> <?php echo __('Counters'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'counterManager/grid/' . $templateData['map']->id; ?>"><i class="icon-th-large"></i> <?php echo __('Counter Grid'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'visualdisplaymanager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Visual displays of counters'); ?></a><div class="pull-right arrow"></div></li>
-            <li><a href="<?php echo URL::base() . 'counterManager/rules/' . $templateData['map']->id; ?>"><i class="icon-check"></i> <?php echo __('Counters Rules'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'counterManager/rules/' . $templateData['map']->id; ?>"><i class="icon-check"></i> <?php echo __('Rules'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'elementManager/index/' . $templateData['map']->id; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'clusterManager/index/' . $templateData['map']->id; ?>"><i class="icon-tags"></i> <?php echo __('Clusters'); ?></a></li>
 

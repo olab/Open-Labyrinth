@@ -57,6 +57,14 @@ if (isset($templateData['map'])) { ?>
                 <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
             </div>
         </div>
+        <div class="control-group">
+            <label for="rule" class="control-label">
+                <?php echo __('Rule'); ?>
+            </label>
+            <div class="controls">
+                <textarea id="rule" name="settings"><?php if(isset($templateData['question'])) echo $templateData['question']->settings; ?></textarea>
+            </div>
+        </div>
     </fieldset>
     <div class="form-actions">
         <div class="pull-right">

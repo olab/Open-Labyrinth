@@ -64,7 +64,7 @@ if (isset($templateData['map'])) {
         </tr>
         <tr>
             <td><?php echo __('number of links'); ?></td>
-            <td><?php echo count($templateData['map']->countLinks());?></td>
+            <td><?php echo $templateData['map']->countLinks();?></td>
         </tr>
     <?php
 

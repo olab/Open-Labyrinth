@@ -426,10 +426,11 @@ class Controller_ExportImportManager extends Controller_Base {
             if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
                 move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
                 $fileName = 'files/' . $_FILES['filename']['name'];
-                $this->importMVP(DOCROOT . $fileName);
+                $data = $this->importMVP(DOCROOT . $fileName);
+
             }
         }
-        Notice::add('Labyrinth has been successfully imported');
+        Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.');
         Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
@@ -456,13 +457,17 @@ class Controller_ExportImportManager extends Controller_Base {
             $folderPath = DOCROOT . 'files/' . $folderName;
             $zip->extractTo($folderPath);
             $zip->close();
-            $this->parseMVPFile($folderName);
+            $data = $this->parseMVPFile($folderName);
             $this->deleteDir($folderPath);
+
         } else {
             echo 'failed'; //TODO: redirect to error
             Request::initial()->redirect(URL::base());
+            return false;
         }
+
         unlink($file);
+        return $data;
     }
 
     public function parseMVPFile($mvpFolder) {
@@ -483,6 +488,8 @@ class Controller_ExportImportManager extends Controller_Base {
         $replaceElement = array();
         $map = array();
         $map['title'] =(string) $xml->general->title->string;
+
+
         $map['title'] = preg_replace_callback('~&#([0-9a-fA-F]+)~i', array($this,"qm_fix_callback"), $map['title']);
 
       $map['title'] = $this->html_entity_decode_numeric($map['title']);
@@ -707,6 +714,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     $nodeArray[$id]['y'] = (string) $nodeAttr->mnodeY;
                     $nodeArray[$id]['rgb'] = (string) $nodeAttr->mnodeRGB;
                     $nodeArray[$id]['info'] = html_entity_decode((string) $node->OL_infoText->div);
+
                 }
             }
         }
@@ -999,10 +1007,15 @@ class Controller_ExportImportManager extends Controller_Base {
                     $string = html_entity_decode((string) $nodeContentsArray[$id]['div']);
                     $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, $string);
                     $nodeArray[$key]['text'] = $this->html_entity_decode_numeric($nodeArray[$key]['text']);
+                    $nodeArray[$key]['info'] = str_replace($findElement, $replaceElement, $nodeArray[$key]['info'] );
+                    $nodeArray[$key]['info'] = $this->html_entity_decode_numeric($nodeArray[$key]['info']);
+
+
 
                     if(extension_loaded('tidy')){
                     // Specify configuration
                         $nodeArray[$key]['text']= $tidy->repairString($nodeArray[$key]['text'], $config, 'utf8');
+                        $nodeArray[$key]['info']= $tidy->repairString($nodeArray[$key]['info'], $config, 'utf8');
                     }
 
                 } else {
@@ -1059,8 +1072,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 }
             }
         }
-
-        return true;
+        return array("title"=>$map->name, "id"=>$map->id);
     }
 
     public function parseXML($tmpFileName) {
@@ -1071,6 +1083,7 @@ class Controller_ExportImportManager extends Controller_Base {
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
         libxml_use_internal_errors(true);
+
         return simplexml_load_string($xmlString);
     }
 

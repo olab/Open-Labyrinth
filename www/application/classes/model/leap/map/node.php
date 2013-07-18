@@ -207,7 +207,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getNodesByMap($mapId, $orderBy = null, $logicSort = null) {
+    public function getNodesByMap($mapId, $orderBy = null, $logicSort = null, $lengthSort = false) {
         $builder = DB_SQL::select('default')->from($this->table(), 't')->column('t.id', 'id')->where('map_id', '=', $mapId);
         switch($orderBy) {
             case 1:
@@ -267,7 +267,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             
             $nodes = array_merge($rootNodes, $nodes);
             $nodes = array_merge($nodes, $endNodes);
-            
+
+            if ($lengthSort){
+                usort($nodes, function($a, $b) {
+                    return strlen($b->title) - strlen($a->title);
+                });
+            }
+
             return $nodes;
         }
         
