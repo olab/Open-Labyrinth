@@ -235,7 +235,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['rules'] = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($mapId);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
 
             $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
             $nodes = array();
@@ -284,7 +284,7 @@ class Controller_CounterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId, null, null, true);
             $nodes = array();
             $ids = array();
             if (count($nodesArray) > 0){
@@ -313,7 +313,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['counters']['id'] = json_encode($ids);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Rule'))->set_url(URL::base() . 'counterManager/addCommonRule/' . $mapId));
 
             $view = View::factory('labyrinth/counter/actionCommonRule');
@@ -373,7 +373,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['counters']['id'] = json_encode($ids);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Rule'))->set_url(URL::base() . 'counterManager/editCommonRule/' . $mapId));
 
             $view = View::factory('labyrinth/counter/actionCommonRule');

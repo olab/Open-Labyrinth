@@ -47,6 +47,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
             if ($continue) {
                 Session::instance()->delete('questionChoices');
+                Session::instance()->delete('counterFunc');
+                Session::instance()->delete('stopCommonRules');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -1185,7 +1187,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     private static function getCounterHTML($mapId, $id){
-        $counterValue = Model::factory('labyrinth')->getCounterValueBydID($mapId, $id);
+        $counterValue = Model::factory('labyrinth')->getCounterValueByID($mapId, $id);
         return $counterValue;
     }
 
