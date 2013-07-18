@@ -1078,7 +1078,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $result = '';
 
         $traceId = Session::instance()->get('trace_id');
-        $trace = DB_ORM::model('user_sessiontrace', array((int)$traceId));
         $traceCountersValues = Session::instance()->get('traceCountersValues');
 
         if($visualDisplay != null) {

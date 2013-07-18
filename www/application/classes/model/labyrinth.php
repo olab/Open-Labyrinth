@@ -519,6 +519,14 @@ class Model_Labyrinth extends Model {
                         }
                     }
                 }
+
+                $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplays($node->map_id);
+                foreach($visualDisplay as $display) {
+                    $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
+                    $counterString .= $this->getVisualDisplayHTML($display->id);
+                    $counterString .= '</div>';
+                }
+
                 $counterString .="<ul class=\"navigation\">";
                 foreach($countersArray as $key => $counter){
                     if (isset($counter['func'])){
@@ -560,6 +568,117 @@ class Model_Labyrinth extends Model {
         }
 
         return '';
+    }
+
+    private static function getVisualDisplayHTML($visualDisplayId) {
+        $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
+        $result = '';
+
+        $traceCountersValues = Session::instance()->get('traceCountersValues');
+
+        if($visualDisplay != null) {
+            $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
+
+            if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
+                foreach($visualDisplay->panels as $panel) {
+                    $result .= '<div style="        position: absolute;
+                                                         top: ' . $panel->y . 'px;
+                                                        left: ' . $panel->x . 'px;
+                                                     z-index: ' . $panel->z_index . ';
+                                            background-color: ' . $panel->background_color . ';
+                                                       width: ' . $panel->width . ';
+                                                      height: ' . $panel->height . ';
+                                                border-width: ' . $panel->border_size . 'px;
+                                                border-style: solid;
+                                                border-color: ' . $panel->border_color . ';
+                                               border-radius: ' . $panel->border_radius . 'px;
+                                       -webkit-border-radius: ' . $panel->border_radius . 'px;
+                                          -moz-border-radius: ' . $panel->border_radius . 'px;
+                                              -moz-transform: rotate(' . $panel->angle . 'deg);
+                                           -webkit-transform: rotate(' . $panel->angle . 'deg);
+                                                -o-transform: rotate(' . $panel->angle . 'deg);
+                                               -ms-transform: rotate(' . $panel->angle . 'deg);
+                                                   transform: rotate(' . $panel->angle . 'deg);">
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->images != null && count($visualDisplay->images) > 0) {
+                foreach($visualDisplay->images as $image) {
+                    if(!file_exists(DOCROOT . '/files/' . $visualDisplay->map_id . '/vdImages/' . $image->name)) continue;
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $image->y . 'px;
+                                                left: ' . $image->x . 'px;
+                                               width: ' . $image->width . 'px;
+                                              height: ' . $image->height . 'px;
+                                             z-index: ' . $image->z_index . ';
+                                      -moz-transform: rotate(' . $image->angle . 'deg);
+                                   -webkit-transform: rotate(' . $image->angle . 'deg);
+                                        -o-transform: rotate(' . $image->angle . 'deg);
+                                       -ms-transform: rotate(' . $image->angle . 'deg);
+                                           transform: rotate(' . $image->angle . 'deg);
+                                ">
+                                    <img style="width: 100%" src="' . URL::base() . 'files/' . $visualDisplay->map_id . '/vdImages/' . $image->name . '" />
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
+                foreach($visualDisplay->counters as $counter) {
+                    $thisCounter = $counter->counter->start_value;
+
+                    if($traceCountersValues != null) {
+                        $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
+                        $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
+                        $e = strpos($tmp, ']') + 1;
+                        $tmp = substr($tmp, 0, $e - 1);
+                        $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
+                        $thisCounter = $tmp;
+                    }
+
+                    $labelFont = explode('%#%', $counter->label_font_style);
+                    $valueFont = explode('%#%', $counter->value_font_style);
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $counter->label_y . ';
+                                                left: ' . $counter->label_x . ';
+                                             z-index: ' . $counter->label_z_index . ';
+                                      -moz-transform: rotate(' . $counter->label_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->label_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->label_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->label_angle . 'deg);
+                                           transform: rotate(' . $counter->label_angle . 'deg);
+                                         font-family: \'' . $labelFont[0] . '\';
+                                           font-size: ' . $labelFont[1] . 'px;
+                                         font-weight: \'' . $labelFont[2] . '\';
+                                               color: ' . $labelFont[3] . ';
+                                          font-style: \'' . $labelFont[4] . '\';
+                                     text-decoration: \'' . $labelFont[5] . '\';
+                                ">' . $counter->label_text . '</div>
+                                <div style="position: absolute;
+                                                 top: ' . $counter->value_y . ';
+                                                left: ' . $counter->value_x . ';
+                                             z-index: ' . $counter->value_z_index . ';
+                                      -moz-transform: rotate(' . $counter->value_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->value_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->value_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->value_angle . 'deg);
+                                           transform: rotate(' . $counter->value_angle . 'deg);
+                                         font-family: \'' .  $valueFont[0] . '\';
+                                           font-size: ' . $valueFont[1] . 'px;
+                                         font-weight: \'' . $valueFont[2] . '\';
+                                               color: ' . $valueFont[3] . ';
+                                          font-style: \'' . $valueFont[4] . '\';
+                                     text-decoration: \'' . $valueFont[5] . '\';
+                                ">' . $thisCounter . '</div>';
+                }
+            }
+
+            $result .= '</div>';
+        }
+
+        return $result;
     }
 
     private function calculateCounterFunction($counter, $function){
