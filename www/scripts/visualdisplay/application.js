@@ -98,6 +98,7 @@ $(function() {
         $.post(postURL, 
                {
                    mapId: mapId,
+                   allPages: $('#showOnAllPage').is(':checked'),
                    data: data
                }, 
                function(responseData) {
@@ -173,8 +174,6 @@ $(function() {
     
     $panelBorderColor.blur(function() {
         $borderColorPicker.hide();
-        $(this).css('background-color', '#ffffff');
-        $panelBackgroundColor.css('background-color', '#ffffff');
     });
     
     $panelBackgroundColor.click(function() {
@@ -188,8 +187,6 @@ $(function() {
     
     $panelBackgroundColor.blur(function() {
         $backgroundColorFarbtastic.hide();
-        $(this).css('background-color', '#ffffff');
-        $panelBorderColor.css('background-color', '#ffffff');
     });
     
     $counterFontLabelColor.click(function() {
@@ -203,8 +200,6 @@ $(function() {
     
     $counterFontLabelColor.blur(function() {
         $labelFontColorFarbtastic.hide();
-        $(this).css('background-color', '#ffffff');
-        $counterFontValueColor.css('background-color', '#ffffff');
     });
     
     $counterFontValueColor.click(function() {
@@ -218,7 +213,5 @@ $(function() {
     
     $counterFontValueColor.blur(function() {
         $valueFontColorFarbtastic.hide();
-        $(this).css('background-color', '#ffffff');
-        $counterFontLabelColor.css('background-color', '#ffffff');
     });
 });

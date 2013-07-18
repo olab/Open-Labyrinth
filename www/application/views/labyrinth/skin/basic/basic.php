@@ -176,20 +176,28 @@
     $(function() {
         $.each($('.visual-display-container'), function(index, object) {
             var maxHeight = 0,
+                maxWidth  = 0,
                 children = $(object).children(),
                 top = 0,
                 height = 0,
-                img = null,
-                p = 1,
-                d = 1;
+                width = 0,
+                left = 0;
             $.each(children, function(index, child) {
                 top = parseInt($(child).css('top').replace('px', ''));
                 height = parseInt($(child).css('height').replace('px', ''));
                 if(maxHeight < (top + height)) {
                     maxHeight = top + height;
                 }
+
+                left = parseInt($(child).css('left').replace('px', ''));
+                width = parseInt($(child).css('width').replace('px', ''));
+                if(maxWidth < (left + width)) {
+                    maxWidth = left + width;
+                }
             });
 
+            $(object).css('width', maxWidth);
+            $(object).parent().css('width', maxWidth);
             $(object).css('height', maxHeight);
         });
     });

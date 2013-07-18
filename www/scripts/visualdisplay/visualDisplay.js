@@ -50,8 +50,6 @@ var VisualDisplay = function() {
     this.Init = function(visualDisplayId) {
         id = visualDisplayId;
         
-        $container.click(ContainerClick);
-        
         $panelWidthInput.blur(ChangeWidth);
         $panelHeightInput.blur(ChangeHeight);
         $panelBorderInput.blur(ChangeBorder);
@@ -509,50 +507,6 @@ var VisualDisplay = function() {
         }
         
         return result;
-    }
-    
-    
-    var ContainerClick = function() {
-        currentActivePanel = null;
-        $panelWidthInput.val('');
-        $panelHeightInput.val('');
-        $panelBorderInput.val('');
-        $panelBorderColorInput.val('');
-        $panelBorderColorInput.css('background-color', '#ffffff');
-        $panelBorderRadiusInput.val('');
-        $panelZIndexInput.val('');
-        $panelBackgroundInput.val('');
-        $panelBackgroundInput.css('background-color', '#ffffff');
-        $panelAngleInput.val('');
-        
-        currentActiveImage = null;
-        $imageZIndexInput.val('');
-        $imageAngleInput.val('');
-        
-        currentActiveCounter = null;
-        $counterFontLabelFamilySelect.children('option').removeAttr('selected');
-        $counterFontLabelFamilySelect.children('option:first').attr('selected', 'selected');
-        $counterFontLabelSizeSelect.children('option').removeAttr('selected');
-        $counterFontLabelSizeSelect.children('option:first').attr('selected', 'selected');
-        $counterLabelTextInput.val('');
-        $counterFontLabelColorInput.val('');
-        $counterFontLabelColorInput.css('background-color', '#ffffff');
-        $counterLabelZIndexInput.val('');
-        $counterLabelAngleInput.val('');
-        $counterLabelBoldCheck.removeClass('active');
-        $counterLabelItalicCheck.removeClass('active');
-        $counterLabelUnderlineCheck.removeClass('active');
-        $counterFontValueFamilySelect.children('option').removeAttr('selected');
-        $counterFontValueFamilySelect.children('option:first').attr('selected', 'selected');
-        $counterFontValueSizeSelect.children('option').removeAttr('selected');
-        $counterFontValueSizeSelect.children('option:first').attr('selected', 'selected');
-        $counterFontValueColorInput.val('');
-        $counterFontValueColorInput.css('background-color', '#ffffff');
-        $counterValueZIndexInput.val('');
-        $counterValueAngleInput.val('');
-        $counterValueBoldCheck.removeClass('active');
-        $counterValueItalicCheck.removeClass('active');
-        $counterValueUnderlineCheck.removeClass('active');
     }
     
     var ChangeWidth = function() {

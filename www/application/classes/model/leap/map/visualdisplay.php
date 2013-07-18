@@ -37,6 +37,12 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
                 'max_length' => 10,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
+            )),
+
+            'is_all_page_show' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
+                'savable' => TRUE
             ))
         );
         
@@ -77,6 +83,21 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
 
     public static function primary_key() {
         return array('id');
+    }
+
+    /**
+     * Update flag for showing visual display on all pages
+     *
+     * @param integer $mapId - map ID
+     * @param boolean $isShow - flag for showing
+     */
+    public function updateShowOnAllPages($mapId, $isShow) {
+        if($mapId == null || $mapId <= 0) return;
+
+        DB_SQL::update('default')
+                ->set('is_all_page_show', $isShow)
+                ->table($this->table())
+                ->execute();
     }
 
     /**

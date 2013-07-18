@@ -32,6 +32,12 @@
     var dataURL = '<?php echo URL::base(); ?>scripts/fileupload/php/';
 </script>
 
+<div class="control-group">
+    <div class="controls">
+        <input type="checkbox" name="showOnAllPage" id="showOnAllPage" <?php if(isset($templateData['display']) && $templateData['display']->is_all_page_show) echo 'checked="checked"'; ?>/> Show on all pages
+    </div>
+</div>
+
 <ul class="nav nav-tabs">
     <li class="active"><a href="#panelsTab" data-toggle="tab">Panels</a></li>
     <li><a href="#imagesTab" data-toggle="tab">Images</a></li>
