@@ -105,8 +105,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            'settings' => new DB_ORM_Field_String($this, array(
-                'max_length' => 400,
+            'settings' => new DB_ORM_Field_Text($this, array(
                 'nullable' => TRUE,
                 'savable' => TRUE,
             ))
