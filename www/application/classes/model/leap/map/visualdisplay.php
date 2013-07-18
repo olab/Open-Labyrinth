@@ -88,14 +88,15 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
     /**
      * Update flag for showing visual display on all pages
      *
-     * @param integer $mapId - map ID
+     * @param integer $id - visual display ID
      * @param boolean $isShow - flag for showing
      */
-    public function updateShowOnAllPages($mapId, $isShow) {
-        if($mapId == null || $mapId <= 0) return;
+    public function updateShowOnAllPages($id, $isShow) {
+        if($id == null || $id <= 0) return;
 
         DB_SQL::update('default')
                 ->set('is_all_page_show', $isShow)
+                ->where('id', '=', $id)
                 ->table($this->table())
                 ->execute();
     }
@@ -110,6 +111,15 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
         if($mapId == null || $mapId <= 0) return null;
         
         return DB_ORM::select('map_visualdisplay')->where('map_id', '=', $mapId)->query();
+    }
+
+    public function getMapDisplaysShowOnAllPages($mapId) {
+        if($mapId == null || $mapId <= 0) return null;
+
+        return DB_ORM::select('map_visualdisplay')
+                       ->where('map_id', '=', $mapId, 'AND')
+                       ->where('is_all_page_show', '=', 1)
+                       ->query();
     }
     
     /**

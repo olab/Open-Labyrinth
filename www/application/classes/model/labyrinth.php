@@ -520,7 +520,7 @@ class Model_Labyrinth extends Model {
                     }
                 }
 
-                $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplays($node->map_id);
+                $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
                 foreach($visualDisplay as $display) {
                     $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
                     $counterString .= $this->getVisualDisplayHTML($display->id);
