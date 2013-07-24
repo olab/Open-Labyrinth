@@ -24,19 +24,80 @@ class RunTimeLogic {
     var $values = array();
     var $questionId = null;
     var $questionResponse = null;
+    var $errors = array();
 
     public function parsingString($string){
-        $errors = array();
-        $resultCon = $this->replaceConditions($string);
-        $resultStr = $this->replaceFunctions($resultCon);
-        $r = array();
-        $finalResult = eval($resultStr['str']);
-        if ($finalResult == ''){
-            $finalResult = 'nothing';
+        if (!empty($string)){
+            $parseFullString = false;
+            $finalResult = array();
+            $changedCounters = array();
+            $errors = array();
+            $r = array();
+            $pattern = '(.*?);\s*(?=IF|\s*$)';
+            if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
+                if (count($matches[0]) > 0){
+                    foreach($matches[0] as $newIF){
+                        $resultCon = $this->replaceConditions($newIF);
+                        $resultStr = $this->replaceFunctions($resultCon);
+                        ob_start();
+                        $result = eval($resultStr['str']);
+                        $checkErrors = ob_get_contents();
+                        ob_end_clean();
+                        if ($checkErrors != ''){
+                            $this->errors[] = $newIF;
+                        } else {
+                            if (isset($result['counters'])){
+                                if (count($result['counters']) > 0){
+                                    foreach($result['counters'] as $key => $value){
+                                        $this->values[$key] = $value;
+                                        $changedCounters[$key] = $value;
+                                    }
+                                }
+                            }
+
+                            $finalResult = array_merge($result, $finalResult);
+                            if (isset($finalResult['stop'])){
+                                if ($finalResult['stop'] == 1){
+                                    break;
+                                }
+                            }
+
+                            if (isset($finalResult['break'])){
+                                if ($finalResult['break'] == 1){
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    $finalResult['counters'] = $changedCounters;
+                } else {
+                    $parseFullString = true;
+                }
+            } else {
+                $parseFullString = true;
+            }
+
+            if ($parseFullString){
+                $resultCon = $this->replaceConditions($string);
+                $resultStr = $this->replaceFunctions($resultCon);
+                ob_start();
+                $finalResult = @eval($resultStr['str']);
+                $checkErrors = ob_get_contents();
+                ob_end_clean();
+                if ($checkErrors != ''){
+                    $this->errors[] = $string;
+                }
+            }
+
+            if (empty($finalResult)){
+                $finalResult = null;
+            }
+            $array['result'] = $finalResult;
+            $array['errors'] = $this->errors;
+            return $array;
         }
-        $array['result'] = $finalResult;
-        $array['errors'] = $errors;
-        return $array;
+
+        return null;
     }
 
     public function replaceFunctions($string){
@@ -51,9 +112,9 @@ class RunTimeLogic {
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (stripos("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
-                    } else {
                         $replace[$i] = ' (strpos("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
+                    } else {
+                        $replace[$i] = ' (stripos("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
                     }
                     $i++;
                 }
@@ -66,9 +127,9 @@ class RunTimeLogic {
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') === false) ';
-                    } else {
                         $replace[$i] = ' (strpos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') === false) ';
+                    } else {
+                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') === false) ';
                     }
                     $i++;
                 }
@@ -81,9 +142,9 @@ class RunTimeLogic {
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
-                    } else {
                         $replace[$i] = ' (strpos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
+                    } else {
+                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
                     }
                     $i++;
                 }
@@ -219,6 +280,7 @@ class RunTimeLogic {
     }
 
     public function parseAction($str){
+        $startStr = $str;
         $returnString = '';
         $posCR = strpos($str, '[[CR:');
         $posGOTO = strpos($str, 'GOTO');
@@ -241,7 +303,14 @@ class RunTimeLogic {
                 $str = substr($str, $posEqual + 1, strlen($str));
                 $resultArray = $this->replaceFunctions($str);
                 if ($resultArray['error'] == false){
+                    ob_start();
                     $result = eval('return '.$resultArray['str'].';');
+                    $checkErrors = ob_get_contents();
+                    ob_end_clean();
+                    if ($checkErrors != ''){
+                        $this->errors[] = $startStr;
+                    }
+
                 }
             }
 

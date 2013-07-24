@@ -298,7 +298,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['nodes']['text'] = json_encode($nodes);
             $this->templateData['nodes']['id'] = json_encode($ids);
 
-            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId, true);
             $counters = array();
             $ids = array();
             if (count($countersArray) > 0){
@@ -347,7 +347,7 @@ class Controller_CounterManager extends Controller_Base {
         if ($mapId != NULL & $ruleId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['commonRule'] = DB_ORM::model('map_counter_commonrules', array((int) $ruleId));
-            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId);
+            $nodesArray = DB_ORM::model('map_node')->getNodesByMap($mapId, null, null, true);
             $nodes = array();
             $ids = array();
             foreach($nodesArray as $node){
@@ -360,7 +360,7 @@ class Controller_CounterManager extends Controller_Base {
             $this->templateData['nodes']['text'] = json_encode($nodes);
             $this->templateData['nodes']['id'] = json_encode($ids);
 
-            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $countersArray = DB_ORM::model('map_counter')->getCountersByMap($mapId, true);
             $counters = array();
             $ids = array();
             foreach($countersArray as $counter){
@@ -411,5 +411,32 @@ class Controller_CounterManager extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function action_checkCommonRule(){
+        $status = 1;
+        $this->auto_render = false;
+
+        $mapId = Arr::get($this->request->post(), 'mapId', NULL);
+        $ruleText = Arr::get($this->request->post(),'ruleText',NULL);
+
+        if ($mapId != NULL){
+            $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $values = array();
+            foreach($counters as $counter){
+                $values[$counter->id] = $counter->start_value;
+            }
+            $runtimelogic = new RunTimeLogic();
+            $runtimelogic->values = $values;
+
+            $array = $runtimelogic->parsingString($ruleText);
+            if (count($array['errors']) > 0){
+                $status = 0;
+            }
+        } else {
+            $status = 0;
+        }
+
+        echo json_encode($status);
     }
 }

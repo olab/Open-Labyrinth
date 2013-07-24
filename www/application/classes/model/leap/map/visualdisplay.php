@@ -121,7 +121,7 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
                        ->where('is_all_page_show', '=', 1)
                        ->query();
     }
-    
+
     /**
      * Save visual displays from json string
      * 

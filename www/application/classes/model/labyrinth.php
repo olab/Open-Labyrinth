@@ -71,7 +71,7 @@ class Model_Labyrinth extends Model {
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
-            $this->addQuestionResponses($node->map_id, $sessionId);
+            $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId);
             if($conditional == null) {
                 if ($sessionId != 'notExist'){
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
@@ -263,7 +263,7 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function addQuestionResponses($mapID, $sessionId){
+    private function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId){
         $questionChoices = Session::instance()->get('questionChoices');
         $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
 
@@ -285,15 +285,12 @@ class Model_Labyrinth extends Model {
                         if (count($counterIDs) > 0){
                             $score = trim($q['score']);
                             $value = $this->getCounterValueFromString($counterIDs[$qID], $counterString);
-                            $valueStr = $score;
-                            if ($score[0] == '=') {
-                                $value = substr($score, 1, strlen($score));
-                            } else if ($score[0] == '-') {
-                                $value -= substr($score, 1, strlen($score));
-                            } else {
-                                $value += $score;
+                            $valueStr = (string)$score;
+                            $value = $this->calculateCounterFunction($value, $score);
+                            if (($valueStr[0] != '-') && ($valueStr[0] != '=')){
                                 $valueStr = '+'.$score;
                             }
+
                             $countersFunc[$counterIDs[$qID]][] = $valueStr;
                             $counterString = $this->setCounterValueToString($counterIDs[$qID], $counterString, $value);
                         }
@@ -302,16 +299,39 @@ class Model_Labyrinth extends Model {
             }
         }
 
+        $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
+
+        if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
+            foreach($sliderQuestionChoices as $qID => $sliderValue) {
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue);
+                $question = DB_ORM::model('map_question', array((int)$qID));
+                if ($question != null){
+                    if(count($question->responses) > 0) {
+                        foreach($question->responses as $response) {
+                            if($sliderValue >= $response->from && $sliderValue <= $response->to) {
+                                $score = $response->score;
+                                $value = $this->getCounterValueFromString($question->counter->id, $counterString);
+                                $valueStr = (string)$score;
+                                $value = $this->calculateCounterFunction($value, $score);
+                                if (($valueStr[0] != '-') && ($valueStr[0] != '=')){
+                                    $valueStr = '+'.$score;
+                                }
+
+                                $countersFunc[$question->counter->id][] = $valueStr;
+                                $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $value);
+                            }
+                        }
+                    } else {
+                        $countersFunc[$question->counter->id][] = '='.$sliderValue;
+                        $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $sliderValue);
+                    }
+                }
+            }
+        }
+
         $this->updateCounterString($mapID, $counterString);
 
         Session::instance()->set('countersFunc', json_encode($countersFunc));
-
-        $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
-        if(count($sliderQuestionChoices) > 0) {
-            foreach($sliderQuestionChoices as $qID => $sliderValue) {
-                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue);
-            }
-        }
     }
 
     private function clearQuestionResponses(){
@@ -334,8 +354,6 @@ class Model_Labyrinth extends Model {
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
-
-                $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
 
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
@@ -380,23 +398,8 @@ class Model_Labyrinth extends Model {
                             $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
                         } else if ($counterFunction[0] == '-') {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
-                        } else if ($counterFunction[0] == '+') {
-                            $thisCounter += substr($counterFunction, 1, strlen($counterFunction));
-                        }
-                    }
-
-                    if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0 && !$isRoot) {
-                        foreach($sliderQuestionChoices as $questionId => $sliderValue) {
-                            $question = DB_ORM::model('map_question', array((int)$questionId));
-                            if($question != null && count($question->responses) > 0) {
-                                foreach($question->responses as $response) {
-                                    if($sliderValue >= $response->from && $sliderValue <= $response->to) {
-                                        $thisCounter += $response->score;
-                                    }
-                                }
-                            } else {
-                                $thisCounter = $sliderValue;
-                            }
+                        } else {
+                            $thisCounter += $counterFunction;
                         }
                     }
 
@@ -686,8 +689,8 @@ class Model_Labyrinth extends Model {
             $counter = substr($function, 1, strlen($function));
         } else if ($function[0] == '-') {
             $counter -= substr($function, 1, strlen($function));
-        } else if ($function[0] == '+') {
-            $counter += substr($function, 1, strlen($function));
+        } else {
+            $counter += $function;
         }
         return $counter;
     }

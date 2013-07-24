@@ -19,6 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 <div class="page-header">
 <h1><?php if(!isset($templateData['question'])){
         echo __('New question for"') . $templateData['map']->name . '"';
@@ -62,15 +63,22 @@ if (isset($templateData['map'])) { ?>
                 <?php echo __('Rule'); ?>
             </label>
             <div class="controls">
-                <textarea id="rule" name="settings"><?php if(isset($templateData['question'])) echo $templateData['question']->settings; ?></textarea>
+                <textarea onkeypress="resetCheck();" id="code" name="settings"><?php if(isset($templateData['question'])) echo $templateData['question']->settings; ?></textarea>
             </div>
         </div>
     </fieldset>
     <div class="form-actions">
         <div class="pull-right">
-            <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Save">
+            <dl class="status-label dl-horizontal">
+                <dt>Status</dt>
+                <dd><span class="label label-warning">The rule hasn't been checked.</span><span class="hide label label-success">The rule is correct.</span><span class="hide label label-important">The rule has error(s).</span></dd>
+            </dl>
+            <input style="float:right;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
+            <input style="float:right;" id="rule_submit_button" class="btn btn-large btn-primary hide" type="submit" name="Submit" value="Save question">
         </div>
     </div>
+    <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
+    <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
 </form>
 <?php } ?>
 

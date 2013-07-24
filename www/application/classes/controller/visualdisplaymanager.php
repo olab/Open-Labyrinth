@@ -82,13 +82,13 @@ class Controller_VisualDisplayManager extends Controller_Base {
         $mapId = Arr::get($_POST, 'mapId', null);
         $json = Arr::get($_POST, 'data', null);
         $showOnAllPages = Arr::get($_POST, 'allPages', 'false') == 'true' ? 1 : 0;
-        
+
         $status = 'fail';
         
         if($mapId != null) {
             $id = DB_ORM::model('map_visualdisplay')->updateFromJSON($mapId, $json);
             DB_ORM::model('map_visualdisplay')->updateShowOnAllPages($id, $showOnAllPages);
-            
+
             $status = $id;
         }
         

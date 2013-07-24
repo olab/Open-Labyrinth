@@ -14,11 +14,13 @@ jQuery(document).ready(function() {
         area.keyup(function(){
             changeTextInTextarea(this);
             convertToCode(this);
+            resetCheck();
         });
 
         areaCode.keyup(function(){
             changeTextInTextarea(this);
             convertToWord(this);
+            resetCheck();
         });
 
         changeTextInTextarea(areaCode);

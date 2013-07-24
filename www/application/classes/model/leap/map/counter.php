@@ -113,7 +113,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getCountersByMap($mapId) {
+    public function getCountersByMap($mapId, $lengthSort = false) {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
 
@@ -121,6 +121,12 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             $counters = array();
             foreach($result as $record) {
                 $counters[] = DB_ORM::model('map_counter', array((int)$record['id']));
+            }
+
+            if ($lengthSort){
+                usort($counters, function($a, $b) {
+                    return strlen($b->name) - strlen($a->name);
+                });
             }
 
             return $counters;
