@@ -578,31 +578,22 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getSearchMap($key, $onlyTitle = TRUE)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1);
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('enabled', '=', 1)
+            ->where('name', 'LIKE', '%'.$key.'%');
+
+        if (!$onlyTitle){
+            $builder->where('abstract', 'LIKE', '%'.$key.'%', 'OR');
+        }
+
 
         $result = $builder->query();
 
         if ($result->is_loaded()) {
             $maps = array();
             foreach ($result as $record) {
-                $map = DB_ORM::model('map', array((int)$record['id']));
-                if ($onlyTitle) {
-                    if (strpos($map->name, $key) === FALSE) {
-
-                    } else {
-                        $maps[] = $map;
-                    }
-                } else {
-                    if (strpos($map->name, $key) === FALSE) {
-                        if (strpos($map->abstract, $key) === FALSE) {
-
-                        } else {
-                            $maps[] = $map;
-                        }
-                    } else {
-                        $maps[] = $map;
-                    }
-                }
+                $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
 
             return $maps;

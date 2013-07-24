@@ -135,9 +135,17 @@ class Controller_Home extends Controller_Base {
             if ($key != NULL) {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
 
+                $rootNodes = array();
+                if (count($maps) > 0){
+                    foreach($maps as $map){
+                        $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+
                 $view = View::factory('search');
                 $view->set('maps', $maps);
                 $view->set('term', $key);
+                $view->set('rootNodes', $rootNodes);
 
                 $this->templateData['center'] = $view;
                 unset($this->templateData['right']);
