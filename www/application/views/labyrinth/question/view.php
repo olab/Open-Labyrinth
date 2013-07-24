@@ -81,7 +81,7 @@ if (isset($templateData['map'])) { ?>
                 </tr>
             <?php } ?>
         <?php } else { ?>
-            <tr class="info"><td colspan="3">There are no available questions right now. You may add a question using the menu below.</td> </tr>
+            <tr class="info"><td colspan="4">There are no available questions right now. You may add a question using the menu below.</td> </tr>
         <?php }?>
         </tbody>
     </table>

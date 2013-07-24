@@ -67,35 +67,49 @@ class Model_Labyrinth extends Model {
                 }
             }
 
+            $conditional = $this->conditional($sessionId, $node);
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-            if ($sessionId != 'notExist'){
-                $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
-            } else {
-                $traceId = 'notExist';
-            }
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
+            $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId);
+            if($conditional == null) {
+                if ($sessionId != 'notExist'){
+                    $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+                } else {
+                    $traceId = 'notExist';
+                }
 
-            $conditional = $this->conditional($sessionId, $node);
-            if ($conditional != NULL) {
-                $result['node_text'] = $conditional['message'];
-                $result['node_links'] = $conditional['linker'];
-            }
+                if (substr($result['node_text'], 0, 3) != '<p>') {
+                    $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
+                }
 
-            if (substr($result['node_text'], 0, 3) != '<p>') {
-                $result['node_text'] = '<p>' . $result['node_text'] . '</p>';
-            }
-
-            $c = $this->counters($traceId, $sessionId, $node, $isRoot);
-            if ($c != NULL) {
-                $result['counters'] = $c['counterString'];
-                $result['redirect'] = $c['redirect'];
-                $result['remoteCounters'] = $c['remote'];
+                $c = $this->counters($traceId, $sessionId, $node, $isRoot);
+                if ($c != NULL) {
+                    if (isset($c['no-entry'])){
+                        $result['node_text'] = '<p>' . $c['message'] . '</p>';
+                        $result['node_links']['linker'] = $c['linker'];
+                        $result['counters'] = '';
+                        $result['redirect'] = NULL;
+                        $result['remoteCounters'] = '';
+                    } else {
+                        $result['counters'] = $c['counterString'];
+                        $result['redirect'] = $c['redirect'];
+                        $result['remoteCounters'] = $c['remote'];
+                    }
+                } else {
+                    $result['counters'] = '';
+                    $result['redirect'] = NULL;
+                    $result['remoteCounters'] = '';
+                }
             } else {
+                $result['node_text'] = '<p>' . $conditional['message'] . '</p>';
+                $result['node_links']['linker'] = $conditional['linker'];
                 $result['counters'] = '';
                 $result['redirect'] = NULL;
                 $result['remoteCounters'] = '';
             }
+
+            $this->clearQuestionResponses();
 
             $result['traces'] = $this->getReviewLinks($sessionId);
             $result['sessionId'] = $sessionId;
@@ -236,17 +250,94 @@ class Model_Labyrinth extends Model {
             }
 
             if ($mode == 'a') {
-                if ($count >= count($nodes)) {
-                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
+                if ($count < count($nodes)) {
+                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                 }
             } else if ($mode == 'o') {
-                if ($count >= 1) {
-                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">back</a></p>');
+                if ($count <= 0) {
+                    return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                 }
             }
         }
 
         return NULL;
+    }
+
+    private function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId){
+        $questionChoices = Session::instance()->get('questionChoices');
+        $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
+
+        $countersFunc = Session::instance()->get('countersFunc');
+        $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
+
+        $counterIDs = array();
+        if (isset($questionChoices['counter_ids'])){
+            $counterIDs = $questionChoices['counter_ids'];
+            unset($questionChoices['counter_ids']);
+        }
+
+        $counterString = $this->getCounterString($mapID);
+        if (count($questionChoices) > 0){
+            foreach($questionChoices as $qID => $questions){
+                if (count($questions) > 0){
+                    foreach($questions as $q){
+                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
+                        if (count($counterIDs) > 0){
+                            $score = trim($q['score']);
+                            $value = $this->getCounterValueFromString($counterIDs[$qID], $counterString);
+                            $valueStr = (string)$score;
+                            $value = $this->calculateCounterFunction($value, $score);
+                            if (($valueStr[0] != '-') && ($valueStr[0] != '=')){
+                                $valueStr = '+'.$score;
+                            }
+
+                            $countersFunc[$counterIDs[$qID]][] = $valueStr;
+                            $counterString = $this->setCounterValueToString($counterIDs[$qID], $counterString, $value);
+                        }
+                    }
+                }
+            }
+        }
+
+        $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
+
+        if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
+            foreach($sliderQuestionChoices as $qID => $sliderValue) {
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue);
+                $question = DB_ORM::model('map_question', array((int)$qID));
+                if ($question != null){
+                    if(count($question->responses) > 0) {
+                        foreach($question->responses as $response) {
+                            if($sliderValue >= $response->from && $sliderValue <= $response->to) {
+                                $score = $response->score;
+                                $value = $this->getCounterValueFromString($question->counter->id, $counterString);
+                                $valueStr = (string)$score;
+                                $value = $this->calculateCounterFunction($value, $score);
+                                if (($valueStr[0] != '-') && ($valueStr[0] != '=')){
+                                    $valueStr = '+'.$score;
+                                }
+
+                                $countersFunc[$question->counter->id][] = $valueStr;
+                                $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $value);
+                            }
+                        }
+                    } else {
+                        $countersFunc[$question->counter->id][] = '='.$sliderValue;
+                        $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $sliderValue);
+                    }
+                }
+            }
+        }
+
+        $this->updateCounterString($mapID, $counterString);
+
+        Session::instance()->set('countersFunc', json_encode($countersFunc));
+    }
+
+    private function clearQuestionResponses(){
+        Session::instance()->delete('questionChoices');
+        Session::instance()->delete('countersFunc');
+        Session::instance()->delete('sliderQuestionResponses');
     }
 
     private function counters($traceId, $sessionId, $node, $isRoot = false) {
@@ -261,8 +352,8 @@ class Model_Labyrinth extends Model {
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($node->map_id);
                 $redirect = NULL;
 
-                $questionChoices = Session::instance()->get('questionChoices');
-                $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
+                $countersFunc = Session::instance()->get('countersFunc');
+                $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
 
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
@@ -291,12 +382,12 @@ class Model_Labyrinth extends Model {
                     }
 
                     $counterFunction = '';
-                    $apperOnNode = 1;
+                    $appearOnNode = 1;
                     if (count($node->counters) > 0) {
                         foreach ($node->counters as $nodeCounter) {
                             if ($counter->id == $nodeCounter->counter->id) {
                                 $counterFunction = $nodeCounter->function;
-                                $apperOnNode = $nodeCounter->display;
+                                $appearOnNode = $nodeCounter->display;
                                 break;
                             }
                         }
@@ -307,40 +398,8 @@ class Model_Labyrinth extends Model {
                             $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
                         } else if ($counterFunction[0] == '-') {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
-                        } else if ($counterFunction[0] == '+') {
-                            $thisCounter += substr($counterFunction, 1, strlen($counterFunction));
-                        }
-                    }
-
-                    if (($questionChoices != NULL) && (isset($questionChoices['counter_ids']) > 0)){
-                        $qID = array();
-                        if (count($questionChoices['counter_ids']) > 0){
-                            foreach($questionChoices['counter_ids'] as $key => $cID){
-                                if ($cID == $counter->id){
-                                    $qID[] = $key;
-                                }
-                            }
-                        }
-
-                        if (count($qID) > 0){
-                            foreach($qID as $questionID){
-                                if (isset($questionChoices[$questionID])){
-                                    if (count($questionChoices[$questionID]) > 0){
-                                        foreach($questionChoices[$questionID] as $value){
-                                            $value = trim($value['score']);
-                                            if ($value[0] == '=') {
-                                                $thisCounter = substr($value, 1, strlen($value));
-                                            } else if ($value[0] == '-') {
-                                                $thisCounter -= substr($value, 1, strlen($value));
-                                            } else {
-                                                $thisCounter += $value;
-                                                $value = '+'.$value;
-                                            }
-                                            $countersArray[$counter->id]['func'][] = $value;
-                                        }
-                                    }
-                                }
-                            }
+                        } else {
+                            $thisCounter += $counterFunction;
                         }
                     }
 
@@ -349,7 +408,20 @@ class Model_Labyrinth extends Model {
                         $countersArray[$counter->id]['func'][] = $counterFunction;
                     }
 
-                    if (($counter->visible != 0) & ($apperOnNode == 1)) {
+                    if (isset($countersFunc[$counter->id])){
+                        if (count($countersFunc[$counter->id]) > 0){
+                            if (isset($countersArray[$counter->id]['func'])){
+                                if (count($countersArray[$counter->id]['func']) > 0){
+                                    $countersArray[$counter->id]['func'] = array_merge($countersArray[$counter->id]['func'], $countersFunc[$counter->id]);
+                                }
+                            } else {
+                                $countersArray[$counter->id]['func'] = $countersFunc[$counter->id];
+                            }
+
+                        }
+                    }
+
+                    if (($counter->visible != 0) & ($appearOnNode == 1)) {
                         $countersArray[$counter->id]['visible'] = true;
 
                     } else {
@@ -403,21 +475,6 @@ class Model_Labyrinth extends Model {
                     }
                 }
 
-                if (isset($questionChoices['counter_ids'])){
-                    unset($questionChoices['counter_ids']);
-                }
-                if (count($questionChoices) > 0){
-                    foreach($questionChoices as $qID => $questions){
-                        if (count($questions) > 0){
-                            foreach($questions as $q){
-                                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
-                            }
-                        }
-                    }
-                }
-
-                Session::instance()->delete('questionChoices');
-
                 $redirect = NULL;
                 $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
                 if (count($commonRules) > 0){
@@ -427,29 +484,53 @@ class Model_Labyrinth extends Model {
                     }
                     $runtimelogic = new RunTimeLogic();
                     $runtimelogic->values = $values;
+                    $stopRules = Session::instance()->get('stopCommonRules', array());
                     foreach($commonRules as $rule){
-                        $array = $runtimelogic->parsingString($rule->rule);
-                        $resultLogic = $array['result'];
-                        if (isset($resultLogic['goto'])){
-                            if ($resultLogic['goto'] != NULL){
-                                if ($redirect == NULL){
-                                    $redirect = $resultLogic['goto'];
+                        if (!in_array($rule->id, $stopRules)){
+                            $array = $runtimelogic->parsingString($rule->rule);
+                            $resultLogic = $array['result'];
+                            if (isset($resultLogic['goto'])){
+                                if ($resultLogic['goto'] != NULL){
+                                    if ($redirect == NULL){
+                                        $redirect = $resultLogic['goto'];
+                                    }
                                 }
                             }
-                        }
-                        if (isset($resultLogic['counters'])){
-                            if (count($resultLogic['counters']) > 0){
-                                foreach($resultLogic['counters'] as $key => $c){
-                                    $previousValue = $countersArray[$key]['value'];
-                                    $funcStr = $c - $previousValue;
-                                    $countersArray[$key]['func'][] = $funcStr;
-                                    $countersArray[$key]['value'] = $c;
+                            if (isset($resultLogic['counters'])){
+                                if (count($resultLogic['counters']) > 0){
+                                    foreach($resultLogic['counters'] as $key => $c){
+                                        $previousValue = $countersArray[$key]['value'];
+                                        $funcStr = $c - $previousValue;
+                                        if ($funcStr > 0){
+                                            $funcStr = '+'.$funcStr;
+                                        }
+                                        $countersArray[$key]['func'][] = $funcStr;
+                                        $countersArray[$key]['value'] = $c;
+                                    }
                                 }
+                            }
+
+                            if (isset($resultLogic['stop'])){
+                                $stopRules[] = $rule->id;
+                                Session::instance()->set('stopCommonRules', $stopRules);
+                            }
+
+                            if (isset($resultLogic['no-entry'])){
+                                $message = '<p>Sorry but you haven\'t yet explored all the required options ...</p>';
+                                return array('no-entry' => 1, 'message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                             }
                         }
                     }
                 }
-                $counterString .="<ul>";
+
+                $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
+                foreach($visualDisplay as $display) {
+                    $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
+                    $counterString .= $this->getVisualDisplayHTML($display->id);
+                    $counterString .= '</div>';
+                }
+
+                $counterString .="<ul class=\"navigation\">";
                 foreach($countersArray as $key => $counter){
                     if (isset($counter['func'])){
                         if (count($counter['func']) > 0) {
@@ -486,11 +567,121 @@ class Model_Labyrinth extends Model {
 
                 return array('counterString' => $counterString, 'redirect' => $redirect, 'remote' => $remoteCounterString);
             }
-
             return '';
         }
 
         return '';
+    }
+
+    private static function getVisualDisplayHTML($visualDisplayId) {
+        $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
+        $result = '';
+
+        $traceCountersValues = Session::instance()->get('traceCountersValues');
+
+        if($visualDisplay != null) {
+            $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
+
+            if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
+                foreach($visualDisplay->panels as $panel) {
+                    $result .= '<div style="        position: absolute;
+                                                         top: ' . $panel->y . 'px;
+                                                        left: ' . $panel->x . 'px;
+                                                     z-index: ' . $panel->z_index . ';
+                                            background-color: ' . $panel->background_color . ';
+                                                       width: ' . $panel->width . ';
+                                                      height: ' . $panel->height . ';
+                                                border-width: ' . $panel->border_size . 'px;
+                                                border-style: solid;
+                                                border-color: ' . $panel->border_color . ';
+                                               border-radius: ' . $panel->border_radius . 'px;
+                                       -webkit-border-radius: ' . $panel->border_radius . 'px;
+                                          -moz-border-radius: ' . $panel->border_radius . 'px;
+                                              -moz-transform: rotate(' . $panel->angle . 'deg);
+                                           -webkit-transform: rotate(' . $panel->angle . 'deg);
+                                                -o-transform: rotate(' . $panel->angle . 'deg);
+                                               -ms-transform: rotate(' . $panel->angle . 'deg);
+                                                   transform: rotate(' . $panel->angle . 'deg);">
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->images != null && count($visualDisplay->images) > 0) {
+                foreach($visualDisplay->images as $image) {
+                    if(!file_exists(DOCROOT . '/files/' . $visualDisplay->map_id . '/vdImages/' . $image->name)) continue;
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $image->y . 'px;
+                                                left: ' . $image->x . 'px;
+                                               width: ' . $image->width . 'px;
+                                              height: ' . $image->height . 'px;
+                                             z-index: ' . $image->z_index . ';
+                                      -moz-transform: rotate(' . $image->angle . 'deg);
+                                   -webkit-transform: rotate(' . $image->angle . 'deg);
+                                        -o-transform: rotate(' . $image->angle . 'deg);
+                                       -ms-transform: rotate(' . $image->angle . 'deg);
+                                           transform: rotate(' . $image->angle . 'deg);
+                                ">
+                                    <img style="width: 100%" src="' . URL::base() . 'files/' . $visualDisplay->map_id . '/vdImages/' . $image->name . '" />
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
+                foreach($visualDisplay->counters as $counter) {
+                    $thisCounter = $counter->counter->start_value;
+
+                    if($traceCountersValues != null) {
+                        $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
+                        $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
+                        $e = strpos($tmp, ']') + 1;
+                        $tmp = substr($tmp, 0, $e - 1);
+                        $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
+                        $thisCounter = $tmp;
+                    }
+
+                    $labelFont = explode('%#%', $counter->label_font_style);
+                    $valueFont = explode('%#%', $counter->value_font_style);
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $counter->label_y . ';
+                                                left: ' . $counter->label_x . ';
+                                             z-index: ' . $counter->label_z_index . ';
+                                      -moz-transform: rotate(' . $counter->label_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->label_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->label_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->label_angle . 'deg);
+                                           transform: rotate(' . $counter->label_angle . 'deg);
+                                         font-family: \'' . $labelFont[0] . '\';
+                                           font-size: ' . $labelFont[1] . 'px;
+                                         font-weight: \'' . $labelFont[2] . '\';
+                                               color: ' . $labelFont[3] . ';
+                                          font-style: \'' . $labelFont[4] . '\';
+                                     text-decoration: \'' . $labelFont[5] . '\';
+                                ">' . $counter->label_text . '</div>
+                                <div style="position: absolute;
+                                                 top: ' . $counter->value_y . ';
+                                                left: ' . $counter->value_x . ';
+                                             z-index: ' . $counter->value_z_index . ';
+                                      -moz-transform: rotate(' . $counter->value_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->value_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->value_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->value_angle . 'deg);
+                                           transform: rotate(' . $counter->value_angle . 'deg);
+                                         font-family: \'' .  $valueFont[0] . '\';
+                                           font-size: ' . $valueFont[1] . 'px;
+                                         font-weight: \'' . $valueFont[2] . '\';
+                                               color: ' . $valueFont[3] . ';
+                                          font-style: \'' . $valueFont[4] . '\';
+                                     text-decoration: \'' . $valueFont[5] . '\';
+                                ">' . $thisCounter . '</div>';
+                }
+            }
+
+            $result .= '</div>';
+        }
+
+        return $result;
     }
 
     private function calculateCounterFunction($counter, $function){
@@ -498,8 +689,8 @@ class Model_Labyrinth extends Model {
             $counter = substr($function, 1, strlen($function));
         } else if ($function[0] == '-') {
             $counter -= substr($function, 1, strlen($function));
-        } else if ($function[0] == '+') {
-            $counter += substr($function, 1, strlen($function));
+        } else {
+            $counter += $function;
         }
         return $counter;
     }
@@ -516,7 +707,7 @@ class Model_Labyrinth extends Model {
 
     public function review($nodeId) {
         $sessionId = Session::instance()->get('session_id', NULL);
-        if ($sessionId == NULL) {
+        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
             $sessionId = $_COOKIE['OL'];
         }
 
@@ -584,6 +775,7 @@ class Model_Labyrinth extends Model {
     }
 
     public function question($questionId, $response, $questionStatus) {
+        $returnStr = '';
         $question = DB_ORM::model('map_question', array((int) $questionId));
 
         if ($question) {
@@ -600,14 +792,69 @@ class Model_Labyrinth extends Model {
             $qChoices = json_decode(Session::instance()->get('questionChoices'), true);
 
             if (($question->type->value == 'text') || ($question->type->value == 'area')) {
-                $qChoices[$questionId] = array();
-                $qChoices[$questionId][$response]['response'] = $response;
+                $response = htmlspecialchars(base64_decode($response));
+                $sessionId = $this->getSessionID();
+                DB_ORM::model('user_response')->createResponse($sessionId, $question->id, $response);
+
+                $countersFunc = Session::instance()->get('countersFunc');
+                $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
+
+                if ($question->settings != '') {
+                    $mapID = $question->map_id;
+                    $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
+                    $values = array();
+                    foreach($counters as $counter){
+                        $values[$counter->id] = $this->getCounterValueByID($mapID, $counter->id);
+                    }
+                    $runtimelogic = new RunTimeLogic();
+                    $runtimelogic->values = $values;
+                    $runtimelogic->questionResponse = $response;
+
+                    $array = $runtimelogic->parsingString($question->settings);
+                    $resultLogic = $array['result'];
+                    if (isset($resultLogic['goto'])){
+                        if ($resultLogic['goto'] != NULL){
+                            //create goto function
+                        }
+                    }
+
+                    if (isset($resultLogic['counters'])){
+                        if (count($resultLogic['counters']) > 0){
+                            $counterString = $this->getCounterString($mapID);
+                            if ($counterString != ''){
+                                foreach($resultLogic['counters'] as $key => $value){
+                                    $previousValue = $this->getCounterValueFromString($key, $counterString);
+                                    $counterString = $this->setCounterValueToString($key, $counterString, $value);
+
+                                    $diff = $value - $previousValue;
+                                    if ($diff > 0){
+                                        $diff = '+'.$diff;
+                                    }
+                                    $countersFunc[$key][] = $diff;
+                                }
+                                $this->updateCounterString($mapID, $counterString);
+                            }
+                        }
+                    }
+
+                    Session::instance()->set('countersFunc', json_encode($countersFunc));
+
+                    if (isset($resultLogic['correct'])){
+                        $returnStr .= '<img src="' . URL::base() . 'images/tick.jpg"> ';
+                    }
+
+                    if (isset($resultLogic['incorrect'])){
+                        $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
+                    }
+                }
             }
 
             if ($question->type->value == 'pcq'){
                 $qChoices[$questionId] = array();
                 $qChoices[$questionId][$response]['score'] = $responseObj->score;
                 $qChoices[$questionId][$response]['response'] = $responseObj->response;
+
+                $qChoices['counter_ids'][$questionId] = $question->counter_id;
             }
 
             if ($question->type->value == 'mcq') {
@@ -619,14 +866,14 @@ class Model_Labyrinth extends Model {
                         unset($qChoices[$questionId][$response]);
                     }
                 }
+
+                $qChoices['counter_ids'][$questionId] = $question->counter_id;
             }
-            $qChoices['counter_ids'][$questionId] = $question->counter_id;
 
             Session::instance()->set('questionChoices', json_encode($qChoices));
 
             if ($question->show_answer) {
                 if ($question->type->value != 'text' and $question->type->value != 'area') {
-                    $returnStr = '';
                     switch ($responseObj->is_correct){
                         case 0:
                             $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
@@ -636,12 +883,11 @@ class Model_Labyrinth extends Model {
                             break;
                     }
                     $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('(' . $responseObj->feedback . ')') : '');
-                    return $returnStr;
                 }
             }
         }
 
-        return '';
+        return $returnStr;
     }
 
     public function getMainFeedback($session, $counters, $mapId) {
@@ -760,6 +1006,94 @@ class Model_Labyrinth extends Model {
             default:
                 return FALSE;
         }
+    }
+
+    public function getCounterValueByID($mapId, $id){
+        $result = NULL;
+        if ($mapId != NULL){
+            $sessionId = $this->getSessionID();
+
+            $counter = DB_ORM::model('map_counter', array($id));
+
+            if (($sessionId != NULL) && ($sessionId != 'notExist')){
+                $currentCountersState = '';
+                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+                if ($rootNode != NULL){
+                    $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+                }
+
+                if ($currentCountersState != ''){
+                    $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+                    $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+                    $e = strpos($tmp, ']') + 1;
+                    $tmp = substr($tmp, 0, $e - 1);
+                    $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+                    $result = $tmp;
+                } else {
+                    $result = $counter->start_value;
+                }
+            } else {
+                $result = $counter->start_value;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getCounterString($mapId){
+        $currentCountersState = '';
+        if ($mapId != NULL){
+            $sessionId = $this->getSessionID();
+
+            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+            if ($rootNode != NULL){
+                $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+            }
+
+        }
+
+        return $currentCountersState;
+    }
+
+    public function updateCounterString($mapId, $string){
+        if ($mapId != NULL){
+            $sessionId = $this->getSessionID();
+
+            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+            if ($rootNode != NULL){
+                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $string);
+            }
+        }
+        return true;
+    }
+
+    public function getCounterValueFromString($cid, $string){
+        $return = NULL;
+        $pattern = '\\[CID='.$cid.',V=(\d+)\\]';
+        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0]) > 0){
+                $return = $matches[1][0];
+            }
+        }
+        return $return;
+    }
+
+    public function setCounterValueToString($cid, $string, $value){
+        $pattern = '\\[CID='.$cid.',V=\d+\\]';
+        $string = preg_replace("/".$pattern."/is", '[CID='.$cid.',V='.$value.']', $string);
+        return $string;
+    }
+
+    public function getSessionID(){
+        $sessionId = Session::instance()->get('session_id', NULL);
+        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
+            $sessionId = $_COOKIE['OL'];
+        } else {
+            if ($sessionId == NULL){
+                $sessionId = 'notExist';
+            }
+        }
+        return $sessionId;
     }
 }
 

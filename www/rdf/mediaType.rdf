@@ -1,0 +1,162 @@
+<rdf:RDF
+  xml:base="http://purl.org/meducator/mediaType/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType/">
+    <rdfs:label>Media Type</rdfs:label>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#mediaPackage"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#primaryMedia">
+    <rdfs:label>Primary Media</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType/"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#text"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#image"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#sketchGraphicalAnnotation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#animation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#audio"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#video"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#3dModel"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#multiMedia">
+    <rdfs:label>Multimedia</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#multimediaSlidePresentation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#eBook"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#virtualPatient"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#interactiveLearningEnvironment"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#immersiveEnvironment"/>
+  </skos:Concept>
+
+
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#webSocialMedia">
+    <rdfs:label>Web/Social Media</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType/"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#website"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#blog"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#discussionForum"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#post"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#podcast"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#webinar"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#wiki"/>
+  </skos:Concept>
+
+
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#mediaPackage">
+    <rdfs:label>Media Package</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType/"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#SCORMPackage"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#DICOM"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/mediaType#IMSPackage"/>
+  </skos:Concept>
+
+
+
+  <!--START PRIMARY MEDIA-->
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#text">
+    <skos:prefLabel>Text</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#image">
+    <skos:prefLabel>Image</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#sketchGraphicalAnnotation">
+    <skos:prefLabel>Sketch/graphical annotation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#animation">
+    <skos:prefLabel>Animation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#audio">
+    <skos:prefLabel>Audio</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#video">
+    <skos:prefLabel>Video</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#3DModel">
+    <skos:prefLabel>3DModel</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#primaryMedia"/>
+  </skos:Concept>
+  <!--END PRIMARY MEDIA-->
+
+  <!--START MULTIMEDIA-->
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#multimediaSlidePresentation">
+    <skos:prefLabel>Multimedia slide/presentation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#eBook">
+    <skos:prefLabel>e-Book</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#virtualPatient">
+    <skos:prefLabel>Virtual Patient</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#interactiveLearningEnvironment">
+    <skos:prefLabel>Interactive LearningEnvironment</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#immersiveEnvironment">
+    <skos:prefLabel>Immersive environment</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#multiMedia"/>
+  </skos:Concept>
+  <!--END MULTIMEDIA-->
+
+
+  <!--START MEDIA PACKAGE-->
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#SCORMPackage ">
+    <skos:prefLabel>SCORM package </skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#mediaPackage"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#IMSPackage">
+    <skos:prefLabel>IMS Package</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#mediaPackage"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#DICOM">
+    <skos:prefLabel>DICOM</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#mediaPackage"/>
+  </skos:Concept>
+  <!--END MEDIA PACKAGE-->
+
+  <!--START WEB/SOCIAL MEDIA PACKAGE-->
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#website">
+    <skos:prefLabel>website</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#blog">
+    <skos:prefLabel>Blog</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#discussionForum">
+    <skos:prefLabel>Discussion Forum</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#post">
+    <skos:prefLabel>Post</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#podcast">
+    <skos:prefLabel>Podcast</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#webinar">
+    <skos:prefLabel>Webinar</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/mediaType#wiki">
+    <skos:prefLabel>Wiki</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/mediaType#webSocialMedia"/>
+  </skos:Concept>
+  <!--END WEB/SOCIAL MEDIA PACKAGE-->
+
+</rdf:RDF>

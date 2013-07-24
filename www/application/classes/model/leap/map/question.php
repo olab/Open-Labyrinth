@@ -105,6 +105,10 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'settings' => new DB_ORM_Field_Text($this, array(
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            ))
         );
         
         $this->relations = array(
@@ -181,6 +185,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case "area":
                 $this->saveAreaQuestion($mapId, $type, $values);
                 break;
+            case 'slr':
+                $this->saveSliderQuestion($mapId, $type, $values);
+                break;
             default:
                 $this->saveResponceQuestion($mapId, $type, $values);
                 break;
@@ -199,17 +206,85 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case "area":
                 $this->updateAreaQuestion($values);
                 break;
+            case 'slr':
+                $this->updateSliderQuestion($questionId, $values);
+                break;
             default:
                 $this->updateResponseQuestion($values, $type->id);
                 break;
         }
     }
-    
+
+    private function updateSliderQuestion($questionId, $values) {
+        DB_ORM::update('map_question')
+            ->set('stem', Arr::get($values, 'stem', ''))
+            ->set('counter_id', (int)Arr::get($values, 'counter', 0))
+            ->set('settings', json_encode(array(
+                'minValue' => Arr::get($values, 'minValue', 0),
+                'maxValue' => Arr::get($values, 'maxValue', 0),
+                'stepValue' => Arr::get($values, 'stepValue', 1),
+                'orientation' => Arr::get($values, 'question_orientation', 'hor'),
+                'showValue' => Arr::get($values, 'question_chosen_value', 0),
+                'sliderSkin' => Arr::get($values, 'sliderSkin', ''),
+                'abilityValue' => Arr::get($values, 'question_ability_input', 0),
+                'defaultValue' => Arr::get($values, 'defaultValue', 0)
+            )))
+            ->where('id', '=', $questionId)
+            ->execute();
+
+        $responses = DB_ORM::model('map_question_response')->getResponsesByQuestion($questionId);
+
+        if($responses != NULL && count($responses) > 0) {
+            foreach($responses as $response) {
+                if(isset($values['response_' . $response->id])) {
+                    $response->from = Arr::get($values, 'from_' . $response->id, '');
+                    $response->to = Arr::get($values, 'to_' . $response->id, '');
+                    $response->is_correct = Arr::get($values, 'correctness_' . $response->id, 0);
+                    $response->score = Arr::get($values, 'score_' . $response->id, 0);
+
+                    $response->save();
+                } else {
+                    $response->delete();
+                }
+            }
+        }
+
+        $newResponses = array();
+        foreach($values as $key => $value) {
+            if(!(strpos($key, 'interval_from_') === FALSE )) {
+                $id = str_replace('interval_from_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['from'] = $value;
+            } else if(!(strpos($key, 'interval_to_') === FALSE )) {
+                $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['to'] = $value;
+            } else if(!(strpos($key, 'correctness_') === FALSE )) {
+                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['correctness'] = $value;
+            } else if(!(strpos($key, 'score_') === FALSE )) {
+                $id = str_replace('score_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $newResponses[$id]['score'] = $value;
+            }
+        }
+
+        if(count($newResponses) > 0) {
+            foreach($newResponses as $newResponse) {
+                DB_ORM::insert('map_question_response')
+                    ->column('question_id', $questionId)
+                    ->column('from', Arr::get($newResponse, 'from', ''))
+                    ->column('to', Arr::get($newResponse, 'to', ''))
+                    ->column('is_correct', (int) Arr::get($newResponse, 'correctness', 0))
+                    ->column('score', (int) Arr::get($newResponse, 'score', 0))
+                    ->execute();
+            }
+        }
+    }
+
     private function updateTextQuestion($values) {
         $this->stem = Arr::get($values, 'qstem', $this->stem);
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        
+        $this->settings = Arr::get($values, 'settings', $this->feedback);
+
         $this->save();
     }
     
@@ -218,7 +293,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->height = Arr::get($values, 'qheight', $this->height);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        
+        $this->settings = Arr::get($values, 'settings', $this->feedback);
+
         $this->save();
     }
     
@@ -247,7 +323,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->stem = Arr::get($values, 'qstem', '');
         $this->width = Arr::get($values, 'qwidth', 0);
         $this->feedback = Arr::get($values, 'fback', '');
-        
+        $this->settings = Arr::get($values, 'settings', '');
+
         $this->save();
     }
     
@@ -258,7 +335,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', 0);
         $this->height = Arr::get($values, 'qheight', 0);
         $this->feedback = Arr::get($values, 'fback', '');
-        
+        $this->settings = Arr::get($values, 'settings', '');
+
         $this->save();
     }
 
@@ -352,6 +430,54 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('is_correct', $response->is_correct)
                         ->column('score', $response->score)
                         ->execute();
+            }
+        }
+    }
+
+    private function saveSliderQuestion($mapId, $type, $values) {
+        $newQuestionId = DB_ORM::insert('map_question')
+                ->column('map_id', $mapId)
+                ->column('entry_type_id', $type->id)
+                ->column('stem', Arr::get($values, 'stem', ''))
+                ->column('counter_id', (int)Arr::get($values, 'counter', 0))
+                ->column('settings', json_encode(array(
+                            'minValue' => Arr::get($values, 'minValue', 0),
+                            'maxValue' => Arr::get($values, 'maxValue', 0),
+                            'stepValue' => Arr::get($values, 'stepValue', 1),
+                            'orientation' => Arr::get($values, 'question_orientation', 'hor'),
+                            'showValue' => Arr::get($values, 'question_chosen_value', 0),
+                            'sliderSkin' => Arr::get($values, 'sliderSkin', ''),
+                            'abilityValue' => Arr::get($values, 'question_ability_input', 0),
+                            'defaultValue' => Arr::get($values, 'defaultValue', 0)
+                        )))
+                ->execute();
+
+        $responses = array();
+        foreach($values as $key => $value) {
+            if(!(strpos($key, 'interval_from_') === FALSE )) {
+                $id = str_replace('interval_from_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['from'] = $value;
+            } else if(!(strpos($key, 'interval_to_') === FALSE )) {
+                $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['to'] = $value;
+            } else if(!(strpos($key, 'correctness_') === FALSE )) {
+                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['correctness'] = $value;
+            } else if(!(strpos($key, 'score_') === FALSE )) {
+                $id = str_replace('score_', '', str_replace('_n', '', $key));
+                if(strlen($id) > 0) $responses[$id]['score'] = $value;
+            }
+        }
+
+        if(count($responses) > 0) {
+            foreach($responses as $response) {
+                DB_ORM::insert('map_question_response')
+                    ->column('question_id', $newQuestionId)
+                    ->column('from', Arr::get($response, 'from', ''))
+                    ->column('to', Arr::get($response, 'to', ''))
+                    ->column('is_correct', (int) Arr::get($response, 'correctness', 0))
+                    ->column('score', (int) Arr::get($response, 'score', 0))
+                    ->execute();
             }
         }
     }

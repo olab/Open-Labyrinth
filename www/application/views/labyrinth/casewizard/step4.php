@@ -43,22 +43,27 @@
         </div>
         <div class="visual-editor" style="height: auto;">
             <div class="block" style="position: relative;" id="canvasContainer">
-            <div id="ve_actionButton" style="position: absolute; top: 5px; left: 5px">
-                <p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i style="color:white;" class="ve-icon-fullscreen"></i></button></p>
-                <p><button type="button" class="round-btn" id="update" data-toggle="tooltip" data-original-title="Update" data-placement="right"><i class="ve-icon-save"></i></button></p>
+            <div id="ve_actionButton" class="canvas-action-buttons-container">
+                <p><button type="button" class="round-btn" id="fullScreen" data-toggle="tooltip" data-original-title="Full&nbsp;screen" data-placement="right"><i class="ve-icon-fullscreen"></i></button></p>
+                <p><button type="button" class="round-btn update" id="update" data-toggle="tooltip" data-original-title="Save" data-placement="right"><i class="ve-icon-save"></i></button></p>
+                <p class="text">Build</p>
                 <p><button type="button" class="round-btn" id="addNode" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Add node</div>" data-placement="right"><i class="ve-icon-add"></i></button></p>
-                <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Pan mode</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
-                <p><button type="button" class="round-btn" id="veSelect" data-toggle="tooltip" data-original-title="Select&nbsp;mode" data-placement="right"><i class="ve-icon-select"></i></button></p>
-                <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Insert&nbsp;pre-template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
+                <p><button type="button" class="round-btn" id="veTemplate" data-toggle="tooltip" data-original-title="<div style='width: 90px'>Add mini template</div>" data-placement="right"><i class="ve-icon-template"></i></button></p>
+                <p class="left"><button type="button" class="round-btn disabled" id="undo" data-toggle="tooltip" data-original-title="Undo" data-placement="left"><i class="ve-icon-undo"></i></button></p>
+                <p><button type="button" class="round-btn disabled" id="redo" data-toggle="tooltip" data-original-title="Redo" data-placement="right"><i class="ve-icon-redo"></i></button></p>
+                <p class="text">Move</p>
+                <p><button type="button" class="round-btn active" id="vePan" data-toggle="tooltip" data-original-title="<div style='width: 50px'>Grab+Pan</div>" data-placement="right"><i class="ve-icon-pan"></i></button></p>
+                <p><button type="button" class="round-btn" id="veSelect" data-toggle="tooltip" data-original-title="Select" data-placement="right"><i class="ve-icon-select"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomIn" data-toggle="tooltip" data-original-title="Zoom&nbsp;In" data-placement="right"><i class="ve-icon-zoom-in"></i></button></p>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
+                <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="ve-icon-settings"></i></button></p>
             </div>
             
-            <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 40px;display: none;">
+            <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px;display: none;">
                 <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
                 <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
                 <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>
-                <p><button type="button" class="round-btn" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
+                <p><button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
@@ -154,10 +159,11 @@
                                         <label class="control-label"><strong>Link Function Style</strong></label>
 
                                         <div class="controls" id="linkStyleOptions">
-                                            <label class="radio"><input name="style" type="radio" value="1" checked="">text (default)</label>
-                                            <label class="radio"><input name="style" type="radio" value="2">dropdown</label>
-                                            <label class="radio"><input name="style" type="radio" value="3">dropdown + confidence</label>
-                                            <label class="radio"><input name="style" type="radio" value="4">type in text</label>
+                                            <?php if (isset($templateData['linkStyles'])) { ?>
+                                                <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
+                                                    <label class="radio"><input type="radio" name="style" value="<?php echo $linkStyle->id ?>"><?php echo __($linkStyle->name); ?></label>
+                                                <?php } ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -168,9 +174,11 @@
                                         <label class="control-label"><strong>Node Priorities</strong></label>
 
                                         <div class="controls" id="nodePriorities">
-                                            <label class="radio"><input name="priority" type="radio" value="1" checked="">normal (default)</label>
-                                            <label class="radio"><input name="priority" type="radio" value="2">must avoid</label>
-                                            <label class="radio"><input name="priority" type="radio" value="3">must visit</label>
+                                            <?php if (isset($templateData['priorities'])) { ?>
+                                                <?php foreach ($templateData['priorities'] as $priority) { ?>
+                                                    <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label>
+                                                <?php } ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -222,6 +230,27 @@
                         <a href="javascript:void(0)" class="btn" id="veSelectRightPanelCloseBtn">Close panel</a>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="modal hide block" id="veSettings">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Settings</h3>
+            </div>
+
+            <div class="modal-body block">
+                <div class="control-group block">
+                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Autosave time (sec, minimum 10 sec)</strong></label>
+                    <div class="controls">
+                        <input type="text" id="autosaveTime" name="autosaveTime" value="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="veSaveSettings">Save</a>
+                <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
             </div>
         </div>
 
@@ -414,7 +443,23 @@
             </div>
         </div>
     </div>
-    <div >
+
+        <div class="modal hide block" id="leaveBox">
+            <div class="modal-header block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="closeLeaveBox">&times;</button>
+                <h3>Unsaved data</h3>
+            </div>
+
+            <div class="modal-body block" align="center">
+                <p>You have unsaved data</p>
+            </div>
+
+            <div class="modal-footer block">
+                <a href="javascript:void(0);" class="btn" id="uploadUnsaved">Save</a>
+                <a href="javascript:void(0);" class="btn" id="leave">Leave without saving</a>
+            </div>
+        </div>
+    <div class="wizard-next-buttons">
         <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map']; ?>"
            style="float:right;" class="wizard_button btn btn-primary">Step 5 - Add other elements</a>
         <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button btn btn-primary">Save & return later</a>
@@ -437,6 +482,7 @@
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/rightPanel.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/selectRightPanel.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/preview.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/history.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
 

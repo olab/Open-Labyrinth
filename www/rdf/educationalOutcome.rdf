@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xml:base="http://purl.org/meducator/educationalOutcome"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+ 
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome">
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#professionalism"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice">
+    <rdfs:label>Apply scientific knowledge to professional practice</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainNormalHumanStructureAndFunction"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainBioChemicalPhysicalProcessesFromFirstPrinciples"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainTheScientificBasisForDiseasePresentation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#applyThePrinciplesOfEvidenceBasedMedicine"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutScientificResearch"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice">
+    <rdfs:label>Apply socio-psychological knowledge to professional practice</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainNormalBehaviourAtIndividualLevel"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainVariedResponsesOfIndividualsGroupsAndSocietyToDisease"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#assessPsychologicalFactorsThatContributeToIllnessTheCourseOfTheDiseaseAndTheSuccessOfTheTreatment"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#managePatientsWithDependenceOrSelfHarmIssues"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#recogniseStressOrAbuseSituations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#appreciateDiversityAndMultiCulturality"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient">
+    <rdfs:label>Carry out a consultation with a patient</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#takeAndRecordMedicalHistory"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performFullPhysicalExamination"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performMentalStateExamination"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#assessTheSeverityOfClinicalPresentations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#provideExplanationAdviceAndSupport"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#diagnosing">
+    <rdfs:label>Diagnosing</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainThePhysiopathologyUnderlyingClinicalAndParaClinicalSigns"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#makeDifferentialDiagnosis"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#discussTheEtiologicalAndDifferentialDiagnosisEpidemiologicalDataAndMorbidity"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#justifyTheDiagnosticProcedureAndTheStrategyOfInvestigation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#orderInvestigationsAccordingToProtocolsAndGuidelines"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfLaboratoryTest"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfBioimagingInvestigation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfBiosignalInvestigation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#defineTheLikelyDiagnosisOrDiagnosesAssessingItsUncertaintyDegree"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup">
+    <rdfs:label>Plan for treatment and patient follow-up</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainDrugsTherapeuticsPharmacokineticsSideEffectsAndInteraction"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#evaluateDrugPotentialBenefitsAndRisks"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#prescribeDrugsClearlyAndAccurately"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#detectAndReportAdverseDrugReaction"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#justifyTheChoiceOfTherapeuticStrategyAndExplainToPatient"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#describeTheModesOfMonitoringDiseaseAndItsTreatment"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#explainTheProceduresOfIndividualAndCollectivePrevention"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively">
+    <rdfs:label>Carry out practical procedures safely and effectively</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#provideImmediateCareOfMedicalEmergencies"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performMeasurementAndRecordingProcedure"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performTherapeuticProcedure"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performProceduresForClinicalInvestigations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performBiosamplingProcedure"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performGesturesAndPhysicalManipulation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#performSurgicalProcedure"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#professionalism">
+    <rdfs:label>Professionalism</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#communicateEffectivelyWithPatientsAndColleagues"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#applyEthicalAndLegalPrinciplesInProfessionalPractice"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#conformToProfessionalRegulations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#promoteHealth"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#useInformationTechnology"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/educationalOutcome#workEffectivelyInTeamAndInCollaborativeSetting"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainNormalHumanStructureAndFunction">
+    <skos:prefLabel>Explain normal human structure and function</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainBioChemicalPhysicalProcessesFromFirstPrinciples">
+    <skos:prefLabel>Explain bio-chemical-physical processes from first principles</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainTheScientificBasisForDiseasePresentation">
+    <skos:prefLabel>Explain the scientific basis for disease presentation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#applyThePrinciplesOfEvidenceBasedMedicine">
+    <skos:prefLabel>Apply the principles of evidence-based medicine</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#carryOutScientificResearch">
+    <skos:prefLabel>Carry out scientific research</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applyScientificKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainNormalBehaviourAtIndividualLevel">
+    <skos:prefLabel>Explain normal behaviour at individual level</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainVariedResponsesOfIndividualsGroupsAndSocietyToDisease">
+    <skos:prefLabel>Explain varied responses of individuals, groups and society to disease</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#assessPsychologicalFactorsThatContributeToIllnessTheCourseOfTheDiseaseAndTheSuccessOfTheTreatment">
+    <skos:prefLabel>Assess psychological factors that contribute to illness, the course of the disease and the success of the treatment</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#managePatientsWithDependenceOrSelfHarmIssues">
+    <skos:prefLabel>Manage patients with dependence or self-harm issues</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#recogniseStressOrAbuseSituations">
+    <skos:prefLabel>Recognise stress or abuse situations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#appreciateDiversityAndMultiCulturality">
+    <skos:prefLabel>Appreciate diversity and multi-culturality</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#applySocioPsychologicalKnowledgeToProfessionalPractice"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#takeAndRecordMedicalHistory">
+    <skos:prefLabel>Take and record medical history</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performFullPhysicalExamination">
+    <skos:prefLabel>Perform a full physical examination</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performMentalStateExamination">
+    <skos:prefLabel>Perform a mental state examination</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#assessTheSeverityOfClinicalPresentations">
+    <skos:prefLabel>Assess the severity of clinical presentations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#provideExplanationAdviceAndSupport">
+    <skos:prefLabel>Provide explanation, advice and support</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutConsultationWithPatient"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainThePhysiopathologyUnderlyingClinicalAndParaClinicalSigns">
+    <skos:prefLabel>Explain the physio-pathology underlying clinical and para-clinical signs</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#makeDifferentialDiagnosis">
+    <skos:prefLabel>Make a differential diagnosis</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#discussTheEtiologicalAndDifferentialDiagnosisEpidemiologicalDataAndMorbidity">
+    <skos:prefLabel>Discuss the etiological and differential diagnosis w.r.t. epidemiological data and morbidity</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#justifyTheDiagnosticProcedureAndTheStrategyOfInvestigation">
+    <skos:prefLabel>Justify the diagnostic procedure and the strategy of investigation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#orderInvestigationsAccordingToProtocolsAndGuidelines">
+    <skos:prefLabel>Order investigations according to protocols and guidelines</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfLaboratoryTest">
+    <skos:prefLabel>Interpret the results of laboratory test</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfBioimagingInvestigation">
+    <skos:prefLabel>Interpret the results of bio-imaging investigation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#interpretTheResultsOfBiosignalInvestigation">
+    <skos:prefLabel>Interpret the results of biosignal investigation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#defineTheLikelyDiagnosisOrDiagnosesAssessingItsUncertaintyDegree">
+    <skos:prefLabel>Define the likely diagnosis or diagnoses assessing its uncertainty degree</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#diagnosing"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainDrugsTherapeuticsPharmacokineticsSideEffectsAndInteraction">
+    <skos:prefLabel>Explain drugs therapeutics, pharmacokinetics, side effects and interaction</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#evaluateDrugPotentialBenefitsAndRisks">
+    <skos:prefLabel>Evaluate drug’s potential benefits and risks</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#prescribeDrugsClearlyAndAccurately">
+    <skos:prefLabel>Prescribe drugs clearly and accurately</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#detectAndReportAdverseDrugReaction">
+    <skos:prefLabel>Detect and report adverse drug reaction</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#justifyTheChoiceOfTherapeuticStrategyAndExplainToPatient">
+    <skos:prefLabel>Justify the choice of therapeutic strategy and explain to patient</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#describeTheModesOfMonitoringDiseaseAndItsTreatment">
+    <skos:prefLabel>Describe the modes of monitoring a disease and its treatment</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#explainTheProceduresOfIndividualAndCollectivePrevention">
+    <skos:prefLabel>Explain the procedures of individual and collective prevention</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#planForTreatmentAndPatientFollowup"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#provideImmediateCareOfMedicalEmergencies">
+    <skos:prefLabel>Provide immediate care of medical emergencies</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performMeasurementAndRecordingProcedure">
+    <skos:prefLabel>Perform a measurement and recording procedure</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performTherapeuticProcedure">
+    <skos:prefLabel>Perform a therapeutic procedure</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performProceduresForClinicalInvestigations">
+    <skos:prefLabel>Perform a procedures for clinical investigations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performBiosamplingProcedure">
+    <skos:prefLabel>Perform a bio-sampling procedure</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performGesturesAndPhysicalManipulation">
+    <skos:prefLabel>Perform gestures and physical manipulation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#performSurgicalProcedure">
+    <skos:prefLabel>Perform a surgical procedure</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#carryOutPracticalProceduresSafelyAndEffectively"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#communicateEffectivelyWithPatientsAndColleagues">
+    <skos:prefLabel>Communicate effectively with patients and colleagues</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#applyEthicalAndLegalPrinciplesInProfessionalPractice">
+    <skos:prefLabel>Apply ethical and legal principles in professional practice</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#conformToProfessionalRegulations">
+    <skos:prefLabel>Conform to professional regulations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#promoteHealth">
+    <skos:prefLabel>Promote health</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#useInformationTechnology">
+    <skos:prefLabel>Use Information Technology</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#workEffectivelyInTeamAndInCollaborativeSetting">
+    <skos:prefLabel>Work effectively in a team and in a collaborative setting</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome#Professionalism"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/educationalOutcome#other">
+    <skos:prefLabel>Other</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/educationalOutcome"/>
+  </skos:Concept>
+  
+</rdf:RDF>

@@ -32,17 +32,21 @@
                     by a group of enthusiasts who love the capability of
                     OpenLabyrinth for virtual patients.'); ?>
         </p>
-
-        <div class="box">
-            <h4 class="box-header round-top"><?php echo __('OpenLabyrinth Tip-of-the-Day'); ?></h4>
-            <div class="box-container-toggle">
-                <div class="box-content">
-                    <p>
-                        <span class="label label-info"><?php echo __('Did You Know?'); ?></span>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla volutpat hendrerit mattis. Cras enim ipsum, commodo vehicula vestibulum sed, vulputate quis purus. Morbi accumsan adipiscing laoreet. Suspendisse porta lobortis aliquet. Suspendisse massa arcu, porta nec congue porttitor, varius ut odio. Morbi et justo neque. Morbi urna justo, dapibus in porttitor eu, malesuada quis massa. Integer eu sem lectus, quis convallis elit. Praesent sit amet justo erat. Vivamus vitae lectus id libero aliquam rhoncus vel sit amet quam. Nunc erat lectus, aliquet eu euismod in, mollis eu orci. Etiam eget felis neque, vitae consequat tortor. Nam nec elit ac orci gravida egestas.</p>
+        <?php if(isset($templateData['todayTip']) && $templateData['todayTip'] != null) { ?>
+                <div class="box">
+                    <h4 class="box-header round-top">OpenLabyrinth Tips-of-the-Day</h4>
+                    <div class="box-container-toggle">
+                        <div class="box-content">
+                            <div>
+                                <b><?php echo $templateData['todayTip']->title; ?></b>
+                            </div>
+                            <div>
+                                <?php echo $templateData['todayTip']->text; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
+        <?php } ?>
     </div>
     <div class="span4">
         <?php if (isset($templateData['latestAuthoredLabyrinths'])) : ?>
@@ -60,11 +64,17 @@
                                     <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                        <i class="icon-play icon-white"></i>
-                                        Play
-                                    </a>
-
+                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } else { ?>
+                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </li>
@@ -91,11 +101,17 @@
                                     <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                        <i class="icon-play icon-white"></i>
-                                        Play
-                                    </a>
-
+                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } else { ?>
+                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
+                                            <i class="icon-play icon-white"></i>
+                                            Play
+                                        </a>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </li>

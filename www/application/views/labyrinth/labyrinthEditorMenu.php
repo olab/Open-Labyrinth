@@ -23,7 +23,13 @@ if (isset($templateData['map'])) {
     <div class="well" style="padding: 8px 0;">
         <ul class="nav nav-list">
             <li class="nav-header">Labyrinth</li>
-            <li><a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><i class="icon-play"></i> <?php echo __('Play'); ?></a></li>
+            <li class="top">
+                <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$templateData['map']->id]) && $templateData['rootNodeMap'][$templateData['map']->id] != null) { ?>
+                    <a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><i class="icon-play icon-white"></i> <?php echo __('Play'); ?></a><div class="pull-right arrow"></div>
+                <?php } else { ?>
+                    <a class="show-root-error" href="javascript:void(0)"><i class="icon-play icon-white"></i> <?php echo __('Play'); ?></a><div class="pull-right arrow"></div>
+                <?php } ?>
+            </li>
             <li><a href="<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a></li>
             <li><a data-toggle="modal" href="#" data-target="#delete-labyrinth"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'labyrinthManager/info/' . $templateData['map']->id; ?>"><i class="icon-info-sign"></i> <?php echo __('Information'); ?></a></li>
@@ -32,7 +38,7 @@ if (isset($templateData['map'])) {
             <li class="nav-header">Core Layout</li>
             <li><a href="<?php echo URL::base() . 'visualManager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open"></i> <?php echo __('Visual Editor'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>"><i class="icon-circle-blank"></i> <?php echo __('Nodes'); ?></a></li>
-            <li><a href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'nodeManager/grid/' . $templateData['map']->id; ?>/1"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base() . 'nodeManager/sections/' . $templateData['map']->id; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>
@@ -41,7 +47,8 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base() . 'avatarManager/index/' . $templateData['map']->id; ?>"><i class="icon-user"></i> <?php echo __('Avatars'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>"><i class="icon-dashboard"></i> <?php echo __('Counters'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'counterManager/grid/' . $templateData['map']->id; ?>"><i class="icon-th-large"></i> <?php echo __('Counter Grid'); ?></a></li>
-            <li><a href="<?php echo URL::base() . 'counterManager/rules/' . $templateData['map']->id; ?>"><i class="icon-check"></i> <?php echo __('Counters Rules'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'visualdisplaymanager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Visual displays of counters'); ?></a><div class="pull-right arrow"></div></li>
+            <li><a href="<?php echo URL::base() . 'counterManager/rules/' . $templateData['map']->id; ?>"><i class="icon-check"></i> <?php echo __('Rules'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'elementManager/index/' . $templateData['map']->id; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'clusterManager/index/' . $templateData['map']->id; ?>"><i class="icon-tags"></i> <?php echo __('Clusters'); ?></a></li>
 

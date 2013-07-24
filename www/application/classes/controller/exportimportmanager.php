@@ -426,10 +426,11 @@ class Controller_ExportImportManager extends Controller_Base {
             if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
                 move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
                 $fileName = 'files/' . $_FILES['filename']['name'];
-                $this->importMVP(DOCROOT . $fileName);
+                $data = $this->importMVP(DOCROOT . $fileName);
+
             }
         }
-        Notice::add('Labyrinth has been successfully imported');
+        Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.');
         Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
@@ -456,13 +457,17 @@ class Controller_ExportImportManager extends Controller_Base {
             $folderPath = DOCROOT . 'files/' . $folderName;
             $zip->extractTo($folderPath);
             $zip->close();
-            $this->parseMVPFile($folderName);
+            $data = $this->parseMVPFile($folderName);
             $this->deleteDir($folderPath);
+
         } else {
             echo 'failed'; //TODO: redirect to error
             Request::initial()->redirect(URL::base());
+            return false;
         }
+
         unlink($file);
+        return $data;
     }
 
     public function parseMVPFile($mvpFolder) {
@@ -482,7 +487,13 @@ class Controller_ExportImportManager extends Controller_Base {
         $findElement = array();
         $replaceElement = array();
         $map = array();
-        $map['title'] = (string) $xml->general->title->string;
+        $map['title'] =(string) $xml->general->title->string;
+
+
+        $map['title'] = preg_replace_callback('~&#([0-9a-fA-F]+)~i', array($this,"qm_fix_callback"), $map['title']);
+
+      $map['title'] = $this->html_entity_decode_numeric($map['title']);
+
         $map['author'] = Auth::instance()->get_user()->id;
         $map['language'] = (string) $xml->general->language;
         if ($map['language'] == 'en') {
@@ -503,7 +514,7 @@ class Controller_ExportImportManager extends Controller_Base {
             foreach ($xml->resources->resource as $resource) {
                 $attr = $resource->attributes();
                 if (!strstr($attr->href, 'xml')) {
-                    $id = (int) $attr->identifier;
+                    $id = (string) $attr->identifier;
                     $elements[$id]['href'] = (string) $attr->href;
                     $fileName = $this->endc(explode('/', (string) $attr->href));
                     copy($tmpFolder . (string) $attr->href, DOCROOT . '/files/' . $fileName);
@@ -600,7 +611,7 @@ class Controller_ExportImportManager extends Controller_Base {
                         foreach ($section->ActivityNode as $node) {
                             $nodeAttr = $node->attributes();
                             $id = (int) $nodeAttr->id;
-                            $nodeArray[$id]['title'] = html_entity_decode((string) $nodeAttr->label);
+                            $nodeArray[$id]['title'] = $this->html_entity_decode_numeric(((string) $nodeAttr->label)) ;
 
                             $nodeArray[$id]['text'] = $this->getIdFromString($node->Content);
                             $nodeArray[$id]['rules_probability'] = (string) $node->Rules->Probability;
@@ -703,6 +714,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     $nodeArray[$id]['y'] = (string) $nodeAttr->mnodeY;
                     $nodeArray[$id]['rgb'] = (string) $nodeAttr->mnodeRGB;
                     $nodeArray[$id]['info'] = html_entity_decode((string) $node->OL_infoText->div);
+
                 }
             }
         }
@@ -808,16 +820,16 @@ class Controller_ExportImportManager extends Controller_Base {
                         $hasAnswers = false;
                         break;
                     case 'mcq2':
-                        $questionsArray[$id]['entry_type_id'] = 3;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq3':
                         $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq5':
-                        $questionsArray[$id]['entry_type_id'] = 5;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     case 'mcq9':
-                        $questionsArray[$id]['entry_type_id'] = 6;
+                        $questionsArray[$id]['entry_type_id'] = 4;
                         break;
                     default:
                         $questionsArray[$id]['entry_type_id'] = 1;
@@ -961,7 +973,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     if($version == '3') {
                         $nodeContentsArray[$id]['div'] = (string) base64_decode($vpdText->div);
                     }else {
-                        $nodeContentsArray[$id]['div'] = (string) $vpdText->div;
+                        $nodeContentsArray[$id]['div'] = $vpdText->div->asXML();
                     }
                 } else {
                     $id = (int) $vpdTextAttr->id;
@@ -983,11 +995,29 @@ class Controller_ExportImportManager extends Controller_Base {
         }
 
         if (count($nodeArray) > 0) {
+            $config = array(
+                'indent'         => true,
+                'output-xhtml'   => true,
+                'clean'          => true,
+                'wrap'           => 200);
+            if(extension_loaded('tidy'))$tidy = new tidy;
             foreach ($nodeArray as $key => $node) {
                 $id = 'ctt_' . $node['text'];
                 if (isset($nodeContentsArray[$id]['div'])) {
                     $string = html_entity_decode((string) $nodeContentsArray[$id]['div']);
                     $nodeArray[$key]['text'] = str_replace($findElement, $replaceElement, $string);
+                    $nodeArray[$key]['text'] = $this->html_entity_decode_numeric($nodeArray[$key]['text']);
+                    $nodeArray[$key]['info'] = str_replace($findElement, $replaceElement, $nodeArray[$key]['info'] );
+                    $nodeArray[$key]['info'] = $this->html_entity_decode_numeric($nodeArray[$key]['info']);
+
+
+
+                    if(extension_loaded('tidy')){
+                    // Specify configuration
+                        $nodeArray[$key]['text']= $tidy->repairString($nodeArray[$key]['text'], $config, 'utf8');
+                        $nodeArray[$key]['info']= $tidy->repairString($nodeArray[$key]['info'], $config, 'utf8');
+                    }
+
                 } else {
                     $nodeArray[$key]['text'] = '';
                 }
@@ -1032,14 +1062,17 @@ class Controller_ExportImportManager extends Controller_Base {
             foreach ($countersArray as $counter) {
                 if (isset($counter['rules'])) {
                     foreach ($counter['rules'] as $rules) {
-                        $rules['node'] = $nodeArray[$rules['node']]['database_id'];
+                        if ($rules['node'] != ''){
+                            $rules['node'] = $nodeArray[$rules['node']]['database_id'];
+                        } else {
+                            $rules['node'] = '';
+                        }
                         DB_ORM::model('map_counter_rule')->addRule($counter['database_id'], $rules);
                     }
                 }
             }
         }
-
-        return true;
+        return array("title"=>$map->name, "id"=>$map->id);
     }
 
     public function parseXML($tmpFileName) {
@@ -1048,6 +1081,9 @@ class Controller_ExportImportManager extends Controller_Base {
         $replaceArray = array('<', '</', "'");
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
+
+        libxml_use_internal_errors(true);
+
         return simplexml_load_string($xmlString);
     }
 
@@ -1067,7 +1103,53 @@ class Controller_ExportImportManager extends Controller_Base {
                 unlink($file);
             }
         }
-        rmdir($dirPath);
+        //rmdir($dirPath);
+    }
+
+
+    private function html_entity_decode_numeric($string, $quote_style = ENT_COMPAT, $charset = "utf-8")
+    {
+        $string = html_entity_decode($string, $quote_style, $charset);
+        $string = preg_replace_callback('~&#x([0-9a-fA-F]+);~i', array($this,"chr_utf8_callback"), $string);
+          $string = html_entity_decode($string, $quote_style, $charset);
+        $string = preg_replace('~&#([0-9]+);~e', $this->chr_utf8("\\1"), $string);
+        return $string;
+    }
+
+
+    /**
+     * Callback helper
+     */
+
+    private function qm_fix_callback($matches)
+    {
+
+        return $matches[0].';';
+    }
+
+    /**
+     * Callback helper
+     */
+
+    private function chr_utf8_callback($matches)
+    {
+        return $this->chr_utf8(hexdec($matches[1]));
+    }
+
+    /**
+     * Multi-byte chr(): Will turn a numeric argument into a UTF-8 string.
+     *
+     * @param mixed $num
+     * @return string
+     */
+
+    private function chr_utf8($num)
+    {
+        if ($num < 128) return chr($num);
+        if ($num < 2048) return chr(($num >> 6) + 192) . chr(($num & 63) + 128);
+        if ($num < 65536) return chr(($num >> 12) + 224) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+        if ($num < 2097152) return chr(($num >> 18) + 240) . chr((($num >> 12) & 63) + 128) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
+        return '';
     }
 
 }

@@ -50,6 +50,18 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][1] = __('Media Upload - Copyright Notice');
         $this->templateData['tabs'][1] = $viewCopyright;
 
+        $this->templateData['support'] = Kohana::$config->load('support');
+        $viewSupport = View::factory('systemmanager/support');
+        $viewSupport->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][2] = __("Support");
+        $this->templateData['tabs'][2] = $viewSupport;
+
+        $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
+        $viewSupport = View::factory('systemmanager/oauth');
+        $viewSupport->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][3] = __("OAuth");
+        $this->templateData['tabs'][3] = $viewSupport;
+
         $view = View::factory('systemmanager/view');
         $view->set('templateData', $this->templateData);
 
@@ -119,6 +131,78 @@ class Controller_SystemManager extends Controller_Base {
         }
     }
 
+    public function action_updateSupportEmails() {
+        if($_POST) {
+            if(Security::check($_POST['token'])) {
+                unset($_POST['token']);
+                $fromEmail = Arr::get($_POST, 'supportEmail', '');
+                $emails = Arr::get($_POST, 'emails', '');
+                $content = '';
+                $handle = fopen(DOCROOT . 'application/config/support.php', 'r');
+                while (($buffer = fgets($handle)) !== false) {
+                    $content .= $buffer;
+                }
+
+                $content = preg_replace("/'email' => '[\w\s\.,_@]*'/", "'email' => '" . $emails . "'", $content);
+                $content = preg_replace("/'main_support_email' => '[\w\s\.,_@]*'/", "'main_support_email' => '" . $fromEmail . "'", $content);
+
+                file_put_contents(DOCROOT . 'application/config/support.php', $content);
+
+                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+            } else {
+                Request::initial()->redirect(URL::base());
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_saveOAuth() {
+        if($_POST) {
+            $providers = DB_ORM::model('oauthprovider')->getAll();
+            if($providers != null && count($providers) > 0) {
+                foreach($providers as $provider) {
+                    $appId  = Arr::get($_POST, 'appId'  . $provider->id, null);
+                    $secret = Arr::get($_POST, 'secret' . $provider->id, null);
+
+                    DB_ORM::model('oauthprovider')->updateData($provider->id, $appId, $secret);
+                }
+            }
+        }
+
+        Request::initial()->redirect(URL::base() . 'systemManager');
+    }
+
+    public function action_updateTodayTip() {
+        if ($_POST) {
+            if (Security::check($_POST['token'])) {
+                unset($_POST['token']);
+                $string = 'return array (';
+                foreach ($_POST as $key => $value) {
+                    $value = str_replace('"', '\"', $value);
+                    $string .= '"' . $key . '" => "' . $value . '", ';
+                }
+                $string .= ');';
+
+                $content = '';
+                $handle = fopen(DOCROOT . 'application/config/today_tip.php', 'r');
+                while (($buffer = fgets($handle)) !== false) {
+                    $content .= $buffer;
+                }
+
+                $position = strpos($content, 'return array');
+                $header = substr($content, 0, $position);
+
+                file_put_contents(DOCROOT . 'application/config/today_tip.php', $header . $string);
+
+                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+            } else {
+                Request::initial()->redirect(URL::base());
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
 }
 
 ?>

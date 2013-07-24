@@ -48,7 +48,10 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
         foreach ($vocabs as $vocabulary) {
             $parser = ARC2::getRDFParser();
-            $parser->parse($vocabulary->alternative_source_uri);
+            $uri_abs = $vocabulary->alternative_source_uri;
+            if (!parse_url($vocabulary->alternative_source_uri, PHP_URL_SCHEME) != '') $uri_abs  = Model_Leap_Vocabulary::getGraphUri().$vocabulary->alternative_source_uri;
+
+            $parser->parse($uri_abs);
             $triples = $parser->getTriples();
             $store->insert($triples, $graph_uri);
 

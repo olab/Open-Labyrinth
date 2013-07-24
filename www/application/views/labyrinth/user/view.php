@@ -18,131 +18,96 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
+if (isset($templateData['map'])) { ?>
     <div class="page-header">
         <h1><?php echo __('Edit users of Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
     </div>
+    <form class="form-horizontal" method="POST"
+          action="<?php echo URL::base() . 'mapUserManager/addUser/' . $templateData['map']->id . (isset($templateData['authorOrder']) ? '/'.$templateData['authorOrder'] : '') . (isset($templateData['learnerOrder']) ? '/'.$templateData['learnerOrder'] : ''); ?>">
 
     <h3><?php echo __('Authors'); ?></h3>
-
-    <?php if (isset($templateData['existUsers']) and count($templateData['existUsers']) > 0) { ?>
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>User</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td><?php echo Auth::instance()->get_user()->nickname; ?></td>
-                <td><?php echo __('you cannot remove or add yourself'); ?></td>
-
-            </tr>
-            <?php foreach ($templateData['existUsers'] as $exUser) { ?>
-                <?php if ($exUser->type->name == 'superuser' or $exUser->type->name == 'author') { ?>
-                    <tr>
-                        <td><?php echo $exUser->nickname; ?></td>
-                        <td><a class="btn btn-danger"
-                               href="<?php echo URL::base() . 'mapUserManager/deleteUser/' . $templateData['map']->id . '/' . $exUser->id; ?>">
-                                <i class="icon-minus-sign"></i>
-                                <?php echo __('Remove'); ?></a>
-                        </td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
-            </tbody>
-        </table>
-
-    <?php } ?>
-
-    <form class="form-horizontal" method="POST"
-          action="<?php echo URL::base() . 'mapUserManager/addUser/' . $templateData['map']->id; ?>">
-        <fieldset class="fieldset">
-            <div class="control-group">
-                <label class="control-label" for="mapuserID">Add author</label>
-
-                <div class="controls">
-                    <select id="mapuserID" name="mapuserID">
-                        <option value=""><?php echo __('select'); ?> ...</option>
-                        <?php if (isset($templateData['admins']) and count($templateData['admins']) > 0) { ?>
-                            <?php foreach ($templateData['admins'] as $admin) { ?>
-                                <?php if ($admin->id != Auth::instance()->get_user()->id) { ?>
-                                    <option value="<?php echo $admin->id; ?>"><?php echo $admin->nickname; ?></option>
-                                <?php } ?>
-                            <?php } ?>
-                        <?php } ?>
-                        <?php if (isset($templateData['authors']) and count($templateData['authors']) > 0) { ?>
-                            <?php foreach ($templateData['authors'] as $author) { ?>
-                                <?php if ($author->id != Auth::instance()->get_user()->id) { ?>
-                                    <option value="<?php echo $author->id; ?>"><?php echo $author->nickname; ?></option>
-                                <?php } ?>
-                            <?php } ?>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-actions">
-            <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Submit'); ?>">
+        <div class="btn-group users" style="margin-bottom: 10px">
+            <a class="btn btn-primary" href="<?php echo URL::base(); ?>mapUserManager/addAllAuthors/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Add All</a>
+            <a class="btn btn-danger" href="<?php echo URL::base(); ?>mapUserManager/removeAllAuthors/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Remove All</a>
         </div>
 
-
-    </form>
-    <h3>Learners</h3>
-    <?php if (isset($templateData['existUsers']) and count($templateData['existUsers']) > 0) { ?>
         <table class="table table-bordered table-striped">
+            <colgroup>
+                <col style="width: 5%" />
+                <col style="width: 80%" />
+            </colgroup>
             <thead>
             <tr>
-                <th>User</th>
-                <th>Actions</th>
+                <th style="text-align: center">Actions</th>
+                <th>
+                    <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder'] == 0 ? 1 : 0; ?>/<?php echo $templateData['learnerOrder']; ?>">
+                        User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['authorOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                    </a>
+                </th>
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($templateData['existUsers'] as $exUser) { ?>
-                <?php if ($exUser->type->name == 'learner') { ?>
+            <?php if(isset($templateData['existAuthors']) and count($templateData['existAuthors']) > 0) { ?>
+                <?php foreach($templateData['existAuthors'] as $author) { ?>
                     <tr>
-                        <td><?php echo $exUser->nickname; ?></td>
-                        <td>
-                            <a class="btn btn-danger" href="<?php echo URL::base() . 'mapUserManager/deleteUser/' . $templateData['map']->id . '/' . $exUser->id; ?>">
-                                <i class="icon-minus-sign"></i>Remove</a>
-                        </td>
+                        <td style="text-align: center"><input type="checkbox" name="user<?php echo $author->id; ?>" checked="checked"></td>
+                        <td><?php echo $author->nickname; ?></td>
                     </tr>
                 <?php } ?>
             <?php } ?>
-
+            <?php if(isset($templateData['allAdmins']) and count($templateData['allAdmins']) > 0) { ?>
+                <?php foreach($templateData['allAdmins'] as $admin) { ?>
+                    <?php if($admin->id == Auth::instance()->get_user()->id) continue; ?>
+                    <tr>
+                        <td style="text-align: center"><input type="checkbox" name="user<?php echo $admin->id; ?>"></td>
+                        <td><?php echo $admin->nickname; ?></td>
+                    </tr>
+                <?php } ?>
+            <?php } ?>
             </tbody>
         </table>
-    <?php } ?>
 
-    <form class="form-horizontal" method="POST"
-          action="<?php echo URL::base() . 'mapUserManager/addUser/' . $templateData['map']->id; ?>">
-        <fieldset class="fieldset">
-            <div class="control-group">
-                <label class="control-label" for="mapuserID2">Add learner</label>
+    <h3>Learners</h3>
+        <div class="btn-group users" style="margin-bottom: 10px">
+            <a class="btn btn-primary" href="<?php echo URL::base(); ?>mapUserManager/addAllLearners/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Add All</a>
+            <a class="btn btn-danger" href="<?php echo URL::base(); ?>mapUserManager/removeAllLearners/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Remove All</a>
+        </div>
 
-                <div class="controls">
-                    <select name="mapuserID" id="mapuserID2">
-                        <option value=""><?php echo __('select'); ?> ...</option>
-                        <?php if (isset($templateData['learners']) and count($templateData['learners']) > 0) { ?>
-                            <?php foreach ($templateData['learners'] as $learner) { ?>
-                                <?php if ($learner->id != Auth::instance()->get_user()->id) { ?>
-                                    <option
-                                        value="<?php echo $learner->id; ?>"><?php echo $learner->nickname; ?></option>
-                                <?php } ?>
-                            <?php } ?>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-actions"><input class="btn btn-primary" type="submit" name="Submit"
-                                         value="<?php echo __('Submit'); ?>"></div>
+    <table class="table table-bordered table-striped">
+        <colgroup>
+            <col style="width: 5%" />
+            <col style="width: 80%" />
+        </colgroup>
+        <thead>
+        <tr>
+            <th style="text-align: center">Actions</th>
+            <th>
+                <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder'] == 0 ? 1 : 0; ?>">
+                    User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['learnerOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                </a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if(isset($templateData['existLearners']) and count($templateData['existLearners']) > 0) { ?>
+            <?php foreach($templateData['existLearners'] as $learner) { ?>
+                <tr>
+                    <td style="text-align: center"><input type="checkbox" name="user<?php echo $learner->id; ?>" checked="checked"></td>
+                    <td><?php echo $learner->nickname; ?></td>
+                </tr>
+            <?php } ?>
+        <?php } ?>
+        <?php if(isset($templateData['learners']) and count($templateData['learners']) > 0) { ?>
+            <?php foreach($templateData['learners'] as $learner) { ?>
+                <tr>
+                    <td style="text-align: center"><input type="checkbox" name="user<?php echo $learner->id; ?>"></td>
+                    <td><?php echo $learner->nickname; ?></td>
+                </tr>
+            <?php } ?>
+        <?php } ?>
+        </tbody>
+    </table>
 
-
+        <div class="pull-right"><input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>"></div>
     </form>
-
 <?php } ?>
-
-

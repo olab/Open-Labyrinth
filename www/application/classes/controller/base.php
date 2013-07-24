@@ -27,12 +27,15 @@ class Controller_Base extends Controller_Template {
     protected $templateData = array();
     private $unauthorizedRules = array(
         array('controller' => 'home', 'action' => 'login'),
+        array('controller' => 'home', 'action' => 'loginOAuth'),
+        array('controller' => 'home', 'action' => 'loginOAuthCallback'),
         array('controller' => 'home', 'action' => 'resetPassword'),
         array('controller' => 'home', 'action' => 'passwordMessage'),
         array('controller' => 'home', 'action' => 'confirmLink'),
         array('controller' => 'home', 'action' => 'updateResetPassword'),
         array('controller' => 'reportManager', 'action' => 'showReport'),
         array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
+        array('controller' => 'updateDatabase', 'action' => 'index'),
     );
     private $authorizedRules = array(
         array('controller' => 'home', 'action' => 'login'),
@@ -93,7 +96,7 @@ class Controller_Base extends Controller_Template {
 
             if (Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
                 $centerView = View::factory('adminMenu');
-
+                $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();
                 /*
                  * Fetch the latest authored labyrinths.
                  */
@@ -104,6 +107,20 @@ class Controller_Base extends Controller_Template {
                 }
 
                 $this->templateData['latestAuthoredLabyrinths'] = $maps;
+                    $rooNodesMap = array();
+                    $rootNodeMaps = null;
+                    if (Auth::instance()->get_user()->type->name == 'superuser') {
+                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledMap();
+                    } else {
+                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+                    }
+                    if($rootNodeMaps != null && count($rootNodeMaps) > 0) {
+                        foreach($rootNodeMaps as $map) {
+                            $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                        }
+                    }
+
+                    $this->templateData['rootNodeMap'] = $rooNodesMap;
 
                 /*
                  * Fetch the latest played labyrinths.
@@ -120,8 +137,8 @@ class Controller_Base extends Controller_Template {
                     $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
                 }
 
-                $this->templateData['center'] = $centerView;
                 $centerView->set('templateData', $this->templateData);
+                $this->templateData['center'] = $centerView;
             } else {
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));
@@ -133,14 +150,29 @@ class Controller_Base extends Controller_Template {
         } else {
             if ($this->request->controller() == 'home' && $this->request->action() == 'index') {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
+                $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
                 Session::instance()->delete('redirectURL');
                 $this->templateData['left'] = View::factory('login');
                 $this->templateData['left']->set('templateData', $this->templateData);
-                
+
+                $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
+                $rooNodesMap = array();
+                if($maps != null && count($maps) > 0) {
+                    foreach($maps as $map) {
+                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+
+                $this->templateData['rootNodeMap'] = $rooNodesMap;
+
                 $centerView = View::factory('userMenu');
                 $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
                 $centerView->set('templateData', $this->templateData);
-                
+
+                $centerView->set('openLabyrinths', $maps);
+                $centerView->set('rootNodesMap', $rooNodesMap);
+
+                $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
             } else {
                 $controller = $this->request->controller();

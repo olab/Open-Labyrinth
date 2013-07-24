@@ -24,7 +24,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
+
 <SCRIPT LANGUAGE="JavaScript">
+    window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
+
     function toggle_visibility(id) {
         var e = document.getElementById(id);
         if (e.style.display == 'none')
@@ -84,7 +93,8 @@
     function ajaxFunction(qid) {
         var qresp = $("#qresponse_" + qid).val();
         if (qresp != ''){
-            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponce/" + qresp + "/" + qid;
+            qresp = B64.encode(qresp);
+            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid;
 
             var $response = $('#AJAXresponse' + qid);
             $.get(URL, function(data) {
@@ -96,7 +106,7 @@
     }
 
     function ajaxQU(obj, qid, qresp, qnts) {
-        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponce/' + qresp + '/' + qid;
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/' + qresp + '/' + qid;
         var check = $(obj).is(':checked');
         if (check){
             URL += '/1';
@@ -115,6 +125,11 @@
             }
         });
 
+    }
+
+    function sendSliderValue(qid, value) {
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/saveSliderQuestionResponse/' + qid;
+        $.post(URL, {value: value}, function(data) {});
     }
 
     function ajaxBookmark() {
@@ -157,13 +172,42 @@
         document.getElementById("ChatAnswer" + ChatElementId).innerHTML = "<p><b>&nbsp;&nbsp;&nbsp;&nbsp;" + xmlhttp.responseText + "</b></p>";
         document.getElementById("ChatQuestion" + ChatElementId).style.color = "grey";
     }
+
+    $(function() {
+        $.each($('.visual-display-container'), function(index, object) {
+            var maxHeight = 0,
+                maxWidth  = 0,
+                children = $(object).children(),
+                top = 0,
+                height = 0,
+                width = 0,
+                left = 0;
+            $.each(children, function(index, child) {
+                top = parseInt($(child).css('top').replace('px', ''));
+                height = parseInt($(child).css('height').replace('px', ''));
+                if(maxHeight < (top + height)) {
+                    maxHeight = top + height;
+                }
+
+                left = parseInt($(child).css('left').replace('px', ''));
+                width = parseInt($(child).css('width').replace('px', ''));
+                if(maxWidth < (left + width)) {
+                    maxWidth = left + width;
+                }
+            });
+
+            $(object).css('width', maxWidth);
+            $(object).parent().css('width', maxWidth);
+            $(object).css('height', maxHeight);
+        });
+    });
 </script>
 <?php
 if ($templateData['skin_path'] != NULL) {
     $doc_file = DOCROOT . 'css/skin/' . $templateData['skin_path'] . '/default.css';
     if (file_exists($doc_file)) {
         $css_file = URL::base() . 'css/skin/' . $templateData['skin_path'] . '/default.css';
-        echo '<link rel="stylesheet" type="text/css" href="' . $css_file . '" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . ScriptVersions::get($css_file) . '" />';
     }
 }
 ?>
@@ -179,11 +223,12 @@ if ($templateData['skin_path'] != NULL) {
         mode:"textareas",
         relative_urls:false,
         skin:"bootstrap",
+        elements:"codemagic",
         theme:"advanced",
-        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap,autocomplete",
+        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap,autocomplete,codemagic",
 // Theme options
-        theme_advanced_buttons1:"save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
-        theme_advanced_buttons2:"cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+        theme_advanced_buttons1:"save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect,codemagic",
+        theme_advanced_buttons2:"cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,|,insertdate,inserttime,preview,|,forecolor,backcolor",
         theme_advanced_buttons3:"tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
         theme_advanced_buttons4:"insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,imgmap",
         theme_advanced_toolbar_location:"top",
@@ -191,7 +236,8 @@ if ($templateData['skin_path'] != NULL) {
         theme_advanced_statusbar_location:"bottom",
         theme_advanced_resizing:true,
         editor_selector:"mceEditor",
-        autocomplete_trigger:""
+        autocomplete_trigger:"",
+        entity_encoding: "raw"
     });
 </script>
     <?php } ?>

@@ -77,8 +77,8 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
 Kohana::init(array(
-
     'base_url' => '/',
+    'errors' => TRUE
 ));
 
 /**
@@ -107,6 +107,7 @@ Kohana::modules(array(
     'leap' => MODPATH . 'leap', // Include Leap ORM
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface
+    'oauth' => MODPATH . 'oauth' // OAuth module
 ));
 
 
@@ -165,3 +166,8 @@ Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<
             'controller' => 'home',
             'action' => 'index',
         ));
+
+Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))
+    ->defaults(array(
+        'controller' => 'error'
+    ));

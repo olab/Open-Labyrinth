@@ -24,7 +24,6 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_Home extends Controller_Base {
 
     public function action_index() {
-
     }
 
     public function action_login() {
@@ -40,6 +39,38 @@ class Controller_Home extends Controller_Base {
             
             Request::initial()->redirect($redirectURL);
         }
+    }
+
+    public function action_loginOAuth() {
+        $providerId = $this->request->param('id', 0);
+        if($providerId > 0) {
+            $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
+            if($provider != null) {
+                Session::instance()->set('OAuthProviderId', $providerId);
+                Request::initial()->redirect($provider->getAuthorizeURL(URL::base(true, false) . 'home/loginOAuthCallback'));
+            }
+        }
+
+        Request::initial()->redirect(URL::base());
+    }
+
+    public function action_loginOAuthCallback() {
+        $providerId = Session::instance()->get('OAuthProviderId', 0);
+        if($providerId > 0) {
+            $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
+            if($provider != null) {
+                $token     = $provider->getAccessToken($_REQUEST, URL::base(true, false) . 'home/loginOAuthCallback');
+                if($token != null) {
+                    $userInfo  = $provider->get($token, 'user-info');
+                    $authorize = OAuth_Authorize::factory($provider->getName());
+                    if($authorize != null) {
+                        $authorize->login($providerId, $userInfo);
+                    }
+                }
+            }
+        }
+
+        Request::initial()->redirect(URL::base());
     }
 
     public function action_logout() {
@@ -104,9 +135,17 @@ class Controller_Home extends Controller_Base {
             if ($key != NULL) {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
 
+                $rootNodes = array();
+                if (count($maps) > 0){
+                    foreach($maps as $map){
+                        $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+
                 $view = View::factory('search');
                 $view->set('maps', $maps);
                 $view->set('term', $key);
+                $view->set('rootNodes', $rootNodes);
 
                 $this->templateData['center'] = $view;
                 unset($this->templateData['right']);

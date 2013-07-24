@@ -78,8 +78,12 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return FALSE;
     }
     
-    public function getAllUsers($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+    public function getAllUsers($mapId, $order = "DESC") {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_users.map_id', '=', $mapId)
+            ->join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')
+            ->order_by('nickname', $order);
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -94,11 +98,16 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getAllAuthors($mapId){
+    public function getAllAuthors($mapId, $order = 'DESC'){
         $builder = DB_SQL::select('default')->
-            from($this->table())->
-            join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')->
-            where('map_users.map_id', '=', $mapId, 'AND')->where_block('(')->where('users.type_id', '=', '2')->where('users.type_id', '=', '4', 'OR')->where_block(')');
+            from($this->table())
+            ->join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')
+            ->where('map_users.map_id', '=', $mapId, 'AND')
+            ->where_block('(')->where('users.type_id', '=', '2')
+            ->where('users.type_id', '=', '4', 'OR')
+            ->where_block(')')
+            ->order_by('users.nickname', $order)
+            ->column('map_users.user_id');
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -113,11 +122,15 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getAllLearners($mapId){
-        $builder = DB_SQL::select('default')->
-            from($this->table())->
-            join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')->
-            where('map_users.map_id', '=', $mapId, 'AND')->where('users.type_id', '=', '1');
+    public function getAllLearners($mapId, $order = "DESC"){
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->join('LEFT', 'users')
+            ->on('map_users.user_id', '=', 'users.id')
+            ->where('map_users.map_id', '=', $mapId, 'AND')
+            ->where('users.type_id', '=', '1')
+            ->order_by('users.nickname', $order)
+            ->column('map_users.user_id');
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -145,7 +158,22 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function getAllMapUserIDs($mapId) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->column('user_id');
+        $query   = $builder->query();
+
+        $ids = null;
+        if($query->is_loaded()) {
+            $ids = array();
+            foreach($query as $user) {
+                $ids[] = $user;
+            }
+        }
+
+        return $ids;
+    }
+
     public function checkUser($users, $userId) {
         if(count($users) > 0) {
             foreach($users as $record) {
@@ -167,9 +195,76 @@ class Model_Leap_Map_User extends DB_ORM_Model {
     
     public function addUser($mapId, $userId) {
         if($mapId != NULL and $userId != NULL) {
-            $this->map_id = $mapId;
-            $this->user_id = $userId;
-            $this->save();
+            DB_ORM::insert('map_user')
+                ->column('map_id', $mapId)
+                ->column('user_id', $userId)
+                ->execute();
+        }
+    }
+
+    public function addAllLearners($mapId) {
+        if($mapId == null && $mapId <= 0) return;
+
+        $userIds = $this->getAllMapUserIDs((int) $mapId);
+        $learners = DB_ORM::model('user')->getUsersByTypeName('learner', $userIds);
+
+        if($learners == null || count($learners) <= 0) return;
+
+        foreach($learners as $learner) {
+            $this->addUser($mapId, $learner->id);
+        }
+    }
+
+    public function removeAllLearners($mapId) {
+        if($mapId == null && $mapId <= 0) return;
+
+        $learners = $this->getAllUsers((int) $mapId);
+
+        if($learners == null || count($learners) <= 0) return;
+
+        foreach($learners as $learner) {
+            if($learner->type->name == 'learner') {
+                $this->deleteByUserId($mapId, $learner->id);
+            }
+        }
+    }
+
+    public function addAllAuthors($mapId) {
+        if($mapId == null && $mapId <= 0) return;
+
+        $userIds = $this->getAllMapUserIDs((int) $mapId);
+
+        $admins = DB_ORM::model('user')->getUsersByTypeName('superuser', $userIds);
+        $authors = DB_ORM::model('user')->getUsersByTypeName('author', $userIds);
+
+        if($admins != null && count($admins) > 0) {
+            foreach($admins as $admin) {
+                if($admin->id != Auth::instance()->get_user()->id) {
+                    $this->addUser($mapId, $admin->id);
+                }
+            }
+        }
+
+        if($authors != null && count($authors) > 0) {
+            foreach($authors as $author) {
+                if($author->id != Auth::instance()->get_user()->id) {
+                    $this->addUser($mapId, $author->id);
+                }
+            }
+        }
+    }
+
+    public function removeAllAuthors($mapId) {
+        if($mapId == null && $mapId <= 0) return;
+
+        $learners = $this->getAllUsers((int) $mapId);
+
+        if($learners == null || count($learners) <= 0) return;
+
+        foreach($learners as $learner) {
+            if(($learner->type->name == 'superuser' || $learner->type->name == 'author') && ($learner->id != Auth::instance()->get_user()->id)) {
+                $this->deleteByUserId($mapId, $learner->id);
+            }
         }
     }
     

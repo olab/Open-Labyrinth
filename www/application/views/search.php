@@ -19,25 +19,68 @@
  *
  */
 ?>
+<h1><?php echo __('Search on term "'); ?><?php if(isset($term)) echo $term; ?>"</h1>
+<div>Found <?php if(isset($maps)) { echo count($maps); } else { echo 0; } ?> labyrinths</div>
+<?php if(isset($maps) and count($maps) > 0) { ?>
+<table  class="table table-striped table-bordered" id="my-labyrinths">
+    <colgroup>
+        <col style="width: 30%" />
+        <col style="width: 30%" />
+        <col style="width: 20%" />
+        <col style="width: 20%" />
+    </colgroup>
+    <thead>
+    <tr>
+        <th><?php echo __('Labyrinth Title'); ?></th>
+        <th><?php echo __('Description'); ?></th>
+        <th><?php echo __('Contributors'); ?></th>
+        <th><?php echo __('Actions'); ?></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    foreach ($maps as $map) {
+        ?>
+        <tr>
+            <td>
+                <a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a>
 
-            <h1><?php echo __('Search on term "'); ?><?php if(isset($term)) echo $term; ?>"</h1>
-
-                       <div>Found <?php if(isset($maps)) { echo count($maps); } else { echo 0; } ?> labyrinths</div>
-                        <table class="table table-striped table-bordered">
-                            <?php if(isset($maps) and count($maps) > 0) { ?>
-                            <?php foreach($maps as $map) { ?>
-                            <tr>
-                                <td><a href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>"><?php echo $map->name; ?></a></td>
-                                <td><a class="btn btn-primary" href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $map->id; ?>">edit</a></td>
-                                <td><a class="btn btn-info" href="<?php echo URL::base(); ?>openLabyrinth/info/<?php echo $map->id; ?>">info</a></td>
-                                <td><p><?php if(count($map->contributors) > 0) { ?>
-                                                <?php foreach($map->contributors as $contributor) { ?>
-                                                    <?php echo $contributor->name ?>, (<?php echo $contributor->role->name; ?>)
-                                                <?php } ?>
-                                                <?php } ?>
-                                    </p></td>
-                                <td><p><?php echo $map->abstract; ?></p></td>
-                            </tr>
-                            <?php } ?>
-                            <?php } ?>
-                        </table>
+            </td>
+            <td><?php echo $map->abstract; ?></td>
+            <td>
+                <?php
+                if (count($map->contributors) > 0) {
+                    $contributors = array();
+                    foreach ($map->contributors as $contributor) {
+                        $contributors[] = '<a href="#" rel="tooltip" title="' . ucwords($contributor->role->name) . '">' . $contributor->name . '</a>';
+                    }
+                    echo implode(', ', $contributors);
+                }
+                ?>
+            </td>
+            <td class="center">
+                <div class="btn-group">
+                    <?php if((isset($rootNodes[$map->id])) && ($rootNodes[$map->id] != null)) { ?>
+                        <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a>
+                    <?php } else { ?>
+                        <a class="btn btn-success show-root-error" href="javascript:void(0)">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a>
+                    <?php } ?>
+                    <a class="btn btn-info" href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
+                        <i class="icon-edit icon-white"></i>
+                        Edit
+                    </a>
+                </div>
+            </td>
+        </tr>
+    <?php
+    }
+    ?>
+    </tbody>
+</table>
+<?php } ?>

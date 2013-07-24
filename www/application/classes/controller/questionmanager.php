@@ -75,6 +75,9 @@ class Controller_QuestionManager extends Controller_Base {
             if($questionId != null) {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
+                if($this->templateData['question']->settings != null) {
+                    $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
+                }
             } else {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
             }

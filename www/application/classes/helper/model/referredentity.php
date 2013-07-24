@@ -26,6 +26,9 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 
     private static  function initGraph($source, $id = "")
     {
+
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source  = Model_Leap_Vocabulary::getGraphUri().$source;
+
         if(!is_dir(sys_get_temp_dir() . '/olab/'))mkdir(sys_get_temp_dir() . '/olab/');
         $temp_file = sys_get_temp_dir() . '/olab/' . md5($source).$id;
         $graph = new Graphite();
@@ -96,6 +99,8 @@ class Helper_Model_ReferredEntity extends Kohana_Object
 
 
     public static function getAllTermsTree($source, $name, $cardinality, $label=null, $type = NULL){
+        if (!parse_url($source, PHP_URL_SCHEME) != '') $source  = Model_Leap_Vocabulary::getGraphUri().$source;
+
         $graph = self::initGraph($source);
 
         if($type==NULL)

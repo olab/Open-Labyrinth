@@ -212,6 +212,9 @@ var RightPanel = function() {
         if(self.visualEditor == null) return;
         
         if(self.mode == 'node' && self.node != null) {
+            if(self.visualEditor.history != null) {
+                self.visualEditor.history.HistoryNode(self.node);
+            }
             if(self.$colorInput != null) {
                 var color = self.$colorInput.val();
                 var isOk  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);

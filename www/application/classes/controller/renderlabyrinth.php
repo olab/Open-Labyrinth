@@ -47,6 +47,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
             if ($continue) {
                 Session::instance()->delete('questionChoices');
+                Session::instance()->delete('counterFunc');
+                Session::instance()->delete('stopCommonRules');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -54,22 +56,26 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data) {
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                        if ($data['node']->link_style->name == 'type in text') {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
-                            $data['links'] = $result['links']['display'];
-                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                        if (!isset($data['node_links']['linker'])){
+                            if ($data['node']->link_style->name == 'type in text') {
+                                $result = $this->generateLinks($data['node'], $data['node_links']);
+                                $data['links'] = $result['links']['display'];
+                                if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                     $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                     $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                                }
+                            } else {
+                                $result = $this->generateLinks($data['node'], $data['node_links']);
+                                $data['links'] = $result['links'];
                             }
                         } else {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
-                            $data['links'] = $result['links'];
+                            $data['links'] = $data['node_links']['linker'];
                         }
 
                         if ($editOn != NULL and $editOn == 1) {
                             $data['node_edit'] = TRUE;
                         } else {
-                            $data['node_text'] = $this->parseText($data['node_text']);
+                            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
@@ -138,24 +144,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
-                    if ($data['node']->link_style->name == 'type in text') {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links']['display'];
-                        if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                             $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                             $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                    if (!isset($data['node_links']['linker'])){
+                        if ($data['node']->link_style->name == 'type in text') {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links']['display'];
+                            if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                                 $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                                 $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            }
+                        } else {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            if(!empty($result['links']))
+                                $data['links'] = $result['links'];
+                            else $data['links'] = "";
                         }
                     } else {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        if(!empty($result['links']))
-                            $data['links'] = $result['links'];
-                        else $data['links'] = "";
+                        $data['links'] = $data['node_links']['linker'];
                     }
 
                     if ($editOn != NULL and $editOn == 1) {
                         $data['node_edit'] = TRUE;
                     } else {
-                        $data['node_text'] = $this->parseText($data['node_text']);
+                        $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
@@ -189,9 +199,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId = $this->request->param('id', NULL);
         if ($nodeId != NULL) {
             $node = DB_ORM::model('map_node', array((int) $nodeId));
-
+            $info = self::parseText( $node->info);
             $infoView = View::factory('labyrinth/node/info');
-            $infoView->set('info', $node->info);
+            $infoView->set('info', $info);
 
             $this->template = $infoView;
         }
@@ -257,7 +267,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_questionResponce() {
+    public function action_questionResponse() {
         $optionNumber = $this->request->param('id', NULL);
         $questionId = $this->request->param('id2', NULL);
         $questionStatus = $this->request->param('id3', NULL);
@@ -267,6 +277,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
             
             echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus);
         }
+    }
+
+    public function action_saveSliderQuestionResponse() {
+        $this->auto_render = false;
+
+        $questionId = $this->request->param('id', null);
+        $value      = Arr::get($_POST, 'value', 0);
+
+        $responses = Session::instance()->get('sliderQuestionResponses');
+        $responses[$questionId] = $value;
+
+        Session::instance()->set('sliderQuestionResponses', $responses);
     }
 
     public function action_remote() {
@@ -329,19 +351,23 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if ($data) {
                     $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                    if ($data['node']->link_style->name == 'type in text') {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links']['display'];
-                        $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                        $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
-                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                    if (!isset($data['node_links']['linker'])){
+                        if ($data['node']->link_style->name == 'type in text') {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links']['display'];
+                            $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                            $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                            $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        } else {
+                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $data['links'] = $result['links'];
+                            $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        }
                     } else {
-                        $result = $this->generateLinks($data['node'], $data['node_links']);
-                        $data['links'] = $result['links'];
-                        $data['remote_links'] = $this->generateRemoteLinks($data['node_links']);
+                        $data['links'] = $data['node_links']['linker'];
                     }
 
-                    $data['node_text'] = $this->parseText($data['node_text']);
+                    $data['node_text'] = $this->parseText($data['node_text'], $mapId);
 
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
 
@@ -425,6 +451,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function generateLinks($node, $links) {
         $result = NULL;
         $result['links'] = '';
+        $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
         if (is_array($links) and count($links) > 0) {
             $result['remote_links'] = '';
             $result['links'] = '';
@@ -435,7 +462,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 switch ($node->link_style->name) {
-                    case 'text (default)':
+                    case 'hyperlinks (default)':
                         if ($link->image_id != 0) {
                             $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
                         } else {
@@ -457,12 +484,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $result['links']['alinknod'] = '"' . $link->node_id_2 . '", ';
                         }
                         break;
+                    case 'buttons':
+                        $result['links'] .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '" class="btn">' . $title . '</a></div>';
+                        break;
                 }
             }
 
             switch ($node->link_style->name) {
-                case 'text (default)':
-                    $result['links'] = '<ul class="links">'.$result['links'].'</ul>';
+                case 'hyperlinks (default)':
+                    $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
                 case 'dropdown':
                     $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
@@ -483,9 +513,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links']['display'] .= $endNodeTemplate;
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links'] .= $endNodeTemplate;
             }
 
             return $result;
@@ -493,10 +523,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($node->end and $node->link_style->name == 'type in text') {
                 if(!isset($result['links']['display']))
                     $result['links']['display'] = '';
-                $result['links']['display'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links']['display'] .= $endNodeTemplate;
                 return $result;
             } else if ($node->end) {
-                $result['links'] .= '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">end session and view report</a></div>';
+                $result['links'] .= $endNodeTemplate;
                 return $result;
             }
 
@@ -509,7 +539,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function generateNavigation($sections) {
         if (count($sections) > 0) {
-            $result = '<ul>';
+            $result = '<ul class="navigation">';
             foreach ($sections as $section) {
                 if ($section->map->section->name == 'visible') {
                     $result .= "<li>" . $section->name . "</li>";
@@ -530,10 +560,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return NULL;
     }
 
-    public static function parseText($text) {
+    public static function parseText($text, $mapId = NULL) {
         $result = $text;
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD', 'CR');
 
         foreach ($codes as $code) {
             $regExp = '/[\[' . $code . ':\d\]]+/';
@@ -573,6 +603,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                     case 'INFO':
                                         $replaceString = Controller_RenderLabyrinth::getInfoHTML($id);
+                                        break;
+                                    case 'VD':
+                                        $replaceString = Controller_RenderLabyrinth::getVisualDisplayHTML($id);
+                                        break;
+                                    case 'CR':
+                                        $replaceString = Controller_RenderLabyrinth::getCounterHTML($mapId, $id);
                                         break;
                                 }
 
@@ -669,20 +705,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');" />';
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" /><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');">Submit</button>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
-                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '" onblur="ajaxFunction(' . $question->id . ');">' . $question->feedback . '</textarea>';
+                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '">' . $question->feedback . '</textarea><p><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'readonly\', \'readonly\');">Submit</button></p>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul>';
+                    $result .= '"><ul class="navigation">';
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
-                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option-'.$id.'" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
                         $result .= '<span class="text">' . $responce->response . '</span>';
                         $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
                         $result .= '</li>';
@@ -698,11 +734,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces questionForm_'.$question->id.' ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul>';
+                    $result .= '"><ul class="navigation">';
                     $i = 1;
                     foreach ($question->responses as $responce) {
                         $result .= '<li>';
-                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
+                        $result .= '<span class="click" id="click' . $responce->id . '"><input type="radio" name="option-'.$id.'" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
                         $result .= '<span>' . $responce->response . '</span>';
                         $result .= '<span id="AJAXresponse' . $responce->id . '"></span>';
                         $result .= '</li>';
@@ -712,6 +748,77 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
                     }
                 }
+            } else if($question->type->value == 'slr') {
+                if($question->settings != null) {
+                    $settings = json_decode($question->settings);
+                    $sliderValue = $settings->minValue;
+
+                    if($question->counter_id > 0) {
+                        $sliderValue = Controller_RenderLabyrinth::getCurrentCounterValue($question->map_id, $question->counter_id);
+                    } else if(property_exists($settings, 'defaultValue')) {
+                        $sliderValue = $settings->defaultValue;
+                    }
+
+                    if($sliderValue > $settings->maxValue) {
+                        $sliderValue = $settings->maxValue;
+                    } else if($sliderValue < $settings->minValue) {
+                        $sliderValue = $settings->minValue;
+                    }
+
+                        if($settings->showValue == 1) {
+                            $result .= '<div style="margin-bottom: 22px;position:relative">
+                                            <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 51px;" : "top: 2px;left: 74px;") . '">' . $settings->minValue . '</div>
+                                            <script>
+                                                var slider' . $question->id . ' = new dhtmlxSlider({
+                                                    size: 300,
+                                                    value: '    . $sliderValue                       . ',
+                                                    min: '      . $settings->minValue                       . ',
+                                                    max: '      . $settings->maxValue                       . ',
+                                                    skin: "'    . $settings->sliderSkin                     . '",
+                                                    step: '     . $settings->stepValue                      . ',
+                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                    onChange: function(n) { $("#sliderQuestionR_' . $question->id . '").val(n); },
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
+                                                });
+                                                slider' . $question->id . '.init();
+                                                $("#sliderQuestionR_' . $question->id . '").val(' . $sliderValue . ');
+                                                $("#sliderQuestionR_' . $question->id . '").change(function() {
+                                                    var value = $(this).val();
+                                                    if(value > ' . $settings->maxValue . ') {
+                                                        value = ' . $settings->maxValue . ';
+                                                        $(this).val(value);
+                                                    } else if(value < ' . $settings->minValue . ') {
+                                                        value = ' . $settings->minValue . ';
+                                                        $(this).val(value);
+                                                    }
+
+                                                    slider' . $question->id . '.setValue(value);
+                                                    sendSliderValue(' . $question->id . ', value);
+                                                });
+                                            </script>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 330px;" : "top: 284px;left: 74px;") . '">' . $settings->maxValue . '</div>
+                                        </div>';
+                        } else {
+                            $result .= '<div style="margin-bottom: 22px;position:relative">
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 5px;" : "top: 2px;left: 34px;") . '">' . $settings->minValue . '</div>
+                                            <script>
+                                                var slider = new dhtmlxSlider({
+                                                    size: 300,
+                                                    value: '    . $sliderValue                       . ',
+                                                    min: '      . $settings->minValue                       . ',
+                                                    max: '      . $settings->maxValue                       . ',
+                                                    skin: "'    . $settings->sliderSkin                     . '",
+                                                    step: '     . $settings->stepValue                      . ',
+                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $question->id . ', value); }
+                                                });
+                                                slider.init();
+                                            </script>
+                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
+                                        </div>';
+                        }
+                }
             }
 
             $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
@@ -720,6 +827,37 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return '';
+    }
+
+    private static function getCurrentCounterValue($mapId, $counterId) {
+        $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+        $counter  = DB_ORM::model('map_counter', array((int)$counterId));
+
+        $sessionId = Session::instance()->get('session_id', NULL);
+        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
+            $sessionId = $_COOKIE['OL'];
+        } else {
+            if ($sessionId == NULL){
+                $sessionId = 'notExist';
+            }
+        }
+
+        $currentCountersState = '';
+        if ($rootNode != NULL) {
+            $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+        }
+
+        $thisCounter = null;
+        if ($currentCountersState != '') {
+            $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+            $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+            $e = strpos($tmp, ']') + 1;
+            $tmp = substr($tmp, 0, $e - 1);
+            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+            $thisCounter = $tmp;
+        }
+
+        return $thisCounter != null ? $thisCounter : 0;
     }
 
     public static function getVpdHTML($id) {
@@ -732,7 +870,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $vpdText = Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'VPDText');
                     switch ($vpdType) {
                         case 'narrative':
-                            $result .= '<p>' . $vpdText . '</p>';
+                            $result .= $vpdText;
                             break;
                         case 'chief complaint':
                             $result .= '<p>Chief complaint: ' . $vpdText . '</p>';
@@ -935,6 +1073,123 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
+    private static function getVisualDisplayHTML($visualDisplayId) {
+        $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
+        $result = '';
+
+        $traceId = Session::instance()->get('trace_id');
+        $traceCountersValues = Session::instance()->get('traceCountersValues');
+
+        if($visualDisplay != null) {
+            $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
+
+            if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
+                foreach($visualDisplay->panels as $panel) {
+                    $result .= '<div style="        position: absolute;
+                                                         top: ' . $panel->y . 'px;
+                                                        left: ' . $panel->x . 'px;
+                                                     z-index: ' . $panel->z_index . ';
+                                            background-color: ' . $panel->background_color . ';
+                                                       width: ' . $panel->width . ';
+                                                      height: ' . $panel->height . ';
+                                                border-width: ' . $panel->border_size . 'px;
+                                                border-style: solid;
+                                                border-color: ' . $panel->border_color . ';
+                                               border-radius: ' . $panel->border_radius . 'px;
+                                       -webkit-border-radius: ' . $panel->border_radius . 'px;
+                                          -moz-border-radius: ' . $panel->border_radius . 'px;
+                                              -moz-transform: rotate(' . $panel->angle . 'deg);
+                                           -webkit-transform: rotate(' . $panel->angle . 'deg);
+                                                -o-transform: rotate(' . $panel->angle . 'deg);
+                                               -ms-transform: rotate(' . $panel->angle . 'deg);
+                                                   transform: rotate(' . $panel->angle . 'deg);">
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->images != null && count($visualDisplay->images) > 0) {
+                foreach($visualDisplay->images as $image) {
+                    if(!file_exists(DOCROOT . '/files/' . $visualDisplay->map_id . '/vdImages/' . $image->name)) continue;
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $image->y . 'px;
+                                                left: ' . $image->x . 'px;
+                                               width: ' . $image->width . 'px;
+                                              height: ' . $image->height . 'px;
+                                             z-index: ' . $image->z_index . ';
+                                      -moz-transform: rotate(' . $image->angle . 'deg);
+                                   -webkit-transform: rotate(' . $image->angle . 'deg);
+                                        -o-transform: rotate(' . $image->angle . 'deg);
+                                       -ms-transform: rotate(' . $image->angle . 'deg);
+                                           transform: rotate(' . $image->angle . 'deg);
+                                ">
+                                    <img style="width: 100%" src="' . URL::base() . 'files/' . $visualDisplay->map_id . '/vdImages/' . $image->name . '" />
+                                </div>';
+                }
+            }
+
+            if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
+                foreach($visualDisplay->counters as $counter) {
+                    $thisCounter = $counter->counter->start_value;
+
+                    if($traceCountersValues != null) {
+                        $s = strpos($traceCountersValues, '[CID=' . $counter->counter_id . ',') + 1;
+                        $tmp = substr($traceCountersValues, $s, strlen($traceCountersValues));
+                        $e = strpos($tmp, ']') + 1;
+                        $tmp = substr($tmp, 0, $e - 1);
+                        $tmp = str_replace('CID=' . $counter->counter_id . ',V=', '', $tmp);
+                        $thisCounter = $tmp;
+                    }
+
+                    $labelFont = explode('%#%', $counter->label_font_style);
+                    $valueFont = explode('%#%', $counter->value_font_style);
+
+                    $result .= '<div style="position: absolute;
+                                                 top: ' . $counter->label_y . ';
+                                                left: ' . $counter->label_x . ';
+                                             z-index: ' . $counter->label_z_index . ';
+                                      -moz-transform: rotate(' . $counter->label_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->label_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->label_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->label_angle . 'deg);
+                                           transform: rotate(' . $counter->label_angle . 'deg);
+                                         font-family: \'' . $labelFont[0] . '\';
+                                           font-size: ' . $labelFont[1] . 'px;
+                                         font-weight: \'' . $labelFont[2] . '\';
+                                               color: ' . $labelFont[3] . ';
+                                          font-style: \'' . $labelFont[4] . '\';
+                                     text-decoration: \'' . $labelFont[5] . '\';
+                                ">' . $counter->label_text . '</div>
+                                <div style="position: absolute;
+                                                 top: ' . $counter->value_y . ';
+                                                left: ' . $counter->value_x . ';
+                                             z-index: ' . $counter->value_z_index . ';
+                                      -moz-transform: rotate(' . $counter->value_angle . 'deg);
+                                   -webkit-transform: rotate(' . $counter->value_angle . 'deg);
+                                        -o-transform: rotate(' . $counter->value_angle . 'deg);
+                                       -ms-transform: rotate(' . $counter->value_angle . 'deg);
+                                           transform: rotate(' . $counter->value_angle . 'deg);
+                                         font-family: \'' .  $valueFont[0] . '\';
+                                           font-size: ' . $valueFont[1] . 'px;
+                                         font-weight: \'' . $valueFont[2] . '\';
+                                               color: ' . $valueFont[3] . ';
+                                          font-style: \'' . $valueFont[4] . '\';
+                                     text-decoration: \'' . $valueFont[5] . '\';
+                                ">' . $thisCounter . '</div>';
+                }
+            }
+
+            $result .= '</div>';
+        }
+
+        return $result;
+    }
+
+    private static function getCounterHTML($mapId, $id){
+        $counterValue = Model::factory('labyrinth')->getCounterValueByID($mapId, $id);
+        return $counterValue;
+    }
+
     private static function getValueByElementKey($elements, $name) {
         if (count($elements) > 0) {
             foreach ($elements as $element) {
@@ -975,7 +1230,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
          */
         if ($traces != NULL and count($traces) > 0) {
             //$result = array();
-            $result = '<ul class="links">';
+            $result = '<ul class="links navigation">';
             $i = 0;
             foreach ($traces as $trace) {
                 //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);

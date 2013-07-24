@@ -619,7 +619,9 @@ class Installation {
         mysql_query('DROP DATABASE IF EXISTS '.$olab['db_name']);
         mysql_query('CREATE DATABASE '.$olab['db_name']);
         mysql_select_db($olab['db_name']);
+
         Installation::populateDatabase(INST_DOCROOT.'sql/CreateDB.sql');
+        Installation::runUpdates();
 
         $olabUser = json_decode(Session::get('installationConfiguration'), true);
 
@@ -676,6 +678,47 @@ class Installation {
             }
         }
         rmdir($dirPath);
+    }
+
+    public static function runUpdates(){
+        $result = 0;
+        $dir = DOCROOT.'updates/';
+        if(is_dir($dir)){
+            $files = scandir($dir);
+            array_shift($files);
+            array_shift($files);
+            if (count($files) > 0){
+                $infoFile = $dir.'history.json';
+                if (!file_exists($infoFile)){
+                    if (!is_writable($dir)){
+                        return 3;
+                    }
+                    $infoFileHandler = fopen($infoFile, 'w');
+                    $skipFiles = array();
+                } else {
+                    $fileString = file_get_contents($infoFile);
+                    $skipFiles = json_decode($fileString, true);
+                }
+                foreach($files as $f){
+                    $ext = pathinfo($f, PATHINFO_EXTENSION);
+                    if ($ext == 'sql'){
+                        $pathToFile = $dir.$f;
+                        if (!isset($skipFiles[$f])){
+                            Installation::populateDatabase($pathToFile);
+                            $skipFiles[$f] = 1;
+                            $result = 1;
+                        }
+                        @unlink($pathToFile);
+                    }
+                }
+
+                file_put_contents($infoFile, json_encode($skipFiles));
+            }
+        } else {
+            return 2;
+        }
+
+        return $result;
     }
 
     public function populateDatabase($schema)

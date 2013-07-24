@@ -34,7 +34,7 @@
 	<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
 
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/basic.css" />
+        <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/basic.css'); ?>" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
         <!--[if IE 7]>
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" />
@@ -120,6 +120,8 @@
                                         }
                                         ?>
 
+                                        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
+
                                         <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
@@ -139,6 +141,12 @@
                     }
                     ?>
                 </div>
+            </div>
+        </div>
+        <div class="root-error-container">
+            <div id="rootNodeMessage" class="alert alert-error root-alert hide">
+                <button type="button" class="root-error-close close">×</button>
+                <?php echo __('You have not set a root node, so your labyrinth will not play. Please return to the visual editor, and click on the starting node -> Actions -> Set as Root'); ?>
             </div>
         </div>
         <div class="container-fluid">

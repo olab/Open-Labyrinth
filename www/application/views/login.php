@@ -32,6 +32,34 @@
     <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/>
     <?php } ?>
 
+    <?php
+        $showOAuth = false;
+        if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) {
+            foreach($templateData['oauthProviders'] as $provider) {
+                if($provider->icon != null && $provider->appId != null && $provider->secret != null) {
+                    $showOAuth = true;
+                    break;
+                }
+            }
+        }
+    ?>
+    <?php if($showOAuth) { ?>
+    <div class="oauth-line">
+        <div class="line"><div></div></div>
+        <div class="text">OR</div>
+        <div class="line"><div></div></div>
+    </div>
+    <div class="oauth-icon-line">
+        <?php if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) { ?>
+            <?php foreach($templateData['oauthProviders'] as $provider) { ?>
+                <?php if($provider->icon != null && $provider->appId != null && $provider->secret != null) { ?>
+                    <a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>"><img width="32" src="<?php echo URL::base(); ?>images/oauth/<?php echo $provider->icon; ?>"></a>&nbsp;
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+    </div>
+    <?php } ?>
+
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
 </form>
 
@@ -62,8 +90,8 @@
     </div>
 </div>
 <?php if(count(Notice::get()) > 0) { ?>
-<div class="alert alert-error">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <?php $m = Notice::get(); echo $m[0]; ?>
-</div>
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <?php $m = Notice::get(); echo $m[0]; ?>
+    </div>
 <?php } ?>

@@ -28,7 +28,15 @@ if (isset($templateData['maps'])) { ?>
                             <table width="100%">
                                 <?php foreach($templateData['maps'] as $map) { ?>
                                     <tr bgcolor="#f3f3fa">
-                                        <td><p><a href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank"><?php echo $map->name; ?></a></p></td>
+                                        <td>
+                                            <p>
+                                                <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$templateData['map']->id]) && $templateData['rootNodeMap'][$templateData['map']->id] != null) { ?>
+                                                    <a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>" target="_blank"><?php echo $map->name; ?></a>
+                                                <?php } else { ?>
+                                                    <a class="show-root-error" href="javascript:void(0)"><?php echo $map->name; ?></a>
+                                                <?php } ?>
+                                            </p>
+                                        </td>
                                         <td><p><a href="<?php echo URL::base().'labyrinthManager/editMap/'.$map->id; ?>"><img src="<?php echo URL::base(); ?>images/editl.jpg" border="0" alt="edit"></a></p></td>
                                         <td><p><a href="<?php echo URL::base().'openLabyrinth/info/'.$map->id; ?>"><img src="<?php echo URL::base(); ?>images/infol.jpg" border="0" alt="get info"></a></p></td>
                                         <td><p>

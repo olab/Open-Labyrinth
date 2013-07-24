@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xml:base="http://purl.org/meducator/repurposing"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing">
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Languages"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Cultures"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Pedagogy"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Educational-Level"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Disciplines"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Content-Types"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Technology"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Changes-to-Content"/>
+<skos:narrower rdf:resource="http://purl.org/meducator/repurposing#Different-Technology"/>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Languages">
+<rdfs:label> Repurposing to Different-Languages</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing "/>
+<skos:note>This is the case where an educational resource is translated to different languages</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Cultures">
+<rdfs:label> Repurposing to Different-Cultures</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note>Repurposing of the resource to a different culture. It may be in the same or in a different language with the initial</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Pedagogy">
+<rdfs:label>Repurposing to Different-Pedagogy</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note>Repurposing of the resource to be used in a different pedagogy than it was originally targeted to</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Educational-Level">
+<rdfs:label>Repurposing to Different-Educational-Level</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note>The resource is repurposed so that i can target a group with a different educational level</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Disciplines">
+<rdfs:label>Repurposing to Different-Disciplines</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note>An educational content often needs to be adapted in order to be delivered to an audience of a different professional background i.e. from medical doctors to nurses and lab technicians, to basic life scientists and even healthcare administrators. </skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Content-Types">
+<rdfs:label>Repurposing to Different-Content-Types</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note> Change a learning object from one type to another. For example, a lecture presentation to a didactic problem, or course notes to presentation and so on</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Different-Technology">
+<rdfs:label>Repurposing to Different-Technology</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note> Changes to a digital learning resource that affect its technological characteristics, such as digital format, digital size and quality (e.g. for images), computer platform, etc</skos:note>
+</skos:Concept>
+
+<skos:Concept rdf:about="http://purl.org/meducator/repurposing#Changes-to-Content">
+<rdfs:label>Changes-to-Content</rdfs:label>
+<skos:broader rdf:resource="http://purl.org/meducator/repurposing"/>
+<skos:note>Add content or mutate content of a learning object, integrate content from different learning resources, fuse different learning resources, re-organize existing content, etc. or a combination of the above.  </skos:note>
+</skos:Concept>
+
+</rdf:RDF>

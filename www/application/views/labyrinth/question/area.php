@@ -19,6 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 <div class="page-header">
 <h1><?php if(!isset($templateData['question'])){
         echo __('New question for"') . $templateData['map']->name . '"';
@@ -59,18 +60,35 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
         <div class="control-group">
-            <label for="fback" class="control-label"><?php echo __('Prompt text'); ?>
+            <label for="fback" class="control-label">
+                <?php echo __('Prompt text'); ?>
+                <p class="question-info-box"><?php echo __('Text will automatically appear in response area. Use to give learner a hint or further instruction.'); ?></p>
             </label>
             <div class="controls">
                 <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
             </div>
         </div>
+        <div class="control-group">
+            <label for="rule" class="control-label">
+                <?php echo __('Rule'); ?>
+            </label>
+            <div class="controls">
+                <textarea onkeypress="resetCheck();" id="code" name="settings"><?php if(isset($templateData['question'])) echo $templateData['question']->settings; ?></textarea>
+            </div>
+        </div>
     </fieldset>
     <div class="form-actions">
         <div class="pull-right">
-            <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save'); ?>">
+            <dl class="status-label dl-horizontal">
+                <dt>Status</dt>
+                <dd><span class="label label-warning">The rule hasn't been checked.</span><span class="hide label label-success">The rule is correct.</span><span class="hide label label-important">The rule has error(s).</span></dd>
+            </dl>
+            <input style="float:right;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
+            <input style="float:right;" id="rule_submit_button" class="btn btn-primary btn-large hide" type="submit" name="Submit" value="<?php echo __('Save question'); ?>">
         </div>
     </div>
+    <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
+    <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
 </form>
 <?php } ?>
 

@@ -39,6 +39,7 @@ var VisualEditor = function() {
     self.turnOnSelectMode = null;
     self.rightPanel = new RightPanel();
     self.unsavedData = false;
+    self.save = null;
     
     self.$aButtonsContianer = $('#ve_additionalActionButton');
     
@@ -53,7 +54,7 @@ var VisualEditor = function() {
             self.$canvasContainer = $(params.canvasContainer);
             if(self.$canvasContainer != null) {
                 $(window).resize(function() {
-                    Resize();
+                    self.Resize();
                 });
             }
         }
@@ -169,9 +170,34 @@ var VisualEditor = function() {
                 closeBtnID: '#veSelectRightPanelCloseBtn',
                 visualEditor: self
             });
+            
+            self.history = new History();
+            self.history.Init({
+                visualEditor: self,
+                undo: '#undo',
+                redo: '#redo'
+            });
+            
+            $('#undo').click(function() {
+                $('#redo').removeClass('disabled');
+                if(self.history != null) {
+                    if(!self.history.Undo()) {
+                        $(this).addClass('disabled');
+                    }
+                }
+            });
+            
+            $('#redo').click(function() {
+                $('#undo').removeClass('disabled');
+                if(self.history != null) {
+                    if(!self.history.Redo()) {
+                        $(this).addClass('disabled');
+                    }
+                }
+            });
         }
 
-        Resize(null);
+        self.Resize(null);
         self.ZoomOut();
         self.ZoomOut();
     }
@@ -400,9 +426,9 @@ var VisualEditor = function() {
         var object = evalJson(jsonString);
         if(object == null) return;
         
+        self.nodes = [];
         var copyNodes = null;
         if('nodes' in object && object.nodes.length > 0) {
-            self.nodes = new Array();
             copyNodes = new Array();
             for(var i = 0; i < object.nodes.length; i++) {
                 var node = new Node();
@@ -450,8 +476,8 @@ var VisualEditor = function() {
             }
         }
         
+        self.links =[];
         if('links' in object && object.links.length > 0) {
-            self.links = new Array();
             for(var i = 0; i < object.links.length; i++) {
                 var nodeAId = object.links[i].nodeA;
                 var nodeBId = object.links[i].nodeB;
@@ -471,7 +497,7 @@ var VisualEditor = function() {
                         generateIdLinkCounter = l;
                 }
                 
-                var existLink = GetLinkById(id);
+                var existLink = self.GetLinkById(id);
                 if(existLink != null) continue;
                 
                 var link = new Link();
@@ -485,6 +511,10 @@ var VisualEditor = function() {
                 
                 self.links.push(link);
             }
+        }
+        
+        if('nodeMap' in object && object.nodeMap.length > 0 && self.history != null) {
+            self.history.Remap(object.nodeMap);
         }
         
         ScatterNodes(copyNodes);
@@ -863,6 +893,8 @@ var VisualEditor = function() {
     }
     
     self.AddNewNode = function() {
+        self.history.HistoryJSON();
+
         var node = new Node();
         node.id = GetNewNodeId();
         node.title = 'new node';
@@ -882,7 +914,9 @@ var VisualEditor = function() {
     
     self.AddDandelion = function(count) {
         if(count <= 0) return;
-        
+
+        self.history.HistoryJSON();
+
         var pos = viewport.GetPosition();
         var scale = viewport.GetScale();
         var x0 = self.canvas.width / scale[0] * 0.5 - pos[0];
@@ -959,7 +993,9 @@ var VisualEditor = function() {
     
     self.AddLinear = function(count) {
         if(count <= 0) return;
-        
+
+        self.history.HistoryJSON();
+
         var nodes = new Array();
         var tNode = null;
         for(var  i = 0; i < count; i++) {
@@ -990,7 +1026,9 @@ var VisualEditor = function() {
     
     self.AddBranched = function(count) {
         if(count <= 0) return;
-        
+
+        self.history.HistoryJSON();
+
         var nodes = new Array();
         
         var sNode = new Node();
@@ -1046,7 +1084,9 @@ var VisualEditor = function() {
     
     self.AddNode = function(node) {
         if(node == null) return;
-        
+
+        self.history.HistoryJSON();
+
         node.id = GetNewNodeId();
         if(self.$canvas != null) {
             var pos = viewport.GetPosition();
@@ -1077,7 +1117,7 @@ var VisualEditor = function() {
         return null;
     }
     
-    var Resize = function() {
+    self.Resize = function() {
         if(self.$canvasContainer != null && self.$canvas != null) {
             var h = window.innerHeight;
             var w = window.innerWidth;
@@ -1096,6 +1136,23 @@ var VisualEditor = function() {
                 self.$canvas.attr('width', self.$canvasContainer.width());
             }
             self.Render();
+        }
+    }
+    
+    self.DeactiveLink = function(linkId) {
+        if(linkId <= 0) return;
+        
+        var link = self.GetLinkById(linkId);
+        if(link != null)
+            link.isActive = false;
+    }
+    
+    self.UpdateLinkLogic = function(linkId, newLogic) {
+        if(linkId <= 0) return;
+        
+        var link = self.GetLinkById(linkId);
+        if(link != null) {
+            link.conditional = newLogic;
         }
     }
     
@@ -1165,6 +1222,9 @@ var VisualEditor = function() {
             if(self.zoomOut != null)
                 self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
+            if(self.save!= null)
+                self.save();
+        } else if((altKeyPressed && event.keyCode == 85)) {
             if(self.update!= null)
                 self.update();
         } else if(event.keyCode == 46) {
@@ -1228,13 +1288,17 @@ var VisualEditor = function() {
         UpdateMousePosition(event);
 
         var isRedraw = false;
-
+        var positions = [];
         if(self.nodes.length > 0) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
+                if(self.nodes[i].isSelected) {
+                    positions.push(self.nodes[i]);
+                }
                 var result = self.nodes[i].MouseClick(self.mouse, viewport);
                 if(result.length > 0 && !isRedraw) {
                     isRedraw = true;
                     if(result[1] == 'header') {
+                        positions.push(self.nodes[i]);
                     } else if(result[1] == 'add') {
                         AddNodeWithLink(result[0]);
                     } else if(result[1] == 'link') {
@@ -1258,6 +1322,18 @@ var VisualEditor = function() {
                     }
                 }
             }
+        }
+        
+        if(self.nodes.length > 0) {
+            for(var i = self.nodes.length - 1; i >= 0; i--) {
+                if(self.nodes[i].isDragging) {
+                    positions.push(self.nodes[i]);
+                }
+            }
+        }
+        
+        if(self.history != null && positions.length > 0) {
+            self.history.HistoryPosition(positions);
         }
         
         if(self.links.length > 0 && !isRedraw) {
@@ -1310,6 +1386,10 @@ var VisualEditor = function() {
                 if(r[1] != r[2] && link == null) {
                     var nodeA = GetNodeById(r[1]);
                     var nodeB = GetNodeById(r[2]);
+                    
+                    if(self.history != null) {
+                        self.history.HistoryJSON();
+                    }
                     
                     var newLink = new Link();
                     
@@ -1483,6 +1563,10 @@ var VisualEditor = function() {
 
         if(node == null) return;
         
+        if(self.history != null) {
+            self.history.HistoryJSON();
+        } 
+        
         var newNode = new Node();
         
         newNode.id = GetNewNodeId();
@@ -1541,7 +1625,7 @@ var VisualEditor = function() {
     }
     
     var ShowLinkManagetDialog = function(linkId) {
-        var link = GetLinkById(linkId);
+        var link = self.GetLinkById(linkId);
         
         if(self.linkModal != null && link != null) {
             self.linkModal.SetLink(link);
@@ -1601,7 +1685,7 @@ var VisualEditor = function() {
         return null;
     }
     
-    var GetLinkById = function(id) {
+    self.GetLinkById = function(id) {
         if(self.links.length <= 0) return null;
         
         for(var i = 0; i < self.links.length; i++) {
@@ -1610,6 +1694,37 @@ var VisualEditor = function() {
         }
     
         return null;
+    }
+    
+    self.GetCasesForLink = function(linkId) {
+        if(linkId <= 0 || self.links.length <= 0) return null;
+        
+        var link = self.GetLinkById(linkId);
+        if(link == null) return null;
+        
+        var result = new Array();
+
+        for(var i = 0; i < self.links.length; i++) {
+            if(self.links[i].nodeA.mapId == link.nodeA.mapId && link.nodeA.id == self.links[i].nodeA.id) {
+                result.push(self.links[i].nodeB);
+            }
+        }
+        
+        return result;
+    }
+    
+    self.GetLinksByNodeId = function(nodeId) {
+        if(nodeId == null || nodeId < 0 || self.links == null) return null;
+        
+        var i = self.links.length,
+            result = [];
+        for(;i--;) {
+            if(self.links[i].nodeA.id == nodeId || self.links[i].nodeB.id == nodeId) {
+                result.push(self.links[i]);
+            }
+        }
+        
+        return result;
     }
     
     var GetRootNode = function() {

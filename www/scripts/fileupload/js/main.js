@@ -1,5 +1,5 @@
 /*
- * jQuery File Upload Plugin JS Example 6.7
+ * jQuery File Upload Plugin JS Example 7.1.1
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2010, Sebastian Tschan
@@ -16,7 +16,11 @@ $(function () {
     'use strict';
 
     // Initialize the jQuery File Upload widget:
-    $('#fileupload').fileupload();
+    $('#fileupload').fileupload({
+        // Uncomment the following to send cross-domain cookies:
+        //xhrFields: {withCredentials: true},
+        url: 'server/php/'
+    });
 
     // Enable iframe cross-domain access via redirect option:
     $('#fileupload').fileupload(
@@ -28,7 +32,8 @@ $(function () {
         )
     );
 
-    if (window.location.hostname === 'blueimp.github.com') {
+    if (window.location.hostname === 'blueimp.github.com' ||
+            window.location.hostname === 'blueimp.github.io') {
         // Demo settings:
         $('#fileupload').fileupload('option', {
             url: '//jquery-file-upload.appspot.com/',
@@ -64,14 +69,18 @@ $(function () {
         }
     } else {
         // Load existing files:
-        $('#fileupload').each(function () {
-            var that = this;
-            $.getJSON(this.action, function (result) {
-                if (result && result.length) {
-                    $(that).fileupload('option', 'done')
-                        .call(that, null, {result: result});
-                }
-            });
+        $('#fileupload').addClass('fileupload-processing');
+        $.ajax({
+            // Uncomment the following to send cross-domain cookies:
+            //xhrFields: {withCredentials: true},
+            url: $('#fileupload').fileupload('option', 'url'),
+            dataType: 'json',
+            context: $('#fileupload')[0]
+        }).always(function (result) {
+            $(this).removeClass('fileupload-processing');
+        }).done(function (result) {
+            $(this).fileupload('option', 'done')
+                .call(this, null, {result: result});
         });
     }
 

@@ -76,6 +76,20 @@ class Model_Leap_User extends DB_ORM_Model {
             'resetTimestamp' => new DB_ORM_Field_DateTime($this, array(
                 'nullable' => TRUE,
             )),
+            'visualEditorAutosaveTime' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'default' => 60000
+            )),
+            'oauth_provider_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
+            'oauth_id' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -139,6 +153,34 @@ private static function initialize_metadata($object)
         }
     }
 
+    public function getUserByOAuth($oauthProvider, $oauthId) {
+        $builder = DB_SQL::select('default')
+                            ->from($this->table())
+                            ->where('oauth_provider_id', '=', $oauthProvider, 'AND')
+                            ->where('oauth_id', '=', $oauthId);
+        $result = $builder->query();
+
+        $user = null;
+        if ($result->is_loaded()) {
+            $user = DB_ORM::model('user', array((int)$result[0]['id']));
+        }
+
+        return $user;
+    }
+
+    public function createOAuthUser($oauthProviderId, $oauthId, $nickname) {
+        return DB_ORM::insert('user')
+                        ->column('username', $oauthId . 'username')
+                        ->column('password', Auth::instance()->hash($oauthId . 'password'))
+                        ->column('email', $oauthId . '@email.generated')
+                        ->column('nickname', $nickname)
+                        ->column('language_id', 1)
+                        ->column('type_id', 1)
+                        ->column('oauth_provider_id', $oauthProviderId)
+                        ->column('oauth_id', $oauthId)
+                        ->execute();
+    }
+
     public function getUserByEmail($email) {
         $builder = DB_SQL::select('default')->from($this->table())->where('email', '=', $email);
         $result = $builder->query();
@@ -167,8 +209,8 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId() {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id');
+    public function getAllUsersId($order = 'DESC') {
+        $builder = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order);
         $result = $builder->query();
         
         
@@ -182,9 +224,9 @@ private static function initialize_metadata($object)
         return $ids;
     }
     
-    public function getAllUsers() {
+    public function getAllUsers($order = 'DESC') {
         $result = array();
-        $ids = $this->getAllUsersId();
+        $ids = $this->getAllUsersId($order);
         
         foreach($ids as $id) {
             $result[] = DB_ORM::model('user', array($id));
@@ -268,12 +310,14 @@ private static function initialize_metadata($object)
         return NULL;
     }
     
-    public function getUsersByTypeName($typeName, $ids = NULL) {
+    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC') {
         $users = array();
         if($ids != NULL) {
             $builder = DB_SQL::select('default')
                     ->from($this->table())
-                    ->where('id', 'NOT IN', $ids);
+                    ->where('id', 'NOT IN', $ids)
+                    ->order_by('nickname', $order);
+
             $result = $builder->query();
             if($result->is_loaded()) {
                 foreach($result as $record) {
@@ -281,7 +325,7 @@ private static function initialize_metadata($object)
                 }
             }
         } else {
-            $users = $this->getAllUsers();
+            $users = $this->getAllUsers($order);
         }
         
         if($users != NULL and count($users) > 0) {
@@ -296,6 +340,10 @@ private static function initialize_metadata($object)
         }
         
         return NULL;
+    }
+
+    public function updateSettings($userId, $settings) {
+        DB_ORM::update('user')->set('visualEditorAutosaveTime', Arr::get($settings, 'time', 50000))->where('id', '=', $userId)->execute();
     }
 }
 

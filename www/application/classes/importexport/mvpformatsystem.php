@@ -278,15 +278,31 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         }
         if (isset($this->labyrinthArray['map_node'])){
             if (count($this->labyrinthArray['map_node']) > 0){
+                $searchNodeIDArray = array();
+                $replaceNodeIDArray = array();
+                foreach($this->labyrinthArray['map_node'] as $key => $node){
+                    $searchNodeIDArray[] = '['.$key.']';
+                    $replaceNodeIDArray[] = '['.$node['database_id'].']';
+                }
                 foreach($this->labyrinthArray['map_node'] as $key => $node){
                     $md5Text = md5($node['text']);
                     $node['text'] = str_replace($searchArray, $replaceArray, $node['text']);
                     $node['text'] = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
                     $newMd5Text = md5($node['text']);
-                    if ($md5Text != $newMd5Text){
+
+                    $md5Conditional = md5($node['conditional']);
+                    $node['conditional'] = str_replace($searchNodeIDArray, $replaceNodeIDArray, $node['conditional']);
+                    $newMd5Conditional = md5($node['conditional']);
+
+                    if (($md5Text != $newMd5Text) || ($md5Conditional != $newMd5Conditional)){
                         $nodeDB = DB_ORM::model('map_node', array((int) $node['database_id']));
                         if ($nodeDB->is_loaded()){
-                            $nodeDB->text = $node['text'];
+                            if ($md5Text != $newMd5Text){
+                                $nodeDB->text = $node['text'];
+                            }
+                            if ($md5Conditional != $newMd5Conditional) {
+                                $nodeDB->conditional = $node['conditional'];
+                            }
                             $nodeDB->save();
                         }
                     }
@@ -360,6 +376,9 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             $data['x'] = ($data['x'] == '') ? NULL : (int) $data['x'];
             $data['y'] = ($data['y'] == '') ? NULL : (int) $data['y'];
             $data['rgb'] = ($data['rgb'] == '') ? NULL : $data['rgb'];
+            $data['kfp'] = ($data['kfp'] == '') ? 0 : 1;
+            $data['undo'] = ($data['undo'] == '') ? 0 : 1;
+            $data['end'] = ($data['end'] == '') ? 0 : 1;
         }
 
         if ($modelName == 'map_dam_element'){

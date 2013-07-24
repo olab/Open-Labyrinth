@@ -1,0 +1,299 @@
+<rdf:RDF
+  xml:base="http://purl.org/meducator/resourceType/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType/">
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact/"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial/"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#professionalPracticeArtefact">
+    <rdfs:label>Professional Practice Artefact</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#database"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#forms"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#evidenceBasedMedicineForm"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#clinicalPracticeGuideline"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#diagnosticExam"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#diagnosticExamWithAnnotations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#diagnosticAlgorithm"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#scientificJournalArticle"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#table"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#clinicalCase"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#clinicalRecord"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#clinicalRecordWithAnnotations"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#experiment"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#bioSignalDataset"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#software"/>
+  </skos:Concept>
+
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#referenceMaterial">
+    <rdfs:label>Reference Material</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#atlas"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#bibliography"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#dictionary"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#encyclopedia"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#handbook"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#indexes"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#terminology"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#laboratoryManuals"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#pharmacopoeias"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#legislation"/>
+  </skos:Concept>
+
+
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#educationalPracticeArtefact">
+    <rdfs:label>Educational Practice Artefact</rdfs:label>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#courseModuleUnit"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#lecture"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#lectureNotes"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#tutorialHandout"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#problemsExercises"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#problemsExercisesFeedback"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#textbookChapter"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#curriculumSyllabusProgramme"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#caseStudy"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#OSCE"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#gameSeriousGame"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#virtualPatient"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#assessmentItem"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#readingList"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#studyGuide"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#workedExample"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#demonstration"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#simulation"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#educationalPolicy"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#activityFieldWorkProject"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#assessmentItemWithAnswersFeedback"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#figureDiagramPicture"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#teachingFile"/>
+    <skos:narrower rdf:resource="http://purl.org/meducator/resourceType#practical"/>
+  </skos:Concept>
+
+
+
+
+  <!--START OF EDUCATIONAL PRACTICE ARTIFACT TYPE DECLARATION-->
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#readingList">
+    <skos:prefLabel>Reading List</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#activityFieldWorkProject">
+    <skos:prefLabel>Activity/Fieldwork/Project</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#assessmentItemWithAnswersFeedback">
+    <skos:prefLabel>Assessment Item With Answers/Feedback</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#studyGuide">
+    <skos:prefLabel>Study Guide</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#educationalPolicy">
+    <skos:prefLabel>Educational Policy</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#curriculumSyllabusProgramme">
+    <skos:prefLabel>Curriculum/Syllabus/Programme</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#figureDiagramPicture">
+    <skos:prefLabel>Figure/Diagram/Picture</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#assessmentItem">
+    <skos:prefLabel>Assessment Item</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#workedExample">
+    <skos:prefLabel>Worked Example</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#demonstration">
+    <skos:prefLabel>Demonstration</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#courseModuleUnit">
+    <skos:prefLabel>Course/Module/Unit</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#lecture">
+    <skos:prefLabel>Lecture</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#tutorialHandout">
+    <skos:prefLabel>Tutorial/Handout</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#problemsAndExercises">
+    <skos:prefLabel>Problems and Exercises</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#problemsAndExercisesWithFeedback">
+    <skos:prefLabel>Problems and exercises with feedback</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#textbookChapter">
+    <skos:prefLabel>Textbook/Chapter</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#caseStudy">
+    <skos:prefLabel>Case study</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#simulation">
+    <skos:prefLabel>Simulation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#OSCE">
+    <skos:prefLabel>Objective Structured Clinical Examination (OSCE)</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#gameSeriousGame">
+    <skos:prefLabel>Game, serious game</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#virtualPatient">
+    <skos:prefLabel>Virtual patient</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#teachingFile">
+    <skos:prefLabel>Teaching File</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#lectureNotes">
+    <skos:prefLabel>Lecture Notes</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#practical">
+    <skos:prefLabel>Practical</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#educationalPracticeArtefact"/>
+  </skos:Concept>
+
+  <!--END OF EDUCATIONAL PRACTICE ARTIFACT TYPE DECLARATION-->
+
+
+
+
+
+  <!-- START OF REFERENCE MATERIAL TYPE DECLARATION -->
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#atlas">
+    <skos:prefLabel>Atlas</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#bibliography">
+    <skos:prefLabel>Bibliography</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#dictionary">
+    <skos:prefLabel>Dictionary</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#encyclopedia">
+    <skos:prefLabel>Encyclopedia</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#handbook">
+    <skos:prefLabel>Handbook</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#indexes">
+    <skos:prefLabel>Indexes</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#laboratoryManuals">
+    <skos:prefLabel>Laboratory manuals</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#pharmacopoeias">
+    <skos:prefLabel>Pharmacopoeias</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#legislation">
+    <skos:prefLabel>Legislation</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#terminology">
+    <skos:prefLabel>Terminology</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#referenceMaterial"/>
+  </skos:Concept>
+  <!-- END OF REFERENCE MATERIAL TYPE DECLARATION -->
+
+
+  <!-- START OF PROFESSIONAL PRACTIC ARTIFACT TYPE DECLARATION -->
+
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#software">
+    <skos:prefLabel>Software</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#forms">
+    <skos:prefLabel>Forms</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#guideline">
+    <skos:prefLabel>Guideline</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#scientificJournalArticle">
+    <skos:prefLabel>Scientific Journal article</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#table">
+    <skos:prefLabel>Table</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#bioSignalDataset">
+    <skos:prefLabel>Bio-signal dataset</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#clinicalPase">
+    <skos:prefLabel>Clinical case</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#clinicalRecord">
+    <skos:prefLabel>Clinical record</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#clinicalRecordWithAnnotations">
+    <skos:prefLabel>Clinical record with annotations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#diagnosticExam">
+    <skos:prefLabel>Diagnostic exam</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#diagnosticExamWithAnnotations">
+    <skos:prefLabel>Diagnostic exam with annotations</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#experiment">
+    <skos:prefLabel>Experiment</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#evidenceBasedMedicineForm">
+    <skos:prefLabel>Evidence based medicine form</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#diagnosticAlgorithm">
+    <skos:prefLabel>Diagnostic algorithm</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#clinicalPracticeGuideline">
+    <skos:prefLabel>Clinical Practice Guideline</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://purl.org/meducator/resourceType#database">
+    <skos:prefLabel>Database</skos:prefLabel>
+    <skos:broader rdf:resource="http://purl.org/meducator/resourceType#professionalPracticeArtefact"/>
+  </skos:Concept>
+  <!-- END OF PROFESSIONAL PRACTICE ARTIFACT TYPE DECLARATION -->
+
+</rdf:RDF>
+
+

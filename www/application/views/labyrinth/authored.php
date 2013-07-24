@@ -74,10 +74,17 @@ if (isset($templateData['maps'])) {
                 </td>
                 <td class="center">
                     <div class="btn-group">
-                    <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
-                        <i class="icon-play icon-white"></i>
-                        Play
-                    </a>
+                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                        <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a>
+                    <?php } else { ?>
+                        <a class="btn btn-success show-root-error" href="javascript:void(0)">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a>
+                    <?php } ?>
                     <a class="btn btn-info" href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
                         <i class="icon-edit icon-white"></i>
                         Edit

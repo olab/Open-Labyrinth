@@ -20,6 +20,7 @@
  */
 if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 
 <?php if (isset($templateData['commonRule'])){ ?>
     <div class="page-header">    <h1><?php echo __('Edit Rule'); ?></h1></div>
@@ -52,8 +53,16 @@ if (isset($templateData['map'])) { ?>
     <a id="availableNodesId" style="display:none;"><?php echo $templateData['nodes']['id']; ?></a>
     <a id="availableCountersText" style="display:none;"><?php echo $templateData['counters']['text']; ?></a>
     <a id="availableCountersId" style="display:none;"><?php echo $templateData['counters']['id']; ?></a>
+
     <div class="pull-right" style="margin-top:10px;">
-        <input type="submit" class="btn btn-primary btn-large" name="Submit" value="<?php echo __('Submit'); ?>">
+        <dl class="status-label dl-horizontal">
+            <dt>Status</dt>
+            <dd><span class="label label-warning">The rule hasn't been checked.</span><span class="hide label label-success">The rule is correct.</span><span class="hide label label-important">The rule has error(s).</span></dd>
+        </dl>
+        <input style="float:right;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
+        <input style="float:right;" id="rule_submit_button" type="submit" class="btn btn-primary btn-large hide" name="save_rule" value="<?php echo __('Save rule'); ?>">
     </div>
+    <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
+    <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
 </form>
 <?php } ?>

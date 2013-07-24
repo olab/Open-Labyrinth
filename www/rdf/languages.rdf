@@ -1,0 +1,1309 @@
+<rdf:RDF xml:lang="en"
+  xmlns:rdf  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+  xmlns      = "http://downlode.org/rdf/iso-639/schema#"
+>
+
+<Language rdf:ID="ab">
+  <name_en>Abkhazian</name_en>
+  <name_fr>abkhaze</name_fr>
+  <alpha2>ab</alpha2>
+  <alpha3>abk</alpha3>
+</Language>
+
+<Language rdf:ID="aa">
+  <name_en>Afar</name_en>
+  <name_fr>afar</name_fr>
+  <alpha2>aa</alpha2>
+  <alpha3>aar</alpha3>
+</Language>
+
+<Language rdf:ID="af">
+  <name_en>Afrikaans</name_en>
+  <name_fr>afrikaans</name_fr>
+  <alpha2>af</alpha2>
+  <alpha3>afr</alpha3>
+</Language>
+
+<Language rdf:ID="ak">
+  <name_en>Akan</name_en>
+  <name_fr>akan</name_fr>
+  <alpha2>ak</alpha2>
+  <alpha3>aka</alpha3>
+</Language>
+
+<Language rdf:ID="sq">
+  <name_en>Albanian</name_en>
+  <name_fr>albanais</name_fr>
+  <alpha2>sq</alpha2>
+  <alpha3>alb/sqi</alpha3>
+</Language>
+
+<Language rdf:ID="am">
+  <name_en>Amharic</name_en>
+  <name_fr>amharique</name_fr>
+  <alpha2>am</alpha2>
+  <alpha3>amh</alpha3>
+</Language>
+
+<Language rdf:ID="ar">
+  <name_en>Arabic</name_en>
+  <name_fr>arabe</name_fr>
+  <alpha2>ar</alpha2>
+  <alpha3>ara</alpha3>
+</Language>
+
+<Language rdf:ID="an">
+  <name_en>Aragonese</name_en>
+  <name_fr>aragonais</name_fr>
+  <alpha2>an</alpha2>
+  <alpha3>arg</alpha3>
+</Language>
+
+<Language rdf:ID="hy">
+  <name_en>Armenian</name_en>
+  <name_fr>arménien</name_fr>
+  <alpha2>hy</alpha2>
+  <alpha3>arm/hye</alpha3>
+</Language>
+
+<Language rdf:ID="as">
+  <name_en>Assamese</name_en>
+  <name_fr>assamais</name_fr>
+  <alpha2>as</alpha2>
+  <alpha3>asm</alpha3>
+</Language>
+
+<Language rdf:ID="av">
+  <name_en>Avaric</name_en>
+  <name_fr>avar</name_fr>
+  <alpha2>av</alpha2>
+  <alpha3>ava</alpha3>
+</Language>
+
+<Language rdf:ID="ae">
+  <name_en>Avestan</name_en>
+  <name_fr>avestique</name_fr>
+  <alpha2>ae</alpha2>
+  <alpha3>ave</alpha3>
+</Language>
+
+<Language rdf:ID="ay">
+  <name_en>Aymara</name_en>
+  <name_fr>aymara</name_fr>
+  <alpha2>ay</alpha2>
+  <alpha3>aym</alpha3>
+</Language>
+
+<Language rdf:ID="az">
+  <name_en>Azerbaijani</name_en>
+  <name_fr>azéri</name_fr>
+  <alpha2>az</alpha2>
+  <alpha3>aze</alpha3>
+</Language>
+
+<Language rdf:ID="bm">
+  <name_en>Bambara</name_en>
+  <name_fr>bambara</name_fr>
+  <alpha2>bm</alpha2>
+  <alpha3>bam</alpha3>
+</Language>
+
+<Language rdf:ID="ba">
+  <name_en>Bashkir</name_en>
+  <name_fr>bachkir</name_fr>
+  <alpha2>ba</alpha2>
+  <alpha3>bak</alpha3>
+</Language>
+
+<Language rdf:ID="eu">
+  <name_en>Basque</name_en>
+  <name_fr>basque</name_fr>
+  <alpha2>eu</alpha2>
+  <alpha3>baq/eus</alpha3>
+</Language>
+
+<Language rdf:ID="be">
+  <name_en>Belarusian</name_en>
+  <name_fr>biélorusse</name_fr>
+  <alpha2>be</alpha2>
+  <alpha3>bel</alpha3>
+</Language>
+
+<Language rdf:ID="bn">
+  <name_en>Bengali</name_en>
+  <name_fr>bengali</name_fr>
+  <alpha2>bn</alpha2>
+  <alpha3>ben</alpha3>
+</Language>
+
+<Language rdf:ID="bh">
+  <name_en>Bihari</name_en>
+  <name_fr>bihari</name_fr>
+  <alpha2>bh</alpha2>
+  <alpha3>bih</alpha3>
+</Language>
+
+<Language rdf:ID="bi">
+  <name_en>Bislama</name_en>
+  <name_fr>bichlamar</name_fr>
+  <alpha2>bi</alpha2>
+  <alpha3>bis</alpha3>
+</Language>
+
+<Language rdf:ID="nb">
+  <name_en>Bokmål, Norwegian; Norwegian Bokmål</name_en>
+  <name_fr>bokmål, norvégien; bokmål norvégien</name_fr>
+  <alpha2>nb</alpha2>
+  <alpha3>nob</alpha3>
+</Language>
+
+<Language rdf:ID="bs">
+  <name_en>Bosnian</name_en>
+  <name_fr>bosniaque</name_fr>
+  <alpha2>bs</alpha2>
+  <alpha3>bos</alpha3>
+</Language>
+
+<Language rdf:ID="br">
+  <name_en>Breton</name_en>
+  <name_fr>breton</name_fr>
+  <alpha2>br</alpha2>
+  <alpha3>bre</alpha3>
+</Language>
+
+<Language rdf:ID="bg">
+  <name_en>Bulgarian</name_en>
+  <name_fr>bulgare</name_fr>
+  <alpha2>bg</alpha2>
+  <alpha3>bul</alpha3>
+</Language>
+
+<Language rdf:ID="my">
+  <name_en>Burmese</name_en>
+  <name_fr>birman</name_fr>
+  <alpha2>my</alpha2>
+  <alpha3>bur/mya</alpha3>
+</Language>
+
+<Language rdf:ID="ca">
+  <name_en>Catalan; Valencian</name_en>
+  <name_fr>catalan; valencien</name_fr>
+  <alpha2>ca</alpha2>
+  <alpha3>cat</alpha3>
+</Language>
+
+<Language rdf:ID="ch">
+  <name_en>Chamorro</name_en>
+  <name_fr>chamorro</name_fr>
+  <alpha2>ch</alpha2>
+  <alpha3>cha</alpha3>
+</Language>
+
+<Language rdf:ID="ce">
+  <name_en>Chechen</name_en>
+  <name_fr>tchétchène</name_fr>
+  <alpha2>ce</alpha2>
+  <alpha3>che</alpha3>
+</Language>
+
+<Language rdf:ID="ny">
+  <name_en>Chewa; Chichewa; Nyanja</name_en>
+  <name_fr>chewa, chichewa, nyanja</name_fr>
+  <alpha2>ny</alpha2>
+  <alpha3>nya</alpha3>
+</Language>
+
+<Language rdf:ID="zh">
+  <name_en>Chinese</name_en>
+  <name_fr>chinois</name_fr>
+  <alpha2>zh</alpha2>
+  <alpha3>chi/zho</alpha3>
+</Language>
+
+<Language rdf:ID="cu">
+  <name_en>Church Slavic; Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic</name_en>
+  <name_fr>slavon d'église; vieux slave; slavon liturgique; vieux bulgare</name_fr>
+  <alpha2>cu</alpha2>
+  <alpha3>chu</alpha3>
+</Language>
+
+<Language rdf:ID="cv">
+  <name_en>Chuvash</name_en>
+  <name_fr>tchouvache</name_fr>
+  <alpha2>cv</alpha2>
+  <alpha3>chv</alpha3>
+</Language>
+
+<Language rdf:ID="kw">
+  <name_en>Cornish</name_en>
+  <name_fr>cornique</name_fr>
+  <alpha2>kw</alpha2>
+  <alpha3>cor</alpha3>
+</Language>
+
+<Language rdf:ID="co">
+  <name_en>Corsican</name_en>
+  <name_fr>corse</name_fr>
+  <alpha2>co</alpha2>
+  <alpha3>cos</alpha3>
+</Language>
+
+<Language rdf:ID="cr">
+  <name_en>Cree</name_en>
+  <name_fr>cree</name_fr>
+  <alpha2>cr</alpha2>
+  <alpha3>cre</alpha3>
+</Language>
+
+<Language rdf:ID="hr">
+  <name_en>Croatian</name_en>
+  <name_fr>croate</name_fr>
+  <alpha2>hr</alpha2>
+  <alpha3>scr/hrv</alpha3>
+</Language>
+
+<Language rdf:ID="cs">
+  <name_en>Czech</name_en>
+  <name_fr>tchèque</name_fr>
+  <alpha2>cs</alpha2>
+  <alpha3>cze/ces</alpha3>
+</Language>
+
+<Language rdf:ID="da">
+  <name_en>Danish</name_en>
+  <name_fr>danois</name_fr>
+  <alpha2>da</alpha2>
+  <alpha3>dan</alpha3>
+</Language>
+
+<Language rdf:ID="dv">
+  <name_en>Divehi</name_en>
+  <name_fr>maldivien</name_fr>
+  <alpha2>dv</alpha2>
+  <alpha3>div</alpha3>
+</Language>
+
+<Language rdf:ID="nl">
+  <name_en>Dutch; Flemish</name_en>
+  <name_fr>néerlandais; flamand</name_fr>
+  <alpha2>nl</alpha2>
+  <alpha3>dut/nld</alpha3>
+</Language>
+
+<Language rdf:ID="dz">
+  <name_en>Dzongkha</name_en>
+  <name_fr>dzongkha</name_fr>
+  <alpha2>dz</alpha2>
+  <alpha3>dzo</alpha3>
+</Language>
+
+<Language rdf:ID="en">
+  <name_en>English</name_en>
+  <name_fr>anglais</name_fr>
+  <alpha2>en</alpha2>
+  <alpha3>eng</alpha3>
+</Language>
+
+<Language rdf:ID="eo">
+  <name_en>Esperanto</name_en>
+  <name_fr>espéranto</name_fr>
+  <alpha2>eo</alpha2>
+  <alpha3>epo</alpha3>
+</Language>
+
+<Language rdf:ID="et">
+  <name_en>Estonian</name_en>
+  <name_fr>estonien</name_fr>
+  <alpha2>et</alpha2>
+  <alpha3>est</alpha3>
+</Language>
+
+<Language rdf:ID="ee">
+  <name_en>Ewe</name_en>
+  <name_fr>éwé</name_fr>
+  <alpha2>ee</alpha2>
+  <alpha3>ewe</alpha3>
+</Language>
+
+<Language rdf:ID="fo">
+  <name_en>Faroese</name_en>
+  <name_fr>féroïen</name_fr>
+  <alpha2>fo</alpha2>
+  <alpha3>fao</alpha3>
+</Language>
+
+<Language rdf:ID="fj">
+  <name_en>Fijian</name_en>
+  <name_fr>fidjien</name_fr>
+  <alpha2>fj</alpha2>
+  <alpha3>fij</alpha3>
+</Language>
+
+<Language rdf:ID="fi">
+  <name_en>Finnish</name_en>
+  <name_fr>finnois</name_fr>
+  <alpha2>fi</alpha2>
+  <alpha3>fin</alpha3>
+</Language>
+
+<Language rdf:ID="fr">
+  <name_en>French</name_en>
+  <name_fr>français</name_fr>
+  <alpha2>fr</alpha2>
+  <alpha3>fre/fra</alpha3>
+</Language>
+
+<Language rdf:ID="fy">
+  <name_en>Frisian</name_en>
+  <name_fr>frison</name_fr>
+  <alpha2>fy</alpha2>
+  <alpha3>fry</alpha3>
+</Language>
+
+<Language rdf:ID="ff">
+  <name_en>Fulah</name_en>
+  <name_fr>peul</name_fr>
+  <alpha2>ff</alpha2>
+  <alpha3>ful</alpha3>
+</Language>
+
+<Language rdf:ID="gd">
+  <name_en>Gaelic; Scottish Gaelic</name_en>
+  <name_fr>gaélique; gaélique écossais</name_fr>
+  <alpha2>gd</alpha2>
+  <alpha3>gla</alpha3>
+</Language>
+
+<Language rdf:ID="gl">
+  <name_en>Galician</name_en>
+  <name_fr>galicien</name_fr>
+  <alpha2>gl</alpha2>
+  <alpha3>glg</alpha3>
+</Language>
+
+<Language rdf:ID="lg">
+  <name_en>Ganda</name_en>
+  <name_fr>ganda</name_fr>
+  <alpha2>lg</alpha2>
+  <alpha3>lug</alpha3>
+</Language>
+
+<Language rdf:ID="ka">
+  <name_en>Georgian</name_en>
+  <name_fr>géorgien</name_fr>
+  <alpha2>ka</alpha2>
+  <alpha3>geo/kat</alpha3>
+</Language>
+
+<Language rdf:ID="de">
+  <name_en>German</name_en>
+  <name_fr>allemand</name_fr>
+  <alpha2>de</alpha2>
+  <alpha3>ger/deu</alpha3>
+</Language>
+
+<Language rdf:ID="ki">
+  <name_en>Gikuyu; Kikuyu</name_en>
+  <name_fr>kikuyu</name_fr>
+  <alpha2>ki</alpha2>
+  <alpha3>kik</alpha3>
+</Language>
+
+<Language rdf:ID="el">
+  <name_en>Greek, Modern (1453-)</name_en>
+  <name_fr>grec moderne (après 1453)</name_fr>
+  <alpha2>el</alpha2>
+  <alpha3>gre/ell</alpha3>
+</Language>
+
+<Language rdf:ID="kl">
+  <name_en>Greenlandic; Kalaallisut</name_en>
+  <name_fr>groenlandais</name_fr>
+  <alpha2>kl</alpha2>
+  <alpha3>kal</alpha3>
+</Language>
+
+<Language rdf:ID="gn">
+  <name_en>Guarani</name_en>
+  <name_fr>guarani</name_fr>
+  <alpha2>gn</alpha2>
+  <alpha3>grn</alpha3>
+</Language>
+
+<Language rdf:ID="gu">
+  <name_en>Gujarati</name_en>
+  <name_fr>goudjrati</name_fr>
+  <alpha2>gu</alpha2>
+  <alpha3>guj</alpha3>
+</Language>
+
+<Language rdf:ID="ht">
+  <name_en>Haitian; Haitian Creole</name_en>
+  <name_fr>haïtien; créole haïtien</name_fr>
+  <alpha2>ht</alpha2>
+  <alpha3>hat</alpha3>
+</Language>
+
+<Language rdf:ID="ha">
+  <name_en>Hausa</name_en>
+  <name_fr>haoussa</name_fr>
+  <alpha2>ha</alpha2>
+  <alpha3>hau</alpha3>
+</Language>
+
+<Language rdf:ID="he">
+  <name_en>Hebrew</name_en>
+  <name_fr>hébreu</name_fr>
+  <alpha2>he</alpha2>
+  <alpha3>heb</alpha3>
+</Language>
+
+<Language rdf:ID="hz">
+  <name_en>Herero</name_en>
+  <name_fr>herero</name_fr>
+  <alpha2>hz</alpha2>
+  <alpha3>her</alpha3>
+</Language>
+
+<Language rdf:ID="hi">
+  <name_en>Hindi</name_en>
+  <name_fr>hindi</name_fr>
+  <alpha2>hi</alpha2>
+  <alpha3>hin</alpha3>
+</Language>
+
+<Language rdf:ID="ho">
+  <name_en>Hiri Motu</name_en>
+  <name_fr>hiri motu</name_fr>
+  <alpha2>ho</alpha2>
+  <alpha3>hmo</alpha3>
+</Language>
+
+<Language rdf:ID="hu">
+  <name_en>Hungarian</name_en>
+  <name_fr>hongrois</name_fr>
+  <alpha2>hu</alpha2>
+  <alpha3>hun</alpha3>
+</Language>
+
+<Language rdf:ID="is">
+  <name_en>Icelandic</name_en>
+  <name_fr>islandais</name_fr>
+  <alpha2>is</alpha2>
+  <alpha3>ice/isl</alpha3>
+</Language>
+
+<Language rdf:ID="io">
+  <name_en>Ido</name_en>
+  <name_fr>ido</name_fr>
+  <alpha2>io</alpha2>
+  <alpha3>ido</alpha3>
+</Language>
+
+<Language rdf:ID="ig">
+  <name_en>Igbo</name_en>
+  <name_fr>igbo</name_fr>
+  <alpha2>ig</alpha2>
+  <alpha3>ibo</alpha3>
+</Language>
+
+<Language rdf:ID="id">
+  <name_en>Indonesian</name_en>
+  <name_fr>indonésien</name_fr>
+  <alpha2>id</alpha2>
+  <alpha3>ind</alpha3>
+</Language>
+
+<Language rdf:ID="ia">
+  <name_en>Auxiliary Language Association)</name_en>
+  <name_fr>interlingua (langue auxiliaire internationale)</name_fr>
+  <alpha2>ia</alpha2>
+  <alpha3>ina</alpha3>
+</Language>
+
+<Language rdf:ID="ie">
+  <name_en>Interlingue</name_en>
+  <name_fr>interlingue</name_fr>
+  <alpha2>ie</alpha2>
+  <alpha3>ile</alpha3>
+</Language>
+
+<Language rdf:ID="iu">
+  <name_en>Inuktitut</name_en>
+  <name_fr>inuktitut</name_fr>
+  <alpha2>iu</alpha2>
+  <alpha3>iku</alpha3>
+</Language>
+
+<Language rdf:ID="ik">
+  <name_en>Inupiaq</name_en>
+  <name_fr>inupiaq</name_fr>
+  <alpha2>ik</alpha2>
+  <alpha3>ipk</alpha3>
+</Language>
+
+<Language rdf:ID="ga">
+  <name_en>Irish</name_en>
+  <name_fr>irlandais</name_fr>
+  <alpha2>ga</alpha2>
+  <alpha3>gle</alpha3>
+</Language>
+
+<Language rdf:ID="it">
+  <name_en>Italian</name_en>
+  <name_fr>italien</name_fr>
+  <alpha2>it</alpha2>
+  <alpha3>ita</alpha3>
+</Language>
+
+<Language rdf:ID="ja">
+  <name_en>Japanese</name_en>
+  <name_fr>japonais</name_fr>
+  <alpha2>ja</alpha2>
+  <alpha3>jpn</alpha3>
+</Language>
+
+<Language rdf:ID="jv">
+  <name_en>Javanese</name_en>
+  <name_fr>javanais</name_fr>
+  <alpha2>jv</alpha2>
+  <alpha3>jav</alpha3>
+</Language>
+
+<Language rdf:ID="kn">
+  <name_en>Kannada</name_en>
+  <name_fr>kannada</name_fr>
+  <alpha2>kn</alpha2>
+  <alpha3>kan</alpha3>
+</Language>
+
+<Language rdf:ID="kr">
+  <name_en>Kanuri</name_en>
+  <name_fr>kanouri</name_fr>
+  <alpha2>kr</alpha2>
+  <alpha3>kau</alpha3>
+</Language>
+
+<Language rdf:ID="ks">
+  <name_en>Kashmiri</name_en>
+  <name_fr>kashmiri</name_fr>
+  <alpha2>ks</alpha2>
+  <alpha3>kas</alpha3>
+</Language>
+
+<Language rdf:ID="kk">
+  <name_en>Kazakh</name_en>
+  <name_fr>kazakh</name_fr>
+  <alpha2>kk</alpha2>
+  <alpha3>kaz</alpha3>
+</Language>
+
+<Language rdf:ID="km">
+  <name_en>Khmer</name_en>
+  <name_fr>khmer</name_fr>
+  <alpha2>km</alpha2>
+  <alpha3>khm</alpha3>
+</Language>
+
+<Language rdf:ID="rw">
+  <name_en>Kinyarwanda</name_en>
+  <name_fr>rwanda</name_fr>
+  <alpha2>rw</alpha2>
+  <alpha3>kin</alpha3>
+</Language>
+
+<Language rdf:ID="ky">
+  <name_en>Kirghiz</name_en>
+  <name_fr>kirghize</name_fr>
+  <alpha2>ky</alpha2>
+  <alpha3>kir</alpha3>
+</Language>
+
+<Language rdf:ID="kv">
+  <name_en>Komi</name_en>
+  <name_fr>komi</name_fr>
+  <alpha2>kv</alpha2>
+  <alpha3>kom</alpha3>
+</Language>
+
+<Language rdf:ID="kg">
+  <name_en>Kongo</name_en>
+  <name_fr>kongo</name_fr>
+  <alpha2>kg</alpha2>
+  <alpha3>kon</alpha3>
+</Language>
+
+<Language rdf:ID="ko">
+  <name_en>Korean</name_en>
+  <name_fr>coréen</name_fr>
+  <alpha2>ko</alpha2>
+  <alpha3>kor</alpha3>
+</Language>
+
+<Language rdf:ID="kj">
+  <name_en>Kuanyama; Kwanyama</name_en>
+  <name_fr>kuanyama; kwanyama</name_fr>
+  <alpha2>kj</alpha2>
+  <alpha3>kua</alpha3>
+</Language>
+
+<Language rdf:ID="ku">
+  <name_en>Kurdish</name_en>
+  <name_fr>kurde</name_fr>
+  <alpha2>ku</alpha2>
+  <alpha3>kur</alpha3>
+</Language>
+
+<Language rdf:ID="lo">
+  <name_en>Lao</name_en>
+  <name_fr>lao</name_fr>
+  <alpha2>lo</alpha2>
+  <alpha3>lao</alpha3>
+</Language>
+
+<Language rdf:ID="la">
+  <name_en>Latin</name_en>
+  <name_fr>latin</name_fr>
+  <alpha2>la</alpha2>
+  <alpha3>lat</alpha3>
+</Language>
+
+<Language rdf:ID="lv">
+  <name_en>Latvian</name_en>
+  <name_fr>letton</name_fr>
+  <alpha2>lv</alpha2>
+  <alpha3>lav</alpha3>
+</Language>
+
+<Language rdf:ID="lb">
+  <name_en>Letzeburgesch; Luxembourgish</name_en>
+  <name_fr>luxembourgeois</name_fr>
+  <alpha2>lb</alpha2>
+  <alpha3>ltz</alpha3>
+</Language>
+
+<Language rdf:ID="li">
+  <name_en>Limburgan; Limburger; Limburgish</name_en>
+  <name_fr>limbourgeois</name_fr>
+  <alpha2>li</alpha2>
+  <alpha3>lim</alpha3>
+</Language>
+
+<Language rdf:ID="ln">
+  <name_en>Lingala</name_en>
+  <name_fr>lingala</name_fr>
+  <alpha2>ln</alpha2>
+  <alpha3>lin</alpha3>
+</Language>
+
+<Language rdf:ID="lt">
+  <name_en>Lithuanian</name_en>
+  <name_fr>lituanien</name_fr>
+  <alpha2>lt</alpha2>
+  <alpha3>lit</alpha3>
+</Language>
+
+<Language rdf:ID="lu">
+  <name_en>Luba-Katanga</name_en>
+  <name_fr>luba-katanga</name_fr>
+  <alpha2>lu</alpha2>
+  <alpha3>lub</alpha3>
+</Language>
+
+<Language rdf:ID="mk">
+  <name_en>Macedonian</name_en>
+  <name_fr>macédonien</name_fr>
+  <alpha2>mk</alpha2>
+  <alpha3>mac/mkd</alpha3>
+</Language>
+
+<Language rdf:ID="mg">
+  <name_en>Malagasy</name_en>
+  <name_fr>malgache</name_fr>
+  <alpha2>mg</alpha2>
+  <alpha3>mlg</alpha3>
+</Language>
+
+<Language rdf:ID="ms">
+  <name_en>Malay</name_en>
+  <name_fr>malais</name_fr>
+  <alpha2>ms</alpha2>
+  <alpha3>may/msa</alpha3>
+</Language>
+
+<Language rdf:ID="ml">
+  <name_en>Malayalam</name_en>
+  <name_fr>malayalam</name_fr>
+  <alpha2>ml</alpha2>
+  <alpha3>mal</alpha3>
+</Language>
+
+<Language rdf:ID="mt">
+  <name_en>Maltese</name_en>
+  <name_fr>maltais</name_fr>
+  <alpha2>mt</alpha2>
+  <alpha3>mlt</alpha3>
+</Language>
+
+<Language rdf:ID="gv">
+  <name_en>Manx</name_en>
+  <name_fr>manx; mannois</name_fr>
+  <alpha2>gv</alpha2>
+  <alpha3>glv</alpha3>
+</Language>
+
+<Language rdf:ID="mi">
+  <name_en>Maori</name_en>
+  <name_fr>maori</name_fr>
+  <alpha2>mi</alpha2>
+  <alpha3>mao/mri</alpha3>
+</Language>
+
+<Language rdf:ID="mr">
+  <name_en>Marathi</name_en>
+  <name_fr>marathe</name_fr>
+  <alpha2>mr</alpha2>
+  <alpha3>mar</alpha3>
+</Language>
+
+<Language rdf:ID="mh">
+  <name_en>Marshallese</name_en>
+  <name_fr>marshall</name_fr>
+  <alpha2>mh</alpha2>
+  <alpha3>mah</alpha3>
+</Language>
+
+<Language rdf:ID="mo">
+  <name_en>Moldavian</name_en>
+  <name_fr>moldave</name_fr>
+  <alpha2>mo</alpha2>
+  <alpha3>mol</alpha3>
+</Language>
+
+<Language rdf:ID="mn">
+  <name_en>Mongolian</name_en>
+  <name_fr>mongol</name_fr>
+  <alpha2>mn</alpha2>
+  <alpha3>mon</alpha3>
+</Language>
+
+<Language rdf:ID="na">
+  <name_en>Nauru</name_en>
+  <name_fr>nauruan</name_fr>
+  <alpha2>na</alpha2>
+  <alpha3>nau</alpha3>
+</Language>
+
+<Language rdf:ID="nv">
+  <name_en>Navajo; Navaho</name_en>
+  <name_fr>navaho</name_fr>
+  <alpha2>nv</alpha2>
+  <alpha3>nav</alpha3>
+</Language>
+
+<Language rdf:ID="nd">
+  <name_en>Ndebele, North</name_en>
+  <name_fr>ndébélé du Nord</name_fr>
+  <alpha2>nd</alpha2>
+  <alpha3>nde</alpha3>
+</Language>
+
+<Language rdf:ID="nr">
+  <name_en>Ndebele, South</name_en>
+  <name_fr>ndébélé du Sud</name_fr>
+  <alpha2>nr</alpha2>
+  <alpha3>nbl</alpha3>
+</Language>
+
+<Language rdf:ID="ng">
+  <name_en>Ndonga</name_en>
+  <name_fr>ndonga</name_fr>
+  <alpha2>ng</alpha2>
+  <alpha3>ndo</alpha3>
+</Language>
+
+<Language rdf:ID="ne">
+  <name_en>Nepali</name_en>
+  <name_fr>népalais</name_fr>
+  <alpha2>ne</alpha2>
+  <alpha3>nep</alpha3>
+</Language>
+
+<Language rdf:ID="se">
+  <name_en>Northern Sami</name_en>
+  <name_fr>sami du Nord</name_fr>
+  <alpha2>se</alpha2>
+  <alpha3>sme</alpha3>
+</Language>
+
+<Language rdf:ID="no">
+  <name_en>Norwegian</name_en>
+  <name_fr>norvégien</name_fr>
+  <alpha2>no</alpha2>
+  <alpha3>nor</alpha3>
+</Language>
+
+<Language rdf:ID="nb">
+  <name_en>Norwegian Bokmål; Bokmål, Norwegian</name_en>
+  <name_fr>norvégien bokmål; bokmål, norvégien</name_fr>
+  <alpha2>nb</alpha2>
+  <alpha3>nob</alpha3>
+</Language>
+
+<Language rdf:ID="nn">
+  <name_en>Norwegian Nynorsk; Nynorsk, Norwegian</name_en>
+  <name_fr>norvégien nynorsk; nynorsk, norvégien</name_fr>
+  <alpha2>nn</alpha2>
+  <alpha3>nno</alpha3>
+</Language>
+
+<Language rdf:ID="oc">
+  <name_en>Occitan (post 1500); Provençal</name_en>
+  <name_fr>occitan (après 1500); provençal</name_fr>
+  <alpha2>oc</alpha2>
+  <alpha3>oci</alpha3>
+</Language>
+
+<Language rdf:ID="oj">
+  <name_en>Ojibwa</name_en>
+  <name_fr>ojibwa</name_fr>
+  <alpha2>oj</alpha2>
+  <alpha3>oji</alpha3>
+</Language>
+
+<Language rdf:ID="or">
+  <name_en>Oriya</name_en>
+  <name_fr>oriya</name_fr>
+  <alpha2>or</alpha2>
+  <alpha3>ori</alpha3>
+</Language>
+
+<Language rdf:ID="om">
+  <name_en>Oromo</name_en>
+  <name_fr>galla</name_fr>
+  <alpha2>om</alpha2>
+  <alpha3>orm</alpha3>
+</Language>
+
+<Language rdf:ID="os">
+  <name_en>Ossetian; Ossetic</name_en>
+  <name_fr>ossète</name_fr>
+  <alpha2>os</alpha2>
+  <alpha3>oss</alpha3>
+</Language>
+
+<Language rdf:ID="pi">
+  <name_en>Pali</name_en>
+  <name_fr>pali</name_fr>
+  <alpha2>pi</alpha2>
+  <alpha3>pli</alpha3>
+</Language>
+
+<Language rdf:ID="pa">
+  <name_en>Panjabi; Punjabi</name_en>
+  <name_fr>pendjabi</name_fr>
+  <alpha2>pa</alpha2>
+  <alpha3>pan</alpha3>
+</Language>
+
+<Language rdf:ID="fa">
+  <name_en>Persian</name_en>
+  <name_fr>persan</name_fr>
+  <alpha2>fa</alpha2>
+  <alpha3>per/fas</alpha3>
+</Language>
+
+<Language rdf:ID="pl">
+  <name_en>Polish</name_en>
+  <name_fr>polonais</name_fr>
+  <alpha2>pl</alpha2>
+  <alpha3>pol</alpha3>
+</Language>
+
+<Language rdf:ID="pt">
+  <name_en>Portuguese</name_en>
+  <name_fr>portugais</name_fr>
+  <alpha2>pt</alpha2>
+  <alpha3>por</alpha3>
+</Language>
+
+<Language rdf:ID="ps">
+  <name_en>Pushto</name_en>
+  <name_fr>pachto</name_fr>
+  <alpha2>ps</alpha2>
+  <alpha3>pus</alpha3>
+</Language>
+
+<Language rdf:ID="qu">
+  <name_en>Quechua</name_en>
+  <name_fr>quechua</name_fr>
+  <alpha2>qu</alpha2>
+  <alpha3>que</alpha3>
+</Language>
+
+<Language rdf:ID="rm">
+  <name_en>Raeto-Romance</name_en>
+  <name_fr>rhéto-roman</name_fr>
+  <alpha2>rm</alpha2>
+  <alpha3>roh</alpha3>
+</Language>
+
+<Language rdf:ID="ro">
+  <name_en>Romanian</name_en>
+  <name_fr>roumain</name_fr>
+  <alpha2>ro</alpha2>
+  <alpha3>rum/ron</alpha3>
+</Language>
+
+<Language rdf:ID="rn">
+  <name_en>Rundi</name_en>
+  <name_fr>rundi</name_fr>
+  <alpha2>rn</alpha2>
+  <alpha3>run</alpha3>
+</Language>
+
+<Language rdf:ID="ru">
+  <name_en>Russian</name_en>
+  <name_fr>russe</name_fr>
+  <alpha2>ru</alpha2>
+  <alpha3>rus</alpha3>
+</Language>
+
+<Language rdf:ID="sm">
+  <name_en>Samoan</name_en>
+  <name_fr>samoan</name_fr>
+  <alpha2>sm</alpha2>
+  <alpha3>smo</alpha3>
+</Language>
+
+<Language rdf:ID="sg">
+  <name_en>Sango</name_en>
+  <name_fr>sango</name_fr>
+  <alpha2>sg</alpha2>
+  <alpha3>sag</alpha3>
+</Language>
+
+<Language rdf:ID="sa">
+  <name_en>Sanskrit</name_en>
+  <name_fr>sanskrit</name_fr>
+  <alpha2>sa</alpha2>
+  <alpha3>san</alpha3>
+</Language>
+
+<Language rdf:ID="sc">
+  <name_en>Sardinian</name_en>
+  <name_fr>sarde</name_fr>
+  <alpha2>sc</alpha2>
+  <alpha3>srd</alpha3>
+</Language>
+
+<Language rdf:ID="sr">
+  <name_en>Serbian</name_en>
+  <name_fr>serbe</name_fr>
+  <alpha2>sr</alpha2>
+  <alpha3>scc/srp</alpha3>
+</Language>
+
+<Language rdf:ID="sn">
+  <name_en>Shona</name_en>
+  <name_fr>shona</name_fr>
+  <alpha2>sn</alpha2>
+  <alpha3>sna</alpha3>
+</Language>
+
+<Language rdf:ID="ii">
+  <name_en>Sichuan Yi</name_en>
+  <name_fr>yi de Sichuan</name_fr>
+  <alpha2>ii</alpha2>
+  <alpha3>iii</alpha3>
+</Language>
+
+<Language rdf:ID="sd">
+  <name_en>Sindhi</name_en>
+  <name_fr>sindhi</name_fr>
+  <alpha2>sd</alpha2>
+  <alpha3>snd</alpha3>
+</Language>
+
+<Language rdf:ID="si">
+  <name_en>Sinhala; Sinhalese</name_en>
+  <name_fr>singhalais</name_fr>
+  <alpha2>si</alpha2>
+  <alpha3>sin</alpha3>
+</Language>
+
+<Language rdf:ID="sk">
+  <name_en>Slovak</name_en>
+  <name_fr>slovaque</name_fr>
+  <alpha2>sk</alpha2>
+  <alpha3>slo/slk</alpha3>
+</Language>
+
+<Language rdf:ID="sl">
+  <name_en>Slovenian</name_en>
+  <name_fr>slovène</name_fr>
+  <alpha2>sl</alpha2>
+  <alpha3>slv</alpha3>
+</Language>
+
+<Language rdf:ID="so">
+  <name_en>Somali</name_en>
+  <name_fr>somali</name_fr>
+  <alpha2>so</alpha2>
+  <alpha3>som</alpha3>
+</Language>
+
+<Language rdf:ID="st">
+  <name_en>Sotho, Southern</name_en>
+  <name_fr>sotho du Sud</name_fr>
+  <alpha2>st</alpha2>
+  <alpha3>sot</alpha3>
+</Language>
+
+<Language rdf:ID="es">
+  <name_en>Spanish; Castilian</name_en>
+  <name_fr>espagnol; castillan</name_fr>
+  <alpha2>es</alpha2>
+  <alpha3>spa</alpha3>
+</Language>
+
+<Language rdf:ID="su">
+  <name_en>Sundanese</name_en>
+  <name_fr>soundanais</name_fr>
+  <alpha2>su</alpha2>
+  <alpha3>sun</alpha3>
+</Language>
+
+<Language rdf:ID="sw">
+  <name_en>Swahili</name_en>
+  <name_fr>swahili</name_fr>
+  <alpha2>sw</alpha2>
+  <alpha3>swa</alpha3>
+</Language>
+
+<Language rdf:ID="ss">
+  <name_en>Swati</name_en>
+  <name_fr>swati</name_fr>
+  <alpha2>ss</alpha2>
+  <alpha3>ssw</alpha3>
+</Language>
+
+<Language rdf:ID="sv">
+  <name_en>Swedish</name_en>
+  <name_fr>suédois</name_fr>
+  <alpha2>sv</alpha2>
+  <alpha3>swe</alpha3>
+</Language>
+
+<Language rdf:ID="tl">
+  <name_en>Tagalog</name_en>
+  <name_fr>tagalog</name_fr>
+  <alpha2>tl</alpha2>
+  <alpha3>tgl</alpha3>
+</Language>
+
+<Language rdf:ID="ty">
+  <name_en>Tahitian</name_en>
+  <name_fr>tahitien</name_fr>
+  <alpha2>ty</alpha2>
+  <alpha3>tah</alpha3>
+</Language>
+
+<Language rdf:ID="tg">
+  <name_en>Tajik</name_en>
+  <name_fr>tadjik</name_fr>
+  <alpha2>tg</alpha2>
+  <alpha3>tgk</alpha3>
+</Language>
+
+<Language rdf:ID="ta">
+  <name_en>Tamil</name_en>
+  <name_fr>tamoul</name_fr>
+  <alpha2>ta</alpha2>
+  <alpha3>tam</alpha3>
+</Language>
+
+<Language rdf:ID="tt">
+  <name_en>Tatar</name_en>
+  <name_fr>tatar</name_fr>
+  <alpha2>tt</alpha2>
+  <alpha3>tat</alpha3>
+</Language>
+
+<Language rdf:ID="te">
+  <name_en>Telugu</name_en>
+  <name_fr>télougou</name_fr>
+  <alpha2>te</alpha2>
+  <alpha3>tel</alpha3>
+</Language>
+
+<Language rdf:ID="th">
+  <name_en>Thai</name_en>
+  <name_fr>thaï</name_fr>
+  <alpha2>th</alpha2>
+  <alpha3>tha</alpha3>
+</Language>
+
+<Language rdf:ID="bo">
+  <name_en>Tibetan</name_en>
+  <name_fr>tibétain</name_fr>
+  <alpha2>bo</alpha2>
+  <alpha3>tib/bod</alpha3>
+</Language>
+
+<Language rdf:ID="ti">
+  <name_en>Tigrinya</name_en>
+  <name_fr>tigrigna</name_fr>
+  <alpha2>ti</alpha2>
+  <alpha3>tir</alpha3>
+</Language>
+
+<Language rdf:ID="to">
+  <name_en>Tonga (Tonga Islands)</name_en>
+  <name_fr>tongan (Îles Tonga)</name_fr>
+  <alpha2>to</alpha2>
+  <alpha3>ton</alpha3>
+</Language>
+
+<Language rdf:ID="ts">
+  <name_en>Tsonga</name_en>
+  <name_fr>tsonga</name_fr>
+  <alpha2>ts</alpha2>
+  <alpha3>tso</alpha3>
+</Language>
+
+<Language rdf:ID="tn">
+  <name_en>Tswana</name_en>
+  <name_fr>tswana</name_fr>
+  <alpha2>tn</alpha2>
+  <alpha3>tsn</alpha3>
+</Language>
+
+<Language rdf:ID="tr">
+  <name_en>Turkish</name_en>
+  <name_fr>turc</name_fr>
+  <alpha2>tr</alpha2>
+  <alpha3>tur</alpha3>
+</Language>
+
+<Language rdf:ID="tk">
+  <name_en>Turkmen</name_en>
+  <name_fr>turkmène</name_fr>
+  <alpha2>tk</alpha2>
+  <alpha3>tuk</alpha3>
+</Language>
+
+<Language rdf:ID="tw">
+  <name_en>Twi</name_en>
+  <name_fr>twi</name_fr>
+  <alpha2>tw</alpha2>
+  <alpha3>twi</alpha3>
+</Language>
+
+<Language rdf:ID="ug">
+  <name_en>Uighur; Uyghur</name_en>
+  <name_fr>ouïgour</name_fr>
+  <alpha2>ug</alpha2>
+  <alpha3>uig</alpha3>
+</Language>
+
+<Language rdf:ID="uk">
+  <name_en>Ukrainian</name_en>
+  <name_fr>ukrainien</name_fr>
+  <alpha2>uk</alpha2>
+  <alpha3>ukr</alpha3>
+</Language>
+
+<Language rdf:ID="ur">
+  <name_en>Urdu</name_en>
+  <name_fr>ourdou</name_fr>
+  <alpha2>ur</alpha2>
+  <alpha3>urd</alpha3>
+</Language>
+
+<Language rdf:ID="uz">
+  <name_en>Uzbek</name_en>
+  <name_fr>ouszbek</name_fr>
+  <alpha2>uz</alpha2>
+  <alpha3>uzb</alpha3>
+</Language>
+
+<Language rdf:ID="ve">
+  <name_en>Venda</name_en>
+  <name_fr>venda</name_fr>
+  <alpha2>ve</alpha2>
+  <alpha3>ven</alpha3>
+</Language>
+
+<Language rdf:ID="vi">
+  <name_en>Vietnamese</name_en>
+  <name_fr>vietnamien</name_fr>
+  <alpha2>vi</alpha2>
+  <alpha3>vie</alpha3>
+</Language>
+
+<Language rdf:ID="vo">
+  <name_en>Volapük</name_en>
+  <name_fr>volapük</name_fr>
+  <alpha2>vo</alpha2>
+  <alpha3>vol</alpha3>
+</Language>
+
+<Language rdf:ID="wa">
+  <name_en>Walloon</name_en>
+  <name_fr>wallon</name_fr>
+  <alpha2>wa</alpha2>
+  <alpha3>wln</alpha3>
+</Language>
+
+<Language rdf:ID="cy">
+  <name_en>Welsh</name_en>
+  <name_fr>gallois</name_fr>
+  <alpha2>cy</alpha2>
+  <alpha3>wel/cym</alpha3>
+</Language>
+
+<Language rdf:ID="wo">
+  <name_en>Wolof</name_en>
+  <name_fr>wolof</name_fr>
+  <alpha2>wo</alpha2>
+  <alpha3>wol</alpha3>
+</Language>
+
+<Language rdf:ID="xh">
+  <name_en>Xhosa</name_en>
+  <name_fr>xhosa</name_fr>
+  <alpha2>xh</alpha2>
+  <alpha3>xho</alpha3>
+</Language>
+
+<Language rdf:ID="yi">
+  <name_en>Yiddish</name_en>
+  <name_fr>yiddish</name_fr>
+  <alpha2>yi</alpha2>
+  <alpha3>yid</alpha3>
+</Language>
+
+<Language rdf:ID="yo">
+  <name_en>Yoruba</name_en>
+  <name_fr>yoruba</name_fr>
+  <alpha2>yo</alpha2>
+  <alpha3>yor</alpha3>
+</Language>
+
+<Language rdf:ID="za">
+  <name_en>Zhuang; Chuang</name_en>
+  <name_fr>zhuang; chuang</name_fr>
+  <alpha2>za</alpha2>
+  <alpha3>zha</alpha3>
+</Language>
+
+<Language rdf:ID="zu">
+  <name_en>Zulu</name_en>
+  <name_fr>zoulou</name_fr>
+  <alpha2>zu</alpha2>
+  <alpha3>zul</alpha3>
+</Language>
+
+</rdf:RDF>

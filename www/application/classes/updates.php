@@ -89,7 +89,7 @@ class Updates
                 {
                     // Execute the query.
 
-                    $result = mysql_query($query) or die(mysql_error());
+                    $result = @mysql_query($query);
 
                     if (!$result){
                         $return = false;
