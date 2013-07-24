@@ -423,9 +423,11 @@ class Controller_CounterManager extends Controller_Base {
         if ($mapId != NULL){
             $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $values = array();
-            foreach($counters as $counter){
-                $values[$counter->id] = $counter->start_value;
-            }
+			if (count($counters) > 0){
+				foreach($counters as $counter){
+					$values[$counter->id] = $counter->start_value;
+				}
+			}
             $runtimelogic = new RunTimeLogic();
             $runtimelogic->values = $values;
 
