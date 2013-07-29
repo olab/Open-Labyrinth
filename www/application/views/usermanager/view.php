@@ -47,6 +47,9 @@
     <thead>
     <tr>
         <th>
+            <?php echo __('Auth type'); ?>
+        </th>
+        <th>
             <?php echo __('Username'); ?>
         </th>
         <th>
@@ -71,22 +74,24 @@
     <?php if (isset($templateData['users']) and count($templateData['users']) > 0) { ?>
         <?php foreach ($templateData['users'] as $user) { ?>
             <tr>
-                <td><?php echo $user->username;?></td>
-                <td><?php echo $user->nickname;?></td>
-                <td><?php echo $user->type->name;?></td>
+                <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
+                <td> <img src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+                <td><?php echo $user['username'];?></td>
+                <td><?php echo $user['nickname'];?></td>
+                <td><?php echo $user['type_name']; ?></td>
                 <td><?php
 
-                    if ($user->resetAttempt != NULL) {
-                        echo $user->resetAttempt;
+                    if ($user['resetAttempt'] != NULL) {
+                        echo $user['resetAttempt'] ;
                     } else {
                         echo __('No attempts');
                     }
-                    if ($user->resetTimestamp != NULL) {
-                        echo __('Last password recovery') . ':&nbsp;' . $user->resetTimestamp;
+                    if ($user['resetTimestamp'] != NULL) {
+                        echo '&nbsp;'. __('Last password recovery') . ':&nbsp;' . $user['resetTimestamp'];
                     }
 
-                    echo $user->resetAttempt;?></td>
-                <td><a class="btn btn-info" href="<?php echo URL::base() . 'usermanager/editUser/' . $user->id; ?>">
+                    echo $user['resetAttempt'];?></td>
+                <td><a class="btn btn-info" href="<?php echo URL::base() . 'usermanager/editUser/' . $user['id']; ?>">
                         <i class="icon-edit"></i><?php echo __("Edit");?> </a>
                 </td>
             </tr>

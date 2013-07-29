@@ -231,7 +231,34 @@ private static function initialize_metadata($object)
         foreach($ids as $id) {
             $result[] = DB_ORM::model('user', array($id));
         }
-        
+
+        return $result;
+    }
+
+    public function getAllUsersAndAuth($order = 'DESC') {
+        $result = array();
+        $ids = $this->getAllUsersId($order);
+
+        foreach($ids as $id) {
+            //$result[] = DB_ORM::model('user', array($id));
+
+            $user= DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from($this->table(), 'u')
+                ->join('LEFT','oauth_providers','op')
+                ->on('u.oauth_provider_id','=','op.id')
+                ->join('LEFT','user_types','ut')
+                ->on('u.type_id','=','ut.id')
+                ->where('u.id', '=', $id)
+                ->order_by('nickname', $order);
+
+            $res = $user->query();
+
+            foreach ($res as $record)
+            {
+                $result[] = $record;
+            }
+
+        }
+
         return $result;
     }
     
