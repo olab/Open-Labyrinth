@@ -44,6 +44,14 @@ class Controller_Error extends Controller_Template {
         $this->sendMail();
 
         $this->template->set('center', View::factory('error/404'));
+
+        $this->template->set('type', $this->error['type']);
+        $this->template->set('code', $this->error['code']);
+        $this->template->set('message', $this->error['message']);
+        $this->template->set('file', $this->error['file']);
+        $this->template->set('line', $this->error['line']);
+        $this->template->set('trace', $this->error['trace']);
+
     }
 
     private function sendMail() {
@@ -133,6 +141,8 @@ class Controller_Error extends Controller_Template {
         $this->error['post'] = isset($e[5]) && strlen($e[5]) > 2 ? $e[5] : null;
         $this->error['get']  = isset($e[6]) && strlen($e[6]) > 2 ? $e[6] : null;
         $this->error['url']  = isset($e[7]) ? $e[7] : null;
+        $this->error['trace'] = isset($e[7]) ? json_decode($e[7],true) : null;
+
     }
 
     private function toString($input) {
