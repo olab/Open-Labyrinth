@@ -339,6 +339,31 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
+    public function getAllMapsForLearner($learnerId) {
+        $builder = DB_SQL::select('default')
+            ->distinct()
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('security_id', '=', 1)
+            ->where('mu.user_id', '=', $learnerId, 'OR')
+            ->order_by('m.id', 'DESC');
+
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $maps = array();
+            foreach ($result as $record) {
+                $maps[] = DB_ORM::model('map', array((int) $record['id']));
+            }
+
+            return $maps;
+        }
+
+        return NULL;
+    }
+
     public function getAllEnabledAndAuthoredMap($authorId, $limit = 0)
     {
         $limit = (int)$limit;

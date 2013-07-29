@@ -139,8 +139,27 @@ class Controller_Base extends Controller_Template {
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
             } else {
+
+                $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
+                $rooNodesMap = array();
+                if($maps != null && count($maps) > 0) {
+                    foreach($maps as $map) {
+                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+                $this->templateData['rootNodeMap'] = $rooNodesMap;
+
                 $centerView = View::factory('userMenu');
-                $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));
+
+                if ( Auth::instance()->get_user()->type->name == 'learner' )
+                {
+                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner(Auth::instance()->get_user()->id));
+                }
+                else
+                {
+                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));
+                }
+
                 $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId(Auth::instance()->get_user()->id));
 
                 $centerView->set('templateData', $this->templateData);
