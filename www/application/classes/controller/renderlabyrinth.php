@@ -75,6 +75,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($editOn != NULL and $editOn == 1) {
                             $data['node_edit'] = TRUE;
                         } else {
+
+                            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false))
+                            {
+                                $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+                            }
+
                             $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                         }
 
