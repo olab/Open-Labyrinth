@@ -37,7 +37,7 @@ class Controller_UserManager extends Controller_Base {
     }
 
     public function action_index() {
-        $this->templateData['users'] = DB_ORM::model('user')->getAllUsers();
+        $this->templateData['users'] = DB_ORM::model('user')->getAllUsersAndAuth();
         $this->templateData['userCount'] = count($this->templateData['users']);
         $this->templateData['currentUserId'] = Auth::instance()->get_user()->id;
         $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups();

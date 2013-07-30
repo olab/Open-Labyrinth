@@ -75,7 +75,7 @@
         <?php foreach ($templateData['users'] as $user) { ?>
             <tr>
                 <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
-                <td> <img src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+                <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
                 <td><?php echo $user['username'];?></td>
                 <td><?php echo $user['nickname'];?></td>
                 <td><?php echo $user['type_name']; ?></td>
