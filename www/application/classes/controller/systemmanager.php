@@ -130,7 +130,7 @@ class Controller_SystemManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-     
+
     public function action_updateSupportEmails() {
         if($_POST) {
             if(Security::check($_POST['token'])) {

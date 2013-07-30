@@ -261,7 +261,7 @@ private static function initialize_metadata($object)
 
         return $result;
     }
-    
+
     public function createUser($username, $password, $nickname, $email, $typeId, $languageId) {
         $this->username = $username;
         $this->password = Auth::instance()->hash($password);

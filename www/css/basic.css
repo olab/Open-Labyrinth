@@ -1356,3 +1356,31 @@ input[readonly].code, textarea[readonly].code{
     max-width: 940px;
     margin: 0 auto;
 }
+
+
+.installation {
+    margin:0 auto;
+    display: block;
+    width:900px;
+}
+
+.installation .badge {
+    padding: 1px 9px 2px;
+}
+
+.installation .step.active span {
+    background-color: #1B75BB;
+}
+
+.installation .nav-tabs > li > span {
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+    display: block;
+    line-height: 18px;
+    margin-right: 2px;
+    padding: 8px 12px;
+}
+
+.installation .form-horizontal .control-label {
+    width:170px;
+}
