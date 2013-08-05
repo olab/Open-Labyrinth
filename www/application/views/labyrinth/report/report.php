@@ -261,11 +261,13 @@ function getRandomColor(){
                                     <?php if(isset($templateData['startValueCounters'])) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
-                                    <?php if(count($counter[1]) > 0) { ?>
+                                    <?php if (isset($counter[1])){
+                                        if(count($counter[1]) > 0) { ?>
                                         <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
 					<s v='<?php echo $counter[1][0]; ?>' />	
+                                    <?php } ?>
                                     <?php } ?>
                            </dataset>
                            <?php } ?>
@@ -285,11 +287,13 @@ function getRandomColor(){
                                     <?php if(isset($templateData['startValueCounters'])) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
-                                    <?php if(count($counter[1]) > 0) { ?>
+                                    <?php if (isset($counter[1])){
+                                    if(count($counter[1]) > 0) { ?>
                                         <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
 					<s v='<?php echo $counter[1][0]; ?>' />
+                                    <?php } ?>
                                     <?php } ?>
                                 </dataset>
                            <?php } ?>
