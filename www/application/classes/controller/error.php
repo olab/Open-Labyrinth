@@ -141,7 +141,7 @@ class Controller_Error extends Controller_Template {
         $this->error['post'] = isset($e[5]) && strlen($e[5]) > 2 ? $e[5] : null;
         $this->error['get']  = isset($e[6]) && strlen($e[6]) > 2 ? $e[6] : null;
         $this->error['url']  = isset($e[7]) ? $e[7] : null;
-        $this->error['trace'] = isset($e[7]) ? json_decode($e[7],true) : null;
+        $this->error['trace'] = isset($e[8]) ? json_decode($e[8],true) : null;
 
     }
 

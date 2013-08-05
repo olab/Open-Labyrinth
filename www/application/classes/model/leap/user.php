@@ -235,12 +235,16 @@ private static function initialize_metadata($object)
         return $result;
     }
 
-    public function getAllUsersAndAuth($order = 'DESC') {
+    public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array()) {
         $result = array();
         $ids = $this->getAllUsersId($order);
 
         foreach($ids as $id) {
-            //$result[] = DB_ORM::model('user', array($id));
+            if (count($notInUsers) > 0) {
+                if (in_array($id, $notInUsers)){
+                    continue;
+                }
+            }
 
             $user= DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from($this->table(), 'u')
                 ->join('LEFT','oauth_providers','op')
@@ -260,6 +264,20 @@ private static function initialize_metadata($object)
         }
 
         return $result;
+    }
+
+    public function getUserByIdAndAuth($id) {
+        $user= DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from($this->table(), 'u')
+            ->join('LEFT','oauth_providers','op')
+            ->on('u.oauth_provider_id','=','op.id')
+            ->join('LEFT','user_types','ut')
+            ->on('u.type_id','=','ut.id')
+            ->where('u.id', '=', $id)
+            ->limit(1);
+
+        $result = $user->query()->as_array();
+
+        return $result[0];
     }
 
     public function createUser($username, $password, $nickname, $email, $typeId, $languageId) {

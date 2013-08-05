@@ -315,7 +315,7 @@ abstract class Base_DB_SQL_Select_Proxy extends Kohana_Object implements DB_SQL_
 	 */
 	public function query($type = 'array') {
 		$connection = DB_Connection_Pool::instance()->get_connection($this->source);
-		$result_set = $connection->query($this->statement(), $type);
+        $result_set = $connection->query($this->statement(), $type);
 		return $result_set;
 	}
 

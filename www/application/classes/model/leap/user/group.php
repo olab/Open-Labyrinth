@@ -87,5 +87,48 @@ class Model_Leap_User_Group extends DB_ORM_Model {
         $this->id = (int)$result[0]['id'];
         $this->delete();
     }
+
+    public function getAllUsersByGroup($groupId)
+    {
+        $builder = DB_SQL::select('default', array(DB::expr('user_id')))
+            ->from($this->table())
+            ->where('group_id', '=', $groupId, 'AND');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $array = array();
+            foreach ($result as $record)
+            {
+                $array[] = $record['user_id'];
+            }
+            return $array;
+        }
+        return false;
+    }
+
+    public function getAllUsersByGroupIN($groupIds)
+    {
+        $builder = DB_SQL::select('default', array(DB::expr('user_id')))->from($this->table())->where('group_id', 'IN', $groupIds);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $array = array();
+
+            foreach ($result as $record)
+            {
+                array_push($array, DB_ORM::model('user')->getUserById($record['user_id']));
+            }
+
+            $usersEmails = [];
+
+            foreach($array as $rec)
+            {
+                $usersEmails[] = $rec->email;
+            }
+
+            return $usersEmails;
+        }
+        return false;
+    }
 }
 
