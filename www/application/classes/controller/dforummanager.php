@@ -241,11 +241,11 @@ class Controller_DForumManager extends Controller_Base {
             // get groups users emails
             $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
 
-            $groupUsers = [];
+            $groupUsers = array();
 
             if ($groups) {
-                $groupData = [];
-                $groupIds = [];
+                $groupData = array();
+                $groupIds = array();
                 foreach ($groups as $group) {
                     $groupIds[] = $group['id_group'];
                 }
@@ -258,7 +258,7 @@ class Controller_DForumManager extends Controller_Base {
                 }
             }
 
-            $result = [];
+            $result = array();
             foreach ($usersEmail as $userEmail) {
                 if (!in_array($userEmail , $groupUsers)) {
                     $result[] = $userEmail;
@@ -266,17 +266,17 @@ class Controller_DForumManager extends Controller_Base {
             }
         }
         else if ($usersEmail != '' && $type == 'groupAdd') {
-            $result = [];
+            $result = array();
             $result = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $result = array_unique($result);
         } else if ($usersEmail != '' && $type == 'groupDelete') {
-            $result = [];
+            $result = array();
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
 
             $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
 
-            $allUsers = [];
+            $allUsers = array();
 
             // get users emails
             foreach ($users as $user) {
@@ -291,7 +291,7 @@ class Controller_DForumManager extends Controller_Base {
         } else {
             $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
 
-            $allUsers = [];
+            $allUsers = array();
 
             // get users emails
             foreach ($users as $user) {
@@ -301,11 +301,11 @@ class Controller_DForumManager extends Controller_Base {
             // get groups users emails
             $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
 
-            $groupUsers = [];
+            $groupUsers = array();
 
             if ($groups) {
-                $groupData = [];
-                $groupIds = [];
+                $groupData = array();
+                $groupIds = array();
                 foreach ($groups as $group) {
                     $groupIds[] = $group['id_group'];
                 }

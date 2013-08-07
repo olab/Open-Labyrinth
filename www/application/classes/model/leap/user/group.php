@@ -119,7 +119,7 @@ class Model_Leap_User_Group extends DB_ORM_Model {
                 array_push($array, DB_ORM::model('user')->getUserById($record['user_id']));
             }
 
-            $usersEmails = [];
+            $usersEmails = array();
 
             foreach($array as $rec)
             {
