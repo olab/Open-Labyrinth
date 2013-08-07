@@ -86,7 +86,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         }
 
         if (count($usersInForum) > 0) {
-            $usersEmail = [];
+            $usersEmail = array();
             foreach($usersInForum as $userId){
                 $this->deleteUserInForum($forumId, $userId);
 

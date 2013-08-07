@@ -63,7 +63,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
         }
 
         if (count($groups) > 0){
-            $groupsIds = [];
+            $groupsIds = array();
             foreach($groups as $key => $groupId){
                 if (in_array($groupId, $groupsInForum)){
                     $keyForum = array_search($groupId, $groupsInForum);
@@ -87,7 +87,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
         }
 
         if (count($groupsInForum) > 0) {
-            $groupsIds = [];
+            $groupsIds = array();
             foreach($groupsInForum as $groupId){
                 $this->deleteGroupInForum($forumId, $groupId);
                 $groupsIds[] = $groupId;
