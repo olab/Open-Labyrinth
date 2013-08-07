@@ -107,7 +107,8 @@ Kohana::modules(array(
     'leap' => MODPATH . 'leap', // Include Leap ORM
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface
-    'oauth' => MODPATH . 'oauth' // OAuth module
+    'oauth' => MODPATH . 'oauth', // OAuth module
+    'phpexcel' => MODPATH . 'phpexcel'
 ));
 
 

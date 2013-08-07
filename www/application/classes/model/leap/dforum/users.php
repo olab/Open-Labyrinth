@@ -78,8 +78,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
 
                     $userInfo = DB_ORM::model('user')->getUserById($userId);
 
-                    if ($userInfo->email != '')
-                    {
+                    if ($userInfo->email != '') {
                         Controller_DForumManager::action_mail('addUserToForum',$forumId, '' , '', $userInfo->email );
                     }
                 }
@@ -105,6 +104,13 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
     public function deleteUserInForum($forumId, $userId){
         $builder = DB_ORM::delete($this->table())->where('id_user', '=', $userId, 'AND')->where('id_forum', '=', $forumId);
         $builder->execute();
+    }
+
+    public function deleteAllUsers($forumId) {
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('id_forum', '=', $forumId)
+                ->execute();
     }
 
     public function getAllUsersInForum($forumId, $return = 'all'){

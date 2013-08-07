@@ -134,8 +134,22 @@
                                 </li>
                                 <?php } ?>
                                 <?php } ?>
-                                <li><a href="#"><?php echo __('Help'); ?></a></li>
+
+                                <?php if(Auth::instance()->get_user()->type->name == 'author' || Auth::instance()->get_user()->type->name == 'superuser') { ?>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenario Management'); ?> <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li>
+                                        </ul>
+                                    </li>
+                                <?php } else { ?>
+                                    <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
+                                <?php } ?>
+
                                 <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Discussion Forums'); ?></a></li>
+                                <li><a href="#"><?php echo __('Help'); ?></a></li>
                             </ul>
                         </div>
                         <?php

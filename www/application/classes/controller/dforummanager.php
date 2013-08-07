@@ -122,29 +122,23 @@ class Controller_DForumManager extends Controller_Base {
         Request::initial()->redirect(URL::base() . 'dforumManager');
     }
 
-    public function action_deleteForum(){
-
+    public function action_deleteForum() {
         $forumId = $this->request->param('id', NULL);
 
         list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
         $messages = DB_ORM::model('dforum')->getAllMessageByForum($forumId);
 
-        if ($messages)
-        {
-            foreach ($messages as $message)
-            {
+        if ($messages) {
+            foreach ($messages as $message) {
                 DB_ORM::model('dforum_messages')->deleteMessage($message['id']);
-                DB_ORM::model('dforum_messages_forum')->deleteRelations($message['id']);
             }
         }
 
         $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
 
-        if ($groups)
-        {
-            foreach($groups as $group)
-            {
+        if ($groups) {
+            foreach($groups as $group) {
                 DB_ORM::model('dforum_groups')->deleteGroupInForum($forumId, $group['id_group']);
             }
         }
@@ -166,9 +160,8 @@ class Controller_DForumManager extends Controller_Base {
         $groups = Arr::get($this->request->post(), 'groups', NULL);
 
         $forumId = DB_ORM::model('dforum')->createForum($forumName,$security);
-        $messageID = DB_ORM::model('dforum_messages')->createMessage($firstMessage);
+        $messageID = DB_ORM::model('dforum_messages')->createMessage($forumId, $firstMessage);
 
-        DB_ORM::model('dforum_messages_forum')->createRelations($forumId, $messageID);
         DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
 
@@ -181,9 +174,7 @@ class Controller_DForumManager extends Controller_Base {
         $message = Arr::get($this->request->post(), 'message', NULL);
         $forumId = Arr::get($this->request->post(), 'forum', NULL);
 
-        $messageID = DB_ORM::model('dforum_messages')->createMessage($message);
-
-        DB_ORM::model('dforum_messages_forum')->createRelations($forumId, $messageID);
+        DB_ORM::model('dforum_messages')->createMessage($forumId, $message);
 
         list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
@@ -200,7 +191,6 @@ class Controller_DForumManager extends Controller_Base {
         $oldMessage = DB_ORM::model('dforum_messages')->getMessage($messageId);
 
         DB_ORM::model('dforum_messages')->deleteMessage($messageId);
-        DB_ORM::model('dforum_messages_forum')->deleteRelations($messageId);
 
         list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
@@ -239,60 +229,47 @@ class Controller_DForumManager extends Controller_Base {
 
         $message = $oldMessage . '-' . $message_text;
 
-        if ($oldMessage != $message_text)
-        {
+        if ($oldMessage != $message_text) {
             self::action_mail('updateMsg',$forumId, $message, $forumName);
         }
 
         Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
     }
 
-    private static function prepareUsersMail($forumId, $usersEmail = '', $type = '')
-    {
-
-        if ($usersEmail != '' && $type == 'deleteUser')
-        {
+    private static function prepareUsersMail($forumId, $usersEmail = '', $type = '') {
+        if ($usersEmail != '' && $type == 'deleteUser') {
             // get groups users emails
             $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
 
             $groupUsers = [];
 
-            if ($groups)
-            {
+            if ($groups) {
                 $groupData = [];
                 $groupIds = [];
-                foreach ($groups as $group)
-                {
+                foreach ($groups as $group) {
                     $groupIds[] = $group['id_group'];
                 }
                 $groupData[] = DB_ORM::model('user_group')->getAllUsersByGroupIN($groupIds);
 
-                foreach ($groupData as $key => $groupUser)
-                {
-                    foreach($groupUser as $user)
-                    {
+                foreach ($groupData as $key => $groupUser) {
+                    foreach($groupUser as $user) {
                         $groupUsers[] = $user;
                     }
                 }
             }
 
             $result = [];
-            foreach ($usersEmail as $userEmail)
-            {
-                if (!in_array($userEmail , $groupUsers))
-                {
+            foreach ($usersEmail as $userEmail) {
+                if (!in_array($userEmail , $groupUsers)) {
                     $result[] = $userEmail;
                 }
             }
         }
-        else if ($usersEmail != '' && $type == 'groupAdd')
-        {
+        else if ($usersEmail != '' && $type == 'groupAdd') {
             $result = [];
             $result = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $result = array_unique($result);
-        }
-        else if ($usersEmail != '' && $type == 'groupDelete')
-        {
+        } else if ($usersEmail != '' && $type == 'groupDelete') {
             $result = [];
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
@@ -302,28 +279,22 @@ class Controller_DForumManager extends Controller_Base {
             $allUsers = [];
 
             // get users emails
-            foreach ($users as $user)
-            {
+            foreach ($users as $user) {
                 $allUsers[] = $user['email'];
             }
 
-            foreach ($groupEmail as $gEmail)
-            {
-                if (!in_array($gEmail , $allUsers))
-                {
+            foreach ($groupEmail as $gEmail) {
+                if (!in_array($gEmail , $allUsers)) {
                     $result[] = $gEmail;
                 }
             }
-        }
-        else
-        {
+        } else {
             $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
 
             $allUsers = [];
 
             // get users emails
-            foreach ($users as $user)
-            {
+            foreach ($users as $user) {
                 $allUsers[] = $user['email'];
             }
 
@@ -332,20 +303,16 @@ class Controller_DForumManager extends Controller_Base {
 
             $groupUsers = [];
 
-            if ($groups)
-            {
+            if ($groups) {
                 $groupData = [];
                 $groupIds = [];
-                foreach ($groups as $group)
-                {
+                foreach ($groups as $group) {
                     $groupIds[] = $group['id_group'];
                 }
                 $groupData[] = DB_ORM::model('user_group')->getAllUsersByGroupIN($groupIds);
 
-                foreach ($groupData as $key => $groupUser)
-                {
-                    foreach($groupUser as $user)
-                    {
+                foreach ($groupData as $key => $groupUser) {
+                    foreach($groupUser as $user) {
                         $groupUsers[] = $user;
                     }
                 }
@@ -358,8 +325,7 @@ class Controller_DForumManager extends Controller_Base {
             $key = null;
             $key = array_search(Auth::instance()->get_user()->email, $result);
 
-            if (isset($key))
-            {
+            if (isset($key)) {
                 unset($result[$key]);
             }
         }
@@ -367,9 +333,7 @@ class Controller_DForumManager extends Controller_Base {
         return $result;
     }
 
-
     public static function action_mail($action, $forumId, $message = '', $forumName = '', $emails = '') {
-
         $emailConfig = Kohana::$config->load('dforum_email');
         $URL = URL::base() . 'dforumManager/viewForum/' . $forumId;
 

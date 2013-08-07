@@ -59,7 +59,18 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'deleteGroup'),
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
-        array('controller' => 'userManager', 'action' => 'removeMember')
+        array('controller' => 'userManager', 'action' => 'removeMember'),
+        array('controller' => 'webinarManager', 'action' => 'add'),
+        array('controller' => 'webinarManager', 'action' => 'edit'),
+        array('controller' => 'webinarManager', 'action' => 'statistic'),
+        array('controller' => 'webinarManager', 'action' => 'delete'),
+        array('controller' => 'webinarManager', 'action' => 'save'),
+        array('controller' => 'webinarManager', 'action' => 'changeStep'),
+        array('controller' => 'dForumManager', 'action' => 'addForum'),
+        array('controller' => 'dForumManager', 'action' => 'editForum'),
+        array('controller' => 'dForumManager', 'action' => 'updateForum'),
+        array('controller' => 'dForumManager', 'action' => 'deleteForum'),
+        array('controller' => 'dForumManager', 'action' => 'saveNewForum')
     );
     private $authorRules = array(
         array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),

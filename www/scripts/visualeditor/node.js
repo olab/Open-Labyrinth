@@ -76,6 +76,7 @@ var Node = function() {
     self.counters = new Array();
     self.isSelected = false;
     self.isActive = false;
+    self.sections = new Array();
     
     // Daraw current node
     // context - canvas context
@@ -89,7 +90,9 @@ var Node = function() {
 
         context.save();
         context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
-        
+
+        DrawSections(context);
+
         if(self.isSelected && !self.isActive)
             DrawSelectedArea(context);
         
@@ -306,6 +309,16 @@ var Node = function() {
         
         self.transform.TranslateWithoutScale(dx / scale[0], dy / scale[1]);
     }
+
+    var DrawSections = function(context) {
+        for(var i = self.sections.length; i--;) {
+            context.beginPath();
+            context.rect(-(i + 10), -(i + 10), self.width + i*2 + 20, self.height + i*2 + 20);
+            context.lineWidth = 1;
+            context.strokeStyle = self.sections[i].color;
+            context.stroke();
+        }
+    };
     
     var DrawContentArea = function(context) {
         context.fillStyle = self.color;

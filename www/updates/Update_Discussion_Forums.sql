@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS `dforum_groups` (
 
 -- --------------------------------------------------------
 
-
 CREATE TABLE IF NOT EXISTS `dforum_messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `text` text NOT NULL,
@@ -28,21 +27,11 @@ CREATE TABLE IF NOT EXISTS `dforum_messages` (
   `date` datetime NOT NULL,
   `type` tinyint(1) NOT NULL,
   `isEdit` tinyint(1) NOT NULL DEFAULT '0',
+  `forum_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- --------------------------------------------------------
-
-
-CREATE TABLE IF NOT EXISTS `dforum_messages_forum` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_forum` int(11) NOT NULL,
-  `id_message` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
--- --------------------------------------------------------
-
 
 CREATE TABLE IF NOT EXISTS `dforum_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

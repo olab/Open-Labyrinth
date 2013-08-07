@@ -32,6 +32,11 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'forum_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            )),
             'text' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
                 'savable' => TRUE,
@@ -69,7 +74,8 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
         return array('id');
     }
 
-    public function createMessage($message, $type = 0) {
+    public function createMessage($forumId, $message, $type = 0) {
+        $this->forum_id = $forumId;
         $this->text = $message;
         $this->user_id = Auth::instance()->get_user()->id;
         $this->date = date('Y-m-d H:i:s');
@@ -84,6 +90,13 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
     public function deleteMessage($messageId) {
         $builder = DB_ORM::delete('dforum_messages')->where('id', '=', (int)$messageId);
         $builder->execute();
+    }
+
+    public function deleteAllMessages($forumId) {
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('forum_id', '=', $forumId)
+                ->execute();
     }
 
     public function updateMessage($messageId, $messageText) {
@@ -114,16 +127,14 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
         $this->load();
         $message = NULL;
 
-        if ($this->is_loaded())
-        {
+        if ($this->is_loaded()) {
             $message = $this->text;
         }
 
         return $message;
     }
 
-    public function getNewMessages($forumId, $lastMessageId)
-    {
+    public function getNewMessages($forumId, $lastMessageId) {
         $builder = DB_SQL::select('default',array(DB::expr('dforum_messages.*') , DB::expr('u.nickname as nickname') ))
             ->from($this->table())
             ->join('LEFT','dforum_messages_forum','dfm' )
@@ -136,13 +147,12 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
 
 
         if($result->is_loaded()) {
-
             $messages = array();
 
-            foreach($result as $record)
-            {
+            foreach($result as $record) {
                 $messages[] = $record;
             }
+
             return $messages;
         }
 
@@ -150,7 +160,6 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
     }
 
     public function getEditedMessages($forumId) {
-
         $builder = DB_SQL::select('default',array(DB::expr('dforum_messages.*') , DB::expr('u.nickname as nickname') ))
             ->from($this->table())
             ->join('LEFT','dforum_messages_forum','dfm' )
@@ -166,8 +175,7 @@ class Model_Leap_DForum_Messages extends DB_ORM_Model {
 
             $messages = array();
 
-            foreach($result as $record)
-            {
+            foreach($result as $record) {
                 $messages[] = $record;
             }
             return $messages;

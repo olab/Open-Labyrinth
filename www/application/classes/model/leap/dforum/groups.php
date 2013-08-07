@@ -101,6 +101,13 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
         $builder->execute();
     }
 
+    public function deleteAllGroups($forumId) {
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('id_forum', '=', $forumId)
+                ->execute();
+    }
+
     public function getAllGroupsInForum($forumId, $return = 'all'){
         $builder = DB_SQL::select('default')->from($this->table())->where('id_forum', '=', $forumId);
         $result = $builder->query();

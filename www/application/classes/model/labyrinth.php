@@ -53,7 +53,13 @@ class Model_Labyrinth extends Model {
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
             } else if ($isRoot) {
-                $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
+                $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'), Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
+
+                $result['webinarId']   = Session::instance()->get('webinarId', null);
+                $result['webinarStep'] = Session::instance()->get('step', null);
+
+                Session::instance()->delete('webinarId')->delete('step');
+
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
             } else {
@@ -67,11 +73,19 @@ class Model_Labyrinth extends Model {
                 }
             }
 
+            $webinarSession = DB_ORM::model('user_session', array((int)$sessionId));
+            if($webinarSession != null && $webinarSession->webinar_id != null && $webinarSession->webinar_step != null) {
+                $result['webinarId']   = $webinarSession->webinar_id;
+                $result['webinarStep'] = $webinarSession->webinar_step;
+            }
+
             $conditional = $this->conditional($sessionId, $node);
             $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
             $result['node_links'] = $this->generateLinks($result['node']);
             $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
-            $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId);
+
+            $previewSessionTrace = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
+            $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
             if($conditional == null) {
                 if ($sessionId != 'notExist'){
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
@@ -263,7 +277,7 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId){
+    private function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId, $nodeId = null){
         $questionChoices = Session::instance()->get('questionChoices');
         $questionChoices = ($questionChoices != NULL) ? json_decode($questionChoices, true) : NULL;
 
@@ -281,7 +295,7 @@ class Model_Labyrinth extends Model {
             foreach($questionChoices as $qID => $questions){
                 if (count($questions) > 0){
                     foreach($questions as $q){
-                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response']);
+                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response'], $nodeId);
                         if (count($counterIDs) > 0){
                             $score = trim($q['score']);
                             $value = $this->getCounterValueFromString($counterIDs[$qID], $counterString);
@@ -303,7 +317,7 @@ class Model_Labyrinth extends Model {
 
         if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
             foreach($sliderQuestionChoices as $qID => $sliderValue) {
-                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue);
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue, $nodeId);
                 $question = DB_ORM::model('map_question', array((int)$qID));
                 if ($question != null){
                     if(count($question->responses) > 0) {
@@ -354,6 +368,8 @@ class Model_Labyrinth extends Model {
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
+
+                $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
 
                 foreach ($counters as $counter) {
                     $countersArray[$counter->id]['counter'] = $counter;
@@ -774,7 +790,7 @@ class Model_Labyrinth extends Model {
         return '';
     }
 
-    public function question($questionId, $response, $questionStatus) {
+    public function question($questionId, $response, $questionStatus, $nodeId) {
         $returnStr = '';
         $question = DB_ORM::model('map_question', array((int) $questionId));
 
@@ -794,7 +810,7 @@ class Model_Labyrinth extends Model {
             if (($question->type->value == 'text') || ($question->type->value == 'area')) {
                 $response = htmlspecialchars(base64_decode($response));
                 $sessionId = $this->getSessionID();
-                DB_ORM::model('user_response')->createResponse($sessionId, $question->id, $response);
+                DB_ORM::model('user_response')->createResponse($sessionId, $question->id, $response, $nodeId);
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;

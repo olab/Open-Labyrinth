@@ -763,6 +763,25 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         return NULL;
     }
+
+    public function getEndNodesForMap($mapId) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('map_id', '=', $mapId, 'AND')
+                           ->where('end', '=', 1)
+                           ->column('id')
+                           ->query();
+
+        $result = null;
+        if($records->is_loaded()) {
+            $result = array();
+            foreach($records as $record) {
+                $result[] = DB_ORM::model('map_node', array((int)$record['id']));
+            }
+        }
+
+        return $result;
+    }
 }
 
 ?>

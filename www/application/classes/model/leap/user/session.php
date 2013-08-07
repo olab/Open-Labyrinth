@@ -56,6 +56,18 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'webinar_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+                'savable' => TRUE
+            )),
+
+            'webinar_step' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+                'savable' => TRUE
+            ))
         );
 
         $this->relations = array(
@@ -92,12 +104,14 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         return array('id');
     }
 
-    public function createSession($userId, $mapId, $startTime, $userIp) {
+    public function createSession($userId, $mapId, $startTime, $userIp, $webinarId = null, $webinarStep = null) {
         $builder = DB_ORM::insert('user_session')
                 ->column('user_id', $userId)
                 ->column('map_id', $mapId)
                 ->column('start_time', $startTime)
-                ->column('user_ip', $userIp);
+                ->column('user_ip', $userIp)
+                ->column('webinar_id', $webinarId)
+                ->column('webinar_step', $webinarStep);
 
         return $builder->execute();
     }
@@ -141,12 +155,21 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId) {
+    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('user_id', '=', $userId, 'AND')
                 ->where('map_id', '=', $mapId)
                 ->order_by('start_time', 'DESC');
+
+        if($webinarId != null) {
+            $builder = $builder->where('webinar_id', '=', $webinarId);
+        }
+
+        if($currentStep != null) {
+            $builder = $builder->where('webinar_step', '<=', $currentStep);
+        }
+
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -159,6 +182,48 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         }
 
         return NULL;
+    }
+
+    const USER_NOT_PLAY_MAP   = 0;
+    const USER_NOT_FINISH_MAP = 1;
+    const USER_FINISH_MAP     = 2;
+
+    /**
+     * Check user finish labyrinth or play it now
+     *
+     * @param integer $mapId - map Id
+     * @param integer $userId - User Id
+     * @param integer $webinarId - Webinar Id
+     * @returns integer - 0 - not play, 1 - now playing, 2 - finish
+     */
+    public function isUserFinishMap($mapId, $userId, $webinarId = null, $currentStep = null) {
+        $result = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
+        $sessions = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
+        if($sessions == null || count($sessions) <= 0) return $result;
+        $result = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
+
+        $endNodes = DB_ORM::model('map_node')->getEndNodesForMap($mapId);
+        if($endNodes != null) {
+            $endNodeIDs = array();
+            if(count($endNodes) > 0) {
+                foreach($endNodes as $endNode) {
+                    $endNodeIDs[] = $endNode->id;
+                }
+            } else {
+                $endNodeIDs[] = $endNodes->id;
+            }
+
+            $sessionIDs = array();
+            foreach($sessions as $session) {
+                $sessionIDs[] = $session->id;
+            }
+
+            if(DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) {
+                $result = Model_Leap_User_Session::USER_FINISH_MAP;
+            }
+        }
+
+        return $result;
     }
 }
 

@@ -87,8 +87,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return $this->getLastAddedForumRecord();
     }
 
-    public function getAllOpenForums()
-    {
+    public function getAllOpenForums() {
         $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
 
             ->from($this->table(), 'forum')
@@ -101,8 +100,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
         if($result->is_loaded()) {
             $forums = array();
 
-            foreach($result as $key => $record){
-
+            foreach($result as $key => $record) {
                 $lastInfo = $this->getInfoAboutLastMessage($record['id']);
                 $message_count = $this->getMessageCountByForum($record['id']);
 
@@ -155,8 +153,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getForumById($forumId)
-    {
+    public function getForumById($forumId) {
         $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
 
             ->from($this->table(), 'forum')
@@ -166,8 +163,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
 
         $result = $builder->query();
 
-        if ($result->is_loaded())
-        {
+        if ($result->is_loaded()) {
             $forum = array();
             $forum = $result[0];
 
@@ -179,16 +175,13 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getAllMessageByForum($forumId)
-    {
+    public function getAllMessageByForum($forumId) {
         $builder = DB_SQL::select('default',array(DB_SQL::expr('messages.*'),DB_SQL::expr('u.nickname as author_name'),
             DB_SQL::expr('u.id as author_id')))
-            ->from('dforum_messages_forum', 'messages_forum')
-            ->join('LEFT','dforum_messages', 'messages')
-            ->on('messages_forum.id_message', '=', 'messages.id')
+            ->from('dforum_messages', 'messages')
             ->join('LEFT', 'users', 'u')
             ->on('u.id', '=', 'messages.user_id')
-            ->where('messages_forum.id_forum','=',$forumId)
+            ->where('messages.forum_id','=',$forumId)
             ->order_by('messages.id');
         $result = $builder->query();
 
@@ -199,14 +192,12 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getInfoAboutLastMessage($forumId, $userId = null){
+    public function getInfoAboutLastMessage($forumId, $userId = null) {
         $builder = DB_SQL::select('default', array(DB_SQL::expr('u.nickname'), DB_SQL::expr('u.id'), DB_SQL::expr('dfm.date'), DB_SQL::expr('dfm.text'), DB_SQL::expr('dfm.id as message_id')))
-            ->from('dforum_messages_forum', 'dfmf')
-            ->join('LEFT', 'dforum_messages', 'dfm')
-            ->on('dfmf.id_message', '=', 'dfm.id')
+            ->from('dforum_messages', 'dfm')
             ->join('LEFT', 'users', 'u')
             ->on('u.id', '=', 'dfm.user_id')
-            ->where('dfmf.id_forum', '=', $forumId)
+            ->where('dfm.forum_id', '=', $forumId)
             ->order_by('dfm.id', 'DESC')
             ->limit(1);
 
@@ -223,11 +214,10 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getMessageCountByForum($forumId)
-    {
+    public function getMessageCountByForum($forumId) {
         $builder = DB_SQL::select('default',array(DB::expr('COUNT(id) as message_count')))
-            ->from('dforum_messages_forum', 'messages_forum')
-            ->where('messages_forum.id_forum','=',$forumId);
+            ->from('dforum_messages', 'messages')
+            ->where('messages.forum_id','=',$forumId);
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -238,7 +228,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
 
-    public function getLastAddedForumRecord(){
+    public function getLastAddedForumRecord() {
         $builder = DB_SQL::select('default')->from($this->table())->order_by('id', 'DESC')->limit(1);
         $result = $builder->query();
 
@@ -249,8 +239,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getForumNameAndSecurityType($forumId){
-
+    public function getForumNameAndSecurityType($forumId) {
         $this->id = $forumId;
         $this->load();
         $forumName = NULL;
@@ -266,7 +255,6 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
     public function updateForum($forumName, $security, $forumId) {
-
         $this->id = $forumId;
         $this->load();
 
@@ -277,12 +265,17 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
     public function deleteForum($forumId) {
-        $builder = DB_ORM::delete($this->table())->where('id', '=', (int)$forumId);
-        $builder->execute();
+        DB_ORM::model('dforum_messages')->deleteAllMessages($forumId);
+        DB_ORM::model('dforum_users')->deleteAllUsers($forumId);
+        DB_ORM::model('dforum_groups')->deleteAllGroups($forumId);
+
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('id', '=', $forumId)
+                ->execute();
     }
 
     public function getForumAuthor($forumId) {
-
         $this->id = $forumId;
         $this->load();
         $authorInfo = NULL;
@@ -294,6 +287,4 @@ class Model_Leap_DForum extends DB_ORM_Model {
         }
         return $authorInfo;
     }
-
-
 }

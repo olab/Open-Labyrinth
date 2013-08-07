@@ -418,6 +418,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_reset() {
+        $mapId       = $this->request->param('id', null);
+        $webinarId   = $this->request->param('id2', null);
+        $webinarStep = $this->request->param('id3', null);
+
+        if($webinarId != null && $webinarStep != null && $webinarId > 0 && $webinarStep > 0) {
+            Session::instance()->set('webinarId', $webinarId);
+            Session::instance()->set('step', $webinarStep);
+        }
+
+        Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
+    }
+
     private function checkRemoteUser($username, $password) {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);

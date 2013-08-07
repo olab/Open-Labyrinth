@@ -49,7 +49,7 @@
 <table class="table table-striped table-bordered" id="message-table">
     <tbody>
     <?php
-    if(isset($templateData['forum']) and count($templateData['forum']) > 0) {
+    if(isset($templateData['forum']) and isset($templateData['forum']['messages']) and count($templateData['forum']['messages']) > 0) {
     foreach($templateData['forum']['messages'] as $message) {
     ?>
         <tr id="message-<?php echo $message['id'] ; ?>" class="message">
@@ -81,8 +81,9 @@
             </td>
         </tr>
     <?php }
-    }
-    ?>
+    } else { ?>
+        <tr class="info"><td colspan="4">There are no forum messages right now. You may add a message using the add message button.</td> </tr>
+    <?php } ?>
     </tbody>
 </table>
 

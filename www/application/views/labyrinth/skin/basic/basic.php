@@ -94,7 +94,7 @@
         var qresp = $("#qresponse_" + qid).val();
         if (qresp != ''){
             qresp = B64.encode(qresp);
-            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid;
+            var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + <?php echo $templateData['node']->id; ?>;
 
             var $response = $('#AJAXresponse' + qid);
             $.get(URL, function(data) {
@@ -106,7 +106,7 @@
     }
 
     function ajaxQU(obj, qid, qresp, qnts) {
-        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/' + qresp + '/' + qid;
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/' + qresp + '/' + qid + '/' + <?php echo $templateData['node']->id; ?>;
         var check = $(obj).is(':checked');
         if (check){
             URL += '/1';
@@ -307,7 +307,8 @@ if ($templateData['skin_path'] != NULL) {
                         <?php } ?>
                     </h5>
                     <?php } ?>
-                <p><a href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>reset</a>
+                <p>
+                    <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData['map']->id; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
                 </p>
 </div>
 <a href="<?php echo URL::base(); ?>"><img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg"

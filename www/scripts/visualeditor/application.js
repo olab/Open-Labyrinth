@@ -2,7 +2,8 @@ $(function () {
     var params = {
         'canvasContainer':'#canvasContainer',
         'canvasId':'#canvas',
-        'aButtonsContianer': '#ve_additionalActionButton'
+        'aButtonsContianer': '#ve_additionalActionButton',
+        'sectionSelectId': '#sectionsNodesSelect'
     };
 
     tinyMCE.init({
@@ -74,7 +75,7 @@ $(function () {
     
     $('#pasteSNodesBtn').click(function() {
         paste();
-    })
+    });
 
     if (mapJSON != null && mapJSON.length > 0) {
         if (mapType != null && mapType == 6) {
@@ -180,7 +181,7 @@ $(function () {
     $('.navbar-inner .dropdown-menu a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.navbar-inner .nav a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.nav-list a').click(function() { return leaveBox($(this)); });
-    $('.wizard-next-buttons a').click(function() { return leaveBox($(this)); })
+    $('.wizard-next-buttons a').click(function() { return leaveBox($(this)); });
 
     var leaveLink = null;
 
@@ -454,6 +455,7 @@ $(function () {
 
     $('#veRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
     $('#veSelectRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
+    $('#veSectionPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
 
     $('#veRightPanel input[type=text]').keyup(function(){
         veUnsavedData();
@@ -474,4 +476,143 @@ $(function () {
     function veUnsavedData(){
         visualEditor.unsavedData = true;
     }
+
+    var $makeSectionBox       = $('#veMakeSectionBox'),
+        $sectionNodeContainer = $('#sectionNodesContainer');
+
+    $('#veMakeSectionBtn').click(function() {
+        var html          = '<label for="nodetitle" class="control-label" style="text-align: left;"><strong>%nodeTitle%</strong></label>' +
+                            '<div class="controls"><select id="sectionNodeOrder%orderNodeId%" class="section-nodes-order">%sectionOptions%</select></div>' +
+                            '<div class="section-node" nodeId="%nodeId%"></div>',
+            optionsHtml   = '<option value="%value%">%title%</option>',
+            selectedNodes = visualEditor.GetSelectedNodes(),
+            length        = 0,
+            options       = '',
+            nodes         = '',
+            i             = 0;
+
+        length = selectedNodes.length;
+        if(length <= 0) return false;
+
+        for(i = 0; i < length; i++) {
+            options += optionsHtml.replace('%value%', i).replace('%title%', i);
+        }
+
+        for(i = length; i--;) {
+            nodes += html.replace('%nodeTitle%', selectedNodes[i].title)
+                         .replace('%sectionOptions%', options)
+                         .replace('%orderNodeId%', selectedNodes[i].id)
+                         .replace('%nodeId%', selectedNodes[i].id);
+        }
+
+        $sectionNodeContainer.empty().append(nodes);
+
+        $makeSectionBox.modal();
+    });
+
+    $('#veMakeNewSectionBtn').click(function() {
+        var $sectionNodes = $('.section-node'),
+            sectionName   = $('#sectionNameInput').val(),
+            nodesIDs      = [];
+
+        $sectionNodes.each(function(index, value) {
+            var nodeId = $(this).attr('nodeId');
+            if(nodeId != null) {
+                nodesIDs.push({nodeId: nodeId, order: $('#sectionNodeOrder' + nodeId).val()});
+            }
+        });
+
+        visualEditor.AddNewSection(sectionName, nodesIDs);
+
+        $makeSectionBox.modal('hide');
+    });
+
+    $('#veSectionClosePanelBtn').click(function() {
+        $('#veSectionPanel').addClass('hide');
+    });
+
+    $('#sectionsNodesSelect').change(function() {
+        sectionData($(this).val());
+    });
+
+    $('.removeNodeFromSection').live('click', function() {
+        var nodeId    = $(this).attr('nodeId'),
+            sectionId = $(this).attr('sectionId');
+
+        visualEditor.RemoveNodeFromSection(sectionId, nodeId);
+        $(this).parent().parent().remove();
+    });
+
+    $('#removeSection').click(function() {
+        var sectionId = $(this).attr('sectionId');
+
+        visualEditor.RemoveSection(sectionId);
+        $('#sectionSettings').addClass('hide');
+        $('#sectionNodeContainer').empty();
+        $('#sectionsNodesSelect option[value="' + sectionId + '"]').remove();
+    });
+
+    $('#addNodeToSection').click(function() {
+        var sectionId  = $(this).attr('sectionId'),
+            addedNodes = visualEditor.AddNodesToSection(sectionId);
+
+        sectionData(sectionId);
+    });
+
+    function sectionData(sectionId) {
+        var section = visualEditor.GetSectionById(sectionId),
+            html    = '<div><label for="nodetitle" class="control-label" style="text-align: left;"><strong>%nodeName%</strong></label><div class="controls">'+
+                      '<select id="selectSectionNodeOrder%orderNodeId%" style="margin-bottom: 0">%options%</select>' +
+                      '<button class="btn btn-danger removeNodeFromSection" nodeId="%removeNodeId%" sectionId="%sectionId%"><i class="icon-trash"></i></button></div>' +
+                      '<div class="sectionNode" nodeId="%nodeId%"></div></div>',
+            options = '',
+            length  = 0,
+            append  = '';
+
+        $('#sectionSettings').removeClass('hide');
+        $('#sectionName').val(section.name);
+        $('#veSectionSaveBtn').attr('sectionId', section.id);
+        $('#removeSection').attr('sectionId', section.id);
+        $('#addNodeToSection').attr('sectionId', section.id);
+        $('#sectionNodeContainer').empty().append('<div><b>Nodes:</b></div>');
+        if(section != null) {
+            length = section.nodes.length;
+            if(length > 0) {
+                for(var i = length; i--;) {
+                    options = '';
+                    append  = '';
+                    for(var j = 0; j < length; j++) {
+                        options += '<option value="' + j + '" ' + (j == section.nodes[i].order ? 'selected="selected"' : '') + '>' + j + '</option>';
+                    }
+
+                    append = html.replace('%nodeName%', section.nodes[i].node.title)
+                        .replace('%options%', options)
+                        .replace('%orderNodeId%', section.nodes[i].node.id)
+                        .replace('%nodeId%', section.nodes[i].node.id)
+                        .replace('%sectionId%', section.id)
+                        .replace('%removeNodeId%', section.nodes[i].node.id);
+
+                    $('#sectionNodeContainer').append(append);
+                }
+            }
+        }
+    }
+
+    $('#veSectionSaveBtn').click(function() {
+        var sectionName = $('#sectionName').val(),
+            $nodes      = $('.sectionNode'),
+            nodes       = [],
+            nodeId      = 0;
+
+        $nodes.each(function(index, value) {
+            nodeId = $(this).attr('nodeId');
+            nodes.push({nodeId: nodeId, order: $('#selectSectionNodeOrder' + nodeId).val()});
+        });
+
+        visualEditor.UpdateSection($(this).attr('sectionId'), sectionName, nodes);
+    });
+
+    $('#sectionsBtn').click(function() {
+        $('#veSectionPanel').removeClass('hide');
+    });
 });

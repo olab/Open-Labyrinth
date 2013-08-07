@@ -51,6 +51,12 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'node_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+            )),
         );
     }
 
@@ -66,10 +72,11 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return array('id');
     }
     
-    public function createResponse($sessionId, $questionId, $response) {
+    public function createResponse($sessionId, $questionId, $response, $nodeId) {
         $this->question_id = $questionId;
         $this->session_id = $sessionId;
         $this->response = $response;
+        $this->node_id = $nodeId;
         
         $this->save();
     }
@@ -106,6 +113,24 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             }
 
             return $responces;
+        }
+
+        return NULL;
+    }
+
+    public function getResponsesByQuestion($questionId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('question_id', '=', $questionId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $responses = array();
+            foreach($result as $record){
+                $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
+            }
+
+            return $responses;
         }
 
         return NULL;
