@@ -180,7 +180,7 @@ class Controller_DForumManager extends Controller_Base {
 
         self::action_mail('addMsg', $forumId,  $message, $forumName, '', $messageId);
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
+        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $messageId);
     }
 
     public function action_deleteMessage(){
@@ -233,7 +233,7 @@ class Controller_DForumManager extends Controller_Base {
             self::action_mail('updateMsg',$forumId, $message, $forumName);
         }
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
+        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $message_id);
     }
 
     private static function prepareUsersMail($forumId, $usersEmail = '', $type = '') {
