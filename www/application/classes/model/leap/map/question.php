@@ -305,6 +305,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
         $this->settings = Arr::get($values, 'settings', $this->feedback);
+        $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
+        $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
 
         $this->save();
     }
