@@ -53,7 +53,7 @@
     foreach($templateData['forum']['messages'] as $message) {
     ?>
         <tr id="message-<?php echo $message['id'] ; ?>" class="message">
-            <td width='150px'>
+            <td width='165px'>
                <a href="<?php echo URL::base().'usermanager/viewUser/' . $message['author_id']; ?>"><?php echo $message['author_name'] . '</a>'; ?>
                <br />
                <?php echo $message['date'];?>
@@ -75,9 +75,10 @@
                         </div>
                     </div>
                <?php }?>
+               <a href="javascript:void(0);" class="add-quote-btn" msgId="<?php echo $message['id'] ; ?>" msgDate="<?php echo $message['date'];?>" msgAuthor="<?php echo $message['author_name']; ?>" rel="tooltip" title="Add quote"><i class="icon-quote-right"></i> <?php echo __('Quote'); ?></a>
             </td>
-            <td>
-                <p><?php echo $message['text'];?></p>
+            <td id="message-text-<?php echo $message['id'] ; ?>">
+                <?php echo $message['text'];?>
             </td>
         </tr>
     <?php }
@@ -124,3 +125,5 @@
     }
 
 </script>
+
+<script src="<?php echo ScriptVersions::get(URL::base().'scripts/dforum.js'); ?>"></script>
