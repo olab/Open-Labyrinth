@@ -52,7 +52,7 @@
     if(isset($templateData['forum']) and isset($templateData['forum']['messages']) and count($templateData['forum']['messages']) > 0) {
     foreach($templateData['forum']['messages'] as $message) {
     ?>
-        <tr id="message-<?php echo $message['id'] ; ?>" class="message">
+        <tr id="m-<?php echo $message['id'] ; ?>" class="message">
             <td width='165px'>
                <a href="<?php echo URL::base().'usermanager/viewUser/' . $message['author_id']; ?>"><?php echo $message['author_name'] . '</a>'; ?>
                <br />

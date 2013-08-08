@@ -24,34 +24,52 @@ return array ("mail_from" => "admin@localhost.com", "from_name" => "Open-Labyrin
 
 			"add_msg" => array(
                 'author' => 'OpenLabyrinth: You added message in to the forum',
-                'other' => 'OpenLabyrinth: Added new message in to the forum'
+                'other' => 'OpenLabyrinth: Added new message in to the forum',
+                'action' => 'commented on'
              ),
 			"delete_msg" => array(
                 'author' => 'OpenLabyrinth: You deleted message from forum',
-                'other'  => 'OpenLabyrinth: The message deleted from forum'
+                'other'  => 'OpenLabyrinth: The message deleted from forum',
+                'action' => 'delete from'
             ),
 			"update_msg" => array(
                 'author' => 'OpenLabyrinth: You edited message in to the forum',
                 'other'  => 'OpenLabyrinth: Edit message in to the forum',
+                'action' => 'updated message on'
             ),
             "update_forum" => array(
                 'author' => 'OpenLabyrinth: You edited forum -',
                 'other' => 'OpenLabyrinth: Forum edited -',
+                'action' => 'updated forum'
             ),
 			"create_forum" => array(
                 'author' => 'OpenLabyrinth: You Create new forum',
                 'other' => 'OpenLabyrinth: Referred to the forum',
+                'action' => 'created new forum'
             ),
 			"delete_forum" => array(
                 'author' => 'OpenLabyrinth: You deleted Forum from OpenLabyrinth -',
                 'other' => 'OpenLabyrinth: Forum from OpenLabyrinth has deleted -',
+                'action' => 'delete forum'
             ),
 			'deleteUserFromForum' => array(
                 'author' => 'OpenLabyrinth: You delete user(s) from forum',
                 'other' => 'OpenLabyrinth: You have removed from the forum -',
+                'action' => 'delete user from forum'
             ),
             'addUserToForum' => array(
                 'author' =>  'OpenLabyrinth: You add user to forum',
                 'other' =>  'OpenLabyrinth: Referred to the forum',
+                'action' => 'add user to forum'
+            ),
+            'addGroupToForum' => array(
+                'author' =>  'OpenLabyrinth: You add group to forum',
+                'other' =>  'OpenLabyrinth: Group has been added to the forum',
+                'action' => 'add group to forum'
+            ),
+            'deleteGroupFromForum' => array(
+                'author' =>  'OpenLabyrinth: You delete group to forum',
+                'other' =>  'OpenLabyrinth: Group has been deleted to the forum',
+                'action' => 'delete group to forum'
             )
 );

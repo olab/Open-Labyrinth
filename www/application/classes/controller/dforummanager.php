@@ -174,11 +174,11 @@ class Controller_DForumManager extends Controller_Base {
         $message = Arr::get($this->request->post(), 'message', NULL);
         $forumId = Arr::get($this->request->post(), 'forum', NULL);
 
-        DB_ORM::model('dforum_messages')->createMessage($forumId, $message);
+        $messageId = DB_ORM::model('dforum_messages')->createMessage($forumId, $message);
 
         list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
-        self::action_mail('addMsg', $forumId,  $message, $forumName);
+        self::action_mail('addMsg', $forumId,  $message, $forumName, '', $messageId);
 
         Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
     }
@@ -333,9 +333,9 @@ class Controller_DForumManager extends Controller_Base {
         return $result;
     }
 
-    public static function action_mail($action, $forumId, $message = '', $forumName = '', $emails = '') {
+    public static function action_mail($action, $forumId, $message = '', $forumName = '', $emails = '', $messageId = null) {
         $emailConfig = Kohana::$config->load('dforum_email');
-        $URL = URL::base() . 'dforumManager/viewForum/' . $forumId;
+        $URL = URL::base('http', true) . 'dforumManager/viewForum/' . $forumId;
 
         switch($action) :
 
@@ -348,10 +348,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['add_msg']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL . ($messageId != null ? '#m-' . $messageId : '');
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -376,10 +381,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['delete_msg']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL . ($messageId != null ? '#m-' . $messageId : '');
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -407,10 +417,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['update_msg']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL . ($messageId != null ? '#m-' . $messageId : '');
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -435,10 +450,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['create_forum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -466,10 +486,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['update_forum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -495,10 +520,15 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  Auth::instance()->get_user()->email;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['delete_forum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -521,10 +551,12 @@ class Controller_DForumManager extends Controller_Base {
                 $nickname = Auth::instance()->get_user()->nickname;
                 $emailTo =  $emails;
 
-                $mail_body = $message . "\r\n" . "\r\n";
-                $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                $mail_body  = $nickname . ' ' . $emailConfig['addUserToForum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                 mail($emailTo, $subject, $mail_body, $header);
 
@@ -542,10 +574,12 @@ class Controller_DForumManager extends Controller_Base {
                     $subject = $emailConfig['deleteUserFromForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;
 
-                    $mail_body = $message . "\r\n" . "\r\n";
-                    $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                    $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                    $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                    $mail_body  = $nickname . ' ' . $emailConfig['deleteUserFromForum']['action'] . ' "' . $forumName . '"<br/>';
+                    $mail_body .=  "URL: " . $URL;
+
+                    $header  = 'MIME-Version: 1.0' . "\r\n";
+                    $header .= 'Content-type: text/html;' . "\r\n";
+                    $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                     foreach ($result as $userEmail)
                     {
@@ -566,13 +600,15 @@ class Controller_DForumManager extends Controller_Base {
                 {
                     list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
-                    $subject = $emailConfig['create_forum']['other'] . ' "' . $forumName . '"';
+                    $subject = $emailConfig['addGroupToForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;
 
-                    $mail_body = $message . "\r\n" . "\r\n";
-                    $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                    $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                    $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                    $mail_body  = $nickname . ' ' . $emailConfig['addGroupToForum']['action'] . ' "' . $forumName . '"<br/>';
+                    $mail_body .=  "URL: " . $URL;
+
+                    $header  = 'MIME-Version: 1.0' . "\r\n";
+                    $header .= 'Content-type: text/html;' . "\r\n";
+                    $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                     foreach ($result as $userEmail)
                     {
@@ -593,13 +629,15 @@ class Controller_DForumManager extends Controller_Base {
                 {
                     list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
 
-                    $subject = $emailConfig['deleteUserFromForum']['other'] . ' "' . $forumName . '"';
+                    $subject = $emailConfig['deleteGroupFromForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;
 
-                    $mail_body = $message . "\r\n" . "\r\n";
-                    $mail_body .=  "URL: " . $URL . "\r\n" . 'Forum: ' . $forumName;
-                    $mail_body .= "\r\n" . 'Author: ' . $nickname .  "\r\n";
-                    $header = "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                    $mail_body  = $nickname . ' ' . $emailConfig['deleteGroupFromForum']['action'] . ' "' . $forumName . '"<br/>';
+                    $mail_body .=  "URL: " . $URL;
+
+                    $header  = 'MIME-Version: 1.0' . "\r\n";
+                    $header .= 'Content-type: text/html;' . "\r\n";
+                    $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
 
                     foreach ($result as $userEmail)
                     {
