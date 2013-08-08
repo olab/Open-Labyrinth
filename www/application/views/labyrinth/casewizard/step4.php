@@ -31,6 +31,7 @@
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = <?php if(isset($templateData['mapModel'])) echo $templateData['mapModel']->type_id; ?>;
+        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
     </script>
 <h1><?php echo __('Step 4. Add your story'); ?></h1>
 <div>
@@ -63,6 +64,7 @@
                 <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
                 <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
                 <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>
+                <p><button type="button" class="round-btn" id="sectionsBtn" data-toggle="tooltip" data-original-title="Sections" data-placement="right"><i class="ve-icon-section"></i></button></p>
                 <p><button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
             </div>
 
@@ -214,7 +216,69 @@
                     </div>
                 </div>
             </div>
-            
+
+            <div class="visual-editor-select-right-panel hide" id="veSectionPanel">
+                <div class="visual-editor-right-panel-tabs">&nbsp;</div>
+                <legend style="margin-left: 5px">Sections</legend>
+                <div class="control-group block" style="margin-left: 5px">
+                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Choice section:</strong></label>
+                    <div class="controls">
+                        <select id="sectionsNodesSelect"></select>
+                    </div>
+
+                    <div id="sectionSettings" class="hide">
+                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Name:</strong></label>
+                        <div class="controls">
+                            <input type="text" id="sectionName" style="margin-bottom: 0"/>
+                            <div class="btn-group">
+                                <button id="removeSection" class="btn btn-danger"><i class="icon-trash"></i></button>
+                                <button id="addNodeToSection" class="btn btn-success"><i class="icon-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sectionNodeContainer"></div>
+                </div>
+
+                <div class="footer block">
+                    <div class="btn-group">
+                        <a href="javascript:void(0)" class="btn btn-success" id="veMakeSectionBtn">Make section</a>
+                        <a href="javascript:void(0)" class="btn btn-info" id="veSectionSaveBtn">Update section</a>
+                        <a href="javascript:void(0)" class="btn" id="veSectionClosePanelBtn">Close panel</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal block hide" id="veMakeSectionBox">
+                <div class="modal-header block">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>New Section</h3>
+                </div>
+
+                <div class="modal-body block">
+                    <div class="control-group block">
+                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Section name:</strong></label>
+                        <div class="controls">
+                            <input type="text" id="sectionNameInput" name="sectionNameInput" value=""/>
+                        </div>
+                    </div>
+                    <div class="control-group block" id="sectionNodesContainer">
+                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Node 1</strong></label>
+                        <div class="controls">
+                            <select><option>0</option><option>1</option></select>
+                        </div>
+                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Node 1</strong></label>
+                        <div class="controls">
+                            <select><option>0</option><option>1</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer block">
+                    <a href="javascript:void(0);" class="btn" id="veMakeNewSectionBtn">Save</a>
+                    <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+
             <div class="visual-editor-select-right-panel hide" id="veSelectRightPanel">
                 <div class="visual-editor-right-panel-tabs">&nbsp;</div>
                 <legend>Background color</legend>
@@ -483,6 +547,8 @@
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/selectRightPanel.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/preview.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/history.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/section.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/sectionNode.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
 

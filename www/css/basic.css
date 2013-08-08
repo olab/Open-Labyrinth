@@ -825,6 +825,12 @@ input[readonly].code, textarea[readonly].code{
     width: 16px;
 }
 
+.ve-icon-section {
+    background-position: -259px 0;
+    margin-top: -3px;
+    width: 16px;
+}
+
 .visual-editor-right-panel-tabs {
     padding-top: 5px;
     background-color: #a1a1a1;
