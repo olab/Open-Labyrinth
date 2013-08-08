@@ -1,1 +1,1 @@
-ALTER TABLE  `user_responses` CHANGE  `node_id`  `node_id` INT( 10 ) UNSIGNED NOT NULL;
+ALTER TABLE  `user_responses` ADD  `node_id` INT UNSIGNED NOT NULL;
