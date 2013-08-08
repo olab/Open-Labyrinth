@@ -274,14 +274,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     public function action_questionResponse() {
-        $optionNumber = $this->request->param('id', NULL);
-        $questionId = $this->request->param('id2', NULL);
-        $questionStatus = $this->request->param('id3', NULL);
+        $optionNumber   = $this->request->param('id', NULL);
+        $questionId     = $this->request->param('id2', NULL);
+        $nodeId         = $this->request->param('id3', null);
+        $questionStatus = $this->request->param('id4', NULL);
 
         if ($optionNumber != NULL and $questionId != NULL) {
             $this->auto_render = false;
             
-            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus);
+            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
         }
     }
 
