@@ -91,6 +91,15 @@ class Model_Leap_Map extends DB_ORM_Model
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'reminder_msg' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+            'reminder_time' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
             'show_bar' => new DB_ORM_Field_Boolean($this, array(
                 'default' => FALSE,
                 'nullable' => FALSE,
@@ -508,6 +517,8 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->skin_id = Arr::get($values, 'skin', 1);
         $this->timing = Arr::get($values, 'timing', FALSE);
         $this->delta_time = Arr::get($values, 'delta_time', 0);
+        $this->reminder_msg = Arr::get($values, 'reminder_msg', 'empty_reminder_msg');
+        $this->reminder_time = Arr::get($values, 'reminder_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
 

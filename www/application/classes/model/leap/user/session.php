@@ -155,6 +155,19 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         return NULL;
     }
 
+    public function getStartTimeSessionById($sessionId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('id', '=', $sessionId);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            return $result[0]['start_time'];
+        }
+
+        return NULL;
+    }
+
     public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())

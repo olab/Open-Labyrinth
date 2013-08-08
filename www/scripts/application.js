@@ -56,10 +56,18 @@ jQuery(document).ready(function(){
 
 
     jQuery('input:radio#timing-on').change(function(){
-        $('#delta_time').prop('disabled', false);
+        $('#delta_time_seconds').prop('disabled', false);
+        $('#delta_time_minutes').prop('disabled', false);
+        $('#reminder_msg').prop('disabled', false);
+        $('#reminder_seconds').prop('disabled', false);
+        $('#reminder_minutes').prop('disabled', false);
     });
     jQuery('input:radio#timing-off').change(function(){
-        $('#delta_time').prop('disabled', true);
+        $('#delta_time_seconds').prop('disabled', true);
+        $('#delta_time_minutes').prop('disabled', true);
+        $('#reminder_msg').prop('disabled', true);
+        $('#reminder_seconds').prop('disabled', true);
+        $('#reminder_minutes').prop('disabled', true);
     });
 
     jQuery('input:radio[name=security]').change(function(){

@@ -858,6 +858,27 @@ class Controller_LabyrinthManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST)) {
             if ($mapId) {
+                if ( isset($_POST['delta_time_seconds']) && isset($_POST['delta_time_minutes']) ) {
+                    $delta_time_seconds = $_POST['delta_time_seconds'];
+                    $delta_time_minutes = $_POST['delta_time_minutes'];
+
+                    $delta_timing = $delta_time_minutes * 60 + $delta_time_seconds;
+
+                    unset($_POST['delta_time_seconds']);
+                    unset($_POST['delta_time_minutes']);
+                    $_POST['delta_time'] = $delta_timing;
+                }
+
+                if ( isset($_POST['reminder_seconds']) && isset($_POST['reminder_minutes']) ) {
+                    $reminder_seconds = $_POST['reminder_seconds'];
+                    $reminder_minutes = $_POST['reminder_minutes'];
+
+                    $reminder_time = $reminder_minutes * 60 + $reminder_seconds;
+
+                    unset($_POST['reminder_seconds']);
+                    unset($_POST['reminder_minutes']);
+                    $_POST['reminder_time'] = $reminder_time;
+                }
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
 

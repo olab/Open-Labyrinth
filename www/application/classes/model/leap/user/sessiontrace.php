@@ -163,7 +163,20 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         
         return NULL;
     }
-    
+    public function getLastTraceBySessionId($sessionId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId)
+            ->order_by('date_stamp', 'DESC')
+            ->limit(1);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            return $result;
+        }
+
+        return NULL;
+    }
     public function isExistBySessionAndNodeIDs($sessionId, $nodeId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())

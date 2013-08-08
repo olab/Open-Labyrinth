@@ -29,7 +29,16 @@
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
+
+<link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css"/>
+
+
+<script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+
+
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
+
 
 <SCRIPT LANGUAGE="JavaScript">
     window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
@@ -45,6 +54,30 @@
 
 <script language="javascript">
     $(document).ready(function(){
+        var rem = '';
+        var remMessage = '';
+        var session = <?php echo $templateData['session']; ?> ;
+        <?php  if ($templateData['map']->timing) { ?>
+                <?php if ( isset($templateData['timer_start']) && $templateData['timer_start'] != 0) {?>
+                    var sec = <?php echo $templateData['map']->delta_time - $templateData['timeForNode']; ?> ;
+
+                    <?php if ( $templateData['map']->reminder_time > 0 && ( $templateData['map']->reminder_time < ($templateData['map']->delta_time - $templateData['timeForNode']) ) ) { ?>
+                        rem = <?php echo $templateData['map']->reminder_time; ?> ;
+                        remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;
+                    <?php } ?>
+
+        <?php } else {?>
+
+        var sec = <?php echo $templateData['map']->delta_time; ?> ;
+
+            <?php if ( $templateData['map']->reminder_time > 0 )  {  ?>
+                rem = <?php echo $templateData['map']->reminder_time; ?> ;
+                remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;
+          <?php } }?>
+
+        start_countdown(sec,rem,remMessage,session);
+
+    <?php }?>
         $(".clearQuestionPrompt").focus(function(){
             if (!$(this).hasClass('cleared')){
                 $(this).val('');
@@ -151,6 +184,61 @@
         xmlhttp.open("POST", URL, true);
         xmlhttp.send(null);
     }
+
+
+    function timer(sec, block,reminder, check, remMsg, session) {
+        var time    = sec;
+
+        var remTime = reminder;
+        var checkReminder = check;
+        var remMessage = remMsg;
+        var sessionID = session;
+
+        var hour    = parseInt(time / 3600);
+        if ( hour < 1 ) hour = 0;
+        time = parseInt(time - hour * 3600);
+        if ( hour < 10 ) hour = '0'+hour;
+
+        var minutes = parseInt(time / 60);
+        if ( minutes < 1 ) minutes = 0;
+        time = parseInt(time - minutes * 60);
+        if ( minutes < 10 ) minutes = '0'+minutes;
+
+        var seconds = time;
+        if ( seconds < 10 ) seconds = '0'+seconds;
+
+        block.innerHTML = hour+':'+minutes+':'+seconds;
+
+        sec--;
+
+        if (checkReminder && remTime != '' && remTime > sec){
+            document.getElementsByClassName("demo btn btn-primary btn-large")[0].click();
+            checkReminder = false;
+        }
+
+        if ( sec > 0 ) {
+            setTimeout(function(){ timer(sec, block,remTime, checkReminder,remMessage,sessionID); }, 1000);
+        }
+        else {
+            document.getElementsByClassName("demo btn btn-primary btn-large")[1].click();
+            setTimeout(function(){ window.location.assign('/reportManager/showReport/' + sessionID); }, 2000);
+        }
+    }
+
+    function start_countdown(seconds,reminderTime,remMsg,session) {
+        var time = seconds;
+        var remTime = reminderTime;
+        var remMessage = remMsg;
+        var sessionID = session;
+        var block = document.getElementById('timer');
+        if (reminderTime != '') {
+            timer(time, block,reminderTime, true, remMessage,sessionID);
+        }
+        else {
+            timer(time,block,'','','',sessionID);
+        }
+    }
+
 
     function ajaxChatShowAnswer(ChatId, ChatElementId) {
         var xmlhttp;
@@ -289,6 +377,11 @@ if ($templateData['skin_path'] != NULL) {
                 </table>
             </td>
             <td class="centre_td" width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center">
+               <?php if ($templateData['map']->timing) { ?>
+                    <h4>Timer: <div id="timer"></div>
+                    <br />
+                    <br />
+               <?php }?>
                 <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
 
                 <h5>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
@@ -330,5 +423,34 @@ if ($templateData['skin_path'] != NULL) {
 </tr>
 </table>
 </div>
+
+<div id="reminder" class="modal hide fade" tabindex="-1" data-width="760">
+    <div class="modal-header">
+        <h3>Reminder</h3>
+    </div>
+    <div class="modal-body">
+      <?php echo $templateData['map']->reminder_msg; ?>
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn">Close</button>
+    </div>
+</div>
+
+<div id="finish" class="modal hide fade" tabindex="-1" data-width="760">
+    <div class="modal-header">
+        <h3>FINISH</h3>
+    </div>
+    <div class="modal-body">
+        Time is up
+    </div>
+    <div class="modal-footer">
+        <button type="button" data-dismiss="modal" class="btn">Close</button>
+    </div>
+</div>
+
+
+<button id="remButton" class="demo btn btn-primary btn-large" href="#reminder" data-toggle="modal" style="display: none" type="submit"></button>
+<button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
+
 </body>
 </html>

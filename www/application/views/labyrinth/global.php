@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map'])) {
     ?>
-
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
     <script language="javascript" type="text/javascript"
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
             xmlns="http://www.w3.org/1999/html"></script>
@@ -233,14 +233,55 @@ if (isset($templateData['map'])) {
                            value=1 <?php if ($templateData['map']->timing) echo 'checked=""'; ?>>
 
                     <div class="control-group">
-                        <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
-
+                        <br />
+                        <label class="control-label" for="delta_time_seconds"><?php echo __('Timing Delta: seconds'); ?></label>
                         <div class="controls">
                             <input
                                 <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
-                                name="delta_time" type="text" class="span1" id="delta_time"
-                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->delta_time; ?>">
-                            <span class="help-inline"><?php echo __('seconds'); ?></span>
+                                name="delta_time_seconds" type="text" class="span1" id="delta_time_seconds"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->delta_time % 60; ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="delta_time_minutes"><?php echo __('Timing Delta: minutes'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="delta_time_minutes" type="text" class="span1" id="delta_time_minutes"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo floor($templateData['map']->delta_time / 60); ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_msg"><?php echo __('Reminder message'); ?></label>
+                        <div class="controls">
+                                <textarea name="reminder_msg" class="span6" <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                          id="reminder_msg"><?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->reminder_msg; ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_seconds"><?php echo __('Reminder: seconds'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="reminder_seconds" type="text" class="span1" id="reminder_seconds"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->reminder_time % 60; ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_minutes"><?php echo __('Reminder: minutes'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="reminder_minutes" type="text" class="span1" id="reminder_minutes"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo floor($templateData['map']->reminder_time / 60); ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
                         </div>
                     </div>
                 </label>
@@ -330,8 +371,44 @@ if (isset($templateData['map'])) {
 
     <div class="pull-right">
         <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit"
-               value="<?php echo __('Save changes'); ?>"></div>
+               value="<?php echo __('Save changes'); ?>" onclick="return checkForm();"></div>
 
     </form>
 
+    <script>
+        createEditableSelect(document.getElementById('delta_time_seconds'));
+        createEditableSelect(document.getElementById('delta_time_minutes'));
+        createEditableSelect(document.getElementById('reminder_seconds'));
+        createEditableSelect(document.getElementById('reminder_minutes'));
+
+        function checkForm (){
+            if(document.getElementById('delta_time_seconds').value == '' && document.getElementById('delta_time_minutes').value == ''
+                && document.getElementById('timing-on').checked ) {
+                alert('Please enter you time interval for Timing!');
+                return false;
+            }
+            if(document.getElementById('delta_time_seconds').value == 0 && document.getElementById('delta_time_minutes').value == 0
+                && document.getElementById('timing-on').checked ) {
+                alert('Please enter you time interval for Timing!');
+                return false;
+            }
+            if(document.getElementById('reminder_seconds').value == 0 && document.getElementById('reminder_minutes').value == 0
+                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+                alert('Please enter you time interval for Reminder Message!');
+                return false;
+            }
+            if(document.getElementById('reminder_seconds').value == '' && document.getElementById('reminder_minutes').value == ''
+                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+                alert('Please enter you time interval for Reminder Message!');
+                return false;
+            }
+            if(( parseInt(document.getElementById('reminder_seconds').value) + parseInt(document.getElementById('reminder_minutes').value) * 60)
+                >= ( parseInt(document.getElementById('delta_time_seconds').value) + parseInt(document.getElementById('delta_time_minutes').value) * 60)
+                && document.getElementById('timing-on').checked ) {
+                alert('Reminder-interval must be less than Timing interval!');
+                return false;
+            }
+        }
+
+    </script>
 <?php } ?>
