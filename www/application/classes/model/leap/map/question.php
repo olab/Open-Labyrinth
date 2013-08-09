@@ -196,7 +196,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
         return NULL;
     }
-    
+
     public function addQuestion($mapId, $type, $values) {
         switch($type->value)
         {

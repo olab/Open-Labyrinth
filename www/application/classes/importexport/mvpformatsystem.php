@@ -262,7 +262,9 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             'DAM' => 'map_dam',
             'AV' => 'map_avatar',
             'VPD' => 'map_vpd',
-            'QU' => 'map_question');
+            'QU' => 'map_question',
+            'CR' => 'map_counter',
+            'NODE' => 'map_node');
 
         $searchArray = array();
         $replaceArray = array();
@@ -276,6 +278,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
                 }
             }
         }
+
         if (isset($this->labyrinthArray['map_node'])){
             if (count($this->labyrinthArray['map_node']) > 0){
                 $searchNodeIDArray = array();
@@ -310,6 +313,35 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
+        if (isset($this->labyrinthArray['map_counter_commonrules'])){
+            foreach($this->labyrinthArray['map_counter_commonrules'] as $key => $rule){
+                $md5Rule = md5($rule['rule']);
+                $rule['rule'] = str_replace($searchArray, $replaceArray, $rule['rule']);
+                $newMd5Rule = md5($rule['rule']);
+                if ($md5Rule != $newMd5Rule){
+                    $ruleDB = DB_ORM::model('map_counter_commonrules', array((int) $rule['database_id']));
+                    if ($ruleDB->is_loaded()){
+                        $ruleDB->rule = $rule['rule'];
+                        $ruleDB->save();
+                    }
+                }
+            }
+        }
+
+        if (isset($this->labyrinthArray['map_question'])){
+            foreach($this->labyrinthArray['map_question'] as $key => $q){
+                $md5Q = md5($q['settings']);
+                $q['settings'] = str_replace($searchArray, $replaceArray, $q['settings']);
+                $newMd5Q = md5($q['settings']);
+                if ($md5Q != $newMd5Q){
+                    $qDB = DB_ORM::model('map_question', array((int) $q['database_id']));
+                    if ($qDB->is_loaded()){
+                        $qDB->settings = $q['settings'];
+                        $qDB->save();
+                    }
+                }
+            }
+        }
 
         $mediaElements = $this->xml2array($tmpFolder, 'media_elements');
         if (isset($mediaElements['media_elements_avatars'])){

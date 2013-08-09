@@ -137,7 +137,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
         return $result;
     }
-    
+
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
         $builder = DB_ORM::insert('user_sessionTrace')
                 ->column('session_id', $sessionId)

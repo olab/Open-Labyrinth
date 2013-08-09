@@ -77,7 +77,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $this->session_id = $sessionId;
         $this->response = $response;
         $this->node_id = $nodeId;
-        
+
         $this->save();
     }
     
