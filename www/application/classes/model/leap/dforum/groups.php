@@ -58,6 +58,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
 
     public function updateGroups($forumId, $groups){
         $groupsInForum = $this->getAllGroupsInForum($forumId, 'id');
+        $usersInForum  = DB_ORM::model('dforum_users')->getAllUsersInForum($forumId);
         if (count($groupsInForum) <= 0) {
             $groupsInForum = array();
         }
@@ -75,6 +76,15 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
 
                     $groupsIds[] = $groupId;
 
+                    $group = DB_ORM::model('group', array((int)$groupId));
+                    if(count($group->users) > 0) {
+                        foreach($group->users as $groupUser) {
+                            if(!in_array($groupUser->user_id, $usersInForum)) {
+                                DB_ORM::model('dforum_users')->addUser($forumId, $groupUser->user_id);
+                            }
+                        }
+                    }
+
                     $this->save();
                     $this->reset();
                 }
@@ -90,6 +100,15 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
             $groupsIds = array();
             foreach($groupsInForum as $groupId){
                 $this->deleteGroupInForum($forumId, $groupId);
+                $group = DB_ORM::model('group', array((int)$groupId));
+                if(count($group->users) > 0) {
+                    foreach($group->users as $groupUser) {
+                        if(!in_array($groupUser->user_id, $usersInForum)) {
+                            DB_ORM::model('dforum_users')->deleteUser($forumId, $groupUser->user_id);
+                        }
+                    }
+                }
+
                 $groupsIds[] = $groupId;
             }
             Controller_DForumManager::action_mail('deleteGroupFromForum', $forumId,'','',$groupsIds);

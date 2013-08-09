@@ -117,24 +117,28 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
     public function getAllPrivateForums(){
-        $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
-            ->from($this->table(), 'forum')
-            ->join('LEFT', 'users', 'u')
-            ->on('forum.author_id', '=', 'u.id')
-            ->join('LEFT', 'dforum_users', 'dfu')
-            ->on('dfu.id_forum', '=', 'forum.id')
-            ->join('LEFT', 'dforum_groups', 'dfg')
-            ->on('dfg.id_forum', '=', 'forum.id')
-            ->join('LEFT', 'user_groups', 'ug')
-            ->on('ug.group_id', '=', 'dfg.id_group')
-            ->where('security_id', '=', 1, 'AND')
-            ->where('dfu.id_user', '=', Auth::instance()->get_user()->id, 'AND')
-            ->where('ug.user_id', '=', Auth::instance()->get_user()->id, 'OR')
-            ->group_by('forum.id');
+        $result = null;
 
-        $result = $builder->query();
+        if(Auth::instance()->get_user()->type->name == 'superuser') {
+            $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
+                ->from($this->table(), 'forum')
+                ->where('security_id', '=', 1)
+                ->join('LEFT', 'users', 'u')
+                ->on('forum.author_id', '=', 'u.id');
 
-        if($result->is_loaded()) {
+            $result = $builder->query();
+        } else {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $result = $connection->query('SELECT forum.*, u.nickname as author_name FROM ' . $this->table() . ' as forum
+                                               LEFT JOIN users as u ON forum.author_id = u.id
+                                               LEFT JOIN dforum_users  as dfu ON dfu.id_forum = forum.id
+                                               LEFT JOIN dforum_groups as dfg ON dfg.id_forum = forum.id
+                                               LEFT JOIN user_groups   as ug  ON ug.group_id  = dfg.id_group
+                                               WHERE forum.security_id = 1 AND (forum.author_id = ' . Auth::instance()->get_user()->id . ' OR dfu.id_user = ' . Auth::instance()->get_user()->id . ' OR ug.user_id = ' . Auth::instance()->get_user()->id . ')
+                                          GROUP BY forum.id');
+        }
+
+        if($result != null && $result->is_loaded()) {
             $forums = array();
 
             foreach($result as $key => $record){

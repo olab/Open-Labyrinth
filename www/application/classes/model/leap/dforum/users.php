@@ -56,6 +56,18 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         return array('id');
     }
 
+    public function addUser($forumId, $userId) {
+        $this->id_user = $userId;
+        $this->id_forum = $forumId;
+
+        $this->save();
+        $this->reset();
+    }
+
+    public function deleteUser($forumId, $userId) {
+        DB_SQL::delete('default')->from($this->table())->where('id_forum', '=', $forumId, 'AND')->where('id_user', '=', $userId)->execute();
+    }
+
     public function updateUsers($forumId, $users){
         $usersInForum = $this->getAllUsersInForum($forumId, 'id');
 
@@ -136,6 +148,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         $result = array();
         $ids = $this->getAllUsersInForum($forumId, 'id');
 
+        if(count($ids) <= 0) return $result;
         foreach($ids as $id) {
             $user= DB_SQL::select('default',array(DB::expr('u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from('users', 'u')
                 ->join('LEFT','oauth_providers','op')
@@ -147,8 +160,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
 
             $res = $user->query();
 
-            foreach ($res as $record)
-            {
+            foreach ($res as $record) {
                 $result[] = $record;
             }
 

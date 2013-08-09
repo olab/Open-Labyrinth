@@ -110,12 +110,7 @@
             <?php if(isset($templateData['existUsers']) and count($templateData['existUsers']) > 0) { ?>
                 <?php foreach($templateData['existUsers'] as $existUser) { ?>
                     <tr>
-                        <?php if($existUser['id'] == Auth::instance()->get_user()->id) { ?>
-                            <td style="text-align: center">Author</td>
-                            <input type="hidden" name="users[]" value="<?php echo $existUser['id']; ?>">
-                        <?php } else { ?>
-                            <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser['id']; ?>" checked="checked"></td>
-                        <?php } ?>
+                        <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser['id']; ?>" checked="checked"></td>
                         <?php $icon = ($existUser['icon'] != NULL) ? 'oauth/'.$existUser['icon'] : 'openlabyrinth-header.png' ; ?>
                         <td style="text-align: center;"> <img <?php echo ($existUser['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
                         <td><?php echo $existUser['nickname']; ?></td>
@@ -124,8 +119,8 @@
             <?php } ?>
             <?php if(isset($templateData['users']) and count($templateData['users']) > 0) { ?>
                 <?php foreach($templateData['users'] as $user) { ?>
-                    <?php if($user['id'] == Auth::instance()->get_user()->id) continue; ?>
                     <tr>
+                        <?php if(!isset($templateData['name']) && $user['id'] == Auth::instance()->get_user()->id) continue; ?>
                         <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
                         <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
                         <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>

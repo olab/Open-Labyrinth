@@ -181,9 +181,33 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 ->where('id', '=', $webinarId)
                 ->execute();
 
-        $usersMap  = array();
-        $users     = Arr::get($values, 'users', null);
+        $formUsers  = Arr::get($values, 'users', null);
+
+        $users  = array();
+        $groups = Arr::get($values, 'groups', null);
+
+        $groupsUserMap = array();
+        if(count($webinar->groups) > 0) {
+            foreach($webinar->groups as $webinarGroup) {
+                if(count($webinarGroup->group->users) > 0) {
+                    foreach($webinarGroup->group->users as $groupUser) {
+                        $groupsUserMap[$groupUser->user_id] = $groupUser->user_id;
+                    }
+                }
+            }
+        }
+
+        if($formUsers != null && count($formUsers) > 0) {
+            foreach($formUsers as $formUserId) {
+                if(!isset($groupsUserMap[$formUserId])) {
+                    $users[] = $formUserId;
+                }
+            }
+        }
+
+        DB_ORM::model('webinar_group')->removeAllGroups($webinarId);
         DB_ORM::model('webinar_user')->removeUsers($webinarId);
+
         if($users != null && count($users) > 0) {
             foreach($users as $userId) {
                 DB_ORM::model('webinar_user')->addUser($webinarId, $userId);
@@ -191,8 +215,6 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             }
         }
 
-        $groups = Arr::get($values, 'groups', null);
-        DB_ORM::model('webinar_group')->removeAllGroups($webinarId);
         if($groups != null && count($groups) > 0) {
             foreach($groups as $groupId) {
                 DB_ORM::model('webinar_group')->addGroup($webinarId, $groupId);

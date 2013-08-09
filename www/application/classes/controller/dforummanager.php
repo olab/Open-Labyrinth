@@ -83,6 +83,8 @@ class Controller_DForumManager extends Controller_Base {
 
         list($this->templateData['name'], $this->templateData['security']) = DB_ORM::model('dforum')->getForumNameAndSecurityType($this->templateData['forum_id']);
 
+        $this->templateData['forum'] = DB_ORM::model('dforum', array((int)$this->templateData['forum_id']));
+
         $this->templateData['existUsers'] = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($this->templateData['forum_id']);
         $existUsersId = DB_ORM::model('dforum_users')->getAllUsersInForum($this->templateData['forum_id'], 'id');
         $this->templateData['users'] = DB_ORM::model('user')->getAllUsersAndAuth('ASC', $existUsersId);
