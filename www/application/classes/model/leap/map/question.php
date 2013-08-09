@@ -426,7 +426,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         
         $question = DB_ORM::model('map_question', array((int)$questionId));
         if($question == null) return;
-        
+
         $builder = DB_ORM::insert('map_question')
                 ->column('map_id', $question->map_id)
                 ->column('stem', $question->stem)
@@ -440,7 +440,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('show_submit', $question->show_submit)
                 ->column('redirect_node_id', $question->redirect_node_id)
                 ->column('submit_text', $question->submit_text)
-                ->column('type_display', $question->type_display);
+                ->column('type_display', $question->type_display)
+                ->column('settings', $question->settings);
 
         $newId = $builder->execute();
         
@@ -452,6 +453,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('feedback', $response->feedback)
                         ->column('is_correct', $response->is_correct)
                         ->column('score', $response->score)
+                        ->column('to', $response->to)
+                        ->column('from', $response->from)
                         ->execute();
             }
         }
@@ -613,6 +616,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('redirect_node_id', null)
                         ->column('submit_text', 'Submit')
                         ->column('type_display', $question->type_display)
+                        ->column('settings', $question->settings)
                         ->execute();
                 
                 if(count($question->responses) > 0) {
@@ -623,6 +627,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                                 ->column('feedback', $response->feedback)
                                 ->column('is_correct', $response->is_correct)
                                 ->column('score', $response->score)
+                                ->column('from', $response->from)
+                                ->column('to', $response->to)
                                 ->execute();
                     }
                 }
