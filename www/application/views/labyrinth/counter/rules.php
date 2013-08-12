@@ -28,12 +28,14 @@ if (isset($templateData['map'])) { ?>
 <table class="table table-striped table-bordered">
     <colgroup>
         <col style="width: 5%">
+        <col style="width: 20%">
         <col style="width: 75%">
         <col style="width: 20%">
     </colgroup>
     <thead>
         <tr>
             <th><?php echo __("#"); ?></th>
+            <th><?php echo __("Correct"); ?></th>
             <th><?php echo __("Rule"); ?></th>
             <th><?php echo __("Actions"); ?></th>
         </tr>
@@ -42,6 +44,7 @@ if (isset($templateData['map'])) { ?>
     <?php foreach($templateData['rules'] as $rule) { ?>
         <tr>
             <td><?php echo $rule->id; ?></td>
+            <td><?php if ($rule->isCorrect == 1) echo 'Yes'; else echo 'No'; ?></td>
             <td class="changeCodeToText"><?php echo $rule->rule; ?></td>
             <td>
                 <div class="btn-group">

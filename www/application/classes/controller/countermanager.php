@@ -232,7 +232,7 @@ class Controller_CounterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['rules'] = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($mapId);
+            $this->templateData['rules'] = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($mapId,'all');
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Rules'))->set_url(URL::base() . 'counterManager/rules/' . $mapId));
@@ -395,7 +395,7 @@ class Controller_CounterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $ruleId = $this->request->param('id2', NULL);
         if ($_POST & $mapId != NULL & $ruleId != NULL) {
-            DB_ORM::model('map_counter_commonrules')->editRule($ruleId, $_POST['commonRule']);
+            DB_ORM::model('map_counter_commonrules')->editRule($ruleId, $_POST['commonRule'], $_POST['isCorrect']);
             Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -413,12 +413,14 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 
-    public function action_checkCommonRule(){
+    public function action_checkCommonRule($isAjax = true, $mapId = '', $ruleText = ''){
         $status = 1;
         $this->auto_render = false;
 
-        $mapId = Arr::get($this->request->post(), 'mapId', NULL);
-        $ruleText = Arr::get($this->request->post(),'ruleText',NULL);
+        if ($isAjax) {
+            $mapId = Arr::get($this->request->post(), 'mapId', NULL);
+            $ruleText = Arr::get($this->request->post(),'ruleText',NULL);
+        }
 
         if ($mapId != NULL){
             $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
@@ -432,13 +434,17 @@ class Controller_CounterManager extends Controller_Base {
             $runtimelogic->values = $values;
 
             $array = $runtimelogic->parsingString($ruleText);
+
             if (count($array['errors']) > 0){
                 $status = 0;
             }
         } else {
             $status = 0;
         }
+        if ($isAjax) {
+            echo json_encode($status);
+        }
 
-        echo json_encode($status);
+        return $status;
     }
 }
