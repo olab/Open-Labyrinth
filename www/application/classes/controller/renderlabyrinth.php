@@ -188,14 +188,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     //Calculate time for Timer
                     $data['timer_start'] = 1;
-                    $sessionId = (int)$data['traces'][0]->session_id;
-                    $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
-                    $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+                    if (isset($data['traces'][0]->session_id)) {
+                        $sessionId = (int)$data['traces'][0]->session_id;
 
-                    $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
+                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
 
-                    $data['timeForNode'] = $timeForNode;
-                    $data['session'] = $sessionId;
+                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
+
+                        $data['timeForNode'] = $timeForNode;
+                        $data['session'] = $sessionId;
+                    }
 
                     $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
