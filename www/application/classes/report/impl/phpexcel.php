@@ -110,6 +110,7 @@ class Report_Impl_PHPExcel extends Report_Impl {
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpExcel, 'Excel2007');
         $objWriter->setIncludeCharts(TRUE);
         $objWriter->save('php://output');
+        die();
     }
 
     public function addStackedBarChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisTickValue, $dataSeriesValues, $title, $yAxisLabel) {
