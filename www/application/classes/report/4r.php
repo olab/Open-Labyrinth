@@ -377,7 +377,7 @@ class Report_4R extends Report {
                             $this->implementation->setCursor('G' . $offset);
                             $this->implementation->setCellsFormat('G' . $offset, PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00);
                             if($sectionCount > 0) {
-                                $this->implementation->setValue('=' . $this->choicesMap[$choiceIndex] . $offset . '/' . $sectionCountCursor);
+                                $this->implementation->setValue($choice / ($sectionCountCursor != 0 ? $sectionCountCursor : 1)/*'=' . $this->choicesMap[$choiceIndex] . $offset . '/' . $sectionCountCursor*/);
 
                                 $sectionCount--;
                             } else {
