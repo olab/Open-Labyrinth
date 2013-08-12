@@ -830,7 +830,22 @@ class Model_Labyrinth extends Model {
                     $resultLogic = $array['result'];
                     if (isset($resultLogic['goto'])){
                         if ($resultLogic['goto'] != NULL){
-                            //create goto function
+                            $nodes = DB_ORM::model('map_node')->getAllNode($mapID);
+                            $inMap = false;
+
+                            foreach ($nodes as $node) {
+                                if ( $node->id == $resultLogic['goto']) {
+                                    $inMap = true;
+                                }
+                            }
+
+                            if ($inMap) {
+                                $goto = Session::instance()->get('goto', NULL);
+
+                                if ($goto == NULL) {
+                                    Session::instance()->set('goto', $resultLogic['goto']);
+                                }
+                            }
                         }
                     }
 

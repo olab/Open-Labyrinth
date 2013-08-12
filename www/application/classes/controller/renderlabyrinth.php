@@ -129,6 +129,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn = $this->request->param('id3', NULL);
         $bookMark = $this->request->param('id4', NULL);
 
+        $gotoNode = Session::instance()->get('goto', NULL);
+
+        if ($gotoNode != NULL) {
+            Session::instance()->set('goto', NULL);
+
+            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' .  $gotoNode);
+        }
+
         if ($mapId != NULL) {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
