@@ -316,7 +316,9 @@ class Model_Labyrinth extends Model {
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
 
         if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
+            $slidersSum = 0;
             foreach($sliderQuestionChoices as $qID => $sliderValue) {
+                $slidersSum += $sliderValue;
                 DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue, $nodeId);
                 $question = DB_ORM::model('map_question', array((int)$qID));
                 if ($question != null){
@@ -337,7 +339,7 @@ class Model_Labyrinth extends Model {
                         }
                     } else {
                         $countersFunc[$question->counter->id][] = '='.$sliderValue;
-                        $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $sliderValue);
+                        $counterString = $this->setCounterValueToString($question->counter->id, $counterString, $slidersSum);
                     }
                 }
             }

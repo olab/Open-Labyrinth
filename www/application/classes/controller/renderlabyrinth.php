@@ -865,7 +865,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                     skin: "'    . $settings->sliderSkin                     . '",
                                                     step: '     . $settings->stepValue                      . ',
                                                     vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
-                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $question->id . ', value); }
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
                                                 });
                                                 slider.init();
                                             </script>
