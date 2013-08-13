@@ -144,4 +144,12 @@ abstract class Report_Impl {
      */
     public abstract function download($name);
 
+    /**
+     * Get style by name
+     *
+     * @param string $styleName - style name
+     * @return mixed - style
+     */
+    public abstract function getStyle($styleName);
+
 }

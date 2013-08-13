@@ -144,7 +144,7 @@ class Report_Impl_PHPExcel extends Report_Impl {
                     $count += $v['count'];
                 }
 
-                $value = substr($value, 0, strlen($value) - 1);
+                $value = '(' . substr($value, 0, strlen($value) - 1) . ')';
             } else {
                 $value = $values['values'];
                 $count = $values['count'];
@@ -252,5 +252,14 @@ class Report_Impl_PHPExcel extends Report_Impl {
         if($this->phpExcel == null || $cells == null || $cellFormat == null) return;
 
         $this->phpExcel->getActiveSheet()->getStyle($cells)->getNumberFormat()->setFormatCode($cellFormat);
+    }
+
+    public function getStyle($styleName) {
+        switch($styleName) {
+            case 'PERCENTAGE_00':
+                return PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE_00;
+        }
+
+        return null;
     }
 }

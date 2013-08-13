@@ -238,6 +238,45 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
         return $result;
     }
+
+    /**
+     * Get session IDs by parameters
+     *
+     * @param integer $mapId - map ID
+     * @param integer|null $webinarId - webinar ID
+     * @param integer|null $webinarStep - webinar step
+     * @param integer|null $notInUsers - not include sessions of susers
+     * @return array|null - session ids or null
+     */
+    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null) {
+        $builder = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('map_id', '=', $mapId, 'AND')
+                           ->column('id');
+        if($webinarId != null && $webinarId > 0) {
+            $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
+        }
+
+        if($webinarStep != null && $webinarStep > 0) {
+            $builder = $builder->where('webinar_step', '=', $webinarStep, 'AND');
+        }
+
+        if($notInUsers != null && count($notInUsers) > 0) {
+            $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
+        }
+
+        $records = $builder->query();
+        if($records->is_loaded()) {
+            $sessions = array();
+            foreach($records as $record) {
+                $sessions[] = $record['id'];
+            }
+
+            return $sessions;
+        }
+
+        return null;
+    }
 }
 
 ?>

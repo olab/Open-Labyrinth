@@ -253,7 +253,7 @@ class Controller_WebinarManager extends Controller_Base {
                 if($webinar != null && count($webinar->maps) > 0) {
                     foreach($webinar->maps as $webinarMap) {
                         if($webinarMap->step == $stepKey) {
-                            $report->add($webinarMap->map_id);
+                            $report->add($webinarMap->map_id, $webinar->id, $stepKey);
                         }
                     }
                 }
@@ -276,7 +276,7 @@ class Controller_WebinarManager extends Controller_Base {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
 
             $report  = new Report_4R(new Report_Impl_PHPExcel(), $webinar->title);
-            $report->add($mapKey);
+            $report->add($mapKey, $webinar->id);
             $report->generate();
 
             $report->get();

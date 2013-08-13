@@ -60,6 +60,7 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
                 'parent_key' => array('id'),
                 'options' => array(
                     array('order_by', array('order', 'ASC')),
+                    array('order_by', array('node_id', 'ASC'))
                 ),
             )),
         );

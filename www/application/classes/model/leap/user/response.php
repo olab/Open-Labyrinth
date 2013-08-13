@@ -135,6 +135,25 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
         return NULL;
     }
+
+    public function getResponses($questionId, $sessions) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('question_id', '=', $questionId, 'AND')
+            ->where('session_id', 'IN', $sessions);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $responces = array();
+            foreach($result as $record){
+                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
+            }
+
+            return $responces;
+        }
+
+        return NULL;
+    }
 }
 
 ?>
