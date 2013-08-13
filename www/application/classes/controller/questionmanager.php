@@ -77,8 +77,11 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
                 if($this->templateData['question']->settings != null) {
                     $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
-                    $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
-                    $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
+
+                    if ($this->templateData['question']->type->value == 'area' || $this->templateData['question']->type->value == 'text') {
+                        $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
+                        $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
+                    }
                 }
             } else {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
