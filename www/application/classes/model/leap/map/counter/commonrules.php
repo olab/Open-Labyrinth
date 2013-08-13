@@ -97,9 +97,11 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
         return NULL;
     }
     
-    public function addRule($mapId, $rule) {
+    public function addRule($mapId, $rule, $isCorrect) {
         $this->map_id = $mapId;
         $this->rule = $rule;
+        $this->isCorrect = $isCorrect;
+
         $this->save();
     }
 

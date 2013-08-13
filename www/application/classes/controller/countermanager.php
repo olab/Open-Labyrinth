@@ -334,7 +334,7 @@ class Controller_CounterManager extends Controller_Base {
     public function action_createCommonRule(){
         $mapId = $this->request->param('id', NULL);
         if ($_POST & $mapId != NULL) {
-            DB_ORM::model('map_counter_commonrules')->addRule($mapId, $_POST['commonRule']);
+            DB_ORM::model('map_counter_commonrules')->addRule($mapId, $_POST['commonRule'], $_POST['isCorrect']);
             Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());

@@ -70,6 +70,6 @@ if (isset($templateData['map'])) { ?>
 
     <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
     <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
-    <input type="hidden" name="isCorrect" id="isCorrect" value="<?php echo $templateData['commonRule']->isCorrect; ?>" />
+    <input type="hidden" name="isCorrect" id="isCorrect" value="<?php if(isset($templateData['commonRule']->isCorrect)) echo $templateData['commonRule']->isCorrect; ?>" />
 </form>
 <?php } ?>
