@@ -71,7 +71,7 @@ if (isset($templateData['map'])) { ?>
         </tr>
         <?php } ?>
     <?php } else{ ?>
-        <tr class="info"><td colspan="3">There are no rules set yet. You may add a rule by clicking the button below</td></tr>
+        <tr class="info"><td colspan="4">There are no rules set yet. You may add a rule by clicking the button below</td></tr>
     <?php } ?>
 </table>
 

@@ -106,12 +106,14 @@ if (isset($templateData['map'])) { ?>
         </div>
 
         <div class="pull-right">
-            <input style="float:right;" id="rule_submit_button" class="btn btn-large btn-primary " type="submit" name="Submit" value="Save question">
+            <input style="float:right;" id="submit_button" class="btn btn-large btn-primary hide" type="submit" name="Submit" value="Save question">
+            <input style="float:right;" id="rule_submit_check" class="btn btn-large btn-primary" type="button" name="Check" value="Save question" onclick="return checkRule(1);">
         </div>
 
     </div>
     <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
     <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
+    <input type="hidden" name="isCorrect" id="isCorrect" value="<?php if(isset($templateData['isCorrect'])) echo $templateData['isCorrect']; ?>" />
 </form>
 <?php } ?>
 

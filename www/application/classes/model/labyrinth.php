@@ -579,7 +579,7 @@ class Model_Labyrinth extends Model {
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
-                if ($redirect != NULL){
+                if ($redirect != NULL && $redirect != $node->id){
                     Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
                 }
 
@@ -816,8 +816,12 @@ class Model_Labyrinth extends Model {
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
-
                 if ($question->settings != '') {
+                    list($rule, $isCorrect) = json_decode($question->settings);
+                }
+
+                if ($question->settings != '' && $isCorrect == 1) {
+
                     $mapID = $question->map_id;
                     $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
                     $values = array();
@@ -828,7 +832,7 @@ class Model_Labyrinth extends Model {
                     $runtimelogic->values = $values;
                     $runtimelogic->questionResponse = $response;
 
-                    $array = $runtimelogic->parsingString($question->settings);
+                    $array = $runtimelogic->parsingString($rule);
                     $resultLogic = $array['result'];
                     if (isset($resultLogic['goto'])){
                         if ($resultLogic['goto'] != NULL){
