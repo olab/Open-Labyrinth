@@ -238,7 +238,7 @@ class Controller_WebinarManager extends Controller_Base {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
             $isExistAccess = false;
 
-            if(Auth::instance()->get_user()->id == $webinar->author_id) {
+            if(Auth::instance()->get_user()->id == $webinar->author_id || Auth::instance()->get_user()->type->name == 'superuser') {
                 $isExistAccess = true;
             }
 

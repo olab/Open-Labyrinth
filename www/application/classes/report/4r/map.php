@@ -160,6 +160,10 @@ class Report_4R_Map extends Report_4R_Element {
                 $this->elements[] = $reportSection;
                 $this->sections[] = $reportSection;
             }
+
+            if(count($this->sections) > 0) {
+                usort($this->sections, 'Report_4R_Map::sortElements');
+            }
         }
 
         foreach($this->map->nodes as $node) {
