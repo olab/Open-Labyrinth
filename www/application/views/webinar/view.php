@@ -53,12 +53,12 @@
                         <div class="btn-group">
                             <a class="btn btn-success" href="<?php echo URL::base() . 'webinarManager/statistic/' . $webinar->id; ?>">
                                 <i class="icon-play icon-white"></i>
-                                <span class="visible-desktop">View statistic</span>
+                                <span class="visible-desktop">View progress</span>
                             </a>
                             <?php if($webinar->forum_id > 0) { ?>
                             <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $webinar->forum_id; ?>">
                                 <i class="icon-list-alt"></i>
-                                <span class="visible-desktop">DF thread</span>
+                                <span class="visible-desktop">Forum</span>
                             </a>
                             <?php } ?>
                             <a data-toggle="modal" href="javascript:void(0)" data-target="#change-step-<?php echo $webinar->id; ?>" class="btn btn-info">

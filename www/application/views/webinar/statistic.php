@@ -20,7 +20,7 @@
  */
 ?>
 <div class="page-header">
-    <h1><?php echo __('Scenario statistic'); ?></h1>
+    <h1><?php echo __('Scenario Progress'); ?></h1>
 </div>
 
 <?php $stepKeyMap = array(
@@ -47,7 +47,9 @@
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
-                                                                (isset($stepKeyMap[$stepKey]) ? $stepKeyMap[$stepKey] : '-') .
+                                                                (isset($stepKeyMap[$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $stepKeyMap[$stepKey] . '</span>'
+                                                                                                                                                     : $stepKeyMap[$stepKey]
+                                                                    : '-') .
                                                                 ($isShowReport ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
                                                                                    <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                : '') .
