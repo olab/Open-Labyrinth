@@ -61,7 +61,7 @@ class Report_4R_Question extends Report_4R_Element {
                 foreach($responsesData as $nodeId => $data) {
                     $this->implementation->setCursor('A' . ($offset + $localOffset));
                     $this->implementation->setFontSize('A' . ($offset + $localOffset), 14);
-                    $this->implementation->setValue($this->question->stem . ' - ' . $nodeId);
+                    $this->implementation->setValue($this->question->stem . '(ID - ' . $this->question->id . ')' . ' - ' . $nodeId);
                     $localOffset += 1;
 
                     $this->implementation->setCursor('A' . ($offset + $localOffset));
@@ -91,11 +91,14 @@ class Report_4R_Question extends Report_4R_Element {
                         $localOffset += 1;
                     }
                     $countResponses = count($this->question->responses);
-                    $end = $start + $countResponses;
+                    $end = $start;
+                    if($countResponses > 0) {
+                        $end += $countResponses - 1;
+                    }
 
                     $endPosition = $countResponses * 3;
                     if($endPosition < 10) {
-                        $endPosition = 10;
+                        $endPosition = 14;
                     }
 
                     $this->implementation->addHorizontalBarChart('A' . ($offset + $localOffset + 1),
@@ -111,7 +114,7 @@ class Report_4R_Question extends Report_4R_Element {
             } else {
                 $this->implementation->setCursor('A' . ($offset + $localOffset));
                 $this->implementation->setFontSize('A' . ($offset + $localOffset), 14);
-                $this->implementation->setValue($this->question->stem);
+                $this->implementation->setValue($this->question->stem . '(ID - ' . $this->question->id . ')');
                 $localOffset += 1;
 
                 $this->implementation->setCursor('A' . ($offset + $localOffset));
@@ -136,11 +139,14 @@ class Report_4R_Question extends Report_4R_Element {
                     $localOffset += 1;
                 }
                 $countResponses = count($this->question->responses);
-                $end = $start + $countResponses;
+                $end = $start;
+                if($countResponses > 0) {
+                    $end += $countResponses - 1;
+                }
 
                 $endPosition = $countResponses * 3;
                 if($endPosition < 10) {
-                    $endPosition = 10;
+                    $endPosition = 14;
                 }
 
                 $this->implementation->addHorizontalBarChart('A' . ($offset + $localOffset + 1),
