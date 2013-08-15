@@ -90,7 +90,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         }else{
                             $data['skin_path'] = NULL;
                         }
-                        $data['session'] = (int)$data['traces'][0]->session_id;;
+                        $data['session'] = (int)$data['traces'][0]->session_id;
+                        $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
 
                         $this->template = View::factory('labyrinth/skin/basic/basic');
                         $this->template->set('templateData', $data);
@@ -186,9 +187,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
 
-                    //Calculate time for Timer
+                    //Calculate time for Timer and Pop-up messages
                     $data['timer_start'] = 1;
-                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
+
+                    $data['popup_start'] = 1;
+                    $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
+
+                    if ( isset($data['traces'][0]) && $data['traces'][0]->session_id != null ) {
                         $sessionId = (int)$data['traces'][0]->session_id;
 
                         $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);

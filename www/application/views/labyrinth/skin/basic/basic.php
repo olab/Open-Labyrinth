@@ -34,6 +34,7 @@
 
 
 <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
+<!--<script  src="--><?php //echo URL::base(); ?><!--scripts/bootstrap/js/bootstrap.js"></script>-->
 <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 
 
@@ -56,8 +57,10 @@
     $(document).ready(function(){
         var rem = '';
         var remMessage = '';
-        var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>;
-        <?php  if ($templateData['map']->timing && isset($templateData['session'])) { ?>
+        var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?> ;
+
+        // Timer
+        <?php  if ( ($templateData['map']->timing) && isset($templateData['session']) ) { ?>
                 <?php if ( isset($templateData['timer_start']) && $templateData['timer_start'] != 0) {?>
                     var sec = <?php echo $templateData['map']->delta_time - $templateData['timeForNode']; ?> ;
 
@@ -78,6 +81,95 @@
         start_countdown(sec,rem,remMessage,session);
 
     <?php }?>
+
+        // Pop-up messages for Labyrinth or Node
+        <?php  if ((count($templateData['messages_labyrinth']) > 0) && isset($templateData['session'])) {
+            foreach($templateData['messages_labyrinth'] as $message) {
+
+                $time = $message->time_before;
+                $time_length = $message->time_length;
+                $text = $message->text;
+                $title = $message->title;
+                $position_type = $message->position_type;
+                if ($position_type == 0) {
+                    $position_type = 'inside';
+                }
+                else {
+                    $position_type = 'outside';
+                }
+
+                $lefOrRight = '';
+
+                switch($message->position) {
+                    case 1 :
+                        $position = 'top_left';
+                        $lefOrRight = 'left';
+                        break;
+                    case 2 :
+                        $position = 'top_right';
+                        $lefOrRight = 'right';
+                        break;
+                    case 3 :
+                        $position = 'bottom_left';
+                        $lefOrRight = 'left';
+                        break;
+                    case 4 :
+                        $position = 'bottom_right';
+                        $lefOrRight = 'right';
+                        break;
+                }
+
+                if ($message->color_custom != '')
+                {
+                    $color = $message->color_custom;
+                }
+                else {
+                    switch($message->color) {
+                        case 1 :
+                            $color = '#FCF8E3';
+                            break;
+                        case 2 :
+                            $color = '#F2DEDE';
+                            break;
+                        case 3 :
+                            $color = '#DFF0D8';
+                            break;
+                        case 4 :
+                            $color = '#D9EDF7';
+                            break;
+                    }
+                }
+
+                $current_pos = $position_type . '_' . $position;
+
+                if ($message->assign_to_node == 0) {
+                    if ( isset($templateData['popup_start']) && $templateData['popup_start'] != 0) {
+                        $time -= $templateData['timeForNode'];
+                        if ($time <= 0) {
+                            continue;
+                        }
+                    }
+                ?>
+                popupTimer(<?php echo $time;?> , <?php echo $time_length;?>, '<?php echo $title;?>','<?php echo $text;?>','<?php echo $color;?>','<?php echo $current_pos;?>','<?php echo $lefOrRight;?>' );
+            <?php }
+                else {
+                    if ($message->node_id == $templateData['node']->id) {
+                       if ( isset($templateData['popup_start']) && $templateData['popup_start'] != 0) {
+
+                ?>
+                // TODO CHECK THIS PLACE
+                popupTimer(<?php echo $time;?>, <?php echo $time_length;?> , '<?php echo $title;?>','<?php echo $text;?>','<?php echo $color;?>','<?php echo $current_pos;?>','<?php echo $lefOrRight;?>' );
+             <?php
+                            //$time -= $templateData['timeForNode'];
+                            //if ($time <= 0) {
+                            //    continue;
+                            //}
+                }
+              }
+            }?>
+     <?php } ?>
+  <?php }?>
+
         $(".clearQuestionPrompt").focus(function(){
             if (!$(this).hasClass('cleared')){
                 $(this).val('');
@@ -185,6 +277,28 @@
         xmlhttp.send(null);
     }
 
+    function popupTimer(sec, lenTime, name,message,color,pos,align) {
+        var time    = sec;
+        var text = message;
+        var title = name;
+        var bgColor = color;
+        var position = pos;
+        var alignStyle = align;
+        var length = lenTime;
+        sec--;
+
+        if ( sec > 0 ) {
+            setTimeout(function(){ popupTimer(sec,lenTime,name,message,color,pos,align); }, 1000);
+        }
+        else {
+           $("#popup_" + pos).append("<div class='alert' style='display: none; float:" + align + "; background-color:" + color +" '>" +
+               "<button type='button' class='close' data-dismiss='alert'>&times;</button> <strong> " + name +
+               "</strong><div id='text'>" + message +"</div></div>");
+
+           $("#popup_"+pos+ " .alert").show();
+           setTimeout(function(){ $("#popup_"+pos+ " .alert").hide() }, lenTime * 1000);
+        }
+    }
 
     function timer(sec, block,reminder, check, remMsg, session) {
         var time    = sec;
@@ -302,6 +416,9 @@ if ($templateData['skin_path'] != NULL) {
 </head>
 
 <body>
+
+
+
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
 <script language="javascript" type="text/javascript"
         src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
@@ -329,9 +446,19 @@ if ($templateData['skin_path'] != NULL) {
 </script>
     <?php } ?>
 <div align="center">
+    <div id="popup_outside_top_left" align="left">
+    </div>
+    <div id="popup_outside_top_right" align="right">
+    </div>
     <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
         <tr>
             <td class="centre_td" width="81%" bgcolor="#FFFFFF" align="left">
+
+                <div id="popup_inside_top_left" align="left">
+                </div>
+                <div id="popup_inside_top_right" align="right">
+                </div>
+
                 <h4><font
                     color="#000000"><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></font>
                 </h4>
@@ -374,6 +501,12 @@ if ($templateData['skin_path'] != NULL) {
                         </td>
                     </tr>
                 </table>
+
+                <div id="popup_inside_bottom_left" align="left">
+                </div>
+                <div id="popup_inside_bottom_right" align="right">
+                </div>
+
             </td>
             <td class="centre_td" width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center">
                <?php if ($templateData['map']->timing) { ?>
@@ -421,6 +554,10 @@ if ($templateData['skin_path'] != NULL) {
     </td>
 </tr>
 </table>
+<div id="popup_outside_bottom_left" align="left">
+</div>
+<div id="popup_outside_bottom_right" align="right">
+</div>
 </div>
 
 <div id="reminder" class="modal hide fade" tabindex="-1" data-width="760">
