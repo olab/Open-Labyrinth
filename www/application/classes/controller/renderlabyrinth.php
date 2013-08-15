@@ -188,7 +188,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     //Calculate time for Timer
                     $data['timer_start'] = 1;
-                    if (isset($data['traces'][0]) && isset($data['traces'][0]->session_id) && $data['traces'][0]->session_id != null) {
+                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
                         $sessionId = (int)$data['traces'][0]->session_id;
 
                         $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);

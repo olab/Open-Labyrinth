@@ -56,8 +56,8 @@
     $(document).ready(function(){
         var rem = '';
         var remMessage = '';
-        var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?> ;
-        <?php  if ($templateData['map']->timing) { ?>
+        var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>;
+        <?php  if ($templateData['map']->timing && isset($templateData['session'])) { ?>
                 <?php if ( isset($templateData['timer_start']) && $templateData['timer_start'] != 0) {?>
                     var sec = <?php echo $templateData['map']->delta_time - $templateData['timeForNode']; ?> ;
 
