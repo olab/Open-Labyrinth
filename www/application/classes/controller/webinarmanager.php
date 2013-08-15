@@ -274,8 +274,9 @@ class Controller_WebinarManager extends Controller_Base {
 
         if($webinarId != null && $webinarId > 0 && $mapKey != null && $mapKey > 0) {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
+            $map = DB_ORM::model('map', array((int)$mapKey));
 
-            $report  = new Report_4R(new Report_Impl_PHPExcel(), $webinar->title);
+            $report  = new Report_4R(new Report_Impl_PHPExcel(), $map->name);
             $report->add($mapKey, $webinar->id);
             $report->generate();
 
