@@ -69,6 +69,7 @@
                                 <i class="icon-edit icon-white"></i>
                                 Edit
                             </a>
+                            <a data-toggle="modal" href="javascript:void(0)" data-target="#reset-webinar-<?php echo $webinar->id; ?>" class="btn btn-warning"><i class="icon-refresh icon-white"></i><?php echo __('Reset'); ?></a>
                             <a data-toggle="modal" href="javascript:void(0)" data-target="#delete-node-<?php echo $webinar->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
                         </div>
                         <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $webinar->id; ?>">
@@ -99,6 +100,23 @@
                                 <a class="btn change-step-btn" href="<?php echo URL::base(); ?>webinarManager/changeStep/<?php echo $webinar->id; ?>/" webinarId="<?php echo $webinar->id; ?>"><?php echo __('Change'); ?></a>
                                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                             </div>
+                        </div>
+
+                        <div class="modal hide fade in alert alert-block alert-danger" id="reset-webinar-<?php echo $webinar->id; ?>">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="alert-heading"><?php echo __('Reset scenario'); ?></h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>
+                                    <?php echo __('Warning! Do you really want to reset scenario? If you reset webinar all user sessions which created on playing this scenarion will be delete.'); ?>
+                                </p>
+                                <div>
+                                    <a class="btn btn-danger" href="<?php echo URL::base(); ?>webinarManager/reset/<?php echo $webinar->id; ?>"><?php echo __('Reset'); ?></a>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                </div>
+                            </div>
+
                         </div>
                     </td>
                 </tr>

@@ -298,4 +298,10 @@ class Controller_WebinarManager extends Controller_Base {
 
         Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
     }
+
+    public function action_reset() {
+        DB_ORM::model('webinar')->resetWebinar($this->request->param('id', null));
+
+        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+    }
 }

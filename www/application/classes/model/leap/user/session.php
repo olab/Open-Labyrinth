@@ -277,6 +277,20 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
         return null;
     }
+
+    /**
+     * Delete webinar sessions
+     *
+     * @param integer $webinarId - webinar ID
+     */
+    public function deleteWebinarSessions($webinarId) {
+        if($webinarId == null || $webinarId <= 0) return;
+
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('webinar_id', '=', $webinarId)
+                ->execute();
+    }
 }
 
 ?>

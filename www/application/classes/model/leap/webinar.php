@@ -293,4 +293,15 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
         return $result;
     }
+
+    /**
+     * Reset webinar
+     *
+     * @param integer $webinarId - webinar ID
+     */
+    public function resetWebinar($webinarId) {
+        $this->changeWebinarStep($webinarId, 1);
+
+        DB_ORM::model('user_session')->deleteWebinarSessions($webinarId);
+    }
 }
