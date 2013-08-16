@@ -31,13 +31,16 @@
 <h2>Users</h2></div>
 
 
-
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
+<script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/olab/dataTablesTB.js"></script>
 
 <div class="alert alert-info"><?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>
     &nbsp;<?php echo __('registered users'); ?></div>
 
 
-<table class="table table-striped table-bordered">
+<table id="users" class="table table-striped table-bordered dataTable">
     <colgroup>
         <col/>
         <col/>

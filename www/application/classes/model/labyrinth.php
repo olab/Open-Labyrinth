@@ -143,6 +143,8 @@ class Model_Labyrinth extends Model {
                 if ($map->author_id == Auth::instance()->get_user()->id) {
                     return TRUE;
                 }
+                if(Auth::instance()->get_user()->type->name == 'superuser')
+                    return TRUE;
             }
 
             return FALSE;
