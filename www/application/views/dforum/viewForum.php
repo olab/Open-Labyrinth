@@ -51,7 +51,7 @@
     foreach($templateData['forum']['messages'] as $message) {
     ?>
         <tr id="m-<?php echo $message['id'] ; ?>" class="message">
-            <td width='165px'>
+            <td width='165px' style="vertical-align: top;">
                <a href="<?php echo URL::base().'usermanager/viewUser/' . $message['author_id']; ?>"><?php echo $message['author_name'] . '</a>'; ?>
                <br />
                <?php echo $message['date'];?>
