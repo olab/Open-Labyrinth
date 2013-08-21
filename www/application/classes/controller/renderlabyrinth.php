@@ -81,7 +81,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                 $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
                             }
 
+                            if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+                            {
+                                $search = '[[INFO:' . $data['node']->id . ']]';
+                                $data['node_text'] = str_replace($search, '',$data['node_text']);
+                            }
+
                             $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
@@ -182,6 +189,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($editOn != NULL and $editOn == 1) {
                         $data['node_edit'] = TRUE;
                     } else {
+
+                        if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false))
+                        {
+                            $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+                        }
+
+                        if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+                        {
+                            $search = '[[INFO:' . $data['node']->id . ']]';
+                            $data['node_text'] = str_replace($search, '',$data['node_text']);
+                        }
+
                         $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
