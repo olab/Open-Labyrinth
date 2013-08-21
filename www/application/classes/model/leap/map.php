@@ -807,6 +807,30 @@ class Model_Leap_Map extends DB_ORM_Model
 
         return NULL;
     }
+
+    public function getAllowedMap($userId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $userId, 'AND')
+            ->where('mu.user_id', '=', $userId, 'OR')
+            ->order_by('m.id', 'DESC');
+
+        $result = $builder->query();
+
+        $res = array();
+
+        if ($result->is_loaded()) {
+            foreach ($result as $record => $val) {
+                $res[] =  $val['id'];
+            }
+        }
+        return $res;
+
+    }
 }
 
 
