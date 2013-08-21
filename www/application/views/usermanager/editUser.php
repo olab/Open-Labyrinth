@@ -79,6 +79,10 @@
                                         <label for="usertype" class="control-label"><?php echo __('User type'); ?></label>
 
                                         <div class="controls">
+
+                                            <?php
+                                            if (Auth::instance()->get_user()->type->name == 'superuser' ) {   ?>
+
                                             <select id="usertype" name="usertype">
                                                 <?php if(isset($templateData['types'])) { ?>
                                                     <?php foreach($templateData['types'] as $type) { ?>
@@ -86,6 +90,9 @@
                                                     <?php } ?>
                                                 <?php } ?>
                                             </select>
+
+                                            <?php } else echo Auth::instance()->get_user()->type->name; ?>
+
                                         </div>
                                     </div>
                                 </fieldset>

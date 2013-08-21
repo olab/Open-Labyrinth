@@ -50,8 +50,8 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'index'),
         array('controller' => 'userManager', 'action' => 'addUser'),
         array('controller' => 'userManager', 'action' => 'saveNewUser'),
-        array('controller' => 'userManager', 'action' => 'editUser'),
-        array('controller' => 'userManager', 'action' => 'saveOldUser'),
+        //array('controller' => 'userManager', 'action' => 'editUser'),
+        //array('controller' => 'userManager', 'action' => 'saveOldUser'),
         array('controller' => 'userManager', 'action' => 'deleteUser'),
         array('controller' => 'userManager', 'action' => 'addGroup'),
         array('controller' => 'userManager', 'action' => 'saveNewGroup'),
@@ -79,8 +79,8 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'index'),
         array('controller' => 'userManager', 'action' => 'addUser'),
         array('controller' => 'userManager', 'action' => 'saveNewUser'),
-        array('controller' => 'userManager', 'action' => 'editUser'),
-        array('controller' => 'userManager', 'action' => 'saveOldUser'),
+
+        //array('controller' => 'userManager', 'action' => 'saveOldUser'),
         array('controller' => 'userManager', 'action' => 'deleteUser'),
         array('controller' => 'userManager', 'action' => 'addGroup'),
         array('controller' => 'userManager', 'action' => 'saveNewGroup'),
@@ -96,7 +96,7 @@ class Controller_Base extends Controller_Template {
 
         if (Auth::instance()->logged_in()) {
             if($this->checkUserRoleRules()) {
-                Request::initial()->redirect(URL::base());   
+                Request::initial()->redirect(URL::base());
             }
             
             I18n::lang(Auth::instance()->get_user()->language->key);

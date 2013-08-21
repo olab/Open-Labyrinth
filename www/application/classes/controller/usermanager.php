@@ -26,7 +26,7 @@ class Controller_UserManager extends Controller_Base {
     public function before() {
         parent::before();
 
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
+        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->type->name != 'author' && Auth::instance()->get_user()->type->name != 'learner') {
             Request::initial()->redirect(URL::base());
         }
 
@@ -112,6 +112,10 @@ class Controller_UserManager extends Controller_Base {
     public function action_viewUser() {
         $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
 
+        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->id != $this->request->param('id', 0)) {
+            Request::initial()->redirect(URL::base());
+        }
+
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View User').' '. $this->templateData['user']->nickname)->set_url(URL::base() . 'usermanager/ViewUser/' . $this->request->param('id', 0)));
 
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
@@ -129,6 +133,10 @@ class Controller_UserManager extends Controller_Base {
 
 
         $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
+
+        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->id != $this->request->param('id', 0)) {
+            Request::initial()->redirect(URL::base());
+        }
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit User').' '. $this->templateData['user']->nickname)->set_url(URL::base() . 'usermanager/editUser/' . $this->request->param('id', 0)));
 
@@ -149,6 +157,14 @@ class Controller_UserManager extends Controller_Base {
             $user = DB_ORM::model('user')->getUserById(htmlspecialchars($userId));
             $userEmail = $user->email;
             $newEmail = Arr::get($_POST, 'uemail', '');
+
+            if (Auth::instance()->get_user()->type->name != 'superuser') {
+                $type = Auth::instance()->get_user()->type->id;
+            }
+            else {
+                $type = NULL;
+            }
+
             if ($userEmail != $newEmail) {
                 if (!empty($newEmail)) {
                     $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($newEmail));
@@ -157,15 +173,16 @@ class Controller_UserManager extends Controller_Base {
                 }
 
                 if (!$checkUserEmail) {
-                    DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
+                    DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', $type), Arr::get($_POST, 'langID', NULL));
                 } else {
                     Session::instance()->set('errorMsg', __('Such email address already exists.'));
                     Request::initial()->redirect(URL::base() . 'usermanager/editUser/' . $userId);
                 }
             } else {
-                DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', NULL), Arr::get($_POST, 'langID', NULL));
+                DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''), Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', $type), Arr::get($_POST, 'langID', NULL));
             }
         }
+
         Model_Leap_Metadata_Record::updateMetadata("user",$userId,$_POST);
         Request::initial()->redirect(URL::base() . 'usermanager');
     }
