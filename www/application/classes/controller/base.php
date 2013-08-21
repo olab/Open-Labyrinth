@@ -288,7 +288,8 @@ class Controller_Base extends Controller_Template {
         $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
 
         foreach($rules as $rule) {
-            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($mapId,$allowedMap)) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($mapId,$allowedMap) &&
+                Auth::instance()->get_user()->type->name != 'superuser' ) {
                 return true;
             }
         }
