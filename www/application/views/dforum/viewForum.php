@@ -25,6 +25,7 @@
     tinyMCE.init({
         // General options
         mode: "textareas",
+        document_base_url : "<?php echo URL::base(true); ?>",
         relative_urls: false,
         theme: "advanced",
         skin: "bootstrap",
