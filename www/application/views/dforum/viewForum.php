@@ -27,6 +27,8 @@
         mode: "textareas",
         document_base_url : "<?php echo URL::base(true); ?>",
         relative_urls: false,
+        convert_urls : false,
+        remove_script_host : false,
         theme: "advanced",
         skin: "bootstrap",
         plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
