@@ -120,11 +120,17 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'reportManager', 'action' => 'index')
     );
 
+    private $forumActions = array(
+        array('controller' => 'dforumManager', 'action' => 'viewForum'),
+        array('controller' => 'dforumManager', 'action' => 'editForum'),
+        array('controller' => 'dforumManager', 'action' => 'deleteForum')
+    );
+
     public function before() {
         parent::before();
 
         if (Auth::instance()->logged_in()) {
-            if($this->checkUserRoleRules() || $this->checkAllowedMaps()) {
+            if($this->checkUserRoleRules() || $this->checkAllowedMaps() || $this->checkAllowedForums()) {
                 Request::initial()->redirect(URL::base());
             }
 
@@ -294,6 +300,39 @@ class Controller_Base extends Controller_Template {
             }
         }
 
+        return false;
+    }
+
+    private function checkAllowedForums() {
+
+        $openForums = DB_ORM::model('dforum')->getAllOpenForums();
+        $privateForums = DB_ORM::model('dforum')->getAllPrivateForums();
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+
+        if (count($openForums) <= 0) $openForums = array();
+        if (count($privateForums) <= 0) $privateForums = array();
+
+        $forumId = (int) $this->request->param('id', 0);
+
+        $forums = array_merge($openForums, $privateForums);
+
+        $allowedForums = array();
+
+        if (count($forums) > 0) {
+            foreach ($forums as $forum) {
+                $allowedForums[] = $forum['id'];
+            }
+        }
+
+        $rules = $this->forumActions;
+
+        foreach ($rules as $rule) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($forumId,$allowedForums) &&
+                Auth::instance()->get_user()->type->name != 'superuser' ) {
+                return true;
+            }
+        }
         return false;
     }
 
