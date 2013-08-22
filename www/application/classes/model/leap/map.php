@@ -384,6 +384,7 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $authorId, 'AND')
             ->where('mu.user_id', '=', $authorId, 'OR')
+            ->group_by('m.id')
             ->order_by('m.id', 'DESC');
         if ($limit) {
             $builder->limit($limit);
