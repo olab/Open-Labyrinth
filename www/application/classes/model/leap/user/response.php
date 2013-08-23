@@ -137,6 +137,11 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     }
 
     public function getResponses($questionId, $sessions) {
+
+        if (!count($sessions)) {
+            $sessions = array('');
+        }
+
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('question_id', '=', $questionId, 'AND')

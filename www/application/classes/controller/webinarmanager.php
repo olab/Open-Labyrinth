@@ -137,6 +137,12 @@ class Controller_WebinarManager extends Controller_Base {
             }
 
             $this->templateData['webinar']     = $webinar;
+
+            foreach ($this->templateData['webinar']->users as $user) {
+                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
+                $this->templateData['includeUsersData'][$user->user_id] = $user->id;
+            }
+
             $this->templateData['usersMap']    = $usersMap;
             $this->templateData['webinarData'] = $webinarData;
 
@@ -250,10 +256,11 @@ class Controller_WebinarManager extends Controller_Base {
 
             if($isExistAccess) {
                 $report  = new Report_4R(new Report_Impl_PHPExcel(), $webinar->title);
+                $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
                 if($webinar != null && count($webinar->maps) > 0) {
                     foreach($webinar->maps as $webinarMap) {
                         if($webinarMap->step == $stepKey) {
-                            $report->add($webinarMap->map_id, $webinar->id, $stepKey);
+                            $report->add($webinarMap->map_id, $webinar->id, $stepKey, $notIncludUsers);
                         }
                     }
                 }
@@ -276,8 +283,10 @@ class Controller_WebinarManager extends Controller_Base {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
             $map = DB_ORM::model('map', array((int)$mapKey));
 
+            $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
+
             $report  = new Report_4R(new Report_Impl_PHPExcel(), $map->name);
-            $report->add($mapKey, $webinar->id);
+            $report->add($mapKey, $webinar->id, '' , $notIncludUsers);
             $report->generate();
 
             $report->get();
@@ -303,5 +312,15 @@ class Controller_WebinarManager extends Controller_Base {
         DB_ORM::model('webinar')->resetWebinar($this->request->param('id', null));
 
         Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+    }
+
+    public function action_updateInclude4R() {
+        $id = $this->request->param('id', null);
+        $include = $this->request->param('id2', null);
+
+        DB_ORM::model('webinar_user')->updateInclude4R($id, $include);
+
+        return true;
+
     }
 }

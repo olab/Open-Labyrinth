@@ -32,7 +32,7 @@
     <table class="table table-striped table-bordered" id="my-labyrinths">
         <tbody>
         <tr>
-            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="2">Users</td>
+            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="3">Users</td>
             <?php
             $stepsHeaders = array();
             foreach($templateData['webinarData'] as $userId => $steps) {
@@ -97,6 +97,7 @@
             <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
             <?php $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
             <td style="text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+            <td><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" >&nbsp;&nbsp;&nbsp;Include in report</td>
             <?php
             foreach($steps as $stepKey => $step) {
                 foreach($step as $mapId => $map) {
@@ -121,3 +122,16 @@
         </tbody>
     </table>
 <?php } ?>
+
+
+<script>
+    function ajaxCheck(id,isInclude) {
+        var URL = "<?php echo URL::base(); ?>webinarManager/updateInclude4R/" + id + "/" + isInclude ;
+        $.get(URL, function(data) {
+            if(data != '') {
+               return true;
+            }
+        });
+    }
+
+</script>

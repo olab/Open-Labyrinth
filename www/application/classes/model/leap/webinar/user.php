@@ -45,6 +45,12 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE
+            )),
+
+            'include_4R' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+                'unsigned' => TRUE
             ))
         );
 
@@ -92,5 +98,30 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
                        ->column('webinar_id', $webinarId)
                        ->column('user_id', $userId)
                        ->execute();
+    }
+
+    public function updateInclude4R($id,$isInclude) {
+        $this->id = $id;
+        $this->load();
+        $this->include_4R = $isInclude;
+        $this->save();
+    }
+
+    public function getNotIncludedUsers($webId) {
+
+        $builder = DB_SQL::select('default',array(DB::expr('user_id')))
+            ->from($this->table())
+            ->where('webinar_id', '=', $webId,'AND')
+            ->where('include_4R', '=', 0);
+
+        $result = $builder->query();
+
+        $users = array();
+        if ($result->is_loaded()) {
+            foreach ($result as $record => $val) {
+                $users[] = $val['user_id'];
+            }
+        }
+        return $users;
     }
 }
