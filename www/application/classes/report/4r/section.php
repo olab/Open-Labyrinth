@@ -29,6 +29,7 @@ class Report_4R_Section extends Report_4R_Element {
     private $webinarStep;
     private $sectionNodes;
     private $notInUsers;
+    private $dateStatistics;
     private $startOffset;
 
     private $choicesMap = array(
@@ -43,7 +44,7 @@ class Report_4R_Section extends Report_4R_Element {
      *
      * @param Report_Impl $impl - report implementation
      */
-    public function __construct(Report_Impl $impl, $mapId, $sectionId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null) {
+    public function __construct(Report_Impl $impl, $mapId, $sectionId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null,$dateStatistics = null) {
         parent::__construct($impl);
 
         $this->mapId          = $mapId;
@@ -53,6 +54,7 @@ class Report_4R_Section extends Report_4R_Element {
         $this->webinarId      = $webinarId;
         $this->webinarStep    = $webinarStep;
         $this->notInUsers     = $notInUsers;
+        $this->dateStatistics = $dateStatistics;
 
         $this->loadSectionNodes();
     }
@@ -69,11 +71,18 @@ class Report_4R_Section extends Report_4R_Element {
         $countOfSectionNodes = count($this->sectionNodes);
         $localOffset         = 0;
 
-        $sessions            = DB_ORM::model('user_session')->getSessions($this->mapId,
+
+        $statisticsModel = 'statistics_';
+        if (is_null($this->dateStatistics)) {
+            $statisticsModel = '';
+        }
+
+        $sessions            = DB_ORM::model($statisticsModel.'user_session')->getSessions($this->mapId,
                                                                           $this->webinarId,
                                                                           $this->webinarStep,
-                                                                          $this->notInUsers);
-        $traces              = ($sessions != null && count($sessions) > 0) ? DB_ORM::model('user_sessionTrace')->getUniqueTraceBySessions($sessions)
+                                                                          $this->notInUsers,
+                                                                          $this->dateStatistics);
+        $traces              = ($sessions != null && count($sessions) > 0) ? DB_ORM::model($statisticsModel.'user_sessionTrace')->getUniqueTraceBySessions($sessions)
                                                                            : null;
         $tracesData          = $this->calculateSectionData($traces);
 

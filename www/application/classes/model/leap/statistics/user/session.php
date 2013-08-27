@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Model for user_sessions table in database
  */
-class Model_Leap_User_Session extends DB_ORM_Model {
+class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -67,6 +67,11 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => TRUE,
                 'savable' => TRUE
+            )),
+            'date_save_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+                'savable' => TRUE
             ))
         );
 
@@ -97,83 +102,83 @@ class Model_Leap_User_Session extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'user_sessions';
+        return 'statistics_user_sessions';
     }
 
     public static function primary_key() {
         return array('id');
     }
 
-    public function createSession($userId, $mapId, $startTime, $userIp, $webinarId = null, $webinarStep = null) {
-        $builder = DB_ORM::insert('user_session')
-                ->column('user_id', $userId)
-                ->column('map_id', $mapId)
-                ->column('start_time', $startTime)
-                ->column('user_ip', $userIp)
-                ->column('webinar_id', $webinarId)
-                ->column('webinar_step', $webinarStep);
+    public function saveWebInarSession(array $sessionData) {
 
-        return $builder->execute();
+        $id = DB_ORM::model('statistics_user_datesave')->saveDate();
+
+        foreach ($sessionData as $data) {
+            $builder = DB_ORM::insert('statistics_user_session')
+                ->column('id', $data['id'])
+                ->column('user_id', $data['user_id'])
+                ->column('map_id', $data['map_id'])
+                ->column('start_time', $data['start_time'])
+                ->column('user_ip', $data['user_ip'])
+                ->column('webinar_id', $data['webinar_id'])
+                ->column('webinar_step', $data['webinar_step'])
+                ->column('date_save_id', $id);
+
+             $builder->execute();
+        }
     }
 
-    public function getAllSessionByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('start_time', 'DESC');
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
-    }
-
-    public function getAllSessionByUser($userId, $limit = 0) {
-        $limit = (int) $limit;
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId)
-                ->order_by('start_time', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
-    }
-
-    public function getStartTimeSessionById($sessionId) {
+    public function getSessionByWebinarId($webinarId) {
         $builder = DB_SQL::select('default')
             ->from($this->table())
-            ->where('id', '=', $sessionId);
+            ->where('webinar_id', '=', $webinarId);
         $result = $builder->query();
-
+        $ids = array();
         if($result->is_loaded()) {
-            return $result[0]['start_time'];
+            foreach ($result as $record) {
+                $ids[] = $record['id'];
+            }
         }
-
-        return NULL;
+        return  $ids;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null) {
+    public function getDateSaveByWebinarId($webinarId){
+
+        $connection = DB_Connection_Pool::instance()->get_connection('default');
+
+        $results = $connection->query ("
+            SELECT
+              DISTINCT ( ud.id ),
+                ud.date_save, MAX(us.webinar_step) as webinar_step
+            FROM
+              statistics_user_sessions AS us
+            LEFT JOIN
+              statistics_user_datesave AS ud ON ud.id = us.date_save_id
+            WHERE
+              us.webinar_id =$webinarId
+            GROUP BY
+              ud.id
+            ORDER BY
+              ud.date_save
+        ");
+
+        $res = array();
+
+        if ($results->is_loaded()) {
+            foreach($results as $record) {
+                $res[] = $record;
+            }
+        }
+
+        return $res;
+    }
+
+    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null, $date=null) {
         $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId, 'AND')
-                ->where('map_id', '=', $mapId)
-                ->order_by('start_time', 'DESC');
+            ->from($this->table())
+            ->where('user_id', '=', $userId, 'AND')
+            ->where('map_id', '=', $mapId)
+            ->order_by('start_time', 'DESC');
 
         if($webinarId != null) {
             $builder = $builder->where('webinar_id', '=', $webinarId);
@@ -183,12 +188,16 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             $builder = $builder->where('webinar_step', '<=', $currentStep);
         }
 
+        if($date != null) {
+            $builder = $builder->where('date_save_id', '=', $date);
+        }
+
         $result = $builder->query();
 
         if($result->is_loaded()) {
             $sessions = array();
             foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
+                $sessions[] = DB_ORM::model('statistics_user_session', array((int)$record['id']));
             }
 
             return $sessions;
@@ -231,7 +240,7 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 $sessionIDs[] = $session->id;
             }
 
-            if(DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) {
+            if(DB_ORM::model('statistics_user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) {
                 $result = Model_Leap_User_Session::USER_FINISH_MAP;
             }
         }
@@ -245,14 +254,15 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      * @param integer $mapId - map ID
      * @param integer|null $webinarId - webinar ID
      * @param integer|null $webinarStep - webinar step
-     * @param integer|null $notInUsers - not include sessions of susers
+     * @param array|null $notInUsers - not include sessions of susers
+     * @param integer|null $dateStatistics - if this sessions for Statistics
      * @return array|null - session ids or null
      */
     public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
         $builder = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->column('id');
+            ->from($this->table())
+            ->where('map_id', '=', $mapId, 'AND')
+            ->column('id');
         if($webinarId != null && $webinarId > 0) {
             $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
         }
@@ -263,6 +273,10 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
         if($notInUsers != null && count($notInUsers) > 0) {
             $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
+        }
+
+        if($dateStatistics != null && $dateStatistics > 0) {
+            $builder = $builder->where('date_save_id', '=', $dateStatistics);
         }
 
         $records = $builder->query();
@@ -276,40 +290,6 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         }
 
         return null;
-    }
-
-    /**
-     * Delete webinar sessions
-     *
-     * @param integer $webinarId - webinar ID
-     */
-    public function deleteWebinarSessions($webinarId) {
-        if($webinarId == null || $webinarId <= 0) return;
-
-        DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('webinar_id', '=', $webinarId)
-                ->execute();
-    }
-
-    public function getSessionByWebinarId($webinarId , $checkIds) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('webinar_id', '=', $webinarId,'AND');
-
-        if (count($checkIds) > 0)
-            $builder->where('id', 'NOT IN', $checkIds);
-
-        $result = $builder->query();
-        $res = array();
-        $ids = array();
-        if($result->is_loaded()) {
-            foreach ($result as $record) {
-                $res[] = $record;
-                $ids[] = $record['id'];
-            }
-        }
-        return array($res, $ids);
     }
 }
 

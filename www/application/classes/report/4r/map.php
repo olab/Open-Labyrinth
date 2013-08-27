@@ -28,6 +28,7 @@ class Report_4R_Map extends Report_4R_Element {
     private $webinarId;
     private $webinarStep;
     private $notInUsers;
+    private $dateStatistics;
     private $countOfChoices;
 
     private $choicesMap = array(
@@ -37,7 +38,7 @@ class Report_4R_Map extends Report_4R_Element {
         4 => 'F'
     );
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null) {
+    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
         parent::__construct($impl);
 
         if($mapId == null || $mapId <= 0) return;
@@ -47,6 +48,7 @@ class Report_4R_Map extends Report_4R_Element {
         $this->webinarId      = $webinarId;
         $this->webinarStep    = $webinarStep;
         $this->notInUsers     = $notInUsers;
+        $this->dateStatistics = $dateStatistics;
 
         $this->elements       = array();
         $this->sections       = array();
@@ -155,7 +157,8 @@ class Report_4R_Map extends Report_4R_Element {
                                                        $this->countOfChoices,
                                                        $this->webinarId,
                                                        $this->webinarStep,
-                                                       $this->notInUsers);
+                                                       $this->notInUsers,
+                                                       $this->dateStatistics);
 
                 $this->elements[] = $reportSection;
                 $this->sections[] = $reportSection;
@@ -186,7 +189,8 @@ class Report_4R_Map extends Report_4R_Element {
                                                             $question->id,
                                                             $this->webinarId,
                                                             $this->webinarStep,
-                                                            $this->notInUsers);
+                                                            $this->notInUsers,
+                                                            $this->dateStatistics);
             }
         }
     }
