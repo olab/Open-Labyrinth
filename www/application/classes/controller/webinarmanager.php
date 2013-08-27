@@ -105,13 +105,79 @@ class Controller_WebinarManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_statistic() {
+    public function action_showStats() {
+        $webinarId   = $this->request->param('id', null);
+        $step   = $this->request->param('id2', null);
+        $dateId   = $this->request->param('id3', null);
+
+        if($webinarId == null || $dateId == null) {
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        } else {
+
+
+            $webinarData = array();
+            $usersMap    = array();
+            $webinar     = DB_ORM::model('webinar', array((int)$webinarId));
+
+            if($webinar != null && count($webinar->users) && count($webinar->maps) > 0) {
+                foreach($webinar->users as $webinarUser) {
+                    if(!isset($usersMap[$webinarUser->user_id])) {
+                        $usersMap[$webinarUser->user_id] = $webinarUser->user;
+                    }
+
+                    foreach($webinar->maps as $webinarMap) {
+                        $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['map']    = DB_ORM::model('map', array((int)$webinarMap->map_id));
+
+                        if($webinarMap->step <= $step) {
+                            $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['status'] = DB_ORM::model('statistics_user_session')->isUserFinishMap($webinarMap->map_id, $webinarUser->user_id, $webinar->id, $step, $dateId);
+                        } else {
+                            $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['status'] = 0;
+                        }
+
+                        $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['user']   = $webinarUser->user;
+                    }
+                }
+            }
+
+            $this->templateData['webinar']     = $webinar;
+
+            foreach ($this->templateData['webinar']->users as $user) {
+                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
+                $this->templateData['includeUsersData'][$user->user_id] = $user->id;
+            }
+
+            $this->templateData['usersMap']    = $usersMap;
+            $this->templateData['webinarData'] = $webinarData;
+            $this->templateData['step'] = $step;
+            $this->templateData['dateId'] = $dateId;
+            $date = DB_ORM::model('statistics_user_datesave', array($dateId));
+            $date  = date('Y-m-d H:i:s',$date->date_save);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title('Statistics for ' .$webinar->title)->set_url(URL::base() . 'webinarManager/statistics/'.$webinarId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($date)->set_url(URL::base() . 'webinarManager/progress'));
+
+            $allUsers = DB_ORM::model('user')->getAllUsersAndAuth('ASC');
+            if($allUsers != null && count($allUsers) > 0) {
+                foreach($allUsers as $user) {
+                    $this->templateData['usersAuthMap'][$user['id']] = $user;
+                }
+            }
+
+            $this->templateData['center'] = View::factory('webinar/showStats');
+            $this->templateData['center']->set('templateData', $this->templateData);
+
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        }
+    }
+
+    public function action_progress() {
         $webinarId = $this->request->param('id', null);
 
         if($webinarId == null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         } else {
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base() . 'webinarManager/statistic'));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base() . 'webinarManager/progress'));
 
             $webinarData    = array();
             $usersMap       = array();
@@ -169,9 +235,29 @@ class Controller_WebinarManager extends Controller_Base {
         }
     }
 
+    public function action_statistics() {
+        $webinarId   = $this->request->param('id', null);
+
+        if($webinarId == null) {
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        } else {
+            $this->templateData['history'] = DB_ORM::model('statistics_user_session')->getDateSaveByWebinarId($webinarId);
+
+            $webinar = DB_ORM::model('webinar', array((int)$webinarId));
+
+            $this->templateData['webinar']     = $webinar;
+            Breadcrumbs::add(Breadcrumb::factory()->set_title('Statistics for ' . $webinar->title)->set_url(URL::base() . 'webinarManager/statistics'));
+
+            $this->templateData['center'] = View::factory('webinar/all');
+            $this->templateData['center']->set('templateData', $this->templateData);
+            $this->template->set('templateData', $this->templateData);
+        }
+    }
+
     public function action_publishStep() {
         $webinarId   = $this->request->param('id', null);
         $webinarStep = $this->request->param('id2', null);
+        $dateId = $this->request->param('id3', null);
         $webinar     = DB_ORM::model('webinar', array((int)$webinarId));
 
         if($webinar != null && $webinarStep != null && $webinarStep > 0) {
@@ -189,11 +275,11 @@ class Controller_WebinarManager extends Controller_Base {
                 $webinar->save();
 
                 if($webinar->forum_id > 0) {
-                    DB_ORM::model('dforum_messages')->createMessage($webinar->forum_id, '<a href="' . URL::base() . 'webinarManager/stepReport/' . $webinarId . '/' . $webinarStep . '">Step ' . $webinarStep . ' 4R Report</a>');
+                    DB_ORM::model('dforum_messages')->createMessage($webinar->forum_id, '<a href="' . URL::base() . 'webinarManager/stepReport/' . $webinarId . '/' . $webinarStep .'/'. $dateId. '">Step ' . $webinarStep . ' 4R Report</a>');
                 }
             }
 
-            Request::initial()->redirect(URL::base() . 'webinarmanager/statistic/' . $webinarId);
+            Request::initial()->redirect(URL::base() . 'webinarmanager/showStats/' . $webinarId . '/' . $webinarStep . '/' . $dateId);
         } else {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
@@ -247,6 +333,7 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_stepReport() {
         $webinarId = $this->request->param('id', null);
         $stepKey   = $this->request->param('id2', null);
+        $dateId   = $this->request->param('id3', null);
 
         if($webinarId != null && $webinarId > 0 && $stepKey != null && $stepKey > 0) {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
@@ -268,7 +355,7 @@ class Controller_WebinarManager extends Controller_Base {
                 if($webinar != null && count($webinar->maps) > 0) {
                     foreach($webinar->maps as $webinarMap) {
                         if($webinarMap->step == $stepKey) {
-                            $report->add($webinarMap->map_id, $webinar->id, $stepKey, $notIncludUsers);
+                            $report->add($webinarMap->map_id, $webinar->id, $stepKey, $notIncludUsers,$dateId);
                         }
                     }
                 }
@@ -286,6 +373,7 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_mapReport() {
         $webinarId = $this->request->param('id', null);
         $mapKey    = $this->request->param('id2', null);
+        $dateId    = $this->request->param('id3', null);
 
         if($webinarId != null && $webinarId > 0 && $mapKey != null && $mapKey > 0) {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
@@ -294,7 +382,7 @@ class Controller_WebinarManager extends Controller_Base {
             $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
 
             $report  = new Report_4R(new Report_Impl_PHPExcel(), $map->name);
-            $report->add($mapKey, $webinar->id, '' , $notIncludUsers);
+            $report->add($mapKey, $webinar->id, '' , $notIncludUsers, $dateId);
             $report->generate();
 
             $report->get();
@@ -317,7 +405,19 @@ class Controller_WebinarManager extends Controller_Base {
     }
 
     public function action_reset() {
-        DB_ORM::model('webinar')->resetWebinar($this->request->param('id', null));
+        $webId = $this->request->param('id', null);
+
+        $dataStatisticsIds = DB_ORM::model('statistics_user_session')->getSessionByWebinarId($webId);
+        list($data, $ids) = DB_ORM::model('user_session')->getSessionByWebinarId($webId,$dataStatisticsIds);
+
+        if (count($data) > 0) {
+            // Save Statistics
+            DB_ORM::model('statistics_user_session')->saveWebInarSession( $data );
+            DB_ORM::model('statistics_user_sessiontrace')->saveWebInarSessionTraces( $ids );
+            DB_ORM::model('statistics_user_response')->saveWebInarResponse( $ids );
+        }
+
+        DB_ORM::model('webinar')->resetWebinar($webId);
 
         Request::initial()->redirect(URL::base() . 'webinarmanager/index');
     }

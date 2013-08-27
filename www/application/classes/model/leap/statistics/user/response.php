@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Model for user_responses table in database 
  */
-class Model_Leap_User_Response extends DB_ORM_Model {
+class Model_Leap_Statistics_User_Response extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -65,75 +65,30 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'user_responses';
+        return 'statistics_user_responses';
     }
 
     public static function primary_key() {
         return array('id');
     }
     
-    public function createResponse($sessionId, $questionId, $response, $nodeId) {
-        $this->question_id = $questionId;
-        $this->session_id = $sessionId;
-        $this->response = $response;
-        $this->node_id = $nodeId;
-
-        $this->save();
-    }
-    
-    public function updateResponse($sessionId, $questionId, $response) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('question_id', '=', $questionId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $resp = DB_ORM::model('user_response', array((int)$result[0]['id']));
-            if($resp) {
-                $resp->response = $response;
-                $resp->save();
-            }
-        } else {
-            $this->createResponse($sessionId, $questionId, $response);
+    public function saveWebInarResponse(array $ids) {
+        $data = array();
+        foreach ($ids as $id) {
+            $data[] = DB_ORM::model('user_response')->getResponsesBySessionID($id);
         }
-    }
-    
-    public function getResponce($sessionId, $questionId) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('question_id', '=', $questionId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $responces = array();
-            foreach($result as $record){
-                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
+        foreach ($data as $responses => $res){
+            foreach ($res as $response) {
+
+                $builder = DB_ORM::insert('statistics_user_response')
+                    ->column('id', $response['id'])
+                    ->column('question_id', $response['question_id'])
+                    ->column('session_id', $response['session_id'])
+                    ->column('response', $response['response'])
+                    ->column('node_id', $response['node_id']);
+                $builder->execute();
             }
-
-            return $responces;
         }
-
-        return NULL;
-    }
-
-    public function getResponsesByQuestion($questionId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('question_id', '=', $questionId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $responses = array();
-            foreach($result as $record){
-                $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
-            }
-
-            return $responses;
-        }
-
-        return NULL;
     }
 
     public function getResponses($questionId, $sessions) {
@@ -151,29 +106,13 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         if($result->is_loaded()) {
             $responces = array();
             foreach($result as $record){
-                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
+                $responces[] = DB_ORM::model('statistics_user_response', array((int)$record['id']));
             }
 
             return $responces;
         }
 
         return NULL;
-    }
-
-    public function getResponsesBySessionID($sessionId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('session_id', '=', $sessionId);
-        $result = $builder->query();
-
-        $responses = array();
-        if($result->is_loaded()) {
-            foreach($result as $record){
-                $responses[] = $record;
-            }
-        }
-
-        return $responses;
     }
 }
 

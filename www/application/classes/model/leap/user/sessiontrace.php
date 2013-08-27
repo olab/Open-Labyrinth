@@ -268,7 +268,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function getTraceBySessionID($sessionId) {
+    public function getTraceBySessionID($sessionId , $getType = 'obj') {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('session_id', '=', $sessionId)
@@ -276,11 +276,17 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $result = $builder->query();
         
         if($result->is_loaded()) {
+
             $traces = array();
             foreach($result as $record) {
-                $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
+                if ($getType != 'array') {
+                    $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
+                }
+                else {
+                    $traces[] = $record;
+                }
             }
-            
+
             return $traces;
         }
         

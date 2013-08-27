@@ -25,6 +25,7 @@ class Report_4R_Question extends Report_4R_Element {
     private $webinarId;
     private $webinarStep;
     private $notInUsers;
+    private $dateStatistics;
     private $questionResponses;
 
     /**
@@ -32,13 +33,14 @@ class Report_4R_Question extends Report_4R_Element {
      *
      * @param Report_Impl $impl - report implementation
      */
-    public function __construct(Report_Impl $impl, $questioId, $webinarId = null, $webinarStep = null, $notInUsers = null) {
+    public function __construct(Report_Impl $impl, $questioId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
         parent::__construct($impl);
 
         $this->question    = DB_ORM::model('map_question', array((int)$questioId));
         $this->webinarId   = $webinarId;
         $this->webinarStep = $webinarStep;
         $this->notInUsers  = $notInUsers;
+        $this->dateStatistics = $dateStatistics;
         $this->questionResponses = DB_ORM::model('map_question_response')->getResponsesByQuestion($questioId);
     }
 
@@ -50,8 +52,13 @@ class Report_4R_Question extends Report_4R_Element {
     public function insert($offset) {
         if($this->implementation == null || $this->question == null) return 0;
 
-        $sessions      = DB_ORM::model('user_session')->getSessions($this->question->map_id, $this->webinarId, $this->webinarStep, $this->notInUsers);
-        $responses     = DB_ORM::model('user_response')->getResponses($this->question->id, $sessions);
+        $statisticsModel = 'statistics_';
+        if (is_null($this->dateStatistics)) {
+            $statisticsModel = '';
+        }
+
+        $sessions      = DB_ORM::model($statisticsModel.'user_session')->getSessions($this->question->map_id, $this->webinarId, $this->webinarStep, $this->notInUsers);
+        $responses     = DB_ORM::model($statisticsModel.'user_response')->getResponses($this->question->id, $sessions);
 
         $localOffset   = 0;
         $responsesData = $this->calculateChoices($responses);

@@ -51,13 +51,14 @@ class Report_4R extends Report {
      * @param integer $webinarId - webinar ID
      * @param integer $webinarStep - webinar step
      */
-    public function add($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null) {
+    public function add($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
         if($mapId == null || $mapId <= 0) return;
 
         $this->maps[] = array('mapId'       => $mapId,
                               'webinarId'   => $webinarId,
                               'webinarStep' => $webinarStep,
-                              'notInUsers'  => $notInUsers);
+                              'notInUsers'  => $notInUsers,
+                              'dateStatistics'  => $dateStatistics );
     }
 
     /**
@@ -84,7 +85,8 @@ class Report_4R extends Report {
                                                      $this->countOfChoices,
                                                      $mapData['webinarId'],
                                                      $mapData['webinarStep'],
-                                                     $mapData['notInUsers']);
+                                                     $mapData['notInUsers'],
+                                                     $mapData['dateStatistics']);
         }
     }
 

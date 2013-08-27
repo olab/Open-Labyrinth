@@ -64,7 +64,7 @@
                     </td>
                     <td class="center">
                         <div class="btn-group">
-                            <a class="btn btn-success" href="<?php echo URL::base() . 'webinarManager/statistic/' . $webinar->id; ?>">
+                            <a class="btn btn-success" href="<?php echo URL::base() . 'webinarManager/progress/' . $webinar->id; ?>">
                                 <i class="icon-play icon-white"></i>
                                 <span class="visible-desktop">View progress</span>
                             </a>
@@ -81,6 +81,10 @@
                             <a class="btn btn-info" href="<?php echo URL::base(); ?>webinarManager/edit/<?php echo $webinar->id; ?>">
                                 <i class="icon-edit icon-white"></i>
                                 Edit
+                            </a>
+                            <a class="btn btn-info" href="<?php echo URL::base(); ?>webinarManager/statistics/<?php echo $webinar->id; ?>">
+                                <i class="icon-calendar icon-white"></i>
+                                Statistics
                             </a>
                             <a data-toggle="modal" href="javascript:void(0)" data-target="#reset-webinar-<?php echo $webinar->id; ?>" class="btn btn-warning"><i class="icon-refresh icon-white"></i><?php echo __('Reset'); ?></a>
                             <a data-toggle="modal" href="javascript:void(0)" data-target="#delete-node-<?php echo $webinar->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
