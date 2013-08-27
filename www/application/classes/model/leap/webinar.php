@@ -89,6 +89,12 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 'child_key' => array('forum_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'dforum'
+            )),
+
+            'steps' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('webinar_id'),
+                'child_model' => 'webinar_step',
+                'parent_key' => array('id')
             ))
         );
     }
@@ -135,33 +141,66 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      */
     public function saveWebinar($values) {
         $webinarId = Arr::get($values, 'webinarId', null);
+        $webinar   = null;
+        $isNew     = false;
 
-        $forumId = null;
         if($webinarId == null || $webinarId < 0) {
-            $webinar = DB_ORM::insert('webinar')
-                               ->column('title', Arr::get($_POST, 'title', ''))
-                               ->column('author_id', Auth::instance()->get_user()->id)
-                               ->column('current_step', 1);
-            $webinar->statement();
-            $webinarId = $webinar->execute();
+            $webinarBuilder = DB_ORM::insert('webinar')
+                                      ->column('title', Arr::get($_POST, 'title', ''))
+                                      ->column('author_id', Auth::instance()->get_user()->id);
+            $webinarBuilder->statement();
+
+            $webinarId = $webinarBuilder->execute();
+            $webinar   = DB_ORM::model('webinar', array((int)$webinarId));
+            $isNew     = true;
         } else {
+            $webinar = DB_ORM::model('webinar', array((int)$webinarId));
             DB_ORM::update('webinar')
                     ->set('title', Arr::get($values, 'title', ''))
                     ->where('id', '=', $webinarId)
                     ->execute();
         }
 
-        DB_ORM::model('webinar_map')->removeMaps($webinarId);
-
-        for($i = 1; $i <= 3; $i++) {
-            $j = 1;
-            while($map = Arr::get($values, 's' . $i . '-labyrinth-' . $j, false)) {
-                DB_ORM::model('webinar_map')->addMap($webinarId, $map, $i);
-                $j++;
+        $completedStepIDs = array();
+        if($webinar->steps != null && count($webinar->steps) > 0) {
+            foreach($webinar->steps as $webinarStep) {
+                $stepName = Arr::get($values, 's' . $webinarStep->id . '_name', null);
+                DB_ORM::model('webinar_map')->removeMapsForStep($webinar->id, $webinarStep->id);
+                if($stepName != null) {
+                    $completedStepIDs['s' . $webinarStep->id . '_name'] = $webinarStep->id;
+                    DB_ORM::model('webinar_step')->updateStep($webinarStep->id, $stepName);
+                    $maps = Arr::get($values, 's' . $webinarStep->id . '_labyrinths', null);
+                    if($maps != null && count($maps) > 0) {
+                        foreach($maps as $webinarStepMap) {
+                            DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarStepMap, $webinarStep->id);
+                        }
+                    }
+                } else {
+                    DB_ORM::model('webinar_step')->removeStep($webinarStep->id);
+                }
             }
         }
 
-        $webinar   = DB_ORM::model('webinar', array((int)$webinarId));
+        foreach($values as $key => $value) {
+            if(strpos($key, '_name') !== false && !isset($completedStepIDs[$key])) {
+                $pattern = '/s(\d+)_name/i';
+                $id = preg_replace($pattern, '$1', $key);
+                if(!is_numeric($id)) continue;
+
+                $stepName = Arr::get($values, 's' . $id . '_name', null);
+                if($stepName == null) continue;
+
+                $stepId = DB_ORM::model('webinar_step')->addStep($webinar->id, $stepName);
+
+                $maps = Arr::get($values, 's' . $id . '_labyrinths', null);
+                if($maps != null && count($maps) > 0) {
+                    foreach($maps as $webinarMap) {
+                        DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarMap, $stepId);
+                    }
+                }
+            }
+        }
+
         $forumId   = null;
         if($webinar->forum_id != null && $webinar->forum_id > 0) {
             $forumId = $webinar->forum_id;
@@ -177,9 +216,9 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         }
 
         DB_ORM::update('webinar')
-                ->set('forum_id', $forumId)
-                ->where('id', '=', $webinarId)
-                ->execute();
+            ->set('forum_id', $forumId)
+            ->where('id', '=', $webinarId)
+            ->execute();
 
         $formUsers  = Arr::get($values, 'users', null);
 
@@ -232,6 +271,20 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $users[] = Auth::instance()->get_user()->id;
         DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
+
+        if($isNew) {
+            $updatedWebinar = DB_ORM::model('webinar', array((int)$webinar->id));
+            if($updatedWebinar->steps != null && count($updatedWebinar->steps) > 0) {
+                $min = $updatedWebinar->steps[0]->id;
+                foreach($updatedWebinar->steps as $webinarStep) {
+                    if($webinarStep->id < $min) {
+                        $min = $webinarStep->id;
+                    }
+                }
+
+                DB_ORM::model('webinar')->changeWebinarStep($updatedWebinar->id, $min);
+            }
+        }
     }
 
     /**

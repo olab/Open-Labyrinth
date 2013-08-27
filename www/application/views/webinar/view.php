@@ -48,7 +48,20 @@
             <?php foreach($templateData['webinars'] as $webinar) { ?>
                 <tr>
                     <td><a href="<?php echo URL::base(); ?>"><?php echo $webinar->title; ?></a></td>
-                    <td><?php echo $webinar->current_step == null ? '-' : $webinar->current_step; ?></td>
+                    <td>
+                        <?php
+                        if($webinar->current_step != null && $webinar->steps != null && count($webinar->steps) > 0) {
+                            foreach($webinar->steps as $webinarStep) {
+                                if($webinarStep->id == $webinar->current_step) {
+                                    echo $webinarStep->name;
+                                    break;
+                                }
+                            }
+                        } else {
+                            echo '-';
+                        }
+                        ?>
+                    </td>
                     <td class="center">
                         <div class="btn-group">
                             <a class="btn btn-success" href="<?php echo URL::base() . 'webinarManager/statistic/' . $webinar->id; ?>">

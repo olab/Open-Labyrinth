@@ -47,9 +47,9 @@
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
-                                                                (isset($stepKeyMap[$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $stepKeyMap[$stepKey] . '</span>'
-                                                                                                                                                     : $stepKeyMap[$stepKey]
-                                                                    : '-') .
+                                                                (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
+                                                                                                                                                                         : $templateData['webinarStepMap'][$stepKey]->name
+                                                                                                                  : '-') .
                                                                 ($isShowReport ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
                                                                                    <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                : '') .
@@ -96,8 +96,8 @@
         <tr>
             <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
             <?php $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
-            <td style="text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-            <td><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" >&nbsp;&nbsp;&nbsp;Include in report</td>
+            <td style="width: 50px;text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+            <td style="width: 120px;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" >&nbsp;Include in report</td>
             <?php
             foreach($steps as $stepKey => $step) {
                 foreach($step as $mapId => $map) {

@@ -22,78 +22,28 @@
 <h1><?php echo __("Scenario"); ?> '<?php echo $templateData['webinar']->title; ?>'</h1>
 
 <form class="form-horizontal" id="addManualForm" name="addManualForm" method="post" action="<?php echo URL::base() ?>">
-    <fieldset class="fieldset">
-        <legend>
-            <?php echo $templateData['webinar']->current_step == 1 ? ('<b>' . __('First step') . '</b>') : __('First step'); ?>
-        </legend>
-        <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-            <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                <?php if($map->step == 1) { ?>
-                <div class="control-group">
-                    <label class="control-label" for="title"><?php echo '#' . $index; ?></label>
-                    <div style="margin-top:3px;" class="controls">
-                        <span><?php echo $map->map->name; ?></span>
-                        <?php if($templateData['webinar']->current_step == 1 && isset($templateData['mapsMap'][1][$map->map_id])) { ?>
-                            <?php if($templateData['mapsMap'][1][$map->map_id] == 0 || $templateData['mapsMap'][1][$map->map_id] == 1) { ?>
-                                <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/1/<?php echo $map->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
-                            <?php } ?>
-                        <?php } ?>
-                    </div>
-                </div>
-                <?php $index++; } ?>
-            <?php } ?>
-        <?php } ?>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend>
-            <?php echo $templateData['webinar']->current_step == 2 ? ('<b>' . __('Second step') . '</b>') : __('Second step'); ?>
-        </legend>
-        <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-            <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                <?php if($map->step == 2) { ?>
-                    <div class="control-group">
-                        <label class="control-label" for="title"><?php echo '#' . $index; ?></label>
-                        <div style="margin-top:3px;" class="controls">
-                            <span><?php echo $map->map->name; ?></span>
-                            <?php if($templateData['webinar']->current_step == 2 && isset($templateData['mapsMap'][2][$map->map_id])) { ?>
-                                <?php if($templateData['mapsMap'][2][$map->map_id] == 0 || $templateData['mapsMap'][2][$map->map_id] == 1) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/2/<?php echo $map->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
-                                <?php } else if($templateData['mapsMap'][2][$map->map_id] == 2) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $map->map_id; ?>" class="btn btn-info btn-small"><i class="icon-eye-open"></i>View 4R</a>
+    <?php if(isset($templateData['webinar']) && $templateData['webinar']->steps != null  && count($templateData['webinar']->steps) > 0) { ?>
+        <?php foreach($templateData['webinar']->steps as $webinarStep) { ?>
+            <fieldset class="fieldset">
+                <legend>
+                    <?php echo $templateData['webinar']->current_step == $webinarStep->id ? ('<b style="color: #0088cc;">' . $webinarStep->name . '</b>') : $webinarStep->name; ?>
+                </legend>
+                <?php if($webinarStep->maps != null && count($webinarStep->maps) > 0) { ?>
+                    <?php $index = 1; foreach($webinarStep->maps as $webinarMap) { ?>
+                        <div class="control-group">
+                            <label class="control-label" for="title"><?php echo '#' . $index; ?></label>
+                            <div style="margin-top:3px;" class="controls">
+                                <span><?php echo $webinarMap->map->name; ?></span>
+                                <?php if(isset($templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id]) && $templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 0 || $templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 1) { ?>
+                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/1/<?php echo $webinarMap->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
                                 <?php } ?>
-                            <?php } ?>
+                            </div>
                         </div>
-                    </div>
                     <?php $index++; } ?>
-            <?php } ?>
+                <?php } ?>
+            </fieldset>
         <?php } ?>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend>
-            <?php echo $templateData['webinar']->current_step == 3 ? ('<b>' . __('Third step') . '</b>') : __('Third step'); ?>
-        </legend>
-        <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-            <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                <?php if($map->step == 3) { ?>
-                    <div class="control-group">
-                        <label class="control-label" for="title"><?php echo '#' . $index; ?></label>
-                        <div style="margin-top:3px;" class="controls">
-                            <span><?php echo $map->map->name; ?></span>
-                            <?php if($templateData['webinar']->current_step == 3 && isset($templateData['mapsMap'][3][$map->map_id])) { ?>
-                                <?php if($templateData['mapsMap'][3][$map->map_id] == 0 || $templateData['mapsMap'][3][$map->map_id] == 1) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/3/<?php echo $map->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
-                                <?php } else if($templateData['mapsMap'][3][$map->map_id] == 2) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $map->map_id; ?>" class="btn btn-info btn-small"><i class="icon-eye-open"></i>View 4R</a>
-                                <?php } ?>
-                            <?php } ?>
-                        </div>
-                    </div>
-                    <?php $index++; } ?>
-            <?php } ?>
-        <?php } ?>
-    </fieldset>
+    <?php } ?>
 
     <?php if(isset($templateData['webinar']) && $templateData['webinar']->forum_id > 0) { ?>
         <div class="pull-right">

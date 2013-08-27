@@ -45,6 +45,8 @@
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
     });
+
+    var $labyrinthContainers = [];
 </script>
 
 <form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base() ?>webinarmanager/save">
@@ -69,19 +71,24 @@
         <?php } ?>
     </fieldset>
 
-    <fieldset class="fieldset">
-        <legend><?php echo __('First step of Scenario'); ?></legend>
-        <div id="labyrinth-container-1" containerId="1">
-            <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-                <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                    <?php if($map->step == 1) { ?>
+    <div id="steps-container">
+        <?php if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) { ?>
+            <?php foreach($templateData['webinar']->steps as $step) { ?>
+                <fieldset class="fieldset step-container-<?php echo $step->id; ?>" stepId="<?php echo $step->id; ?>">
+                    <legend>
+                        Step - <input type="text" name="s<?php echo $step->id; ?>_name" value="<?php echo $step->name; ?>"/> <button class="btn btn-danger btn-remove-step"><i class="icon-trash"></i></button>
+                        <input type="hidden" name="stepIDs[]" value="<?php echo $step->id; ?>"/>
+                    </legend>
+                    <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>">
+                        <?php if(count($step->maps) > 0) { ?>
+                            <?php $index = 1; foreach($step->maps as $stepMap) { ?>
                         <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
-                            <label for="s1-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
+                                    <label for="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
                             <div class="controls">
-                                <select id="s1-labyrinth-<?php echo $index; ?>" name="s1-labyrinth-<?php echo $index; ?>" class="span6">
+                                        <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6">
                                     <?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) { ?>
                                         <?php foreach($templateData['maps'] as $m) { ?>
-                                            <option value="<?php echo $m->id; ?>" <?php if($m->id == $map->map_id) echo 'selected="selected"'; ?>><?php echo $m->name; ?></option>
+                                                    <option value="<?php echo $m->id; ?>" <?php if($m->id == $stepMap->map_id) echo 'selected="selected"'; ?>><?php echo $m->name; ?></option>
                                         <?php } ?>
                                     <?php } ?>
                                 </select>
@@ -90,71 +97,23 @@
                         </div>
                     <?php $index++; } ?>
                 <?php } ?>
-            <?php } ?>
-        </div>
+                    </div>
 
-        <div>
-            <button class="btn btn-info add-labyrinth-btn" type="button" containerId="1"><i class="icon-plus-sign"></i>Add Labyrinth</button>
-        </div>
-    </fieldset>
+                    <div>
+                        <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add Labyrinth</button>
+                    </div>
 
-    <fieldset class="fieldset">
-        <legend><?php echo __('Second step of Scenario'); ?></legend>
-        <div id="labyrinth-container-2" containerId="2">
-            <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-                <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                    <?php if($map->step == 2) { ?>
-                        <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
-                            <label for="s2-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
-                            <div class="controls">
-                                <select id="s2-labyrinth-<?php echo $index; ?>" name="s2-labyrinth-<?php echo $index; ?>" class="span6">
-                                    <?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) { ?>
-                                        <?php foreach($templateData['maps'] as $m) { ?>
-                                            <option value="<?php echo $m->id; ?>" <?php if($m->id == $map->map_id) echo 'selected="selected"'; ?>><?php echo $m->name; ?></option>
-                                        <?php } ?>
-                                    <?php } ?>
-                                </select>
-                                <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
-                            </div>
-                        </div>
-                        <?php $index++; } ?>
+                    <script>
+                        $labyrinthContainers.push($('#labyrinth-container-<?php echo $step->id; ?>'));
+                    </script>
+                </fieldset>
                 <?php } ?>
             <?php } ?>
         </div>
 
         <div>
-            <button class="btn btn-info add-labyrinth-btn" type="button" containerId="2"><i class="icon-plus-sign"></i>Add Labyrinth</button>
+        <button class="btn btn-info add-step-btn" type="button"><i class="icon-plus-sign"></i>Add Step</button>
         </div>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend><?php echo __('Third step of Scenario'); ?></legend>
-        <div id="labyrinth-container-3" containerId="3">
-            <?php if(isset($templateData['webinar']) && count($templateData['webinar']->maps) > 0) { ?>
-                <?php $index = 1; foreach($templateData['webinar']->maps as $map) { ?>
-                    <?php if($map->step == 3) { ?>
-                        <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
-                            <label for="s3-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
-                            <div class="controls">
-                                <select id="s3-labyrinth-<?php echo $index; ?>" name="s3-labyrinth-<?php echo $index; ?>" class="span6">
-                                    <?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) { ?>
-                                        <?php foreach($templateData['maps'] as $m) { ?>
-                                            <option value="<?php echo $m->id; ?>" <?php if($m->id == $map->map_id) echo 'selected="selected"'; ?>><?php echo $m->name; ?></option>
-                                        <?php } ?>
-                                    <?php } ?>
-                                </select>
-                                <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
-                            </div>
-                        </div>
-                        <?php $index++; } ?>
-                <?php } ?>
-            <?php } ?>
-        </div>
-
-        <div>
-            <button class="btn btn-info add-labyrinth-btn" type="button" containerId="3"><i class="icon-plus-sign"></i>Add Labyrinth</button>
-        </div>
-    </fieldset>
 
     <h3>Assign the users</h3>
     <table id="assign-users" class="table table-bordered table-striped">

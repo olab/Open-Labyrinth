@@ -113,9 +113,10 @@ class Controller_WebinarManager extends Controller_Base {
         } else {
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base() . 'webinarManager/statistic'));
 
-            $webinarData = array();
-            $usersMap    = array();
-            $webinar     = DB_ORM::model('webinar', array((int)$webinarId));
+            $webinarData    = array();
+            $usersMap       = array();
+            $webinar        = DB_ORM::model('webinar', array((int)$webinarId));
+            $webinarStepMap = array();
             if($webinar != null && count($webinar->users) && count($webinar->maps) > 0) {
                 foreach($webinar->users as $webinarUser) {
                     if(!isset($usersMap[$webinarUser->user_id])) {
@@ -134,9 +135,16 @@ class Controller_WebinarManager extends Controller_Base {
                         $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['user']   = $webinarUser->user;
                     }
                 }
+
+                if($webinar->steps != null && count($webinar->steps) > 0) {
+                    foreach($webinar->steps as $webinarStep) {
+                        $webinarStepMap[$webinarStep->id] = $webinarStep;
+                    }
+                }
             }
 
-            $this->templateData['webinar']     = $webinar;
+            $this->templateData['webinarStepMap'] = $webinarStepMap;
+            $this->templateData['webinar']        = $webinar;
 
             foreach ($this->templateData['webinar']->users as $user) {
                 $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
@@ -195,7 +203,7 @@ class Controller_WebinarManager extends Controller_Base {
         $webinarId = $this->request->param('id', null);
 
         $this->templateData['webinar'] = DB_ORM::model('webinar', array((int)$webinarId));
-        if($this->templateData['webinar'] != null && count($this->templateData['webinar']->maps) > 0) {
+        if($this->templateData['webinar'] != null && count($this->templateData['webinar']->steps) > 0) {
             foreach($this->templateData['webinar']->maps as $webinarMap) {
                 if($webinarMap->step <= $this->templateData['webinar']->current_step) {
                     $this->templateData['mapsMap'][$webinarMap->step][$webinarMap->map_id] = DB_ORM::model('user_session')->isUserFinishMap($webinarMap->map_id, Auth::instance()->get_user()->id, $webinarId, $this->templateData['webinar']->current_step);

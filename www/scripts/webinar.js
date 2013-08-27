@@ -10,14 +10,14 @@ $(function() {
         }
     }
 
-    $addLabyrinthButtons.click(function() {
+    $addLabyrinthButtons.live('click', function() {
         var containerId   = $(this).attr('containerId'),
             $container    = null,
             maxItemNumber = 0,
             html          = '<div class="control-group labyrinth-item-%itemId%" itemNumber="%itemNumber%">' +
                                 '<label for="s%containerForId%-labyrinth-%labelId%" class="control-label">Labyrinth #%number%</label>' +
                                 '<div class="controls">' +
-                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%-labyrinth-%name%" class="span6">' + mapsOptions + '</select> ' +
+                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6">' + mapsOptions + '</select> ' +
                                     '<button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>' +
                                 '</div>' +
                             '</div>';
@@ -40,7 +40,6 @@ $(function() {
                    .replace('%number%'        , maxItemNumber)
                    .replace('%id%'            , maxItemNumber)
                    .replace('%labelId%'       , maxItemNumber)
-                   .replace('%name%'          , maxItemNumber)
                    .replace('%containerForId%', containerId)
                    .replace('%containerId%'   , containerId)
                    .replace('%containerName%' , containerId);
@@ -68,8 +67,7 @@ $(function() {
         });
     });
 
-    var $labyrinthContainers = [$('#labyrinth-container-1'), $('#labyrinth-container-2'), $('#labyrinth-container-3')],
-        $labyrinthErrorEmpty = $('.map-error-empty');
+    var $labyrinthErrorEmpty = $('.map-error-empty');
 
     $('.submit-webinar-btn').click(function() {
         $labyrinthErrorEmpty.hide();
@@ -79,5 +77,31 @@ $(function() {
                 return false;
             }
         }
+    });
+
+    var $stepsContainer = $('#steps-container');
+    $('.add-step-btn').click(function() {
+        var stepContainerId = parseInt($stepsContainer.children().last().attr('stepId'));
+        if(isNaN(stepContainerId)) {
+            stepContainerId = 0;
+        }
+
+        stepContainerId += 1;
+        var html = '<fieldset class="fieldset step-container-' + stepContainerId + '" stepId="' + stepContainerId + '">' +
+                       '<legend>' +
+                           'Step - <input type="text" name="s' + stepContainerId + '_name" value=""/> <button class="btn btn-danger btn-remove-step"><i class="icon-trash"></i></button>' +
+                       '</legend>' +
+                       '<div id="labyrinth-container-' + stepContainerId + '" containerId="' + stepContainerId + '"></div>' +
+
+                       '<div>' +
+                           '<button class="btn btn-info add-labyrinth-btn" type="button" containerId="' + stepContainerId + '"><i class="icon-plus-sign"></i>Add Labyrinth</button>' +
+                       '</div>' +
+                   '</fieldset>';
+
+        $stepsContainer.append(html);
+    });
+
+    $('.btn-remove-step').live('click', function() {
+        $(this).parent().parent().remove();
     });
 });

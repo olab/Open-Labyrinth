@@ -21,9 +21,9 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for users table in database
+ * Model for webinar steps table in database
  */
-class Model_Leap_Webinar_Map extends DB_ORM_Model {
+class Model_Leap_Webinar_Step extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -41,25 +41,19 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'unsigned' => TRUE,
             )),
 
-            'map_id' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'name' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
                 'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'savable' => TRUE
             )),
-
-            'step' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
-            ))
         );
 
         $this->relations = array(
-            'map' => new DB_ORM_Relation_BelongsTo($this, array(
-                'child_key' => array('map_id'),
-                'parent_key' => array('id'),
-                'parent_model' => 'map'
-            ))
+            'maps' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('step'),
+                'child_model' => 'webinar_map',
+                'parent_key' => array('id')
+            )),
         );
     }
 
@@ -68,7 +62,7 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'webinar_maps';
+        return 'webinar_steps';
     }
 
     public static function primary_key() {
@@ -76,11 +70,11 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
     }
 
     /**
-     * Remove all webinar maps
+     * Remove all steps from webinar
      *
      * @param integer $webinarId - webinar ID
      */
-    public function removeMaps($webinarId) {
+    public function removeSteps($webinarId) {
         DB_SQL::delete('default')
                 ->from($this->table())
                 ->where('webinar_id', '=', $webinarId)
@@ -88,46 +82,40 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
     }
 
     /**
-     * Remove maps for webinar step
+     * Add new step
      *
      * @param integer $webinarId - webinar ID
-     * @param integer $stepId - step ID
+     * @param string $stepName - step name
+     * @return integer - new webinar step ID
      */
-    public function removeMapsForStep($webinarId, $stepId) {
-        DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('webinar_id', '=', $webinarId, 'AND')
-                ->where('step', '=', $stepId)
+    public function addStep($webinarId, $stepName) {
+        return DB_ORM::insert('webinar_step')
+                       ->column('webinar_id', $webinarId)
+                       ->column('name', $stepName)
+                       ->execute();
+    }
+
+    /**
+     * Remove webinar step
+     *
+     * @param integer $stepId - webinar step ID
+     */
+    public function removeStep($stepId) {
+        DB_ORM::delete('webinar_step')
+                ->where('id', '=', $stepId)
                 ->execute();
     }
 
     /**
-     * Remove webinar map
+     * Update webinar step
      *
-     * @param integer $webinarId - webinar ID
-     * @param integer $mapId - map ID
+     * @param integer $stepId - webinar step ID
+     * @param string $name - new step name
      */
-    public function removeMap($webinarId, $mapId) {
-        DB_SQL::delete('default')
-            ->from($this->table())
-            ->where('webinar_id', '=', $webinarId, 'AND')
-            ->where('map_id', '=', $mapId)
-            ->execute();
-    }
-
-    /**
-     * Add map to webinar
-     *
-     * @param integer $webinarId - webinar ID
-     * @param integer $mapId - map ID
-     * @param integer $step - map step
-     * @return integer - webinar map ID
-     */
-    public function addMap($webinarId, $mapId, $step) {
-        return DB_ORM::insert('webinar_map')
-                       ->column('webinar_id', $webinarId)
-                       ->column('map_id', $mapId)
-                       ->column('step', $step)
-                       ->execute();
+    public function updateStep($stepId, $name) {
+        DB_ORM::update('webinar_step')
+                ->set('name', $name)
+                ->where('id', '=', $stepId)
+                ->execute();
     }
 }
