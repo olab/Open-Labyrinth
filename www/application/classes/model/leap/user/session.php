@@ -301,13 +301,25 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             $builder->where('id', 'NOT IN', $checkIds);
 
         $result = $builder->query();
+
+        $builder = DB_SQL::select('default')
+            ->from('webinars')
+            ->where('id', '=', $webinarId)
+            ->column('current_step');
+        $step = $builder->query();
+        foreach($step as $current) {
+            $current_step = $current['current_step'];
+        }
+
         $res = array();
         $ids = array();
         if($result->is_loaded()) {
             foreach ($result as $record) {
+                $record['webinar_step'] = $current_step;
                 $res[] = $record;
                 $ids[] = $record['id'];
             }
+
         }
         return array($res, $ids);
     }

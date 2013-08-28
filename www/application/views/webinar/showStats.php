@@ -36,7 +36,7 @@
             <?php
             $stepsHeaders = array();
             foreach($templateData['webinarData'] as $userId => $steps) {
-                foreach($steps as $stepKey => $step) {
+                foreach($steps as $stepKey => $step){
                     $isShowReport = true;
                     foreach($step as $mapId => $map) {
                         if($map['status'] != 2) {
@@ -47,9 +47,9 @@
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
-                                                                (isset($stepKeyMap[$stepKey]) ? ($templateData['step'] == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $stepKeyMap[$stepKey] . '</span>'
-                                                                                                                                                     : $stepKeyMap[$stepKey]
-                                                                    : '-') .
+                            (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['step'] == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
+                                : $templateData['webinarStepMap'][$stepKey]->name
+                                : '-') .
                                                                 ($isShowReport ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '/' .  $templateData['dateId'].'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
                                                                                    <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '/' . $templateData['dateId'] .  '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                : '') .
@@ -121,7 +121,17 @@
         <?php } ?>
         </tbody>
     </table>
+    <div class="form-actions">
+        <div class="pull-right">
+            <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinar']->forum_id;?>">
+                <i class="icon-comment icon-white"></i>
+                Go Forum
+            </a>
+        </div>
+    </div>
 <?php } ?>
+
+
 
 
 <script>

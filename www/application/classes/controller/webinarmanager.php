@@ -109,6 +109,7 @@ class Controller_WebinarManager extends Controller_Base {
         $webinarId   = $this->request->param('id', null);
         $step   = $this->request->param('id2', null);
         $dateId   = $this->request->param('id3', null);
+        $webinarStepMap = array();
 
         if($webinarId == null || $dateId == null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -137,9 +138,16 @@ class Controller_WebinarManager extends Controller_Base {
                         $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['user']   = $webinarUser->user;
                     }
                 }
+                if($webinar->steps != null && count($webinar->steps) > 0) {
+                    foreach($webinar->steps as $webinarStep) {
+                        $webinarStepMap[$webinarStep->id] = $webinarStep;
+                    }
+                }
+
             }
 
             $this->templateData['webinar']     = $webinar;
+            $this->templateData['webinarStepMap'] = $webinarStepMap;
 
             foreach ($this->templateData['webinar']->users as $user) {
                 $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
@@ -150,6 +158,7 @@ class Controller_WebinarManager extends Controller_Base {
             $this->templateData['webinarData'] = $webinarData;
             $this->templateData['step'] = $step;
             $this->templateData['dateId'] = $dateId;
+
             $date = DB_ORM::model('statistics_user_datesave', array($dateId));
             $date  = date('Y-m-d H:i:s',$date->date_save);
 
@@ -182,6 +191,7 @@ class Controller_WebinarManager extends Controller_Base {
             $webinarData    = array();
             $usersMap       = array();
             $webinar        = DB_ORM::model('webinar', array((int)$webinarId));
+
             $webinarStepMap = array();
             if($webinar != null && count($webinar->users) && count($webinar->maps) > 0) {
                 foreach($webinar->users as $webinarUser) {

@@ -123,6 +123,15 @@
     </table>
 <?php } ?>
 
+<div class="form-actions">
+    <div class="pull-right">
+        <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinar']->forum_id;?>">
+            <i class="icon-comment icon-white"></i>
+            Go Forum
+        </a>
+    </div>
+</div>
+
 
 <script>
     function ajaxCheck(id,isInclude) {
