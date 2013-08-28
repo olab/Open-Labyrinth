@@ -322,9 +322,6 @@ class Controller_WebinarManager extends Controller_Base {
         $webinarId = $this->request->param('id' , null);
         $step      = $this->request->param('id2', null);
 
-        if($step < 1) { $step = 1; }
-        if($step > 3) { $step = 3; }
-
         DB_ORM::model('webinar')->changeWebinarStep($webinarId, $step);
 
         Request::initial()->redirect(URL::base() . 'webinarmanager/index');

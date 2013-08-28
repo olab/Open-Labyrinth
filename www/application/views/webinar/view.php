@@ -108,9 +108,14 @@
                             </div>
                             <div class="modal-body">
                                 <p>
-                                    <div><input class="current-step-<?php echo $webinar->id; ?>" type="radio" name="currentStep<?php echo $webinar->id; ?>" value="1" <?php if($webinar->current_step == 1) echo 'checked'; ?>> Step 1</div>
-                                    <div><input class="current-step-<?php echo $webinar->id; ?>" type="radio" name="currentStep<?php echo $webinar->id; ?>" value="2" <?php if($webinar->current_step == 2) echo 'checked'; ?>> Step 2</div>
-                                    <div><input class="current-step-<?php echo $webinar->id; ?>" type="radio" name="currentStep<?php echo $webinar->id; ?>" value="3" <?php if($webinar->current_step == 3) echo 'checked'; ?>> Step 3</div>
+                                <?php if(count($webinar->steps) > 0) { ?>
+                                    <?php foreach($webinar->steps as $webinarStep) { ?>
+                                        <div>
+                                            <input class="current-step-<?php echo $webinar->id; ?>" type="radio" name="currentStep<?php echo $webinar->id; ?>" value="<?php echo $webinarStep->id; ?>" <?php if($webinar->current_step == $webinarStep->id) echo 'checked'; ?>>
+                                            <?php echo $webinarStep->name; ?>
+                                        </div>
+                                    <?php } ?>
+                                <?php } ?>
                                 </p>
                             </div>
                             <div class="modal-footer">
