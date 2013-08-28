@@ -32,7 +32,8 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_index() {
         unset($this->templateData['right']);
 
-        $this->templateData['webinars'] = DB_ORM::model('webinar')->getAllWebinars();
+        $this->templateData['webinars'] = (Auth::instance()->get_user()->type->name == 'superuser') ? DB_ORM::model('webinar')->getAllWebinars()
+                                                                                                    : DB_ORM::model('webinar')->getAllWebinars(Auth::instance()->get_user()->id);
 
         $this->templateData['center'] = View::factory('webinar/view');
         $this->templateData['center']->set('templateData', $this->templateData);

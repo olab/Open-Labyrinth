@@ -60,6 +60,11 @@
                             <i class="icon-folder-open icon-white"></i>
                             <span class="visible-desktop">Open</span>
                         </a>
+                        &nbsp;
+                        <a class="btn btn-info" href="<?php echo URL::base() . 'webinarManager/progress/' . $webinar->id; ?>">
+                            <i class="icon-calendar icon-white"></i>
+                            <span class="visible-desktop">Show progress</span>
+                        </a>
                     </div>
                 </td>
             </tr>

@@ -116,11 +116,14 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      *
      * @return array|null
      */
-    public function getAllWebinars() {
+    public function getAllWebinars($userId = null) {
         $records = DB_SQL::select('default')
                            ->from($this->table())
-                           ->column('id')
-                           ->query();
+                           ->column('id');
+        if (!is_null($userId)) {
+            $records = $records->where('author_id', '=', $userId);
+        }
+        $records = $records->query();
 
         $result  = null;
         if($records->is_loaded()) {
@@ -366,5 +369,27 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
             DB_ORM::model('user_session')->deleteWebinarSessions($webinarId);
         }
+    }
+
+    public function getAllowedWebinars($userId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('web.id')))
+            ->from('webinars', 'web')
+            ->join('LEFT', 'webinar_users', 'webu')
+            ->on('webu.webinar_id', '=', 'web.id')
+            ->where('author_id', '=', $userId, 'AND')
+            ->order_by('web.id', 'DESC');
+
+        $result = $builder->query();
+
+        $res = array();
+
+        if ($result->is_loaded()) {
+            foreach ($result as $record => $val) {
+                $res[] =  $val['id'];
+            }
+        }
+        return $res;
+
     }
 }

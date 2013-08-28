@@ -126,11 +126,18 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'dforumManager', 'action' => 'deleteForum')
     );
 
+    private $webinarsActions = array(
+        array('controller' => 'webinarManager', 'action' => 'edit'),
+        array('controller' => 'webinarManager', 'action' => 'delete'),
+        array('controller' => 'webinarManager', 'action' => 'statistics')
+    );
+
     public function before() {
         parent::before();
 
         if (Auth::instance()->logged_in()) {
-            if($this->checkUserRoleRules() || $this->checkAllowedMaps() || $this->checkAllowedForums()) {
+
+            if($this->checkUserRoleRules() || $this->checkAllowedMaps() || $this->checkAllowedForums() || $this->checkAllowedWebinars()){
                 Request::initial()->redirect(URL::base());
             }
 
@@ -278,6 +285,23 @@ class Controller_Base extends Controller_Template {
             if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller) {
                 return true;
             } else if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    private function checkAllowedWebinars() {
+
+        $rules = $this->webinarsActions;
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+        $webinarId = (int) $this->request->param('id', 0);
+        $allowedWebinars = DB_ORM::model('webinar')->getAllowedWebinars(Auth::instance()->get_user()->id);
+
+        foreach($rules as $rule) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($webinarId,$allowedWebinars) &&
+                Auth::instance()->get_user()->type->name != 'superuser' ) {
                 return true;
             }
         }
