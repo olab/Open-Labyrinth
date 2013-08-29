@@ -151,8 +151,10 @@ class Controller_WebinarManager extends Controller_Base {
             $this->templateData['webinarStepMap'] = $webinarStepMap;
 
             foreach ($this->templateData['webinar']->users as $user) {
-                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
+                DB_ORM::model('webinar_user')->updateInclude4R($user->id, 1);
+
                 $this->templateData['includeUsersData'][$user->user_id] = $user->id;
+                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
             }
 
             $this->templateData['usersMap']    = $usersMap;
@@ -224,8 +226,10 @@ class Controller_WebinarManager extends Controller_Base {
             $this->templateData['webinar']        = $webinar;
 
             foreach ($this->templateData['webinar']->users as $user) {
-                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
+                DB_ORM::model('webinar_user')->updateInclude4R($user->id, 1);
+
                 $this->templateData['includeUsersData'][$user->user_id] = $user->id;
+                $this->templateData['includeUsers'][$user->user_id] = $user->include_4R;
             }
 
             $this->templateData['usersMap']    = $usersMap;
