@@ -50,9 +50,9 @@ class Model_Leap_Webinar_Step extends DB_ORM_Model {
 
         $this->relations = array(
             'maps' => new DB_ORM_Relation_HasMany($this, array(
-                'child_key' => array('step'),
+                'child_key' => array('step', 'webinar_id'),
                 'child_model' => 'webinar_map',
-                'parent_key' => array('id')
+                'parent_key' => array('id', 'webinar_id')
             )),
         );
     }
