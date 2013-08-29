@@ -33,14 +33,16 @@ class Controller_DForumManager extends Controller_Base {
     }
 
     public function action_index() {
+        $sortBy = $this->request->param('id', NULL);
+        $typeSort = $this->request->param('id2', 1);
 
-        $openForums = DB_ORM::model('dforum')->getAllOpenForums();
-        $privateForums = DB_ORM::model('dforum')->getAllPrivateForums();
+        if (is_null($sortBy)) $sortBy = 4;
 
-        if (count($openForums) <= 0) $openForums = array();
-        if (count($privateForums) <= 0) $privateForums = array();
+        $openForums = DB_ORM::model('dforum')->getAllForums($sortBy,$typeSort);
 
-        $this->templateData['forums'] = array_merge($openForums, $privateForums);
+        $this->templateData['forums'] = $openForums;
+        $this->templateData['typeSort'] = $typeSort;
+        $this->templateData['sortBy'] = $sortBy;
 
         $view = View::factory('dforum/view');
         $view->set('templateData', $this->templateData);

@@ -116,6 +116,100 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
+    public function getAllForums($sortBy = null, $typeSort = null){
+
+        $where = '';
+        $join = '';
+
+        $type = ($typeSort == 0) ? 'ASC' : 'DESC';
+
+        $columName = '';
+
+        switch($sortBy) {
+            case 1 :
+                $columName = 'forum.name';
+                break;
+            case 2 :
+                $columName = 'users_count';
+                break;
+            case 3 :
+                $columName = 'messages_count';
+                break;
+            case 4 :
+                $columName = 'message_date';
+                break;
+        }
+
+        $orderBy = $columName . ' ' . $type;
+
+
+        if (Auth::instance()->get_user()->type->name != 'superuser') {
+
+            $join = ' LEFT JOIN
+                        dforum_users  as dfuu ON dfuu.id_forum = forum.id
+                      LEFT JOIN
+                        dforum_groups as dfg ON dfg.id_forum = forum.id
+                      LEFT JOIN
+                        user_groups   as ug  ON ug.group_id  = dfg.id_group ';
+
+            $where = ' AND (forum.author_id = ' . Auth::instance()->get_user()->id . '
+                         OR dfuu.id_user = ' . Auth::instance()->get_user()->id . ' OR ug.user_id = ' . Auth::instance()->get_user()->id .')';
+        }
+
+        $connection = DB_Connection_Pool::instance()->get_connection('default');
+        $result = $connection->query("
+            SELECT
+              forum. * , u.nickname AS author_name,
+              COUNT( DISTINCT(dmes.id) ) AS messages_count,
+              lastm.id AS message_id,
+              lastm.date AS message_date,
+              lastm.text AS message_text,
+              lu.nickname AS message_nickname,
+              COUNT(DISTINCT(dfu.id)) AS users_count
+            FROM
+              dforum_messages AS dmes, dforum_users AS dfu, dforum AS forum
+            JOIN
+              dforum_messages AS lastm
+            LEFT JOIN
+              users AS u ON forum.author_id = u.id
+            LEFT JOIN
+              users AS lu ON lastm.user_id = lu.id
+            $join
+            WHERE
+              dmes.forum_id = forum.id
+            AND
+              dfu.id_forum = forum.id
+            AND
+              lastm.date = (
+                  SELECT
+                    m.date
+                  FROM
+                    dforum_messages AS m
+                  WHERE
+                    m.forum_id = forum.id
+                  ORDER BY
+                    m.date DESC
+                  LIMIT 1 )
+            $where
+            GROUP BY
+              forum.id
+            ORDER BY
+              $orderBy
+        ");
+
+        $res = array();
+
+        if($result != null && $result->is_loaded()) {
+
+            foreach($result as $record) {
+                $res[] = $record;
+            }
+            return $res;
+        }
+
+        return NULL;
+    }
+
     public function getAllPrivateForums(){
         $result = null;
 
