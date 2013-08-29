@@ -30,8 +30,8 @@ $config['default'] = array(
         'hostname'      => 'localhost', // string
         'port'          => '',          // string
         'database'      => 'openlabyrinth',          // string
-        'username'      => 'openlabyrinth',      // string
-        'password'      => 'openlabyrinth',      // string
+        'username'      => 'ol_user',      // string
+        'password'      => 'ol_user_pass',      // string
     ),
     'caching'       => FALSE,       // boolean
     'charset'       => 'utf8',      // string

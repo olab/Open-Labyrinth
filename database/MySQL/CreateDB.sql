@@ -1,12 +1,12 @@
--- CREATE DATABASE IF NOT EXISTS `openlabyrinth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `openlabyrinth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- Create user (username: ol_user; password: ol_user_pass) 
--- CREATE USER IF NOT EXISTS 'ol_user'@'localhost' IDENTIFIED BY 'ol_user_pass';
+CREATE USER IF NOT EXISTS 'ol_user'@'localhost' IDENTIFIED BY 'ol_user_pass';
 
 -- Link user with database
--- GRANT ALL PRIVILEGES ON `openlabyrinth` . * TO 'ol_user'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `openlabyrinth` . * TO 'ol_user'@'localhost' WITH GRANT OPTION;
 
--- USE `openlabyrinth`;
+USE `openlabyrinth`;
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
