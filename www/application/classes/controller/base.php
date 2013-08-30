@@ -317,9 +317,16 @@ class Controller_Base extends Controller_Template {
         $mapId = (int) $this->request->param('id', 0);
         $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
 
+        if ( Auth::instance()->get_user()->type->name == 'reviewer') {
+            $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
+            $allowedMap = array_merge($allowedMap,$collectionsMaps);
+            $allowedMap = array_unique($allowedMap);
+        }
+
+
         foreach($rules as $rule) {
             if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($mapId,$allowedMap) &&
-                Auth::instance()->get_user()->type->name != 'superuser' ) {
+                Auth::instance()->get_user()->type->name != 'superuser') {
                 return true;
             }
         }

@@ -216,7 +216,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllMap()
     {
-        $builder = DB_SQL::select('default')->from($this->table());
+        $builder = DB_SQL::select('default')->from($this->table())->order_by('name');
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -570,7 +570,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getMaps($mapIDs)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $mapIDs);
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $mapIDs)->order_by('name');
         $result = $builder->query();
 
         if ($result->is_loaded()) {

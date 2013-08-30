@@ -250,6 +250,10 @@ class Controller_WebinarManager extends Controller_Base {
         }
     }
 
+    public function action_statistic() {
+        Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $this->request->param('id', null));
+    }
+
     public function action_statistics() {
         $webinarId   = $this->request->param('id', null);
 
