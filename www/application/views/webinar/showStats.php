@@ -35,16 +35,32 @@
             <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="3">Users</td>
             <?php
             $stepsHeaders = array();
+
+            $mapSteps = array();
+            foreach($templateData['webinarData'] as $userId => $steps) {
+                foreach($steps as $stepKey => $step) {
+                    foreach($step as $mapId => $map) {
+                        $mapSteps[$stepKey][] = $map['status'];
+                    }
+                }
+            }
+
             foreach($templateData['webinarData'] as $userId => $steps) {
                 foreach($steps as $stepKey => $step){
-                    $isShowReport = true;
-                    foreach($step as $mapId => $map) {
-                        if($map['status'] != 2) {
-                            $isShowReport = false;
-                            break;
-                        }
-                    }
+//                    $isShowReport = true;
+//                    foreach($step as $mapId => $map) {
+//                        if($map['status'] != 2) {
+//                            $isShowReport = false;
+//                            break;
+//                        }
+//                    }
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
+
+                        $isShowReport = false;
+                        if (in_array(2, $mapSteps[$stepKey])) {
+                            $isShowReport = true;
+                        }
+
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
                             (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['step'] == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'

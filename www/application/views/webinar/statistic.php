@@ -35,22 +35,45 @@
             <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="3">Users</td>
             <?php
             $stepsHeaders = array();
+
+            // formate publish steps
+            $mapSteps = array();
             foreach($templateData['webinarData'] as $userId => $steps) {
                 foreach($steps as $stepKey => $step) {
-                    $isShowReport = true;
-                    foreach($step as $mapId => $map) {
-                        if($map['status'] != 2) {
-                            $isShowReport = false;
-                            break;
+                        foreach($step as $mapId => $map) {
+                            $mapSteps[$stepKey][] = $map['status'];
                         }
-                    }
+                }
+            }
+
+            foreach($templateData['webinarData'] as $userId => $steps) {
+
+                foreach($steps as $stepKey => $step) {
+//                    //$isShowReport = true;
+//                    foreach($step as $mapId => $map) {
+//                        //echo $map['status'].'<br />';
+////                        if($map['status'] != 2) {
+////                            $isShowReport = false;
+////                            break;
+////                        }
+//                    }
+
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
+
+                        $isShowReport = false;
+                        if (in_array(2, $mapSteps[$stepKey])) {
+                            $isShowReport = true;
+                        }
+
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
                                                                 (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
                                                                                                                                                                          : $templateData['webinarStepMap'][$stepKey]->name
                                                                                                                   : '-') .
-                                                                (($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+                                                                (($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer')
+                                                                    ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() .
+                                                                    'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+
                                                                                    <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                : '') .
                                                            '</td>';
