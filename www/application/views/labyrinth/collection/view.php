@@ -48,8 +48,10 @@
                 </td>
 
             <td>
-                <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
-                <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/viewAll/<?php echo $collection->id; ?>"><i class="icon-list"></i> <?php echo __('View'); ?></a>
+                <div class="btn-group">
+                    <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
+                    <a class="btn btn-success" href="<?php echo URL::base() ?>collectionManager/viewAll/<?php echo $collection->id; ?>"><i class="icon-list"></i> <?php echo __('View'); ?></a>
+                </div>
             </td>
 
         </tr>
