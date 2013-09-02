@@ -145,6 +145,7 @@
                                         </ul>
                                     </li>
                                 <?php } else { ?>
+                                    <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
                                     <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                 <?php } ?>
 

@@ -42,7 +42,8 @@ class Controller_Base extends Controller_Template {
     );
     private $learnerRules = array(
         array('controller' => 'authoredLabyrinth', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'collectionManager', 'action' => 'editCollection'),
+        array('controller' => 'collectionManager', 'action' => 'addCollection'),
         array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'exportImportManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
@@ -73,7 +74,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'dForumManager', 'action' => 'saveNewForum')
     );
     private $authorRules = array(
-        array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
+//        array('controller' => 'collectionManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'userManager', 'action' => 'index'),
@@ -89,6 +90,11 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
         array('controller' => 'userManager', 'action' => 'removeMember')
+    );
+
+    private $reviewerRules = array(
+        array('controller' => 'collectionManager', 'action' => 'editCollection'),
+        array('controller' => 'collectionManager', 'action' => 'addCollection')
     );
 
     private $mapActions = array(
@@ -280,6 +286,9 @@ class Controller_Base extends Controller_Template {
         } else if(Auth::instance()->get_user()->type->name == 'author') {
             $rules = $this->authorRules;
         }
+        else if(Auth::instance()->get_user()->type->name == 'reviewer') {
+            $rules = $this->reviewerRules;
+        }
 
         foreach($rules as $rule) {
             if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller) {
@@ -317,7 +326,7 @@ class Controller_Base extends Controller_Template {
         $mapId = (int) $this->request->param('id', 0);
         $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
 
-        if ( Auth::instance()->get_user()->type->name == 'reviewer') {
+        if ( Auth::instance()->get_user()->type->name == 'author') {
             $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
             $allowedMap = array_merge($allowedMap,$collectionsMaps);
             $allowedMap = array_unique($allowedMap);
