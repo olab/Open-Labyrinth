@@ -145,7 +145,9 @@
                                         </ul>
                                     </li>
                                 <?php } else { ?>
-                                    <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
+                                    <?php if (Auth::instance()->get_user()->type->name != 'reviewer') {?>
+                                        <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
+                                    <?php } ?>
                                     <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                 <?php } ?>
 
