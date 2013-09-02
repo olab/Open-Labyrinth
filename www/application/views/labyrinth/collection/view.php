@@ -29,7 +29,9 @@
         }
     </script>
 <div class="page-header">
+    <?php if(Auth::instance()->logged_in() && (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->type->name == 'author')) { ?>
     <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base(); ?>collectionManager/addCollection"><i class="icon-plus-sign"></i>Add Collection</a></div>
+    <?php } ?>
     <h1><?php echo __('Collections'); ?></h1>
 </div>
 
