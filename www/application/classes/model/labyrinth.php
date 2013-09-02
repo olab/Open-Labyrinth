@@ -741,6 +741,17 @@ class Model_Labyrinth extends Model {
         }
     }
 
+    public function undo($nodeId){
+        $sessionId = Session::instance()->get('session_id', NULL);
+        if ($sessionId != NULL and $nodeId != NULL) {
+            $node = DB_ORM::model('map_node', array((int) $nodeId));
+
+            $dateStamp = DB_ORM::model('user_sessionTrace')->getDateStampBySessionAndNodeId($sessionId,$nodeId);
+
+            DB_ORM::model('user_sessionTrace')->updateSession($sessionId,$nodeId,$node->map_id,$dateStamp);
+        }
+    }
+
     public function getChatResponce($sessionId, $mapId, $chatId, $elementId) {
         $chat = DB_ORM::model('map_chat', array((int) $chatId));
 

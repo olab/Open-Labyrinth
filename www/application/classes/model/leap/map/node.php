@@ -782,6 +782,19 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         return $result;
     }
+
+    public function getNodeName($nodeId) {
+        $this->id = $nodeId;
+        $this->load();
+
+        $name = null;
+
+        if ($this->is_loaded()){
+            $name = $this->title;
+        }
+
+        return $name;
+    }
 }
 
 ?>

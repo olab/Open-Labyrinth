@@ -495,6 +495,9 @@ if ($templateData['skin_path'] != NULL) {
                             <?php if (isset($templateData['links'])) {
                             echo $templateData['links'];
                         }?>
+                        <?php if (isset($templateData['undoLinks'])) {
+                                echo $templateData['undoLinks'];
+                            }?>
                         </td>
                         <td align="right" valign="bottom">
                             <?php if (isset($templateData['counters'])) echo $templateData['counters']; ?>
