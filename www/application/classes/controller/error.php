@@ -59,29 +59,63 @@ class Controller_Error extends Controller_Template {
 
         if($supportConfig == null) return;
 
-        $to = $supportConfig['support']['email'];
+        require_once(DOCROOT.'application/classes/class.phpmailer.php');
+        $mail = new PHPMailer;
+
+        $mail->From = 'support@'.$_SERVER['HTTP_HOST'];
+        $mail->FromName = 'OpenLabyrinth Support';
+
+        $toArray = explode(',', $supportConfig['support']['email']);
+        if (count($toArray) > 0){
+            foreach($toArray as $to){
+                $mail->AddAddress($to);
+            }
+        }
+
         $subject = $supportConfig['support']['mail_settings']['subject'];
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html;' . "\r\n";
-        $headers .= 'From: ' . $supportConfig['support']['main_support_email'];
+        $message = $supportConfig['support']['mail_settings']['message'];
 
         if($subject != null) {
             $subject = str_replace('#error_type#', $this->toString($this->error['type']), $subject);
         }
 
-        $message = View::factory('error/error');
-        $message->set('type', $this->error['type']);
-        $message->set('code', $this->error['code']);
-        $message->set('message', $this->error['message']);
-        $message->set('file', $this->error['file']);
-        $message->set('line', $this->error['line']);
-        $message->set('trace', $this->error['trace']);
-        $message->set('browser_info', $this->toString($this->error['browser'] != null && isset($this->error['browser']['browser']) ? $this->error['browser']['browser'] : null));
-        $message->set('browser_version', $this->toString($this->error['browser'] != null && isset($this->error['browser']['version']) ? $this->error['browser']['version'] : null));
-        $message->set('client_resolution', $this->toString($this->error['resolution'] != null ? ($this->error['resolution']['width'] . 'x' . $this->error['resolution']['height']) : null));
-        $message->set('username', $this->toString($this->error['user'] != null ? $this->error['user']->username : null));
+        if($message != null) {
+            $message = str_replace('#error_type#', $this->toString($this->error['type']), $message);
+            $message = str_replace('#error_code#', $this->toString($this->error['code']), $message);
+            $message = str_replace('#error_message#', $this->toString($this->error['message']), $message);
+            $message = str_replace('#error_file#', $this->toString($this->error['file']), $message);
+            $message = str_replace('#error_line#', $this->toString($this->error['line']), $message);
+            $message = str_replace('#browser_info#', $this->toString($this->error['browser'] != null && isset($this->error['browser']['browser']) ? $this->error['browser']['browser'] : null), $message);
+            $message = str_replace('#browser_version#', $this->toString($this->error['browser'] != null && isset($this->error['browser']['version']) ? $this->error['browser']['version'] : null), $message);
+            $message = str_replace('#client_resolution#', $this->toString($this->error['resolution'] != null ? ($this->error['resolution']['width'] . 'x' . $this->error['resolution']['height']) : null), $message);
+            $message = str_replace('#username#', $this->toString($this->error['user'] != null ? $this->error['user']->username : null), $message);
+            $message = str_replace('#post#', $this->toString($this->error['post']), $message);
+            $message = str_replace('#get#', $this->toString($this->error['get']), $message);
+            $message = str_replace('#url#', $this->toString($this->error['url']), $message);
+        }
 
-        mail($to, $subject, $message, $headers);
+        $errorDetails = View::factory('error/error');
+        $errorDetails->set('type', $this->error['type']);
+        $errorDetails->set('code', $this->error['code']);
+        $errorDetails->set('message', $this->error['message']);
+        $errorDetails->set('file', $this->error['file']);
+        $errorDetails->set('line', $this->error['line']);
+        $errorDetails->set('trace', $this->error['trace']);
+        $errorDetails->set('browser_info', $this->toString($this->error['browser'] != null && isset($this->error['browser']['browser']) ? $this->error['browser']['browser'] : null));
+        $errorDetails->set('browser_version', $this->toString($this->error['browser'] != null && isset($this->error['browser']['version']) ? $this->error['browser']['version'] : null));
+        $errorDetails->set('client_resolution', $this->toString($this->error['resolution'] != null ? ($this->error['resolution']['width'] . 'x' . $this->error['resolution']['height']) : null));
+        $errorDetails->set('username', $this->toString($this->error['user'] != null ? $this->error['user']->username : null));
+
+        $filename = DOCROOT.'tmp/errorDetails_'.uniqid('error').'.html';
+        file_put_contents($filename, $errorDetails);
+
+        $mail->AddAttachment($filename);
+
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+
+        $mail->Send();
+        @unlink($filename);
     }
 
     private function writeToLog() {
@@ -138,8 +172,8 @@ class Controller_Error extends Controller_Template {
 
         $this->error['post'] = isset($e[5]) && strlen($e[5]) > 2 ? $e[5] : null;
         $this->error['get']  = isset($e[6]) && strlen($e[6]) > 2 ? $e[6] : null;
-        $this->error['url']  = isset($e[7]) ? $e[7] : null;
-        $this->error['trace'] = isset($e[8]) ? json_decode($e[8],true) : null;
+        $this->error['url']  = isset($e[8]) ? $e[8] : null;
+        $this->error['trace'] = isset($e[7]) ? json_decode($e[7],true) : null;
 
     }
 
