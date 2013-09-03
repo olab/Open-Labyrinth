@@ -61,27 +61,25 @@ class Controller_Error extends Controller_Template {
 
         $to = $supportConfig['support']['email'];
         $subject = $supportConfig['support']['mail_settings']['subject'];
-        $message = $supportConfig['support']['mail_settings']['message'];
-        $headers = 'From: ' . $supportConfig['support']['main_support_email'];
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html;' . "\r\n";
+        $headers .= 'From: ' . $supportConfig['support']['main_support_email'];
 
         if($subject != null) {
             $subject = str_replace('#error_type#', $this->toString($this->error['type']), $subject);
         }
 
-        if($message != null) {
-            $message = str_replace('#error_type#', $this->toString($this->error['type']), $message);
-            $message = str_replace('#error_code#', $this->toString($this->error['code']), $message);
-            $message = str_replace('#error_message#', $this->toString($this->error['message']), $message);
-            $message = str_replace('#error_file#', $this->toString($this->error['file']), $message);
-            $message = str_replace('#error_line#', $this->toString($this->error['line']), $message);
-            $message = str_replace('#browser_info#', $this->toString($this->error['browser'] != null && isset($this->error['browser']['browser']) ? $this->error['browser']['browser'] : null), $message);
-            $message = str_replace('#browser_version#', $this->toString($this->error['browser'] != null && isset($this->error['browser']['version']) ? $this->error['browser']['version'] : null), $message);
-            $message = str_replace('#client_resolution#', $this->toString($this->error['resolution'] != null ? ($this->error['resolution']['width'] . 'x' . $this->error['resolution']['height']) : null), $message);
-            $message = str_replace('#username#', $this->toString($this->error['user'] != null ? $this->error['user']->username : null), $message);
-            $message = str_replace('#post#', $this->toString($this->error['post']), $message);
-            $message = str_replace('#get#', $this->toString($this->error['get']), $message);
-            $message = str_replace('#url#', $this->toString($this->error['url']), $message);
-        }
+        $message = View::factory('error/error');
+        $message->set('type', $this->error['type']);
+        $message->set('code', $this->error['code']);
+        $message->set('message', $this->error['message']);
+        $message->set('file', $this->error['file']);
+        $message->set('line', $this->error['line']);
+        $message->set('trace', $this->error['trace']);
+        $message->set('browser_info', $this->toString($this->error['browser'] != null && isset($this->error['browser']['browser']) ? $this->error['browser']['browser'] : null));
+        $message->set('browser_version', $this->toString($this->error['browser'] != null && isset($this->error['browser']['version']) ? $this->error['browser']['version'] : null));
+        $message->set('client_resolution', $this->toString($this->error['resolution'] != null ? ($this->error['resolution']['width'] . 'x' . $this->error['resolution']['height']) : null));
+        $message->set('username', $this->toString($this->error['user'] != null ? $this->error['user']->username : null));
 
         mail($to, $subject, $message, $headers);
     }
@@ -114,7 +112,7 @@ class Controller_Error extends Controller_Template {
                                                   : null;
         $this->error['message']    = isset($e[2]) ? $e[2] : null;
         $this->error['file']       = isset($e[3]) ? $e[3] : null;
-        $this->error['line']       = isset($e[4]) ? $e[4] : null;
+        $this->error['line']       = isset($e[4]) ? (int)$e[4] : null;
         $this->error['browser']    = null;
         $browser = Arr::get($_COOKIE, 'browser', null);
         if($browser != null) {

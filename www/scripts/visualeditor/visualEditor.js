@@ -348,7 +348,7 @@ var VisualEditor = function() {
             self.sections[i].deleteNode(nodeId);
         }
     }
-    
+
     // Serialize nodes info
     self.Serialize = function() {
         return SerializeElements(self.nodes, self.links);
