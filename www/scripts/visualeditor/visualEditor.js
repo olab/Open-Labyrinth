@@ -337,6 +337,16 @@ var VisualEditor = function() {
                 break;
             }
         }
+
+        self.DeleteNodeFromSections(nodeId);
+    }
+
+    self.DeleteNodeFromSections = function(nodeId) {
+        if(self.sections.length <= 0) return;
+
+        for(var i = self.sections.length; i--;) {
+            self.sections[i].deleteNode(nodeId);
+        }
     }
     
     // Serialize nodes info
@@ -428,9 +438,8 @@ var VisualEditor = function() {
                 }
                 if(sectionNodes.length > 0) {
                     sectionNodes = sectionNodes.substring(0, sectionNodes.length - 2);
+                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + self.sections[i].name + '", "nodes": [' + sectionNodes + ']}, ';
                 }
-
-                sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + self.sections[i].name + '", "nodes": [' + sectionNodes + ']}, ';
             }
 
             if(sectionStr.length > 2) {

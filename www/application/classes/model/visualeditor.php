@@ -595,9 +595,9 @@ class Model_VisualEditor extends Model {
                     DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => $section['name']));
                 }
 
-                $sectionIdMap[$sectionId] = $sectionId;
-
                 if(isset($section['nodes']) && count($section['nodes']) > 0) {
+                    $sectionIdMap[$sectionId] = $sectionId;
+
                     DB_ORM::model('map_node_section_node')->deleteNodesBySection($sectionId);
                     foreach($section['nodes'] as $sNode) {
                         $order = $sNode['order'];
@@ -609,6 +609,8 @@ class Model_VisualEditor extends Model {
 
                         DB_ORM::model('map_node_section_node')->createNode($nodeId, $sectionId, $order);
                     }
+                } else if($sectionId > 0) {
+                    DB_ORM::model('map_node_section')->deleteSection($sectionId);
                 }
             }
 
@@ -617,6 +619,12 @@ class Model_VisualEditor extends Model {
                     if(!isset($sectionIdMap[$s->id])) {
                         DB_ORM::model('map_node_section')->deleteSection($s->id);
                     }
+                }
+            }
+        } else {
+            if($currentSections != null && count($currentSections) > 0) {
+                foreach($currentSections as $s) {
+                    DB_ORM::model('map_node_section')->deleteSection($s->id);
                 }
             }
         }

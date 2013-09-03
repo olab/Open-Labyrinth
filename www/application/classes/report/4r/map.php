@@ -118,7 +118,7 @@ class Report_4R_Map extends Report_4R_Element {
                                                           $xAxisTickValue,
                                                           $dataSeriesValues,
                                                           $sectionModel->name,
-                                                          'Number of visits');
+                                                          'Frequency');
 
                 $localOffset += $endPosition + 1;
             }
