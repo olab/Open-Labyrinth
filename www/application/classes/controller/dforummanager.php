@@ -26,7 +26,7 @@ class Controller_DForumManager extends Controller_Base {
     public function before() {
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Discussion Forums'))->set_url(URL::base() . 'dforumManager'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Forums'))->set_url(URL::base() . 'dforumManager'));
 
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);

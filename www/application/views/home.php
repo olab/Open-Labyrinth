@@ -151,7 +151,7 @@
                                     <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                 <?php } ?>
 
-                                <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Discussion Forums'); ?></a></li>
+                                <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>
                             </ul>
                         </div>

@@ -22,7 +22,7 @@
 
 <div class="page-header">
     <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'dforumManager/addForum'; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add new forum'); ?></a></div>
-    <h1><?php echo __('Discussion Forums'); ?></h1></div>
+    <h1><?php echo __('Forums'); ?></h1></div>
 
 
 <table class="table table-striped table-bordered">

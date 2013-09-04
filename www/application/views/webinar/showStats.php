@@ -23,16 +23,12 @@
     <h1><?php echo __('Progress for') . ' ' . $templateData['webinar']->title; ?></h1>
 </div>
 
-<?php $stepKeyMap = array(
-    1 => 'First step',
-    2 => 'Second step',
-    3 => 'Third step'
-); ?>
 <?php if(isset($templateData['webinar']) && isset($templateData['webinarData']) && isset($templateData['usersMap'])) { ?>
     <table class="table table-striped table-bordered" id="my-labyrinths">
         <tbody>
         <tr>
-            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="3">Users</td>
+            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="2">Users</td>
+            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2">Include in report</td>
             <?php
             $stepsHeaders = array();
 
@@ -47,13 +43,6 @@
 
             foreach($templateData['webinarData'] as $userId => $steps) {
                 foreach($steps as $stepKey => $step){
-//                    $isShowReport = true;
-//                    foreach($step as $mapId => $map) {
-//                        if($map['status'] != 2) {
-//                            $isShowReport = false;
-//                            break;
-//                        }
-//                    }
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
 
                         $isShowReport = false;
@@ -110,10 +99,10 @@
         </tr>
         <?php foreach($templateData['webinarData'] as $userId => $steps) { ?>
         <tr>
-            <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
             <?php $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
-            <td style="width: 50px;text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-            <td style="width: 120px;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" >&nbsp;&nbsp;&nbsp;Include in report</td>
+            <td style="width: 50px; text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+            <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
+            <td style="width: 120px; text-align: center;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" /></td>
             <?php
             foreach($steps as $stepKey => $step) {
                 foreach($step as $mapId => $map) {

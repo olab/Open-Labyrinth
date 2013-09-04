@@ -340,10 +340,15 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_changeStep() {
         $webinarId = $this->request->param('id' , null);
         $step      = $this->request->param('id2', null);
+        $redirect  = $this->request->param('id3', null);
 
         DB_ORM::model('webinar')->changeWebinarStep($webinarId, $step);
 
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        if ($redirect == null){
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        } else {
+            Request::initial()->redirect(URL::base() . 'webinarmanager/progress/'.$webinarId);
+        }
     }
 
     public function action_stepReport() {
