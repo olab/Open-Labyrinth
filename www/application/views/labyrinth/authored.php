@@ -53,12 +53,14 @@
 
     <table class="table table-striped table-bordered dataTable" id="my-labyrinths">
         <colgroup>
+            <col style="width: 5%"/>
             <col style="width: 50%"/>
             <col style="width: 20%"/>
-            <col style="width: 30%"/>
+            <col style="width: 25%"/>
         </colgroup>
         <thead>
         <tr>
+            <th><?php echo __('ID'); ?></th>
             <th><?php echo __('Labyrinth Title'); ?></th>
             <th><?php echo __('Contributors'); ?></th>
             <th><?php echo __('Actions'); ?></th>
@@ -70,8 +72,10 @@
             ?>
             <tr>
                 <td>
+                    <?php echo $map->id; ?>
+                </td>
+                <td>
                     <a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a>
-
                 </td>
                 <td>
                     <?php

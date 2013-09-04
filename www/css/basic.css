@@ -1392,3 +1392,10 @@ input[readonly].code, textarea[readonly].code{
     width:170px;
 }
 
+table.dataTable tr.odd td[class*='sorting'] {
+    background-color: #E0E0E0 !important;
+}
+
+table.dataTable tr.even td[class*='sorting'] {
+    background-color: #F0F0F0 !important;
+}

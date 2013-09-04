@@ -57,19 +57,19 @@ if (isset($templateData['map'])) {
                     $isImage = false;
 
                     if ($file->mime == 'image/gif') {
-                        $preview = '<img src="' . URL::base() . $file->path . '?' . time() . '" />';
+                        $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
                         $isImage = true;
                     } else if ($file->mime == 'image/jpg') {
-                        $preview = '<img src="' . URL::base() . $file->path . '?' . time() . '" />';
+                        $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
                         $isImage = true;
                     } else if ($file->mime == 'image/png') {
-                        $preview = '<img src="' . URL::base() . $file->path . '?' . time() . '" />';
+                        $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
                         $isImage = true;
                     } else if ($file->mime == 'image/jpeg') {
-                        $preview = '<img src="' . URL::base() . $file->path . '?' . time() . '" />';
+                        $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
                         $isImage = true;
                     } else if ($file->mime == 'application/vnd.ms-powerpoint') {
