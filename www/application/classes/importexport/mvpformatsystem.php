@@ -279,17 +279,27 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
+        $searchArray[] = 'renderLabyrinth/index/'.$this->labyrinthArray['map']['id'];
+        $replaceArray[] = 'renderLabyrinth/index/'.$this->labyrinthArray['map']['database_id'];
+
         if (isset($this->labyrinthArray['map_node'])){
             if (count($this->labyrinthArray['map_node']) > 0){
                 $searchNodeIDArray = array();
                 $replaceNodeIDArray = array();
+
+                $searchNodeLinksArray = array();
+                $replaceNodeLinksArray = array();
                 foreach($this->labyrinthArray['map_node'] as $key => $node){
                     $searchNodeIDArray[] = '['.$key.']';
                     $replaceNodeIDArray[] = '['.$node['database_id'].']';
+
+                    $searchNodeLinksArray[] = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['id'].'/'.$key;
+                    $replaceNodeLinksArray[] = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['database_id'].'/'.$node['database_id'];
                 }
                 foreach($this->labyrinthArray['map_node'] as $key => $node){
                     $md5Text = md5($node['text']);
                     $node['text'] = str_replace($searchArray, $replaceArray, $node['text']);
+                    $node['text'] = str_replace($searchNodeLinksArray, $replaceNodeLinksArray, $node['text']);
                     $node['text'] = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
                     $newMd5Text = md5($node['text']);
 
@@ -355,12 +365,16 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
+        if (!file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'])) {
+            mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'], 0777, true);
+        }
+
         if (isset($mediaElements['media_elements_files'])){
             if (count($mediaElements['media_elements_files']) > 0){
                 foreach($mediaElements['media_elements_files'] as $file){
                     $filePath = $tmpFolder . 'media/' . $file;
                     if (file_exists($filePath)){
-                        copy($filePath, DOCROOT . 'files/' . $file);
+                        copy($filePath, DOCROOT . 'files/' . $this->labyrinthArray['map']['database_id'] . '/' . $file);
                     }
                 }
             }
@@ -389,6 +403,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
                 $returnData[$d['id']]['database_id'] = $this->insertInDB($modelName, $d);
             }
         } else {
+            $returnData['id'] = $data['id'];
             $returnData['database_id'] = $this->insertInDB($modelName, $data);
         }
         return $returnData;
@@ -435,6 +450,10 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
                     }
                     break;
             }
+        }
+
+        if ($modelName == 'map_element'){
+            $data['path'] = 'files/' . $this->labyrinthArray['map']['database_id'] . '/' . $data['name'];
         }
 
         if ($modelName == 'map_node_link'){
