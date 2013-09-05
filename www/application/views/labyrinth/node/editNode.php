@@ -214,7 +214,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             </div>
 
             <div class="control-group">
-                <label class="control-label"><?php echo __('Undo Links'); ?></label>
+                <label class="control-label"><?php echo __('Prevent Revisit'); ?></label>
 
                 <div class="controls">
                     <label class="radio">

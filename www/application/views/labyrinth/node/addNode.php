@@ -123,7 +123,7 @@ if (isset($templateData['map'])) {
 
             </div>
             <div class="control-group">
-                <label class="control-label"><?php echo __('Enable undo links'); ?></label>
+                <label class="control-label"><?php echo __('Prevent Revisit'); ?></label>
 
                 <div class="controls">
                     <label class="radio">

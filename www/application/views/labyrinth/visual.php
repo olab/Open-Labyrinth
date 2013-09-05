@@ -195,7 +195,7 @@ if (isset($templateData['map'])) { ?>
                                 </div>
                                 <div class="span6">
                                     <div class="control-group">
-                                        <label class="control-label"><strong>Undo Links</strong></label>
+                                        <label class="control-label"><strong>Prevent Revisit</strong></label>
 
                                         <div class="controls" id="nodeUndoLinks">
                                             <label class="radio">Enabled<input name="undo" type="radio" value="1"></label>
