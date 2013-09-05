@@ -557,7 +557,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
     private function makeTempFolder($mapName = null) {
         $this->folderPath = DOCROOT . 'tmp/';
         if ($mapName != null){
-            $this->folderName = preg_replace("/[^A-Za-z0-9?!]/","",$mapName) . '_mvp_' . rand();
+            $this->folderName = preg_replace("/[^A-Za-z0-9]/","",$mapName) . '_mvp_' . rand();
         } else {
             $this->folderName = 'mvp_' . rand();
         }
