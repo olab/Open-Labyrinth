@@ -39,7 +39,7 @@ if (isset($templateData['map'])) { ?>
             <a class="btn btn-danger" href="<?php echo URL::base(); ?>mapUserManager/removeAllAuthors/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Remove All</a>
         </div>
 
-        <table class="table table-bordered table-striped dataTable">
+        <table class="table table-bordered table-striped">
             <colgroup>
                 <col style="width: 5%" />
                 <col style="width: 80%" />
@@ -49,7 +49,7 @@ if (isset($templateData['map'])) { ?>
                 <th style="text-align: center">Actions</th>
                 <th>
                     <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder'] == 0 ? 1 : 0; ?>/<?php echo $templateData['learnerOrder']; ?>">
-                        User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['authorOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        Users <div class="pull-right"><i class="icon-chevron-<?php if($templateData['authorOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
                     </a>
                 </th>
             </tr>
@@ -81,7 +81,7 @@ if (isset($templateData['map'])) { ?>
             <a class="btn btn-danger" href="<?php echo URL::base(); ?>mapUserManager/removeAllLearners/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder']; ?>">Remove All</a>
         </div>
 
-    <table class="table table-bordered table-striped dataTable">
+    <table class="table table-bordered table-striped">
         <colgroup>
             <col style="width: 5%" />
             <col style="width: 80%" />
@@ -91,7 +91,7 @@ if (isset($templateData['map'])) { ?>
             <th style="text-align: center">Actions</th>
             <th>
                 <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder'] == 0 ? 1 : 0; ?>">
-                    User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['learnerOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                    Users <div class="pull-right"><i class="icon-chevron-<?php if($templateData['learnerOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
                 </a>
             </th>
         </tr>
