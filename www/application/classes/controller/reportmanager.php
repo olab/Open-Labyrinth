@@ -68,7 +68,6 @@ class Controller_ReportManager extends Controller_Base
 
                 if($webinar->steps != null && count($webinar->steps) > 0) {
                     foreach($webinar->steps as $webinarStep) {
-                        echo $webinarStep->id . ' != ' . $this->templateData['session']->webinar_step . '<br/>';
                         if($webinarStep->id != $this->templateData['session']->webinar_step) continue;
 
                         if(count($webinarStep->maps) > 0) {
