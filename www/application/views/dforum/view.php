@@ -21,7 +21,11 @@
 ?>
 
 <div class="page-header">
-    <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'dforumManager/addForum'; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add new forum'); ?></a></div>
+    <div class="pull-right">
+        <?php if(Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') { ?>
+        <a class="btn btn-primary" href="<?php echo URL::base().'dforumManager/addForum'; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add new forum'); ?></a>
+        <?php } ?>
+    </div>
     <h1><?php echo __('Forums'); ?></h1></div>
 
 
