@@ -26,7 +26,9 @@ class Controller_DTopicManager extends Controller_DForumManager {
     public function before() {
         parent::before();
 
-        if (!in_array(strtolower($this->request->action()),array('addtopic','edittopic','savenewtopic'))) {
+        $actionTopic = array('addtopic','edittopic','savenewtopic','updatetopic','deletetopic');
+
+        if (!in_array(strtolower($this->request->action()), $actionTopic)) {
             $forumInfo = DB_ORM::model('dtopic')->getForumByTopicId($this->request->param('id', NULL));
             $name = $forumInfo['name'];
             $id = $forumInfo['id'];
