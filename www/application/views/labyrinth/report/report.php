@@ -30,7 +30,29 @@ function getRandomColor(){
 ?>
 <?php if (isset($templateData['session'])) { ?>
 
-                <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+    <?php if (isset($templateData['nextCase']) || isset($templateData['webinarForum']) || isset($templateData['webinarID'])) { ?>
+    <h3>Scenario actions</h3>
+    <div>
+    <?php if(isset($templateData['nextCase'])) { ?>
+        <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['nextCase']['webinarId']; ?>/<?php echo $templateData['nextCase']['webinarStep']; ?>/<?php echo $templateData['nextCase']['webinarMap']; ?>" class="btn btn-success"><i class="icon-play"></i><?php echo __("Play the next labyrinth"); ?></a>
+    <?php }
+    if(isset($templateData['webinarForum'])) { ?>
+        <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinarForum'];?>">
+            <i class="icon-comment icon-white"></i>
+            <?php echo __('Go to the Forum Topic'); ?>
+        </a>
+    <?php }
+    if(isset($templateData['webinarForum'])) { ?>
+        <a class="btn" href="<?php echo URL::base(); ?>webinarManager/render/<?php echo $templateData['webinarID'];?>">
+            <i class="icon-folder-open icon-white"></i>
+            <?php echo __('Go to the Scenario steps'); ?>
+        </a>
+    <?php } ?>
+    </div>
+    <hr/>
+    <?php } ?>
+
+    <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
 
     <table class="table  table-striped table-bordered">
         <tr>
@@ -289,16 +311,5 @@ function getRandomColor(){
                            </graph>"  name="Line" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
 
-    <?php if(isset($templateData['nextCase'])) { ?>
-        <div>
-            <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['nextCase']['webinarId']; ?>/<?php echo $templateData['nextCase']['webinarStep']; ?>/<?php echo $templateData['nextCase']['webinarMap']; ?>" class="btn btn-success btn-small"><i class="icon-play"></i><?php echo __("Play next case"); ?></a>
-        </div>
-    <?php } else if(isset($templateData['webinarForum'])) { ?>
-        <div>
-            <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinarForum'];?>">
-                <i class="icon-comment icon-white"></i>
-                <?php echo __('Go to Discussion Forum Topic'); ?>
-            </a>
-        </div>
-    <?php } ?>
+
 <?php } ?>

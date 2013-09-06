@@ -84,7 +84,7 @@ class Controller_ReportManager extends Controller_Base
                         }
                     }
                 }
-
+                $this->templateData['webinarID'] = $webinar->id;
                 $this->templateData['webinarForum'] = $webinar->forum_id;
             }
 

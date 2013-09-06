@@ -50,7 +50,7 @@
             <div class="pull-right">
                 <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinar']->forum_id;?>">
                     <i class="icon-comment icon-white"></i>
-                    <?php echo __('Go to Discussion Forum Topic'); ?>
+                    <?php echo __('Go to the Forum Topic'); ?>
                 </a>
             </div>
         </div>

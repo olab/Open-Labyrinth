@@ -128,7 +128,7 @@ if (isset($templateData['map'])) { ?>
                             </div>
                             <div class="control-group block">
                                 <label for="show_info"
-                                       class="control-label"><strong><?php echo __('Show in the bottom'); ?></strong></label>
+                                       class="control-label"><strong><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></strong></label>
 
                                 <div class="controls block">
                                     <input id="show_info" name="show_info" type="checkbox"/>

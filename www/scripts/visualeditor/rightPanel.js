@@ -33,7 +33,7 @@ var RightPanel = function() {
     self.$unsavedDataBtnClose = null;
     self.$unsavedDataForm = null;
     self.$showInfo = null;
-    
+
     self.$unsavedDataChange = null;
     self.$unsavedDataBtnChangeClose = null;
 
@@ -246,7 +246,7 @@ var RightPanel = function() {
             self.node.undo = GetBooleanValueFromField(self.$nodeUndoLinks);
             self.node.isEnd = GetBooleanValueFromField(self.$endNode);
             self.node.showInfo = self.$showInfo.attr('checked') ? true : false;
-            
+
             var counters = GetCountersData();
             if(counters != null && counters.length > 0) {
                 for(var i = 0; i < counters.length; i++) {

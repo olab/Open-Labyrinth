@@ -100,7 +100,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label for="mnodekeyword"
-                       class="control-label"><?php echo __('Show in the bottom'); ?></label>
+                       class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
 
                 <div class="controls">
                     <input id="show_info" name="show_info" type="checkbox" <?php if($templateData['node']->show_info == 1) echo 'checked="checked"'; ?>/>

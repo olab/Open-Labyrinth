@@ -415,7 +415,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->undo = FALSE;
             $this->end = FALSE;
             $this->show_info = FALSE;
-            
+
             $this->save();
         }
     }
@@ -434,7 +434,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->undo = Arr::get($values, 'mnodeUndo', $this->undo);
             $this->end = Arr::get($values, 'ender', $this->end);
             $this->show_info = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
-            
+
             $this->save();
             
             return $this;

@@ -78,7 +78,7 @@ var Node = function() {
     self.isActive = false;
     self.sections = new Array();
     self.showInfo = false;
-    
+
     // Daraw current node
     // context - canvas context
     // viewport - Transform viewport transfomration
