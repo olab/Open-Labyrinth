@@ -262,4 +262,13 @@ class Report_Impl_PHPExcel extends Report_Impl {
 
         return null;
     }
+
+    public function setURL($text, $url) {
+        $this->setValue($text);
+
+        $urlStyle = array('font'  => array('color' => array('rgb' => '0088cc')));
+
+        $this->phpExcel->getActiveSheet()->getStyle($this->cursor)->applyFromArray($urlStyle);
+        $this->phpExcel->getActiveSheet()->getCell($this->cursor)->getHyperlink()->setUrl($url);
+    }
 }

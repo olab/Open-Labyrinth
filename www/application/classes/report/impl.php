@@ -152,4 +152,12 @@ abstract class Report_Impl {
      */
     public abstract function getStyle($styleName);
 
+    /**
+     * Set URL for cell
+     *
+     * @param string $text - text for URL
+     * @param string $url - URL address
+     */
+    public abstract function setURL($text, $url);
+
 }

@@ -68,7 +68,7 @@ class Report_4R_Question extends Report_4R_Element {
                 foreach($responsesData as $nodeId => $data) {
                     $this->implementation->setCursor('A' . ($offset + $localOffset));
                     $this->implementation->setFontSize('A' . ($offset + $localOffset), 14);
-                    $this->implementation->setValue($this->question->stem . '(ID - ' . $this->question->id . ')' . ' - ' . $nodeId);
+                    $this->implementation->setURL($this->question->stem . '(ID - ' . $this->question->id . ')' . ' - ' . $nodeId, URL::base(true) . 'renderLabyrinth/go/' . $this->question->map_id . '/' . $nodeId);
                     $localOffset += 1;
 
                     $this->implementation->setCursor('A' . ($offset + $localOffset));
