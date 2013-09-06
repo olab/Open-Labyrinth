@@ -35,7 +35,7 @@
                             <div style="margin-top:3px;" class="controls">
                                 <span><?php echo $webinarMap->map->name; ?></span>
                                 <?php if($templateData['webinar']->current_step == $webinarStep->id && isset($templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id]) && ($templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 0 || $templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 1)) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/1/<?php echo $webinarMap->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
+                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/<?php echo $templateData['webinar']->current_step; ?>/<?php echo $webinarMap->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
                                 <?php } ?>
                             </div>
                         </div>
