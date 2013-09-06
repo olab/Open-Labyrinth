@@ -54,6 +54,7 @@ class Controller_DForumManager extends Controller_Base {
     public function action_viewForum() {
 
         $this->templateData['forum'] = DB_ORM::model('dforum')->getForumById($this->request->param('id', 0));
+        $this->templateData['topics'] = DB_ORM::model('dtopic')->getAllTopicsByForumId($this->request->param('id', 0));
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View').' '. $this->templateData['forum']['name'])->set_url(URL::base() . 'dforumManager/ViewForum/' . $this->request->param('id', 0)));
 
@@ -70,6 +71,7 @@ class Controller_DForumManager extends Controller_Base {
         $this->templateData['existUsers'][0] = DB_ORM::model('user')->getUserByIdAndAuth(Auth::instance()->get_user()->id);
         $this->templateData['users'] = DB_ORM::model('user')->getAllUsersAndAuth('ASC');
         $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups('ASC');
+        $this->templateData['status'] = DB_ORM::model('dforum_status')->getAllStatus();
 
         $view = View::factory('dforum/addEditForum');
         $view->set('templateData', $this->templateData);
@@ -86,6 +88,9 @@ class Controller_DForumManager extends Controller_Base {
         list($this->templateData['name'], $this->templateData['security']) = DB_ORM::model('dforum')->getForumNameAndSecurityType($this->templateData['forum_id']);
 
         $this->templateData['forum'] = DB_ORM::model('dforum', array((int)$this->templateData['forum_id']));
+        $this->templateData['topics'] = DB_ORM::model('dtopic')->getAllTopicsByForumId($this->templateData['forum_id']);
+
+        $this->templateData['status'] = DB_ORM::model('dforum_status')->getAllStatus();
 
         $this->templateData['existUsers'] = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($this->templateData['forum_id']);
         $existUsersId = DB_ORM::model('dforum_users')->getAllUsersInForum($this->templateData['forum_id'], 'id');
@@ -105,6 +110,7 @@ class Controller_DForumManager extends Controller_Base {
     public function action_updateForum(){
         $forumName = Arr::get($this->request->post(), 'forumname', NULL);
         $securityType = Arr::get($this->request->post(), 'security', NULL);
+        $status = Arr::get($this->request->post(), 'status', NULL);
         $forumId = Arr::get($this->request->post(), 'forum_id', NULL);
 
         list($oldName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
@@ -112,7 +118,7 @@ class Controller_DForumManager extends Controller_Base {
         $users = Arr::get($this->request->post(), 'users', NULL);
         $groups = Arr::get($this->request->post(), 'groups', NULL);
 
-        DB_ORM::model('dforum')->updateForum($forumName, $securityType, $forumId);
+        DB_ORM::model('dforum')->updateForum($forumName, $securityType,$status, $forumId);
         DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
 
@@ -158,12 +164,13 @@ class Controller_DForumManager extends Controller_Base {
     public function action_saveNewForum(){
         $forumName = Arr::get($this->request->post(), 'forumname', NULL);
         $firstMessage = Arr::get($this->request->post(), 'firstmessage', NULL);
+        $status = Arr::get($this->request->post(), 'status', NULL);
         $security = Arr::get($this->request->post(), 'security', NULL);
 
         $users = Arr::get($this->request->post(), 'users', NULL);
         $groups = Arr::get($this->request->post(), 'groups', NULL);
 
-        $forumId = DB_ORM::model('dforum')->createForum($forumName,$security);
+        $forumId = DB_ORM::model('dforum')->createForum($forumName,$security, $status);
         $messageID = DB_ORM::model('dforum_messages')->createMessage($forumId, $firstMessage);
 
         DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
@@ -337,15 +344,115 @@ class Controller_DForumManager extends Controller_Base {
         return $result;
     }
 
-    public static function action_mail($action, $forumId, $message = '', $forumName = '', $emails = '', $messageId = null) {
+    private static function prepareUsersMailforTopic($topicId, $usersEmail = '', $type = '') {
+
+        if ($usersEmail != '' && $type == 'deleteUser') {
+            // get groups users emails
+            $groups = DB_ORM::model('dtopic_groups')->getAllGroupsInTopic($topicId);
+
+            $groupUsers = array();
+
+            if ($groups) {
+                $groupData = array();
+                $groupIds = array();
+                foreach ($groups as $group) {
+                    $groupIds[] = $group['id_group'];
+                }
+                $groupData[] = DB_ORM::model('user_group')->getAllUsersByGroupIN($groupIds);
+
+                foreach ($groupData as $key => $groupUser) {
+                    foreach($groupUser as $user) {
+                        $groupUsers[] = $user;
+                    }
+                }
+            }
+
+            $result = array();
+            foreach ($usersEmail as $userEmail) {
+                if (!in_array($userEmail , $groupUsers)) {
+                    $result[] = $userEmail;
+                }
+            }
+        }
+        else if ($usersEmail != '' && $type == 'groupAdd') {
+            $result = array();
+            $result = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
+            $result = array_unique($result);
+        } else if ($usersEmail != '' && $type == 'groupDelete') {
+            $result = array();
+            $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
+            $groupEmail = array_unique($groupEmail);
+
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+
+            $allUsers = array();
+
+            // get users emails
+            foreach ($users as $user) {
+                $allUsers[] = $user['email'];
+            }
+
+            foreach ($groupEmail as $gEmail) {
+                if (!in_array($gEmail , $allUsers)) {
+                    $result[] = $gEmail;
+                }
+            }
+        } else {
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+
+            $allUsers = array();
+
+            // get users emails
+            foreach ($users as $user) {
+                $allUsers[] = $user['email'];
+            }
+
+            // get groups users emails
+            $groups = DB_ORM::model('dtopic_groups')->getAllGroupsInTopic($topicId);
+
+            $groupUsers = array();
+
+            if ($groups) {
+                $groupData = array();
+                $groupIds = array();
+                foreach ($groups as $group) {
+                    $groupIds[] = $group['id_group'];
+                }
+                $groupData[] = DB_ORM::model('user_group')->getAllUsersByGroupIN($groupIds);
+
+                foreach ($groupData as $key => $groupUser) {
+                    foreach($groupUser as $user) {
+                        $groupUsers[] = $user;
+                    }
+                }
+            }
+
+            $result = array_merge($allUsers,$groupUsers);
+
+            $result = array_unique($result);
+
+            $key = null;
+            $key = array_search(Auth::instance()->get_user()->email, $result);
+
+            if (isset($key)) {
+                unset($result[$key]);
+            }
+        }
+
+        return $result;
+    }
+
+
+    public static function action_mail($action, $forumId, $message = '', $forumName = '', $emails = '', $messageId = null, $isTopic = null ) {
         $emailConfig = Kohana::$config->load('dforum_email');
-        $URL = URL::base('http', true) . 'dforumManager/viewForum/' . $forumId;
+        $openUrl = (is_null($isTopic)) ? 'dforumManager/viewForum/' : 'dtopicManager/viewTopic/';
+        $URL = URL::base('http', true) . $openUrl . $forumId;
 
         switch($action) :
 
             case 'addMsg' :
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['add_msg']['author'] . ' "' . $forumName . '"';
@@ -378,7 +485,7 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'deleteMsg' :
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['delete_msg']['author'] . ' "' . $forumName . '"';
@@ -414,7 +521,7 @@ class Controller_DForumManager extends Controller_Base {
                 list($oldMessage, $newMessage) = explode('-', $message);
                 $message = 'Old message:' . "\r\n" . $oldMessage . "\r\n\r\n" . 'New message:' .  "\r\n" . $newMessage;
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['update_msg']['author'] . ' "' . $forumName . '"';
@@ -447,7 +554,7 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'createForum' :
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['create_forum']['author'] . ' "' . $forumName . '"';
@@ -478,12 +585,67 @@ class Controller_DForumManager extends Controller_Base {
 
                 break;
 
+
+            case 'userAddTopic' :
+
+                $result = self::prepareUsersMailforTopic($forumId);
+
+                //send mail to author of Forum
+                $subject = $emailConfig['create_forum']['activate_admin'];
+                $nickname = Auth::instance()->get_user()->nickname;
+                $forumInfo =  DB_ORM::model('dtopic')->getForumByTopicId($forumId);
+
+                $emailTo = $forumInfo['forumAuthor_email'];
+
+                $URL = URL::base('http', true) . 'dforumManager/editForum/' . $forumInfo['id'];
+
+                $mail_body  = $nickname . ' ' . $emailConfig['create_forum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                mail($emailTo, $subject, $mail_body, $header);
+
+
+                // send mail to Author of action
+                $subject = $emailConfig['create_forum']['author'] . ' "' . $forumName . '"' . $emailConfig['create_forum']['activate_user'];
+                $nickname = Auth::instance()->get_user()->nickname;
+                $emailTo =  Auth::instance()->get_user()->email;
+                $URL = URL::base('http', true) . 'dforumManager/';
+
+                $mail_body  = $nickname . ' ' . $emailConfig['create_forum']['action'] . ' "' . $forumName . '"<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .= $message . '<br/>';
+                $mail_body .= '---------------------------------------<br/>';
+                $mail_body .=  "URL: " . $URL;
+
+                $header  = 'MIME-Version: 1.0' . "\r\n";
+                $header .= 'Content-type: text/html;' . "\r\n";
+                $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
+                mail($emailTo, $subject, $mail_body, $header);
+
+                // send mail to other Users
+                $subject = $emailConfig['create_forum']['other'] . ' "' . $forumName . '"';
+                foreach($result as $userEmail)
+                {
+                    if ($userEmail != '')
+                    {
+                        mail($userEmail, $subject, $mail_body, $header);
+                    }
+                }
+
+                break;
+
             case 'updateForum' :
 
                 list($oldForumName, $newForumName) = explode('-', $message);
                 $message = 'Old Forum Name:' . "\r\n" . $oldForumName . "\r\n\r\n" . 'New Forum Name:' .  "\r\n" . $newForumName;
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['update_forum']['author'] . ' "' . $oldForumName . '"(old name)';
@@ -517,7 +679,7 @@ class Controller_DForumManager extends Controller_Base {
             case 'deleteForum' :
                 $URL = URL::base() . 'dforumManager/';
 
-                $result = self::prepareUsersMail($forumId);
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 // send mail to Author of action
                 $subject = $emailConfig['delete_forum']['author'] . ' "' . $forumName . '"';
@@ -549,7 +711,8 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'addUserToForum' :
 
-                list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
+                list($forumName, ) = (is_null($isTopic)) ? DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId) :
+                                                           DB_ORM::model('dtopic')->getTopicNameAndSecurityType($forumId) ;
 
                 $subject = $emailConfig['addUserToForum']['other'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
@@ -568,12 +731,13 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'deleteUserFromForum' :
 
-                $result = self::prepareUsersMail($forumId, $emails,'deleteUser');
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 if (count($result) > 0)
                 {
 
-                    list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
+                    list($forumName, ) = (is_null($isTopic)) ? DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId) :
+                                                               DB_ORM::model('dtopic')->getTopicNameAndSecurityType($forumId) ;
 
                     $subject = $emailConfig['deleteUserFromForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;
@@ -598,11 +762,12 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'addGroupToForum' :
 
-                $result = self::prepareUsersMail($forumId, $emails, 'groupAdd');
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 if (count($result) > 0)
                 {
-                    list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
+                    list($forumName, ) = (is_null($isTopic)) ? DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId) :
+                                                               DB_ORM::model('dtopic')->getTopicNameAndSecurityType($forumId) ;
 
                     $subject = $emailConfig['addGroupToForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;
@@ -627,11 +792,12 @@ class Controller_DForumManager extends Controller_Base {
 
             case 'deleteGroupFromForum' :
 
-                $result = self::prepareUsersMail($forumId, $emails, 'groupDelete');
+                $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
                 if (count($result) > 0)
                 {
-                    list($forumName, ) = DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId);
+                    list($forumName, ) = (is_null($isTopic)) ? DB_ORM::model('dforum')->getForumNameAndSecurityType($forumId) :
+                                                               DB_ORM::model('dtopic')->getTopicNameAndSecurityType($forumId) ;
 
                     $subject = $emailConfig['deleteGroupFromForum']['other'] . ' "' . $forumName . '"';
                     $nickname = Auth::instance()->get_user()->nickname;

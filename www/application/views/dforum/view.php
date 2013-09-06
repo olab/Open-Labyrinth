@@ -29,10 +29,18 @@
     <h1><?php echo __('Forums'); ?></h1></div>
 
 
-<table class="table table-striped table-bordered">
+<table id="mainForum" class="table table-striped table-bordered">
+    <colgroup>
+        <col style="width: 5%" />
+        <col style="width: 50%" />
+        <col style="width: 15%" />
+        <col style="width: 15%" />
+        <col style="width: 15%" />
+    </colgroup>
     <?php
     if(isset($templateData['forums']) and count($templateData['forums']) > 0) { ?>
         <tr>
+        <th> </th>
         <th><a href="<?php echo URL::base(); ?>dforumManager/index/1/<?php echo ($templateData['typeSort'] == 0) ? '1' : '0'; ?>" >Forum name
                <div class="pull-right"><i class="icon-chevron-<?php if($templateData['typeSort'] == 0 && $templateData['sortBy'] == 1 ) echo 'down';  else  echo 'up'; ?> icon-black"></i></div></th>
         <th><a href="<?php echo URL::base(); ?>dforumManager/index/2/<?php echo ($templateData['typeSort'] == 0) ? '1' : '0'; ?>" >Users
@@ -44,17 +52,23 @@
     </tr>
         <?php foreach($templateData['forums'] as $forum) {
     ?>
+            <?php // SHOW FORUMS ?>
+
     <tr>
+        <th></th>
         <th>Forum</th>
         <th>Count of users</th>
         <th>Count of comments</th>
         <th>Last comment</th>
     </tr>
     <tr>
+        <td> <?php if(count($forum['topics']) > 0) { ?> <a href="javascript:void(0);" id = "read" class="showMoreTopics" style="text-decoration: none" attr="<?php echo $forum['id']; ?>">&nbsp&nbsp&nbsp&nbsp<i id="icon-<?php echo $forum['id']; ?>" class="icon-chevron-right"></i></a><?php } ?> </td>
         <td>
 
-            <?php if (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->id == $forum['author_id']) { ?>
             <div class="pull-right">
+                <a href="<?php echo URL::base() . 'dtopicManager/addTopic/' . $forum['id']; ?>" rel="tooltip" title="Add new topic in this forum" class="btn btn-small btn-info"><i class="icon-plus-sign"></i> <?php echo __('Add topic'); ?></a>
+
+                <?php if (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->id == $forum['author_id']) { ?>
                 <a href="<?php echo URL::base() . 'dforumManager/editForum/' . $forum['id']; ?>" rel="tooltip" title="Edit this forum" class="btn btn-small btn-info"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
                 <a data-toggle="modal" href="javascript:void(0);" data-target="#delete-labyrinth-<?php echo $forum['id'];  ?>" rel="tooltip" title="Delete this forum" class="btn btn-small btn-danger"><i class="icon-trash"></i> <?php echo __('Delete Forum'); ?></a>
                 <div class="modal hide alert alert-block alert-error fade in" id="delete-labyrinth-<?php echo $forum['id'];  ?>">
@@ -69,10 +83,19 @@
                         </p>
                     </div>
                 </div>
+                <?php }?>
             </div>
-           <?php }?>
 
-            <a href="<?php echo URL::base().'dforumManager/viewForum/' . $forum['id']; ?>"><h4><?php echo $forum['name'];?></h4></a>
+
+            <a href="<?php if ($forum['status'] != 2 && $forum['status'] != 0 ) echo URL::base().'dforumManager/viewForum/' . $forum['id']; ?>"> <h4><?php echo $forum['name'];?></h4></a>
+
+                <?php if ($forum['status'] == 0) {?>
+                    <span class="label label-important"><?php echo 'Inactive' ?></span>
+                <?php } elseif ($forum['status'] == 2) {?>
+                    <span class="label label-important"><?php echo 'Closed' ?></span>
+                <?php } elseif ($forum['status'] == 3) {?>
+                    <span class="label label-warning"><?php echo 'Archived' ?></span>
+                <?php } ?>
 
             <p>
                 <a rel="tooltip" title="Author" class="label label-info" href="<?php echo URL::base().'usermanager/viewUser/' . $forum['author_id']; ?>"><?php echo $forum['author_name']; ?></a><br/>
@@ -89,16 +112,79 @@
             </p>
         </td>
     </tr>
+            <?php // SHOW TOPICS ?>
+
+            <?php  if (count($forum['topics']) > 0 ) { ?>
+
+                <tr class="showTopic-id-<?php echo $forum['id']; ?>" style="display: none;">
+                    <th></th>
+                    <th>Topics(<?php echo count($forum['topics']); ?>)</th>
+                    <th>Count of users</th>
+                    <th>Count of comments</th>
+                    <th>Last comment</th>
+                </tr>
+                    <?php foreach($forum['topics'] as $topic) { ?>
+                    <tr class="showTopic-id-<?php echo $forum['id']; ?>" style="display: none;">
+                        <td></td>
+                        <td>
+                            <?php if (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->id == $topic['author_id']) { ?>
+                            <div class="pull-right">
+                                <a href="<?php echo URL::base() . 'dtopicManager/editTopic/' . $forum['id'] . '/' . $topic['id']; ?>" rel="tooltip" title="Edit this topic" class="btn btn-small btn-info"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
+                                <a data-toggle="modal" href="javascript:void(0);" data-target="#delete-labyrinth-<?php echo $topic['id'];  ?>" rel="tooltip" title="Delete this topic" class="btn btn-small btn-danger"><i class="icon-trash"></i> <?php echo __('Delete Topic'); ?></a>
+                                <div class="modal hide alert alert-block alert-error fade in" id="delete-labyrinth-<?php echo $topic['id'];  ?>">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting this Topic from OpenLabyrinth?'); ?></p>
+                                        <p>
+                                            <a class="btn btn-danger" href="<?php echo URL::base() . 'dtopicManager/deleteTopic/' . $forum['id'] . '/' . $topic['id'] ?>"><?php echo __('Delete Topic'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php }?>
+
+                            <a href="<?php if ($topic['status'] != 2 && $topic['status'] != 0 ) echo URL::base().'dtopicManager/viewTopic/' . $topic['id']; ?>"> <h5><?php echo $topic['name'];?></h5></a>
+
+                            <?php if ($topic['status'] == 0) {?>
+                                <span class="label label-important"><?php echo 'Inactive' ?></span>
+                            <?php } elseif ($topic['status'] == 2) {?>
+                                <span class="label label-important"><?php echo 'Closed' ?></span>
+                            <?php } elseif ($topic['status'] == 3) {?>
+                                <span class="label label-warning"><?php echo 'Archived' ?></span>
+                            <?php } ?>
+
+                            <p>
+                                <a rel="tooltip" title="Author" class="label label-info" href="<?php echo URL::base().'usermanager/viewUser/' . $topic['author_id']; ?>"><?php echo $topic['author_name']; ?></a><br/>
+                                <span class="label label-info"><?php echo $topic['date']; ?></span>
+                            </p>
+                        </td>
+                        <td><?php echo $topic['users_count'];?> users</td>
+                        <td><?php echo $topic['messages_count'];?> comments</td>
+                        <td>
+                            <p>
+                                <a rel="tooltip" title="Author" class="label label-info" href="<?php echo URL::base().'usermanager/viewUser/' . $topic['message_id']; ?>"><?php echo $topic['message_nickname']; ?></a>
+                                <br/>
+                                <span class="label label-info"><?php echo $topic['message_date']; ?></span>
+                            </p>
+                        </td>
+                    </tr>
+
+                <?php } ?>
+
+            <?php } ?>
     <?php }
     }
     else
     { ?>
         <tr class="info">
-            <td colspan="3">There are no forums. You may add one, clicking the button above.</td>
+            <td colspan="5">There are no forums. You may add one, clicking the button above.</td>
         </tr>
    <?php } ?>
 </table>
 
-
+<script src="<?php echo ScriptVersions::get(URL::base().'scripts/dforum.js'); ?>"></script>
 
 

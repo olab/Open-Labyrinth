@@ -132,6 +132,11 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'dforumManager', 'action' => 'deleteForum')
     );
 
+    private $topicActions = array(
+        array('controller' => 'dtopicManager', 'action' => 'editTopic'),
+        array('controller' => 'dtopicManager', 'action' => 'deleteTopic')
+    );
+
     private $webinarsActions = array(
         array('controller' => 'webinarManager', 'action' => 'edit'),
         array('controller' => 'webinarManager', 'action' => 'delete'),
@@ -143,7 +148,8 @@ class Controller_Base extends Controller_Template {
 
         if (Auth::instance()->logged_in()) {
 
-            if($this->checkUserRoleRules() || $this->checkAllowedMaps() || $this->checkAllowedForums() || $this->checkAllowedWebinars()){
+            if($this->checkUserRoleRules() || $this->checkAllowedMaps()     || $this->checkAllowedForums()
+                                           || $this->checkAllowedWebinars() || $this->checkAllowedTopics()){
                 Request::initial()->redirect(URL::base());
             }
 
@@ -335,6 +341,24 @@ class Controller_Base extends Controller_Template {
 
         foreach($rules as $rule) {
             if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($mapId,$allowedMap) &&
+                Auth::instance()->get_user()->type->name != 'superuser') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function checkAllowedTopics() {
+        $rules = $this->topicActions;
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+        $topicId = (int) $this->request->param('id2', 0);
+
+        $allowedTopics = DB_ORM::model('dtopic')->getAllowedTopics(Auth::instance()->get_user()->id);
+
+        foreach($rules as $rule) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($topicId,$allowedTopics) &&
                 Auth::instance()->get_user()->type->name != 'superuser') {
                 return true;
             }

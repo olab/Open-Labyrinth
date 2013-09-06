@@ -69,7 +69,7 @@
                                 <span class="visible-desktop">View progress</span>
                             </a>
                             <?php if($webinar->forum_id > 0) { ?>
-                            <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $webinar->forum_id; ?>">
+                            <a class="btn btn-info" href="<?php echo URL::base(); ?><?php if ($webinar->isForum) {?>dforumManager/viewForum/<?php } else {?>dtopicManager/viewTopic/<?php } ?><?php echo $webinar->forum_id; ?>">
                                 <i class="icon-list-alt"></i>
                                 <span class="visible-desktop">Forum</span>
                             </a>

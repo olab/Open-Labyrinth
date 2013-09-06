@@ -22,7 +22,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 
-class Model_Leap_DForum extends DB_ORM_Model {
+class Model_Leap_DTopic extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -59,6 +59,10 @@ class Model_Leap_DForum extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'forum_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            ))
         );
     }
 
@@ -67,24 +71,194 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'dforum';
+        return 'dtopic';
     }
 
     public static function primary_key() {
         return array('id');
     }
 
-    public function createForum($forumName, $security , $status) {
-        $this->name = $forumName;
+    public function createTopic($topicName, $security, $status,$forum_id) {
+        $this->name = $topicName;
         $this->status = $status;
         $this->date = date('Y-m-d h:i:s');
         $this->author_id = Auth::instance()->get_user()->id;
         $this->settings = '';
         $this->security_id = $security;
+        $this->forum_id = $forum_id;
 
         $this->save();
 
-        return $this->getLastAddedForumRecord();
+        return $this->getLastAddedTopicRecord();
+    }
+
+    public function getForumByTopicId($topicId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.email as forumAuthor_email')))
+            ->from($this->table(),'topic')
+            ->join('LEFT', 'dforum', 'forum')
+            ->on('forum.id', '=', 'topic.forum_id')
+            ->join('LEFT','users','u')
+            ->on('u.id','=','forum.author_id')
+            ->where('topic.id', '=', $topicId)
+            ->limit(1);
+
+        $result = $builder->query();
+
+        $forumInfo = array();
+        if($result->is_loaded()) {
+            foreach($result as $record){
+                $forumInfo[] = $record;
+            }
+            return $forumInfo[0];
+        }
+        return $forumInfo;
+    }
+
+    public function getAllTopicsByForumId($forumId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('topic.*'), DB_SQL::expr('u.nickname as author_name')))
+                ->from($this->table(),'topic')
+                ->join('LEFT', 'users', 'u')
+                ->on('topic.author_id', '=', 'u.id')
+                ->where('forum_id', '=', $forumId)
+                ->order_by('date','DESC');
+
+        $result = $builder->query();
+
+        $topics = array();
+        if($result->is_loaded()) {
+            foreach($result as $key =>$record) {
+                $topics[$key] = $record;
+                //TODO : fixed array(array) to add new row in database
+                $topics[$key]['status_name'] = ($record['status']) ? DB_ORM::model('dforum_status')->getStatusNameById($record['status']) : array(array('name' => 'Inactive'));
+            }
+        }
+        return $topics;
+    }
+
+    public function getAllowedTopics($userId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('topic.id')))
+            ->from('dtopic', 'topic')
+            ->join('LEFT', 'dtopic_users', 'mu')
+            ->on('mu.id_topic', '=', 'topic.id')
+//            ->where('status', 'NOT IN', array(0,2))
+             ->where('author_id', '=', $userId, 'OR')
+            ->where('mu.id_user', '=', $userId)
+            ->order_by('topic.id', 'DESC');
+
+        $result = $builder->query();
+
+        $res = array();
+
+        if ($result->is_loaded()) {
+            foreach ($result as $record => $val) {
+                $res[] =  $val['id'];
+            }
+        }
+        return $res;
+
+    }
+
+    public function getFullAllTopicsByForumId($forumId) {
+
+        $where = '';
+        $join = '';
+        $orderBy = 'message_date DESC';
+
+        // Get only visible topics
+        if (Auth::instance()->get_user()->type->name != 'superuser') {
+            $where = ' AND topic.security_id = 0';
+        }
+
+        $connection = DB_Connection_Pool::instance()->get_connection('default');
+        $result = $connection->query("
+            SELECT
+              topic. * , u.nickname AS author_name,
+              COUNT( DISTINCT(dmes.id) ) AS messages_count,
+              lastm.id AS message_id,
+              lastm.date AS message_date,
+              lastm.text AS message_text,
+              lu.nickname AS message_nickname,
+              COUNT(DISTINCT(dfu.id)) AS users_count
+            FROM
+              dtopic_messages AS dmes, dtopic_users AS dfu, dtopic AS topic
+            JOIN
+              dtopic_messages AS lastm
+            LEFT JOIN
+              users AS u ON topic.author_id = u.id
+            LEFT JOIN
+              users AS lu ON lastm.user_id = lu.id
+            $join
+            WHERE
+              topic.forum_id = $forumId
+            AND
+              dmes.topic_id = topic.id
+            AND
+              dfu.id_topic = topic.id
+            AND
+              lastm.date = (
+                  SELECT
+                    m.date
+                  FROM
+                    dtopic_messages AS m
+                  WHERE
+                    m.topic_id = topic.id
+                  ORDER BY
+                    m.date DESC
+                  LIMIT 1 )
+            $where
+            GROUP BY
+              topic.id
+            ORDER BY
+              $orderBy
+        ");
+
+        $res = array();
+
+        if($result != null && $result->is_loaded()) {
+
+            foreach($result as $record) {
+                $res[] = $record;
+            }
+
+            return $res;
+        }
+
+        return NULL;
+    }
+
+    public function getTopicNameAndSecurityType($topicId) {
+        $this->id = $topicId;
+        $this->load();
+        $topicName = NULL;
+        $security = NULL;
+
+        if($this->is_loaded()) {
+            $topicName = $this->name;
+            $security = $this->security_id;
+
+            return array($topicName , $security);
+        }
+        return NULL;
+    }
+
+    public function getAllMessageByTopic($topicId) {
+        $builder = DB_SQL::select('default',array(DB_SQL::expr('messages.*'),DB_SQL::expr('u.nickname as author_name'),
+            DB_SQL::expr('u.id as author_id')))
+            ->from('dtopic_messages', 'messages')
+            ->join('LEFT', 'users', 'u')
+            ->on('u.id', '=', 'messages.user_id')
+            ->where('messages.topic_id','=',$topicId)
+            ->order_by('messages.id');
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            return $result;
+        }
+
+        return NULL;
     }
 
     public function getAllOpenForums() {
@@ -142,6 +316,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
 
         $orderBy = $columName . ' ' . $type;
 
+
         if (Auth::instance()->get_user()->type->name != 'superuser') {
 
             $join = ' LEFT JOIN
@@ -149,14 +324,10 @@ class Model_Leap_DForum extends DB_ORM_Model {
                       LEFT JOIN
                         dforum_groups as dfg ON dfg.id_forum = forum.id
                       LEFT JOIN
-                        user_groups as ug  ON ug.group_id  = dfg.id_group ';
+                        user_groups   as ug  ON ug.group_id  = dfg.id_group ';
 
-            $where = ' AND (
-                            (forum.author_id = ' . Auth::instance()->get_user()->id . ')
-                         OR (dfuu.id_user = ' . Auth::instance()->get_user()->id . ' AND forum.status = 1)
-                         OR (ug.user_id = ' . Auth::instance()->get_user()->id .' AND forum.status = 1)
-                         OR forum.security_id = 0
-                      )';
+            $where = ' AND (forum.author_id = ' . Auth::instance()->get_user()->id . '
+                         OR dfuu.id_user = ' . Auth::instance()->get_user()->id . ' OR ug.user_id = ' . Auth::instance()->get_user()->id .')';
         }
 
         $connection = DB_Connection_Pool::instance()->get_connection('default');
@@ -204,12 +375,9 @@ class Model_Leap_DForum extends DB_ORM_Model {
 
         if($result != null && $result->is_loaded()) {
 
-            foreach($result as $key => $record) {
-                $topics = DB_ORM::model('dtopic')->getFullAllTopicsByForumId($record['id']);
-                $res[$key] = $record;
-                $res[$key]['topics'] = $topics;
+            foreach($result as $record) {
+                $res[] = $record;
             }
-
             return $res;
         }
 
@@ -257,44 +425,29 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getForumById($forumId) {
-        $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
+    public function getTopicById($topicId) {
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('topic.*'), DB_SQL::expr('u.nickname as author_name')))
 
-            ->from($this->table(), 'forum')
+            ->from($this->table(), 'topic')
             ->join('LEFT', 'users', 'u')
-            ->on('forum.author_id', '=', 'u.id')
-            ->where('forum.id', '=', $forumId);
+            ->on('topic.author_id', '=', 'u.id')
+            ->where('topic.id', '=', $topicId);
 
         $result = $builder->query();
 
         if ($result->is_loaded()) {
-            $forum = array();
-            $forum = $result[0];
+            $topic = array();
+            $topic = $result[0];
 
-            $forum['messages'] = $this->getAllMessageByForum($result[0]['id']);
+            $topic['messages'] = $this->getAllMessageByTopic($result[0]['id']);
 
-            return $forum;
+            return $topic;
         }
 
         return NULL;
     }
 
-    public function getAllMessageByForum($forumId) {
-        $builder = DB_SQL::select('default',array(DB_SQL::expr('messages.*'),DB_SQL::expr('u.nickname as author_name'),
-            DB_SQL::expr('u.id as author_id')))
-            ->from('dforum_messages', 'messages')
-            ->join('LEFT', 'users', 'u')
-            ->on('u.id', '=', 'messages.user_id')
-            ->where('messages.forum_id','=',$forumId)
-            ->order_by('messages.id');
-        $result = $builder->query();
 
-        if($result->is_loaded()) {
-            return $result;
-        }
-
-        return NULL;
-    }
 
     public function getInfoAboutLastMessage($forumId, $userId = null) {
         $builder = DB_SQL::select('default', array(DB_SQL::expr('u.nickname'), DB_SQL::expr('u.id'), DB_SQL::expr('dfm.date'), DB_SQL::expr('dfm.text'), DB_SQL::expr('dfm.id as message_id')))
@@ -332,64 +485,38 @@ class Model_Leap_DForum extends DB_ORM_Model {
     }
 
 
-    public function getLastAddedForumRecord() {
+    public function getLastAddedTopicRecord() {
         $builder = DB_SQL::select('default')->from($this->table())->order_by('id', 'DESC')->limit(1);
         $result = $builder->query();
 
         if($result->is_loaded()) {
-            $forum = DB_ORM::model('dforum', array($result[0]['id']));
-            return $forum->id;
+            $topic = DB_ORM::model('dtopic', array($result[0]['id']));
+            return $topic->id;
         }
         return NULL;
     }
 
-    public function getForumNameAndSecurityType($forumId) {
-        $this->id = $forumId;
-        $this->load();
-        $forumName = NULL;
-        $security = NULL;
 
-        if($this->is_loaded()) {
-            $forumName = $this->name;
-            $security = $this->security_id;
 
-            return array($forumName , $security);
-        }
-        return NULL;
-    }
-
-    public function updateForum($forumName, $security, $statusId, $forumId) {
-        $this->id = $forumId;
+    public function updateTopic($topicName, $security, $status, $topicId) {
+        $this->id = $topicId;
         $this->load();
 
-        $this->name = $forumName;
+        $this->name = $topicName;
+        $this->status = $status;
         $this->security_id = $security;
-        $this->status = $statusId;
 
         $this->save();
     }
 
-    public function deleteForum($forumId) {
-        DB_ORM::model('dforum_messages')->deleteAllMessages($forumId);
-        DB_ORM::model('dforum_users')->deleteAllUsers($forumId);
-        DB_ORM::model('dforum_groups')->deleteAllGroups($forumId);
+    public function deleteTopic($topicId) {
+        DB_ORM::model('dtopic_messages')->deleteAllMessages($topicId);
+        DB_ORM::model('dtopic_users')->deleteAllUsers($topicId);
+        DB_ORM::model('dtopic_groups')->deleteAllGroups($topicId);
 
         DB_SQL::delete('default')
                 ->from($this->table())
-                ->where('id', '=', $forumId)
+                ->where('id', '=', $topicId)
                 ->execute();
-    }
-
-    public function getForumAuthor($forumId) {
-        $this->id = $forumId;
-        $this->load();
-        $authorInfo = NULL;
-
-        if($this->is_loaded()) {
-            $authorInfo = DB_ORM::model('user', array($this->author_id));
-
-            return $authorInfo;
-        }
-        return $authorInfo;
     }
 }

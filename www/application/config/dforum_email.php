@@ -44,6 +44,8 @@ return array ("mail_from" => "admin@localhost.com", "from_name" => "Open-Labyrin
             ),
 			"create_forum" => array(
                 'author' => 'OpenLabyrinth: You Create new forum',
+                'activate_user' => '. Please wait until the administrator approved it.',
+                'activate_admin' => 'OpenLabyrinth: User create new topic in forum, please approve it.',
                 'other' => 'OpenLabyrinth: Referred to the forum',
                 'action' => 'created new forum'
             ),

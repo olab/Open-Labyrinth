@@ -104,4 +104,29 @@ $(function() {
     $('.btn-remove-step').live('click', function() {
         $(this).parent().parent().remove();
     });
+
+    var $redirectContainer = $('.submitSettingsContainer');
+    var $forumSelect = $('#forum');
+
+    $('#use').click(function() {
+        if($redirectContainer != null)
+            $redirectContainer.removeClass('hide');
+    });
+
+    $('#notUse').click(function() {
+        if($redirectContainer != null)
+            $redirectContainer.addClass('hide');
+    });
+
+    $('#forum').click(function() {
+        var $s = $forumSelect.val();
+        if($("#topics-" + $s).length) {
+            $(".topics").addClass('hide');
+            $("#topics-" + $s).removeClass('hide');
+        }
+        else {
+            $(".topics").addClass('hide');
+        }
+    });
+
 });

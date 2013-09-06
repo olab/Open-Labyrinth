@@ -40,26 +40,24 @@
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
     });
-
 </script>
-
 <div class="page-header">
     <?php if (isset($templateData['name'])){ ?>
-        <h1><?php echo __('Edit forum') . ' - "' .  $templateData['name'] . '"'; ?></h1>
+        <h1><?php echo __('Edit topic') . ' - "' .  $templateData['name'] . '"'; ?></h1>
     <?php } else { ?>
-        <h1><?php echo __('Add new forum'); ?></h1>
+        <h1><?php echo __('Add new topic in ') . '"' . $templateData['forumName'] . '"' . ' forum'; ?></h1>
     <?php } ?>
 </div>
 
 <form class="form-horizontal" id="form1" name="form1" method="post"
-      action="<?php echo (!isset($templateData['name'])) ? URL::base() . 'dforumManager/saveNewForum/' : URL::base() . 'dforumManager/updateForum/'; ?>">
+      action="<?php echo (!isset($templateData['name'])) ? URL::base() . 'dtopicManager/saveNewTopic/' : URL::base() . 'dtopicManager/updateTopic/'; ?>">
 
     <fieldset class="fieldset">
         <div class="control-group">
-            <label for="forumname" class="control-label"><?php echo __('Forum name'); ?></label>
+            <label for="topicname" class="control-label"><?php echo __('Topic name'); ?></label>
 
             <div class="controls">
-                <input class="span6" type="text" name="forumname" id="forumname" value="<?php echo (isset($templateData['name'])) ? $templateData['name'] : ''; ?>" />
+                <input class="span6" type="text" name="topicname" id="topicname" value="<?php echo (isset($templateData['name'])) ? $templateData['name'] : ''; ?>" />
             </div>
         </div>
 
@@ -74,17 +72,19 @@
         <?php } ?>
     </fieldset>
     <fieldset class="fieldset">
+
+        <?php if (Auth::instance()->get_user()->type->name == 'superuser' || (isset($templateData['topic']) && $templateData['topic']->status)) { ?>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Security'); ?></label>
+            <label class="control-label"><?php echo __('Visibility'); ?></label>
 
             <div class="controls">
                 <label class="radio">
-                    <input name="security" type="radio" value="0" <?php if (isset($templateData['security'])) { echo ($templateData['security'] == 0) ? 'checked="checked"' : ''; } else { echo 'checked="checked"'; } ?>><?php echo __('Open'); ?>
+                    <input name="security" type="radio" value="0" <?php if (isset($templateData['security'])) { echo ($templateData['security'] == 0) ? 'checked="checked"' : ''; } else { echo 'checked="checked"'; } ?>><?php echo __('Visible'); ?>
                 </label>
             </div>
             <div class="controls">
                 <label class="radio">
-                    <input name="security" type="radio" value="1" <?php if (isset($templateData['security'])) { echo ($templateData['security'] == 1) ? 'checked="checked"' : ''; } ?>><?php echo __('Private'); ?>
+                    <input name="security" type="radio" value="1" <?php if (isset($templateData['security'])) { echo ($templateData['security'] == 1) ? 'checked="checked"' : ''; } ?>><?php echo __('Hidden'); ?>
                 </label>
 
             </div>
@@ -95,91 +95,45 @@
                 <div class="control-group">
                     <label class="control-label"><?php echo __('Status'); ?></label>
 
-                    <div class=" controls">
-                        <?php foreach ($templateData['status'] as $status) { ?>
+                    <?php if ( isset($templateData['topic']) && $templateData['topic']->status == 0 ) {?>
+                        <div class="controls">
                             <label class="radio">
-                                <input type="radio" name="status" value=<?php echo $status->id; ?>
-                                <?php  if (isset($templateData['name'])) { ?>
-                                    <?php if ($status->id == $templateData['forum']->status) echo 'checked=""'; ?>/> <?php echo $status->name; ?>
-                                <?php } else {?>
-                                    <?php if ($status->id == 1) echo 'checked=""'; ?>/> <?php echo $status->name; ?>
-                                <?php }?>
+                                <input name="status" type="radio" value="0"  checked="checked"><?php echo __('Inactive'); ?>
                             </label>
-                        <?php } ?>
-                    </div>
 
+                            <label class="radio">
+                                <input name="status" type="radio" value="1"><?php echo __('Activate'); ?>
+                            </label>
+                        </div>
+                    <?php } else {?>
+
+                        <div class=" controls">
+                            <?php foreach ($templateData['status'] as $status) { ?>
+                                <label class="radio">
+                                    <input type="radio" name="status" value=<?php echo $status->id; ?>
+                                        <?php  if (isset($templateData['name'])) { ?>
+                                            <?php if ($status->id == $templateData['topic']->status) echo 'checked=""'; ?>/> <?php echo $status->name; ?>
+                                        <?php } else {?>
+                                        <?php if ($status->id == 1) echo 'checked=""'; ?>/> <?php echo $status->name; ?>
+                                     <?php }?>
+                                </label>
+                            <?php } ?>
+                        </div>
+                    <?php  } ?>
                 </div>
             <?php } ?>
         </div>
-
-        <?php if(isset($templateData['forum_id'])) { ?>
-            <a class="btn btn-info" rel="tooltip" title="Add new topic" href="/dtopicManager/addTopic/<?php if (isset($templateData['name'])) echo $templateData['forum_id'];  ?> ">
-                <i class="icon-plus-sign"></i>
-                <span class="visible-desktop">Add topic</span>
-            </a>
+        <?php } else {?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Status'); ?></label>
+                <div class="controls">
+                    <label class="radio">
+                        <input name="status" type="radio" value="0"  checked="checked"><?php echo __('Inactive'); ?>
+                        <?php if(isset($templateData['topic'])) echo '- please wait until the administrator approved it';?>
+                    </label>
+                </div>
+            </div>
         <?php } ?>
-
-            <h3>Topics</h3>
-            <table id="topics" class="table table-striped table-bordered ">
-                <colgroup>
-                    <col style="width: 30%" />
-                    <col style="width: 10%" />
-                    <col style="width: 15%" />
-                    <col style="width: 15%" />
-                    <col style="width: 30%" />
-                </colgroup>
-                <thead>
-                <tr>
-                    <th style="text-align: left">Title</th>
-                    <th style="text-align: left">Status</th>
-                    <th style="text-align: left">Author</th>
-                    <th style="text-align: left">Create Date</th>
-                    <th style="text-align: left">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php if(isset($templateData['topics']) && count(($templateData['topics'])) > 0 ) { ?>
-                    <?php foreach ($templateData['topics'] as $topic) {?>
-                        <tr>
-                            <td>
-                                <?php echo $topic['name']; ?>
-                            </td>
-                            <td>
-                                <?php echo ($topic['security_id']) ? 'Hidden/' : 'Visibile/' ; echo $topic['status_name'][0]['name'];  ?>
-                            </td>
-                            <td>
-                                <?php echo $topic['author_name']; ?>
-                            </td>
-                            <td>
-                                <?php echo $topic['date']; ?>
-                            </td>
-                            <td>
-
-                                    <a class="btn btn-small btn-info" href="<?php echo URL::base() ?>dTopicManager/editTopic/<?php echo $templateData['forum_id']; ?>/<?php echo $topic['id']; ?>" rel="tooltip" title="Edit this topic"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
-                                    <a data-toggle="modal" href="javascript:void(0);" data-target="#delete-topic-<?php echo $topic['id'];  ?>" rel="tooltip" title="Delete this topic" class="btn btn-small btn-danger"><i class="icon-trash"></i> <?php echo __('Delete Topic'); ?></a>
-
-                                    <div class="modal hide alert alert-block alert-error fade in" id="delete-topic-<?php echo $topic['id'];  ?>">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting this Topic '); ?></p>
-                                            <p>
-                                                <a class="btn btn-danger" href="<?php echo URL::base() . 'dtopicManager/deleteTopic/' . $templateData['forum_id'] . '/' . $topic['id'] . '/1' ?>"><?php echo __('Delete Topic'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                                            </p>
-                                        </div>
-                                    </div>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                <?php } else { ?>
-                    <tr class="info">
-                        <td colspan="5">There are no topics. You may add one, clicking the button above.</td>
-                    </tr>
-                <?php }?>
-                </tbody>
-            </table>
 
         <h3>Assign the users</h3>
         <table id="users" class="table table-striped table-bordered">
@@ -192,7 +146,7 @@
             <tr>
                 <th style="text-align: center">Actions</th>
                 <th style="text-align: center">Auth type</th>
-                <th>
+                <th style="text-align: left">
                     <a href="javascript:void(0);">
                         User <div class="pull-right"><i class="icon-chevron-down icon-white"></i></div>
                     </a>
@@ -212,8 +166,8 @@
             <?php } ?>
             <?php if(isset($templateData['users']) and count($templateData['users']) > 0) { ?>
                 <?php foreach($templateData['users'] as $user) { ?>
+                    <?php if($user['id'] == Auth::instance()->get_user()->id) continue; ?>
                     <tr>
-                        <?php if(!isset($templateData['name']) && $user['id'] == Auth::instance()->get_user()->id) continue; ?>
                         <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
                         <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
                         <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
@@ -263,11 +217,14 @@
     <div class="form-actions">
         <div class="pull-right">
             <input class="btn btn-large btn-primary" type="submit" name="Submit"
-                   value="<?php echo (isset($templateData['name'])) ? 'Edit forum' : 'Add forum'; ?>" onclick="return CheckForm();"></div>
+                   value="<?php echo (isset($templateData['name'])) ? 'Edit topic' : 'Add topic'; ?>" onclick="return CheckForm();"></div>
         </div>
     </div>
-    <?php if (isset($templateData['name'])) { ?>
+    <?php if (isset($templateData['forum_id'])) { ?>
     <input type="hidden" value="<?php echo $templateData['forum_id'] ?>" name="forum_id" id="forum_id" >
+    <?php } ?>
+    <?php if (isset($templateData['topic_id'])) { ?>
+        <input type="hidden" value="<?php echo $templateData['topic_id'] ?>" name="topic_id" id="topic_id" >
     <?php } ?>
 </form>
 
@@ -275,9 +232,9 @@
 
     function CheckForm()
     {
-        if(document.getElementById('forumname').value == '')
+        if(document.getElementById('topicname').value == '')
         {
-            alert('Please enter you forum name');
+            alert('Please enter you topic name');
             return false;
         }
         <?php if (!isset($templateData['name'])){ ?>

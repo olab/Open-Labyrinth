@@ -60,6 +60,8 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['maps'] = (Auth::instance()->get_user()->type->name == 'superuser') ? DB_ORM::model('map')->getAllEnabledMap()
                                                                                                 : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
 
+        $this->templateData['forums'] = DB_ORM::model('dforum')->getAllForums(1,0); // Type of Sort, 1 = Name , 0 - ASC
+
         $this->templateData['center'] = View::factory('webinar/webinar');
         $this->templateData['center']->set('templateData', $this->templateData);
 
@@ -203,7 +205,7 @@ class Controller_WebinarManager extends Controller_Base {
                     }
 
                     foreach($webinar->maps as $webinarMap) {
-                        $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['map']    = DB_ORM::model('map', array((int)$webinarMap->map_id));
+                        $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['map'] = DB_ORM::model('map', array((int)$webinarMap->map_id));
 
                         if($webinarMap->step <= $webinar->current_step) {
                             $webinarData[$webinarUser->user_id][$webinarMap->step][$webinarMap->map_id]['status'] = DB_ORM::model('user_session')->isUserFinishMap($webinarMap->map_id, $webinarUser->user_id, $webinar->id, $webinar->current_step);

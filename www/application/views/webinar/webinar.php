@@ -68,8 +68,52 @@
                 <textarea name="firstmessage" id="firstmessage" class="mceEditor"></textarea>
             </div>
         </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Use existing forum') ?></label>
+                <div class="controls">
+                    <div class="radio_extended btn-group">
+                        <?php if (count($templateData['forums'])) {?>
+                            <input autocomplete="off" type="radio" id="use" name="use" value="1" />
+                            <label data-class="btn-info" class="btn" for="use"><?php echo __('Use'); ?></label>
+                        <?php }?>
+                        <input autocomplete="off" type="radio" id="notUse" name="use" value="0" checked="checked" />
+                        <label data-class="btn-info" class="btn" for="notUse" rel="tooltip" title="Will be created a new forum"><?php echo __('Do not use'); ?></label>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group submitSettingsContainer hide">
+                <label class="control-label"><?php echo __('Forums') ?></label>
+                <div class="controls">
+                    <select id="forum" name="forum">
+                        <?php if(isset($templateData['forums']) && count($templateData['forums']) > 0) { ?>
+                            <?php foreach($templateData['forums'] as $forum) { ?>
+                                <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option>
+                            <?php } ?>
+                        <?php } ?>
+                    </select>
+                </div>
+                <br />
+                <?php if(isset($templateData['forums']) && count($templateData['forums']) > 0) { ?>
+                    <?php foreach($templateData['forums'] as $forum) {
+                        if (count($forum['topics']) > 0) { ?>
+                        <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
+                            <label class="control-label"><?php echo __('Topics') ?></label>
+                            <div class="controls">
+                                <select id="topic" name="topic">
+                                        <option value="0">Please select</option>
+                                        <?php foreach($forum['topics'] as $topic) { ?>
+                                            <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } ?>
+            </div>
         <?php } ?>
     </fieldset>
+
 
     <div id="steps-container">
         <?php if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) { ?>

@@ -59,6 +59,12 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 'savable' => TRUE
             )),
 
+            'isForum' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            )),
+
             'publish' => new DB_ORM_Field_String($this, array(
                 'max_length' => 100,
                 'nullable' => TRUE,
@@ -146,6 +152,9 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $webinarId = Arr::get($values, 'webinarId', null);
         $webinar   = null;
         $isNew     = false;
+        $isUseForumName = Arr::get($values, 'use', null);
+        $useForumId = Arr::get($values, 'forum', null);
+        $useTopicId = Arr::get($values, 'topic', null);
 
         if($webinarId == null || $webinarId < 0) {
             $webinarBuilder = DB_ORM::insert('webinar')
@@ -207,9 +216,15 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $forumId   = null;
         if($webinar->forum_id != null && $webinar->forum_id > 0) {
             $forumId = $webinar->forum_id;
-            DB_ORM::model('dforum')->updateForum($webinar->title, 1, $forumId);
+            $forumInfo = DB_ORM::model('dforum', array((int)$forumId));
+            DB_ORM::model('dforum')->updateForum($webinar->title, 1, $forumInfo->status, $forumId);
         } else {
-            $forumId = DB_ORM::model('dforum')->createForum($webinar->title, 1);
+            if (!$isUseForumName) {
+                $forumId = DB_ORM::model('dforum')->createForum($webinar->title, 1,1);
+            }
+            else {
+                $forumId = ($useTopicId) ? $useTopicId : $useForumId;
+            }
         }
 
         $firstMessage = Arr::get($values, 'firstmessage', null);
@@ -222,6 +237,14 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             ->set('forum_id', $forumId)
             ->where('id', '=', $webinarId)
             ->execute();
+
+        if ($useTopicId) {
+            DB_ORM::update('webinar')
+                ->set('isForum', 0)
+                ->where('id', '=', $webinarId)
+                ->where('forum_id','=',$forumId)
+                ->execute();
+        }
 
         $formUsers  = Arr::get($values, 'users', null);
 
