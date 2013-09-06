@@ -677,7 +677,7 @@ class Controller_DForumManager extends Controller_Base {
                 break;
 
             case 'deleteForum' :
-                $URL = URL::base() . 'dforumManager/';
+                $URL = URL::base('http', true) . 'dforumManager/';
 
                 $result = (is_null($isTopic)) ? self::prepareUsersMail($forumId) : self::prepareUsersMailforTopic($forumId);
 
