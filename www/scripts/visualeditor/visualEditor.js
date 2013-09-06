@@ -135,7 +135,8 @@ var VisualEditor = function() {
             unsavedDataForm: '#veRightPanel_unsaveddata',
             unsavedDataBtnClose: '#veRightPanel_unsaveddata_close',
             unsavedDataChange: '#veRightPanel_unsaveddataChange',
-            unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close'
+            unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close',
+            showInfo: '#show_info'
         });
         
         self.deleteModal.Init({
@@ -382,8 +383,7 @@ var VisualEditor = function() {
             var nodesStr = '';
             for(var i = 0; i < nodes.length; i++) {
                 var pos = nodes[i].transform.GetPosition();
-
-                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
+                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "showInfo": "' + (nodes[i].showInfo ? 1 : 0) + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
 
                 if(nodes[i].counters.length > 0) {
                     var counters = '';
@@ -492,6 +492,7 @@ var VisualEditor = function() {
                 node.undo = (object.nodes[i].undo == 'true');
                 node.isEnd = (object.nodes[i].isEnd == 'true');
                 node.isRoot = (object.nodes[i].isRoot == 'true');
+                node.showInfo = (object.nodes[i].showInfo == 1);
                 var x = parseInt(object.nodes[i].x);
                 var y = parseInt(object.nodes[i].y);
 

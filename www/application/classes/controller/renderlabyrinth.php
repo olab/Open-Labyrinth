@@ -76,7 +76,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $data['node_edit'] = TRUE;
                         } else {
 
-                            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false))
+                            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
                             {
                                 $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
                             }
@@ -190,7 +190,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['node_edit'] = TRUE;
                     } else {
 
-                        if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false))
+                        if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
                         {
                             $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
                         }

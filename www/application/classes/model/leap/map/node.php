@@ -52,12 +52,6 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'content' => new DB_ORM_Field_String($this, array(
-                'max_length' => 4000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
-            
             'type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
@@ -81,8 +75,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
             
-            'info' => new DB_ORM_Field_String($this, array(
-                'max_length' => 1000,
+            'info' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
@@ -133,6 +126,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             'rgb' => new DB_ORM_Field_String($this, array(
                 'max_length' => 8,
                 'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+
+            'show_info' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
                 'savable' => TRUE,
             )),
         );
@@ -303,18 +302,19 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $mapId = Arr::get($values, 'map_id', NULL);
         if($mapId != NULL) {
             return DB_ORM::model('map_node', array(DB_ORM::insert('map_node')
-                    ->column('map_id', $mapId)
-                    ->column('title', Arr::get($values, 'mnodetitle', ''))
-                    ->column('text', Arr::get($values, 'mnodetext', ''))
-                    ->column('info', Arr::get($values, 'mnodeinfo', ''))
-                    ->column('probability', Arr::get($values, 'mnodeprobability', FALSE))
-                    ->column('link_style_id', Arr::get($values, 'linkstyle', 1))
-                    ->column('link_type_id', 2)
-                    ->column('priority_id', Arr::get($values, 'priority', 1))
-                    ->column('undo', Arr::get($values, 'mnodeUndo', FALSE))
-                    ->column('end', Arr::get($values, 'ender', FALSE))
-                    ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
-                    ->execute()));
+                                                           ->column('map_id', $mapId)
+                                                           ->column('title', Arr::get($values, 'mnodetitle', ''))
+                                                           ->column('text', Arr::get($values, 'mnodetext', ''))
+                                                           ->column('info', Arr::get($values, 'mnodeinfo', ''))
+                                                           ->column('probability', Arr::get($values, 'mnodeprobability', FALSE))
+                                                           ->column('link_style_id', Arr::get($values, 'linkstyle', 1))
+                                                           ->column('link_type_id', 2)
+                                                           ->column('priority_id', Arr::get($values, 'priority', 1))
+                                                           ->column('undo', Arr::get($values, 'mnodeUndo', FALSE))
+                                                           ->column('end', Arr::get($values, 'ender', FALSE))
+                                                           ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                                                           ->column('show_info', Arr::get($values, 'show_info', FALSE) ? 1 : 0)
+                                                           ->execute()));
         }
         
         return NULL;
@@ -336,6 +336,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->x = Arr::get($values, 'x', FALSE);
             $this->y = Arr::get($values, 'y', FALSE);
             $this->rgb = Arr::get($values, 'rgb', FALSE);
+            $this->show_info = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
 
             $this->save();
 
@@ -361,7 +362,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('end', (Arr::get($values, 'isEnd', 'false') == 'true'))
                 ->column('x', Arr::get($values, 'x', 0))
                 ->column('y', Arr::get($values, 'y', 0))
-                ->column('rgb', Arr::get($values, 'color', '#FFFFFF'));
+                ->column('rgb', Arr::get($values, 'color', '#FFFFFF'))
+                ->column('show_info', Arr::get($values, 'showInfo', 0));
 
         return $builder->execute();
     }
@@ -382,6 +384,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->x = Arr::get($values, 'x', 0);
             $this->y = Arr::get($values, 'y', 0);
             $this->rgb = Arr::get($values, 'color', '#FFFFFF');
+            $this->show_info = Arr::get($values, 'showInfo', 0);
 
             $this->save();
         }
@@ -411,6 +414,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->type_id = 1;
             $this->undo = FALSE;
             $this->end = FALSE;
+            $this->show_info = FALSE;
             
             $this->save();
         }
@@ -429,6 +433,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->priority_id = Arr::get($values, 'priority', $this->priority_id);
             $this->undo = Arr::get($values, 'mnodeUndo', $this->undo);
             $this->end = Arr::get($values, 'ender', $this->end);
+            $this->show_info = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
             
             $this->save();
             

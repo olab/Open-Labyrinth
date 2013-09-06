@@ -1,0 +1,1 @@
+ALTER TABLE `map_nodes` ADD `show_info` TINYINT NOT NULL DEFAULT '0';

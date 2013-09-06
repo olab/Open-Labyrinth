@@ -77,6 +77,7 @@ var Node = function() {
     self.isSelected = false;
     self.isActive = false;
     self.sections = new Array();
+    self.showInfo = false;
     
     // Daraw current node
     // context - canvas context

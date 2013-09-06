@@ -75,6 +75,15 @@ if (isset($templateData['map'])) {
                               id="mnodeinfo" <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
                 </div>
             </div>
+
+            <div class="control-group">
+                <label for="show_info"
+                       class="control-label"><?php echo __('Show in the bottom'); ?></label>
+
+                <div class="controls">
+                    <input id="show_info" name="show_info" name="show_info" type="checkbox"/>
+                </div>
+            </div>
         </fieldset>
         <fieldset class="fieldset">
             <div class="control-group">

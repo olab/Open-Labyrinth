@@ -32,6 +32,7 @@ var RightPanel = function() {
     self.nodeSupportId = '';
     self.$unsavedDataBtnClose = null;
     self.$unsavedDataForm = null;
+    self.$showInfo = null;
     
     self.$unsavedDataChange = null;
     self.$unsavedDataBtnChangeClose = null;
@@ -179,6 +180,9 @@ var RightPanel = function() {
         
         if('nodeCounters' in parameters)
             self.$nodeCounters = $(parameters.nodeCounters);
+
+        if('showInfo' in parameters)
+            self.$showInfo = $(parameters.showInfo);
     }
     
     self.Close = function() {
@@ -241,6 +245,7 @@ var RightPanel = function() {
             self.node.nodePriority = GetIntegerValueFromField(self.$nodePriority);
             self.node.undo = GetBooleanValueFromField(self.$nodeUndoLinks);
             self.node.isEnd = GetBooleanValueFromField(self.$endNode);
+            self.node.showInfo = self.$showInfo.attr('checked') ? true : false;
             
             var counters = GetCountersData();
             if(counters != null && counters.length > 0) {
@@ -334,6 +339,12 @@ var RightPanel = function() {
 
                 if(self.$nodePriority != null)
                     self.$nodePriority.find('input[value="' + self.node.nodePriority + '"]').attr('checked', 'checked');
+
+                if(self.$showInfo != null && self.node.showInfo) {
+                    self.$showInfo.attr('checked', 'checked');
+                } else {
+                    self.$showInfo.removeAttr('checked');
+                }
 
                 if(self.node.counters.length > 0 && self.$nodeCounters != null) {
                     var counters = GetCountersData();

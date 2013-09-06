@@ -1,0 +1,1 @@
+ALTER TABLE `map_nodes` DROP `content`;
