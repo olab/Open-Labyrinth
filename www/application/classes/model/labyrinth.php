@@ -499,8 +499,10 @@ class Model_Labyrinth extends Model {
                 $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
                 if (count($commonRules) > 0){
                     $values = array();
-                    foreach($countersArray as $key => $counter){
-                        $values[$key] = $counter['value'];
+                    if (count($countersArray) > 0){
+                        foreach($countersArray as $key => $counter){
+                            $values[$key] = $counter['value'];
+                        }
                     }
                     $runtimelogic = new RunTimeLogic();
                     $runtimelogic->values = $values;
@@ -838,8 +840,10 @@ class Model_Labyrinth extends Model {
                     $mapID = $question->map_id;
                     $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
                     $values = array();
-                    foreach($counters as $counter){
-                        $values[$counter->id] = $this->getCounterValueByID($mapID, $counter->id);
+                    if (count($counters) > 0){
+                        foreach($counters as $counter){
+                            $values[$counter->id] = $this->getCounterValueByID($mapID, $counter->id);
+                        }
                     }
                     $runtimelogic = new RunTimeLogic();
                     $runtimelogic->values = $values;
