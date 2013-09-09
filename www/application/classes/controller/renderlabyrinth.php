@@ -167,17 +167,36 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $data = Model::factory('labyrinth')->execute($node->id);
                 }
                 if ($data) {
+                    $undoNodes = array();
+                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
+                        $sessionId = (int)$data['traces'][0]->session_id;
+
+                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+
+                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
+
+                        $data['timeForNode'] = $timeForNode;
+                        $data['session'] = $sessionId;
+
+                        if ($data['node']->undo) {
+                            list($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId);
+
+                            $data['undoLinks'] = $undoLinks;
+                        }
+                    }
+
                     $data['navigation'] = $this->generateNavigation($data['sections']);
                     if (!isset($data['node_links']['linker'])){
                         if ($data['node']->link_style->name == 'type in text') {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             $data['links'] = $result['links']['display'];
                             if(isset($data['alinkfil']) && isset($data['alinknod'])) {
                                  $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
                                  $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                             }
                         } else {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             if(!empty($result['links']))
                                 $data['links'] = $result['links'];
                             else $data['links'] = "";
@@ -211,25 +230,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     $data['popup_start'] = 1;
                     $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
-
-                    if ( isset($data['traces'][0]) && $data['traces'][0]->session_id != null ) {
-                        $sessionId = (int)$data['traces'][0]->session_id;
-
-                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
-                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-
-                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
-
-                        $data['timeForNode'] = $timeForNode;
-                        $data['session'] = $sessionId;
-
-                        if ($data['node']->undo) {
-                            $undoLinks = $this->prepareUndoLinks($sessionId,$mapId);
-
-                            $data['undoLinks'] = $undoLinks;
-                        }
-
-                    }
 
                     $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
@@ -537,7 +537,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '';
     }
 
-    private function generateLinks($node, $links) {
+    private function generateLinks($node, $links, $undoNodes = null) {
         $result = NULL;
         $result['links'] = '';
         $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
@@ -545,6 +545,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['remote_links'] = '';
             $result['links'] = '';
             foreach ($links as $link) {
+                if($undoNodes != null && isset($undoNodes[$link->node_2->id])) continue;
+
                 $title = $link->node_2->title;
                 if ($link->text != '' and $link->text != ' ') {
                     $title = $link->text;
@@ -1357,16 +1359,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
        // array_pop($traces);
 
         $html = '<ul class="links navigation">';
-
+        $nodes = array();
         if (count($traces) > 0) {
             foreach($traces as &$trace){
+                $nodes[$trace['node_id']] = $trace['node_id'];
                 $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($trace['node_id']);
                 $html .= '<li><i><font color="#777799">' .$trace['node_name'] . '</font></i><a href=' . URL::base() . 'renderLabyrinth/undo/' . $mapId . '/' .$trace['node_id'] .'>'  . ' [undo]' . '</a></li>';
             }
         }
         $html .= '</ul>';
 
-        return $html;
+        return array($html, $nodes);
     }
 }
 

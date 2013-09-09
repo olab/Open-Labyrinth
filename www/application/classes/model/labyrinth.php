@@ -747,10 +747,7 @@ class Model_Labyrinth extends Model {
         $sessionId = Session::instance()->get('session_id', NULL);
         if ($sessionId != NULL and $nodeId != NULL) {
             $node = DB_ORM::model('map_node', array((int) $nodeId));
-
-            $dateStamp = DB_ORM::model('user_sessionTrace')->getDateStampBySessionAndNodeId($sessionId,$nodeId);
-
-            DB_ORM::model('user_sessionTrace')->updateSession($sessionId,$nodeId,$node->map_id,$dateStamp);
+            DB_ORM::model('user_sessionTrace')->undoTrace($sessionId, $node->map_id, $nodeId);
         }
     }
 

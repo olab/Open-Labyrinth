@@ -164,6 +164,48 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return $result;
     }
 
+    public function undoTrace($sessionId, $mapId, $nodeId) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('session_id', '=', $sessionId, 'AND')
+                           ->where('map_id', '=', $mapId)
+                           ->order_by('id', 'DESC')
+                           ->column('id')
+                           ->column('node_id')
+                           ->query();
+
+        if($records->is_loaded()) {
+            $removeTraceIDs = array();
+            $undoTraceId = null;
+            foreach($records as $record) {
+                if($record['node_id'] == $nodeId) {
+                    $undoTraceId = $record['id'];
+                    break;
+                } else {
+                    $removeTraceIDs[] = $record['id'];
+                }
+            }
+
+            if($undoTraceId != null && $undoTraceId > 0) {
+                $trace = DB_ORM::model('user_sessionTrace', array((int)$undoTraceId));
+                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+                $this->updateCounter($sessionId, $mapId, $rootNode->id, $trace->counters);
+
+                $removeTraceIDs[] = $trace->id;
+                $this->deleteTracesByIDs($removeTraceIDs);
+            }
+        }
+    }
+
+    public function deleteTracesByIDs($tracesIDs) {
+        if($tracesIDs == null && count($tracesIDs) <= 0) return;
+
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('id', 'IN', $tracesIDs)
+                ->execute();
+    }
+
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
         $builder = DB_ORM::insert('user_sessionTrace')
                 ->column('session_id', $sessionId)
