@@ -294,8 +294,8 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             }
         }
 
-        $users[] = Auth::instance()->get_user()->id;
-        DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
+        $formUsers[] = Auth::instance()->get_user()->id;
+        DB_ORM::model('dforum_users')->updateUsers($forumId, $formUsers);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
 
         if($isNew) {
