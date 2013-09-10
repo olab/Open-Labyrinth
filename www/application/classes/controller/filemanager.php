@@ -69,6 +69,44 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
+    public function action_replaceFiles() {
+        $this->auto_render = false;
+
+        $mapId = Arr::get($_POST, 'mapId', null);
+        $fileName = Arr::get($_POST, 'fileName', null);
+
+        $result = '';
+        if($mapId != null && $fileName != null) {
+            $dir = DOCROOT . '/files/' . $mapId ;
+            if(!is_dir($dir)) {
+                mkdir(DOCROOT . '/files/' . $mapId);
+            }
+
+            $dest = DOCROOT . '/files/' . $mapId . '/' . $fileName;
+            $src  = DOCROOT . '/scripts/fileupload/php/files/' . $fileName;
+            if (getimagesize($src)) {
+                $src2 = DOCROOT . '/scripts/fileupload/php/thumbnails/' . $fileName;
+                unlink($src2);
+            }
+
+            $path = 'files/' . $mapId . '/' . $fileName;
+
+            $dataSave = array(
+                'name' => $fileName,
+                'path' => $path,
+            );
+
+            DB_ORM::model('map_element')->saveElement($mapId,$dataSave);
+
+            copy($src, $dest);
+            unlink($src);
+
+            $result = $fileName;
+        }
+
+        echo $result;
+    }
+
     public function action_deleteFile() {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
