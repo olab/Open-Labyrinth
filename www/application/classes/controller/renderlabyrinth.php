@@ -319,8 +319,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $nodeId != NULL) {
-            Model::factory('labyrinth')->review($nodeId);
-            Model::factory('labyrinth')->undo($nodeId);
             Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
             Request::initial()->redirect(URL::base());
