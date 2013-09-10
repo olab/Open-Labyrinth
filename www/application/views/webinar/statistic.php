@@ -20,7 +20,7 @@
  */
 ?>
 <div class="page-header">
-    <h1><?php echo __('Scenario Progress'); ?></h1>
+    <h1><?php echo __('Scenario Progress'); ?> <?php if(isset($templateData['webinar'])) { ?> - "<?php echo $templateData['webinar']->title; ?>" <?php } ?></h1>
 </div>
 
 <?php if(isset($templateData['webinar']) && isset($templateData['webinarData']) && isset($templateData['usersMap'])) { ?>
@@ -46,11 +46,6 @@
 
                 foreach($steps as $stepKey => $step) {
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
-                        $isShowReport = false;
-                        if (in_array(2, $mapSteps[$stepKey])) {
-                            $isShowReport = true;
-                        }
-
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $changeStepLink = '';
                         if(Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') {
@@ -58,7 +53,7 @@
                         }
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
                                                             (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
-                                                                                                                                                                     : $templateData['webinarStepMap'][$stepKey]->name . $changeStepLink : '-') . (($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
+                                                                                                                                                                     : $templateData['webinarStepMap'][$stepKey]->name . $changeStepLink : '-') . ((Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                                               : '') . '</td>';
                     }
                 }
@@ -72,16 +67,9 @@
             foreach($templateData['webinarData'] as $userId => $steps) {
                 foreach($steps as $stepKey => $step) {
                     foreach($step as $mapId => $map) {
-                        if(!isset($maps[$stepKey][$mapId])) {
-                            $maps[$stepKey][$mapId]['map'] = $map['map'];
-
-                            if(!isset($maps[$stepKey][$mapId]['showReport'])) {
-                                $maps[$stepKey][$mapId]['showReport'] = false;
-                            }
-
-                            if(!$maps[$stepKey][$mapId]['showReport'] && $map['status'] == 2) {
-                                $maps[$stepKey][$mapId]['showReport'] = true;
-                            }
+                        $maps[$stepKey][$mapId]['map'] = $map['map'];
+                        if($map['status'] == 2) {
+                            $maps[$stepKey][$mapId]['showReport'] = true;
                         }
                     }
                 }
