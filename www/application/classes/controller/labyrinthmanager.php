@@ -789,7 +789,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
 
             $regAuthors = DB_ORM::model('map_user')->getAllAuthors($mapId);
             if ($regAuthors != NULL) {
@@ -815,24 +815,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    public function action_info() {
-        $mapId = $this->request->param('id', NULL);
-        if ($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
 
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $infoView;
-                $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
-        }
-    }
     public function action_addContributor() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {
@@ -885,6 +868,12 @@ class Controller_LabyrinthManager extends Controller_Base {
                 $linkStyleId = Arr::get($_POST, 'linkStyle', null);
                 if($linkStyleId != null) {
                     DB_ORM::model('map_node')->setLinkStyle($linkStyleId);
+                }
+
+                $map = DB_ORM::model('map', array($mapId));
+                if ($map) {
+                    $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
+                    $map->save();
                 }
 
                 Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
@@ -967,29 +956,4 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         }
     }
-
-    public function action_showDevNotes() {
-        $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
-            $this->template = View::factory('labyrinth/note');
-            $this->template->set('map', DB_ORM::model('map', array($mapId)));
-        } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
-        }
-    }
-
-    public function action_updateDevNodes() {
-        $mapId = (int) $this->request->param('id', 0);
-        if (isset($_POST) && !empty($_POST) && $mapId) {
-            $map = DB_ORM::model('map', array($mapId));
-            if ($map) {
-                $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
-                $map->save();
-            }
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/showDevNotes/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
-        }
-    }
-
 }
