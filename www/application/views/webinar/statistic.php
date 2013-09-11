@@ -46,6 +46,16 @@
 
                 foreach($steps as $stepKey => $step) {
                     if(!isset($stepsHeaders[$stepKey]) || $stepsHeaders[$stepKey]['count'] < count($step)) {
+                        $isShowReport = false;
+                        if(isset($mapSteps[$stepKey]) && count($mapSteps[$stepKey]) > 0) {
+                            foreach($mapSteps[$stepKey] as $mapStatus) {
+                                if($mapStatus == 2) {
+                                    $isShowReport = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $changeStepLink = '';
                         if(Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') {
@@ -53,7 +63,7 @@
                         }
                         $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
                                                             (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
-                                                                                                                                                                     : $templateData['webinarStepMap'][$stepKey]->name . $changeStepLink : '-') . ((Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
+                                                                                                                                                                     : $templateData['webinarStepMap'][$stepKey]->name . $changeStepLink : '-') . (($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                                               : '') . '</td>';
                     }
                 }
