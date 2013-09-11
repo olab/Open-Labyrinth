@@ -80,7 +80,7 @@
             ?>
                 <td style="text-align: center; font-weight: bold;">
                     <?php echo $v['map']->name;?>
-                    <?php if($v['showReport'] && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') { ?>
+                    <?php if(isset($v['showReport']) && $v['showReport'] && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') { ?>
                         <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $v['map']->id; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
                     <?php } ?>
                 </td>
