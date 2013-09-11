@@ -134,6 +134,13 @@ if (isset($templateData['map'])) { ?>
                                     <input id="show_info" name="show_info" type="checkbox"/>
                                 </div>
                             </div>
+                            <div class="control-group block">
+                                <label for="annotation"
+                                       class="control-label"><strong><?php echo __('Annotation'); ?></strong></label>
+                                <div class="controls block">
+                                    <textarea class="mceEditorLite" name="annotation" id="annotation"></textarea>
+                                </div>
+                            </div>
                             <div>
                                 <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                                     <div>

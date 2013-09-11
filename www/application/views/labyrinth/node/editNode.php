@@ -43,6 +43,25 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             editor_selector: "mceEditor",
             entity_encoding: "raw"
         });
+
+        tinyMCE.init({
+            // General options
+            mode: "textareas",
+            relative_urls: false,
+            theme: "advanced",
+            skin: "bootstrap",
+            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+            // Theme options
+            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+            theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,|,forecolor,backcolor",
+            theme_advanced_buttons3: "sub,sup,|,charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
+            theme_advanced_toolbar_location: "top",
+            theme_advanced_toolbar_align: "left",
+            theme_advanced_statusbar_location: "bottom",
+            theme_advanced_resizing: true,
+            editor_selector: "mceEditorLite",
+            entity_encoding: "raw"
+        });
     </script>
 
 <div class="page-header">
@@ -50,11 +69,10 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
             <i class="icon-sitemap"></i>
             <?php echo __('Set as Root'); ?></a>
-
     </div>
 
     <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-    </div>
+</div>
 
     <form id="form1" name="form1" method="post" class="form-horizontal"
           action="<?php echo URL::base() . 'nodeManager/updateNode/' . $templateData['node']->id; ?>">
@@ -107,18 +125,20 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 </div>
             </div>
 
+            <div class="control-group">
+                <label for="annotation"
+                       class="control-label"><?php echo __('Annotation'); ?></label>
+                <div class="controls">
+                    <textarea class="mceEditorLite" name="annotation" id="annotation"><?php echo $templateData['node']->annotation; ?></textarea>
+                </div>
+            </div>
         </fieldset>
-
 
         <fieldset class="fieldset">
             <legend>Counters</legend>
-
-
             <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                 <?php foreach ($templateData['counters'] as $counter) { ?>
                     <?php echo __('counter function for'); ?> "<a href="<?php  echo URL::base() . 'counterManager/editCounter/' . $templateData['map']->id.'/'.$counter->id;?>"><?php echo $counter->name; ?></a>"
-
-
                     <div class="control-group">
                         <label for="cfunc_<?php echo $counter->id; ?>"
                                class="control-label"><?php echo __('Counter Function'); ?></label>
@@ -146,10 +166,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
                         </div>
                     </div>
-
-
-
-
                 <?php } ?>
             <?php } ?>
             <div class="form-actions">
@@ -170,7 +186,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                         <?php echo __('On'); ?><input name="mnodeprobability" type="radio"
                                                       value="1" <?php if ($templateData['node']->probability) echo 'checked=""'; ?>>
                     </label>
-
                     <label class="radio">
                         <?php echo __('Off'); ?>
                         <input name="mnodeprobability" type="radio"
@@ -178,7 +193,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                     </label>
                 </div>
             </div>
-
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Node Conditional'); ?></label>
@@ -191,10 +205,8 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 </div>
             </div>
 
-
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link Function Style'); ?></label>
-
                 <div class="controls">
                     <?php if (isset($templateData['linkStyles'])) { ?>
                         <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
@@ -209,7 +221,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Node Priorities'); ?></label>
-
                 <div class="controls">
                     <?php if (isset($templateData['priorities'])) { ?>
                         <?php foreach ($templateData['priorities'] as $priority) { ?>
@@ -224,7 +235,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Prevent Revisit'); ?></label>
-
                 <div class="controls">
                     <label class="radio">
                         <span><?php echo __('Enabled'); ?></span>
@@ -240,7 +250,6 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link to end and report from this node'); ?></label>
-
                 <div class="controls">
                     <label class="radio">
                         <span><?php echo __('Off'); ?>
@@ -255,17 +264,11 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                     </label>
                 </div>
             </div>
-
-
         </fieldset>
-
-
         <?php
         echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
         <div class="form-actions">
-
             <div class="pull-right">
-
             <input class="btn btn-large btn-primary" type="submit" name="Submit"
                    value="<?php echo __('Save changes'); ?>"></div></div>
     </form>

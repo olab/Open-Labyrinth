@@ -86,6 +86,7 @@ class Model_VisualEditor extends Model {
                 $title = base64_encode(str_replace('&#43;', '+', $node->title));
                 $text  = base64_encode(str_replace('&#43;', '+', $node->text));
                 $info  = base64_encode(str_replace('&#43;', '+', $node->info));
+                $annotation = base64_encode(str_replace('&#43;', '+', $node->annotation));
 
                 $counters = '';
                 $countersData = DB_ORM::model('map_node_counter')->getNodeCounters($node->id);
@@ -100,7 +101,7 @@ class Model_VisualEditor extends Model {
                     }
                 }
 
-                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", showInfo: "' . $node->show_info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . ', y: ' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
+                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", annotation: "' . $annotation . '", showInfo: "' . $node->show_info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . ', y: ' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
             }
 
             if (strlen($nodesJSON) > 2) {

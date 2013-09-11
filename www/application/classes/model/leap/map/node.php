@@ -134,6 +134,11 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'annotation' => new DB_ORM_Field_Text($this, array(
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            ))
         );
         
         $this->relations = array(
@@ -314,6 +319,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                                                            ->column('end', Arr::get($values, 'ender', FALSE))
                                                            ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
                                                            ->column('show_info', Arr::get($values, 'show_info', FALSE) ? 1 : 0)
+                                                           ->column('annotation', Arr::get($values, 'annotation', null))
                                                            ->execute()));
         }
         
@@ -363,6 +369,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('x', Arr::get($values, 'x', 0))
                 ->column('y', Arr::get($values, 'y', 0))
                 ->column('rgb', Arr::get($values, 'color', '#FFFFFF'))
+                ->column('annotation', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null)))))
                 ->column('show_info', Arr::get($values, 'showInfo', 0));
 
         return $builder->execute();
@@ -385,6 +392,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->y = Arr::get($values, 'y', 0);
             $this->rgb = Arr::get($values, 'color', '#FFFFFF');
             $this->show_info = Arr::get($values, 'showInfo', 0);
+            $this->annotation = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
 
             $this->save();
         }
@@ -434,6 +442,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->undo = Arr::get($values, 'mnodeUndo', $this->undo);
             $this->end = Arr::get($values, 'ender', $this->end);
             $this->show_info = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
+            $this->annotation = Arr::get($values, 'annotation', null);
 
             $this->save();
             

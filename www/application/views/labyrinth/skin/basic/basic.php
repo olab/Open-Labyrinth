@@ -485,9 +485,11 @@ if ($templateData['skin_path'] != NULL) {
                             editor</a></p>
                     <?php } else { ?>
                     <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
+                    <?php if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>'; ?>
                     <?php } ?>
                 <?php } else { ?>
                 <?php if (isset($templateData['node_text'])) echo $templateData['node_text']; ?>
+                <?php if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>'; ?>
                 <?php } ?>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>

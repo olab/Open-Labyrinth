@@ -45,6 +45,7 @@ class Model_Labyrinth extends Model {
 
             $result['node_title'] = $node->title;
             $result['node_text'] = $node->text;
+            $result['node_annotation'] = $node->annotation;
 				
             $sessionId = NULL;
             if($bookmark != NULL) {
