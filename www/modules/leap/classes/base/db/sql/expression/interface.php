@@ -70,7 +70,7 @@ interface Base_DB_SQL_Expression_Interface {
 	 * @param string $expr                      the expression to be prepared
 	 * @return string                           the prepared expression
 	 */
-	public function prepare_identifier($expr);
+	public function prepare_identifier($expr, $withFunc = false);
 
 	/**
 	 * This function prepares the specified expression as a join type.

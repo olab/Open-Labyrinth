@@ -173,6 +173,14 @@
                 if (Auth::instance()->logged_in()) {
                     ?>
                     <div id="sidebar" class="span2">
+                        <?php if(isset($templateData['labyrinthSearch']) && isset($templateData['map'])) { ?>
+                            <form action="<?php echo URL::base(); ?>labyrinthManager/search<?php echo '/' . $templateData['map']->id; ?>" method="get">
+                                <div class="input-prepend">
+                                    <span class="add-on"><i class="icon-search"></i></span>
+                                    <input class="span10" id="searchText" name="s" type="text" value="<?php if(isset($templateData['searchText'])) echo $templateData['searchText']; ?>" placeholder="Labyrinth Search">
+                                </div>
+                            </form>
+                        <?php } else { ?>
                             <form action="<?php echo URL::base(); ?>home/search" method="post">
                                 <input type="hidden" name="scope" value="t" />
                                 <div class="input-prepend">
@@ -180,6 +188,7 @@
                                     <input class="span10" id="searchterm" name="searchterm" type="text" placeholder="Labyrinth Search">
                                 </div>
                             </form>
+                        <?php } ?>
 
                         <div class="sidebar-nav">
                             <?php if (isset($templateData['left'])) echo $templateData['left']; ?>

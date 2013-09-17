@@ -24,6 +24,8 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_LabyrinthManager extends Controller_Base {
 
     public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
         parent::before();
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
@@ -974,5 +976,49 @@ class Controller_LabyrinthManager extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base() . 'openLabyrinth');
         }
+    }
+
+    public function action_search() {
+        $mapId = $this->request->param('id', null);
+        $searchText = Arr::get($_GET, 's', null);
+
+        $searcher = new Searcher();
+
+        $searcher->addElement(new Searcher_Element_BasicMap_Dam($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                              array('field' => 'name', 'label' => 'Name'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_Node($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                               array('field' => 'title', 'label' => 'Title'),
+                                                                               array('field' => 'text', 'label' => 'Content'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_NodeSection($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                                      array('field' => 'name', 'label' => 'Name'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_Counter($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                                  array('field' => 'name', 'label' => 'Name'),
+                                                                                  array('field' => 'description', 'label' => 'Description'),
+                                                                                  array('field' => 'start_value', 'label' => 'Start value'))));
+        $searcher->addElement(new Searcher_Element_Question($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                          array('field' => 'stem', 'label' => 'Stem'),
+                                                                          array('field' => 'response', 'label' => 'Response', 'type' => 'response'),
+                                                                          array('field' => 'feedback', 'label' => 'Feedback', 'type' => 'response'))));
+        $searcher->addElement(new Searcher_Element_Chat($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                      array('field' => 'stem', 'label' => 'Stem'),
+                                                                      array('field' => 'question', 'label' => 'Question', 'type' => 'element'),
+                                                                      array('field' => 'response', 'label' => 'Response', 'type' => 'element'))));
+        $searcher->addElement(new Searcher_Element_Vpd($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                     array('field' => 'value', 'label' => 'Value', 'type' => 'element'))));
+
+        $this->templateData['searchText'] = $searchText;
+
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+
+        $view = View::factory('labyrinthSearchResult');
+        $view->set('data', $searcher->search($searchText));
+        $view->set('searchText', $searchText);
+
+        $this->templateData['center'] = $view;
+        $this->templateData['left'] = $leftView;
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
     }
 }

@@ -89,8 +89,8 @@ abstract class Base_DB_SQL_Select_Proxy extends Kohana_Object implements DB_SQL_
 	 * @param string $alias                 the alias to used for the specified table
 	 * @return DB_SQL_Select_Proxy          a reference to the current instance
 	 */
-	public function column($column, $alias = NULL) {
-		$this->builder->column($column, $alias);
+	public function column($column, $alias = NULL, $withFunc = false) {
+		$this->builder->column($column, $alias, $withFunc);
 		return $this;
 	}
 
@@ -131,7 +131,7 @@ abstract class Base_DB_SQL_Select_Proxy extends Kohana_Object implements DB_SQL_
 	 * @return DB_SQL_Select_Proxy          a reference to the current instance
 	 * @throws Kohana_SQL_Exception         indicates an invalid SQL build instruction
 	 */
-	public function on($column0, $operator, $column1) {
+	public function on($column0, $operator, $column1, $withFunc = false) {
 		$this->builder->on($column0, $operator, $column1);
 		return $this;
 	}
@@ -171,8 +171,8 @@ abstract class Base_DB_SQL_Select_Proxy extends Kohana_Object implements DB_SQL_
 	 * @param string $connector             the connector to be used
 	 * @return DB_SQL_Select_Proxy          a reference to the current instance
 	 */
-	public function where($column, $operator, $value, $connector = 'AND') {
-		$this->builder->where($column, $operator, $value, $connector);
+	public function where($column, $operator, $value, $connector = 'AND', $withFunc = false) {
+		$this->builder->where($column, $operator, $value, $connector, $withFunc);
 		return $this;
 	}
 

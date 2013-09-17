@@ -1399,3 +1399,7 @@ table.dataTable tr.odd td[class*='sorting'] {
 table.dataTable tr.even td[class*='sorting'] {
     background-color: #F0F0F0 !important;
 }
+
+.search-selected {
+    background-color: #ffff00;
+}

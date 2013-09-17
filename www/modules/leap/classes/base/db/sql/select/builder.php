@@ -115,8 +115,8 @@ abstract class Base_DB_SQL_Select_Builder extends DB_SQL_Builder {
 	 * @param string $alias                     the alias to used for the specified table
 	 * @return DB_SQL_Select_Builder            a reference to the current instance
 	 */
-	public function column($column, $alias = NULL) {
-		$column = $this->compiler->prepare_identifier($column);
+	public function column($column, $alias = NULL, $withFunc = false) {
+		$column = $this->compiler->prepare_identifier($column, $withFunc);
 		if ( ! is_null($alias)) {
 			$alias = $this->compiler->prepare_alias($alias);
 			$column = "{$column} AS {$alias}";
@@ -160,7 +160,7 @@ abstract class Base_DB_SQL_Select_Builder extends DB_SQL_Builder {
 		}
 		if ( ! is_null($alias)) {
 			$alias = $this->compiler->prepare_alias($alias);
-			$table = "{$table} {$alias}";
+			$table = "{$table} AS {$alias}";
 		}
 		$this->data['join'][] = array($table, array(), array());
 		return $this;
@@ -176,16 +176,16 @@ abstract class Base_DB_SQL_Select_Builder extends DB_SQL_Builder {
 	 * @return DB_SQL_Select_Builder            a reference to the current instance
 	 * @throws Kohana_SQL_Exception             indicates an invalid SQL build instruction
 	 */
-	public function on($column0, $operator, $column1) {
+	public function on($column0, $operator, $column1, $withFunc = false) {
 		if ( ! empty($this->data['join'])) {
 			$index = count($this->data['join']) - 1;
 			$condition = $this->data['join'][$index][2];
 			if ( ! empty($condition)) {
 				throw new Kohana_SQL_Exception('Message: Invalid build instruction. Reason: Must not declare two different types of constraints on a JOIN statement.', array(':column0' => $column0, ':operator' => $operator, ':column1:' => $column1));
 			}
-			$column0 = $this->compiler->prepare_identifier($column0);
+			$column0 = $this->compiler->prepare_identifier($column0, $withFunc);
 			$operator = $this->compiler->prepare_operator($operator, 'COMPARISON');
-			$column1 = $this->compiler->prepare_identifier($column1);
+			$column1 = $this->compiler->prepare_identifier($column1, $withFunc);
 			$this->data['join'][$index][1][] = "{$column0} {$operator} {$column1}";
 		}
 		else {
@@ -244,13 +244,13 @@ abstract class Base_DB_SQL_Select_Builder extends DB_SQL_Builder {
 	 * @return DB_SQL_Select_Builder            a reference to the current instance
 	 * @throws Kohana_SQL_Exception             indicates an invalid SQL build instruction
 	 */
-	public function where($column, $operator, $value, $connector = 'AND') {
+	public function where($column, $operator, $value, $connector = 'AND', $withFunc = false) {
 		$operator = $this->compiler->prepare_operator($operator, 'COMPARISON');
 		if (($operator == DB_SQL_Operator::_BETWEEN_) || ($operator == DB_SQL_Operator::_NOT_BETWEEN_)) {
 			if ( ! is_array($value)) {
 				throw new Kohana_SQL_Exception('Message: Invalid SQL build instruction. Reason: Operator requires the value to be declared as an array.', array(':column' => $column, ':operator' => $operator, ':value' => $value, ':connector' => $connector));
 			}
-			$column = $this->compiler->prepare_identifier($column);
+			$column = $this->compiler->prepare_identifier($column, $withFunc);
 			$value0 = $this->compiler->prepare_value($value[0]);
 			$value1 = $this->compiler->prepare_value($value[1]);
 			$connector = $this->compiler->prepare_connector($connector);
@@ -270,7 +270,7 @@ abstract class Base_DB_SQL_Select_Builder extends DB_SQL_Builder {
 					break;
 				}
 			}
-			$column = $this->compiler->prepare_identifier($column);
+			$column = $this->compiler->prepare_identifier($column, $withFunc);
 //			$escape = (in_array($operator, array(DB_SQL_Operator::_LIKE_, DB_SQL_Operator::_NOT_LIKE_)))
 //				? '\\'
 //				: NULL;
