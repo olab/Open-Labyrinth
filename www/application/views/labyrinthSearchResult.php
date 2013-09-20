@@ -81,7 +81,11 @@
                         <?php
 
                         $value = strip_tags($content['value']);
-                        $regexp = '/(' . $searcherElement->searchText . ')/i';
+                        $searchText = preg_replace('/\./', '\\.', $searcherElement->searchText);
+                        $searchText = preg_replace('/\//', "\/", $searchText);
+                        $searchText = preg_replace('/\*/', "\*", $searchText);
+                        $searchText = preg_replace('/\+/', "\+", $searchText);
+                        $regexp = '/(' . $searchText . ')/i';
                         $replace = '<span class="search-selected">${1}</span>';
                         $value = preg_replace($regexp, $replace, $value);
 

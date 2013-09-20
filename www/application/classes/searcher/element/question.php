@@ -33,7 +33,7 @@ class Searcher_Element_Question extends Searcher_Element {
         $data = array();
         $search = '%' . strtolower($searchText) . '%';
 
-        if($this->fields == null || count($this->fields) <= 0) return $data;
+        if($this->fields == null || count($this->fields) <= 0 || $searchText == null || empty($searchText)) return $data;
 
         $builder = DB_SQL::select('default')
                            ->column('M.id', 'id', true)
