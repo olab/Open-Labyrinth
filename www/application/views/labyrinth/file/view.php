@@ -47,13 +47,13 @@ if (isset($templateData['map'])) {
                     </button>
                     <span class="fileupload-loading"></span>
             </div>
+            <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio(.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
             <div class="col-lg-5 fileupload-progress fade" style="margin-top: 22px;">
                 <div class="progress progress-striped active" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="margin-bottom: 0px;">
                     <div class="progress-bar progress-bar-success bar" style="width:0%;"></div>
                 </div>
                 <div class="progress-extended">&nbsp;</div>
             </div>
-
             <table role="presentation" id="filesTable" class="table table-striped"><tbody class="files"></tbody></table>
         </form>
     </div>
