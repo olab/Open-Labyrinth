@@ -91,6 +91,12 @@ if (isset($templateData['map'])) {
                     <span>Start</span>
                 </button>
                 {% } %}
+                {% if (!i) { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+                {% } %}
             </td>
         </tr>
         {% } %}
