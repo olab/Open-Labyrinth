@@ -47,7 +47,7 @@
     <h1><?php echo __('Edit Message'); ?></h1></div>
 
 <form class="form-horizontal" id="form1" name="form1" method="post"
-      action="<?php echo URL::base() . 'dtopicManager/updateMessage/'; ?>">
+      action="<?php echo URL::base() . 'dtopicManager/updateMessage/' . $templateData['topic_id']; ?>">
 
 <fieldset class="fieldset">
 

@@ -90,7 +90,7 @@
 </table>
 
 <form class="form-horizontal" id="form1" name="form1" method="post"
-      action="<?php echo URL::base() . 'dtopicManager/addMessage/'; ?>">
+      action="<?php echo URL::base() . 'dtopicManager/addMessage/' . $templateData['topic']['id']; ?>">
     <fieldset class="fieldset">
         <div class="control-group">
             <label for="message" class="control-label"><?php echo __('Message: '); ?></label>
