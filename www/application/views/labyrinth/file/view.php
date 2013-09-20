@@ -18,14 +18,118 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+
 if (isset($templateData['map'])) {
     ?>
+<script>
+    var dataURL = '<?php echo URL::base(); ?>scripts/fileupload/php/';
+    var replaceAction = '<?php echo URL::base(); ?>fileManager/replaceFiles';
+    var displayMapId = <?php echo $templateData['map']->id; ?>;
+    var fileManagerUrl = '<?php echo URL::base(); ?>fileManager/<?php echo $templateData['map']->id; ?>';
+</script>
+
+<link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/jquery.fileupload-ui.css" />
+
 <div class="page-header">
     <h1><?php echo __('Edit files for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
-
-
     <div class="alert alert-info"> Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></div>
+    <div class="container" style="position: relative;">
+        <form id="fileupload" action="" method="POST" enctype="multipart/form-data">
+            <div class="fileupload-buttonbar">
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="files[]" multiple>
+                </span>
+                    <button id="uploadBtn" type="submit" class="btn btn-primary start">
+                        <i class="glyphicon glyphicon-upload"></i>
+                        <span>Start upload</span>
+                    </button>
+                    <span class="fileupload-loading"></span>
+            </div>
+            <div class="col-lg-5 fileupload-progress fade" style="margin-top: 22px;">
+                <div class="progress progress-striped active" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="margin-bottom: 0px;">
+                    <div class="progress-bar progress-bar-success bar" style="width:0%;"></div>
+                </div>
+                <div class="progress-extended">&nbsp;</div>
+            </div>
 
+            <table role="presentation" id="filesTable" class="table table-striped"><tbody class="files"></tbody></table>
+        </form>
+    </div>
+
+    <script id="template-upload" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+        <tr class="template-upload fade">
+            <td>
+                <span class="preview"></span>
+            </td>
+            <td>
+                <p class="name">{%=file.name%}</p>
+                {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                {% } %}
+            </td>
+            <td>
+                <p class="size">{%=o.formatFileSize(file.size)%}</p>
+                {% if (!o.files.error) { %}
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success bar" style="width:0%;"></div></div>
+                {% } %}
+            </td>
+            <td>
+                {% if (!o.files.error && !i && !o.options.autoUpload) { %}
+                <button class="btn btn-primary start hide">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start</span>
+                </button>
+                {% } %}
+            </td>
+        </tr>
+        {% } %}
+    </script>
+
+    <script id="template-download" type="text/x-tmpl">
+        {% for (var i=0, file; file=o.files[i]; i++) { %}
+        <tr class="template-download fade">
+            <td>
+            <span class="preview">
+                {% if (file.thumbnailUrl) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
+                {% } %}
+            </span>
+            </td>
+            <td>
+                <p class="name">
+                    {% if (file.url) { %}
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
+                    {% } else { %}
+                    <span>{%=file.name%}</span>
+                    {% } %}
+                </p>
+                {% if (file.error) { %}
+                <div><span class="label label-danger">Error</span> {%=file.error%}</div>
+                {% } %}
+            </td>
+            <td>
+                <span class="size">{%=o.formatFileSize(file.size)%}</span>
+            </td>
+            <td>
+                {% if (file.deleteUrl) { %}
+                <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                <i class="glyphicon glyphicon-trash"></i>
+                <span>Delete</span>
+                </button>
+                <input type="checkbox" name="delete" value="1" class="toggle">
+                {% } else { %}
+                <button class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel</span>
+                </button>
+                {% } %}
+            </td>
+        </tr>
+        {% } %}
+    </script>
 
     <table class="table table-striped table-bordered">
         <colgroup>
@@ -135,7 +239,6 @@ if (isset($templateData['map'])) {
                                     editor</a>
                         <?php } ?></div>
                     </td>
-
                 </tr>
             <?php } ?>
         <?php }else{ ?>
@@ -143,40 +246,19 @@ if (isset($templateData['map'])) {
         <?php } ?>
         </tbody>
     </table>
+    <input type="hidden" id="redirect_url" name="redirect_url" value="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>" />
 
-     <form method="POST" id="upload-form" enctype="multipart/form-data" class="form-horizontal"
-          action="<?php echo URL::base() . 'fileManager/uploadFile/' . $templateData['map']->id; ?>">
-        <fieldset class="fieldset">
-            <legend><?php echo __('Upload a file to Labyrinth'); ?> "<?php echo $templateData['map']->name; ?>"</legend>
-<p>
-    Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to
-    display or link a file there
-</p>
-            <div class="control-group">
-                <label class="control-label"><?php echo __('Select file to upload'); ?></label>
-                <div class="controls">
-                    <input type="FILE"  name="filename">
-                </div>
-            </div>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+    <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
 
-        </fieldset>
-         <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc),
-             Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4
-             Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio
-             (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
-
-        <div class="form-actions">
-         <div class="pull-right">
-             <input class="btn btn-large btn-primary" id="opener" type="button" name="Submit" value="<?php echo __('Upload'); ?>">
-         </div></div>
-
-    </form>
-    <div id="dialog-confirm" title="<?php echo $templateData['media_copyright']['title']; ?>">
-        <div class="dialog-box"><span class="ui-icon ui-icon-alert"
-                                      style="float: left; margin: 0 7px 20px 0;"></span><?php echo $templateData['media_copyright']['copyright_message']; ?>
-        </div>
-    </div>
-
-
-
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.iframe-transport.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-process.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-image.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-audio.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-video.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-validate.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload-ui.js"></script>
+    <script src="<?php echo URL::base(); ?>scripts/filemanager.js"></script>
 <?php } ?>
