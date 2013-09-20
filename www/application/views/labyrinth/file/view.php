@@ -34,6 +34,8 @@ if (isset($templateData['map'])) {
     <h1><?php echo __('Edit files for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
     <div class="alert alert-info"> Labyrinth '<?php echo $templateData['map']->id; ?>' - <?php echo $templateData['files_count']; ?> files, <?php echo $templateData['files_size']; ?></div>
     <div class="container" style="position: relative;">
+        <p>Once uploaded copy and paste the file tag (looks like [[MR:1234567]]) into a node's content box or info box to display or link a file there</p>
+
         <form id="fileupload" action="" method="POST" enctype="multipart/form-data">
             <div class="fileupload-buttonbar">
                 <span class="btn btn-success fileinput-button">
@@ -41,7 +43,9 @@ if (isset($templateData['map'])) {
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple>
                 </span>
-                    <button id="uploadBtn" type="submit" class="btn btn-primary start">
+                    <button id="uploadBtn" type="submit" class="btn btn-primary start" style="display: none"></button>
+
+                    <button id="opener" type="button" name="Submit" class="btn btn-primary">
                         <i class="glyphicon glyphicon-upload"></i>
                         <span>Start upload</span>
                     </button>
@@ -56,6 +60,10 @@ if (isset($templateData['map'])) {
             </div>
             <table role="presentation" id="filesTable" class="table table-striped"><tbody class="files"></tbody></table>
         </form>
+    </div>
+
+    <div id="dialog-confirm" title="<?php echo $templateData['media_copyright']['title']; ?>">
+        <div class="dialog-box"><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span><?php echo $templateData['media_copyright']['copyright_message']; ?></div>
     </div>
 
     <script id="template-upload" type="text/x-tmpl">

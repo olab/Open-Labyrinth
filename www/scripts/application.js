@@ -29,7 +29,7 @@ jQuery(document).ready(function(){
         buttons: {
             "I agree": function() {
                 jQuery(this).dialog( "close" );
-                jQuery('#upload-form').submit();
+                jQuery('#uploadBtn').click();
             },
             Cancel: function() {
                 jQuery(this).dialog( "close" );
