@@ -174,7 +174,7 @@
                     ?>
                     <div id="sidebar" class="span2">
                         <?php if(isset($templateData['labyrinthSearch']) && isset($templateData['map'])) { ?>
-                            <form action="<?php echo URL::base(); ?>labyrinthManager/search<?php echo '/' . $templateData['map']->id; ?>" method="get">
+                            <form action="<?php echo URL::base(); ?>labyrinthManager/search<?php echo '/' . (isset($templateData['map']) && !is_numeric($templateData['map'])  ? $templateData['map']->id : $templateData['map']); ?>" method="get">
                                 <div class="input-prepend">
                                     <span class="add-on"><i class="icon-search"></i></span>
                                     <input class="span10" id="searchText" name="s" type="text" value="<?php if(isset($templateData['searchText'])) echo $templateData['searchText']; ?>" placeholder="Labyrinth Search">
