@@ -286,7 +286,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
             ->join('LEFT', 'users', 'u')
             ->on('u.id', '=', 'messages.user_id')
             ->where('messages.forum_id','=',$forumId)
-            ->order_by('messages.id');
+            ->order_by('messages.id', 'DESC');
         $result = $builder->query();
 
         if($result->is_loaded()) {

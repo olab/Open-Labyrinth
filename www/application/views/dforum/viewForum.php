@@ -44,8 +44,9 @@
 </script>
 
 <div class="page-header">
+    <h1><?php echo __($templateData['forum']['name']); ?></h1>
+</div>
 
-    <h1><?php echo __($templateData['forum']['name']); ?></h1></div>
 
 
     <?php if (isset($templateData['topics'])) {
@@ -57,6 +58,29 @@
         <?php }
         echo '</ul><br />';
     } ?>
+
+                    <form class="form-horizontal" id="form1" name="form1" method="post"
+                          action="<?php echo URL::base() . 'dforumManager/addMessage/'; ?>">
+                        <fieldset class="fieldset">
+                            <div class="control-group">
+                                <label for="message" class="control-label"><?php echo __('Message: '); ?></label>
+
+                                <div class="controls">
+                                    <textarea name="message" id="message" class="mceEditor"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="form-actions">
+                                <div class="pull-right">
+                                    <input class="btn btn-large btn-primary" type="submit" name="Submit"
+                                           value="<?php echo __('Add message'); ?>" onclick="return CheckForm();">
+                                </div>
+                        </div>
+                        <input type="hidden" name="forum" id="forum" value="<?php echo $templateData['forum']['id']; ?>" />
+                        <input type="hidden" id="lastMessageId" value="<?php echo (isset($message['id'])) ? $message['id'] : null; ?>" />
+                        <input type="hidden" id="url" value="<?php echo URL::base(); ?>" />
+                    </form>
 
 <table class="table table-striped table-bordered" id="message-table">
     <tbody>
@@ -99,31 +123,6 @@
     <?php } ?>
     </tbody>
 </table>
-
-<form class="form-horizontal" id="form1" name="form1" method="post"
-      action="<?php echo URL::base() . 'dforumManager/addMessage/'; ?>">
-    <fieldset class="fieldset">
-        <div class="control-group">
-            <label for="message" class="control-label"><?php echo __('Message: '); ?></label>
-
-            <div class="controls">
-                <textarea name="message" id="message" class="mceEditor"></textarea>
-            </div>
-        </div>
-    </fieldset>
-
-    <div class="form-actions">
-        <div class="form-actions">
-            <div class="pull-right">
-                <input class="btn btn-large btn-primary" type="submit" name="Submit"
-                       value="<?php echo __('Add message'); ?>" onclick="return CheckForm();"></div>
-        </div>
-    </div>
-    <input type="hidden" name="forum" id="forum" value="<?php echo $templateData['forum']['id']; ?>" />
-    <input type="hidden" id="lastMessageId" value="<?php echo (isset($message['id'])) ? $message['id'] : null; ?>" />
-    <input type="hidden" id="url" value="<?php echo URL::base(); ?>" />
-</form>
-
 
 <script>
 

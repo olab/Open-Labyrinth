@@ -47,6 +47,29 @@
 
     <h1><?php echo __($templateData['topic']['name']); ?></h1></div>
 
+<form class="form-horizontal" id="form1" name="form1" method="post"
+      action="<?php echo URL::base() . 'dtopicManager/addMessage/' . $templateData['topic']['id']; ?>">
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="message" class="control-label"><?php echo __('Message: '); ?></label>
+
+            <div class="controls">
+                <textarea name="message" id="message" class="mceEditor"></textarea>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="form-actions">
+        <div class="pull-right">
+            <input class="btn btn-large btn-primary" type="submit" name="Submit"
+                   value="<?php echo __('Add message'); ?>" onclick="return CheckForm();">
+        </div>
+    </div>
+    <input type="hidden" name="topic" id="topic" value="<?php echo $templateData['topic']['id']; ?>" />
+    <input type="hidden" id="lastMessageId" value="<?php echo (isset($message['id'])) ? $message['id'] : null; ?>" />
+    <input type="hidden" id="url" value="<?php echo URL::base(); ?>" />
+</form>
+
 <table class="table table-striped table-bordered" id="message-table">
     <tbody>
     <?php
@@ -88,31 +111,6 @@
     <?php } ?>
     </tbody>
 </table>
-
-<form class="form-horizontal" id="form1" name="form1" method="post"
-      action="<?php echo URL::base() . 'dtopicManager/addMessage/' . $templateData['topic']['id']; ?>">
-    <fieldset class="fieldset">
-        <div class="control-group">
-            <label for="message" class="control-label"><?php echo __('Message: '); ?></label>
-
-            <div class="controls">
-                <textarea name="message" id="message" class="mceEditor"></textarea>
-            </div>
-        </div>
-    </fieldset>
-
-    <div class="form-actions">
-        <div class="form-actions">
-            <div class="pull-right">
-                <input class="btn btn-large btn-primary" type="submit" name="Submit"
-                       value="<?php echo __('Add message'); ?>" onclick="return CheckForm();"></div>
-        </div>
-    </div>
-    <input type="hidden" name="topic" id="topic" value="<?php echo $templateData['topic']['id']; ?>" />
-    <input type="hidden" id="lastMessageId" value="<?php echo (isset($message['id'])) ? $message['id'] : null; ?>" />
-    <input type="hidden" id="url" value="<?php echo URL::base(); ?>" />
-</form>
-
 
 <script>
 
