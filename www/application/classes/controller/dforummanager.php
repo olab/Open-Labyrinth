@@ -268,6 +268,7 @@ class Controller_DForumManager extends Controller_Base {
     }
 
     private static function prepareUsersMail($forumId, $usersEmail = '', $type = '') {
+        $result = array();
         if ($usersEmail != '' && $type == 'deleteUser') {
             // get groups users emails
             $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
@@ -365,7 +366,7 @@ class Controller_DForumManager extends Controller_Base {
     }
 
     private static function prepareUsersMailforTopic($topicId, $usersEmail = '', $type = '') {
-
+        $result = array();
         if ($usersEmail != '' && $type == 'deleteUser') {
             // get groups users emails
             $groups = DB_ORM::model('dtopic_groups')->getAllGroupsInTopic($topicId);
