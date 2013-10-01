@@ -61,9 +61,12 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         return array('id');
     }
 
-    public function addUser($forumId, $userId) {
+    public function addUser($forumId, $userId, $sendNotifications = -1) {
         $this->id_user = $userId;
         $this->id_forum = $forumId;
+        if($sendNotifications >= 0) {
+            $this->is_notificate = $sendNotifications == 0 ? false : true;
+        }
 
         $this->save();
         $this->reset();
@@ -73,7 +76,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         DB_SQL::delete('default')->from($this->table())->where('id_forum', '=', $forumId, 'AND')->where('id_user', '=', $userId)->execute();
     }
 
-    public function updateUsers($forumId, $users){
+    public function updateUsers($forumId, $users, $sendNotification = -1){
         $usersInForum = $this->getAllUsersInForum($forumId, 'id');
 
         if (count($usersInForum) <= 0) {
@@ -89,13 +92,16 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
                 } else {
                     $this->id_user = $userId;
                     $this->id_forum = $forumId;
+                    if($sendNotification >= 0) {
+                        $this->is_notificate = $sendNotification == 0 ? false : true;
+                    }
 
                     $this->save();
                     $this->reset();
 
                     $userInfo = DB_ORM::model('user')->getUserById($userId);
 
-                    if ($userInfo->email != '') {
+                    if ($sendNotification >= 0 && $sendNotification == 1 && $userInfo->email != '') {
                         Controller_DForumManager::action_mail('addUserToForum',$forumId, '' , '', $userInfo->email );
                     }
                 }
@@ -109,8 +115,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
 
                 $userInfo = DB_ORM::model('user')->getUserById($userId);
 
-                if ($userInfo->email != '')
-                {
+                if ($sendNotification && $userInfo->email != '') {
                     $usersEmail[] = $userInfo->email;
                 }
             }

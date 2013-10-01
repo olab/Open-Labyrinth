@@ -186,6 +186,7 @@ class Controller_DForumManager extends Controller_Base {
         $firstMessage = Arr::get($this->request->post(), 'firstmessage', NULL);
         $status = Arr::get($this->request->post(), 'status', NULL);
         $security = Arr::get($this->request->post(), 'security', NULL);
+        $sendNotification = Arr::get($this->request->post(), 'sentNotifications', 'off') == 'off' ? 0: 1;
 
         $users = Arr::get($this->request->post(), 'users', NULL);
         $groups = Arr::get($this->request->post(), 'groups', NULL);
@@ -193,8 +194,8 @@ class Controller_DForumManager extends Controller_Base {
         $forumId = DB_ORM::model('dforum')->createForum($forumName,$security, $status);
         $messageID = DB_ORM::model('dforum_messages')->createMessage($forumId, $firstMessage);
 
-        DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
-        DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
+        DB_ORM::model('dforum_users')->updateUsers($forumId, $users, $sendNotification);
+        DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups, $sendNotification);
 
         self::action_mail('createForum',$forumId, $firstMessage, $forumName);
 
