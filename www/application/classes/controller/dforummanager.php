@@ -357,7 +357,7 @@ class Controller_DForumManager extends Controller_Base {
             $key = null;
             $key = array_search(Auth::instance()->get_user()->email, $result);
 
-            if (isset($key)) {
+            if ($key !== FALSE) {
                 unset($result[$key]);
             }
         }
@@ -455,7 +455,7 @@ class Controller_DForumManager extends Controller_Base {
             $key = null;
             $key = array_search(Auth::instance()->get_user()->email, $result);
 
-            if (isset($key)) {
+            if ($key !== FALSE) {
                 unset($result[$key]);
             }
         }
