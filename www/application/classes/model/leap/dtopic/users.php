@@ -178,13 +178,16 @@ class Model_Leap_DTopic_Users extends DB_ORM_Model {
     }
 
     public function getTopicUser($topicIds, $userId) {
-        $records = DB_SQL::select('default')
+        $builder = DB_SQL::select('default')
                            ->from($this->table())
                            ->column('id')
                            ->column('id_topic')
-                           ->where('id_topic', 'IN', $topicIds, 'AND')
-                           ->where('id_user', '=', $userId)
-                           ->query();
+                           ->where('id_user', '=', $userId, 'AND');
+        if($topicIds != null && count($topicIds) > 0) {
+            $builder = $builder->where('id_topic', 'IN', $topicIds);
+        }
+
+        $records = $builder->query();
 
         $result = array();
         if($records->is_loaded()) {

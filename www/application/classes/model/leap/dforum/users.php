@@ -178,13 +178,16 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
     }
 
     public function getForumUser($forumIds, $userId) {
-        $records = DB_SQL::select('default')
+        $builder = DB_SQL::select('default')
                            ->from($this->table())
                            ->column('id')
                            ->column('id_forum')
-                           ->where('id_forum', 'IN', $forumIds, 'AND')
-                           ->where('id_user', '=', $userId)
-                           ->query();
+                           ->where('id_user', '=', $userId, 'AND');
+        if($forumIds != null && count($forumIds) > 0) {
+            $builder = $builder->where('id_forum', 'IN', $forumIds);
+        }
+
+        $records = $builder->query();
 
         $result = array();
         if($records->is_loaded()) {
