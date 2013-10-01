@@ -40,9 +40,29 @@ class Controller_DForumManager extends Controller_Base {
 
         $openForums = DB_ORM::model('dforum')->getAllForums($sortBy,$typeSort);
 
+        $userForumsInfo = array();
+        $userTopicsInfo = array();
+        if(Auth::instance()->logged_in()) {
+            $forumIds = array();
+            $topicIds = array();
+            foreach($openForums as $forum) {
+                $forumIds[] = $forum['id'];
+                if(isset($forum['topics']) && count($forum['topics']) > 0) {
+                    foreach($forum['topics'] as $topic) {
+                        $topicIds[] = $topic['id'];
+                    }
+                }
+            }
+
+            $userForumsInfo = DB_ORM::model('dforum_users')->getForumUser($forumIds, Auth::instance()->get_user()->id);
+            $userTopicsInfo = DB_ORM::model('dtopic_users')->getTopicUser($topicIds, Auth::instance()->get_user()->id);
+        }
+
         $this->templateData['forums'] = $openForums;
         $this->templateData['typeSort'] = $typeSort;
         $this->templateData['sortBy'] = $sortBy;
+        $this->templateData['userForumsInfo'] = $userForumsInfo;
+        $this->templateData['userTopicsInfo'] = $userTopicsInfo;
 
         $view = View::factory('dforum/view');
         $view->set('templateData', $this->templateData);
@@ -285,7 +305,7 @@ class Controller_DForumManager extends Controller_Base {
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
 
-            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
+            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId, true);
 
             $allUsers = array();
 
@@ -300,7 +320,7 @@ class Controller_DForumManager extends Controller_Base {
                 }
             }
         } else {
-            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
+            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId, true);
 
             $allUsers = array();
 
@@ -383,7 +403,7 @@ class Controller_DForumManager extends Controller_Base {
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
 
-            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId, true);
 
             $allUsers = array();
 
@@ -398,7 +418,7 @@ class Controller_DForumManager extends Controller_Base {
                 }
             }
         } else {
-            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId, true);
 
             $allUsers = array();
 
@@ -862,6 +882,28 @@ class Controller_DForumManager extends Controller_Base {
         }
 
         echo $result;
+    }
+
+    public function action_ajaxUpdateNotification() {
+        $this->auto_render = false;
+
+        if(Request::initial()->is_ajax() && Auth::instance()->logged_in()) {
+            $forumId = Arr::get($this->request->post(), 'forumId', null);
+            $userId = Auth::instance()->get_user()->id;
+
+            DB_ORM::model('dforum_users')->updateNotifications($forumId, $userId, Arr::get($this->request->post(), 'notification', 1));
+        }
+    }
+
+    public function action_ajaxUpdateTopicNotification() {
+        $this->auto_render = false;
+
+        if(Request::initial()->is_ajax() && Auth::instance()->logged_in()) {
+            $topicId = Arr::get($this->request->post(), 'topicId', null);
+            $userId = Auth::instance()->get_user()->id;
+
+            DB_ORM::model('dtopic_users')->updateNotifications($topicId, $userId, Arr::get($this->request->post(), 'notification', 1));
+        }
     }
 
 }

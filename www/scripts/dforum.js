@@ -27,4 +27,40 @@ $(function() {
         }
     });
 
+    $('.sent-notification-forum-save-btn').click(function() {
+        var forumId       = $(this).attr('forumId'),
+            checkboxValue = $('#forum-notification-checkbox-' + forumId).is(':checked') ? 1 : 0,
+            $this         = $(this),
+            $loader       = $('#sent-forum-notification-loader-' + forumId);
+
+        $this.hide();
+        $loader.removeClass('hide');
+        $.post(updateNotificationURL, {
+            forumId: forumId,
+            notification: checkboxValue
+        }, function(data) {
+            $this.parent().parent().modal('hide');
+            $this.show();
+            $loader.addClass('hide');
+        });
+    });
+
+    $('.sent-notification-forum-topic-save-btn').click(function() {
+        var topicId       = $(this).attr('forumTopicId'),
+            checkboxValue = $('#forum-topic-notification-checkbox-' + topicId).is(':checked') ? 1 : 0,
+            $this         = $(this),
+            $loader       = $('#sent-forum-topic-notification-loader-' + topicId);
+
+        $this.hide();
+        $loader.removeClass('hide');
+        $.post(updateTopicNotificationURL, {
+            topicId: topicId,
+            notification: checkboxValue
+        }, function(data) {
+            $this.parent().parent().modal('hide');
+            $this.show();
+            $loader.addClass('hide');
+        });
+    });
+
 });
