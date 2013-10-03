@@ -134,6 +134,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'child_key' => array('question_id'),
                 'child_model' => 'map_question_response',
                 'parent_key' => array('id'),
+                'options' => array(array('order_by', array('map_question_responses.order', 'ASC')))
             )),
             
             'user_responses' => new DB_ORM_Relation_HasMany($this, array(
@@ -524,19 +525,21 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->execute();
         
         $responses = array();
-        foreach($values as $key => $value) {
-            if(!(strpos($key, 'response_') === FALSE )) {
-                $id = str_replace('response_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['response'] = $value;
-            } else if(!(strpos($key, 'feedback_') === FALSE )) {
-                $id = str_replace('feedback_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['feedback'] = $value;
-            } else if(!(strpos($key, 'correctness_') === FALSE )) {
-                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['correctness'] = $value;
-            } else if(!(strpos($key, 'score_') === FALSE )) {
-                $id = str_replace('score_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['score'] = $value;
+        $responsesJSONs = Arr::get($values, 'responses', null);
+        if($responsesJSONs != null && count($responsesJSONs) > 0) {
+            $responseIndex = 0;
+            foreach($responsesJSONs as $responsesJSON) {
+                $object = json_decode($responsesJSON, true);
+
+                if($object == null) { continue; }
+
+                if(isset($object['response']))    { $responses[$responseIndex]['response']    = urldecode(str_replace('+', '&#43;', base64_decode($object['response']))); }
+                if(isset($object['feedback']))    { $responses[$responseIndex]['feedback']    = urldecode(str_replace('+', '&#43;', base64_decode($object['feedback']))); }
+                if(isset($object['correctness'])) { $responses[$responseIndex]['correctness'] = $object['correctness']; }
+                if(isset($object['score']))       { $responses[$responseIndex]['score']       = $object['score'];       }
+                if(isset($object['order']))       { $responses[$responseIndex]['order']       = $object['order'];       }
+
+                $responseIndex++;
             }
         }
         
@@ -546,8 +549,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('question_id', $newQuestionId)
                         ->column('response', Arr::get($response, 'response', ''))
                         ->column('feedback', Arr::get($response, 'feedback', ''))
-                        ->column('is_correct', (int) Arr::get($response, 'correctness', 0))
+                        ->column('is_correct', (int) Arr::get($response, 'correctness', 2))
                         ->column('score', (int) Arr::get($response, 'score', 0))
+                        ->column('order', (int) Arr::get($response, 'order', 1))
                         ->execute();
             }
         }
