@@ -511,11 +511,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $isNew = true;
             if(count($prevResponses) > 0) {
-                foreach($prevResponses as $response) {
+                foreach($prevResponses as $key => $response) {
                     $object = json_decode($response, true);
                     if($object != null && isset($object['id'])) {
-                        if($object['id'] == $questionId) {
-                            $response = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
+                        if((int)$object['id'] == (int)$questionId) {
+                            $prevResponses[$key] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
                             $isNew = false;
                             break;
                         }
