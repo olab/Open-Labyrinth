@@ -52,7 +52,7 @@
         <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-72-precomposed.png" />
         <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-114-precomposed.png" />
         <link rel="apple-touch-icon-precomposed" sizes="144x144" href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-144-precomposed.png" />
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery/jquery-1.8.2.js"></script>
     </head>
     <body>
         <div class="navbar navbar-fixed-top">

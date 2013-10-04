@@ -1,1 +1,0 @@
-ALTER TABLE  `user_responses` ADD  `node_id` INT UNSIGNED NOT NULL;

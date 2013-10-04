@@ -6,27 +6,45 @@
  * To change this template use File | Settings | File Templates.
  */
 if(typeof tinymce != 'undefined' && !tinymce.initialized){
-tinyMCE.init({
-    mode : "textareas",
-    theme : "simple",
-    editor_selector : "wysiwyg"
-});}
+    tinymce.init({
+        selector: ".wysiwyg",
+        theme: "modern",
+        valid_elements : "+*[*]",
+        content_css: "<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table rdface contextmenu paste "
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+        toolbar2: "print preview media | forecolor backcolor  rdfaceMain",
+        image_advtab: true,
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/
+    });}
 $(document).ready(function () {
-
-    loadEditor($(".textarea"));
+    if($(".textarea").tinymce!=undefined)
+        loadEditor($(".textarea"));
 
     function loadEditor (elem){
-        elem.tinymce(
-            {
-                mode : "textareas",
-                theme : "advanced",
-                plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
-                theme_advanced_buttons3_add : "tablecontrols",
-                skin: 'bootstrap',
-                entity_encoding : "raw"
-
-            }
-        );
+        elem.tinymce({
+            selector: ".mceEditor",
+            theme: "modern",
+            valid_elements : "+*[*]",
+            content_css: "<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+            plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table rdface contextmenu paste "
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+            toolbar2: "print preview media | forecolor backcolor  rdfaceMain",
+            image_advtab: true,
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column rdfaceMain",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/
+        });
     }
 
 

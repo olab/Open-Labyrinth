@@ -69,6 +69,18 @@ class ARC2_RdfaExtractor extends ARC2_RDFExtractor {
     $lct['ns'] = array_merge($ct['ns'], $this->v('xmlns', array(), $n['a']));
     /* step 3 */
     $lct['lang'] = $this->v('xml:lang', $ct['lang'], $n['a']);
+      $pattern = '^(\w*): (([A-Za-z]{3,9})://([-;:&=\+\$,\w]+@{1})?([-A-Za-z0-9\.]+)+:?(\d+)?((/[-\+~%/\.\w]+)?\??([-\+=&;%@\.\w]+)?[#/]?([\w]+)?)?)^';
+
+      if(count($this->v('prefix', array(), $n['a']))>0){
+          $matches = array();
+
+          $rm  = preg_match_all($pattern, $this->v('prefix', array(), $n['a']), $matches);
+
+          for($ii=0;$ii<$rm;$ii++){
+              $lct['ns'][$matches[1][$ii]] = $matches[2][$ii];
+          }
+      }
+
     /* step 4 */
     $rel_uris = $this->getAttributeURIs($n, $ct, $lct, 'rel');
     $rev_uris = $this->getAttributeURIs($n, $ct, $lct, 'rev');
@@ -326,6 +338,7 @@ class ARC2_RdfaExtractor extends ARC2_RDFExtractor {
   /*  */
   
   function xURI($v, $base, $ns, $attr_type = '', $lct = '') {
+
     if ((list($sub_r, $sub_v) = $this->xBlankCURIE($v, $base, $ns)) && $sub_r) {
       return array($sub_r, $sub_v);
     }
@@ -371,7 +384,10 @@ class ARC2_RdfaExtractor extends ARC2_RDFExtractor {
   }
   
   function xCURIE($v, $base, $ns) {
+
     if ($sub_r = $this->x('([a-z0-9\-\_]*)\:([^\s]+)', $v)) {
+      // var_dump($sub_r);
+      //  var_dump($ns);
       if (!$sub_r[1]) return array('http://www.w3.org/1999/xhtml/vocab#' . $sub_r[2], '');
       if (isset($ns[$sub_r[1]])) {
         return array($ns[$sub_r[1]] . $sub_r[2], '');
