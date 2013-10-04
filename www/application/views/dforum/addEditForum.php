@@ -89,7 +89,6 @@
             </div>
         </div>
 
-        <div class="control-group">
             <?php if (isset($templateData['status'])) { ?>
                 <div class="control-group">
                     <label class="control-label"><?php echo __('Status'); ?></label>
@@ -109,7 +108,15 @@
 
                 </div>
             <?php } ?>
-        </div>
+
+        <?php if (!isset($templateData['name'])) { ?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Send notifications'); ?></label>
+                <div class=" controls">
+                    <input type="checkbox" name="sentNotifications">
+                </div>
+            </div>
+        <?php } ?>
 
         <?php if(isset($templateData['forum_id'])) { ?>
             <a class="btn btn-info" rel="tooltip" title="Add new topic" href="/dtopicManager/addTopic/<?php if (isset($templateData['name'])) echo $templateData['forum_id'];  ?> ">

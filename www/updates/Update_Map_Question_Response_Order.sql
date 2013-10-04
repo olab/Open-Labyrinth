@@ -1,0 +1,1 @@
+ALTER TABLE `map_question_responses` ADD `order` INT UNSIGNED NOT NULL DEFAULT '0';

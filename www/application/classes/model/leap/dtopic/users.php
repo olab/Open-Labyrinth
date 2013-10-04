@@ -41,6 +41,11 @@ class Model_Leap_DTopic_Users extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'is_notificate' => new DB_ORM_Field_Boolean($this, array(
+                'default' => TRUE,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            ))
         );
     }
 
@@ -125,8 +130,11 @@ class Model_Leap_DTopic_Users extends DB_ORM_Model {
                 ->execute();
     }
 
-    public function getAllUsersInTopic($topicId, $return = 'all'){
-        $builder = DB_SQL::select('default')->from($this->table())->where('id_topic', '=', $topicId);
+    public function getAllUsersInTopic($topicId, $return = 'all', $isNotificated = null){
+        $builder = DB_SQL::select('default')->from($this->table())->where('id_topic', '=', $topicId, 'AND');
+        if($isNotificated != null) {
+            $builder->where('is_notificate', '=', $isNotificated);
+        }
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -144,9 +152,9 @@ class Model_Leap_DTopic_Users extends DB_ORM_Model {
         return null;
     }
 
-    public function getAllUsersInTopicInfo($topicId){
+    public function getAllUsersInTopicInfo($topicId, $isNotificated = null){
         $result = array();
-        $ids = $this->getAllUsersInTopic($topicId, 'id');
+        $ids = $this->getAllUsersInTopic($topicId, 'id', $isNotificated);
 
         if(count($ids) <= 0) return $result;
         foreach($ids as $id) {
@@ -169,5 +177,48 @@ class Model_Leap_DTopic_Users extends DB_ORM_Model {
         return $result;
     }
 
+    public function getTopicUser($topicIds, $userId) {
+        $builder = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->column('id')
+                           ->column('id_topic')
+                           ->where('id_user', '=', $userId, 'AND');
+        if($topicIds != null && count($topicIds) > 0) {
+            $builder = $builder->where('id_topic', 'IN', $topicIds);
+        }
 
+        $records = $builder->query();
+
+        $result = array();
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[$record['id_topic']] = DB_ORM::model('dtopic_users', array($record['id']));
+            }
+        }
+
+        return $result;
+    }
+
+    public function updateNotifications($topicId, $userId, $notification) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->column('id')
+                           ->where('id_topic', '=', $topicId, 'AND')
+                           ->where('id_user', '=', $userId)
+                           ->query();
+
+        if(!$records->is_loaded()) {
+            DB_ORM::insert('dtopic_users')
+                    ->column('is_notificate', $notification)
+                    ->column('id_topic', $topicId)
+                    ->column('id_user', $userId)
+                    ->execute();
+        } else {
+            DB_ORM::update('dtopic_users')
+                    ->set('is_notificate', $notification)
+                    ->where('id_topic', '=', $topicId, 'AND')
+                    ->where('id_user', '=', $userId)
+                    ->execute();
+        }
+    }
 }

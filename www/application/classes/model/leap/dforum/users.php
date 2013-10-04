@@ -41,6 +41,11 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'is_notificate' => new DB_ORM_Field_Boolean($this, array(
+                'default' => TRUE,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            ))
         );
     }
 
@@ -56,9 +61,12 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         return array('id');
     }
 
-    public function addUser($forumId, $userId) {
+    public function addUser($forumId, $userId, $sendNotifications = -1) {
         $this->id_user = $userId;
         $this->id_forum = $forumId;
+        if($sendNotifications >= 0) {
+            $this->is_notificate = $sendNotifications == 0 ? false : true;
+        }
 
         $this->save();
         $this->reset();
@@ -68,7 +76,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         DB_SQL::delete('default')->from($this->table())->where('id_forum', '=', $forumId, 'AND')->where('id_user', '=', $userId)->execute();
     }
 
-    public function updateUsers($forumId, $users){
+    public function updateUsers($forumId, $users, $sendNotification = -1){
         $usersInForum = $this->getAllUsersInForum($forumId, 'id');
 
         if (count($usersInForum) <= 0) {
@@ -84,13 +92,16 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
                 } else {
                     $this->id_user = $userId;
                     $this->id_forum = $forumId;
+                    if($sendNotification >= 0) {
+                        $this->is_notificate = $sendNotification == 0 ? false : true;
+                    }
 
                     $this->save();
                     $this->reset();
 
                     $userInfo = DB_ORM::model('user')->getUserById($userId);
 
-                    if ($userInfo->email != '') {
+                    if ($sendNotification >= 0 && $sendNotification == 1 && $userInfo->email != '') {
                         Controller_DForumManager::action_mail('addUserToForum',$forumId, '' , '', $userInfo->email );
                     }
                 }
@@ -104,8 +115,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
 
                 $userInfo = DB_ORM::model('user')->getUserById($userId);
 
-                if ($userInfo->email != '')
-                {
+                if ($sendNotification && $userInfo->email != '') {
                     $usersEmail[] = $userInfo->email;
                 }
             }
@@ -125,8 +135,11 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
                 ->execute();
     }
 
-    public function getAllUsersInForum($forumId, $return = 'all'){
-        $builder = DB_SQL::select('default')->from($this->table())->where('id_forum', '=', $forumId);
+    public function getAllUsersInForum($forumId, $return = 'all', $isNotificated = null){
+        $builder = DB_SQL::select('default')->from($this->table())->where('id_forum', '=', $forumId, 'AND');
+        if($isNotificated != null) {
+            $builder->where('is_notificate', '=', $isNotificated);
+        }
         $result = $builder->query();
 
         if($result->is_loaded()) {
@@ -144,9 +157,9 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         return null;
     }
 
-    public function getAllUsersInForumInfo($forumId){
+    public function getAllUsersInForumInfo($forumId, $isNotificated = null){
         $result = array();
-        $ids = $this->getAllUsersInForum($forumId, 'id');
+        $ids = $this->getAllUsersInForum($forumId, 'id', $isNotificated);
 
         if(count($ids) <= 0) return $result;
         foreach($ids as $id) {
@@ -169,5 +182,48 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
         return $result;
     }
 
+    public function getForumUser($forumIds, $userId) {
+        $builder = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->column('id')
+                           ->column('id_forum')
+                           ->where('id_user', '=', $userId, 'AND');
+        if($forumIds != null && count($forumIds) > 0) {
+            $builder = $builder->where('id_forum', 'IN', $forumIds);
+        }
 
+        $records = $builder->query();
+
+        $result = array();
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[$record['id_forum']] = DB_ORM::model('dforum_users', array($record['id']));
+            }
+        }
+
+        return $result;
+    }
+
+    public function updateNotifications($forumId, $userId, $notification) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->column('id')
+                           ->where('id_forum', '=', $forumId, 'AND')
+                           ->where('id_user', '=', $userId)
+                           ->query();
+
+        if(!$records->is_loaded()) {
+            DB_ORM::insert('dforum_users')
+                    ->column('is_notificate', $notification)
+                    ->column('id_forum', $forumId)
+                    ->column('id_user', $userId)
+                    ->execute();
+        } else {
+            DB_ORM::update('dforum_users')
+                    ->set('is_notificate', $notification)
+                    ->where('id_forum', '=', $forumId, 'AND')
+                    ->where('id_user', '=', $userId)
+                    ->execute();
+        }
+    }
 }

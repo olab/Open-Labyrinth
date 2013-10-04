@@ -40,9 +40,29 @@ class Controller_DForumManager extends Controller_Base {
 
         $openForums = DB_ORM::model('dforum')->getAllForums($sortBy,$typeSort);
 
+        $userForumsInfo = array();
+        $userTopicsInfo = array();
+        if(Auth::instance()->logged_in()) {
+            $forumIds = array();
+            $topicIds = array();
+            foreach($openForums as $forum) {
+                $forumIds[] = $forum['id'];
+                if(isset($forum['topics']) && count($forum['topics']) > 0) {
+                    foreach($forum['topics'] as $topic) {
+                        $topicIds[] = $topic['id'];
+                    }
+                }
+            }
+
+            $userForumsInfo = DB_ORM::model('dforum_users')->getForumUser($forumIds, Auth::instance()->get_user()->id);
+            $userTopicsInfo = DB_ORM::model('dtopic_users')->getTopicUser($topicIds, Auth::instance()->get_user()->id);
+        }
+
         $this->templateData['forums'] = $openForums;
         $this->templateData['typeSort'] = $typeSort;
         $this->templateData['sortBy'] = $sortBy;
+        $this->templateData['userForumsInfo'] = $userForumsInfo;
+        $this->templateData['userTopicsInfo'] = $userTopicsInfo;
 
         $view = View::factory('dforum/view');
         $view->set('templateData', $this->templateData);
@@ -166,6 +186,7 @@ class Controller_DForumManager extends Controller_Base {
         $firstMessage = Arr::get($this->request->post(), 'firstmessage', NULL);
         $status = Arr::get($this->request->post(), 'status', NULL);
         $security = Arr::get($this->request->post(), 'security', NULL);
+        $sendNotification = Arr::get($this->request->post(), 'sentNotifications', 'off') == 'off' ? 0: 1;
 
         $users = Arr::get($this->request->post(), 'users', NULL);
         $groups = Arr::get($this->request->post(), 'groups', NULL);
@@ -173,8 +194,8 @@ class Controller_DForumManager extends Controller_Base {
         $forumId = DB_ORM::model('dforum')->createForum($forumName,$security, $status);
         $messageID = DB_ORM::model('dforum_messages')->createMessage($forumId, $firstMessage);
 
-        DB_ORM::model('dforum_users')->updateUsers($forumId, $users);
-        DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
+        DB_ORM::model('dforum_users')->updateUsers($forumId, $users, $sendNotification);
+        DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups, $sendNotification);
 
         self::action_mail('createForum',$forumId, $firstMessage, $forumName);
 
@@ -248,6 +269,7 @@ class Controller_DForumManager extends Controller_Base {
     }
 
     private static function prepareUsersMail($forumId, $usersEmail = '', $type = '') {
+        $result = array();
         if ($usersEmail != '' && $type == 'deleteUser') {
             // get groups users emails
             $groups = DB_ORM::model('dforum_groups')->getAllGroupsInForum($forumId);
@@ -285,7 +307,7 @@ class Controller_DForumManager extends Controller_Base {
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
 
-            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
+            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId, true);
 
             $allUsers = array();
 
@@ -300,7 +322,7 @@ class Controller_DForumManager extends Controller_Base {
                 }
             }
         } else {
-            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId);
+            $users = DB_ORM::model('dforum_users')->getAllUsersInForumInfo($forumId, true);
 
             $allUsers = array();
 
@@ -336,7 +358,7 @@ class Controller_DForumManager extends Controller_Base {
             $key = null;
             $key = array_search(Auth::instance()->get_user()->email, $result);
 
-            if (isset($key)) {
+            if ($key !== FALSE) {
                 unset($result[$key]);
             }
         }
@@ -345,7 +367,7 @@ class Controller_DForumManager extends Controller_Base {
     }
 
     private static function prepareUsersMailforTopic($topicId, $usersEmail = '', $type = '') {
-
+        $result = array();
         if ($usersEmail != '' && $type == 'deleteUser') {
             // get groups users emails
             $groups = DB_ORM::model('dtopic_groups')->getAllGroupsInTopic($topicId);
@@ -383,7 +405,7 @@ class Controller_DForumManager extends Controller_Base {
             $groupEmail = DB_ORM::model('user_group')->getAllUsersByGroupIN($usersEmail);
             $groupEmail = array_unique($groupEmail);
 
-            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId, true);
 
             $allUsers = array();
 
@@ -398,7 +420,7 @@ class Controller_DForumManager extends Controller_Base {
                 }
             }
         } else {
-            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId);
+            $users = DB_ORM::model('dtopic_users')->getAllUsersInTopicInfo($topicId, true);
 
             $allUsers = array();
 
@@ -434,7 +456,7 @@ class Controller_DForumManager extends Controller_Base {
             $key = null;
             $key = array_search(Auth::instance()->get_user()->email, $result);
 
-            if (isset($key)) {
+            if ($key !== FALSE) {
                 unset($result[$key]);
             }
         }
@@ -457,7 +479,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['add_msg']['author'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['add_msg']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -468,8 +489,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['add_msg']['other'] . ' "' . $forumName . '"';
@@ -490,7 +509,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['delete_msg']['author'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['delete_msg']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -501,8 +519,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['delete_msg']['other'] . ' "' . $forumName . '"';
@@ -526,7 +542,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['update_msg']['author'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['update_msg']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -537,8 +552,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['update_msg']['other'] . ' "' . $forumName . '"';
@@ -559,7 +572,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['create_forum']['author'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['create_forum']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -570,8 +582,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['create_forum']['other'] . ' "' . $forumName . '"';
@@ -614,7 +624,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['create_forum']['author'] . ' "' . $forumName . '"' . $emailConfig['create_forum']['activate_user'];
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
                 $URL = URL::base('http', true) . 'dforumManager/';
 
                 $mail_body  = $nickname . ' ' . $emailConfig['create_forum']['action'] . ' "' . $forumName . '"<br/>';
@@ -626,7 +635,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['create_forum']['other'] . ' "' . $forumName . '"';
@@ -650,7 +658,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['update_forum']['author'] . ' "' . $oldForumName . '"(old name)';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['update_forum']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -661,8 +668,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['update_forum']['other'] . ' "' . $oldForumName . '"(old name)';
@@ -684,7 +689,6 @@ class Controller_DForumManager extends Controller_Base {
                 // send mail to Author of action
                 $subject = $emailConfig['delete_forum']['author'] . ' "' . $forumName . '"';
                 $nickname = Auth::instance()->get_user()->nickname;
-                $emailTo =  Auth::instance()->get_user()->email;
 
                 $mail_body  = $nickname . ' ' . $emailConfig['delete_forum']['action'] . ' "' . $forumName . '"<br/>';
                 $mail_body .= '---------------------------------------<br/>';
@@ -695,8 +699,6 @@ class Controller_DForumManager extends Controller_Base {
                 $header  = 'MIME-Version: 1.0' . "\r\n";
                 $header .= 'Content-type: text/html;' . "\r\n";
                 $header .= "From: ".  $emailConfig['from_name'] . " <" . $emailConfig['mail_from'] . ">\r\n";
-
-                mail($emailTo, $subject, $mail_body, $header);
 
                 // send mail to other Users
                 $subject = $emailConfig['delete_forum']['other'] . ' "' . $forumName . '"';
@@ -862,6 +864,28 @@ class Controller_DForumManager extends Controller_Base {
         }
 
         echo $result;
+    }
+
+    public function action_ajaxUpdateNotification() {
+        $this->auto_render = false;
+
+        if(Request::initial()->is_ajax() && Auth::instance()->logged_in()) {
+            $forumId = Arr::get($this->request->post(), 'forumId', null);
+            $userId = Auth::instance()->get_user()->id;
+
+            DB_ORM::model('dforum_users')->updateNotifications($forumId, $userId, Arr::get($this->request->post(), 'notification', 1));
+        }
+    }
+
+    public function action_ajaxUpdateTopicNotification() {
+        $this->auto_render = false;
+
+        if(Request::initial()->is_ajax() && Auth::instance()->logged_in()) {
+            $topicId = Arr::get($this->request->post(), 'topicId', null);
+            $userId = Auth::instance()->get_user()->id;
+
+            DB_ORM::model('dtopic_users')->updateNotifications($topicId, $userId, Arr::get($this->request->post(), 'notification', 1));
+        }
     }
 
 }

@@ -56,7 +56,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
         return array('id');
     }
 
-    public function updateGroups($forumId, $groups){
+    public function updateGroups($forumId, $groups, $sendNotifications = -1){
         $groupsInForum = $this->getAllGroupsInForum($forumId, 'id');
         $usersInForum  = DB_ORM::model('dforum_users')->getAllUsersInForum($forumId);
         if (count($groupsInForum) <= 0) {
@@ -80,7 +80,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
                     if(count($group->users) > 0) {
                         foreach($group->users as $groupUser) {
                             if(!in_array($groupUser->user_id, $usersInForum)) {
-                                DB_ORM::model('dforum_users')->addUser($forumId, $groupUser->user_id);
+                                DB_ORM::model('dforum_users')->addUser($forumId, $groupUser->user_id, $sendNotifications);
                             }
                         }
                     }
