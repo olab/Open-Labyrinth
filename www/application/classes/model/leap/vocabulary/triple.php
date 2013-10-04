@@ -54,23 +54,15 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
 
         $arc_triple = array('s'=>$s,'p'=>$p,'o'=>$o);
 
+
         if($this->data_type!=NULL){
             $arc_triple['o_datatype']="http://www.w3.org/2001/XMLSchema#". $this->data_type;
     }
 
         if ($this->type == Model_Leap_Vocabulary_Term::Property)
             $arc_triple['o_type'] = "literal";
-        else{
+        else
             $arc_triple['o_type'] = "uri";
-            if($this->type == Model_Leap_Vocabulary_Term::Reverse){
-                $arc_triple['s'] = $this->o;
-                $arc_triple['o'] = $this->s;
-
-
-            }
-        }
-
-
 
         return $arc_triple;
     }

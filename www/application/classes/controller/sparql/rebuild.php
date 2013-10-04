@@ -37,17 +37,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
                 $arc_triple = $triple->toString();
 
-                if($arc_triple['o_type']=='literal'){
-                    $extra_graph = $arc_triple['s'];
-
-                    $extra_triples  = $this->discover_triples(html_entity_decode($arc_triple['o']));
-
-                    foreach ($extra_triples as $extra_triple) {
-                        $store->insert(array($extra_triple),$extra_graph);
-                    }
-
-                }
-
                 $store->insert(array($arc_triple),$graph_uri);
             }
         }
@@ -60,8 +49,7 @@ class Controller_Sparql_Rebuild extends Controller_Base
         foreach ($vocabs as $vocabulary) {
             $parser = ARC2::getRDFParser();
             $uri_abs = $vocabulary->alternative_source_uri;
-            if (!parse_url($vocabulary->alternative_source_uri, PHP_URL_SCHEME) != '')
-                $uri_abs  = Model_Leap_Vocabulary::getGraphUri().$vocabulary->alternative_source_uri;
+            if (!parse_url($vocabulary->alternative_source_uri, PHP_URL_SCHEME) != '') $uri_abs  = Model_Leap_Vocabulary::getGraphUri().$vocabulary->alternative_source_uri;
 
             $parser->parse($uri_abs);
             $triples = $parser->getTriples();
@@ -90,10 +78,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
                 $arc_triple = $triple->toString();
 
                 $store->insert(array($arc_triple),$graph_uri);
-
-
-
-
             }
 
 
@@ -109,18 +93,7 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
 
             foreach ($property_triples as $triple) {
-
                 $arc_triple = $triple->toString();
-                if($arc_triple['o_type']=='literal'){
-                    $extra_graph = $arc_triple['s'];
-
-                    $extra_triples  = $this->discover_triples(html_entity_decode($arc_triple['o']));
-
-                    foreach ($extra_triples as $extra_triple) {
-                        $store->insert(array($extra_triple),$extra_graph);
-                    }
-
-                }
 
                 $store->insert(array($arc_triple),$graph_uri);
             }
@@ -137,24 +110,7 @@ class Controller_Sparql_Rebuild extends Controller_Base
         $this->template->set('templateData', $this->templateData);
     }
 
-
-    private function discover_triples($data){
-
-        $data = '<html>'.$data.'</html>';
-        $parser = ARC2::getSemHTMLParser();
-        $base = URL::base();
-        $parser->parse($base, $data);
-        $parser->extractRDF('rdfa');
-
-        $triples = $parser->getTriples();
-        return $triples;
-    }
-
     public function action_index(){
-
-
-
-
         $View = View::factory('sparql/rebuild');
         // $openView->set('templateData', $this->templateData);
 

@@ -19,9 +19,6 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/tinymce.min.js"
-            xmlns="http://www.w3.org/1999/html"></script>
     <table width="100%" height="100%" cellpadding='6'>
         <tr>
             <td valign="top" bgcolor="#bbbbcb">

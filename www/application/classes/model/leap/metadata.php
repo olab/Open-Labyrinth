@@ -27,10 +27,6 @@ class Model_Leap_Metadata extends DB_ORM_Model
     static $MetadataExtras = array(
         "referencerecord" => array("source", "type", "label"),
         "skosrecord" => array("source"),
-        "stringrecord"=>array(),
-        "daterecord" => array(),
-        "textrecord" =>array(),
-        "inlineobjectrecord" =>array(),
     );
 
 

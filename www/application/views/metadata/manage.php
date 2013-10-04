@@ -154,6 +154,7 @@ if(isset($metadata) and count($metadata)>0){
                     <option value="stringrecord">String</option>
                     <option value="textrecord">Text</option>
                     <option value="daterecord">Date</option>
+                    <option value="listrecord">List</option>
                     <option value="referencerecord">Entity with URI from a list</option>
                     <option value="skosrecord">Class from a SKOS classification</option>
                     <option value="inlineobjectrecord">Complex object defined inline</option>

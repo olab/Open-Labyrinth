@@ -438,35 +438,10 @@ if ($templateData['skin_path'] != NULL) {
 
 
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-<!--script language="javascript" type="text/javascript"
-        src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script-->
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/tinymce.min.js"
-            xmlns="http://www.w3.org/1999/html"></script>
-    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
-
+<script language="javascript" type="text/javascript"
+        src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 <script language="javascript" type="text/javascript">
-    tinymce.init({
-        selector: ".mceEditor",
-        theme: "modern",
-        valid_elements : "+*[*]",
-        content_css: "<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-        plugins: ["compat3x",
-            "advlist autolink lists link image charmap print preview anchor",
-            "searchreplace visualblocks code fullscreen",
-            "insertdatetime media table rdface contextmenu paste imgmap"
-        ],
-        toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-        toolbar2: "print preview media | forecolor backcolor  rdfaceMain imgmap",
-        image_advtab: true,
-        entity_encoding: "raw",
-        contextmenu: "link image inserttable | cell row column rdfaceMain ",
-        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-    });
-
-
-
-    /*tinyMCE.init({
+    tinyMCE.init({
 // General options
         mode:"textareas",
         relative_urls:false,
@@ -485,7 +460,7 @@ if ($templateData['skin_path'] != NULL) {
         editor_selector:"mceEditor",
         autocomplete_trigger:"",
         entity_encoding: "raw"
-    });*/
+    });
 </script>
     <?php } ?>
 <div align="center">
