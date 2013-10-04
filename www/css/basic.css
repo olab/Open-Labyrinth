@@ -1457,3 +1457,23 @@ table.dataTable tr.even td[class*='sorting'] {
 .question-response-panel-group .panel-collapse .panel-body .control-group .controls {
     margin-left: 110px;
 }
+
+.question-response-draggable-panel-group .response-panel {
+    margin-bottom: 5px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    background-color: #fbfbfb;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.question-response-draggable-panel-group .response-panel label {
+    float: left;
+    padding-top: 5px;
+    line-height: 20px;
+    color: #333333;
+    font-size: 21px;
+    margin-right: 5px;
+}

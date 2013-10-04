@@ -1,0 +1,1 @@
+INSERT INTO `openlabyrinth`.`map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES (NULL, 'Drag and Drop', 'dd', 'draganddrop', NULL);

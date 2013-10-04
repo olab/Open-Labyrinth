@@ -348,6 +348,20 @@ class Model_Labyrinth extends Model {
             }
         }
 
+        $draggingQuestionResponses = Session::instance()->get('dragQuestionResponses');
+        if($draggingQuestionResponses != null && count($draggingQuestionResponses) > 0) {
+            foreach($draggingQuestionResponses as $responseJSON) {
+                $responseObject = json_decode($responseJSON, true);
+                if($responseObject == null) continue;
+
+                if(isset($responseObject['id']) && isset($responseObject['responses'])) {
+                    DB_ORM::model('user_response')->createResponse($sessionId, $responseObject['id'], json_encode($responseObject['responses']), $nodeId);
+                }
+            }
+
+            Session::instance()->delete('dragQuestionResponses');
+        }
+
         $this->updateCounterString($mapID, $counterString);
 
         Session::instance()->set('countersFunc', json_encode($countersFunc));

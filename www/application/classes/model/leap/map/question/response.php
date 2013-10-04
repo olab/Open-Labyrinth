@@ -122,11 +122,11 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
         if($responses != NULL && count($responses) > 0) {
             foreach($responses as $response) {
                 if($responsesFromJSON != null && isset($responsesFromJSON['old']) && isset($responsesFromJSON['old'][$response->id])) {
-                    $response->response   = $responsesFromJSON['old'][$response->id]['response'];
-                    $response->feedback   = $responsesFromJSON['old'][$response->id]['feedback'];
-                    $response->is_correct = $responsesFromJSON['old'][$response->id]['correctness'];
-                    $response->score      = $responsesFromJSON['old'][$response->id]['score'];
-                    $response->order      = $responsesFromJSON['old'][$response->id]['order'];
+                    $response->response   = Arr::get($responsesFromJSON['old'][$response->id], 'response', '');
+                    $response->feedback   = Arr::get($responsesFromJSON['old'][$response->id], 'feedback', '');
+                    $response->is_correct = Arr::get($responsesFromJSON['old'][$response->id], 'correctness', 2);
+                    $response->score      = Arr::get($responsesFromJSON['old'][$response->id], 'score', 0);
+                    $response->order      = Arr::get($responsesFromJSON['old'][$response->id], 'order', 1);
 
                     $response->save();
                 } else {

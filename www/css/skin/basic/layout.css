@@ -446,3 +446,18 @@ button.close {
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
+.drag-question-container {
+    margin: 5px 5px 5px 0px;
+    list-style: none;
+    padding: 0;
+}
+.drag-question-container > li {
+    padding: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: 1px solid #b0b0b0;
+    background-color: #eeeeee;
+}

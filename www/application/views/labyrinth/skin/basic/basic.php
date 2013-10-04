@@ -24,6 +24,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
 
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
@@ -401,6 +402,23 @@
             $(object).css('width', maxWidth);
             $(object).parent().css('width', maxWidth);
             $(object).css('height', maxHeight);
+        });
+
+        $('.drag-question-container').sortable({
+            axis: "y",
+            cursor: "move",
+            stop: function(event, ui) {
+                var questionId      = ui.item.parent().attr('questionId'),
+                    responsesObject = [];
+                ui.item.parent().children().each(function(index, value) {
+                    responsesObject.push($(value).attr('responseId'));
+                });
+
+                $.post('<?php echo URL::base(); ?>renderLabyrinth/ajaxDraggingQuestionResponse', {
+                    questionId: questionId,
+                    responsesJSON: JSON.stringify(responsesObject)
+                }, function(data) {});
+            }
         });
     });
 </script>

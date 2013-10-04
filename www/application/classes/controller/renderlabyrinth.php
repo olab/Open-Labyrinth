@@ -47,6 +47,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
             if ($continue) {
                 Session::instance()->delete('questionChoices');
+                Session::instance()->delete('dragQuestionResponses');
                 Session::instance()->delete('counterFunc');
                 Session::instance()->delete('stopCommonRules');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
@@ -499,6 +500,37 @@ class Controller_RenderLabyrinth extends Controller_Template {
         Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
     }
 
+    public function action_ajaxDraggingQuestionResponse() {
+        $this->auto_render = false;
+        $questionId    = Arr::get($_POST, 'questionId', null);
+        $responsesJSON = Arr::get($_POST, 'responsesJSON', null);
+
+        if($questionId != null && $questionId > 0) {
+            $prevResponses = Session::instance()->get('dragQuestionResponses');
+            if($prevResponses == null) { $prevResponses = array(); }
+
+            $isNew = true;
+            if(count($prevResponses) > 0) {
+                foreach($prevResponses as $response) {
+                    $object = json_decode($response, true);
+                    if($object != null && isset($object['id'])) {
+                        if($object['id'] == $questionId) {
+                            $response = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
+                            $isNew = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if($isNew) {
+                $prevResponses[] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
+            }
+
+            Session::instance()->set('dragQuestionResponses', $prevResponses);
+        }
+    }
+
     private function checkRemoteUser($username, $password) {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);
@@ -918,6 +950,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         </div>';
                         }
                 }
+            } else if($question->type->value == 'dd') {
+                $result .= '<ul class="drag-question-container" questionId="' . $question->id . '">';
+                foreach ($question->responses as $response) {
+                    $result .= '<li class="sortable" responseId="' . $response->id . '">' . $response->response . '</li>';
+                }
+                $result .= '</ul>';
             }
 
             $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
