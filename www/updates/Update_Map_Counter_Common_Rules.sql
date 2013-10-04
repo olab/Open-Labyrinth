@@ -1,1 +1,0 @@
-ALTER TABLE `map_counter_common_rules` ADD `isCorrect` TINYINT( 1 ) NOT NULL DEFAULT '1';

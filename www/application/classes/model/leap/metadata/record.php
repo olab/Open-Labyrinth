@@ -28,7 +28,6 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
     protected static function prepareViews()
     {
         Helper_Html_Javascript::add("scripts/crypto-js/rollups/md5.js");
-        Helper_Html_Javascript::add("scripts/jquery/jquery-1.8.2.js");
        // Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
     }
 

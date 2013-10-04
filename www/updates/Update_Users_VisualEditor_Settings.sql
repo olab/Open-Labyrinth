@@ -1,1 +1,0 @@
-ALTER TABLE `users` ADD `visualEditorAutosaveTime` int(11) DEFAULT '50000';

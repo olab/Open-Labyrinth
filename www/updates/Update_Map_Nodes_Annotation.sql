@@ -1,1 +1,0 @@
-ALTER TABLE `map_nodes` ADD `annotation` TEXT NULL;

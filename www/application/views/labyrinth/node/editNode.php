@@ -20,59 +20,102 @@
  */
 if (isset($templateData['map']) and isset($templateData['node'])) {
     ?>
-    <script language="javascript" type="text/javascript"
+    <!--script language="javascript" type="text/javascript"
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
+            xmlns="http://www.w3.org/1999/html"></script-->
+
+    <script language="javascript" type="text/javascript"
+            src="<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/tinymce.min.js"
             xmlns="http://www.w3.org/1999/html"></script>
+
+
     <script language="javascript" type="text/javascript">
-        tinyMCE.init({
-            // General options
-            mode: "textareas",
-            relative_urls: false,
-            theme: "advanced",
-            skin: "bootstrap",
-            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
-            // Theme options
-            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
-            theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
-            theme_advanced_buttons3: "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
-            theme_advanced_buttons4: "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,imgmap",
-            theme_advanced_toolbar_location: "top",
-            theme_advanced_toolbar_align: "left",
-            theme_advanced_statusbar_location: "bottom",
-            theme_advanced_resizing: true,
-            editor_selector: "mceEditor",
-            entity_encoding: "raw"
+        tinymce.init({
+            selector: ".mceEditor",
+            theme: "modern",
+            valid_elements: "+*[*]",
+            content_css: "<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+            plugins: [ "compat3x",
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table rdface contextmenu paste imgmap"
+            ],
+
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+            toolbar2: "print preview media | forecolor backcolor  rdfaceMain imgmap",
+            image_advtab: true,
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column rdfaceMain",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/
+        });
+        tinymce.init({
+            selector: ".mceEditorLite",
+            theme: "modern",
+            valid_elements: "+*[*]",
+            content_css: "<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+            plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table  contextmenu paste "
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+            toolbar2: "print preview media | forecolor backcolor   ",
+            image_advtab: true,
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/
         });
 
-        tinyMCE.init({
-            // General options
-            mode: "textareas",
-            relative_urls: false,
-            theme: "advanced",
-            skin: "bootstrap",
-            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
-            // Theme options
-            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
-            theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,|,forecolor,backcolor",
-            theme_advanced_buttons3: "sub,sup,|,charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
-            theme_advanced_toolbar_location: "top",
-            theme_advanced_toolbar_align: "left",
-            theme_advanced_statusbar_location: "bottom",
-            theme_advanced_resizing: true,
-            editor_selector: "mceEditorLite",
-            entity_encoding: "raw"
-        });
+        /*tinyMCE.init({
+         // General options
+         mode: "textareas",
+         relative_urls: false,
+         theme: "advanced",
+         skin: "bootstrap",
+         plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+         // Theme options
+         theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+         theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+         theme_advanced_buttons3: "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+         theme_advanced_buttons4: "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak,restoredraft,|,imgmap",
+         theme_advanced_toolbar_location: "top",
+         theme_advanced_toolbar_align: "left",
+         theme_advanced_statusbar_location: "bottom",
+         theme_advanced_resizing: true,
+         editor_selector: "mceEditor",
+         entity_encoding: "raw"
+         });
+
+         tinyMCE.init({
+         // General options
+         mode: "textareas",
+         relative_urls: false,
+         theme: "advanced",
+         skin: "bootstrap",
+         plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+         // Theme options
+         theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+         theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,|,forecolor,backcolor",
+         theme_advanced_buttons3: "sub,sup,|,charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
+         theme_advanced_toolbar_location: "top",
+         theme_advanced_toolbar_align: "left",
+         theme_advanced_statusbar_location: "bottom",
+         theme_advanced_resizing: true,
+         editor_selector: "mceEditorLite",
+         entity_encoding: "raw"
+         });*/
     </script>
 
-<div class="page-header">
-    <div class="pull-right">
-        <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
-            <i class="icon-sitemap"></i>
-            <?php echo __('Set as Root'); ?></a>
-    </div>
+    <div class="page-header">
+        <div class="pull-right">
+            <a class="btn btn-primary"
+               href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
+                <i class="icon-sitemap"></i>
+                <?php echo __('Set as Root'); ?></a>
+        </div>
 
-    <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-</div>
+        <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+    </div>
 
     <form id="form1" name="form1" method="post" class="form-horizontal"
           action="<?php echo URL::base() . 'nodeManager/updateNode/' . $templateData['node']->id; ?>">
@@ -121,15 +164,18 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                        class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
 
                 <div class="controls">
-                    <input id="show_info" name="show_info" type="checkbox" <?php if($templateData['node']->show_info == 1) echo 'checked="checked"'; ?>/>
+                    <input id="show_info" name="show_info"
+                           type="checkbox" <?php if ($templateData['node']->show_info == 1) echo 'checked="checked"'; ?>/>
                 </div>
             </div>
 
             <div class="control-group">
                 <label for="annotation"
                        class="control-label"><?php echo __('Annotation'); ?></label>
+
                 <div class="controls">
-                    <textarea class="mceEditorLite" name="annotation" id="annotation"><?php echo $templateData['node']->annotation; ?></textarea>
+                    <textarea class="mceEditorLite" name="annotation"
+                              id="annotation"><?php echo $templateData['node']->annotation; ?></textarea>
                 </div>
             </div>
         </fieldset>
@@ -138,7 +184,8 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             <legend>Counters</legend>
             <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                 <?php foreach ($templateData['counters'] as $counter) { ?>
-                    <?php echo __('counter function for'); ?> "<a href="<?php  echo URL::base() . 'counterManager/editCounter/' . $templateData['map']->id.'/'.$counter->id;?>"><?php echo $counter->name; ?></a>"
+                    <?php echo __('counter function for'); ?> "<a
+                        href="<?php echo URL::base() . 'counterManager/editCounter/' . $templateData['map']->id . '/' . $counter->id; ?>"><?php echo $counter->name; ?></a>"
                     <div class="control-group">
                         <label for="cfunc_<?php echo $counter->id; ?>"
                                class="control-label"><?php echo __('Counter Function'); ?></label>
@@ -146,7 +193,8 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                         <div class="controls">
                             <input type="text" id="cfunc_<?php echo $counter->id; ?>"
                                    name="cfunc_<?php echo $counter->id; ?>"
-                                   value="<?php $c = $templateData['node']->getCounter($counter->id); if ($c != NULL) echo $c->function; ?>">
+                                   value="<?php $c = $templateData['node']->getCounter($counter->id);
+                                   if ($c != NULL) echo $c->function; ?>">
                             <span>type +, - or = an integer - e.g. '+1' or '=32'</span>
                         </div>
                     </div>
@@ -170,7 +218,8 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             <?php } ?>
             <div class="form-actions">
 
-                <a class="btn btn-info" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>">
+                <a class="btn btn-info"
+                   href="<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>">
                     <i class="icon-dashboard"></i>
                     <?php echo __("Manage"); ?></a>
             </div>
@@ -207,6 +256,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link Function Style'); ?></label>
+
                 <div class="controls">
                     <?php if (isset($templateData['linkStyles'])) { ?>
                         <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
@@ -221,6 +271,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Node Priorities'); ?></label>
+
                 <div class="controls">
                     <?php if (isset($templateData['priorities'])) { ?>
                         <?php foreach ($templateData['priorities'] as $priority) { ?>
@@ -235,6 +286,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Prevent Revisit'); ?></label>
+
                 <div class="controls">
                     <label class="radio">
                         <span><?php echo __('Enabled'); ?></span>
@@ -250,6 +302,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link to end and report from this node'); ?></label>
+
                 <div class="controls">
                     <label class="radio">
                         <span><?php echo __('Off'); ?>
@@ -266,11 +319,12 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             </div>
         </fieldset>
         <?php
-        echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
+        echo Helper_Controller_Metadata::displayEditor($templateData["node"], "map_node");?>
         <div class="form-actions">
             <div class="pull-right">
-            <input class="btn btn-large btn-primary" type="submit" name="Submit"
-                   value="<?php echo __('Save changes'); ?>"></div></div>
+                <input class="btn btn-large btn-primary" type="submit" name="Submit"
+                       value="<?php echo __('Save changes'); ?>"></div>
+        </div>
     </form>
 
 <?php } ?>
