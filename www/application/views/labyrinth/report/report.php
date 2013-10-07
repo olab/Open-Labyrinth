@@ -30,7 +30,29 @@ function getRandomColor(){
 ?>
 <?php if (isset($templateData['session'])) { ?>
 
-                <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+    <?php if (isset($templateData['nextCase']) || isset($templateData['webinarForum']) || isset($templateData['webinarID'])) { ?>
+    <h3>Scenario actions</h3>
+    <div>
+    <?php if(isset($templateData['nextCase'])) { ?>
+        <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['nextCase']['webinarId']; ?>/<?php echo $templateData['nextCase']['webinarStep']; ?>/<?php echo $templateData['nextCase']['webinarMap']; ?>" class="btn btn-success"><i class="icon-play"></i><?php echo __("Play the next labyrinth"); ?></a>
+    <?php }
+    if(isset($templateData['webinarForum'])) { ?>
+        <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinarForum'];?>">
+            <i class="icon-comment icon-white"></i>
+            <?php echo __('Go to the Forum Topic'); ?>
+        </a>
+    <?php }
+    if(isset($templateData['webinarForum'])) { ?>
+        <a class="btn" href="<?php echo URL::base(); ?>webinarManager/render/<?php echo $templateData['webinarID'];?>">
+            <i class="icon-folder-open icon-white"></i>
+            <?php echo __('Go to the Scenario steps'); ?>
+        </a>
+    <?php } ?>
+    </div>
+    <hr/>
+    <?php } ?>
+
+    <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
 
     <table class="table  table-striped table-bordered">
         <tr>
@@ -81,7 +103,6 @@ function getRandomColor(){
         </tr>
     </table>
 
-
     <?php if(isset($templateData['feedbacks']['general'])){?>
     <table class="table table-striped table-bordered">
 
@@ -98,7 +119,6 @@ function getRandomColor(){
         </tr>
 
         <?php } ?>
-
 
     <?php if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
         <tr>
@@ -126,9 +146,6 @@ function getRandomColor(){
 
     </table>
 <?php } ?>
-
-
-             
                             <h3><?php echo __('Questions'); ?></h3>
                             <table class="table table-striped table-bordered">
                                 <thead>
@@ -143,7 +160,15 @@ function getRandomColor(){
                                 </thead>
                                 <tbody>
                                 <?php if($templateData['questions'] != NULL) { ?>
-                                    <?php foreach($templateData['questions'] as $question) { ?>
+                                    <?php
+                                        foreach($templateData['questions'] as $question) {
+                                            $responseMap = array();
+                                            if($question->type->value == 'dd' && count($question->responses) > 0) {
+                                                foreach($question->responses as $r) {
+                                                    $responseMap[$r->id] = $r;
+                                                }
+                                            }
+                                    ?>
                                         <tr>
                                             <td><?php echo $question->id; ?></td>
                                             <td><?php echo $question->type->title; ?></td>
@@ -151,7 +176,19 @@ function getRandomColor(){
                                             <td><?php if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
                                                         if(count($templateData['responses'][$question->id]) > 0){
                                                             foreach($templateData['responses'][$question->id] as $response){
-                                                                echo '<p>'.$response->response.'</p>';
+                                                                if($question->type->value == 'dd') {
+                                                                    $jsonObj = json_decode($response->response, true);
+                                                                    if($jsonObj != null && count($jsonObj) > 0) {
+                                                                        foreach($jsonObj as $o) {
+                                                                            if(isset($responseMap[$o])) {
+                                                                                echo '<p>' . $responseMap[$o]->response . '</p>';
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    echo '<p>'.$response->response.'</p>';
+                                                                }
                                                             }
                                                         } else {
                                                             echo 'no response';
@@ -159,7 +196,7 @@ function getRandomColor(){
                                                     } else { echo 'no response'; }
                                                     ?></td>
                                             <td>
-                                                <?php if($question->type->value != 'text' and $question->type->value != 'area') { ?>
+                                                <?php if($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' ) { ?>
                                                     <?php if(count($question->responses) > 0) { ?>
                                                         <?php foreach($question->responses as $resp) { ?>
                                                             <?php if($resp->is_correct == 1) { ?>
@@ -168,20 +205,13 @@ function getRandomColor(){
                                                         <?php } ?>
                                                     <?php } else { echo 'n/a'; } ?>
                                                 <?php } else { echo 'n/a'; } ?>
-
                                             </td>
-                                            <td>
-                                                    <?php echo $question->feedback; ?>
-                                                </td>
+                                            <td><?php echo $question->feedback; ?></td>
                                         </tr>
                                     <?php } ?>
                                 <?php } ?>
                                 </tbody>
-
-
                             </table>
-
-
 
                             <table class="table table-striped table-bordered">
                                 <thead>
@@ -207,7 +237,6 @@ function getRandomColor(){
                                 </tbody>
                             </table>
 
-                
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
                     <param name="FlashVars" value="&dataXML=<graph bgcolor='FFFFFF' canvasbgcolor='FFFFFF' xaxisname='node path (node IDs)' yaxisname='time on node (s)' caption='Node Path Analysis'>
                         <?php if (count($templateData['session']->traces) > 0) {
@@ -242,8 +271,6 @@ function getRandomColor(){
                            </graph>" quality="high" bgcolor="#FFFFFF" name="Line" align="" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
 
-
-
                 <h3>Counters Track</h3>
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
                     <param name="FlashVars" value="&dataXML=<graph caption='Counters' lineThickness='2' showValues='1' formatNumberScale='1' rotateNames='1' decimalPrecision='2' anchorRadius='2' anchorBgAlpha='50' showAlternateVGridColor='1' anchorAlpha='100' animation='1' limitsDecimalPrecision='0' divLineDecimalPrecision='1'>
@@ -261,11 +288,13 @@ function getRandomColor(){
                                     <?php if(isset($templateData['startValueCounters'])) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
-                                    <?php if(count($counter[1]) > 0) { ?>
+                                    <?php if (isset($counter[1])){
+                                        if(count($counter[1]) > 0) { ?>
                                         <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
 					<s v='<?php echo $counter[1][0]; ?>' />	
+                                    <?php } ?>
                                     <?php } ?>
                            </dataset>
                            <?php } ?>
@@ -285,11 +314,13 @@ function getRandomColor(){
                                     <?php if(isset($templateData['startValueCounters'])) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
-                                    <?php if(count($counter[1]) > 0) { ?>
+                                    <?php if (isset($counter[1])){
+                                    if(count($counter[1]) > 0) { ?>
                                         <?php for($i = 1; $i < count($counter[1]); $i++) { ?>
                                             <s v='<?php echo $counter[1][$i]; ?>' />
                                         <?php } ?>
 					<s v='<?php echo $counter[1][0]; ?>' />
+                                    <?php } ?>
                                     <?php } ?>
                                 </dataset>
                            <?php } ?>

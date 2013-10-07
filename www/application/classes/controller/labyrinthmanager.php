@@ -24,6 +24,8 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_LabyrinthManager extends Controller_Base {
 
     public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
         parent::before();
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
@@ -789,7 +791,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
 
             $regAuthors = DB_ORM::model('map_user')->getAllAuthors($mapId);
             if ($regAuthors != NULL) {
@@ -815,24 +817,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    public function action_info() {
-        $mapId = $this->request->param('id', NULL);
-        if ($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
 
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $infoView;
-                $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
-        }
-    }
     public function action_addContributor() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {
@@ -858,12 +843,39 @@ class Controller_LabyrinthManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST)) {
             if ($mapId) {
+                if ( isset($_POST['delta_time_seconds']) && isset($_POST['delta_time_minutes']) ) {
+                    $delta_time_seconds = $_POST['delta_time_seconds'];
+                    $delta_time_minutes = $_POST['delta_time_minutes'];
+
+                    $delta_timing = $delta_time_minutes * 60 + $delta_time_seconds;
+
+                    unset($_POST['delta_time_seconds']);
+                    unset($_POST['delta_time_minutes']);
+                    $_POST['delta_time'] = $delta_timing;
+                }
+
+                if ( isset($_POST['reminder_seconds']) && isset($_POST['reminder_minutes']) ) {
+                    $reminder_seconds = $_POST['reminder_seconds'];
+                    $reminder_minutes = $_POST['reminder_minutes'];
+
+                    $reminder_time = $reminder_minutes * 60 + $reminder_seconds;
+
+                    unset($_POST['reminder_seconds']);
+                    unset($_POST['reminder_minutes']);
+                    $_POST['reminder_time'] = $reminder_time;
+                }
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
 
                 $linkStyleId = Arr::get($_POST, 'linkStyle', null);
                 if($linkStyleId != null) {
                     DB_ORM::model('map_node')->setLinkStyle($linkStyleId);
+                }
+
+                $map = DB_ORM::model('map', array($mapId));
+                if ($map) {
+                    $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
+                    $map->save();
                 }
 
                 Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
@@ -947,28 +959,66 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_showDevNotes() {
-        $mapId = (int) $this->request->param('id', 0);
+    public function action_info() {
+        $mapId = $this->request->param('id', NULL);
         if ($mapId) {
-            $this->template = View::factory('labyrinth/note');
-            $this->template->set('map', DB_ORM::model('map', array($mapId)));
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $infoView = View::factory('labyrinth/labyrinthInfo');
+            $infoView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $infoView;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
+            Request::initial()->redirect(URL::base() . 'openLabyrinth');
         }
     }
 
-    public function action_updateDevNodes() {
-        $mapId = (int) $this->request->param('id', 0);
-        if (isset($_POST) && !empty($_POST) && $mapId) {
-            $map = DB_ORM::model('map', array($mapId));
-            if ($map) {
-                $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
-                $map->save();
-            }
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/showDevNotes/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
-        }
-    }
+    public function action_search() {
+        $mapId = $this->request->param('id', null);
+        $searchText = Arr::get($_GET, 's', null);
 
+        $searcher = new Searcher();
+
+        $searcher->addElement(new Searcher_Element_BasicMap_Dam($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                              array('field' => 'name', 'label' => 'Name'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_Node($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                               array('field' => 'title', 'label' => 'Title'),
+                                                                               array('field' => 'text', 'label' => 'Content'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_NodeSection($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                                      array('field' => 'name', 'label' => 'Name'))));
+        $searcher->addElement(new Searcher_Element_BasicMap_Counter($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                                  array('field' => 'name', 'label' => 'Name'),
+                                                                                  array('field' => 'description', 'label' => 'Description'),
+                                                                                  array('field' => 'start_value', 'label' => 'Start value'))));
+        $searcher->addElement(new Searcher_Element_Question($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                          array('field' => 'stem', 'label' => 'Stem'),
+                                                                          array('field' => 'response', 'label' => 'Response', 'type' => 'response'),
+                                                                          array('field' => 'feedback', 'label' => 'Feedback', 'type' => 'response'))));
+        $searcher->addElement(new Searcher_Element_Chat($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                      array('field' => 'stem', 'label' => 'Stem'),
+                                                                      array('field' => 'question', 'label' => 'Question', 'type' => 'element'),
+                                                                      array('field' => 'response', 'label' => 'Response', 'type' => 'element'))));
+        $searcher->addElement(new Searcher_Element_Vpd($mapId, array(array('field' => 'id', 'label' => 'Id'),
+                                                                     array('field' => 'value', 'label' => 'Value', 'type' => 'element'))));
+
+        $this->templateData['searchText'] = $searchText;
+
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+
+        $view = View::factory('labyrinthSearchResult');
+        $view->set('data', $searcher->search($searchText));
+        $view->set('searchText', $searchText);
+
+        $this->templateData['center'] = $view;
+        $this->templateData['left'] = $leftView;
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
+    }
 }

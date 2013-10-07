@@ -63,6 +63,24 @@ class Controller_CollectionManager extends Controller_Base {
         }
     }
 
+    public function action_viewAll(){
+        $collectionId = $this->request->param('id', 0);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View Collection'))->set_url(URL::base() . 'collectionManager/viewAll/' . $collectionId));
+
+        if ($collectionId) {
+            $this->templateData['collection'] = DB_ORM::model('map_collection', array((int) $collectionId));
+
+            $editView = View::factory('labyrinth/collection/viewAll');
+            $editView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $editView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
     public function action_editCollection() {
         $collectionId = $this->request->param('id', 0);
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Collection'))->set_url(URL::base() . 'collectionManager/editCollection/' . $collectionId));
@@ -102,7 +120,7 @@ class Controller_CollectionManager extends Controller_Base {
         $mapId = $this->request->param('id2', NULL);
         if ($collectionId != NULL) {
             DB_ORM::model('map_collectionMap')->deleteByIDs($collectionId, $mapId);
-            Request::initial()->redirect(URL::base() . 'collectionManager');
+            Request::initial()->redirect(URL::base() . 'collectionManager/editCollection/'.$collectionId);
         } else {
             Request::initial()->redirect(URL::base());
         }

@@ -189,7 +189,7 @@ class RunTimeLogic {
             if (count($matches[0]) > 0){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
-                    $replace[$i] = ' intval('.$this->getValue($matches[1][$key]).' / '.$matches[2][$key].') ';
+                    $replace[$i] = ' intval("'.$this->getValue($matches[1][$key]).'" / '.$matches[2][$key].') ';
                     $i++;
                 }
             }
@@ -212,7 +212,7 @@ class RunTimeLogic {
     }
 
     private function replaceCounter($matches){
-        return $this->getValue($matches[1]);
+        return '"'.$this->getValue($matches[1]).'"';
     }
 
     public function getValue($id){

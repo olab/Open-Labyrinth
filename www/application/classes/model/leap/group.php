@@ -63,8 +63,8 @@ class Model_Leap_Group extends DB_ORM_Model {
         return array('id');
     }
 
-    public function getAllGroupsId() {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id');
+    public function getAllGroupsId($order = 'ASC') {
+        $builder = DB_SQL::select('default')->from($this->table())->column('id')->order_by('name', $order);
         $result = $builder->query();
 
         $ids = array();
@@ -77,11 +77,16 @@ class Model_Leap_Group extends DB_ORM_Model {
         return $ids;
     }
 
-    public function getAllGroups() {
+    public function getAllGroups($order = 'ASC', $notInGroups = array()) {
         $result = array();
-        $ids = $this->getAllGroupsId();
+        $ids = $this->getAllGroupsId($order);
 
         foreach($ids as $id) {
+            if (count($notInGroups) > 0) {
+                if (in_array($id, $notInGroups)){
+                    continue;
+                }
+            }
             $result[] = DB_ORM::model('group', array($id));
         }
 

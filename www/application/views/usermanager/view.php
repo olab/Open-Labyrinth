@@ -31,13 +31,16 @@
 <h2>Users</h2></div>
 
 
-
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
+<script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/olab/dataTablesTB.js"></script>
 
 <div class="alert alert-info"><?php if (isset($templateData['userCount'])) echo $templateData['userCount']; ?>
     &nbsp;<?php echo __('registered users'); ?></div>
 
 
-<table class="table table-striped table-bordered">
+<table id="users" class="table table-striped table-bordered dataTable">
     <colgroup>
         <col/>
         <col/>
@@ -46,6 +49,9 @@
     </colgroup>
     <thead>
     <tr>
+        <th>
+            <?php echo __('Auth type'); ?>
+        </th>
         <th>
             <?php echo __('Username'); ?>
         </th>
@@ -71,22 +77,24 @@
     <?php if (isset($templateData['users']) and count($templateData['users']) > 0) { ?>
         <?php foreach ($templateData['users'] as $user) { ?>
             <tr>
-                <td><?php echo $user->username;?></td>
-                <td><?php echo $user->nickname;?></td>
-                <td><?php echo $user->type->name;?></td>
+                <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
+                <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+                <td><?php echo $user['username'];?></td>
+                <td><?php echo $user['nickname'];?></td>
+                <td><?php echo $user['type_name']; ?></td>
                 <td><?php
 
-                    if ($user->resetAttempt != NULL) {
-                        echo $user->resetAttempt;
+                    if ($user['resetAttempt'] != NULL) {
+                        echo $user['resetAttempt'] ;
                     } else {
                         echo __('No attempts');
                     }
-                    if ($user->resetTimestamp != NULL) {
-                        echo __('Last password recovery') . ':&nbsp;' . $user->resetTimestamp;
+                    if ($user['resetTimestamp'] != NULL) {
+                        echo '&nbsp;'. __('Last password recovery') . ':&nbsp;' . $user['resetTimestamp'];
                     }
 
-                    echo $user->resetAttempt;?></td>
-                <td><a class="btn btn-info" href="<?php echo URL::base() . 'usermanager/editUser/' . $user->id; ?>">
+                    echo $user['resetAttempt'];?></td>
+                <td><a class="btn btn-info" href="<?php echo URL::base() . 'usermanager/editUser/' . $user['id']; ?>">
                         <i class="icon-edit"></i><?php echo __("Edit");?> </a>
                 </td>
             </tr>

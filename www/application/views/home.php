@@ -134,6 +134,24 @@
                                 </li>
                                 <?php } ?>
                                 <?php } ?>
+
+                                <?php if(Auth::instance()->get_user()->type->name == 'author' || Auth::instance()->get_user()->type->name == 'superuser') { ?>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenario Management'); ?> <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li>
+                                        </ul>
+                                    </li>
+                                <?php } else { ?>
+                                    <?php if (Auth::instance()->get_user()->type->name != 'reviewer') {?>
+                                        <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
+                                    <?php } ?>
+                                    <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
+                                <?php } ?>
+
+                                <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>
                             </ul>
                         </div>
@@ -155,6 +173,14 @@
                 if (Auth::instance()->logged_in()) {
                     ?>
                     <div id="sidebar" class="span2">
+                        <?php if(isset($templateData['labyrinthSearch']) && isset($templateData['map'])) { ?>
+                            <form action="<?php echo URL::base(); ?>labyrinthManager/search<?php echo '/' . (isset($templateData['map']) && !is_numeric($templateData['map'])  ? $templateData['map']->id : $templateData['map']); ?>" method="get">
+                                <div class="input-prepend">
+                                    <span class="add-on"><i class="icon-search"></i></span>
+                                    <input class="span10" id="searchText" name="s" type="text" value="<?php if(isset($templateData['searchText'])) echo $templateData['searchText']; ?>" placeholder="Labyrinth Search">
+                                </div>
+                            </form>
+                        <?php } else { ?>
                             <form action="<?php echo URL::base(); ?>home/search" method="post">
                                 <input type="hidden" name="scope" value="t" />
                                 <div class="input-prepend">
@@ -162,6 +188,7 @@
                                     <input class="span10" id="searchterm" name="searchterm" type="text" placeholder="Labyrinth Search">
                                 </div>
                             </form>
+                        <?php } ?>
 
                         <div class="sidebar-nav">
                             <?php if (isset($templateData['left'])) echo $templateData['left']; ?>
@@ -205,11 +232,11 @@
         </div>
         <input type="hidden" id="browserWarningImages" value="<?php echo URL::base(); ?>scripts/browser/images/"/>
 
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery.cookie.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/browser/js/BrowserUpdateWarning_jQuery.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/application.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/bootstrap/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/browser/js/BrowserUpdateWarning_jQuery.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
     </body>
 </html>

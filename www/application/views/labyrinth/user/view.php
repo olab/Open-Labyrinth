@@ -18,7 +18,15 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+
+
 if (isset($templateData['map'])) { ?>
+    <link rel="stylesheet" type="text/css"
+          href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
+    <script type="text/javascript" charset="utf8"
+            src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/olab/dataTablesTB.js"></script>
+
     <div class="page-header">
         <h1><?php echo __('Edit users of Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
     </div>
@@ -41,7 +49,7 @@ if (isset($templateData['map'])) { ?>
                 <th style="text-align: center">Actions</th>
                 <th>
                     <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder'] == 0 ? 1 : 0; ?>/<?php echo $templateData['learnerOrder']; ?>">
-                        User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['authorOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        Users <div class="pull-right"><i class="icon-chevron-<?php if($templateData['authorOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
                     </a>
                 </th>
             </tr>
@@ -83,7 +91,7 @@ if (isset($templateData['map'])) { ?>
             <th style="text-align: center">Actions</th>
             <th>
                 <a href="<?php echo URL::base(); ?>mapUserManager/index/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['authorOrder']; ?>/<?php echo $templateData['learnerOrder'] == 0 ? 1 : 0; ?>">
-                    User <div class="pull-right"><i class="icon-chevron-<?php if($templateData['learnerOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                    Users <div class="pull-right"><i class="icon-chevron-<?php if($templateData['learnerOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
                 </a>
             </th>
         </tr>

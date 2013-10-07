@@ -43,6 +43,11 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
             'rule' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
                 'savable' => TRUE,
+            )),
+
+            'isCorrect' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'savable' => TRUE,
             ))
         );
         
@@ -68,8 +73,16 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
     }
     
     
-    public function getRulesByMapId($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+    public function getRulesByMapId($mapId, $type = '') {
+
+        if ($type == 'all'){
+            $builder = DB_SQL::select('default')->from($this->table())
+                ->where('map_id', '=', $mapId);
+        } else {
+            $builder = DB_SQL::select('default')->from($this->table())
+                ->where('map_id', '=', $mapId)
+                ->where('isCorrect' , '=', 1);
+        }
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -84,18 +97,22 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
         return NULL;
     }
     
-    public function addRule($mapId, $rule) {
+    public function addRule($mapId, $rule, $isCorrect) {
         $this->map_id = $mapId;
         $this->rule = $rule;
+        $this->isCorrect = $isCorrect;
+
         $this->save();
     }
 
-    public function editRule($ruleId, $rule) {
+    public function editRule($ruleId, $rule, $isCorrect) {
         $this->id = $ruleId;
         $this->load();
 
         if ($this->is_loaded()){
             $this->rule = $rule;
+            $this->isCorrect = $isCorrect;
+
             $this->save();
             return true;
         }

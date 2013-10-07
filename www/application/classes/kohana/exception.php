@@ -31,6 +31,9 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
             $file    = $e->getFile();
             $line    = $e->getLine();
 
+            // Get the exception backtrace
+            $trace = $e->getTrace();
+
             $attributes = array
             (
                 'controller' => 'error',
@@ -43,6 +46,7 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
                     $line . '#$#' .
                     json_encode($_POST) . '#$#' .
                     json_encode($_GET) . '#$#' .
+                    json_encode($trace) . '#$#' .
                     URL::site(Request::initial()->uri(), true)
                 )
             );

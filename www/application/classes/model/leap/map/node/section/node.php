@@ -86,7 +86,15 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         
         $this->save();
     }
-    
+
+    public function createNode($nodeId, $sectionId, $order) {
+        $this->node_id = $nodeId;
+        $this->section_id = $sectionId;
+        $this->order = $order;
+
+        $this->save();
+    }
+
     public function updateNodesOrder($sectionId, $values) {
         $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId);
         $result = $builder->query();
@@ -113,7 +121,11 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
                                 ->where('node_id', '=', $nodeId);
         $builder->execute();
     }
-    
+
+    public function deleteNodesBySection($sectionId) {
+        DB_SQL::delete('default')->from($this->table())->where('section_id', '=', $sectionId)->execute();
+    }
+
     public function getSectionNodes($sectionId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
         $result = $builder->query();

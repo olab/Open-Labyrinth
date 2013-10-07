@@ -30,10 +30,8 @@ if (isset($templateData['map'])) {
                     <a class="show-root-error" href="javascript:void(0)"><i class="icon-play icon-white"></i> <?php echo __('Play'); ?></a><div class="pull-right arrow"></div>
                 <?php } ?>
             </li>
-            <li><a href="<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a></li>
+            <li><a href="<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>"><i class="icon-edit"></i> <?php echo __('Details'); ?></a></li>
             <li><a data-toggle="modal" href="#" data-target="#delete-labyrinth"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a></li>
-            <li><a href="<?php echo URL::base() . 'labyrinthManager/info/' . $templateData['map']->id; ?>"><i class="icon-info-sign"></i> <?php echo __('Information'); ?></a></li>
-            <li><a data-toggle="modal" href="<?php echo URL::base(); ?>labyrinthManager/showDevNotes/<?php echo $templateData['map']->id; ?>" data-target="#developer-notes"><i class="icon-paper-clip"></i> Notes</a></li>
 
             <li class="nav-header">Core Layout</li>
             <li><a href="<?php echo URL::base() . 'visualManager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open"></i> <?php echo __('Visual Editor'); ?></a></li>
@@ -49,6 +47,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base() . 'counterManager/grid/' . $templateData['map']->id; ?>"><i class="icon-th-large"></i> <?php echo __('Counter Grid'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'visualdisplaymanager/index/' . $templateData['map']->id; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Visual displays of counters'); ?></a><div class="pull-right arrow"></div></li>
             <li><a href="<?php echo URL::base() . 'counterManager/rules/' . $templateData['map']->id; ?>"><i class="icon-check"></i> <?php echo __('Rules'); ?></a></li>
+<!--            <li><a href="--><?php //echo URL::base() . 'popupManager/index/' . $templateData['map']->id; ?><!--"><i class="icon-envelope"></i> --><?php //echo __('Pop-up messages'); ?><!--</a></li>-->
             <li><a href="<?php echo URL::base() . 'elementManager/index/' . $templateData['map']->id; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>
             <li><a href="<?php echo URL::base() . 'clusterManager/index/' . $templateData['map']->id; ?>"><i class="icon-tags"></i> <?php echo __('Clusters'); ?></a></li>
 

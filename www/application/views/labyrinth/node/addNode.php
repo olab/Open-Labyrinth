@@ -41,6 +41,25 @@ if (isset($templateData['map'])) {
             theme_advanced_resizing: true,
             editor_selector: "mceEditor"
         });
+
+        tinyMCE.init({
+            // General options
+            mode: "textareas",
+            relative_urls: false,
+            theme: "advanced",
+            skin: "bootstrap",
+            plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+            // Theme options
+            theme_advanced_buttons1: "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+            theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,|,forecolor,backcolor",
+            theme_advanced_buttons3: "sub,sup,|,charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
+            theme_advanced_toolbar_location: "top",
+            theme_advanced_toolbar_align: "left",
+            theme_advanced_statusbar_location: "bottom",
+            theme_advanced_resizing: true,
+            editor_selector: "mceEditorLite",
+            entity_encoding: "raw"
+        });
     </script>
 <div class="page-header">
     <h1><?php echo __('Add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
@@ -73,6 +92,23 @@ if (isset($templateData['map'])) {
                 <div class="controls">
                     <textarea name="mnodeinfo"
                               id="mnodeinfo" <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="show_info"
+                       class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
+
+                <div class="controls">
+                    <input id="show_info" name="show_info" name="show_info" type="checkbox"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="annotation"
+                       class="control-label"><?php echo __('Annotation'); ?></label>
+                <div class="controls">
+                    <textarea class="mceEditorLite" name="annotation" id="annotation"></textarea>
                 </div>
             </div>
         </fieldset>
@@ -123,7 +159,7 @@ if (isset($templateData['map'])) {
 
             </div>
             <div class="control-group">
-                <label class="control-label"><?php echo __('Enable undo links'); ?></label>
+                <label class="control-label"><?php echo __('Prevent Revisit'); ?></label>
 
                 <div class="controls">
                     <label class="radio">

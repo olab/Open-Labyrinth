@@ -97,5 +97,22 @@ class Model_Leap_Map_CollectionMap extends DB_ORM_Model {
         }
         return DB_ORM::model('map')->getAllMap();
     }
+
+
+    public function getAllColMapsIds() {
+        $builder = DB_SQL::select('default')->from($this->table())->column('map_id');
+
+        $result = $builder->query();
+
+        $res = array();
+
+        if($result->is_loaded()) {
+            foreach ($result as $record) {
+                $res[] = $record['map_id'];
+            }
+        }
+
+        return $res;
+    }
 }
 
