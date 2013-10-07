@@ -45,14 +45,16 @@ class Controller_DForumManager extends Controller_Base {
         if(Auth::instance()->logged_in()) {
             $forumIds = array();
             $topicIds = array();
-            foreach($openForums as $forum) {
-                $forumIds[] = $forum['id'];
-                if(isset($forum['topics']) && count($forum['topics']) > 0) {
-                    foreach($forum['topics'] as $topic) {
-                        $topicIds[] = $topic['id'];
-                    }
-                }
-            }
+			if (count($openForums) > 0) {
+				foreach($openForums as $forum) {
+					$forumIds[] = $forum['id'];
+					if(isset($forum['topics']) && count($forum['topics']) > 0) {
+						foreach($forum['topics'] as $topic) {
+							$topicIds[] = $topic['id'];
+						}
+					}
+				}
+			}
 
             $userForumsInfo = DB_ORM::model('dforum_users')->getForumUser($forumIds, Auth::instance()->get_user()->id);
             $userTopicsInfo = DB_ORM::model('dtopic_users')->getTopicUser($topicIds, Auth::instance()->get_user()->id);
