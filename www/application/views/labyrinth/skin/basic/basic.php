@@ -434,9 +434,6 @@ if ($templateData['skin_path'] != NULL) {
 </head>
 
 <body>
-
-
-
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
 <script language="javascript" type="text/javascript"
         src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>

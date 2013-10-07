@@ -161,7 +161,7 @@ var RightPanel = function() {
                 self.annotationId = self.annotationId.substr(1, self.annotationId.length - 1);
             }
         }
-        
+
         if('nodeSupport' in parameters) {
             self.$nodeSupport = $(parameters.nodeSupport);
             self.nodeSupportId = parameters.nodeSupport;

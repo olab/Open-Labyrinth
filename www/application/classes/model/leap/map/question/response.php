@@ -176,7 +176,7 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
 
         return $result;
     }
-    
+
     public function deleteByQuestion($questionId) {
         $builder = DB_ORM::delete('map_question_response')->where('question_id', '=', (int)$questionId);
         $builder->execute();
