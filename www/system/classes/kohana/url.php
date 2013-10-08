@@ -44,8 +44,15 @@ class Kohana_URL {
 
 		if ($protocol instanceof Request)
 		{
-			// Use the current protocol
-			list($protocol) = explode('/', strtolower($protocol->protocol()));
+			if ( ! $protocol->secure())
+			{
+				// Use the current protocol
+				list($protocol) = explode('/', strtolower($protocol->protocol()));
+			}
+			else
+			{
+				$protocol = 'https';
+			}
 		}
 
 		if ( ! $protocol)
@@ -80,7 +87,7 @@ class Kohana_URL {
 			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$domain.$port.'/';
+			$base_url = $protocol.'://'.$domain.$port.$base_url;
 		}
 
 		return $base_url;
