@@ -223,11 +223,7 @@ if (isset($templateData['map'])) {
                    </td>
 
                     <td>
-                        <?php if ($isInput) { ?>
-                         <label> <input class="code" readonly="readonly" type="text"  value="[[MR:<?php echo $file->id; ?>]]"></label>
-                        <?php } else { ?>
-                        <label>   <textarea readonly="readonly" class="code">&lt;a href="<?php echo URL::base() . $file->path; ?>"&gt;<?php echo $file->name; ?>&lt;/a&gt;</textarea></label>
-                        <?php } ?>
+                        <label> <input class="code" readonly="readonly" type="text"  value="[[MR:<?php echo $file->id; ?>]]"></label>
                     </td>
                     <td>
                         <?php
