@@ -611,7 +611,6 @@ var VisualEditor = function() {
 
         for (var i = 0; i < 3; i++ ) {
             color += getRandomInt(10, 150) + ', ';
-            console.log(color);
         }
 
         color += '1.0)';
