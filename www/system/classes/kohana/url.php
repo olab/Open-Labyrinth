@@ -31,7 +31,7 @@ class Kohana_URL {
 	 * @uses    Kohana::$index_file
 	 * @uses    Request::protocol()
 	 */
-	public static function base($protocol = NULL, $index = FALSE)
+	public static function base($protocol = NULL, $index = FALSE, $addBaseUrl = false)
 	{
 		// Start with the configured base URL
 		$base_url = Kohana::$base_url;
@@ -87,7 +87,12 @@ class Kohana_URL {
 			}
 
 			// Add the protocol and domain to the base URL
-			$base_url = $protocol.'://'.$domain.$port.$base_url;
+			if ($addBaseUrl) {
+				$base_url = $protocol.'://'.$domain.$port.$base_url;
+			} else {
+				$base_url = $protocol.'://'.$domain.$port.'/';
+			}
+			
 		}
 
 		return $base_url;
