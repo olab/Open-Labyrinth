@@ -461,3 +461,7 @@ button.close {
     border: 1px solid #b0b0b0;
     background-color: #eeeeee;
 }
+a.file-link,
+a.file-link:visited {
+    color: #0088cc;
+}

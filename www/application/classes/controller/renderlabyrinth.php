@@ -531,6 +531,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_downloadFile() {
+        $fileId = $this->request->param('id', null);
+
+        if($fileId != null) {
+            $file = DB_ORM::model('map_element', array((int)$fileId));
+            $filename = DOCROOT . $file->path; // of course find the exact filename....
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Cache-Control: private', false); // required for certain browsers
+            header('Content-Type: ' . $file->mime);
+
+            header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . filesize($filename));
+
+            readfile($filename);
+
+            exit;
+        }
+    }
+
     private function checkRemoteUser($username, $password) {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);
@@ -703,8 +725,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             $replaceString = Controller_RenderLabyrinth::getSwfHTML($id);
                                         } elseif (strstr($media->mime, 'audio')) {
                                             $replaceString = Controller_RenderLabyrinth::getAudioHTML($id);
-                                        } else {
+                                        } else if(in_array($media->mime, array('image/jpg', 'image/jpeg', 'image/gif', 'image/png'))) {
                                             $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
+                                        } else {
+                                            $replaceString = Controller_RenderLabyrinth::getFileLink($id);
                                         }
                                         break;
                                     case 'AV':
@@ -753,6 +777,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $image = DB_ORM::model('map_element', array((int) $id));
         if ($image) {
             return '<img src="' . URL::base() . $image->path . '">';
+        }
+
+        return '';
+    }
+
+    private static function getFileLink($id) {
+        $file = DB_ORM::model('map_element', array((int) $id));
+        if ($file) {
+            return '<a class="file-link" href="' . URL::base() . 'renderlabyrinth/downloadFile/' . $file->id . '">' . $file->name . '</a>';
         }
 
         return '';

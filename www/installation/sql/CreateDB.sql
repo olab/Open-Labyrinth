@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `maps` (
   KEY `skin_id` (`skin_id`),
   KEY `section_id` (`section_id`),
   KEY `language_id` (`language_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `maps`

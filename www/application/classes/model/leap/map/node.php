@@ -370,7 +370,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('y', Arr::get($values, 'y', 0))
                 ->column('rgb', Arr::get($values, 'color', '#FFFFFF'))
                 ->column('annotation', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null)))))
-                ->column('show_info', Arr::get($values, 'showInfo', 0));
+                ->column('show_info', (int) Arr::get($values, 'showInfo', 0));
 
         return $builder->execute();
     }
@@ -391,7 +391,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->x = Arr::get($values, 'x', 0);
             $this->y = Arr::get($values, 'y', 0);
             $this->rgb = Arr::get($values, 'color', '#FFFFFF');
-            $this->show_info = Arr::get($values, 'showInfo', 0);
+            $this->show_info = (int) Arr::get($values, 'showInfo', 0);
             $this->annotation = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
 
             $this->save();
