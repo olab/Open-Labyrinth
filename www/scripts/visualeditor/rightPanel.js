@@ -32,7 +32,10 @@ var RightPanel = function() {
     self.nodeSupportId = '';
     self.$unsavedDataBtnClose = null;
     self.$unsavedDataForm = null;
-    
+    self.$showInfo = null;
+    self.$annotation = null;
+    self.annotationId = '';
+
     self.$unsavedDataChange = null;
     self.$unsavedDataBtnChangeClose = null;
 
@@ -150,7 +153,15 @@ var RightPanel = function() {
                 self.nodeContentId = self.nodeContentId.substr(1, self.nodeContentId.length - 1);
             }
         }
-        
+
+        if('annotation' in parameters) {
+            self.$annotation = $(parameters.annotation);
+            self.annotationId = parameters.annotation;
+            if(self.annotationId.length > 2) {
+                self.annotationId = self.annotationId.substr(1, self.annotationId.length - 1);
+            }
+        }
+
         if('nodeSupport' in parameters) {
             self.$nodeSupport = $(parameters.nodeSupport);
             self.nodeSupportId = parameters.nodeSupport;
@@ -179,6 +190,9 @@ var RightPanel = function() {
         
         if('nodeCounters' in parameters)
             self.$nodeCounters = $(parameters.nodeCounters);
+
+        if('showInfo' in parameters)
+            self.$showInfo = $(parameters.showInfo);
     }
     
     self.Close = function() {
@@ -241,7 +255,9 @@ var RightPanel = function() {
             self.node.nodePriority = GetIntegerValueFromField(self.$nodePriority);
             self.node.undo = GetBooleanValueFromField(self.$nodeUndoLinks);
             self.node.isEnd = GetBooleanValueFromField(self.$endNode);
-            
+            self.node.showInfo = self.$showInfo.attr('checked') ? true : false;
+            self.node.annotation = tinymce.get(self.annotationId).getContent({format : 'raw', no_events : 1});
+
             var counters = GetCountersData();
             if(counters != null && counters.length > 0) {
                 for(var i = 0; i < counters.length; i++) {
@@ -306,6 +322,11 @@ var RightPanel = function() {
                     tinymce.get(self.nodeContentId).setContent(self.node.content);
                 }
 
+                if(self.$annotation != null) {
+                    self.$annotation.val(self.node.annotation);
+                    tinymce.get(self.annotationId).setContent(self.node.annotation);
+                }
+
                 if(self.$nodeSupport != null) {
                     self.$nodeSupport.val(self.node.support);
                     tinymce.get(self.nodeSupportId).setContent(self.node.support);
@@ -334,6 +355,12 @@ var RightPanel = function() {
 
                 if(self.$nodePriority != null)
                     self.$nodePriority.find('input[value="' + self.node.nodePriority + '"]').attr('checked', 'checked');
+
+                if(self.$showInfo != null && self.node.showInfo) {
+                    self.$showInfo.attr('checked', 'checked');
+                } else {
+                    self.$showInfo.removeAttr('checked');
+                }
 
                 if(self.node.counters.length > 0 && self.$nodeCounters != null) {
                     var counters = GetCountersData();

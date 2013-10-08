@@ -111,7 +111,101 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public function getUniqueTraceByMapId($mapId) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('map_id', '=', $mapId)
+                           ->group_by('node_id')
+                           ->group_by('session_id')
+                           ->order_by('id')
+                           ->column('id')
+                           ->column('session_id')
+                           ->column('user_id')
+                           ->column('node_id')
+                           ->query();
+
+        $result = array();
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[] = array('id'         => $record['id'],
+                                  'session_id' => $record['session_id'],
+                                  'user_id'    => $record['user_id'],
+                                  'node_id'    => $record['node_id']);
+            }
+        }
+
+        return $result;
+    }
+
+    public function getUniqueTraceBySessions($sessions) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('session_id', 'IN', $sessions)
+                           ->group_by('node_id')
+                           ->group_by('session_id')
+                           ->order_by('id')
+                           ->column('id')
+                           ->column('session_id')
+                           ->column('user_id')
+                           ->column('node_id')
+                           ->query();
+
+        $result = array();
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[] = array('id'         => $record['id'],
+                                  'session_id' => $record['session_id'],
+                                  'user_id'    => $record['user_id'],
+                                  'node_id'    => $record['node_id']);
+            }
+        }
+
+        return $result;
+    }
+
+    public function undoTrace($sessionId, $mapId, $nodeId) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->where('session_id', '=', $sessionId, 'AND')
+                           ->where('map_id', '=', $mapId)
+                           ->order_by('id', 'DESC')
+                           ->column('id')
+                           ->column('node_id')
+                           ->query();
+
+        if($records->is_loaded()) {
+            $removeTraceIDs = array();
+            $undoTraceId = null;
+            foreach($records as $record) {
+                if($record['node_id'] == $nodeId) {
+                    $undoTraceId = $record['id'];
+                    break;
+                } else {
+                    $removeTraceIDs[] = $record['id'];
+                }
+            }
+
+            if($undoTraceId != null && $undoTraceId > 0) {
+                $trace = DB_ORM::model('user_sessionTrace', array((int)$undoTraceId));
+                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+                $this->updateCounter($sessionId, $mapId, $rootNode->id, $trace->counters);
+
+                $removeTraceIDs[] = $trace->id;
+                $this->deleteTracesByIDs($removeTraceIDs);
+            }
+        }
+    }
+
+    public function deleteTracesByIDs($tracesIDs) {
+        if($tracesIDs == null && count($tracesIDs) <= 0) return;
+
+        DB_SQL::delete('default')
+                ->from($this->table())
+                ->where('id', 'IN', $tracesIDs)
+                ->execute();
+    }
+
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
         $builder = DB_ORM::insert('user_sessionTrace')
                 ->column('session_id', $sessionId)
@@ -137,7 +231,20 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         
         return NULL;
     }
-    
+    public function getLastTraceBySessionId($sessionId) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId)
+            ->order_by('date_stamp', 'DESC')
+            ->limit(1);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            return $result;
+        }
+
+        return NULL;
+    }
     public function isExistBySessionAndNodeIDs($sessionId, $nodeId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
@@ -193,7 +300,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         if($traceId != null) {
             $builder = $builder->where('id', '=', $traceId, 'AND');
             $builder = $builder->where('node_id', '=', $nodeId);
-        } else  {
+        } else {
             $builder = $builder->where('node_id', '=', $nodeId);
         }
 
@@ -203,7 +310,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function getTraceBySessionID($sessionId) {
+    public function getTraceBySessionID($sessionId , $getType = 'obj') {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('session_id', '=', $sessionId)
@@ -211,11 +318,17 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $result = $builder->query();
         
         if($result->is_loaded()) {
+
             $traces = array();
             foreach($result as $record) {
-                $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
+                if ($getType != 'array') {
+                    $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
+                }
+                else {
+                    $traces[] = $record;
+                }
             }
-            
+
             return $traces;
         }
         
@@ -257,6 +370,47 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         }
         
         return NULL;
+    }
+
+    public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs) {
+        $records = DB_SQL::select('default')
+                           ->from($this->table())
+                           ->column('id')
+                           ->where('user_id', '=', $userId, 'AND')
+                           ->where('map_id', '=', $mapId, 'AND')
+                           ->where('session_id', 'IN', $sessionIDs, 'AND')
+                           ->where('node_id', 'IN', $nodeIDs)
+                           ->query();
+
+        return $records->is_loaded();
+    }
+
+    public function getDateStampBySessionAndNodeId($sessionId, $nodeId){
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->column('date_stamp')
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('node_id', '=', $nodeId)
+            ->limit(1)
+            ->query();
+
+        if ($result->is_loaded()) {
+            $res = array();
+            foreach($result as $record) {
+                $res[] = $record['date_stamp'];
+            }
+        }
+
+        return $res;
+    }
+
+    public function updateSession($sessionId, $nodeId, $mapId, $dateStamp) {
+        $builder = DB_ORM::delete('user_sessiontrace')
+            ->where('session_id', '=', $sessionId)
+            ->where('node_id', '=', $nodeId)
+            ->where('map_id', '=', $mapId)
+            ->where('date_stamp', '>=', $dateStamp);
+        $builder->execute();
     }
 }
 

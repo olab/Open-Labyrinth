@@ -1,3 +1,13 @@
+CREATE DATABASE IF NOT EXISTS `openlabyrinth` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-- Create user (username: ol_user; password: ol_user_pass) 
+CREATE USER IF NOT EXISTS 'ol_user'@'localhost' IDENTIFIED BY 'ol_user_pass';
+
+-- Link user with database
+GRANT ALL PRIVILEGES ON `openlabyrinth` . * TO 'ol_user'@'localhost' WITH GRANT OPTION;
+
+USE `openlabyrinth`;
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
@@ -1621,22 +1631,3 @@ CREATE TABLE IF NOT EXISTS `rdf_vocabularies` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
-CREATE TABLE IF NOT EXISTS `visual_editor_autosaves` (
-  `map_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `json` text NOT NULL,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
-TRUNCATE TABLE `map_question_types`;
-INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES (1, 'single line text entry',	'text', 'text', NULL);
-INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES (2, 'multi-line text entry',	'area', 'area', NULL);
-INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES (3, 'multiple choice',	'mcq', 'choise', 0);
-INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES (4, 'pick choise',	'pqc', 'choise', 0);
-
-ALTER TABLE `map_questions` ADD `show_submit` tinyint(4) NOT NULL DEFAULT '0',
-ADD `redirect_node_id` int(10) unsigned DEFAULT NULL,
-ADD `submit_text` varchar(200) DEFAULT NULL;
-
-UPDATE `map_questions` SET `entry_type_id` = 3 WHERE `entry_type_id` IN ('4', '5', '6');

@@ -24,6 +24,8 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_VisualManager extends Controller_Base {
 
     public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
         parent::before();
 
         $this->mapId = (int) $this->request->param('id', 0);

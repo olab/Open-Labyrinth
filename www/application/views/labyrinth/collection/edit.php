@@ -32,7 +32,7 @@ if (isset($templateData['collection'])) {
                 <label for="colname" class="control-label"><?php echo __('Collection name'); ?></label>
 
                 <div class="controls">
-                    <input type="text" name="colname" value="" id="colname">
+                    <input type="text" name="colname" value="<?php if (isset($templateData['collection'])) echo $templateData['collection']->name; ?>" id="colname">
 
                 </div>
             </div>

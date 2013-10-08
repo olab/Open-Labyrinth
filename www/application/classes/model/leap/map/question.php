@@ -134,6 +134,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'child_key' => array('question_id'),
                 'child_model' => 'map_question_response',
                 'parent_key' => array('id'),
+                'options' => array(array('order_by', array('map_question_responses.order', 'ASC')))
             )),
             
             'user_responses' => new DB_ORM_Relation_HasMany($this, array(
@@ -175,7 +176,28 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function getQuestionsByMapAndTypes($mapId, $types) {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('map_id', '=', $mapId, 'AND')
+            ->where('entry_type_id', 'IN', $types)
+            ->column('id');
+
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $questions = array();
+            foreach($result as $record) {
+                $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
+            }
+
+            return $questions;
+        }
+
+        return NULL;
+    }
+
     public function addQuestion($mapId, $type, $values) {
         switch($type->value)
         {
@@ -284,6 +306,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', $this->width);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
         $this->settings = Arr::get($values, 'settings', $this->feedback);
+        $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
+        $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
 
         $this->save();
     }
@@ -403,7 +427,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         
         $question = DB_ORM::model('map_question', array((int)$questionId));
         if($question == null) return;
-        
+
         $builder = DB_ORM::insert('map_question')
                 ->column('map_id', $question->map_id)
                 ->column('stem', $question->stem)
@@ -417,7 +441,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('show_submit', $question->show_submit)
                 ->column('redirect_node_id', $question->redirect_node_id)
                 ->column('submit_text', $question->submit_text)
-                ->column('type_display', $question->type_display);
+                ->column('type_display', $question->type_display)
+                ->column('settings', $question->settings);
 
         $newId = $builder->execute();
         
@@ -429,6 +454,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('feedback', $response->feedback)
                         ->column('is_correct', $response->is_correct)
                         ->column('score', $response->score)
+                        ->column('to', $response->to)
+                        ->column('from', $response->from)
                         ->execute();
             }
         }
@@ -498,19 +525,21 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->execute();
         
         $responses = array();
-        foreach($values as $key => $value) {
-            if(!(strpos($key, 'response_') === FALSE )) {
-                $id = str_replace('response_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['response'] = $value;
-            } else if(!(strpos($key, 'feedback_') === FALSE )) {
-                $id = str_replace('feedback_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['feedback'] = $value;
-            } else if(!(strpos($key, 'correctness_') === FALSE )) {
-                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['correctness'] = $value;
-            } else if(!(strpos($key, 'score_') === FALSE )) {
-                $id = str_replace('score_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $responses[$id]['score'] = $value;
+        $responsesJSONs = Arr::get($values, 'responses', null);
+        if($responsesJSONs != null && count($responsesJSONs) > 0) {
+            $responseIndex = 0;
+            foreach($responsesJSONs as $responsesJSON) {
+                $object = json_decode($responsesJSON, true);
+
+                if($object == null) { continue; }
+
+                if(isset($object['response']))    { $responses[$responseIndex]['response']    = urldecode(str_replace('+', '&#43;', base64_decode($object['response']))); }
+                if(isset($object['feedback']))    { $responses[$responseIndex]['feedback']    = urldecode(str_replace('+', '&#43;', base64_decode($object['feedback']))); }
+                if(isset($object['correctness'])) { $responses[$responseIndex]['correctness'] = $object['correctness']; }
+                if(isset($object['score']))       { $responses[$responseIndex]['score']       = $object['score'];       }
+                if(isset($object['order']))       { $responses[$responseIndex]['order']       = $object['order'];       }
+
+                $responseIndex++;
             }
         }
         
@@ -520,8 +549,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('question_id', $newQuestionId)
                         ->column('response', Arr::get($response, 'response', ''))
                         ->column('feedback', Arr::get($response, 'feedback', ''))
-                        ->column('is_correct', (int) Arr::get($response, 'correctness', 0))
+                        ->column('is_correct', (int) Arr::get($response, 'correctness', 2))
                         ->column('score', (int) Arr::get($response, 'score', 0))
+                        ->column('order', (int) Arr::get($response, 'order', 1))
                         ->execute();
             }
         }
@@ -590,6 +620,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                         ->column('redirect_node_id', null)
                         ->column('submit_text', 'Submit')
                         ->column('type_display', $question->type_display)
+                        ->column('settings', $question->settings)
                         ->execute();
                 
                 if(count($question->responses) > 0) {
@@ -600,6 +631,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                                 ->column('feedback', $response->feedback)
                                 ->column('is_correct', $response->is_correct)
                                 ->column('score', $response->score)
+                                ->column('from', $response->from)
+                                ->column('to', $response->to)
                                 ->execute();
                     }
                 }

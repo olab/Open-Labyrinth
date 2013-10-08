@@ -2,10 +2,61 @@ $(function () {
     var params = {
         'canvasContainer':'#canvasContainer',
         'canvasId':'#canvas',
-        'aButtonsContianer': '#ve_additionalActionButton'
+        'aButtonsContianer': '#ve_additionalActionButton',
+        'sectionSelectId': '#sectionsNodesSelect'
     };
 
-    tinyMCE.init({
+    var tinyMCEConfigs = [{
+        // General options
+        mode:"textareas",
+        relative_urls:false,
+        entity_encoding:"raw",
+        theme:"advanced",
+        skin:"bootstrap",
+        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
+        // Theme options
+        theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,|,bullist,numlist,|,blockquote,",
+        theme_advanced_buttons2:"styleselect,formatselect,fontselect,fontsizeselect,visualchars",
+        theme_advanced_buttons3:"link,unlink,anchor,image,template,code,forecolor,backcolor,iespell,media,advhr,fullscreen,attribs,nonbreaking,outdent,indent",
+        theme_advanced_buttons4:"tablecontrols,|,hr,removeformat,visualaid,help,",
+        theme_advanced_toolbar_location:"top",
+        theme_advanced_toolbar_align:"left",
+        theme_advanced_statusbar_location:"bottom",
+        theme_advanced_resizing:true,
+        setup: function(ed) {
+            ed.onClick.add(function(ed, e) {
+                veUnsavedData();
+            });
+        }
+    },{
+        // General options
+        mode: "textareas",
+        relative_urls: false,
+        theme: "advanced",
+        skin: "bootstrap",
+        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+        // Theme options
+        theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword",
+        theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
+        theme_advanced_buttons3: "bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,forecolor,backcolor,sub,sup",
+        theme_advanced_buttons4: "charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
+        theme_advanced_toolbar_location: "top",
+        theme_advanced_toolbar_align: "left",
+        theme_advanced_statusbar_location: "bottom",
+        theme_advanced_resizing: true,
+        entity_encoding: "raw"
+    }];
+
+    function setTinyMCE(configNumber, id) {
+        tinyMCE.settings = tinyMCEConfigs[configNumber];
+        tinyMCE.execCommand('mceAddControl', true, id);
+    }
+
+    setTinyMCE(0, 'nodecontent');
+    setTinyMCE(0, 'nodesupport');
+    setTinyMCE(1, 'annotation');
+
+    /*tinyMCE.init({
         // General options
         mode:"textareas",
         relative_urls:false,
@@ -29,6 +80,25 @@ $(function () {
             });
         }
     });
+
+    tinyMCE.init({
+        // General options
+        mode: "textareas",
+        relative_urls: false,
+        theme: "advanced",
+        skin: "bootstrap",
+        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
+        // Theme options
+        theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,|,bullist,numlist,|,blockquote,",
+        theme_advanced_buttons2:"styleselect,formatselect,fontselect,fontsizeselect,visualchars",
+        theme_advanced_buttons3: "cut,copy,paste,pastetext,pasteword,|,bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,|,forecolor,backcolor",
+        theme_advanced_buttons4: "sub,sup,|,charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
+        theme_advanced_toolbar_location: "top",
+        theme_advanced_toolbar_align: "left",
+        theme_advanced_statusbar_location: "bottom",
+        theme_advanced_resizing: true,
+        editor_selector: "mceEditorLite"
+    });*/
 
     var autoSaveData = null;
     var visualEditor = new VisualEditor();
@@ -74,7 +144,7 @@ $(function () {
     
     $('#pasteSNodesBtn').click(function() {
         paste();
-    })
+    });
 
     if (mapJSON != null && mapJSON.length > 0) {
         if (mapType != null && mapType == 6) {
@@ -180,7 +250,7 @@ $(function () {
     $('.navbar-inner .dropdown-menu a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.navbar-inner .nav a:not(.dropdown-toggle)').click(function() { return leaveBox($(this)); });
     $('.nav-list a').click(function() { return leaveBox($(this)); });
-    $('.wizard-next-buttons a').click(function() { return leaveBox($(this)); })
+    $('.wizard-next-buttons a').click(function() { return leaveBox($(this)); });
 
     var leaveLink = null;
 
@@ -454,6 +524,7 @@ $(function () {
 
     $('#veRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
     $('#veSelectRightPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
+    $('#veSectionPanel').draggable({handle: '.visual-editor-right-panel-tabs', cursor: 'move', scroll: false, containment: "#canvasContainer"});
 
     $('#veRightPanel input[type=text]').keyup(function(){
         veUnsavedData();
@@ -474,4 +545,143 @@ $(function () {
     function veUnsavedData(){
         visualEditor.unsavedData = true;
     }
+
+    var $makeSectionBox       = $('#veMakeSectionBox'),
+        $sectionNodeContainer = $('#sectionNodesContainer');
+
+    $('#veMakeSectionBtn').click(function() {
+        var html          = '<label for="nodetitle" class="control-label" style="text-align: left;"><strong>%nodeTitle%</strong></label>' +
+                            '<div class="controls"><select id="sectionNodeOrder%orderNodeId%" class="section-nodes-order">%sectionOptions%</select></div>' +
+                            '<div class="section-node" nodeId="%nodeId%"></div>',
+            optionsHtml   = '<option value="%value%">%title%</option>',
+            selectedNodes = visualEditor.GetSelectedNodes(),
+            length        = 0,
+            options       = '',
+            nodes         = '',
+            i             = 0;
+
+        length = selectedNodes.length;
+        if(length <= 0) return false;
+
+        for(i = 0; i < length; i++) {
+            options += optionsHtml.replace('%value%', i).replace('%title%', i);
+        }
+
+        for(i = length; i--;) {
+            nodes += html.replace('%nodeTitle%', selectedNodes[i].title)
+                         .replace('%sectionOptions%', options)
+                         .replace('%orderNodeId%', selectedNodes[i].id)
+                         .replace('%nodeId%', selectedNodes[i].id);
+        }
+
+        $sectionNodeContainer.empty().append(nodes);
+
+        $makeSectionBox.modal();
+    });
+
+    $('#veMakeNewSectionBtn').click(function() {
+        var $sectionNodes = $('.section-node'),
+            sectionName   = $('#sectionNameInput').val(),
+            nodesIDs      = [];
+
+        $sectionNodes.each(function(index, value) {
+            var nodeId = $(this).attr('nodeId');
+            if(nodeId != null) {
+                nodesIDs.push({nodeId: nodeId, order: $('#sectionNodeOrder' + nodeId).val()});
+            }
+        });
+
+        visualEditor.AddNewSection(sectionName, nodesIDs);
+
+        $makeSectionBox.modal('hide');
+    });
+
+    $('#veSectionClosePanelBtn').click(function() {
+        $('#veSectionPanel').addClass('hide');
+    });
+
+    $('#sectionsNodesSelect').change(function() {
+        sectionData($(this).val());
+    });
+
+    $('.removeNodeFromSection').live('click', function() {
+        var nodeId    = $(this).attr('nodeId'),
+            sectionId = $(this).attr('sectionId');
+
+        visualEditor.RemoveNodeFromSection(sectionId, nodeId);
+        $(this).parent().parent().remove();
+    });
+
+    $('#removeSection').click(function() {
+        var sectionId = $(this).attr('sectionId');
+
+        visualEditor.RemoveSection(sectionId);
+        $('#sectionSettings').addClass('hide');
+        $('#sectionNodeContainer').empty();
+        $('#sectionsNodesSelect option[value="' + sectionId + '"]').remove();
+    });
+
+    $('#addNodeToSection').click(function() {
+        var sectionId  = $(this).attr('sectionId'),
+            addedNodes = visualEditor.AddNodesToSection(sectionId);
+
+        sectionData(sectionId);
+    });
+
+    function sectionData(sectionId) {
+        var section = visualEditor.GetSectionById(sectionId),
+            html    = '<div><label for="nodetitle" class="control-label" style="text-align: left;"><strong>%nodeName%</strong></label><div class="controls">'+
+                      '<select id="selectSectionNodeOrder%orderNodeId%" style="margin-bottom: 0">%options%</select>' +
+                      '<button class="btn btn-danger removeNodeFromSection" nodeId="%removeNodeId%" sectionId="%sectionId%"><i class="icon-trash"></i></button></div>' +
+                      '<div class="sectionNode" nodeId="%nodeId%"></div></div>',
+            options = '',
+            length  = 0,
+            append  = '';
+
+        $('#sectionSettings').removeClass('hide');
+        $('#sectionName').val(section.name);
+        $('#veSectionSaveBtn').attr('sectionId', section.id);
+        $('#removeSection').attr('sectionId', section.id);
+        $('#addNodeToSection').attr('sectionId', section.id);
+        $('#sectionNodeContainer').empty().append('<div><b>Nodes:</b></div>');
+        if(section != null) {
+            length = section.nodes.length;
+            if(length > 0) {
+                for(var i = length; i--;) {
+                    options = '';
+                    append  = '';
+                    for(var j = 0; j < length; j++) {
+                        options += '<option value="' + j + '" ' + (j == section.nodes[i].order ? 'selected="selected"' : '') + '>' + j + '</option>';
+                    }
+
+                    append = html.replace('%nodeName%', section.nodes[i].node.title)
+                        .replace('%options%', options)
+                        .replace('%orderNodeId%', section.nodes[i].node.id)
+                        .replace('%nodeId%', section.nodes[i].node.id)
+                        .replace('%sectionId%', section.id)
+                        .replace('%removeNodeId%', section.nodes[i].node.id);
+
+                    $('#sectionNodeContainer').append(append);
+                }
+            }
+        }
+    }
+
+    $('#veSectionSaveBtn').click(function() {
+        var sectionName = $('#sectionName').val(),
+            $nodes      = $('.sectionNode'),
+            nodes       = [],
+            nodeId      = 0;
+
+        $nodes.each(function(index, value) {
+            nodeId = $(this).attr('nodeId');
+            nodes.push({nodeId: nodeId, order: $('#selectSectionNodeOrder' + nodeId).val()});
+        });
+
+        visualEditor.UpdateSection($(this).attr('sectionId'), sectionName, nodes);
+    });
+
+    $('#sectionsBtn').click(function() {
+        $('#veSectionPanel').removeClass('hide');
+    });
 });

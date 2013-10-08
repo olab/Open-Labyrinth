@@ -24,15 +24,15 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_ReportManager extends Controller_Base
 {
 
-    public function before()
-    {
+    public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
         parent::before();
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index()
-    {
+    public function action_index() {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL and $this->checkUser()) {
             $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
@@ -56,9 +56,7 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    public function action_showReport()
-    {
-
+    public function action_showReport() {
         $reportId = $this->request->param('id', NULL);
         if ($reportId != NULL) {
             $this->templateData['session'] = DB_ORM::model('user_session', array((int)$reportId));
@@ -66,6 +64,31 @@ class Controller_ReportManager extends Controller_Base
             $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap($this->templateData['session']->map_id);
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($this->templateData['session']->map_id);
+
+            if(isset($this->templateData['session']) && $this->templateData['session']->webinar_id != null && $this->templateData['session']->webinar_step != null) {
+                $webinar = DB_ORM::model('webinar', array($this->templateData['session']->webinar_id));
+
+                if($webinar->steps != null && count($webinar->steps) > 0) {
+                    foreach($webinar->steps as $webinarStep) {
+                        if($webinarStep->id != $this->templateData['session']->webinar_step) continue;
+
+                        if(count($webinarStep->maps) > 0) {
+                            foreach($webinarStep->maps as $webinarStepMap) {
+                                $isFinished = DB_ORM::model('user_session')->isUserFinishMap($webinarStepMap->map_id, $this->templateData['session']->user_id, $webinar->id, $this->templateData['session']->webinar_step);
+                                if($isFinished == Model_Leap_User_Session::USER_NOT_PLAY_MAP) {
+                                    $this->templateData['nextCase'] = array('webinarId' => $webinar->id, 'webinarStep' => $webinarStep->id, 'webinarMap' => $webinarStepMap->map_id);
+                                    break;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                $this->templateData['webinarID'] = $webinar->id;
+                $this->templateData['webinarForum'] = $webinar->forum_id;
+            }
+
             if ($this->templateData['questions'] != NULL) {
                 foreach ($this->templateData['questions'] as $question) {
                     $response = DB_ORM::model('user_response')->getResponce($this->templateData['session']->id, $question->id);

@@ -10,6 +10,7 @@ var VisualEditor = function() {
     var ctrlKeyPressed = false;
     var altKeyPressed = false;
     var def2PI = Math.PI * 2;
+    var sectionNodeId = 0;
     
     self.$canvasContainer = null;
     self.$canvas = null;
@@ -19,6 +20,7 @@ var VisualEditor = function() {
     self.lastMouse = new Mouse();
     self.nodes = new Array();
     self.links = new Array();
+    self.sections = new Array();
     self.linkConnector = null;
     self.zoomInFactor = 1.2;
     self.zommOutFactor = 0.8;
@@ -48,6 +50,8 @@ var VisualEditor = function() {
     self.preview = null;
     self.mode = 'node';
 
+    self.$sectionSelect = null;
+
     // Initialize visual editor
     self.Init = function(params) {
         if('canvasContainer' in params) {
@@ -67,6 +71,10 @@ var VisualEditor = function() {
                 canvasOffsetLeft = self.canvas.offsetLeft;
                 canvasOffsetTop = self.canvas.offsetTop;
             }
+        }
+
+        if('sectionSelectId' in params) {
+            self.$sectionSelect = $(params.sectionSelectId);
         }
         
         if('aButtonsContianer' in params) {
@@ -127,7 +135,9 @@ var VisualEditor = function() {
             unsavedDataForm: '#veRightPanel_unsaveddata',
             unsavedDataBtnClose: '#veRightPanel_unsaveddata_close',
             unsavedDataChange: '#veRightPanel_unsaveddataChange',
-            unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close'
+            unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close',
+            showInfo: '#show_info',
+            annotation: '#annotation'
         });
         
         self.deleteModal.Init({
@@ -329,8 +339,18 @@ var VisualEditor = function() {
                 break;
             }
         }
+
+        self.DeleteNodeFromSections(nodeId);
     }
-    
+
+    self.DeleteNodeFromSections = function(nodeId) {
+        if(self.sections.length <= 0) return;
+
+        for(var i = self.sections.length; i--;) {
+            self.sections[i].deleteNode(nodeId);
+        }
+    }
+
     // Serialize nodes info
     self.Serialize = function() {
         return SerializeElements(self.nodes, self.links);
@@ -364,8 +384,7 @@ var VisualEditor = function() {
             var nodesStr = '';
             for(var i = 0; i < nodes.length; i++) {
                 var pos = nodes[i].transform.GetPosition();
-
-                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
+                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "showInfo": "' + (nodes[i].showInfo ? 1 : 0) + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "annotation": "' + encode64(nodes[i].annotation) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
 
                 if(nodes[i].counters.length > 0) {
                     var counters = '';
@@ -409,6 +428,30 @@ var VisualEditor = function() {
                 }
             }
         }
+
+        if(self.sections.length > 0) {
+            var sectionStr   = '',
+                sectionNodes = '';
+            for(var i = self.sections.length; i--;) {
+                sectionNodes = '';
+                for(var j = self.sections[i].nodes.length; j--;) {
+                    sectionNodes += '{"nodeId": "' + self.sections[i].nodes[j].node.id + '", "order": "' + self.sections[i].nodes[j].order + '"}, ';
+                }
+                if(sectionNodes.length > 0) {
+                    sectionNodes = sectionNodes.substring(0, sectionNodes.length - 2);
+                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + self.sections[i].name + '", "nodes": [' + sectionNodes + ']}, ';
+                }
+            }
+
+            if(sectionStr.length > 2) {
+                sectionStr = sectionStr.substring(0, sectionStr.length - 2);
+                sectionStr = '"sections": [' + sectionStr + ']';
+
+                if(result.length > 0) {
+                    result += ', ' + sectionStr;
+                }
+            }
+        }
         
         if(result.length > 0) {
             var pos = viewport.GetPosition();
@@ -446,10 +489,12 @@ var VisualEditor = function() {
                 node.title = decode64(object.nodes[i].title);
                 node.content = decode64(object.nodes[i].content);
                 node.support = decode64(object.nodes[i].support);
+                node.annotation = decode64(object.nodes[i].annotation);
                 node.isExit = (object.nodes[i].isExit == 'true');
                 node.undo = (object.nodes[i].undo == 'true');
                 node.isEnd = (object.nodes[i].isEnd == 'true');
                 node.isRoot = (object.nodes[i].isRoot == 'true');
+                node.showInfo = (object.nodes[i].showInfo == 1);
                 var x = parseInt(object.nodes[i].x);
                 var y = parseInt(object.nodes[i].y);
 
@@ -512,6 +557,25 @@ var VisualEditor = function() {
                 self.links.push(link);
             }
         }
+
+        if('sections' in object && object.sections.length > 0) {
+            for(var i = object.sections.length; i--;) {
+                var color   = self.GetRandomColor(),
+                    section = new Section(object.sections[i].id, object.sections[i].name, color);
+                if('nodes' in object.sections[i] && object.sections[i].nodes.length > 0) {
+                    for(var j = object.sections[i].nodes.length; j--;) {
+                        var n = GetNodeById(object.sections[i].nodes[j].nodeId);
+                        if(n != null) {
+                            var sectionNode = new SectionNode(n, object.sections[i].nodes[j].order);
+                            section.nodes.push(sectionNode);
+                            n.sections.push(section);
+                        }
+                    }
+                }
+
+                self.sections.push(section);
+            }
+        }
         
         if('nodeMap' in object && object.nodeMap.length > 0 && self.history != null) {
             self.history.Remap(object.nodeMap);
@@ -536,6 +600,23 @@ var VisualEditor = function() {
         if(generateIdLinkCounter > 1)
             generateIdLinkCounter++;
     }
+
+    self.GetRandomColor = function() {
+        var letters = '0123456789ABCDEF'.split(''),
+            color = 'rgba(';
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        for (var i = 0; i < 3; i++ ) {
+            color += getRandomInt(10, 150) + ', ';
+        }
+
+        color += '1.0)';
+
+        return color;
+    };
     
     var ScatterNodes = function(nodes) {
         if(nodes == null || nodes.length <= 0) return;
@@ -1451,11 +1532,133 @@ var VisualEditor = function() {
             
             isRedraw = true;
         }
+
+        var selectedNodes = self.GetSelectedNodes();
+        if(selectedNodes.length > 0) {
+            self.$sectionSelect.empty();
+            $('#sectionSettings').addClass('hide');
+            $('#sectionNodeContainer').empty();
+            var options = '<option value="">Select section</option>';
+            var existSectionsId = [];
+            self.$sectionSelect.append(options);
+            for(var i = selectedNodes.length; i--;) {
+                if(selectedNodes[i].sections.length > 0) {
+                    options = '';
+                    for(var j = selectedNodes[i].sections.length; j--;) {
+                        var exist = false;
+                        for(var k = existSectionsId.length; k--;) {
+                            if(existSectionsId[k] == selectedNodes[i].sections[j].id) {
+                                exist = true;
+                                break;
+                            }
+                        }
+
+                        if(!exist) {
+                            existSectionsId.push(selectedNodes[i].sections[j].id);
+                            options += '<option value="' + selectedNodes[i].sections[j].id + '">' + selectedNodes[i].sections[j].name + '</option>';
+                        }
+                    }
+
+                    self.$sectionSelect.append(options);
+                }
+            }
+        }
         
         if(isRedraw)
             self.Render();
 
         return false;
+    }
+
+    self.AddNodesToSection = function(sectionId) {
+        var section       = self.GetSectionById(sectionId),
+            selectedNodes = self.GetSelectedNodes(),
+            addedNodes    = [],
+            isExist       = false;
+
+        if(section == null || selectedNodes == null || selectedNodes.length <= 0) return;
+
+        for(var i = selectedNodes.length; i--;) {
+            isExist = false;
+            for(var k = selectedNodes[i].sections.length; k--;) {
+                if(selectedNodes[i].sections[k].id == sectionId) {
+                    isExist = true;
+                    break;
+                }
+            }
+
+            if(!isExist) {
+                addedNodes.push(selectedNodes[i]);
+                section.nodes.push(new SectionNode(selectedNodes[i], 0));
+                selectedNodes[i].sections.push(section);
+            }
+        }
+
+        self.Render();
+
+        return addedNodes;
+    }
+
+    self.GetSectionById = function(id) {
+        if(self.sections == null || self.sections.length <= 0) return null;
+
+        for(var i = self.sections.length; i--;) {
+            if(self.sections[i].id == id) {
+                return self.sections[i];
+            }
+        }
+
+        return null;
+    }
+
+    self.RemoveNodeFromSection = function(sectionId, nodeId) {
+        var section = self.GetSectionById(sectionId),
+            node    = GetNodeById(nodeId),
+            length1 = 0,
+            length2 = 0;
+
+        if(section == null || node == null) return;
+
+        length1 = section.nodes.length;
+        length2 = node.sections.length;
+
+        for(var i = length1; i--;) {
+            if(section.nodes[i].node.id == nodeId) {
+                section.nodes.splice(i, 1);
+                break;
+            }
+        }
+
+        for(var i = length2; i--;) {
+            if(node.sections[i].id == sectionId) {
+                node.sections.splice(i, 1);
+                break;
+            }
+        }
+
+        self.Render();
+    }
+
+    self.RemoveSection = function(sectionId) {
+        var length = self.sections.length;
+
+        for(var i = length; i--;) {
+            if(self.sections[i].id == sectionId) {
+                for(var j = self.sections[i].nodes.length; j--;) {
+                    for(var k = self.sections[i].nodes[j].node.sections.length; k--;) {
+                        if(self.sections[i].nodes[j].node.sections[k].id == sectionId) {
+                            self.sections[i].nodes[j].node.sections.splice(k, 1);
+                            break;
+                        }
+                    }
+                }
+
+                self.sections.splice(i, 1);
+                break;
+            }
+        }
+
+        self.Render();
     }
     
     var MouseMove = function(event) {
@@ -1726,6 +1929,20 @@ var VisualEditor = function() {
         
         return result;
     }
+
+    self.GetSelectedNodes = function() {
+        var result = new Array();
+
+        if(self.nodes.length <= 0) return result;
+
+        for(var i = self.nodes.length; i--;) {
+            if(self.nodes[i].isSelected) {
+                result.push(self.nodes[i]);
+            }
+        }
+
+        return result;
+    }
     
     var GetRootNode = function() {
         if(self.nodes.length <= 0) return null;
@@ -1764,6 +1981,51 @@ var VisualEditor = function() {
         }
         
         return null;
+    }
+
+    self.AddNewSection = function(name, nodes) {
+        if(name == null || name.length <= 0) return;
+
+        var section = new Section(GetSectionId(), name, self.GetRandomColor()),
+            i       = nodes.length,
+            node    = null;
+
+        for(;i--;) {
+            node = GetNodeById(nodes[i].nodeId);
+            if(node != null) {
+                section.nodes.push(new SectionNode(node, nodes[i].order));
+                node.sections.push(section);
+            }
+        }
+
+        self.sections.push(section);
+
+        $('#sectionsNodesSelect').append('<option value="' + section.id + '">' + section.name + '</option>');
+
+        self.Render();
+    };
+
+    self.UpdateSection = function(sectionId, sectionName, nodes) {
+        var section = self.GetSectionById(sectionId);
+
+        if(section == null) return;
+
+        section.name = sectionName;
+
+        for(var i = nodes.length; i--;) {
+            for(var k = section.nodes.length; k--;) {
+                if(section.nodes[k].node.id == nodes[i].nodeId) {
+                    section.nodes[k].order = nodes[i].order;
+                    break;
+                }
+            }
+        }
+    }
+
+    var GetSectionId = function() {
+        sectionNodeId += 1;
+
+        return sectionNodeId + 'n';
     }
     
     var encode64 = function (input) {

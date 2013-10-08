@@ -24,6 +24,8 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_QuestionManager extends Controller_Base {
 
     public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
         parent::before();
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
@@ -77,6 +79,11 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
                 if($this->templateData['question']->settings != null) {
                     $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
+
+                    if ($this->templateData['question']->type->value == 'area' || $this->templateData['question']->type->value == 'text') {
+                        $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
+                        $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
+                    }
                 }
             } else {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
@@ -106,6 +113,12 @@ class Controller_QuestionManager extends Controller_Base {
         $map = DB_ORM::model('map', array((int)$mapId));
         $type = DB_ORM::model('map_question_type', array((int) $typeId));
         if($_POST != null && $map != null && $type != null) {
+
+            if (isset($_POST['isCorrect'])) {
+                $rule = $_POST['settings'];
+                $_POST['settings'] = json_encode(array($rule, $_POST['isCorrect']));
+            }
+
             if($questionId == null || $questionId <= 0) {
                 DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
             } else {

@@ -47,6 +47,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
             if ($continue) {
                 Session::instance()->delete('questionChoices');
+                Session::instance()->delete('dragQuestionResponses');
                 Session::instance()->delete('counterFunc');
                 Session::instance()->delete('stopCommonRules');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
@@ -75,7 +76,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($editOn != NULL and $editOn == 1) {
                             $data['node_edit'] = TRUE;
                         } else {
+
+                            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
+                            {
+                                $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+                            }
+
+                            if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+                            {
+                                $search = '[[INFO:' . $data['node']->id . ']]';
+                                $data['node_text'] = str_replace($search, '',$data['node_text']);
+                            }
+
                             $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
@@ -84,6 +98,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         }else{
                             $data['skin_path'] = NULL;
                         }
+                        $data['session'] = (int)$data['traces'][0]->session_id;
+                        $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
+
                         $this->template = View::factory('labyrinth/skin/basic/basic');
                         $this->template->set('templateData', $data);
                     } else {
@@ -121,6 +138,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn = $this->request->param('id3', NULL);
         $bookMark = $this->request->param('id4', NULL);
 
+        $gotoNode = Session::instance()->get('goto', NULL);
+
+        if ($gotoNode != NULL) {
+            Session::instance()->set('goto', NULL);
+
+            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' .  $gotoNode);
+        }
+
         if ($mapId != NULL) {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
@@ -143,17 +168,36 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $data = Model::factory('labyrinth')->execute($node->id);
                 }
                 if ($data) {
+                    $undoNodes = array();
+                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
+                        $sessionId = (int)$data['traces'][0]->session_id;
+
+                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+
+                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
+
+                        $data['timeForNode'] = $timeForNode;
+                        $data['session'] = $sessionId;
+
+                        if ($data['node']->undo) {
+                            list($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId);
+
+                            $data['undoLinks'] = $undoLinks;
+                        }
+                    }
+
                     $data['navigation'] = $this->generateNavigation($data['sections']);
                     if (!isset($data['node_links']['linker'])){
                         if ($data['node']->link_style->name == 'type in text') {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             $data['links'] = $result['links']['display'];
                             if(isset($data['alinkfil']) && isset($data['alinknod'])) {
                                  $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
                                  $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                             }
                         } else {
-                            $result = $this->generateLinks($data['node'], $data['node_links']);
+                            $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             if(!empty($result['links']))
                                 $data['links'] = $result['links'];
                             else $data['links'] = "";
@@ -165,10 +209,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($editOn != NULL and $editOn == 1) {
                         $data['node_edit'] = TRUE;
                     } else {
+
+                        if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
+                        {
+                            $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+                        }
+
+                        if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+                        {
+                            $search = '[[INFO:' . $data['node']->id . ']]';
+                            $data['node_text'] = str_replace($search, '',$data['node_text']);
+                        }
+
                         $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
+
+                    //Calculate time for Timer and Pop-up messages
+                    $data['timer_start'] = 1;
+
+                    $data['popup_start'] = 1;
+                    $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
 
                     $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
@@ -253,6 +315,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_undo() {
+        $mapId = $this->request->param('id', NULL);
+        $nodeId = $this->request->param('id2', NULL);
+
+        if ($mapId != NULL and $nodeId != NULL) {
+            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+
+    }
+
     public function action_chatAnswer() {
         $chatId = $this->request->param('id', NULL);
         $elemId = $this->request->param('id2', NULL);
@@ -268,14 +342,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     public function action_questionResponse() {
-        $optionNumber = $this->request->param('id', NULL);
-        $questionId = $this->request->param('id2', NULL);
-        $questionStatus = $this->request->param('id3', NULL);
+        $optionNumber   = $this->request->param('id', NULL);
+        $questionId     = $this->request->param('id2', NULL);
+        $nodeId         = $this->request->param('id3', null);
+        $questionStatus = $this->request->param('id4', NULL);
 
         if ($optionNumber != NULL and $questionId != NULL) {
             $this->auto_render = false;
             
-            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus);
+            echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
         }
     }
 
@@ -412,6 +487,72 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_reset() {
+        $mapId       = $this->request->param('id', null);
+        $webinarId   = $this->request->param('id2', null);
+        $webinarStep = $this->request->param('id3', null);
+
+        if($webinarId != null && $webinarStep != null && $webinarId > 0 && $webinarStep > 0) {
+            Session::instance()->set('webinarId', $webinarId);
+            Session::instance()->set('step', $webinarStep);
+        }
+
+        Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
+    }
+
+    public function action_ajaxDraggingQuestionResponse() {
+        $this->auto_render = false;
+        $questionId    = Arr::get($_POST, 'questionId', null);
+        $responsesJSON = Arr::get($_POST, 'responsesJSON', null);
+
+        if($questionId != null && $questionId > 0) {
+            $prevResponses = Session::instance()->get('dragQuestionResponses');
+            if($prevResponses == null) { $prevResponses = array(); }
+
+            $isNew = true;
+            if(count($prevResponses) > 0) {
+                foreach($prevResponses as $key => $response) {
+                    $object = json_decode($response, true);
+                    if($object != null && isset($object['id'])) {
+                        if((int)$object['id'] == (int)$questionId) {
+                            $prevResponses[$key] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
+                            $isNew = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if($isNew) {
+                $prevResponses[] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
+            }
+
+            Session::instance()->set('dragQuestionResponses', $prevResponses);
+        }
+    }
+
+    public function action_downloadFile() {
+        $fileId = $this->request->param('id', null);
+
+        if($fileId != null) {
+            $file = DB_ORM::model('map_element', array((int)$fileId));
+            $filename = DOCROOT . $file->path; // of course find the exact filename....
+            header('Pragma: public');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Cache-Control: private', false); // required for certain browsers
+            header('Content-Type: ' . $file->mime);
+
+            header('Content-Disposition: attachment; filename="'. basename($filename) . '";');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . filesize($filename));
+
+            readfile($filename);
+
+            exit;
+        }
+    }
+
     private function checkRemoteUser($username, $password) {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);
@@ -448,7 +589,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '';
     }
 
-    private function generateLinks($node, $links) {
+    private function generateLinks($node, $links, $undoNodes = null) {
         $result = NULL;
         $result['links'] = '';
         $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
@@ -456,6 +597,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['remote_links'] = '';
             $result['links'] = '';
             foreach ($links as $link) {
+                if($undoNodes != null && isset($undoNodes[$link->node_2->id])) continue;
+
                 $title = $link->node_2->title;
                 if ($link->text != '' and $link->text != ' ') {
                     $title = $link->text;
@@ -582,8 +725,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                             $replaceString = Controller_RenderLabyrinth::getSwfHTML($id);
                                         } elseif (strstr($media->mime, 'audio')) {
                                             $replaceString = Controller_RenderLabyrinth::getAudioHTML($id);
-                                        } else {
+                                        } else if(in_array($media->mime, array('image/jpg', 'image/jpeg', 'image/gif', 'image/png'))) {
                                             $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
+                                        } else {
+                                            $replaceString = Controller_RenderLabyrinth::getFileLink($id);
                                         }
                                         break;
                                     case 'AV':
@@ -632,6 +777,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $image = DB_ORM::model('map_element', array((int) $id));
         if ($image) {
             return '<img src="' . URL::base() . $image->path . '">';
+        }
+
+        return '';
+    }
+
+    private static function getFileLink($id) {
+        $file = DB_ORM::model('map_element', array((int) $id));
+        if ($file) {
+            return '<a class="file-link" href="' . URL::base() . 'renderlabyrinth/downloadFile/' . $file->id . '">' . $file->name . '</a>';
         }
 
         return '';
@@ -705,7 +859,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result = '';
 
             if ($question->type->value == 'text') {
-                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" /><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');">Submit</button>';
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" ' ;
+                $submitText = 'Submit';
+                if ($question->show_submit == 1) {
+                    if ($question->submit_text != null) {
+                        $submitText = $question->submit_text;
+                    }
+                    $result .= '/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');">' . $submitText. '</button>';
+                }
+                else {
+                    $result .= 'onKeyUp="if (event.keyCode == 13) {ajaxFunction(' . $question->id . ');$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');}"/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span>';
+                }
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
             } else if ($question->type->value == 'area') {
                 $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '">' . $question->feedback . '</textarea><p><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'readonly\', \'readonly\');">Submit</button></p>';
@@ -811,7 +975,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                                     skin: "'    . $settings->sliderSkin                     . '",
                                                     step: '     . $settings->stepValue                      . ',
                                                     vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
-                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', ' . $question->id . ', value); }
+                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
                                                 });
                                                 slider.init();
                                             </script>
@@ -819,6 +983,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         </div>';
                         }
                 }
+            } else if($question->type->value == 'dd') {
+                $result .= '<ul class="drag-question-container" questionId="' . $question->id . '">';
+                foreach ($question->responses as $response) {
+                    $result .= '<li class="sortable" responseId="' . $response->id . '">' . $response->response . '</li>';
+                }
+                $result .= '</ul>';
             }
 
             $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
@@ -1249,5 +1419,26 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '';
     }
 
+
+    private function prepareUndoLinks($sessionId,$mapId) {
+        $traces = DB_ORM::model('user_sessiontrace')->getUniqueTraceBySessions(array($sessionId));
+
+        //Delete root node and current node
+        array_shift($traces);
+       // array_pop($traces);
+
+        $html = '<ul class="links navigation">';
+        $nodes = array();
+        if (count($traces) > 0) {
+            foreach($traces as &$trace){
+                $nodes[$trace['node_id']] = $trace['node_id'];
+                $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($trace['node_id']);
+                $html .= '<li><i><font color="#777799">' .$trace['node_name'] . '</font></i><a href=' . URL::base() . 'renderLabyrinth/undo/' . $mapId . '/' .$trace['node_id'] .'>'  . ' [undo]' . '</a></li>';
+            }
+        }
+        $html .= '</ul>';
+
+        return array($html, $nodes);
+    }
 }
 

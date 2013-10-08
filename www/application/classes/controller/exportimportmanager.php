@@ -511,20 +511,25 @@ class Controller_ExportImportManager extends Controller_Base {
         $xml = $this->parseXML($tmpFileName);
         $elements = array();
         if (isset($xml->resources->resource)) {
+            if (!file_exists(DOCROOT.'/files/'.$map->id)) {
+                mkdir(DOCROOT.'/files/'.$map->id, 0777, true);
+            }
             foreach ($xml->resources->resource as $resource) {
                 $attr = $resource->attributes();
                 if (!strstr($attr->href, 'xml')) {
                     $id = (string) $attr->identifier;
                     $elements[$id]['href'] = (string) $attr->href;
                     $fileName = $this->endc(explode('/', (string) $attr->href));
-                    copy($tmpFolder . (string) $attr->href, DOCROOT . '/files/' . $fileName);
-                    $values['path'] = 'files/' . $fileName;
-                    $values['name'] = $fileName;
+                    if (file_exists($tmpFolder . (string) $attr->href)){
+                        copy($tmpFolder . (string) $attr->href, DOCROOT . '/files/'.$map->id.'/' . $fileName);
+                        $values['path'] = 'files/'.$map->id.'/' . $fileName;
+                        $values['name'] = $fileName;
 
-                    $elementDB = DB_ORM::model('map_element')->saveElement($map->id, $values);
-                    $elements[$id]['database_id'] = $elementDB->id;
-                    $findElement[] = '[[MR:' . $id . ']]';
-                    $replaceElement[] = '[[MR:' . $elementDB->id . ']]';
+                        $elementDB = DB_ORM::model('map_element')->saveElement($map->id, $values);
+                        $elements[$id]['database_id'] = $elementDB->id;
+                        $findElement[] = '[[MR:' . $id . ']]';
+                        $replaceElement[] = '[[MR:' . $elementDB->id . ']]';
+                    }
                 }
             }
         }

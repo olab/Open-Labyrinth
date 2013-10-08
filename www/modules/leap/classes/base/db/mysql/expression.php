@@ -120,7 +120,7 @@ abstract class Base_DB_MySQL_Expression implements DB_SQL_Expression_Interface {
 	 * @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 	 * @see http://www.ispirer.com/wiki/sqlways/mysql/identifiers
 	 */
-	public function prepare_identifier($expr) {
+	public function prepare_identifier($expr, $withFunc = false) {
 		if ($expr instanceof DB_MySQL_Select_Builder) {
 			return DB_SQL_Builder::_OPENING_PARENTHESIS_ . $expr->statement(FALSE) . DB_SQL_Builder::_CLOSING_PARENTHESIS_;
 		}
@@ -139,7 +139,11 @@ abstract class Base_DB_MySQL_Expression implements DB_SQL_Expression_Interface {
 		}
 		$parts = explode('.', $expr);
 		foreach ($parts as &$part) {
-			$part = self::_OPENING_QUOTE_CHARACTER_ . trim(preg_replace('/[^a-z0-9$_ ]/i', '', $part)) . self::_CLOSING_QUOTE_CHARACTER_;
+            if($withFunc) {
+                $part = trim(preg_replace('/[^a-z0-9()$_ ]/i', '', self::_OPENING_QUOTE_CHARACTER_ . $part . self::_CLOSING_QUOTE_CHARACTER_));
+            } else {
+                $part = self::_OPENING_QUOTE_CHARACTER_ . trim(preg_replace('/[^a-z0-9$_ ]/i', '', $part)) . self::_CLOSING_QUOTE_CHARACTER_;
+            }
 		}
 		$expr = implode('.', $parts);
 		return $expr;

@@ -34,29 +34,24 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-            
             'question_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            
             'response' => new DB_ORM_Field_String($this, array(
                 'max_length' => 250,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
             'feedback' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
             'is_correct' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 4,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
             'score' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
@@ -70,7 +65,13 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
                 'max_length' => 200,
                 'nullable' => TRUE,
                 'savable' => TRUE,
-            ))
+            )),
+            'order' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => FALSE,
+                'unsigned' => TRUE,
+                'default' => 0
+            )),
         );
     }
 
@@ -115,52 +116,67 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
     
     public function updateResponses($questionId, $values) {
         $responses = $this->getResponsesByQuestion($questionId);
-        
+
+        $responsesFromJSON = $this->prepareResponsesFromJSON(Arr::get($values, 'responses', null));
+
         if($responses != NULL && count($responses) > 0) {
             foreach($responses as $response) {
-                if(isset($values['response_' . $response->id])) {
-                    $response->response = Arr::get($values, 'response_' . $response->id, '');
-                    $response->feedback = Arr::get($values, 'feedback_' . $response->id, '');
-                    $response->is_correct = Arr::get($values, 'correctness_' . $response->id, 0);
-                    $response->score = Arr::get($values, 'score_' . $response->id, 0);
-                    
+                if($responsesFromJSON != null && isset($responsesFromJSON['old']) && isset($responsesFromJSON['old'][$response->id])) {
+                    $response->response   = Arr::get($responsesFromJSON['old'][$response->id], 'response', '');
+                    $response->feedback   = Arr::get($responsesFromJSON['old'][$response->id], 'feedback', '');
+                    $response->is_correct = Arr::get($responsesFromJSON['old'][$response->id], 'correctness', 2);
+                    $response->score      = Arr::get($responsesFromJSON['old'][$response->id], 'score', 0);
+                    $response->order      = Arr::get($responsesFromJSON['old'][$response->id], 'order', 1);
+
                     $response->save();
                 } else {
                     $response->delete();
                 }
             }
         }
-        
-        $newResponses = array();
-        foreach($values as $key => $value) {
-            if(!(strpos($key, 'response_') === FALSE) && !(strpos($key, '_n') === FALSE)) {
-                $id = str_replace('response_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $newResponses[$id]['response'] = $value;
-            } else if(!(strpos($key, 'feedback_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
-                $id = str_replace('feedback_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $newResponses[$id]['feedback'] = $value;
-            } else if(!(strpos($key, 'correctness_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
-                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $newResponses[$id]['correctness'] = $value;
-            } else if(!(strpos($key, 'score_') === FALSE ) && !(strpos($key, '_n') === FALSE)) {
-                $id = str_replace('score_', '', str_replace('_n', '', $key));
-                if(strlen($id) > 0) $newResponses[$id]['score'] = $value;
-            }
-        }
 
-        if(count($newResponses) > 0) {
-            foreach($newResponses as $response) {
+        if($responsesFromJSON != null && isset($responsesFromJSON['new']) && count($responsesFromJSON['new']) > 0) {
+            foreach($responsesFromJSON['new'] as $response) {
                 DB_ORM::insert('map_question_response')
                         ->column('question_id', $questionId)
                         ->column('response', Arr::get($response, 'response', ''))
                         ->column('feedback', Arr::get($response, 'feedback', ''))
-                        ->column('is_correct', Arr::get($response, 'correctness', 0))
+                        ->column('is_correct', Arr::get($response, 'correctness', 2))
                         ->column('score', Arr::get($response, 'score', 0))
+                        ->column('order', Arr::get($response, 'order', 1))
                         ->execute();
             }
         }
     }
-    
+
+    private function prepareResponsesFromJSON($responses) {
+        if($responses == null) return null;
+
+        $result = array();
+        foreach($responses as $responseJSON) {
+            $object = json_decode($responseJSON, true);
+
+            if($object == null) { continue; }
+
+            $responseData = array();
+
+            if(isset($object['response']))    { $responseData['response']    = urldecode(str_replace('+', '&#43;', base64_decode($object['response']))); }
+            if(isset($object['feedback']))    { $responseData['feedback']    = urldecode(str_replace('+', '&#43;', base64_decode($object['feedback']))); }
+            if(isset($object['correctness'])) { $responseData['correctness'] = $object['correctness']; }
+            if(isset($object['score']))       { $responseData['score']       = $object['score'];       }
+            if(isset($object['order']))       { $responseData['order']       = $object['order'];       }
+
+            if(isset($object['id']) && $object['id'] > 0) {
+                $responseData['id'] = $object['id'];
+                $result['old'][$object['id']] = $responseData;
+            } else {
+                $result['new'][] = $responseData;
+            }
+        }
+
+        return $result;
+    }
+
     public function deleteByQuestion($questionId) {
         $builder = DB_ORM::delete('map_question_response')->where('question_id', '=', (int)$questionId);
         $builder->execute();

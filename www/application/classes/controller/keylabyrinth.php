@@ -23,6 +23,12 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_KeyLabyrinth extends Controller_Base {
 
+    public function before() {
+        $this->templateData['labyrinthSearch'] = 1;
+
+        parent::before();
+    }
+
     public function action_index() {
         $maps = DB_ORM::model('map')->getAllEnabledAndKeyMap();
         $this->templateData['maps'] = $maps;

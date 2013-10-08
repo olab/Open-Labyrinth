@@ -11,7 +11,7 @@
  */
 
 error_reporting(E_ALL | E_STRICT);
-
+set_time_limit(0);
 require('upload.class.php');
 
 $upload_handler = new UploadHandler();

@@ -29,43 +29,35 @@
         }
     </script>
 <div class="page-header">
+    <?php if(Auth::instance()->logged_in() && (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->type->name == 'author')) { ?>
     <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base(); ?>collectionManager/addCollection"><i class="icon-plus-sign"></i>Add Collection</a></div>
-<h1><?php echo __('Collections'); ?></h1></div>
-    <table class="table table-striped table-bordered">
-<thead><tr>
+    <?php } ?>
+    <h1><?php echo __('Collections'); ?></h1>
+</div>
+
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
     <th>Collection</th>
     <th>Actions</th>
-</tr></thead>
+</tr>
+</thead>
 <tbody>
-
 <?php if (isset($templateData['collections']) and count($templateData['collections']) > 0) { ?>
-
-
     <?php foreach($templateData['collections'] as $collection) { ?>
-        <tr><td>
-               <?php echo $collection->name; ?>
-
-                </td>
-
+        <tr>
+            <td><?php echo $collection->name; ?></td>
             <td>
-                <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
-
-
-
+                <div class="btn-group">
+                    <?php if(Auth::instance()->logged_in() && (Auth::instance()->get_user()->type->name == 'superuser' || Auth::instance()->get_user()->type->name == 'author')) { ?>
+                    <a class="btn btn-info" href="<?php echo URL::base() ?>collectionManager/editCollection/<?php echo $collection->id; ?>"><i class="icon-edit"></i> <?php echo __('Edit'); ?></a>
+                    <?php } ?>
+                    <a class="btn btn-success" href="<?php echo URL::base() ?>collectionManager/viewAll/<?php echo $collection->id; ?>"><i class="icon-list"></i> <?php echo __('View'); ?></a>
+                </div>
             </td>
-
         </tr>
-
-
     <?php } ?>
-
-
 <?php } ?>
-
-
-
 </tbody>
-
-
-    </table>
+</table>
 

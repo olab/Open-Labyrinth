@@ -91,6 +91,15 @@ class Model_Leap_Map extends DB_ORM_Model
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'reminder_msg' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+            'reminder_time' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
             'show_bar' => new DB_ORM_Field_Boolean($this, array(
                 'default' => FALSE,
                 'nullable' => FALSE,
@@ -207,7 +216,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllMap()
     {
-        $builder = DB_SQL::select('default')->from($this->table());
+        $builder = DB_SQL::select('default')->from($this->table())->order_by('name');
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -339,6 +348,31 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
+    public function getAllMapsForLearner($learnerId) {
+        $builder = DB_SQL::select('default')
+            ->distinct()
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('security_id', '=', 1)
+            ->where('mu.user_id', '=', $learnerId, 'OR')
+            ->order_by('m.id', 'DESC');
+
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $maps = array();
+            foreach ($result as $record) {
+                $maps[] = DB_ORM::model('map', array((int) $record['id']));
+            }
+
+            return $maps;
+        }
+
+        return NULL;
+    }
+
     public function getAllEnabledAndAuthoredMap($authorId, $limit = 0)
     {
         $limit = (int)$limit;
@@ -350,6 +384,7 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $authorId, 'AND')
             ->where('mu.user_id', '=', $authorId, 'OR')
+            ->group_by('m.id')
             ->order_by('m.id', 'DESC');
         if ($limit) {
             $builder->limit($limit);
@@ -483,6 +518,8 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->skin_id = Arr::get($values, 'skin', 1);
         $this->timing = Arr::get($values, 'timing', FALSE);
         $this->delta_time = Arr::get($values, 'delta_time', 0);
+        $this->reminder_msg = Arr::get($values, 'reminder_msg', 'empty_reminder_msg');
+        $this->reminder_time = Arr::get($values, 'reminder_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
 
@@ -533,7 +570,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getMaps($mapIDs)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $mapIDs);
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $mapIDs)->order_by('name');
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -770,6 +807,30 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         return NULL;
+    }
+
+    public function getAllowedMap($userId) {
+
+        $builder = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $userId, 'AND')
+            ->where('mu.user_id', '=', $userId, 'OR')
+            ->order_by('m.id', 'DESC');
+
+        $result = $builder->query();
+
+        $res = array();
+
+        if ($result->is_loaded()) {
+            foreach ($result as $record => $val) {
+                $res[] =  $val['id'];
+            }
+        }
+        return $res;
+
     }
 }
 

@@ -78,17 +78,23 @@ if (isset($templateData['map'])) { ?>
         </div>
     </fieldset>
     <div class="form-actions">
-        <div class="pull-right">
+        <div class="pull-left" style="margin-left: -250px; margin-top: -20px;">
             <dl class="status-label dl-horizontal">
                 <dt>Status</dt>
                 <dd><span class="label label-warning">The rule hasn't been checked.</span><span class="hide label label-success">The rule is correct.</span><span class="hide label label-important">The rule has error(s).</span></dd>
             </dl>
             <input style="float:right;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
-            <input style="float:right;" id="rule_submit_button" class="btn btn-primary btn-large hide" type="submit" name="Submit" value="<?php echo __('Save question'); ?>">
         </div>
+
+        <div class="pull-right">
+            <input style="float:right;" id="submit_button" class="btn btn-primary btn-large hide" type="submit" name="Submit" value="<?php echo __('Save question'); ?>">
+            <input style="float:right;" id="rule_submit_check" class="btn btn-primary btn-large" type="button" name="Check" value="<?php echo __('Save question'); ?>" onclick="return checkRule(1);">
+        </div>
+
     </div>
     <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
     <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
+    <input type="hidden" name="isCorrect" id="isCorrect" value="<?php if(isset($templateData['isCorrect'])) echo $templateData['isCorrect']; ?>" />
 </form>
 <?php } ?>
 

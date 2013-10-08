@@ -18,14 +18,20 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($map)) {
-    ?>
-    <form action="<?php echo URL::base(); ?>labyrinthManager/updateDevNodes/<?php echo $map->id; ?>" method="post" id="developer-notes-form">
-        <input type="hidden" name="mapid" value="21">
-        <textarea cols="120" rows="12" id="devnotes" name="devnotes" style="width: 97%"><?php echo $map->dev_notes; ?></textarea>
-    </form>
-    <script type="text/javascript">
-        $('#devnotes').focus();
-    </script>
-    <?php
-}
+defined('SYSPATH') or die('No direct script access.');
+
+class Searcher_Result {
+    public $type;
+    public $url;
+    public $urlTitle;
+    public $content;
+    public $searchText;
+
+    public function __construct($type, $url, $urlTitle, $content, $searchText) {
+        $this->type = $type;
+        $this->url = $url;
+        $this->urlTitle = $urlTitle;
+        $this->content = $content;
+        $this->searchText = $searchText;
+    }
+};

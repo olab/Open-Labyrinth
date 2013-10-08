@@ -1,4 +1,4 @@
-<div class="error-wrapper">
+<div class="error-wrapper" id="openError">
     <div class="error-content-wrapper">
         <div class="cell"><img src="<?php echo URL::base(); ?>images/openlabyrinth-large.png"/></div>
         <div class="cell">

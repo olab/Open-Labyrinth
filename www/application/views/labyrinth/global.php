@@ -20,21 +20,81 @@
  */
 if (isset($templateData['map'])) {
     ?>
-
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
     <script language="javascript" type="text/javascript"
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
             xmlns="http://www.w3.org/1999/html"></script>
-    <h1><?php echo __('Edit Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php echo __('Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
 
     <form class="form-horizontal" id="globalMapFrom" name="globalMapFrom" method="post"
           action=<?php echo URL::base() . 'labyrinthManager/saveGlobal/' . $templateData['map']->id; ?>>
 
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Info'); ?></legend>
+        <table class="table table-bordered table-striped">
+            <tbody>
+            <tr>
+                <td><?php echo __('title'); ?></td>
+                <td><?php echo $templateData['map']->name; ?></td>
+            </tr>
+            <tr>
+                <td><?php echo __('authors'); ?></td>
+                <td>
+                    <?php if (count($templateData['map']->authors) > 0) { ?>
+                        <?php foreach ($templateData['map']->authors as $author) { ?>
+                            <?php echo $author->user->nickname; ?> (<?php echo $author->user->username; ?>),
+                        <?php } ?>
+                    <?php } ?>
+                </td>
+            </tr>
+            <tr>
+                <td><?php echo __('keywords'); ?></td>
+                <td><?php echo $templateData['map']->keywords; ?></td>
+            </tr>
+            <tr>
+                <td><?php echo __('Labyrinth type'); ?></td>
+                <td><?php echo $templateData['map']->type->name; ?></td>
+            </tr>
+            <tr>
+                <td><?php echo __('security'); ?></td>
+                <td><?php echo $templateData['map']->security->name; ?></td>
+            </tr>
+            <tr>
+                <td><?php echo __('number of nodes'); ?></td>
+                <td>
+                    <?php
+                    if (count($templateData['map']->nodes) > 0) {
+                        echo count($templateData['map']->nodes);
+                    } else {
+                        echo '0';
+                    }
+                    ?>
+                </td>
+            </tr>
+            <tr>
+                <td><?php echo __('number of links'); ?></td>
+                <td><?php echo $templateData['map']->countLinks();?></td>
+            </tr>
+            <?php
+            $vars = $templateData["map"]->as_array();
+
+            foreach ($vars as $property):?>    <?php if (Helper_Controller_Metadata::isMetadataRecord($property)): ?>
+                <tr>
+                    <?php $view =  Helper_Controller_Metadata::getView($property); ?>
+                    <td><?php echo $view["label"]?></td>
+                    <td>
+                        <?php echo $view["body"]?>
+                    </td>
+                </tr>  <?php endif; ?>
+            <?php endforeach;?>
+            </tbody>
+        </table>
+    </fieldset>
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Details'); ?></legend>
         <div class="control-group" title="Please give a short title for your labyrinth.">
             <label class="control-label" for="mtitle"><?php echo __('Labyrinth Title'); ?></label>
-
             <div class="controls">
                 <input name="title" type="text" id="mtitle" class="span6"
                        value="<?php echo $templateData['map']->name; ?>">
@@ -44,7 +104,6 @@ if (isset($templateData['map'])) {
         <div class="control-group" title="Describe your labyrinth in detail">
             <label class="control-label" for="mdesc">
                 <?php echo __('Labyrinth Description'); ?></label>
-
             <div class="controls">
                 <textarea name="description" class="span6"
                           id="mdesc"><?php echo $templateData['map']->abstract; ?></textarea>
@@ -53,7 +112,6 @@ if (isset($templateData['map'])) {
 
         <div class="control-group">
             <label class="control-label" for="keywords"><?php echo __('Labyrinth Keywords'); ?></label>
-
             <div class="controls">
                 <input name="keywords" type="text" id="keywords" class="span6"
                        value="<?php echo $templateData['map']->keywords; ?>">
@@ -62,9 +120,7 @@ if (isset($templateData['map'])) {
         <?php if (isset($templateData['types'])) { ?>
             <div class="control-group">
                 <label class="control-label" for="type"><?php echo __('Labyrinth Type'); ?></label>
-
                 <div class="controls">
-
                     <select name="type" id="type" class="span6">
                         <?php foreach ($templateData['types'] as $type) { ?>
                             <option
@@ -75,11 +131,9 @@ if (isset($templateData['map'])) {
             </div>
         <?php } ?>
 
-
         <?php if (isset($templateData['skins'])) { ?>
             <div class="control-group">
                 <label class="control-label" for="skin"><?php echo __('Labyrinth Skin'); ?></label>
-
                 <div class="controls">
                     <select name="skin" id="skin" class="span6">
                         <?php foreach ($templateData['skins'] as $skin) { ?>
@@ -87,14 +141,10 @@ if (isset($templateData['map'])) {
                                 value="<?php echo $skin->id; ?>" <?php if ($skin->id == $templateData['map']->skin_id) echo 'selected=""'; ?>><?php echo $skin->name; ?></option>
                         <?php } ?>
                     </select>
-
                 </div>
             </div>
         <?php } ?>
-
-
     </fieldset>
-
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Contributors'); ?></legend>
@@ -102,31 +152,23 @@ if (isset($templateData['map'])) {
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
                 <?php   if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
-
-
                     <div class="pull-right">
                         <a class="btn btn-info"
                            href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
                             <i class="icon-plus"></i><?php echo __('Add'); ?></a>
                     </div>
-
                 <?php } ?>
             </label>
 
             <?php   if (!isset($templateData['contributors'])) { ?>
-
-
                 <div class="controls">
                     <a class="btn btn-info"
                        href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
                         <i class="icon-plus"></i> <?php echo __('Add'); ?></a>
                 </div>
-
             <?php } ?>
             <?php if (isset($templateData['contributors'])) { ?>
                 <div class="control-groupper">
-
-
                     <?php foreach ($templateData['contributors'] as $contributor) { ?>
                         <div class="control-subgroup">
                             <div class="control-group">
@@ -155,12 +197,8 @@ if (isset($templateData['map'])) {
                             <div class="control-group">
                                 <label class="control-label" for="role_<?php echo $contributor->id; ?>">
                                     <?php echo __('Role'); ?></label>
-
                                 <div class="controls">
                                     <?php if (isset($templateData['contributor_roles'])) { ?>
-
-
-
                                         <select name="role_<?php echo $contributor->id; ?>"
                                                 id="role_<?php echo $contributor->id; ?>">
                                             <?php foreach ($templateData['contributor_roles'] as $role) { ?>
@@ -169,10 +207,7 @@ if (isset($templateData['map'])) {
                                             <?php } ?>
 
                                         </select>
-
-
                                     <?php } ?>
-
                                 </div>
                             </div>
                             <div class="pull-right">
@@ -182,16 +217,13 @@ if (isset($templateData['map'])) {
                                 </a>
                             </div>
                         </div>
-
                     <?php } ?>
                 </div>
             <?php } ?>
         </div>
 
-
         <div class="control-group">
             <label class="control-label"><?php echo __('Registered Labyrinth Authors'); ?>:</label>
-
             <div class="controls">
                 <?php if (isset($templateData['regAuthors'])) { ?>
                     <?php foreach ($templateData['regAuthors'] as $user) { ?>
@@ -205,7 +237,6 @@ if (isset($templateData['map'])) {
         </div>
         <div class="control-group">
             <label class="control-label"><?php echo __('Registered Labyrinth Learners'); ?></label>
-
             <div class="controls">
                 <?php if (isset($templateData['regLearners'])) { ?>
                     <?php foreach ($templateData['regLearners'] as $user) { ?>
@@ -215,17 +246,13 @@ if (isset($templateData['map'])) {
                 } ?>
             </div>
         </div>
-
     </fieldset>
-
 
     <fieldset class="fieldset">
         <legend><?php echo __(' Labyrinth Timing');?> </legend>
-
         <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to
         navigate it in a certain time.">
             <label class="control-label"><?php echo __('Timing'); ?></label>
-
             <div class="controls">
                 <label class="radio">
                     <?php echo __('On'); ?>
@@ -233,18 +260,58 @@ if (isset($templateData['map'])) {
                            value=1 <?php if ($templateData['map']->timing) echo 'checked=""'; ?>>
 
                     <div class="control-group">
-                        <label class="control-label" for="delta_time"><?php echo __('Timing Delta'); ?></label>
-
+                        <br />
+                        <label class="control-label" for="delta_time_seconds"><?php echo __('Timing Delta: seconds'); ?></label>
                         <div class="controls">
                             <input
                                 <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
-                                name="delta_time" type="text" class="span1" id="delta_time"
-                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->delta_time; ?>">
-                            <span class="help-inline"><?php echo __('seconds'); ?></span>
+                                name="delta_time_seconds" type="text" class="span1" id="delta_time_seconds"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->delta_time % 60; ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="delta_time_minutes"><?php echo __('Timing Delta: minutes'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="delta_time_minutes" type="text" class="span1" id="delta_time_minutes"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo floor($templateData['map']->delta_time / 60); ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_msg"><?php echo __('Reminder message'); ?></label>
+                        <div class="controls">
+                                <textarea name="reminder_msg" class="span6" <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                          id="reminder_msg"><?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->reminder_msg; ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_seconds"><?php echo __('Reminder: seconds'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="reminder_seconds" type="text" class="span1" id="reminder_seconds"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo $templateData['map']->reminder_time % 60; ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <br />
+                        <label class="control-label" for="reminder_minutes"><?php echo __('Reminder: minutes'); ?></label>
+                        <div class="controls">
+                            <input
+                                <?php if (!$templateData['map']->timing) echo 'disabled'; ?>
+                                name="reminder_minutes" type="text" class="span1" id="reminder_minutes"
+                                value="<?php if ($templateData['map']->delta_time > 0 and $templateData['map']->timing) echo floor($templateData['map']->reminder_time / 60); ?>" selectBoxOptions="1;5;10;15;20;25;30;35;40;45;50;55;60">
                         </div>
                     </div>
                 </label>
-
 
                 <label class="radio">
                     <?php echo __('Off'); ?>
@@ -253,17 +320,11 @@ if (isset($templateData['map'])) {
                 </label>
             </div>
         </div>
-
-
     </fieldset>
-
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Security'); ?></legend>
-
-
         <?php if (isset($templateData['securities'])) { ?>
-
             <div class="control-group">
                 <label class="control-label"><?php echo __('Security'); ?></label>
 
@@ -285,9 +346,6 @@ if (isset($templateData['map'])) {
 
             </div>
         <?php } ?>
-
-
-
 
         <?php if (isset($templateData['sections'])) { ?>
             <div class="control-group">
@@ -325,13 +383,60 @@ if (isset($templateData['map'])) {
             </div>
         <?php } ?>
     </fieldset>
+
+    <fieldset class="fieldset">
+        <legend><?php echo __('Labyrinth Notes'); ?></legend>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Notes'); ?>:</label>
+            <div class="controls">
+                <textarea name="devnotes"><?php echo $templateData['map']->dev_notes; ?></textarea>
+            </div>
+        </div>
+    </fieldset>
+
     <?php
     echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
 
     <div class="pull-right">
         <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit"
-               value="<?php echo __('Save changes'); ?>"></div>
+               value="<?php echo __('Save changes'); ?>" onclick="return checkForm();"></div>
 
     </form>
 
+    <script>
+        createEditableSelect(document.getElementById('delta_time_seconds'));
+        createEditableSelect(document.getElementById('delta_time_minutes'));
+        createEditableSelect(document.getElementById('reminder_seconds'));
+        createEditableSelect(document.getElementById('reminder_minutes'));
+
+        function checkForm (){
+            if(document.getElementById('delta_time_seconds').value == '' && document.getElementById('delta_time_minutes').value == ''
+                && document.getElementById('timing-on').checked ) {
+                alert('Please enter you time interval for Timing!');
+                return false;
+            }
+            if(document.getElementById('delta_time_seconds').value == 0 && document.getElementById('delta_time_minutes').value == 0
+                && document.getElementById('timing-on').checked ) {
+                alert('Please enter you time interval for Timing!');
+                return false;
+            }
+            if(document.getElementById('reminder_seconds').value == 0 && document.getElementById('reminder_minutes').value == 0
+                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+                alert('Please enter you time interval for Reminder Message!');
+                return false;
+            }
+            if(document.getElementById('reminder_seconds').value == '' && document.getElementById('reminder_minutes').value == ''
+                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+                alert('Please enter you time interval for Reminder Message!');
+                return false;
+            }
+            if(( parseInt(document.getElementById('reminder_seconds').value) + parseInt(document.getElementById('reminder_minutes').value) * 60)
+                >= ( parseInt(document.getElementById('delta_time_seconds').value) + parseInt(document.getElementById('delta_time_minutes').value) * 60)
+                && document.getElementById('timing-on').checked ) {
+                alert('Reminder-interval must be less than Timing interval!');
+                return false;
+            }
+        }
+
+    </script>
 <?php } ?>
