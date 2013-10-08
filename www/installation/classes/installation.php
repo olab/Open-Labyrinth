@@ -721,7 +721,7 @@ class Installation {
         return $result;
     }
 
-    public function populateDatabase($schema)
+    public static function populateDatabase($schema)
     {
         $return = true;
 
