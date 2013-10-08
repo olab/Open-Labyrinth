@@ -72,6 +72,7 @@ class Controller_FileManager extends Controller_Base {
     }
 
     public function action_replaceFiles() {
+        set_time_limit(0);
         $this->auto_render = false;
 
         $mapId = Arr::get($_POST, 'mapId', null);
