@@ -47,7 +47,7 @@ class Controller_Home extends Controller_Base {
             $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
             if($provider != null) {
                 Session::instance()->set('OAuthProviderId', $providerId);
-                Request::initial()->redirect($provider->getAuthorizeURL(URL::base(true, false) . 'home/loginOAuthCallback'));
+                Request::initial()->redirect($provider->getAuthorizeURL(URL::base(true, false, true) . 'home/loginOAuthCallback'));
             }
         }
 
@@ -59,7 +59,7 @@ class Controller_Home extends Controller_Base {
         if($providerId > 0) {
             $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
             if($provider != null) {
-                $token     = $provider->getAccessToken($_REQUEST, URL::base(true, false) . 'home/loginOAuthCallback');
+                $token     = $provider->getAccessToken($_REQUEST, URL::base(true, false, true) . 'home/loginOAuthCallback');
                 if($token != null) {
                     $userInfo  = $provider->get($token, 'user-info');
                     $authorize = OAuth_Authorize::factory($provider->getName());
@@ -77,7 +77,7 @@ class Controller_Home extends Controller_Base {
         if (Auth::instance()->logged_in()) {
             Auth::instance()->logout();
         }
-
+		
         Request::initial()->redirect(URL::base());
     }
 
