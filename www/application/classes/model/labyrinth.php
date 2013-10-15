@@ -45,7 +45,11 @@ class Model_Labyrinth extends Model {
 
             $result['node_title'] = $node->title;
             $result['node_text'] = $node->text;
-            $result['node_annotation'] = $node->annotation;
+
+            $clearAnnotation = strip_tags($node->annotation, '<img>');
+            if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0)) {
+                $result['node_annotation'] = $node->annotation;
+            }
 
             $sessionId = NULL;
             if($bookmark != NULL) {
@@ -133,19 +137,28 @@ class Model_Labyrinth extends Model {
         return $result;
     }
 
-    private function checkUser($mapId) {
+    private function checkUser($mapId, $allowReviewers = false) {
         if (Auth::instance()->logged_in()) {
-            if (DB_ORM::model('map_user')->checkUserById($mapId, Auth::instance()->get_user()->id)) {
-                return TRUE;
-            }
-
-            $map = DB_ORM::model('map', array((int) $mapId));
-            if ($map) {
-                if ($map->author_id == Auth::instance()->get_user()->id) {
+            if (Auth::instance()->get_user()->type->name != 'learner'){
+                if (DB_ORM::model('map_user')->checkUserById($mapId, Auth::instance()->get_user()->id)) {
                     return TRUE;
                 }
-                if(Auth::instance()->get_user()->type->name == 'superuser')
+
+                $map = DB_ORM::model('map', array((int) $mapId));
+                if ($map) {
+                    if ($map->author_id == Auth::instance()->get_user()->id) {
+                        return TRUE;
+                    }
+                }
+                if(Auth::instance()->get_user()->type->name == 'superuser') {
                     return TRUE;
+                }
+
+                if ($allowReviewers){
+                    if(Auth::instance()->get_user()->type->name == 'reviewer') {
+                        return TRUE;
+                    }
+                }
             }
 
             return FALSE;
