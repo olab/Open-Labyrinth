@@ -357,4 +357,20 @@ jQuery(document).ready(function(){
     });
 
     $('.verification .date').datepicker();
+
+    jQuery('.contributors-list').sortable({
+        axis: "y",
+        cursor: "move",
+        stop: function(event, ui) {
+            recalculateContributorsOrder();
+        }
+    });
+
+    recalculateContributorsOrder();
+
+    function recalculateContributorsOrder() {
+        $('.contributors-list input[type="hidden"]').each(function(index, value) {
+            $(value).val(index + 1);
+        });
+    }
 });

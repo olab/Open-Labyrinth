@@ -149,6 +149,7 @@ if (isset($templateData['map'])) {
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Contributors'); ?></legend>
         <div class="control-group">
+            <div >
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
                 <?php   if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
@@ -159,45 +160,28 @@ if (isset($templateData['map'])) {
                     </div>
                 <?php } ?>
             </label>
-
-            <?php   if (!isset($templateData['contributors'])) { ?>
-                <div class="controls">
-                    <a class="btn btn-info"
-                       href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
-                        <i class="icon-plus"></i> <?php echo __('Add'); ?></a>
                 </div>
-            <?php } ?>
-            <?php if (isset($templateData['contributors'])) { ?>
-                <div class="control-groupper">
-                    <?php foreach ($templateData['contributors'] as $contributor) { ?>
-                        <div class="control-subgroup">
-                            <div class="control-group">
-                                <label class="control-label" for="cname_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Name'); ?></label>
 
-                                <div class="controls">
+            <?php if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
+                <ul class="contributors-list">
+                    <?php $orderIndex=1; foreach ($templateData['contributors'] as $contributor) { ?>
+                    <li>
+                        <p>
+                            <input type="hidden" name="corder_<?php echo $contributor->id; ?>" value="<?php echo $orderIndex; ?>"/>
+                            <label><?php echo __('Name'); ?></label>
                                     <input type="text"
-
                                            id="cname_<?php echo $contributor->id; ?>"
                                            name="cname_<?php echo $contributor->id; ?>"
                                            value="<?php echo $contributor->name; ?>">
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="cnorg_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Organization'); ?></label>
-
-                                <div class="controls">
+                        </p>
+                        <p>
+                            <label><?php echo __('Organization'); ?></label>
                                     <input type="text" name="cnorg_<?php echo $contributor->id; ?>"
                                            id="cnorg_<?php echo $contributor->id; ?>"
                                            value="<?php echo $contributor->organization; ?>">
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <label class="control-label" for="role_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Role'); ?></label>
-                                <div class="controls">
+                        </p>
+                        <p>
+                            <label><?php echo __('Role'); ?></label>
                                     <?php if (isset($templateData['contributor_roles'])) { ?>
                                         <select name="role_<?php echo $contributor->id; ?>"
                                                 id="role_<?php echo $contributor->id; ?>">
@@ -208,17 +192,12 @@ if (isset($templateData['map'])) {
 
                                         </select>
                                     <?php } ?>
-                                </div>
-                            </div>
-                            <div class="pull-right">
-                                <a class="btn btn-danger"
-                                   href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>">
-                                    <i class="icon-trash"></i><?php echo __('Delete'); ?>
-                                </a>
-                            </div>
-                        </div>
-                    <?php } ?>
-                </div>
+                        </p>
+                        <p><a href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>" class="btn btn-small btn-danger"><i class="icon-trash"></i></a></p>
+                    </li>
+                    <?php $orderIndex++; } ?>
+                </ul>
+                <div style="clear: both"></div>
             <?php } ?>
         </div>
 

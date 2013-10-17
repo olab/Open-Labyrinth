@@ -186,6 +186,7 @@ class Model_Leap_Map extends DB_ORM_Model
                 'child_key' => array('map_id'),
                 'child_model' => 'map_contributor',
                 'parent_key' => array('id'),
+                'options' => array(array('order_by', array('map_contributors.order', 'ASC')))
             )),
             'authors' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('map_id'),
