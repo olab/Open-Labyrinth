@@ -347,94 +347,14 @@ jQuery(document).ready(function(){
         }
     });
 
-
-    var $redirectContainerLogic = $('.submitSettingsContainer_link_logic');
-    var $redirectContainerNode = $('.submitSettingsContainer_cont_date');
-    var $redirectContainerGuide = $('.submitSettingsContainer_inst_guide');
-    var $redirectContainerMediaCopy = $('.submitSettingsContainer_media_copy');
-    var $redirectContainerMediaCont = $('.submitSettingsContainer_media_cont');
-    var $redirectContainerClinical = $('.submitSettingsContainer_clinical_acc');
-    var $redirectContainerMetadata = $('.submitSettingsContainer_metadata_file_id');
-
-    $('#link_logic_yes').click(function() {
-        if($redirectContainerLogic != null)
-            $redirectContainerLogic.removeClass('hide');
-    });
-    $('#link_logic_no').click(function() {
-        if($redirectContainerLogic != null)
-            $redirectContainerLogic.addClass('hide');
-    });
-    $('#link_logic_date').datepicker();
-
-
-    $('#node_cont_yes').click(function() {
-        if($redirectContainerNode != null)
-            $redirectContainerNode.removeClass('hide');
+    $('.fieldset-verification .btn').click(function() {
+        var verification = $(this).parents('.controls').find('div.verification');
+        if ($(this).attr('data-value') == 'yes'){
+            verification.removeClass('hide');
+        } else {
+            verification.addClass('hide');
+        }
     });
 
-    $('#node_cont_no').click(function() {
-        if($redirectContainerNode != null)
-            $redirectContainerNode.addClass('hide');
-    });
-    $('#node_cont_date').datepicker();
-
-
-    $('#clinical_acc_yes').click(function() {
-        if($redirectContainerClinical != null)
-            $redirectContainerClinical.removeClass('hide');
-    });
-
-    $('#clinical_acc_no').click(function() {
-        if($redirectContainerClinical != null)
-            $redirectContainerClinical.addClass('hide');
-    });
-    $('#clinical_acc_date').datepicker();
-
-
-    $('#media_cont_yes').click(function() {
-        if($redirectContainerMediaCont != null)
-            $redirectContainerMediaCont.removeClass('hide');
-    });
-
-    $('#media_cont_no').click(function() {
-        if($redirectContainerMediaCont != null)
-            $redirectContainerMediaCont.addClass('hide');
-    });
-    $('#media_cont_date').datepicker();
-
-
-    $('#media_copy_yes').click(function() {
-        if($redirectContainerMediaCopy != null)
-            $redirectContainerMediaCopy.removeClass('hide');
-    });
-
-    $('#media_copy_no').click(function() {
-        if($redirectContainerMediaCopy != null)
-            $redirectContainerMediaCopy.addClass('hide');
-    });
-    $('#media_copy_date').datepicker();
-
-
-    $('#inst_guide_yes').click(function() {
-        if($redirectContainerGuide != null)
-            $redirectContainerGuide.removeClass('hide');
-    });
-
-    $('#inst_guide_no').click(function() {
-        if($redirectContainerGuide != null)
-            $redirectContainerGuide.addClass('hide');
-    });
-    $('#inst_guide_date').datepicker();
-
-
-    $('#metadata_file_id_yes').click(function() {
-        if($redirectContainerMetadata != null)
-            $redirectContainerMetadata.removeClass('hide');
-    });
-
-    $('#metadata_file_id_no').click(function() {
-        if($redirectContainerMetadata != null)
-            $redirectContainerMetadata.addClass('hide');
-    });
-
+    $('.verification .date').datepicker();
 });

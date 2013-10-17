@@ -782,6 +782,11 @@ class Controller_LabyrinthManager extends Controller_Base {
         if ($mapId) {
 
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            if ($this->templateData['map']->verification != null){
+                $this->templateData['verification'] = json_decode($this->templateData['map']->verification, true);
+            } else {
+                $this->templateData['verification'] = array();
+            }
             $this->templateData['types'] = DB_ORM::model('map_type')->getAllTypes();
             $this->templateData['skins'] = DB_ORM::model('map_skin')->getAllSkins();
             $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
@@ -868,15 +873,29 @@ class Controller_LabyrinthManager extends Controller_Base {
 
 
                 // Prepare to save verified data
-                $_POST['link_logic_date'] = ($_POST['link_logic']) ? strtotime($_POST['link_logic_date']) : 0;
-                $_POST['node_cont_date'] = ($_POST['node_cont']) ? strtotime($_POST['node_cont_date']) : 0;
-
-                $_POST['clinical_acc_date'] = ($_POST['clinical_acc']) ? strtotime($_POST['clinical_acc_date']) : 0;
-                $_POST['media_cont_date'] = ($_POST['media_cont']) ? strtotime($_POST['media_cont_date']) : 0;
-                $_POST['media_copy_date'] = ($_POST['media_copy']) ? strtotime($_POST['media_copy_date']) : 0;
-                $_POST['inst_guide_date'] = ($_POST['inst_guide']) ? strtotime($_POST['inst_guide_date']) : 0;
-                $_POST['metadata_file_id'] = ($_POST['metadata_file_id']) ? $_POST['file_id'] : 0;
-
+                if (count($_POST['verification']) > 0) {
+                    foreach($_POST['verification'] as $key => $value){
+                        if (isset($_POST[$key])){
+                            if ($_POST[$key] == 1){
+                                $_POST['verification'][$key] = strtotime($_POST['verification'][$key]);
+                            } else {
+                                $_POST['verification'][$key] = null;
+                            }
+                        } else {
+                            $_POST['verification'][$key] = null;
+                        }
+                    }
+                }
+                if (isset($_POST['inst_guide']) && isset($_POST['inst_guide_select'])){
+                    if ($_POST['inst_guide'] == 1){
+                        $_POST['verification']['inst_guide'] = $_POST['inst_guide_select'];
+                    } else {
+                        $_POST['verification']['inst_guide'] = null;
+                    }
+                } else {
+                    $_POST['verification']['inst_guide'] = null;
+                }
+                $_POST['verification'] = json_encode($_POST['verification']);
 
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
