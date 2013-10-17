@@ -789,6 +789,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
             $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
@@ -864,6 +865,19 @@ class Controller_LabyrinthManager extends Controller_Base {
                     unset($_POST['reminder_minutes']);
                     $_POST['reminder_time'] = $reminder_time;
                 }
+
+
+                // Prepare to save verified data
+                $_POST['link_logic_date'] = ($_POST['link_logic']) ? strtotime($_POST['link_logic_date']) : 0;
+                $_POST['node_cont_date'] = ($_POST['node_cont']) ? strtotime($_POST['node_cont_date']) : 0;
+
+                $_POST['clinical_acc_date'] = ($_POST['clinical_acc']) ? strtotime($_POST['clinical_acc_date']) : 0;
+                $_POST['media_cont_date'] = ($_POST['media_cont']) ? strtotime($_POST['media_cont_date']) : 0;
+                $_POST['media_copy_date'] = ($_POST['media_copy']) ? strtotime($_POST['media_copy_date']) : 0;
+                $_POST['inst_guide_date'] = ($_POST['inst_guide']) ? strtotime($_POST['inst_guide_date']) : 0;
+                $_POST['metadata_file_id'] = ($_POST['metadata_file_id']) ? $_POST['file_id'] : 0;
+
+
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
 

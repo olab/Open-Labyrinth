@@ -137,6 +137,34 @@ class Model_Leap_Map extends DB_ORM_Model
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'link_logic' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'node_cont' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'clinical_acc' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'media_cont' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'media_copy' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'inst_guide' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'metadata_file_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
             'source' => new DB_ORM_Field_String($this, array(
                 'max_length' => 50,
                 'nullable' => FALSE,
@@ -522,6 +550,13 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->reminder_time = Arr::get($values, 'reminder_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
+        $this->link_logic = Arr::get($values, 'link_logic_date', 0);
+        $this->node_cont = Arr::get($values, 'node_cont_date', 0);
+        $this->clinical_acc = Arr::get($values, 'clinical_acc_date', 0);
+        $this->media_cont = Arr::get($values, 'media_cont_date', 0);
+        $this->media_copy = Arr::get($values, 'media_copy_date', 0);
+        $this->inst_guide = Arr::get($values, 'inst_guide_date', 0);
+        $this->metadata_file_id = Arr::get($values, 'metadata_file_id', 0);
 
         $this->save();
     }

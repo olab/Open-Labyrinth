@@ -385,6 +385,224 @@ if (isset($templateData['map'])) {
     </fieldset>
 
     <fieldset class="fieldset">
+        <legend><?php echo __(' Labyrinth verification'); ?></legend>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Link Logic verified') ?></label>
+                <div class="controls">
+                    <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                        <input autocomplete="off" type="radio" id="link_logic_no" name="link_logic" value="0"
+                            <?php if (isset($templateData['map'])){
+                                echo ($templateData['map']->link_logic == 0) ? 'checked="checked"' : '';
+                            } else {
+                                echo 'checked="checked"';
+                            }
+                            ?>
+                            />
+                        <label data-class="btn-danger" class="btn" for="link_logic_no"><?php echo __('No'); ?></label>
+
+                        <input autocomplete="off" type="radio" id="link_logic_yes" name="link_logic" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->link_logic) ? 'checked="checked"' : '') ?>/>
+                        <label data-class="btn-info" class="btn" for="link_logic_yes"><?php echo __('Yes'); ?></label>
+                    </div>
+
+                    <div class="submitSettingsContainer_link_logic <?php echo ((isset($templateData['map']) && $templateData['map']->link_logic) ? '' : 'hide') ?>">
+
+                        <div class="input-append date" id="link_logic_date" data-date="<?php if ($templateData['map']->link_logic) echo date('d-m-Y',$templateData['map']->link_logic); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                            <input name="link_logic_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->link_logic) echo date('d-m-Y',$templateData['map']->link_logic); else echo date('d-m-Y');?>">
+                            <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Node Content verified') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="node_cont_no" name="node_cont" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->node_cont == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="node_cont_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="node_cont_yes" name="node_cont" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->node_cont) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="node_cont_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="submitSettingsContainer_cont_date <?php echo ((isset($templateData['map']) && $templateData['map']->node_cont) ? '' : 'hide') ?>">
+                    <div class="input-append date" id="node_cont_date" data-date="<?php if ($templateData['map']->node_cont) echo date('d-m-Y',$templateData['map']->node_cont); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                        <input name="node_cont_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->node_cont) echo date('d-m-Y',$templateData['map']->node_cont); else echo date('d-m-Y');?>">
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Clinical Accuracy verified') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="clinical_acc_no" name="clinical_acc" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->clinical_acc == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="clinical_acc_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="clinical_acc_yes" name="clinical_acc" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->clinical_acc) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="clinical_acc_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="submitSettingsContainer_clinical_acc <?php echo ((isset($templateData['map']) && $templateData['map']->clinical_acc) ? '' : 'hide') ?>">
+                    <div class="input-append date" id="clinical_acc_date" data-date="<?php if ($templateData['map']->clinical_acc) echo date('d-m-Y',$templateData['map']->clinical_acc); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                        <input name="clinical_acc_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->clinical_acc) echo date('d-m-Y',$templateData['map']->clinical_acc); else echo date('d-m-Y');?>">
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Media Content complete') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="media_cont_no" name="media_cont" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->media_cont == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="media_cont_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="media_cont_yes" name="media_cont" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->media_cont) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="media_cont_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="submitSettingsContainer_media_cont <?php echo ((isset($templateData['map']) && $templateData['map']->media_cont) ? '' : 'hide') ?>">
+                    <div class="input-append date" id="media_cont_date" data-date="<?php if ($templateData['map']->media_cont) echo date('d-m-Y',$templateData['map']->media_cont); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                        <input name="media_cont_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->media_cont) echo date('d-m-Y',$templateData['map']->media_cont); else echo date('d-m-Y');?>">
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Media Copyright verified') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="media_copy_no" name="media_copy" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->media_copy == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="media_copy_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="media_copy_yes" name="media_copy" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->media_copy) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="media_copy_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                    <div class="submitSettingsContainer_media_copy <?php echo ((isset($templateData['map']) && $templateData['map']->media_copy) ? '' : 'hide') ?>">
+                        <div class="input-append date" id="media_copy_date" data-date="<?php if ($templateData['map']->media_copy) echo date('d-m-Y',$templateData['map']->media_copy); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                            <input name="media_copy_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->media_copy) echo date('d-m-Y',$templateData['map']->media_copy); else echo date('d-m-Y');?>">
+                            <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
+                    </div>
+
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Instructor guide complete') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="inst_guide_no" name="inst_guide" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->inst_guide == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="inst_guide_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="inst_guide_yes" name="inst_guide" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->inst_guide) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="inst_guide_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="submitSettingsContainer_inst_guide <?php echo ((isset($templateData['map']) && $templateData['map']->inst_guide) ? '' : 'hide') ?>">
+
+                    <div class="input-append date" id="inst_guide_date" data-date="<?php if ($templateData['map']->inst_guide) echo date('d-m-Y',$templateData['map']->inst_guide); else echo date('d-m-Y');?>" data-date-format="dd-mm-yyyy">
+                        <input name="inst_guide_date" class="span2" size="120" type="text" value="<?php if ($templateData['map']->inst_guide) echo date('d-m-Y',$templateData['map']->inst_guide); else echo date('d-m-Y');?>">
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Metadata complete') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left; margin-right: 20px;">
+                    <input autocomplete="off" type="radio" id="metadata_file_id_no" name="metadata_file_id" value="0"
+                        <?php if (isset($templateData['map'])){
+                            echo ($templateData['map']->metadata_file_id == 0) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                        ?>
+                        />
+                    <label data-class="btn-danger" class="btn" for="metadata_file_id_no"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="metadata_file_id_yes" name="metadata_file_id" value="1" <?php echo ((isset($templateData['map']) && $templateData['map']->metadata_file_id) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="metadata_file_id_yes"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="submitSettingsContainer_metadata_file_id <?php echo ((isset($templateData['map']) && $templateData['map']->metadata_file_id) ? '' : 'hide') ?>">
+
+                            <select  id="file_id" name="file_id">
+                                <?php if(isset($templateData['files'])) { ?>
+                                    <?php foreach($templateData['files'] as $file) { ?>
+                                        <option value="<?php echo $file->id; ?>" <?php if( isset($templateData['map']) && $file->id == $templateData['map']->metadata_file_id) echo 'selected'; ?>><?php echo $file->name; ?></option>
+                                    <?php } ?>
+                                <?php } ?>
+                            </select>
+
+                </div>
+
+            </div>
+        </div>
+
+<!--        <div class="control-group submitSettingsContainer_metadata_file_id --><?php //echo ((isset($templateData['map']) && $templateData['map']->metadata_file_id) ? '' : 'hide') ?><!--">-->
+<!---->
+<!--        </div>-->
+
+    </fieldset>
+
+    <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Notes'); ?></legend>
         <div class="control-group">
             <label class="control-label"><?php echo __('Notes'); ?>:</label>
