@@ -782,6 +782,11 @@ class Controller_LabyrinthManager extends Controller_Base {
         if ($mapId) {
 
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+            if ($this->templateData['map']->verification != null){
+                $this->templateData['verification'] = json_decode($this->templateData['map']->verification, true);
+            } else {
+                $this->templateData['verification'] = array();
+            }
             $this->templateData['types'] = DB_ORM::model('map_type')->getAllTypes();
             $this->templateData['skins'] = DB_ORM::model('map_skin')->getAllSkins();
             $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
@@ -789,6 +794,7 @@ class Controller_LabyrinthManager extends Controller_Base {
             $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
             $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
             $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
@@ -864,6 +870,33 @@ class Controller_LabyrinthManager extends Controller_Base {
                     unset($_POST['reminder_minutes']);
                     $_POST['reminder_time'] = $reminder_time;
                 }
+
+
+                // Prepare to save verified data
+                if (count($_POST['verification']) > 0) {
+                    foreach($_POST['verification'] as $key => $value){
+                        if (isset($_POST[$key])){
+                            if ($_POST[$key] == 1){
+                                $_POST['verification'][$key] = strtotime($_POST['verification'][$key]);
+                            } else {
+                                $_POST['verification'][$key] = null;
+                            }
+                        } else {
+                            $_POST['verification'][$key] = null;
+                        }
+                    }
+                }
+                if (isset($_POST['inst_guide']) && isset($_POST['inst_guide_select'])){
+                    if ($_POST['inst_guide'] == 1){
+                        $_POST['verification']['inst_guide'] = $_POST['inst_guide_select'];
+                    } else {
+                        $_POST['verification']['inst_guide'] = null;
+                    }
+                } else {
+                    $_POST['verification']['inst_guide'] = null;
+                }
+                $_POST['verification'] = json_encode($_POST['verification']);
+
                 DB_ORM::model('map')->updateMap($mapId, $_POST);
                 DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
 
