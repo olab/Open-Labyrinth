@@ -149,7 +149,6 @@ if (isset($templateData['map'])) {
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Contributors'); ?></legend>
         <div class="control-group">
-            <div >
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
                 <?php   if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
@@ -160,7 +159,6 @@ if (isset($templateData['map'])) {
                     </div>
                 <?php } ?>
             </label>
-                </div>
 
             <?php if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
                 <ul class="contributors-list">
