@@ -1,1 +1,0 @@
-ALTER TABLE `maps` ADD `verification` TEXT NULL ;
