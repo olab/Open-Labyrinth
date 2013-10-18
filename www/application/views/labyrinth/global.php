@@ -151,13 +151,11 @@ if (isset($templateData['map'])) {
         <div class="control-group">
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
-                <?php   if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
                     <div class="pull-right">
                         <a class="btn btn-info"
                            href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
                             <i class="icon-plus"></i><?php echo __('Add'); ?></a>
                     </div>
-                <?php } ?>
             </label>
 
             <?php if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
