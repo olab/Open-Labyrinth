@@ -346,4 +346,31 @@ jQuery(document).ready(function(){
             }
         }
     });
+
+    $('.fieldset-verification .btn').click(function() {
+        var verification = $(this).parents('.controls').find('div.verification');
+        if ($(this).attr('data-value') == 'yes'){
+            verification.removeClass('hide');
+        } else {
+            verification.addClass('hide');
+        }
+    });
+
+    $('.verification .date').datepicker();
+
+    jQuery('.contributors-list').sortable({
+        axis: "y",
+        cursor: "move",
+        stop: function(event, ui) {
+            recalculateContributorsOrder();
+        }
+    });
+
+    recalculateContributorsOrder();
+
+    function recalculateContributorsOrder() {
+        $('.contributors-list input[type="hidden"]').each(function(index, value) {
+            $(value).val(index + 1);
+        });
+    }
 });

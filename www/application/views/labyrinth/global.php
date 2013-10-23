@@ -151,53 +151,33 @@ if (isset($templateData['map'])) {
         <div class="control-group">
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
-                <?php   if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
                     <div class="pull-right">
                         <a class="btn btn-info"
                            href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
                             <i class="icon-plus"></i><?php echo __('Add'); ?></a>
                     </div>
-                <?php } ?>
             </label>
 
-            <?php   if (!isset($templateData['contributors'])) { ?>
-                <div class="controls">
-                    <a class="btn btn-info"
-                       href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
-                        <i class="icon-plus"></i> <?php echo __('Add'); ?></a>
-                </div>
-            <?php } ?>
-            <?php if (isset($templateData['contributors'])) { ?>
-                <div class="control-groupper">
-                    <?php foreach ($templateData['contributors'] as $contributor) { ?>
-                        <div class="control-subgroup">
-                            <div class="control-group">
-                                <label class="control-label" for="cname_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Name'); ?></label>
-
-                                <div class="controls">
+            <?php if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
+                <ul class="contributors-list">
+                    <?php $orderIndex=1; foreach ($templateData['contributors'] as $contributor) { ?>
+                    <li>
+                        <p>
+                            <input type="hidden" name="corder_<?php echo $contributor->id; ?>" value="<?php echo $orderIndex; ?>"/>
+                            <label><?php echo __('Name'); ?></label>
                                     <input type="text"
-
                                            id="cname_<?php echo $contributor->id; ?>"
                                            name="cname_<?php echo $contributor->id; ?>"
                                            value="<?php echo $contributor->name; ?>">
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label" for="cnorg_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Organization'); ?></label>
-
-                                <div class="controls">
+                        </p>
+                        <p>
+                            <label><?php echo __('Organization'); ?></label>
                                     <input type="text" name="cnorg_<?php echo $contributor->id; ?>"
                                            id="cnorg_<?php echo $contributor->id; ?>"
                                            value="<?php echo $contributor->organization; ?>">
-                                </div>
-                            </div>
-
-                            <div class="control-group">
-                                <label class="control-label" for="role_<?php echo $contributor->id; ?>">
-                                    <?php echo __('Role'); ?></label>
-                                <div class="controls">
+                        </p>
+                        <p>
+                            <label><?php echo __('Role'); ?></label>
                                     <?php if (isset($templateData['contributor_roles'])) { ?>
                                         <select name="role_<?php echo $contributor->id; ?>"
                                                 id="role_<?php echo $contributor->id; ?>">
@@ -208,17 +188,12 @@ if (isset($templateData['map'])) {
 
                                         </select>
                                     <?php } ?>
-                                </div>
-                            </div>
-                            <div class="pull-right">
-                                <a class="btn btn-danger"
-                                   href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>">
-                                    <i class="icon-trash"></i><?php echo __('Delete'); ?>
-                                </a>
-                            </div>
-                        </div>
-                    <?php } ?>
-                </div>
+                        </p>
+                        <p><a href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>" class="btn btn-small btn-danger"><i class="icon-trash"></i></a></p>
+                    </li>
+                    <?php $orderIndex++; } ?>
+                </ul>
+                <div style="clear: both"></div>
             <?php } ?>
         </div>
 
@@ -382,6 +357,77 @@ if (isset($templateData['map'])) {
                 </div>
             </div>
         <?php } ?>
+    </fieldset>
+
+    <fieldset class="fieldset fieldset-verification">
+        <legend><?php echo __(' Labyrinth verification'); ?></legend>
+            <?php $verificationArray = array(
+                'link_logic' => 'Link Logic verified',
+                'node_cont' => 'Node Content verified',
+                'clinical_acc' => 'Clinical Accuracy verified',
+                'media_cont' => 'Media Content complete',
+                'media_copy' => 'Media Copyright verified',
+                'metadata' => 'Metadata complete'
+            );
+
+            foreach($verificationArray as $key => $value) { ?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __($value) ?></label>
+                <div class="controls">
+                    <div class="radio_extended btn-group" style="float:left;">
+                        <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"
+                            <?php if (isset($templateData['verification'][$key])){
+                            echo ($templateData['verification'][$key] == null) ? 'checked="checked"' : '';
+                        } else {
+                            echo 'checked="checked"';
+                        }
+                            ?>
+                                />
+                        <label data-class="btn-danger" data-value="no" class="btn" for="<?php echo $key; ?>0"><?php echo __('No'); ?></label>
+
+                        <input autocomplete="off" type="radio" id="<?php echo $key; ?>1" name="<?php echo $key; ?>" value="1" <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? 'checked="checked"' : '') ?>/>
+                        <label data-class="btn-success" data-value="yes" class="btn" for="<?php echo $key; ?>1"><?php echo __('Yes'); ?></label>
+                    </div>
+
+                    <div class="verification span2 <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? '' : 'hide') ?>">
+                        <div class="input-append date" data-date="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>" data-date-format="mm/dd/yyyy">
+                            <input name="verification[<?php echo $key; ?>]" style="width:120px;" type="text" value="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>">
+                            <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Instructor guide complete') ?></label>
+                <div class="controls">
+                    <div class="radio_extended btn-group" style="float: left;">
+                        <input autocomplete="off" type="radio" id="inst_guide0" name="inst_guide" value="0"
+                            <?php if (isset($templateData['verification']['inst_guide'])){
+                                echo ($templateData['verification']['inst_guide'] == 0) ? 'checked="checked"' : '';
+                            } else {
+                                echo 'checked="checked"';
+                            }
+                            ?>
+                            />
+                        <label data-class="btn-danger" data-value="no" class="btn" for="inst_guide0"><?php echo __('No'); ?></label>
+
+                        <input autocomplete="off" type="radio" id="inst_guide1" name="inst_guide" value="1" <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? 'checked="checked"' : '') ?>/>
+                        <label data-class="btn-success" data-value="yes" class="btn" for="inst_guide1"><?php echo __('Yes'); ?></label>
+                    </div>
+
+                    <div class="verification span2 <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? '' : 'hide') ?>">
+                        <select id="file_id" name="inst_guide_select">
+                            <?php if(isset($templateData['files'])) { ?>
+                                <?php foreach($templateData['files'] as $file) { ?>
+                                    <option value="<?php echo $file->id; ?>" <?php if( isset($templateData['verification']['inst_guide']) && $file->id == $templateData['verification']['inst_guide']) echo 'selected'; ?>><?php echo $file->name; ?></option>
+                                <?php } ?>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
     </fieldset>
 
     <fieldset class="fieldset">
