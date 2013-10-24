@@ -73,6 +73,35 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                 <a href="<?php echo URL::base().$templateData['file']->path;?>"><?php echo URL::base().$templateData['file']->path;?> </a>
                             </div>
                         </div>
+
+                        <?php
+
+                        if(isset($templateData['fileMetadata']) && count($templateData['fileMetadata']) > 0) { ?>
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('File metadata'); ?>
+                            </label>
+                            <div class="controls">
+                                <table>
+                                <?php foreach ($templateData['fileMetadata'] as $info) { ?>
+                                    <tr>
+                                        <td><?php echo $info['title']; ?>: </td>
+                                        <td><?php echo $info['value']; ?></td>
+                                    </tr>
+                                <?php } ?>
+                                </table>
+                            </div>
+                        </div>
+                        <?php } else if(isset($templateData['enableModule'])) { ?>
+                        <div class="control-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="controls">
+                                <div class="alert alert-danger">
+                                    <?php echo __('Please enable EXIF module for image file metadata.'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+
                         <div class="control-group">
                             <label class="control-label"><?php echo __('ID'); ?>
                             </label>
