@@ -1,1 +1,0 @@
-ALTER TABLE `map_elements` ADD `is_shared` TINYINT NOT NULL DEFAULT '1';

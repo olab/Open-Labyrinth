@@ -1,3 +1,5 @@
+ALTER TABLE `map_elements` ADD `is_shared` TINYINT NOT NULL DEFAULT '1';
+
 CREATE TABLE IF NOT EXISTS `map_elements_metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `element_id` int(11) NOT NULL,
