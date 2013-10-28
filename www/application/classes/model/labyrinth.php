@@ -809,9 +809,13 @@ class Model_Labyrinth extends Model {
                                                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $counterStr);
                                                 return $element->response;
                                             }
+                                        } else {
+                                            return $element->response;
                                         }
                                     }
                                 }
+                            } else {
+                                return $element->response;
                             }
                         } else {
 							return $element->response;
