@@ -516,8 +516,9 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
+        $model = DB_ORM::model($modelName);
         foreach($data as $key => $value){
-            if (!in_array($key, $skipColumns)){
+            if (!in_array($key, $skipColumns) && $model->is_field($key)){
                 $builder->column($key, $value);
             }
         }

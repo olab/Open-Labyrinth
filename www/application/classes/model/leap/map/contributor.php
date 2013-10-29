@@ -34,27 +34,27 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-            
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            
             'role_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            
             'name' => new DB_ORM_Field_String($this, array(
                 'max_length' => 200,
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
             'organization' => new DB_ORM_Field_String($this, array(
                 'max_length' => 200,
                 'nullable' => FALSE,
                 'savable' => TRUE,
+            )),
+            'order' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
             )),
         );
         
@@ -80,7 +80,7 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
     }
     
     public function getAllContributors($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('order', 'ASC');
         $result = $builder->query();
         
         if($result->is_loaded()) {
@@ -108,6 +108,7 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
                 $role = Arr::get($values, 'role_'.$contributor->id, NULL);
                 $name = Arr::get($values, 'cname_'.$contributor->id, '');
                 $organization = Arr::get($values, 'cnorg_'.$contributor->id, '');
+                $order = Arr::get($values, 'corder_'.$contributor->id, 1);
 
                 if($role != NULL) {
                     $contributor->role_id = $role;
@@ -120,6 +121,8 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
                 if($organization != NULL) {
                     $contributor->organization = $organization;
                 }
+
+                $contributor->order = $order;
 
                 $contributor->save();
             }

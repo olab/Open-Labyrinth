@@ -23,6 +23,15 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_FileManager extends Controller_Base {
 
+    private $metadataJPEGFields = array(array('key' => 'Artist', 'title' => 'Artist'),
+                                        array('key' => 'Company', 'title' => 'Company'),
+                                        array('key' => 'Make', 'title' => 'Make'),
+                                        array('key' => 'Model', 'title' => 'Model'),
+                                        array('key' => 'DateTimeOriginal', 'title' => 'Original date time'),
+                                        array('key' => 'DateTimeDigitized', 'title' => 'Digitized date time'),
+                                        array('key' => 'Software', 'title' => 'Software'),
+                                        array('key' => 'DateTime', 'title' => 'Date time'));
+
     public function before() {
         $this->templateData['labyrinthSearch'] = 1;
 
@@ -121,12 +130,44 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
+    private function getArrayValueByKey($needle, $haystack) {
+        if(array_key_exists($needle, $haystack)) { return array(true, $haystack[$needle]); }
+
+        foreach($haystack as $v) {
+            $k = false;
+            $r = null;
+            if(is_array($v)) {
+                list($k, $r) = $this->getArrayValueByKey($needle, $v);
+            }
+
+            if($k) { return array(true, $r); }
+        }
+
+        return array(false, null);
+    }
+
     public function action_editFile() {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
+
+            $extensionExist = extension_loaded('exif');
+            if($extensionExist && isset($this->templateData['file']) && $this->templateData['file']->mime == 'image/jpeg') {
+                $jpegInfo     = exif_read_data(DOCROOT . $this->templateData['file']->path, 0, true);
+                $jpegMetadata = array();
+                foreach($this->metadataJPEGFields as $metadataField) {
+                    list($exist, $value) = $this->getArrayValueByKey($metadataField['key'], $jpegInfo);
+                    if($exist) {
+                        $jpegMetadata[] = array('title' => $metadataField['title'], 'value' => $value);
+                    }
+                }
+
+                $this->templateData['fileMetadata'] = $jpegMetadata;
+            } else if(!$extensionExist) {
+                $this->templateData['enableModule'] = true;
+            }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));

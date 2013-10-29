@@ -146,6 +146,9 @@ class Model_Leap_Map extends DB_ORM_Model
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+            'verification' => new DB_ORM_Field_Text($this, array(
+                'savable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -183,6 +186,7 @@ class Model_Leap_Map extends DB_ORM_Model
                 'child_key' => array('map_id'),
                 'child_model' => 'map_contributor',
                 'parent_key' => array('id'),
+                'options' => array(array('order_by', array('map_contributors.order', 'ASC')))
             )),
             'authors' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('map_id'),
@@ -522,6 +526,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->reminder_time = Arr::get($values, 'reminder_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
+        $this->verification = Arr::get($values, 'verification', NULL);
 
         $this->save();
     }
@@ -668,7 +673,8 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('feedback', $this->feedback)
             ->column('dev_notes', $this->dev_notes)
             ->column('source', $this->source)
-            ->column('source_id', $this->source_id);
+            ->column('source_id', $this->source_id)
+            ->column('verification', $this->verification);
 
         $newMapId = $builder->execute();
         $nodeMap = DB_ORM::model('map_node')->duplicateNodes($mapId, $newMapId);

@@ -73,6 +73,35 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                 <a href="<?php echo URL::base().$templateData['file']->path;?>"><?php echo URL::base().$templateData['file']->path;?> </a>
                             </div>
                         </div>
+
+                        <?php
+
+                        if(isset($templateData['fileMetadata']) && count($templateData['fileMetadata']) > 0) { ?>
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('File metadata'); ?>
+                            </label>
+                            <div class="controls">
+                                <table>
+                                <?php foreach ($templateData['fileMetadata'] as $info) { ?>
+                                    <tr>
+                                        <td><?php echo $info['title']; ?>: </td>
+                                        <td><?php echo $info['value']; ?></td>
+                                    </tr>
+                                <?php } ?>
+                                </table>
+                            </div>
+                        </div>
+                        <?php } else if(isset($templateData['enableModule'])) { ?>
+                        <div class="control-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="controls">
+                                <div class="alert alert-danger">
+                                    <?php echo __('Please enable EXIF module for image file metadata.'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+
                         <div class="control-group">
                             <label class="control-label"><?php echo __('ID'); ?>
                             </label>
@@ -176,12 +205,42 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                 </select>
                             </div>
                         </div>
+                        <div class="control-group">
+                            <label class="control-label" for="v"><?php echo __('Shared'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="checkbox" name="shared" <?php echo $templateData['file']->is_shared ? 'checked="checked"' : ''; ?>>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="v"><?php echo __('Description'); ?>
+                            </label>
+                            <div class="controls">
+                                <textarea name="description"><?php echo $templateData['file']->metadata->description; ?></textarea>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="v"><?php echo __('Origin URL'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" name="originURL" value="<?php echo $templateData['file']->metadata->originURL; ?>">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="v"><?php echo __('Copyright'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" name="copyright" value="<?php echo $templateData['file']->metadata->copyright; ?>">
+                            </div>
+                        </div>
+
                     </fieldset>
 
-<div class="form-actions"><div class="pull-right">
-                                <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save'); ?>"></div>
-</div>
-
-                </form>  
-
+                    <div class="form-actions"><div class="pull-right">
+                        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save'); ?>"></div>
+                    </div>
+                </form>
 <?php } ?>
