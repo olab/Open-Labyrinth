@@ -33,7 +33,8 @@ class Helper_RDF_Store {
                 'load',
                 'dump' /* dump is a special command for streaming SPOG export */
             ),
-            'endpoint_timeout' => 60, /* not implemented in ARC2 preview */
+            'endpoint_timeout' => 300, /* not implemented in ARC2 preview */
+            'time_limit'=>300,
             'endpoint_read_key' => '', /* optional */
             'endpoint_max_limit' => 2500, /* optional */
         );
