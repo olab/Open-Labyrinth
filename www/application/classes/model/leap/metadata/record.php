@@ -54,8 +54,10 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
             if ($recCount > 0)
                 $records[0]->updateRecord($records[0]->id, $values);
             else {
-                $rec = DB_ORM_Model::factory($metadata->getModelname());
-                $rec->newRecord($metadata->id, $objectId, $values);
+                if(count($values)>0){
+                    $rec = DB_ORM_Model::factory($metadata->getModelname());
+                    $rec->newRecord($metadata->id, $objectId, $values);
+                }
             }
             return;
         }
