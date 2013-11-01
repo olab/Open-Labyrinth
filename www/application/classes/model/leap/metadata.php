@@ -27,6 +27,10 @@ class Model_Leap_Metadata extends DB_ORM_Model
     static $MetadataExtras = array(
         "referencerecord" => array("source", "type", "label"),
         "skosrecord" => array("source"),
+        "stringrecord"=>array(),
+        "daterecord" => array(),
+        "textrecord" =>array(),
+        "inlineobjectrecord" =>array(),
     );
 
 
@@ -37,56 +41,56 @@ class Model_Leap_Metadata extends DB_ORM_Model
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
-            )),
+                    'max_length' => 11,
+                    'nullable' => FALSE,
+                    'unsigned' => TRUE,
+                )),
             'name' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
+                    'max_length' => 200,
+                    'nullable' => FALSE,
+                    'savable' => TRUE,
+                )),
             'model' => new DB_ORM_Field_String($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
+                    'max_length' => 11,
+                    'nullable' => FALSE,
+                )),
             'type' => new DB_ORM_Field_String($this, array(
-                'max_length' => 2000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
+                    'max_length' => 2000,
+                    'nullable' => FALSE,
+                    'savable' => TRUE,
+                )),
             'options' => new DB_ORM_Field_String($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
+                    'max_length' => 11,
+                    'nullable' => FALSE,
+                )),
             'cardinality' => new DB_ORM_Field_String($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
+                    'max_length' => 11,
+                    'nullable' => FALSE,
+                )),
             'label' => new DB_ORM_Field_String($this, array(
-                'max_length' => 500,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
+                    'max_length' => 500,
+                    'nullable' => FALSE,
+                    'savable' => TRUE,
+                )),
             'comment' => new DB_ORM_Field_String($this, array(
-                'max_length' => 500,
-                'nullable' => FALSE,
-                'savable' => TRUE,
-            )),
+                    'max_length' => 500,
+                    'nullable' => FALSE,
+                    'savable' => TRUE,
+                )),
         );
 
         $this->relations = array(
             'mappings' => new DB_ORM_Relation_HasMany($this, array(
-                'child_key' => array('metadata_id'),
-                'child_model' => 'vocabulary_mapping',
-                'parent_key' => array('id'),
-            )),
+                    'child_key' => array('metadata_id'),
+                    'child_model' => 'vocabulary_mapping',
+                    'parent_key' => array('id'),
+                )),
         );
 
         $this->adaptors = array(
             'extras' => new DB_ORM_Field_Adaptor_JSON($this, array(
-                'field' => 'options',
-            )),
+                    'field' => 'options',
+                )),
         );
     }
 
@@ -109,7 +113,7 @@ class Model_Leap_Metadata extends DB_ORM_Model
         $metadataFields = self::getMetadataByModelName($model);
         $relationsMetadata = array();
 
-       foreach ($metadataFields as $metadata) {
+        foreach ($metadataFields as $metadata) {
             $relationsMetadata[$metadata->name] = $metadata->toRelationMetadata($object);
         }
 
@@ -195,11 +199,11 @@ class Model_Leap_Metadata extends DB_ORM_Model
 
 
         foreach ($this->mappings as $mapping){
-           $mapping->delete();
+            $mapping->delete();
         }
 
 
-      parent::delete($reset);
+        parent::delete($reset);
 
 
     }

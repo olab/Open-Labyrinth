@@ -18,30 +18,30 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
 
         $this->fields = array(
             's' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => FALSE,
-            )),
+                    'max_length' => 200,
+                    'nullable' => FALSE,
+                    'savable' => FALSE,
+                )),
             'p' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => FALSE,
-            )),
+                    'max_length' => 200,
+                    'nullable' => FALSE,
+                    'savable' => FALSE,
+                )),
             'o' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => FALSE,
-            )),
+                    'max_length' => 200,
+                    'nullable' => FALSE,
+                    'savable' => FALSE,
+                )),
             'type' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => FALSE,
-            )),
+                    'max_length' => 200,
+                    'nullable' => FALSE,
+                    'savable' => FALSE,
+                )),
             'data_type' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
-                'nullable' => True,
-                'savable' => FALSE,
-        )),
+                    'max_length' => 200,
+                    'nullable' => True,
+                    'savable' => FALSE,
+                )),
 
         );
     }
@@ -54,15 +54,23 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
 
         $arc_triple = array('s'=>$s,'p'=>$p,'o'=>$o);
 
-
         if($this->data_type!=NULL){
             $arc_triple['o_datatype']="http://www.w3.org/2001/XMLSchema#". $this->data_type;
-    }
+        }
 
         if ($this->type == Model_Leap_Vocabulary_Term::Property)
-            $arc_triple['o_type'] = "literal";
-        else
             $arc_triple['o_type'] = "uri";
+        else{//var_dump($this->type);
+            $arc_triple['o_type'] = "uri";
+            if($this->type == Model_Leap_Vocabulary_Term::Reverse){
+                $arc_triple['s'] = $this->o;
+                $arc_triple['o'] = $this->s;
+
+
+            }
+        }
+
+
 
         return $arc_triple;
     }

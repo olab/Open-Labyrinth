@@ -48,11 +48,15 @@ class ARC2_Store extends ARC2_Class {
     foreach (array('db_host' => 'localhost', 'db_user' => '', 'db_pwd' => '', 'db_name' => '') as $k => $v) {
       $this->a[$k] = $this->v($k, $v, $this->a);
     }
-    if (!$db_con = mysql_connect($this->a['db_host'], $this->a['db_user'], $this->a['db_pwd'])) {
-      return $this->addError(mysql_error());
+    if (!$db_con = ($GLOBALS["___mysqli_ston"] = mysqli_connect($this->a['db_host'],  $this->a['db_user'],  $this->a['db_pwd']))) {
+      return $this->addError(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     }
+
     $this->a['db_con'] = $db_con;
-    if (!mysql_select_db($this->a['db_name'], $db_con)) {
+    
+    $dbname = $this->a['db_name'];
+  
+    if (!((bool)mysqli_query( $db_con, "USE $dbname"))) {
       $fixed = 0;
       /* try to create it */
       if ($this->a['db_name']) {
@@ -62,13 +66,13 @@ class ARC2_Store extends ARC2_Class {
           DEFAULT COLLATE utf8_general_ci
           ", $db_con, 1
         );
-        if (mysql_select_db($this->a['db_name'], $db_con)) {
+        if (((bool)mysqli_query( $db_con, "USE $this->a['db_name']"))) {
           $this->queryDB("SET NAMES 'utf8'", $db_con);
           $fixed = 1;
         }
       }
       if (!$fixed) {
-        return $this->addError(mysql_error($db_con));
+        return $this->addError(((is_object($db_con)) ? mysqli_error($db_con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
       }
     }
     if (preg_match('/^utf8/', $this->getCollation())) {
@@ -83,20 +87,20 @@ class ARC2_Store extends ARC2_Class {
         return false;
       }
     }
-    if (!$force && !@mysql_thread_id($this->a['db_con'])) return $this->getDBCon(1);
+    if (!$force && !@mysqli_thread_id($this->a['db_con'])) return $this->getDBCon(1);
     return $this->a['db_con'];
   }
   
   function closeDBCon() {
     if ($this->v('db_con', false, $this->a)) {
-      @mysql_close($this->a['db_con']);
+      @((is_null($___mysqli_res = mysqli_close($this->a['db_con']))) ? false : $___mysqli_res);
     }
     unset($this->a['db_con']);
   }
   
   function getDBVersion() {
     if (!$this->v('db_version')) {
-      $this->db_version = preg_match("/^([0-9]+)\.([0-9]+)\.([0-9]+)/", mysql_get_server_info($this->getDBCon()), $m) ? sprintf("%02d-%02d-%02d", $m[1], $m[2], $m[3])  : '00-00-00';
+      $this->db_version = preg_match("/^([0-9]+)\.([0-9]+)\.([0-9]+)/", ((is_null($___mysqli_res = mysqli_get_server_info($this->getDBCon()))) ? false : $___mysqli_res), $m) ? sprintf("%02d-%02d-%02d", $m[1], $m[2], $m[3])  : '00-00-00';
     }
     return $this->db_version;
   }
@@ -105,14 +109,14 @@ class ARC2_Store extends ARC2_Class {
   
   function getCollation() {
     $rs = $this->queryDB('SHOW TABLE STATUS LIKE "' . $this->getTablePrefix(). 'setting"', $this->getDBCon());
-    return ($rs && ($row = mysql_fetch_array($rs)) && isset($row['Collation'])) ? $row['Collation'] : '';
+    return ($rs && ($row = mysqli_fetch_array($rs)) && isset($row['Collation'])) ? $row['Collation'] : '';
   }
 
   function getColumnType() {
     if (!$this->v('column_type')) {
       $tbl = $this->getTablePrefix() . 'g2t';
       $rs = $this->queryDB('SHOW COLUMNS FROM ' . $tbl . ' LIKE "t"', $this->getDBCon());
-      $row = $rs ? mysql_fetch_array($rs) : array('Type' => 'mediumint');
+      $row = $rs ? mysqli_fetch_array($rs) : array('Type' => 'mediumint');
       $this->column_type = preg_match('/mediumint/', $row['Type']) ? 'mediumint' : 'int';
     }
     return $this->column_type;
@@ -125,7 +129,7 @@ class ARC2_Store extends ARC2_Class {
     if (!isset($this->$var_name)) {
       $tbl = $this->getTablePrefix() . $tbl;
       $rs = $this->queryDB('SHOW COLUMNS FROM ' . $tbl . ' LIKE "val_hash"', $this->getDBCon());
-      $this->$var_name = ($rs && mysql_fetch_array($rs));
+      $this->$var_name = ($rs && mysqli_fetch_array($rs));
     }
     return $this->$var_name;
   }
@@ -137,7 +141,7 @@ class ARC2_Store extends ARC2_Class {
       $this->has_fulltext_index = 0;
       $tbl = $this->getTablePrefix() . 'o2val';
       $rs = $this->queryDB('SHOW INDEX FROM ' . $tbl, $this->getDBCon());
-      while ($row = mysql_fetch_array($rs)) {
+      while ($row = mysqli_fetch_array($rs)) {
         if ($row['Column_name'] != 'val') continue;
         if ($row['Index_type'] != 'FULLTEXT') continue;
         $this->has_fulltext_index = 1;
@@ -162,7 +166,7 @@ class ARC2_Store extends ARC2_Class {
   /*  */
 
   function countDBProcesses() {
-    return ($rs = $this->queryDB('SHOW PROCESSLIST', $this->getDBCon())) ? mysql_num_rows($rs) : 0;
+    return ($rs = $this->queryDB('SHOW PROCESSLIST', $this->getDBCon())) ? mysqli_num_rows($rs) : 0;
   }
 
   function killDBProcesses($needle = '', $runtime = 30) {
@@ -173,7 +177,7 @@ class ARC2_Store extends ARC2_Class {
     }
     $rs = $this->queryDB('SHOW FULL PROCESSLIST', $dbcon);
     $ref_tbl = $this->getTablePrefix() . 'triple';
-    while ($row = mysql_fetch_array($rs)) {
+    while ($row = mysqli_fetch_array($rs)) {
       if ($row['Time'] < $runtime) continue;
       if (!preg_match('/^\s*(INSERT|SELECT) /s', $row['Info'])) continue; /* only basic queries */
       if (!strpos($row['Info'], $ref_tbl . ' ')) continue; /* only from this store */
@@ -231,14 +235,14 @@ class ARC2_Store extends ARC2_Class {
     $tbl = $this->getTablePrefix() . 'setting';
     $sql = "SELECT val FROM " . $tbl . " WHERE k = '" .md5($k). "'";
     $rs = $this->queryDB($sql, $this->getDBCon());
-    return ($rs && ($row = mysql_fetch_array($rs))) ? 1 : 0;
+    return ($rs && ($row = mysqli_fetch_array($rs))) ? 1 : 0;
   }
   
   function getSetting($k, $default = 0) {
     $tbl = $this->getTablePrefix() . 'setting';
     $sql = "SELECT val FROM " . $tbl . " WHERE k = '" .md5($k). "'";
     $rs = $this->queryDB($sql, $this->getDBCon());
-    if ($rs && ($row = mysql_fetch_array($rs))) {
+    if ($rs && ($row = mysqli_fetch_array($rs))) {
       return unserialize($row['val']);
     }
     return $default;
@@ -248,10 +252,10 @@ class ARC2_Store extends ARC2_Class {
     $con = $this->getDBCon();
     $tbl = $this->getTablePrefix() . 'setting';
     if ($this->hasSetting($k)) {
-      $sql = "UPDATE " .$tbl . " SET val = '" . mysql_real_escape_string(serialize($v), $con) . "' WHERE k = '" . md5($k) . "'";
+      $sql = "UPDATE " .$tbl . " SET val = '" . mysqli_real_escape_string( $con, serialize($v)) . "' WHERE k = '" . md5($k) . "'";
     }
     else {
-      $sql = "INSERT INTO " . $tbl . " (k, val) VALUES ('" . md5($k) . "', '" . mysql_real_escape_string(serialize($v), $con) . "')";
+      $sql = "INSERT INTO " . $tbl . " (k, val) VALUES ('" . md5($k) . "', '" . mysqli_real_escape_string( $con, serialize($v)) . "')";
     }
     return $this->queryDB($sql, $con);
   }
@@ -379,7 +383,7 @@ class ARC2_Store extends ARC2_Class {
     $new_prefix .= $name . '_';
     foreach ($tbls as $tbl) {
       $rs = $this->queryDB('RENAME TABLE ' . $old_prefix . $tbl .' TO ' . $new_prefix . $tbl, $con);
-      $err = mysql_error($con);
+      $err = ((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
       if ($err) {
         return $this->addError($err);
       }
@@ -399,7 +403,7 @@ class ARC2_Store extends ARC2_Class {
     $new_prefix = $new_store->getTablePrefix();
     foreach ($tbls as $tbl) {
       $rs = $this->queryDB('INSERT IGNORE INTO ' . $new_prefix . $tbl .' SELECT * FROM ' . $old_prefix . $tbl, $con);
-      $err = mysql_error($con);
+      $err = ((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
       if ($err) {
         return $this->addError($err);
       }
@@ -516,8 +520,8 @@ class ARC2_Store extends ARC2_Class {
     /* via hash */
     if (preg_match('/^(s2val|o2val)$/', $tbl) && $this->hasHashColumn($tbl)) {
       $sql = "SELECT id, val FROM " . $this->getTablePrefix() . $tbl . " WHERE val_hash = '" . $this->getValueHash($val) . "'";
-      if (($rs = $this->queryDB($sql, $con)) && mysql_num_rows($rs)) {
-        while ($row = mysql_fetch_array($rs)) {
+      if (($rs = $this->queryDB($sql, $con)) && mysqli_num_rows($rs)) {
+        while ($row = mysqli_fetch_array($rs)) {
           if ($row['val'] == $val) {
             $r = $row['id'];
             break;
@@ -527,8 +531,8 @@ class ARC2_Store extends ARC2_Class {
     }
     /* exact match */
     else {
-      $sql = "SELECT id FROM " . $this->getTablePrefix() . $tbl . " WHERE val = BINARY '" . mysql_real_escape_string($val, $con) . "' LIMIT 1";
-      if (($rs = $this->queryDB($sql, $con)) && mysql_num_rows($rs) && ($row = mysql_fetch_array($rs))) {
+      $sql = "SELECT id FROM " . $this->getTablePrefix() . $tbl . " WHERE val = BINARY '" . mysqli_real_escape_string( $con, $val) . "' LIMIT 1";
+      if (($rs = $this->queryDB($sql, $con)) && mysqli_num_rows($rs) && ($row = mysqli_fetch_array($rs))) {
         $r = $row['id'];
       }
     }
@@ -541,8 +545,8 @@ class ARC2_Store extends ARC2_Class {
   function getIDValue($id, $term = '') {
     $tbl = preg_match('/^(s|o)$/', $term) ? $term . '2val' : 'id2val';
     $con = $this->getDBCon();
-    $sql = "SELECT val FROM " . $this->getTablePrefix() . $tbl . " WHERE id = " . mysql_real_escape_string($id, $con) . " LIMIT 1";
-    if (($rs = $this->queryDB($sql, $con)) && mysql_num_rows($rs) && ($row = mysql_fetch_array($rs))) {
+    $sql = "SELECT val FROM " . $this->getTablePrefix() . $tbl . " WHERE id = " . mysqli_real_escape_string( $con, $id) . " LIMIT 1";
+    if (($rs = $this->queryDB($sql, $con)) && mysqli_num_rows($rs) && ($row = mysqli_fetch_array($rs))) {
       return $row['val'];
     }
     return 0;
@@ -556,7 +560,7 @@ class ARC2_Store extends ARC2_Class {
     $l_name = $this->a['db_name'] . '.' . $this->getTablePrefix() . '.write_lock';
     $rs = $this->queryDB('SELECT IS_FREE_LOCK("' . $l_name. '") AS success', $con);
     if ($rs) {
-      $row = mysql_fetch_array($rs);
+      $row = mysqli_fetch_array($rs);
       if (!$row['success']) {
         if ($t_out) {
           sleep(1);
@@ -566,7 +570,7 @@ class ARC2_Store extends ARC2_Class {
       else {
         $rs = $this->queryDB('SELECT GET_LOCK("' . $l_name. '", ' . $t_out_init. ') AS success', $con);
         if ($rs) {
-          $row = mysql_fetch_array($rs);
+          $row = mysqli_fetch_array($rs);
           return $row['success'];
         }
       }
@@ -593,7 +597,7 @@ class ARC2_Store extends ARC2_Class {
       $sql .= $pre . $tbl;
     }
     $this->queryDB($sql, $con);
-    $err = mysql_error($con);
+    $err = ((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
     if ($err) {
       $this->addError($err . ' in ' . $sql);
     }

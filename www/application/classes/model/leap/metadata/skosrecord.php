@@ -209,7 +209,18 @@ class Model_Leap_Metadata_SkosRecord extends Model_Leap_Metadata_Record
     }
 
     public function toString(){
-        return $this->uri;
+        $uri_parts = parse_url($this->uri);
+        $uri_parts["fragment"] = urlencode($uri_parts["fragment"]);
+
+        $scheme = (!empty($uri_parts['scheme'])) ? $uri_parts['scheme'] : '';
+        $host = (!empty($uri_parts['host'])) ? $uri_parts['host'] : '';
+        $port = (!empty($uri_parts['port'])) ? ':' . $uri_parts['port'] : '';
+        $path = (!empty($uri_parts['path'])) ? $uri_parts['path'] : '';
+        $query = (!empty($uri_parts['query'])) ? '?' . $uri_parts['query'] : '';
+        $fragment = (!empty($uri_parts['fragment'])) ? '#' . $uri_parts['fragment'] : '';
+        $uri = $scheme. '://'. $host . $port . $path . $query . $fragment;
+
+        return $uri ;
     }
 
     public function handlesCardinality()
