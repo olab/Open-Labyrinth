@@ -120,7 +120,7 @@ Kohana::modules(array(
 
 Route::set('sparql', '<directory>(/<controller>(/<action>(/<id>)))',
     array(
-        'directory' => '(sparql)'
+        'directory' => '(sparql/api|sparql)'
     ))
     ->defaults(array(
     'controller' => 'endpoint',

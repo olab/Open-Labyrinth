@@ -50,8 +50,9 @@ class Model_Leap_Vocabulary_ClassMapping extends DB_ORM_Model
         return array('id');
     }
 
-    public static function getAllClassMappings(){
-        $builder = DB_SQL::select('default')->from(self::table());
+    public static function getAllClassMappings($offset=0, $limit=0){
+        $builder = DB_SQL::select('default')->from(self::table())->offset($offset);
+        if($limit>0) $builder->limit($limit);
         $result = $builder->query();
 
         if ($result->is_loaded()) {

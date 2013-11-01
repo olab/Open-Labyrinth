@@ -62,8 +62,9 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
         return array('id');
     }
 
-    public static function getAllMappings(){
-        $builder = DB_SQL::select('default')->from(self::table());
+    public static function getAllMappings($offset=0, $limit=0){
+        $builder = DB_SQL::select('default')->from(self::table())->offset($offset);
+        if($limit>0) $builder->limit($limit);
         $result = $builder->query();
 
         if ($result->is_loaded()) {
