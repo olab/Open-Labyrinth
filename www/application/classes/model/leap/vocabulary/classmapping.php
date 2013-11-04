@@ -50,9 +50,10 @@ class Model_Leap_Vocabulary_ClassMapping extends DB_ORM_Model
         return array('id');
     }
 
-    public static function getAllClassMappings($offset=0, $limit=0){
-        $builder = DB_SQL::select('default')->from(self::table())->offset($offset);
-        if($limit>0) $builder->limit($limit);
+    public static function getAllClassMappings(){
+
+        $builder = DB_SQL::select('default')->from(self::table());
+
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -85,12 +86,13 @@ class Model_Leap_Vocabulary_ClassMapping extends DB_ORM_Model
         return array();
     }
 
-    public function getTriples(){
+    public function getTriples($offset, $limit){
         $tableName = DB_ORM::model($this->class)->table();
         $primary = DB_ORM::model($this->class)->primary_key();
         $builder = DB_SQL::select('default')
-            ->from($tableName);
-
+            ->from($tableName)
+            ->offset($offset);
+        if($limit>0) $builder->limit($limit);
         $result = $builder->query();
         $triples = array();
         foreach ($result as $record) {

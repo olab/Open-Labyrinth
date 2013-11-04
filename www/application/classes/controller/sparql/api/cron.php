@@ -98,10 +98,10 @@ class Controller_Sparql_API_cron extends RESTful_Controller
     {
         $store = Helper_RDF_Store::getStore();
         $graph_uri = Model_Leap_Vocabulary::getGraphUri();
-        $propertyMappings = Model_Leap_Vocabulary_LegacyPropertyMapping::getAllMappings($offset, $limit);
+        $propertyMappings = Model_Leap_Vocabulary_LegacyPropertyMapping::getAllMappings();
         $total = count($propertyMappings);
         if ($classOffset >= $total) return array("status" => "finished","total"=>$total);
-        $property_triples = $propertyMappings[$classOffset]->getTriples();
+        $property_triples = $propertyMappings[$classOffset]->getTriples($offset, $limit);
         $extra_triples = array();
         $arc_triples = array();
         foreach ($property_triples as $triple) {
@@ -238,7 +238,11 @@ class Controller_Sparql_API_cron extends RESTful_Controller
 
             $vocabs = $this->request->query("vocabs");
 
-            $types = array("classes", "properties", "metadata");
+            $types = array(
+                "classes",
+                "properties",
+                "metadata"
+            );
 
             if ($vocabs=="true")
                 $types[] = "vocabs";
