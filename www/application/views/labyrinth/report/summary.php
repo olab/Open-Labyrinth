@@ -174,7 +174,7 @@ function getRandomColor() {
 											<s v='<?php echo $templateData['startValueCounters'][$counter->id]; ?>' />
 											<?php } ?>
 											<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0)  { ?>
-												<?php if(array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
+												<?php if(isset($templateData['counters'][$counter->name]) and array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
 												<?php for($i = 1; $i < count($templateData['counters'][$counter->name][1]); $i++) { ?>
 												<s v='<?php echo $templateData['counters'][$counter->name][1][$i]; ?>' />
 												<?php } ?>
