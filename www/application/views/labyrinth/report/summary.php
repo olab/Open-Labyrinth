@@ -150,7 +150,7 @@ function getRandomColor() {
 											<s v='<?php echo $templateData['startValueCounters'][$counter->id]; ?>' />
 											<?php } ?>
 											<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0)  { ?>
-												<?php if(array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
+												<?php if(isset($templateData['counters'][$counter->name]) and array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
 												<?php for($i = 1; $i < count($templateData['counters'][$counter->name][1]); $i++) { ?>
 												<s v='<?php echo $templateData['counters'][$counter->name][1][$i]; ?>' />
 												<?php } ?>
@@ -174,7 +174,7 @@ function getRandomColor() {
 											<s v='<?php echo $templateData['startValueCounters'][$counter->id]; ?>' />
 											<?php } ?>
 											<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0)  { ?>
-												<?php if(array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
+												<?php if(isset($templateData['counters'][$counter->name]) and array_key_exists(1, $templateData['counters'][$counter->name]) and count($templateData['counters'][$counter->name][1]) > 0) { ?>
 												<?php for($i = 1; $i < count($templateData['counters'][$counter->name][1]); $i++) { ?>
 												<s v='<?php echo $templateData['counters'][$counter->name][1][$i]; ?>' />
 												<?php } ?>
@@ -202,8 +202,8 @@ function getRandomColor() {
                                 <tr>
                                     <td><?php echo $session->id; ?></td>
                                     <td><?php echo count($session->traces); ?></td>
-                                    <td><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
-                                    <td><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
+                                    <td><?php if(isset($session->traces[count($session->traces) - 1])) echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
+                                    <td><?php if(isset($session->traces[count($session->traces) - 1])) echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
                                 </tr>
                                 <?php } ?>
                                 <?php } ?>

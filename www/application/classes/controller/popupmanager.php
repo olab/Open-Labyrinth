@@ -29,129 +29,119 @@ class Controller_PopupManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function after() {
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
 
-        $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['messages'] = DB_ORM::model('map_popup')->getAllMessageByMap($mapId);
+        parent::after();
+    }
+
+    public function action_index() {
+        $mapId = $this->request->param('id', null);
+
+        if($mapId != null) {
+            $this->templateData['map']    = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['popups'] = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
 
-            $popupView = View::factory('labyrinth/popup/all');
-            $popupView->set('templateData', $this->templateData);
+            $popupListView = View::factory('labyrinth/popup/list');
+            $popupListView->set('templateData', $this->templateData);
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
 
-            $this->templateData['center'] = $popupView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
+            $this->templateData['center'] = $popupListView;
+            $this->templateData['left']   = $leftView;
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_addMessage(){
-        $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['positions'] = DB_ORM::model('map_popup_position')->getAllPositions();
-            $this->templateData['styles'] = DB_ORM::model('map_popup_style')->getAllStyles();
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNode($mapId);
+    public function action_newPopup() {
+        $mapId = $this->request->param('id', null);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
+        if($mapId != null) {
+            $this->preparePopupData($mapId);
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Message'))->set_url(URL::base() . 'popupManager/addMessage/' . $mapId));
 
-            $view = View::factory('labyrinth/popup/addEditMessage');
-            $view->set('templateData', $this->templateData);
+            $popupListView = View::factory('labyrinth/popup/popup');
+            $popupListView->set('templateData', $this->templateData);
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
 
-            $this->templateData['center'] = $view;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
+            $this->templateData['center'] = $popupListView;
+            $this->templateData['left']   = $leftView;
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_createMessage(){
-        $mapId = $this->request->param('id', NULL);
-        if ($_POST & $mapId != NULL) {
+    public function action_editPopup() {
+        $popupId = $this->request->param('id', null);
 
-            if ($_POST['enabled'] == 0) {
-                $_POST['time_before'] = 0;
-                $_POST['time_length'] = 0;
-            }
+        if($popupId != null) {
+            $this->templateData['popup'] = DB_ORM::model('map_popup', array((int)$popupId));
+            $this->preparePopupData($this->templateData['popup']->map_id);
 
-            DB_ORM::model('map_popup')->addMessage($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'popupManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Message'))->set_url(URL::base() . 'popupManager/editPopup/' . $this->templateData['popup']->map_id));
 
-    public function action_deleteMessage(){
-        $mapId = $this->request->param('id', NULL);
-        $messageId = $this->request->param('id2', NULL);
-        if ($mapId != NULL & $messageId != NULL) {
-            DB_ORM::model('map_popup', array((int) $messageId))->delete();
-            Request::initial()->redirect(URL::base() . 'popupManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_editMessage(){
-        $mapId = $this->request->param('id', NULL);
-        $messageId = $this->request->param('id2', NULL);
-        if ($mapId != NULL & $messageId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['message'] = DB_ORM::model('map_popup', array((int) $messageId));
-            $this->templateData['positions'] = DB_ORM::model('map_popup_position')->getAllPositions();
-            $this->templateData['styles'] = DB_ORM::model('map_popup_style')->getAllStyles();
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNode($mapId);
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Message'))->set_url(URL::base() . 'popupManager/editMessage/' . $mapId));
-
-            $view = View::factory('labyrinth/popup/addEditMessage');
-            $view->set('templateData', $this->templateData);
+            $popupListView = View::factory('labyrinth/popup/popup');
+            $popupListView->set('templateData', $this->templateData);
 
             $leftView = View::factory('labyrinth/labyrinthEditorMenu');
             $leftView->set('templateData', $this->templateData);
 
-            $this->templateData['center'] = $view;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
+            $this->templateData['center'] = $popupListView;
+            $this->templateData['left']   = $leftView;
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_updateMessage(){
-        $mapId = $this->request->param('id', NULL);
-        $messageId = $this->request->param('id2', NULL);
-        if ($_POST & $mapId != NULL & $messageId != NULL) {
+    public function action_savePopup() {
+        $mapId    = $this->request->param('id', null);
+        $redirect = URL::base() . 'popupManager/index/' . $mapId;
 
-            if ($_POST['enabled'] == 0) {
-                $_POST['time_before'] = 0;
-                $_POST['time_length'] = 0;
+        if($mapId != null) {
+            $popupId = DB_ORM::model('map_popup')->savePopup($mapId, $_POST);
+
+            if($popupId != null) {
+                $redirect = URL::base() . 'popupManager/editPopup/' . $popupId;
             }
-
-            DB_ORM::model('map_popup')->editMessage($messageId, $_POST);
-            Request::initial()->redirect(URL::base() . 'popupManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+
+        Request::initial()->redirect($redirect);
     }
 
+    public function action_deletePopup(){
+        $mapId       = $this->request->param('id', null);
+        $popupId     = $this->request->param('id2', null);
+        $redirectURL = URL::base();
+
+        if ($mapId != NULL & $popupId != NULL) {
+            DB_ORM::model('map_popup_assign', array((int) $popupId))->delete();
+            DB_ORM::model('map_popup_style', array((int) $popupId))->delete();
+            DB_ORM::model('map_popup', array((int) $popupId))->delete();
+
+            $redirectURL .= 'popupManager/index/' . $mapId;
+        }
+
+        Request::initial()->redirect($redirectURL);
+    }
+
+    private function preparePopupData($mapId) {
+        $this->templateData['map']                = DB_ORM::model('map', array($mapId));
+        $this->templateData['popupPositionTypes'] = DB_ORM::model('map_popup_position_type')->getAll();
+        $this->templateData['popupPositions']     = DB_ORM::model('map_popup_position')->getAll();
+        $this->templateData['popupAssignTypes']   = DB_ORM::model('map_popup_assign_type')->getAll();
+        $this->templateData['nodes']              = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $this->templateData['sections']           = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
+    }
 }

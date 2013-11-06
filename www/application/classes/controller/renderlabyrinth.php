@@ -50,6 +50,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Session::instance()->delete('dragQuestionResponses');
                 Session::instance()->delete('counterFunc');
                 Session::instance()->delete('stopCommonRules');
+                Session::instance()->delete('shownMapPopups');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -99,7 +100,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $data['skin_path'] = NULL;
                         }
                         $data['session'] = (int)$data['traces'][0]->session_id;
-                        $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
+                        $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
 
                         $this->template = View::factory('labyrinth/skin/basic/basic');
                         $this->template->set('templateData', $data);
@@ -230,7 +231,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $data['timer_start'] = 1;
 
                     $data['popup_start'] = 1;
-                    $data['messages_labyrinth'] = DB_ORM::model('map_popup')->getEnabledLabyrinthMessageByMap($mapId);
+                    $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
 
                     $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);
@@ -551,6 +552,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             exit;
         }
+    }
+
+    public function action_shownPopup() {
+        $this->auto_render = false;
+        $popupId = Arr::get($_POST, 'popupId', null);
+        $shownPopups = Session::instance()->get('shownMapPopups', array());
+
+        if($popupId != null && !in_array($popupId, $shownPopups)) {
+            $shownPopups[] = $popupId;
+        }
+
+        Session::instance()->set('shownMapPopups', $shownPopups);
     }
 
     private function checkRemoteUser($username, $password) {

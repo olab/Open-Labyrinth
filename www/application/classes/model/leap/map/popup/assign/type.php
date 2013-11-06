@@ -21,9 +21,9 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_types table in database 
+ * Model for map_counters table in database
  */
-class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
+class Model_Leap_Map_Popup_Assign_Type extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -31,23 +31,24 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE
-            )),
-            
-            'title' => new DB_ORM_Field_String($this, array(
-                'max_length' => 200,
                 'nullable' => FALSE,
-                'savable' => FALSE,
+                'savable' => FALSE
+            )),
+
+            'title' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => FALSE,
+                'savable' => FALSE
             ))
         );
     }
-    
+
     public static function data_source() {
         return 'default';
     }
 
     public static function table() {
-        return 'map_popup_positions';
+        return 'map_popup_assign_types';
     }
 
     public static function primary_key() {
@@ -55,21 +56,20 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
     }
 
     /**
-     * Get all popup positions
+     * Get all popups assign styles
      *
-     * @return array - array of all positions
+     * @return array - array of all popups assign styles
      */
     public function getAll() {
-        $records = DB_SQL::select('default')->from($this->table())->column('id')->query();
+        $records = DB_SQL::select('default')->column('id')->from($this->table())->query();
         $result  = array();
 
         if($records->is_loaded()) {
             foreach($records as $record) {
-                $result[] = DB_ORM::model('map_popup_position', array((int)$record['id']));
+                $result[] = DB_ORM::model('map_popup_assign_type', array((int)$record['id']));
             }
         }
 
         return $result;
     }
 }
-
