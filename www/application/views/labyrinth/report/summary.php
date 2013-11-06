@@ -202,8 +202,8 @@ function getRandomColor() {
                                 <tr>
                                     <td><?php echo $session->id; ?></td>
                                     <td><?php echo count($session->traces); ?></td>
-                                    <td><?php echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
-                                    <td><?php echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
+                                    <td><?php if(isset($session->traces[count($session->traces) - 1])) echo $session->traces[count($session->traces) - 1]->date_stamp - $session->start_time; ?></td>
+                                    <td><?php if(isset($session->traces[count($session->traces) - 1])) echo $session->traces[count($session->traces) - 1]->node_id; ?></td>
                                 </tr>
                                 <?php } ?>
                                 <?php } ?>
