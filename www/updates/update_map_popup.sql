@@ -1,4 +1,4 @@
-DROP TABLE `map_popup`, `map_popup_position`, `map_popup_style`;
+DROP TABLE IF EXISTS `map_popup`, `map_popup_position`, `map_popup_style`;
 
 CREATE TABLE IF NOT EXISTS `map_popups` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `map_popups_styles` (
   `background_color` varchar(10) DEFAULT NULL,
   `font_color` varchar(10) DEFAULT NULL,
   `border_color` varchar(10) DEFAULT NULL,
-  `is_border_transparent` TINYINT NOT NULL DEFAULT '0'
+  `is_border_transparent` TINYINT NOT NULL DEFAULT '0',
   PRIMARY KEY (`map_popup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `map_popups_assign` (
   `assign_type_id` int(11) NOT NULL,
   `assign_to_id` int(11) NOT NULL,
   `redirect_to_id` int(11) NULL,
-  `redirect_type_id` int(11) NOT NULL DEFAULT '1'
+  `redirect_type_id` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`map_popup_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
