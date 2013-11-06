@@ -34,77 +34,65 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
                 'nullable' => FALSE,
             )),
 
-            'title' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
-                'nullable' => FALSE,
+            'map_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE
             )),
-            
+
+            'title' => new DB_ORM_Field_String($this, array(
+                'max_length' => 300,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            )),
+
             'text' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
-            )),
-            
-            'height' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
-            
-            'width' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
+                'savable' => TRUE
             )),
 
             'position_type' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 1,
-                'nullable' => FALSE,
+                'max_length' => 11,
+                'nullable' => FALSE
             )),
 
-            'position' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 1,
-                'nullable' => FALSE,
+            'position_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE
             )),
 
             'time_before' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
+                'savable' => TRUE,
+                'default' => 0
             )),
 
             'time_length' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
+                'savable' => TRUE,
+                'default' => 0
             )),
 
-            'color' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'is_enabled' => new DB_ORM_Field_Boolean($this, array(
                 'nullable' => FALSE,
-            )),
-
-            'color_custom' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
-                'nullable' => FALSE,
-            )),
-            
-            'map_id' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
-            
-            'assign_to_node' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 1,
-                'default' => 0,
-                'nullable' => FALSE,
-            )),
-
-            'node_id' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'default' => NULL,
-            )),
-
-            'enabled' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 1,
-                'default' => NULL,
-            )),
+                'default' => TRUE
+            ))
         );
 
+        $this->relations = array(
+            'assign' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('map_popup_id'),
+                'child_model' => 'map_popup_assign',
+                'parent_key' => array('id')
+            )),
+
+            'style' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('map_popup_id'),
+                'child_model' => 'map_popup_style',
+                'parent_key' => array('id')
+            ))
+        );
     }
 
     public static function data_source() {
@@ -112,94 +100,118 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'map_popup';
+        return 'map_popups';
     }
 
     public static function primary_key() {
         return array('id');
     }
 
-    public function addMessage($mapId, $arrayPost) {
-        $this->map_id = $mapId;
-        $this->title = $arrayPost['title'];
-        $this->text = $arrayPost['text'];
-        $this->position = $arrayPost['position'];
-        $this->time_before = $arrayPost['time_before'];
-        $this->time_length = $arrayPost['time_length'];
-        $this->position_type = $arrayPost['position_type'];
-        $this->color = $arrayPost['color'];
-        if ($arrayPost['color_default'] == 1) {
-            $this->color_custom = '';
-        } else {
-            $this->color_custom = $arrayPost['color_code'];
-        }
-        $this->assign_to_node = $arrayPost['assign_to_node'];
-        $this->node_id = $arrayPost['node_id'];
-        $this->enabled = $arrayPost['enabled'];
+    /**
+     * Get all map popups
+     *
+     * @param {integer} $mapId - map ID
+     * @return array - array of map popups
+     */
+    public function getAllMapPopups($mapId) {
+        $records = DB_SQL::select('default')
+                           ->column('id')
+                           ->from($this->table())
+                           ->where('map_id', '=', $mapId)
+                           ->query();
+        $result = array();
 
-        $this->save();
-    }
-
-    public function editMessage($messageId, $arrayPost) {
-        $this->id = $messageId;
-        $this->load();
-        if ($this->is_loaded()){
-                $this->title = $arrayPost['title'];
-                $this->text = $arrayPost['text'];
-                $this->position = $arrayPost['position'];
-                $this->time_before = $arrayPost['time_before'];
-                $this->time_length = $arrayPost['time_length'];
-                $this->position_type = $arrayPost['position_type'];
-                $this->color = $arrayPost['color'];
-                if ($arrayPost['color_default'] == 1) {
-                    $this->color_custom = '';
-                } else {
-                    $this->color_custom = $arrayPost['color_code'];
-                }
-                $this->assign_to_node = $arrayPost['assign_to_node'];
-                $this->node_id = $arrayPost['node_id'];
-                $this->enabled = $arrayPost['enabled'];
-
-                $this->save();
-            return true;
-        }
-        return false;
-    }
-
-    public function getAllMessageByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())
-            ->where('map_id', '=', $mapId);
-
-        $result = $builder->query();
-        if($result->is_loaded()) {
-            $messages = array();
-            foreach($result as $record) {
-                $messages[] = DB_ORM::model($this->table(), array((int)$record['id']));
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[] = DB_ORM::model('map_popup', array((int)$record['id']));
             }
-            return $messages;
         }
 
-        return NULL;
+        return $result;
     }
 
-    public function getEnabledLabyrinthMessageByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())
-            ->where('map_id', '=', $mapId)
-            ->where('enabled','=',1);
+    /**
+     * Save popup
+     *
+     * @param {integer} $mapId - map ID
+     * @param {array} $values - popup values
+     * @return null|{integer} - null or popup ID
+     */
+    public function savePopup($mapId, $values) {
+        if($mapId == null || $values == null || count($values) <= 0) return null;
+        $popupId = Arr::get($values, 'popupId', null);
 
-        $result = $builder->query();
-        if($result->is_loaded()) {
-            $messages = array();
-            foreach($result as $record) {
-                $messages[] = DB_ORM::model($this->table(), array((int)$record['id']));
+        return ($popupId != null && $popupId > 0) ? $this->updatePopup($popupId, $mapId, $values)
+                                                  : $this->createNewPopup($mapId, $values);
+    }
+
+    /**
+     * Get all enabled map popups
+     *
+     * @param {integer} $mapId - map ID
+     * @return array - array of enabled map popups
+     */
+    public function getEnabledMapPopups($mapId) {
+        $records = DB_SQL::select('default')
+                           ->column('id')
+                           ->from($this->table())
+                           ->where('map_id', '=', $mapId, 'AND')
+                           ->where('is_enabled', '=', 1)
+                           ->query();
+        $result  = array();
+
+        if($records->is_loaded()) {
+            foreach($records as $record) {
+                $result[] = DB_ORM::model('map_popup', array((int) $record['id']));
             }
-            return $messages;
         }
 
-        return NULL;
+        return $result;
     }
-    
 
+    private function createNewPopup($mapId, $values) {
+        $newPopupId = DB_ORM::insert('map_popup')
+                              ->column('map_id',        $mapId)
+                              ->column('title',         Arr::get($values, 'title',        ''))
+                              ->column('text',          Arr::get($values, 'text',         ''))
+                              ->column('position_type', Arr::get($values, 'positionType', Popup_Position_Types::OUTSIDE_NODE))
+                              ->column('position_id',   Arr::get($values, 'position',     Popup_Positions::TOP_LEFT))
+                              ->column('time_before',   Arr::get($values, 'timeBefore',   0))
+                              ->column('time_length',   Arr::get($values, 'timeLength',   0))
+                              ->column('is_enabled',    Arr::get($values, 'enabled',      false))
+                              ->execute();
+
+        if($newPopupId != null && $newPopupId > 0) {
+            DB_ORM::model('map_popup_assign')->assignPopup($newPopupId, $mapId, $values);
+            DB_ORM::model('map_popup_style')->saveStyle($newPopupId, $values);
+        }
+
+        return $newPopupId;
+    }
+
+    private function updatePopup($popupId, $mapId, $values) {
+        if($popupId == null || $mapId == null || $values == null || count($values) <= 0) return $popupId;
+
+        $popup = DB_SQL::select('default')->from($this->table())->where('id', '=', $popupId)->limit(1)->query();
+        if($popup->is_loaded()) {
+            DB_SQL::update('default')
+                    ->table($this->table())
+                    ->set('title',         Arr::get($values, 'title',        ''))
+                    ->set('text',          Arr::get($values, 'text',         ''))
+                    ->set('position_type', Arr::get($values, 'positionType', Popup_Position_Types::OUTSIDE_NODE))
+                    ->set('position_id',   Arr::get($values, 'position',     Popup_Positions::TOP_LEFT))
+                    ->set('time_before',   Arr::get($values, 'timeBefore',   0))
+                    ->set('time_length',   Arr::get($values, 'timeLength',   0))
+                    ->set('is_enabled',    Arr::get($values, 'enabled',      false))
+                    ->where('id', '=', $popupId)
+                    ->execute();
+
+            DB_ORM::model('map_popup_assign')->assignPopup($popupId, $mapId, $values);
+            DB_ORM::model('map_popup_style')->saveStyle($popupId, $values);
+        }
+
+        return $popupId;
+    }
 }
 
 ?>
