@@ -55,8 +55,8 @@
                             (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['step'] == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
                                 : $templateData['webinarStepMap'][$stepKey]->name
                                 : '-') .
-                                                                ($isShowReport ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '/' .  $templateData['dateId'].'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
-                                                                                   <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '/' . $templateData['dateId'] .  '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
+                                                                ($isShowReport ? ' <a title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '/' .  $templateData['dateId'].'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+                                                                                   <a title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '/' . $templateData['dateId'] .  '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                                                                : '') .
                                                            '</td>';
                     }
@@ -92,7 +92,7 @@
                 <td style="text-align: center; font-weight: bold;">
                     <?php echo $v['map']->name; ?>
                     <?php if($v['showReport']) { ?>
-                        <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $v['map']->id; ?>/<?php echo $templateData['dateId']; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
+                        <a title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $v['map']->id; ?>/<?php echo $templateData['dateId']; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
                     <?php } ?>
                 </td>
             <?php }} ?>

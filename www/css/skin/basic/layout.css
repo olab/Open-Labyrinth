@@ -467,3 +467,35 @@ a.file-link,
 a.file-link:visited {
     color: #0088cc;
 }
+.popup-inside-container {
+    position: relative;
+}
+.popup-outside-container {
+    position: relative;
+}
+.popup {
+    z-index: 1800;
+    max-width: 350px;
+    text-align: justify;
+    padding: 5px 10px;
+    position: absolute;
+}
+.popup.top {
+    top: 0;
+}
+.popup.left {
+    left: 0;
+}
+.popup.right {
+    right: 0;
+}
+.popup.bottom {
+    bottom: 0;
+}
+.popup.hide {
+    display: none;
+}
+.popup .header {
+    text-align: center;
+    font-size: 18px;
+}

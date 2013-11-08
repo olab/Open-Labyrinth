@@ -64,6 +64,7 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
 
     public static function getAllMappings(){
         $builder = DB_SQL::select('default')->from(self::table());
+
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -106,12 +107,12 @@ class Model_Leap_Vocabulary_LegacyPropertyMapping extends DB_ORM_Model
 
 
 
-    public function getTriples(){
+    public function getTriples($offset=0, $limit=0){
         $tableName = DB_ORM::model($this->class)->table();
         $primary = DB_ORM::model($this->class)->primary_key();
         $builder = DB_SQL::select('default')
-            ->from($tableName);
-
+            ->from($tableName)->offset($offset);
+        if($limit>0) $builder->limit($limit);
         $result = $builder->query();
 
 

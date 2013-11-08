@@ -16,6 +16,7 @@ class Helper_RDF_Store {
     public static  function initialize(){
 
         $db_config = Kohana::$config->load('database')->get('default');
+        $sparql_config = Kohana::$config->load('sparql');
 
         $config = array(
             /* db */
@@ -33,9 +34,10 @@ class Helper_RDF_Store {
                 'load',
                 'dump' /* dump is a special command for streaming SPOG export */
             ),
-            'endpoint_timeout' => 60, /* not implemented in ARC2 preview */
+            'endpoint_timeout' => ini_get('max_execution_time'), /* not implemented in ARC2 preview */
+            'time_limit'=>ini_get('max_execution_time') ,
             'endpoint_read_key' => '', /* optional */
-            'endpoint_max_limit' => 2500, /* optional */
+            'endpoint_max_limit' => $sparql_config["endpoint_max_limit"], /* optional */
         );
 
         /* instantiation */

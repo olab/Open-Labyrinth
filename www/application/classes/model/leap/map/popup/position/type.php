@@ -21,9 +21,9 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_types table in database 
+ * Model for user_types table in database
  */
-class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
+class Model_Leap_Map_Popup_Position_Type extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -33,7 +33,7 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE
             )),
-            
+
             'title' => new DB_ORM_Field_String($this, array(
                 'max_length' => 200,
                 'nullable' => FALSE,
@@ -41,13 +41,13 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
             ))
         );
     }
-    
+
     public static function data_source() {
         return 'default';
     }
 
     public static function table() {
-        return 'map_popup_positions';
+        return 'map_popup_position_types';
     }
 
     public static function primary_key() {
@@ -55,7 +55,7 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
     }
 
     /**
-     * Get all popup positions
+     * Get all popup position types
      *
      * @return array - array of all positions
      */
@@ -65,7 +65,7 @@ class Model_Leap_Map_Popup_Position extends DB_ORM_Model {
 
         if($records->is_loaded()) {
             foreach($records as $record) {
-                $result[] = DB_ORM::model('map_popup_position', array((int)$record['id']));
+                $result[] = DB_ORM::model('map_popup_position_type', array((int)$record['id']));
             }
         }
 

@@ -1,79 +1,91 @@
 $(function() {
-var
-    $redirectContainer = $('.submitSettingsContainer');
-var
-    $colorDefault = $('.submitSettingsContainerColorDefault');
-var
-    $colorCustom = $('.submitSettingsContainerColorCustom');
+    var $fontColorContainer             = $('.fontColorContainer'),
+        $borderColorContainer           = $('.borderColorContainer'),
+        $customBackgroundColorContainer = $('.customBackgroundColorContainer'),
+        $defaultBackgroundColors        = $('.defaultBackgroundColors'),
+        $customBackgroundColors         = $('.customBackgroundColors'),
+        $nodeAssignContainer            = $('.popup-assign-' + nodeAssignTypeId + '-container'),
+        $sectionAssignContainer         = $('.popup-assign-' + sectionAssignTypeId + '-container'),
+        $redirectNodesContainer         = $('.redirect-nodes-container');
 
-$('#node').click(function() {
-    if($redirectContainer != null)
-        $redirectContainer.removeClass('hide');
-});
+    $('#fontColor').click(function() {
+        $fontColorContainer.show();
+        $fontColorContainer.farbtastic('#fontColor');
+    }).blur(function() {
+        $fontColorContainer.hide();
+    });
 
-$('#labyrinth').click(function() {
-    if($redirectContainer != null)
-        $redirectContainer.addClass('hide');
-});
+    $('#borderColor').click(function() {
+        $borderColorContainer.show();
+        $borderColorContainer.farbtastic('#borderColor');
+    }).blur(function() {
+        $borderColorContainer.hide();
+    });
 
-$('#color_code').click(function() {
-    $('#font_color_cntr').show();
-    $('#font_color_cntr').farbtastic('#color_code');
-});
+    $('#customBackgroundColor').click(function() {
+        $customBackgroundColorContainer.show();
+        $customBackgroundColorContainer.farbtastic('#customBackgroundColor');
+    }).blur(function() {
+        $customBackgroundColorContainer.hide();
+    });
 
-$('#color_code').blur(function() {
-    $('#font_color_cntr').hide();
-});
+    $('#backgroundColorDefault').click(function() {
+        if($(this).is(':checked')) {
+            $defaultBackgroundColors.show();
+            $customBackgroundColors.hide();
+        }
+    });
 
-$('#color_default').click(function() {
-    if($colorDefault != null) {
-        $colorDefault.removeClass('hide');
-        $colorCustom.addClass('hide');
+    $('#backgroundColorCustom').click(function() {
+        if($(this).is(':checked')) {
+            $customBackgroundColors.show();
+            $defaultBackgroundColors.hide();
+        }
+    });
+
+    $('input:radio#timing-on').change(function(){
+        $('#timeBefore').prop('disabled', false);
+        $('#timeLength').prop('disabled', false);
+        $('#redirectNodeId').prop('disabled', false);
+        $('.redirect-options-container label').removeClass('disabled');
+    });
+
+    $('input:radio#timing-off').change(function(){
+        $('#timeBefore').prop('disabled', true);
+        $('#timeLength').prop('disabled', true);
+        $('#redirectNodeId').prop('disabled', true);
+        $('.redirect-options-container label').addClass('disabled');
+    });
+
+    $('#timeBefore').click(function() {return false;});
+    $('#timeLength').click(function() {return false;});
+
+    $('#assignType_' + labyrinthAssignTypeId).click(function() {
+        hideAllAssignContainers();
+    });
+
+    $('#assignType_' + nodeAssignTypeId).click(function() {
+        hideAllAssignContainers();
+        $nodeAssignContainer.removeClass('hide');
+    });
+
+    $('#assignType_' + sectionAssignTypeId).click(function() {
+        hideAllAssignContainers();
+        $sectionAssignContainer.removeClass('hide');
+    });
+
+    $('.redirect-options-container label').click(function() {
+        if($(this).attr('show-nodes')) {
+            $redirectNodesContainer.removeClass('hide');
+        } else {
+            $redirectNodesContainer.addClass('hide');
+        }
+    });
+
+    $('#redirectNodeId').click(function() {return false;});
+
+    function hideAllAssignContainers() {
+        $nodeAssignContainer.addClass('hide');
+        $sectionAssignContainer.addClass('hide');
     }
 });
-
-$('#color_custom').click(function() {
-    if($colorCustom != null) {
-        $colorCustom.removeClass('hide');
-        $colorDefault.addClass('hide');
-    }
- });
-
-$('input:radio#timing-on').change(function(){
-    $('#time_before').prop('disabled', false);
-    $('#time_length').prop('disabled', false);
-});
-
-$('input:radio#timing-off').change(function(){
-    $('#time_before').prop('disabled', true);
-    $('#time_length').prop('disabled', true);
-});
-
-});
-
-function CheckForm() {
-    if(document.getElementById('title').value == '') {
-        alert('Please enter you message title');
-        return false;
-    }
-
-    if(tinyMCE.get("text").getContent() =='') {
-        alert('Please enter you message text');
-        return false;
-    }
-
-    if( (document.getElementById('time_before').value == '' || document.getElementById('time_before').value == 0)
-        && document.getElementById('timing-on').checked ) {
-        alert('Please enter you Time before appearance interval!');
-        return false;
-    }
-
-    if(( document.getElementById('time_length').value == '' || document.getElementById('time_length').value == 0)
-        && document.getElementById('timing-on').checked ) {
-        alert('Please enter you Time length appearance interval!');
-        return false;
-    }
-
-}
-
-
