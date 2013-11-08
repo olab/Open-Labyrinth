@@ -228,9 +228,6 @@ jQuery(document).ready(function(){
         $(this).select();
     });
 
-    $('[data-toggle=tooltip]').tooltip({placement:"top"});
-
-
     jQuery('#nodeCountContainer button').click(function() {
         if($(this).attr('id') != 'applyCount')
             $('#nodeCount').attr('disabled', 'disabled');
