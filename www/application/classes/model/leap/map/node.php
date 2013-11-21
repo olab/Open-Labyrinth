@@ -398,6 +398,30 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
 
+    public function updateNodeStyle($nodeId, $values) {
+        $this->id = $nodeId;
+        $this->load();
+
+        if($this->is_loaded()) {
+            $this->x   = Arr::get($values, 'x', 0);
+            $this->y   = Arr::get($values, 'y', 0);
+            $this->rgb = Arr::get($values, 'rgb', '#FFFFFF');
+
+            $this->save();
+        }
+    }
+
+    public function updateNodeText($nodeId, $text) {
+        $this->id = $nodeId;
+        $this->load();
+
+        if($this->is_loaded()) {
+            $this->text = $text;
+
+            $this->save();
+        }
+    }
+
     public function getLastAddedNode($mapId){
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
         $result = $builder->query();

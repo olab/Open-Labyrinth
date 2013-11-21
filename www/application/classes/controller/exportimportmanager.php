@@ -481,6 +481,13 @@ class Controller_ExportImportManager extends Controller_Base {
             return true;
         }
 
+        if(isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim') {
+            ImportExport_Manager::getFormatSystem('MVPvpSim')->import(array('tmpFolder'        => $tmpFolder,
+                                                                            'filesFolder'      => DOCROOT . 'files',
+                                                                            'filesShortFolder' => 'files'));
+            return true;
+        }
+
         if(isset($xml->general->version))
             $version = (string)$xml->general->version;
 
