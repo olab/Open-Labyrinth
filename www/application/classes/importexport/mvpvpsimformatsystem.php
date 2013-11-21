@@ -410,7 +410,7 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
                         if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($branchChoice['@attributes']['questionID'], $map, 4); }
 
                         DB_ORM::model('map_question_response')->addFullResponses($questionDatabaseId, array('response' => $branchChoice['choiceText'],
-                                                                                                            'feedback' => $branchChoice['patientResponse'][0]));
+                                                                                                            'feedback' => isset($branchChoice['patientResponse'][0]) ? $branchChoice['patientResponse'][0] : ''));
 
                         $parentNodeId = $branchChoice['parentNodeID'];
                         $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($parentNodeId);
@@ -443,7 +443,7 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
                         if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($q['@attributes']['questionID'], $map, 3); }
 
                         DB_ORM::model('map_question_response')->addFullResponses($questionDatabaseId, array('response' => $q['choiceText'],
-                                                                                                            'feedback' => $q['patientResponse'][0]));
+                                                                                                            'feedback' => isset($q['patientResponse'][0]) ? $q['patientResponse'][0] : ''));
 
                         $parentNodeId = $q['@attributes']['NodeId'];
                         $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($parentNodeId);
