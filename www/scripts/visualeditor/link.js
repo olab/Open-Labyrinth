@@ -296,14 +296,16 @@ var Link = function() {
         var trs = GetNodesTransformations(viewport);
         var trA = trs[0];
         var trB = trs[1];
-        
+
+        var s = viewport.GetScale();
+
         context.save();
             context.beginPath();
-            context.setTransform(trA.matrix[0], trA.matrix[1], trA.matrix[2], trA.matrix[3], trA.matrix[4], trA.matrix[5]);
-            context.moveTo(0, 0);
-            context.setTransform(trB.matrix[0], trB.matrix[1], trB.matrix[2], trB.matrix[3], trB.matrix[4], trB.matrix[5]);
-            context.lineTo(0, 0);
-            context.lineWidth = stateParams.lineWidth;
+            //context.setTransform(trA.matrix[0], trA.matrix[1], trA.matrix[2], trA.matrix[3], trA.matrix[4], trA.matrix[5]);
+            context.moveTo(trA.matrix[4], trA.matrix[5]);
+            //context.setTransform(trB.matrix[0], trB.matrix[1], trB.matrix[2], trB.matrix[3], trB.matrix[4], trB.matrix[5]);
+            context.lineTo(trB.matrix[4], trB.matrix[5]);
+            context.lineWidth = stateParams.lineWidth * (s[0] + s[1]) * 0.5;
             context.strokeStyle = stateParams.lineColor;
             context.stroke();
         context.restore();
