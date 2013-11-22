@@ -149,6 +149,11 @@ class Model_Leap_Map extends DB_ORM_Model
             'verification' => new DB_ORM_Field_Text($this, array(
                 'savable' => TRUE,
             )),
+            'assign_forum_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+                'savable' => TRUE
+            ))
         );
 
         $this->relations = array(
@@ -462,6 +467,12 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->section_id = Arr::get($values, 'section', 1);
         $this->language_id = Arr::get($values, 'language_id', 1);
 
+        $forum = DB_ORM::model('dforum')->createForum(Arr::get($values, 'title', 'empty_title'), 1, 1);
+        $messageID = DB_ORM::model('dforum_messages')->createMessage($forum, '');
+        DB_ORM::model('dforum_users')->updateUsers($forum, array($this->author_id), 1);
+
+        $this->assign_forum_id = $forum;
+
         $this->save();
 
         $map = $this->getMapByName($this->name);
@@ -470,6 +481,14 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         return $map;
+    }
+
+    public function updateMapForumAssign($mapId, $newForumId) {
+        DB_SQL::update('default')
+                ->table($this->table())
+                ->set('assign_forum_id', $newForumId)
+                ->where('id', '=', $mapId)
+                ->execute();
     }
 
     public function createVUEMap($title, $authorId)

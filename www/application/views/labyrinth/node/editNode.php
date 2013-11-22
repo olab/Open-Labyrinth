@@ -64,15 +64,25 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         });
     </script>
 
-<div class="page-header">
-    <div class="pull-right">
-        <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
-            <i class="icon-sitemap"></i>
-            <?php echo __('Set as Root'); ?></a>
-    </div>
+    <div class="page-header">
+        <div class="pull-right">
+            <a class="btn btn-primary" href="<?php echo URL::base() . 'nodeManager/setRootNode/' . $templateData['map']->id . '/' . $templateData['node']->id; ?>">
+                <i class="icon-sitemap"></i>
+                <?php echo __('Set as Root'); ?></a>
+        </div>
 
-    <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-</div>
+        <h1><?php echo __('Edit "') . $templateData['node']->title . __('" in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+
+        <?php if($templateData['map']->assign_forum_id != null) { ?>
+            <div class="pull-right" style="margin-top: 20px;">
+                <?php if($templateData['node']->notes != null && count($templateData['node']->notes) == 1) { ?>
+                    <a class="btn" target="_blank" href="<?php echo URL::base(); ?>dtopicManager/viewTopic/<?php echo $templateData['node']->notes[0]->id; ?>"><?php echo __('Edit note'); ?></a>
+                <?php } else { ?>
+                    <a class="btn" target="_blank" href="<?php echo URL::base(); ?>nodeManager/addNodeNote/<?php echo $templateData['node']->id; ?>"><?php echo __('Add note'); ?></a>
+                <?php } ?>
+            </div>
+        <?php } ?>
+    </div>
 
     <form id="form1" name="form1" method="post" class="form-horizontal"
           action="<?php echo URL::base() . 'nodeManager/updateNode/' . $templateData['node']->id; ?>">

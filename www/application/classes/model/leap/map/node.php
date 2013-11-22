@@ -189,6 +189,15 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'child_model' => 'map_node_counter',
                 'parent_key' => array('id'),
             )),
+
+            'notes' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('node_id'),
+                'child_model' => 'dtopic',
+                'parent_key' => array('id'),
+                'options' => array(
+                    array('where', array('status', '=', '1'))
+                )
+            ))
         );
         self::initialize_metadata($this);
     }
