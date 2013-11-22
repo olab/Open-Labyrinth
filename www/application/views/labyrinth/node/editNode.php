@@ -81,6 +81,25 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                     <a class="btn" target="_blank" href="<?php echo URL::base(); ?>nodeManager/addNodeNote/<?php echo $templateData['node']->id; ?>"><?php echo __('Add note'); ?></a>
                 <?php } ?>
             </div>
+        <?php } else { ?>
+            <div class="pull-right" style="margin-top: 20px;">
+                <a class="btn" href="javascript:void(0)" data-toggle="modal" data-target="#assign-forum-modal"><?php echo __('Add note'); ?></a>
+                <div class="modal block hide" id="assign-forum-modal">
+                    <div class="modal-header block">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h3>Assign forum</h3>
+                    </div>
+
+                    <div class="modal-body block">
+                        <p>Please assign forum for this labyrinth in "Details" menu.</p>
+                    </div>
+
+                    <div class="modal-footer block">
+                        <a href="<?php echo URL::base(); ?>labyrinthManager/global/<?php echo $templateData['map']->id; ?>" class="btn">Assign</a>
+                        <a href="javascript:void(0);" class="btn" data-dismiss="modal">Close</a>
+                    </div>
+                </div>
+            </div>
         <?php } ?>
     </div>
 
