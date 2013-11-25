@@ -111,7 +111,7 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
 
         $this->save();
     }
-    
+
     public function updateContributors($mapId, $values) {
         $contibutors = $this->getAllContributors($mapId);
         if(count($contibutors) > 0) {

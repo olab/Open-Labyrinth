@@ -159,7 +159,7 @@ var LinkConnector = function() {
         vec = [vec[0] / mVec * self.connectorRadius, vec[1] / mVec * self.connectorRadius];
 
         var s = viewport.GetScale();
-        
+
         //context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
         context.beginPath();
         context.moveTo(tr.matrix[4] + vec[0], tr.matrix[5] + vec[1]);
