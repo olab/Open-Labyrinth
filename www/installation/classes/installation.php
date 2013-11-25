@@ -699,16 +699,20 @@ class Installation {
                     $fileString = file_get_contents($infoFile);
                     $skipFiles = json_decode($fileString, true);
                 }
-                foreach($files as $f){
-                    $ext = pathinfo($f, PATHINFO_EXTENSION);
-                    if ($ext == 'sql'){
-                        $pathToFile = $dir.$f;
-                        if (!isset($skipFiles[$f])){
-                            Installation::populateDatabase($pathToFile);
-                            $skipFiles[$f] = 1;
-                            $result = 1;
+
+                if (count($files) > 0){
+                    usort($files, array('Installation', 'sortVersionInOrder'));
+                    foreach($files as $f){
+                        $ext = pathinfo($f, PATHINFO_EXTENSION);
+                        if ($ext == 'sql'){
+                            $pathToFile = $dir.$f;
+                            if (!isset($skipFiles[$f])){
+                                Installation::populateDatabase($pathToFile);
+                                $skipFiles[$f] = 1;
+                                $result = 1;
+                            }
+                            @unlink($pathToFile);
                         }
-                        @unlink($pathToFile);
                     }
                 }
 
@@ -719,6 +723,43 @@ class Installation {
         }
 
         return $result;
+    }
+
+    public static function sortVersionInOrder($a, $b) {
+        $ext = pathinfo($a, PATHINFO_EXTENSION);
+        if ($ext != 'sql'){
+            return -1;
+        }
+
+        $ext = pathinfo($b, PATHINFO_EXTENSION);
+        if ($ext != 'sql'){
+            return 1;
+        }
+
+        $regExp = '/(?<=v)(.*?)(?=\.sql)/is';
+        $regExpDot = '/(\.|_)/e';
+        $resultA = '';
+        $resultB = '';
+
+        if ($c=preg_match_all ($regExp, $a, $matches)) {
+            if (isset($matches[0][0])) {
+                $found = 0;
+                $resultA = preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]);
+            }
+        }
+
+        if ($c=preg_match_all ($regExp, $b, $matches)) {
+            if (isset($matches[0][0])) {
+                $found = 0;
+                $resultB = preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]);
+            }
+        }
+
+        if ($resultA == $resultB) {
+            return 0;
+        }
+
+        return ($resultA-$resultB > 0) ? 1 : -1;
     }
 
     public static function populateDatabase($schema)
