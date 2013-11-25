@@ -60,7 +60,20 @@ class Model_Leap_Language extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public function getLanguageByName($name) {
+        $record = DB_SQL::select('default')
+                          ->from($this->table())
+                          ->column('id')
+                          ->where('name', '=', $name)
+                          ->limit(1)
+                          ->query();
+        if($record->is_loaded()) {
+            return DB_ORM::model('language', array((int)$record[0]['id']));
+        }
+
+        return null;
+    }
 }
 
 ?>

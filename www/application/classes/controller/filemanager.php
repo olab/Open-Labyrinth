@@ -130,6 +130,34 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
+    public function action_saveByUrl(){
+        $mapId = $this->request->param('id', NULL);
+        $url = Arr::get($this->request->post(), 'url', NULL);
+        $meta_values['originURL'] = $url;
+
+        if (($url != NULL) && ($url != '')){
+            $url_info = pathinfo ($url);
+            if(isset($url_info['basename'])){
+                $name = $url_info['basename'];
+
+                $path = DOCROOT . '/files/'.$mapId.'/';
+                if (file_exists($path.$name)){
+                    $name = uniqid().'_'.$name;
+                }
+
+                $img = file_get_contents($url, FILE_USE_INCLUDE_PATH);
+                file_put_contents($path.$name, $img);
+
+                $values['path'] = 'files/'.$mapId.'/'.$name;
+                $values['name'] = $name;
+                $obj = DB_ORM::model('map_element')->saveElement($mapId, $values);
+                DB_ORM::model('map_element_metadata')->saveMetadata($obj->id, $meta_values);
+            }
+        }
+
+        Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
+    }
+
     private function getArrayValueByKey($needle, $haystack) {
         if(array_key_exists($needle, $haystack)) { return array(true, $haystack[$needle]); }
 

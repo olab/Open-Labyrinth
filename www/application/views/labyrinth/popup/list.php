@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map'])) { ?>
     <div class="page-header">
-        <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'popupManager/newPopup/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add messages'); ?></a></div>
+        <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'popupManager/newPopup/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add Pop-up'); ?></a></div>
         <h1><?php echo __('Pop-up messages for ') . ' "' . $templateData['map']->name . '"'; ?></h1>
     </div>
 

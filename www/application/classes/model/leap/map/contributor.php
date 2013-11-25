@@ -100,7 +100,18 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
         $this->role_id = 13; // 'Select' role default
         $this->save();
     }
-    
+
+    public function createContributorFromValues($values) {
+        if($values == null || !isset($values['map_id'])) { return; }
+
+        $this->map_id  = $values['map_id'];
+        $this->role_id = Arr::get($values, 'role_id', 13);
+        $this->name    = Arr::get($values, 'name', '');
+        $this->order   = Arr::get($values, 'order', 1);
+
+        $this->save();
+    }
+
     public function updateContributors($mapId, $values) {
         $contibutors = $this->getAllContributors($mapId);
         if(count($contibutors) > 0) {

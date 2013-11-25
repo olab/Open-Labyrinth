@@ -67,6 +67,23 @@
 
             <div class="controls">
                 <input class="span6" type="text" name="title" id="title" value="<?php if(isset($templateData['popup'])) echo $templateData['popup']->title; ?>" />
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off"
+                           type="radio"
+                           id="title_hide_no"
+                           name="title_hide"
+                           value="0"
+                           <?php if( ! isset ($templateData['popup']) OR $templateData['popup']->title_hide == 0) echo 'checked'; ?> />
+                    <label data-class="btn-info" class="btn" for="title_hide_no"><?php echo __('Display'); ?></label>
+
+                    <input autocomplete="off"
+                           type="radio"
+                           id="title_hide_yes"
+                           name="title_hide"
+                           value="1"
+                           <?php if( isset ($templateData['popup']) AND $templateData['popup']->title_hide == 1) echo 'checked'; ?>/>
+                    <label data-class="btn-info" class="btn" for="title_hide_yes"><?php echo __('Hide'); ?></label>
+                </div>
             </div>
         </div>
 
@@ -75,6 +92,14 @@
 
             <div class="controls">
                 <textarea name="text" id="text" class="mceEditor"><?php if(isset($templateData['popup'])) echo $templateData['popup']->text;  ?></textarea>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="annotation" class="control-label"><?php echo __('Annotation'); ?></label>
+
+            <div class="controls">
+                <textarea name="annotation" id="annotation" class="mceEditor"><?php if(isset($templateData['popup'])) echo $templateData['popup']->annotation; ?></textarea>
             </div>
         </div>
 
@@ -128,6 +153,7 @@
             <div class="controls">
                 <input type="text" id="borderColor" name="borderColor" value="<?php echo isset($templateData['popup']) ? $templateData['popup']->style->border_color : '#ffffff'; ?>" style="background-color: <?php echo isset($templateData['popup']) ? $templateData['popup']->style->border_color : '#ffffff'; ?>;"/>
                 <input type="checkbox" id="isBorderTransparent" name="isBorderTransparent" style="margin: 0;" <?php if(isset($templateData['popup']) && $templateData['popup']->style->is_border_transparent) { echo 'checked="checked"'; } ?>> Transparent
+                <input type="text" name="border_transparent" style="width: 40px; text-align: center;" value="<?php if(isset($templateData['popup']) && $templateData['popup']->style->border_transparent){echo $templateData['popup']->style->border_transparent;}else{echo '0%';} ?>">
                 <div class="borderColorContainer"></div>
             </div>
         </div>
@@ -162,6 +188,7 @@
             <div class="controls">
                 <input type="text" id="customBackgroundColor" name="customBackgroundColor" value="<?php echo isset($templateData['popup']) && !$templateData['popup']->style->is_default_background_color ? $templateData['popup']->style->background_color : '#ffff00'; ?>" style="background-color: <?php echo isset($templateData['popup']) && !$templateData['popup']->style->is_default_background_color ? $templateData['popup']->style->background_color : '#ffff00'; ?>;" />
                 <input type="checkbox" id="isBorderTransparent" name="isBackgroundTransparent" style="margin: 0;" <?php if(isset($templateData['popup']) && $templateData['popup']->style->is_background_transparent) { echo 'checked="checked"'; } ?>> Transparent
+                <input type="text" name="background_transparent" style="width: 40px; text-align: center;" value="<?php if(isset($templateData['popup']) && $templateData['popup']->style->background_transparent){echo $templateData['popup']->style->background_transparent;}else{echo '0%';} ?>">
                 <div class="customBackgroundColorContainer"></div>
             </div>
         </div>
@@ -284,7 +311,7 @@
 
     <div class="form-actions">
         <div class="pull-right">
-            <input class="btn btn-large btn-primary" type="submit" name="Submit" value="<?php echo (isset($templateData['popup'])) ? __('Save message') : __('Add message'); ?>">
+            <input class="btn btn-large btn-primary" type="submit" name="Submit" value="<?php echo (isset($templateData['popup'])) ? __('Save pop-up') : __('Add pop-up'); ?>">
         </div>
     </div>
 </form>

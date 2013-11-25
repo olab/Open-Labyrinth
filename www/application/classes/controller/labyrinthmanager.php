@@ -834,6 +834,43 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
+    public function action_addNewForum() {
+        $mapId       = $this->request->param('id', null);
+        $redirectURL = URL::base();
+
+        if($mapId != null) {
+            $message = Arr::get($_POST, 'firstForumMessage', '');
+            $map     = DB_ORM::model('map', array((int)$mapId));
+            if($map != null) {
+                $forum = DB_ORM::model('dforum')->createForum($map->name, 1, 1);
+                $messageID = DB_ORM::model('dforum_messages')->createMessage($forum, $message);
+                DB_ORM::model('dforum_users')->updateUsers($forum, array(Auth::instance()->get_user()->id), 1);
+
+                DB_ORM::model('map')->updateMapForumAssign($mapId, $forum);
+
+                $redirectURL .= 'labyrinthManager/global/' . $mapId;
+            }
+        }
+
+        Request::initial()->redirect($redirectURL);
+    }
+
+    public function action_unassignForum() {
+        $mapId       = $this->request->param('id', null);
+        $redirectURL = URL::base();
+
+        if($mapId != null) {
+            $map = DB_ORM::model('map', array((int)$mapId));
+            if($map != null) {
+                DB_ORM::model('map')->updateMapForumAssign($mapId, null);
+
+                $redirectURL .= 'labyrinthManager/global/' . $mapId;
+            }
+        }
+
+        Request::initial()->redirect($redirectURL);
+    }
+
     public function action_deleteContributor() {
         $mapId = (int) $this->request->param('id', 0);
         $contId = (int) $this->request->param('id2', 0);

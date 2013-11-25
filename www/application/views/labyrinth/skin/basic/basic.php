@@ -467,7 +467,15 @@ if ($templateData['skin_path'] != NULL) {
                          popup-id="<?php echo $mapPopup->id; ?>"
                          redirect-type="<?php echo $mapPopup->assign->redirect_type_id; ?>"
                          redirect-id="<?php echo $mapPopup->assign->redirect_to_id; ?>"
-                         style="<?php if(!$mapPopup->style->is_background_transparent) { echo 'background-color: ' . $mapPopup->style->background_color . ';'; } ?> <?php if(!$mapPopup->style->is_border_transparent) { echo 'border: 1px solid ' . $mapPopup->style->border_color . ';'; } ?> color: <?php echo $mapPopup->style->font_color; ?>">
+                         title-hide="<?php echo $mapPopup->title_hide; ?>"
+                         background-color="<?php echo $mapPopup->style->background_color ?>"
+                         border-color="<?php echo $mapPopup->style->border_color ?>"
+                         is-background-transparent="<?php echo $mapPopup->style->is_background_transparent ?>"
+                         background-transparent="<?php echo $mapPopup->style->background_transparent ?>"
+                         is-border-transparent="<?php echo $mapPopup->style->is_border_transparent ?>"
+                         border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
+
+                         style="<?php if(!$mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
                         <div class="header"><?php echo $mapPopup->title; ?></div>
                         <div class="text"><?php echo $mapPopup->text; ?></div>
                     </div>

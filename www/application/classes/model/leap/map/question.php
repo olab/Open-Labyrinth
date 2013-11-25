@@ -215,7 +215,14 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 break;
         }
     }
-    
+
+    public function createEmptyQuestion($mapId, $typeId) {
+        return DB_ORM::insert('map_question')
+                       ->column('map_id', $mapId)
+                       ->column('entry_type_id', $typeId)
+                       ->execute();
+    }
+
     public function updateQuestion($questionId, $type, $values) {
         $this->id = $questionId;
         $this->load();

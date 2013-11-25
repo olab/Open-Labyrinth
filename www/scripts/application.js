@@ -228,7 +228,7 @@ jQuery(document).ready(function(){
         $(this).select();
     });
 
-    $('[data-toggle=tooltip]').tooltip({placement:"top"});
+    $('[data-toggle=tooltip]').tooltip({placement:"left"});
 
 
     jQuery('#nodeCountContainer button').click(function() {
@@ -373,4 +373,14 @@ jQuery(document).ready(function(){
             $(value).val(index + 1);
         });
     }
+
+    $('body').on('click', '#createNewForum', function() {
+        var url = $(this).attr('submit-url');
+        $('form').attr('action', url).submit();
+    });
+
+    $('body').on('click', '.unassign-forum', function() {
+        var url = $(this).attr('submit-url');
+        $('form').attr('action', url).submit();
+    });
 });
