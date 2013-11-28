@@ -192,6 +192,15 @@ class MVP2Map {
         $this->DB2ANMap[$databaseId]     = $fullData;
     }
 
+    public function removeActivityNode($activityNodeId) {
+        if(isset($this->AN2DBMap[$activityNodeId])) {
+            $data = $this->AN2DBMap[$activityNodeId];
+            unset($this->AN2DBMap[$activityNodeId]);
+            unset($this->ANC2DBMap[$data['content']]);
+            unset($this->DB2ANMap[$data['databaseId']]);
+        }
+    }
+
     /**
      * Get database node ID by activity node ID
      *
@@ -382,6 +391,7 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
         $this->processActivityProperties($activityModelData, $map);
         $this->processActivityNodes($activityModelData, $map);
         $this->processActivityLinks($activityModelData, $map);
+        //die();
         $this->processActivityNodeCoordinates($activityModelData, $map);
 
         //TODO: Add NodeLinksID only order field
@@ -398,40 +408,6 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
         if(!isset($virtualPatientData['XtensibleInfo']) ||
            !isset($virtualPatientData['XtensibleInfo']['QuestionChoices'])) { return; }
 
-        foreach($virtualPatientData['XtensibleInfo']['QuestionChoices'] as $questionChoices) {
-            if(isset($questionChoices['BranchChoice']) && count($questionChoices['BranchChoice']) > 0) {
-                $addedQuestion = array();
-                foreach($questionChoices['BranchChoice'] as $branchChoice) {
-                    if(!isset($branchChoice['@attributes'])) { continue; }
-
-
-                    if(isset($branchChoice['@attributes']['questionID'])) {
-                        $questionDatabaseId = $this->mvp2Map->getQuestionDatabaseId($branchChoice['@attributes']['questionID']);
-                        if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($branchChoice['@attributes']['questionID'], $map, 4); }
-
-                        DB_ORM::model('map_question_response')->addFullResponses($questionDatabaseId, array('response' => $branchChoice['choiceText'],
-                                                                                                            'feedback' => isset($branchChoice['patientResponse'][0]) ? $branchChoice['patientResponse'][0] : ''));
-
-                        $parentNodeId = $branchChoice['parentNodeID'];
-                        $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($parentNodeId);
-                        if($databaseNodeId != null) {
-                            if(!isset($addedQuestion[$questionDatabaseId])) {
-                                $addedQuestion[$questionDatabaseId] = array();
-                            }
-
-                            if(!isset($addedQuestion[$questionDatabaseId][$parentNodeId])) {
-                                $addedQuestion[$questionDatabaseId][$parentNodeId] = true;
-                                $node = DB_ORM::model('map_node', array((int)$databaseNodeId));
-
-                                $node->text .= '[[QU:' . $questionDatabaseId . ']]';
-                                DB_ORM::model('map_node')->updateNodeText($databaseNodeId, $node->text);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         if(isset($virtualPatientData['XtensibleInfo']['QuestionChoices']['MCQ']) && count($virtualPatientData['XtensibleInfo']['QuestionChoices']['MCQ']) > 0) {
             foreach($virtualPatientData['XtensibleInfo']['QuestionChoices']['MCQ'] as $mcq) {
                 $addedQuestion = array();
@@ -440,10 +416,20 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
 
                     if(isset($q['@attributes']['questionID'])) {
                         $questionDatabaseId = $this->mvp2Map->getQuestionDatabaseId($q['@attributes']['questionID']);
-                        if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($q['@attributes']['questionID'], $map, 3); }
+                        if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($q['@attributes']['questionID'], $map, 4); }
+
+                        $feedback = '';
+                        if(isset($q['patientResponse'])) {
+                            if(is_array($q['patientResponse']) && count($q['patientResponse']) > 0) {
+                                $feedback = $q['patientResponse'][0];
+                            } else {
+                                $feedback = $q['patientResponse'];
+                            }
+                        }
 
                         DB_ORM::model('map_question_response')->addFullResponses($questionDatabaseId, array('response' => $q['choiceText'],
-                                                                                                            'feedback' => isset($q['patientResponse'][0]) ? $q['patientResponse'][0] : ''));
+                                                                                                            'is_correct' => 2,
+                                                                                                            'feedback' => $feedback));
 
                         $parentNodeId = $q['@attributes']['NodeId'];
                         $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($parentNodeId);
@@ -475,8 +461,18 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
                         $questionDatabaseId = $this->mvp2Map->getQuestionDatabaseId($q['@attributes']['questionID']);
                         if($questionDatabaseId == null) { $questionDatabaseId = $this->createQuestion($q['@attributes']['questionID'], $map, 3); }
 
+                        $feedback = '';
+                        if(isset($q['patientResponse'])) {
+                            if(is_array($q['patientResponse']) && count($q['patientResponse']) > 0) {
+                                $feedback = $q['patientResponse'][0];
+                            } else {
+                                $feedback = $q['patientResponse'];
+                            }
+                        }
+
                         DB_ORM::model('map_question_response')->addFullResponses($questionDatabaseId, array('response' => $q['choiceText'],
-                                                                                                            'feedback' => isset($q['patientResponse'][0]) ? $q['patientResponse'][0] : ''));
+                                                                                                            'is_correct' => 2,
+                                                                                                            'feedback' => $feedback));
 
                         $parentNodeId = $q['@attributes']['NodeId'];
                         $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($parentNodeId);
@@ -652,11 +648,13 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
             $databaseNodeB = $this->mvp2Map->getActivityNodeDatabaseId($nodeB);
 
             if($databaseNodeA != null && $databaseNodeB != null) {
-                $link = DB_ORM::model('map_node_link')->addFullLink($map->id, array('text'      => $label,
-                                                                                    'node_id_1' => $databaseNodeA,
-                                                                                    'node_id_2' => $databaseNodeB));
+                if(empty($label) || (strlen($label) > 0 && $label[0] != '#')) {
+                    $link = DB_ORM::model('map_node_link')->addFullLink($map->id, array('text'      => $label,
+                                                                                        'node_id_1' => $databaseNodeA,
+                                                                                        'node_id_2' => $databaseNodeB));
 
-                $this->mvp2Map->addActivityLink($nodeA, $nodeB, $link);
+                    $this->mvp2Map->addActivityLink($nodeA, $nodeB, $link);
+                }
             }
         }
     }
