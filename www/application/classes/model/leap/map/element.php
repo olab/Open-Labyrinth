@@ -237,7 +237,18 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         
         return NULL;
     }
-    
+
+    public function addFile($mapId, $values) {
+        return DB_ORM::insert('map_element')
+                       ->column('map_id', $mapId)
+                       ->column('name', Arr::get($values, 'name', ''))
+                       ->column('mime', Arr::get($values, 'mime', ''))
+                       ->column('path', Arr::get($values, 'path', ''))
+                       ->column('width', Arr::get($values, 'width', 0))
+                       ->column('height', Arr::get($values, 'height', 0))
+                       ->execute();
+    }
+
     public function uploadFile($mapId, $values) {
         if($values['filename']['size'] < 1024 * 3 * 1024) {
             if(is_uploaded_file($values['filename']['tmp_name'])) {

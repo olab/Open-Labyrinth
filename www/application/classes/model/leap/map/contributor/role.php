@@ -86,6 +86,22 @@ class Model_Leap_Map_Contributor_Role extends DB_ORM_Model {
         
         return $result;
     }
+
+    public function getRoleByName($name) {
+        $record = DB_SQL::select('default')
+                          ->from($this->table())
+                          ->column('id')
+                          ->where('name', '=', $name)
+                          ->limit(1)
+                          ->query();
+
+        $role = null;
+        if($record->is_loaded()) {
+            $role = DB_ORM::model('map_contributor_role', $record[0]['id']);
+        }
+
+        return $role;
+    }
 }
 
 ?>

@@ -285,7 +285,7 @@ function getRandomColor(){
                            <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                            <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php $v[$counter[0]] = getRandomColor(); echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
-                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <?php if(isset($templateData['startValueCounters']) && (isset($templateData['startValueCounters'][$counter[2]]))) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if (isset($counter[1])){
@@ -311,7 +311,7 @@ function getRandomColor(){
                            <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                                 <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
-                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <?php if(isset($templateData['startValueCounters']) && (isset($templateData['startValueCounters'][$counter[2]]))) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if (isset($counter[1])){

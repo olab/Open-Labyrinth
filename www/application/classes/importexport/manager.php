@@ -34,6 +34,8 @@ class ImportExport_Manager {
             case 'MVP':
                 $result = new ImportExport_MVPFormatSystem();
                 break;
+            case 'MVPvpSim':
+                $result = new ImportExport_MVPvpSimFormatSystem();
         }
         
         return $result;
