@@ -420,7 +420,7 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
 
                         $feedback = '';
                         if(isset($q['patientResponse'])) {
-                            if(is_array($q['patientResponse']) && count($q['patientResponse']) > 0) {
+                            if(is_array($q['patientResponse'])) {
                                 $feedback = $q['patientResponse'][0];
                             } else {
                                 $feedback = $q['patientResponse'];
@@ -463,7 +463,7 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
 
                         $feedback = '';
                         if(isset($q['patientResponse'])) {
-                            if(is_array($q['patientResponse']) && count($q['patientResponse']) > 0) {
+                            if(is_array($q['patientResponse'])) {
                                 $feedback = $q['patientResponse'][0];
                             } else {
                                 $feedback = $q['patientResponse'];
