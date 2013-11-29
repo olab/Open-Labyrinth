@@ -119,7 +119,7 @@ abstract class Base_DB_ORM extends Kohana_Object {
      * @return DB_ORM_Update_Proxy          an instance of the class
      */
     public static function update($model) {
-        echo 'lol';die;
+        //echo 'lol';die;
         $proxy = new DB_ORM_Update_Proxy($model);
         return $proxy;
     }

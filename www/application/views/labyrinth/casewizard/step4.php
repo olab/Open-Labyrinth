@@ -20,8 +20,7 @@
  */
 ?>
 <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
-            xmlns="http://www.w3.org/1999/html"></script>
+        src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
         var sendURL = '<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/updateVisualEditor/<?php echo $templateData['map']; ?>';
         var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
@@ -39,7 +38,7 @@
         <div class="instractions">
             <p class="header">Instructions:</p>
 
-            <p class="li">This is hight level editing. Just get the main points of your story down one idea per
+            <p class="li">This is high level editing. Just get the main points of your story down one idea per
                 node.</p>
         </div>
         <div class="visual-editor" style="height: auto;">

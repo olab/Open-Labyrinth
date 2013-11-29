@@ -27,11 +27,11 @@ $(function() {
                 var item = '<div id="nodeConatiner' + j + '"><legend>Branch Node #' + j + '</legend><div class="control-group"><label for="nodeTitle' + j + '" class="control-label">Title</label><div class="controls"><input type="text" id="nodeTitle' + j + '" name="nodeTitle' + j + '"/></div></div><div class="control-group"><label for="nodeContent' + j + '" class="control-label">Content</label><div class="controls"><textarea id="nodeContent' + j + '" class="mceEditor" name="nodeContent' + j + '"></textarea></div></div></div>';
                 $nodeContainer.append(item);
                 
-                tinyMCE.execCommand("mceAddControl", false, "nodeContent" + j);
+                tinyMCE.execCommand("mceAddEditor", false, "nodeContent" + j);
             }
             
             for(var i = 0, j = currentCount; i < remove; i++, j--) {
-                tinyMCE.execCommand("mceRemoveControl", false, "nodeContent" + j);
+                tinyMCE.execCommand("mceRemoveEditor", false, "nodeContent" + j);
                 $nodeContainer.children().last().remove();
             }
             

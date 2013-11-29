@@ -151,8 +151,8 @@ if(isset($metadata) and count($metadata)>0){
 
             <div class="controls">
                 <select name='type' id="metadata-type">
-                    <option value="stringrecord">String</option>
-                    <option value="textrecord">Text</option>
+                    <option value="stringrecord">Short text</option>
+                    <option value="textrecord">Rich Text</option>
                     <option value="daterecord">Date</option>
                     <option value="referencerecord">Entity with URI from a list</option>
                     <option value="skosrecord">Class from a SKOS classification</option>

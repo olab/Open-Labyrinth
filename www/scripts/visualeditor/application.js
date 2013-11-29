@@ -8,48 +8,63 @@ $(function () {
 
     var tinyMCEConfigs = [{
         // General options
-        mode:"textareas",
-        relative_urls:false,
-        entity_encoding:"raw",
-        theme:"advanced",
-        skin:"bootstrap",
-        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
-        // Theme options
-        theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,|,bullist,numlist,|,blockquote,",
-        theme_advanced_buttons2:"styleselect,formatselect,fontselect,fontsizeselect,visualchars",
-        theme_advanced_buttons3:"link,unlink,anchor,image,template,code,forecolor,backcolor,iespell,media,advhr,fullscreen,attribs,nonbreaking,outdent,indent",
-        theme_advanced_buttons4:"tablecontrols,|,hr,removeformat,visualaid,help,",
-        theme_advanced_toolbar_location:"top",
-        theme_advanced_toolbar_align:"left",
-        theme_advanced_statusbar_location:"bottom",
-        theme_advanced_resizing:true,
+
+        theme: "modern",
+        content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime media nonbreaking save table contextmenu directionality",
+            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+        image_advtab: true,
+        templates: [
+
+        ],
         setup: function(ed) {
-            ed.onClick.add(function(ed, e) {
-                veUnsavedData();
+
+            ed.on("init", function(e){
+
+                ed.on("click",function(e) {
+
+                    veUnsavedData();
+                });
             });
+
+
         }
     },{
         // General options
-        mode: "textareas",
-        relative_urls: false,
-        theme: "advanced",
-        skin: "bootstrap",
-        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
-        // Theme options
-        theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword",
-        theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
-        theme_advanced_buttons3: "bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,forecolor,backcolor,sub,sup",
-        theme_advanced_buttons4: "charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
-        theme_advanced_toolbar_location: "top",
-        theme_advanced_toolbar_align: "left",
-        theme_advanced_statusbar_location: "bottom",
-        theme_advanced_resizing: true,
-        entity_encoding: "raw"
+
+        theme: "modern",
+        content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime media nonbreaking save table contextmenu directionality",
+            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+        image_advtab: true,
+        templates: [
+
+        ]
     }];
 
     function setTinyMCE(configNumber, id) {
         tinyMCE.settings = tinyMCEConfigs[configNumber];
-        tinyMCE.execCommand('mceAddControl', true, id);
+        tinyMCE.execCommand('mceAddEditor', true, id);
     }
 
     setTinyMCE(0, 'nodecontent');
@@ -128,7 +143,7 @@ $(function () {
     
     $('#copySNodesBtn').click(function() {
         copy();
-    })
+    });
 
     function paste() {
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
@@ -208,7 +223,7 @@ $(function () {
         $('#visual_editor_set_root').modal();
 
         return false;
-    })
+    });
 
     var $veMessageContainer = $('#ve_message');
     var $veMessage = $('#ve_message_text');
@@ -318,11 +333,11 @@ $(function () {
 
     $('#veCountContainer button').click(function () {
         $('#veCount').attr('disabled', 'disabled');
-    })
+    });
 
     $('#veCustom').click(function () {
         $('#veCount').removeAttr('disabled');
-    })
+    });
 
     $('#backgroundColor').click(function () {
         $('#visual_editor_background_color').modal();
