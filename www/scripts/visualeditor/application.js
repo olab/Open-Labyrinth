@@ -34,7 +34,7 @@ $(function () {
         relative_urls: false,
         theme: "advanced",
         skin: "bootstrap",
-        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
+        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
         // Theme options
         theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword",
         theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
@@ -209,6 +209,34 @@ $(function () {
 
         return false;
     })
+
+    var timerRange = 600000, // 10 min
+        timerRangeBeforeLogout = 120000, // 2 min
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    $('#canvas, #veRightPanel').mousemove(function(){
+        clearTimeout(timer);
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    });
+
+    $('#setAsideTimeout').click(function()
+    {
+        $('#visual_editor_timeout').modal('hide');
+        clearTimeout(timer);
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    });
+
+    function showTimeoutPopupMassage ()
+    {
+        $('#visual_editor_timeout').modal('show');
+        timer = setTimeout (saveAndLogout, timerRangeBeforeLogout);
+    }
+
+    function saveAndLogout ()
+    {
+        $('#visual_editor_timeout').modal('hide');
+        leaveLink = logoutUrl;
+        update();
+    }
 
     var $veMessageContainer = $('#ve_message');
     var $veMessage = $('#ve_message_text');
@@ -530,7 +558,7 @@ $(function () {
         veUnsavedData();
     });
 
-    $('#veRightPanel button:not("#veDeleteNodeBtn")').click(function(){
+    $('#veRightPanel button:not(#veDeleteNodeBtn)').click(function(){
         veUnsavedData();
     });
 

@@ -47,6 +47,7 @@ if (isset($templateData['map'])) { ?>
         var mapType = null;
         var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
         var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
+        var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -528,6 +529,17 @@ if (isset($templateData['map'])) { ?>
                 <p>You have just clicked the set as root button, are you certain that you wish to proceed with set this node as root?</p>
                 <a href="javascript:void(0);" class="btn btn-primary" id="setAsRootNodeBtn">Set</a>
                 <a href="javascript:void(0);" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+            </div>
+        </div>
+
+        <div class="modal hide block" id="visual_editor_timeout">
+            <div class="modal-header block">
+                <h3>Timeout</h3>
+            </div>
+
+            <div class="modal-body block">
+                <p>No events by last 10 min. If you want to continue, please, press the confirm button, or you will be redirected to login page.</p>
+                <a href="javascript:void(0);" class="btn btn-primary" id="setAsideTimeout">Yes, I'm here</a>
             </div>
         </div>
 

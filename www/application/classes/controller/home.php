@@ -77,7 +77,13 @@ class Controller_Home extends Controller_Base {
         if (Auth::instance()->logged_in()) {
             Auth::instance()->logout();
         }
-		
+
+        $uri = ($this->request->referrer())
+            ? str_replace(URL::base(true),'',$this->request->referrer())
+            : '';
+
+        Session::instance()->set('redirectURL', $uri);
+
         Request::initial()->redirect(URL::base());
     }
 
