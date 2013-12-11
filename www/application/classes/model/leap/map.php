@@ -663,53 +663,56 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
-    public function duplicateMap($mapId)
+    public function duplicateMap ($mapId)
     {
         $this->id = $mapId;
         $this->load();
 
         if (strlen($this->name) <= 0) return;
 
-        $builder = DB_ORM::insert('map')
-            ->column('name', $this->getMapName($this->name))
-            ->column('author_id', $this->author_id)
-            ->column('abstract', $this->abstract)
-            ->column('startScore', $this->startScore)
-            ->column('threshold', $this->threshold)
-            ->column('keywords', $this->keywords)
-            ->column('type_id', $this->type_id)
-            ->column('units', $this->units)
-            ->column('security_id', $this->security_id)
-            ->column('guid', $this->guid)
-            ->column('timing', $this->timing)
-            ->column('delta_time', $this->delta_time)
-            ->column('show_bar', $this->show_bar)
-            ->column('show_score', $this->show_score)
-            ->column('skin_id', $this->skin_id)
-            ->column('enabled', $this->enabled)
-            ->column('section_id', $this->section_id)
-            ->column('language_id', $this->language_id)
-            ->column('feedback', $this->feedback)
-            ->column('dev_notes', $this->dev_notes)
-            ->column('source', $this->source)
-            ->column('source_id', $this->source_id)
-            ->column('verification', $this->verification);
+        $newMapId = DB_ORM::insert('map')
+            ->column('name',            $this->getMapName($this->name))
+            ->column('author_id',       $this->author_id)
+            ->column('abstract',        $this->abstract)
+            ->column('startScore',      $this->startScore)
+            ->column('threshold',       $this->threshold)
+            ->column('keywords',        $this->keywords)
+            ->column('type_id',         $this->type_id)
+            ->column('units',           $this->units)
+            ->column('security_id',     $this->security_id)
+            ->column('guid',            $this->guid)
+            ->column('timing',          $this->timing)
+            ->column('delta_time',      $this->delta_time)
+            ->column('reminder_msg',    $this->reminder_msg)
+            ->column('reminder_time',   $this->reminder_time)
+            ->column('show_bar',        $this->show_bar)
+            ->column('show_score',      $this->show_score)
+            ->column('skin_id',         $this->skin_id)
+            ->column('enabled',         $this->enabled)
+            ->column('section_id',      $this->section_id)
+            ->column('language_id',     $this->language_id)
+            ->column('feedback',        $this->feedback)
+            ->column('dev_notes',       $this->dev_notes)
+            ->column('source',          $this->source)
+            ->column('source_id',       $this->source_id)
+            ->column('verification',    $this->verification)
+            ->column('assign_forum_id', $this->assign_forum_id)
+            ->execute();
 
-        $newMapId = $builder->execute();
-        $nodeMap = DB_ORM::model('map_node')->duplicateNodes($mapId, $newMapId);
-        DB_ORM::model('map_node_section')->duplicateSections($mapId, $newMapId, $nodeMap);
-        $elementMap = DB_ORM::model('map_element')->duplicateElements($mapId, $newMapId);
-        DB_ORM::model('map_node_link')->duplicateLinks($mapId, $newMapId, $nodeMap, $elementMap);
-        $counterMap = DB_ORM::model('map_counter')->duplicateCounters($mapId, $newMapId, $nodeMap, $elementMap);
-        $chatMap = DB_ORM::model('map_chat')->duplicateChats($mapId, $newMapId, $counterMap);
-        $questionMap = DB_ORM::model('map_question')->duplicateQuestions($mapId, $newMapId, $counterMap);
-        $avartMap = DB_ORM::model('map_avatar')->duplicateAvatars($mapId, $newMapId);
-        $vpdMap = DB_ORM::model('map_vpd')->duplicateElements($mapId, $newMapId);
-        $damsMap = DB_ORM::model('map_dam')->duplicateDam($mapId, $newMapId, $vpdMap, $elementMap);
-        DB_ORM::model('map_feedback_rule')->duplicateRules($mapId, $newMapId);
-        DB_ORM::model('map_user')->duplicateUsers($mapId, $newMapId);
-        DB_ORM::model('map_key')->duplicateKeys($mapId, $newMapId);
-        DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avartMap, $chatMap, $questionMap, $damsMap);
+        $nodeMap =      DB_ORM::model('map_node')         ->duplicateNodes        ($mapId, $newMapId);
+                        DB_ORM::model('map_node_section') ->duplicateSections     ($mapId, $newMapId, $nodeMap);
+        $elementMap =   DB_ORM::model('map_element')      ->duplicateElements     ($mapId, $newMapId);
+                        DB_ORM::model('map_node_link')    ->duplicateLinks        ($mapId, $newMapId, $nodeMap);
+        $counterMap =   DB_ORM::model('map_counter')      ->duplicateCounters     ($mapId, $newMapId, $nodeMap, $elementMap);
+        $chatMap =      DB_ORM::model('map_chat')         ->duplicateChats        ($mapId, $newMapId, $counterMap);
+        $questionMap =  DB_ORM::model('map_question')     ->duplicateQuestions    ($mapId, $newMapId, $counterMap);
+        $avatarMap =    DB_ORM::model('map_avatar')       ->duplicateAvatars      ($mapId, $newMapId);
+        $vpdMap =       DB_ORM::model('map_vpd')          ->duplicateElements     ($mapId, $newMapId);
+        $damsMap =      DB_ORM::model('map_dam')          ->duplicateDam          ($mapId, $newMapId, $vpdMap, $elementMap);
+                        DB_ORM::model('map_feedback_rule')->duplicateRules        ($mapId, $newMapId);
+                        DB_ORM::model('map_user')         ->duplicateUsers        ($mapId, $newMapId);
+                        DB_ORM::model('map_key')          ->duplicateKeys         ($mapId, $newMapId);
+                        DB_ORM::model('map_node')         ->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damsMap);
     }
 
     public function getMapName($mapName, $mapId = 0)

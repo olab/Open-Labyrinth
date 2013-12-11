@@ -126,36 +126,33 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         DB_SQL::delete('default')->from($this->table())->where('section_id', '=', $sectionId)->execute();
     }
 
-    public function getSectionNodes($sectionId) {
+    public function getSectionNodes ($sectionId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $sections = array();
-            foreach($result as $record) {
-                $sections[] = DB_ORM::model('map_node_section_node', array((int)$record['id']));
-            }
+
+            foreach($result as $record) $sections[] = DB_ORM::model('map_node_section_node', array((int)$record['id']));
             
             return $sections;
         }
-        
-        return NULL;
+        return array();
     }
     
-    public function duplicateSectionNodes($fromSectionId, $toSectionId, $nodeMap) {
-        $nodes = $this->getSectionNodes($fromSectionId);
+    public function duplicateSectionNodes($fromSectionId, $toSectionId, $nodeMap)
+    {
+        if( ! $toSectionId) return;
         
-        if($nodes == null || $toSectionId == null || $toSectionId <= 0) return;
-        
-        foreach($nodes as $node) {
-            $builder = DB_ORM::insert('map_node_section_node')
-                    ->column('section_id', $toSectionId)
-                    ->column('order', $node->order);
-            
-            if(isset($nodeMap[$node->node_id]))
-                $builder = $builder->column ('node_id', $nodeMap[$node->node_id]);
-            
-            $builder->execute();
+        foreach($this->getSectionNodes($fromSectionId) as $node)
+        {
+            DB_ORM::insert('map_node_section_node')
+                ->column('section_id', $toSectionId)
+                ->column('order', $node->order)
+                ->column ('node_id', Arr::get($nodeMap, $node->node_id))
+                ->execute();
         }
     }
 

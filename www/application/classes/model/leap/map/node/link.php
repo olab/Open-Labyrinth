@@ -238,22 +238,20 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         }
     }
     
-    public function getLinksByMap($mapId) {
+    public function getLinksByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('map_id', '=', $mapId);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $links = array();
-            foreach($result as $record) {
-                $links[] = DB_ORM::model('map_node_link', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $links[] = DB_ORM::model('map_node_link', array((int)$record['id']));
             return $links;
         }
-        
-        return NULL;
+        return array();
     }
     
     public function getLinkByNodeIDs($nodeA, $nodeB) {
@@ -287,28 +285,21 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function duplicateLinks($fromMapId, $toMapId, $nodeMap, $elementMap) {
-        $links = $this->getLinksByMap($fromMapId);
-        
-        if($links == null || $toMapId == null || $toMapId <= 0) return;
-        
-        foreach($links as $link) {
-            $builder = DB_ORM::insert('map_node_link')
-                    ->column('map_id', $toMapId)
-                    ->column('text', $link->text)
-                    ->column('order', $link->order)
-                    ->column('probability', $link->probability);
-                    
-            if(isset($nodeMap[$link->node_id_1]))
-                $builder = $builder->column ('node_id_1', $nodeMap[$link->node_id_1]);
-            
-            if(isset($nodeMap[$link->node_id_2]))
-                $builder = $builder->column ('node_id_2', $nodeMap[$link->node_id_2]);
-   
-            if(isset($elementMap[$link->image_id]))
-                $builder = $builder->column ('image_id', $elementMap[$link->image_id]);
-            
-            $builder->execute();
+    public function duplicateLinks($fromMapId, $toMapId, $nodeMap)
+    {
+        if( ! $toMapId) return;
+
+        foreach ($this->getLinksByMap($fromMapId) as $link)
+        {
+            DB_ORM::insert('map_node_link')
+                ->column('map_id',      $toMapId)
+                ->column('text',        $link->text)
+                ->column('order',       $link->order)
+                ->column('probability', $link->probability)
+                ->column('node_id_1',   Arr::get($nodeMap, $link->node_id_1))
+                ->column('node_id_2',   Arr::get($nodeMap, $link->node_id_2))
+                ->column('image_id',    Arr::get($nodeMap, $link->image_id))
+                ->execute();
         }
     }
 

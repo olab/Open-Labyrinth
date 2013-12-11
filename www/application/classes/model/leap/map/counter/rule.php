@@ -126,7 +126,7 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
             return $rules;
         }
         
-        return NULL;
+        return array();
     }
     
     public function addRule($counterId, $values) {
@@ -147,7 +147,7 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
     public function duplicateRules($fromCounterId, $toCounterId, $nodeMap) {
         $rules = $this->getRulesByCounterId($fromCounterId);
         
-        if($rules == null || $toCounterId == null || $toCounterId <= 0) return;
+        if($toCounterId == null || $toCounterId <= 0) return;
         
         foreach($rules as $rule) {
             $builder = DB_ORM::insert('map_counter_rule')

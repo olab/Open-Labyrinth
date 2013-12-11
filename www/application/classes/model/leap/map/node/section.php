@@ -129,28 +129,29 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function getSectionsByMapId($mapId) {
+    public function getSectionsByMapId ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id');
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $sections = array();
-            foreach($result as $record) {
-                $sections[] = DB_ORM::model('map_node_section', array((int)$record['id']));
-            }
+
+            foreach($result as $record) $sections[] = DB_ORM::model('map_node_section', array((int)$record['id']));
             
             return $sections;
         }
         
-        return NULL;
+        return array();
     }
     
-    public function duplicateSections($fromMapId, $toMapId, $nodeMap) {
-        $sections = $this->getSectionsByMapId($fromMapId);
-        
-        if($sections == null || $toMapId == null || $toMapId <= 0) return;
-        
-        foreach($sections as $section) {
+    public function duplicateSections ($fromMapId, $toMapId, $nodeMap)
+    {
+        if ( ! $toMapId) return;
+
+        foreach($this->getSectionsByMapId($fromMapId) as $section)
+        {
             $builder = DB_ORM::insert('map_node_section')
                     ->column('map_id', $toMapId)
                     ->column('name', $section->name);

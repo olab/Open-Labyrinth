@@ -63,13 +63,11 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
         }
     }
 
-    public function action_duplicate() {
+    public function action_duplicate()
+    {
         $mapId = (int) $this->request->param('id', 0);
-        if($mapId) {
-            DB_ORM::model('map')->duplicateMap($mapId);
-        }
-
-        Request::initial()->redirect(URL::base() . 'authoredLabyrinth');
+        if ($mapId) DB_ORM::model('map')->duplicateMap($mapId);
+        Request::initial()->redirect(URL::base().'authoredLabyrinth');
     }
 
 }

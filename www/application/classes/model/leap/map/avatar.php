@@ -222,29 +222,26 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         }
     }
     
-    public function getAvatarsByMap($mapId) {
+    public function getAvatarsByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $avatars = array();
-            foreach($result as $record) {
-                $avatars[] = DB_ORM::model('map_avatar', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $avatars[] = DB_ORM::model('map_avatar', array((int)$record['id']));
             return $avatars;
         }
-        
-        return NULL;
+        return array();
     }
 
-    public function getAvatarImage($avatarId){
+    public function getAvatarImage ($avatarId)
+    {
         $builder = DB_SQL::select('default', array('image'))->from($this->table())->where('id', '=', $avatarId);
         $result = $builder->query();
 
-        if($result->is_loaded()) {
-            return $result[0]['image'];
-        }
+        if($result->is_loaded()) return $result[0]['image'];
     }
 
     public function duplicateAvatar($avatarId, $file) {
@@ -278,24 +275,25 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         }
     }
 
-    public function duplicateAvatars($fromMapId, $toMapId) {
-        $avatars = $this->getAvatarsByMap($fromMapId);
-
-        if($avatars == null || $toMapId == null || $toMapId <= 0) return array();
+    public function duplicateAvatars($fromMapId, $toMapId)
+    {
+        if ( ! $toMapId) return array();
 
         $avatarMap = array();
-        foreach($avatars as $avatar) {
+
+        foreach ($this->getAvatarsByMap($fromMapId) as $avatar)
+        {
             $avatarImage = $this->getAvatarImage($avatar->id);
-            if (!empty($avatarImage)) {
+
+            if ( ! empty($avatarImage))
+            {
                 $upload_dir = DOCROOT . 'avatars/';
                 $file = uniqid() . '.png';
-				if(is_dir($upload_dir))
-					copy($upload_dir . $avatarImage, $upload_dir . $file);
-            } else {
-                $file = NULL;
+				if (is_dir($upload_dir)) copy($upload_dir . $avatarImage, $upload_dir . $file);
             }
+            else $file = NULL;
 
-            $builder = DB_ORM::insert('map_avatar')
+            $avatarMap[$avatar->id] = DB_ORM::insert('map_avatar')
                     ->column('map_id', $toMapId)
                     ->column('skin_1', $avatar->skin_1)
                     ->column('skin_2', $avatar->skin_2)
@@ -315,11 +313,9 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                     ->column('age', $avatar->age)
                     ->column('eyes', $avatar->eyes)
                     ->column('hair_color', $avatar->hair_color)
-                    ->column('image', $file);
-
-            $avatarMap[$avatar->id] = $builder->execute();
+                    ->column('image', $file)
+                    ->execute();
         }
-
         return $avatarMap;
     }
 

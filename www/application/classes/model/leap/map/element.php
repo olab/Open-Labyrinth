@@ -219,23 +219,19 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllFilesByMap($mapId) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('map_id', '=', $mapId);
+    public function getAllFilesByMap ($mapId)
+    {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $elements = array();
-            foreach($result as $record) {
-                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
-            }
-            
+            foreach ($result as $record) $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
             return $elements;
         }
-        
-        return NULL;
+        return array();
     }
 
     public function addFile($mapId, $values) {
@@ -370,17 +366,19 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->save();
     }
     
-    public function duplicateElements($fromMapId, $toMapId) {
-        $elements = $this->getAllFilesByMap($fromMapId);
-        
-        if($elements == null || $toMapId == null || $toMapId <= 0) return null;
+    public function duplicateElements ($fromMapId, $toMapId)
+    {
+        if ( ! $toMapId) return null;
         
         $elementMap = array();
-        foreach($elements as $element) {
+
+        foreach ($this->getAllFilesByMap($fromMapId) as $element)
+        {
             $newFileName = $this->duplicateFile(DOCROOT.'/'.$element->path, $toMapId);
+
             if($newFileName == null) continue;
             
-            $newPath = 'files/' . $newFileName;
+            $newPath = 'files/'.$newFileName;
             
             $builder = DB_ORM::insert('map_element')
                     ->column('map_id', $toMapId)
@@ -397,7 +395,6 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             
             $elementMap[$element->id] = $builder->execute();
         }
-        
         return $elementMap;
     }
     

@@ -158,23 +158,21 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
     }
     
     
-    public function getQuestionsByMap($mapId) {
+    public function getQuestionsByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('map_id', '=', $mapId);
-        
+
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $questions = array();
-            foreach($result as $record) {
-                $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
             return $questions;
         }
-        
-        return NULL;
+        return array();
     }
 
     public function getQuestionsByMapAndTypes($mapId, $types) {
@@ -397,35 +395,32 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         return NULL;
     }
     
-    public function duplicateQuestions($fromMapId, $toMapId, $counterMap) {
-        $questions = $this->getQuestionsByMap($fromMapId);
-        
-        if($questions == null || $toMapId == null || $toMapId <= 0) return array();
+    public function duplicateQuestions($fromMapId, $toMapId, $counterMap)
+    {
+        if ( ! $toMapId) return array();
         
         $questionMap = array();
-        foreach($questions as $question) {
-            $builder = DB_ORM::insert('map_question')
-                    ->column('map_id', $toMapId)
-                    ->column('stem', $question->stem)
-                    ->column('entry_type_id', $question->entry_type_id)
-                    ->column('width', $question->width)
-                    ->column('height', $question->height)
-                    ->column('feedback', $question->feedback)
-                    ->column('show_answer', $question->show_answer)
-                    ->column('num_tries', $question->num_tries)
-                    ->column('show_submit', $question->show_submit)
-                    ->column('redirect_node_id', $question->redirect_node_id)
-                    ->column('submit_text', $question->submit_text)
-                    ->column('type_display', $question->type_display);
 
-            if(isset($counterMap[$question->counter_id]))
-                $builder = $builder->column ('counter_id', $counterMap[$question->counter_id]);
-            
-            $questionMap[$question->id] = $builder->execute();
-            
+        foreach ($this->getQuestionsByMap($fromMapId) as $question)
+        {
+            $questionMap[$question->id] = DB_ORM::insert('map_question')
+                ->column('map_id',              $toMapId)
+                ->column('stem',                $question->stem)
+                ->column('entry_type_id',       $question->entry_type_id)
+                ->column('width',               $question->width)
+                ->column('height',              $question->height)
+                ->column('feedback',            $question->feedback)
+                ->column('show_answer',         $question->show_answer)
+                ->column('num_tries',           $question->num_tries)
+                ->column('show_submit',         $question->show_submit)
+                ->column('redirect_node_id',    $question->redirect_node_id)
+                ->column('submit_text',         $question->submit_text)
+                ->column('type_display',        $question->type_display)
+                ->column ('counter_id',         Arr::get($counterMap, $question->counter_id))
+                ->execute();
+
             DB_ORM::model('map_question_response')->duplicateResponses($question->id, $questionMap[$question->id]);
         }
-        
         return $questionMap;
     }
     
