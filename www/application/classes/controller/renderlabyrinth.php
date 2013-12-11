@@ -229,9 +229,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     //Calculate time for Timer and Pop-up messages
                     $data['timer_start'] = 1;
-
                     $data['popup_start'] = 1;
-                    $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
+
+                    // Parse text key for each nodes
+                    foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+                    {
+                        $popup->text = $this->parseText($popup->text);
+                        $data['map_popups'][] = $popup;
+                    }
 
                     $this->template = View::factory('labyrinth/skin/basic/basic');
                     $this->template->set('templateData', $data);

@@ -352,30 +352,28 @@ if ($templateData['skin_path'] != NULL) {
             <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
                 <tr>
                     <td class="centre_td popup-inside-container" width="81%" bgcolor="#FFFFFF" align="left">
-                        <h4><font color="#000000"><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></font></h4>
-                        <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
+                        <h4><?php echo Arr::get($templateData, 'node_title'); ?></h4>
+                        <?php if (Arr::get($templateData, 'editor') == TRUE) { ?>
                             <?php if (isset($templateData['node_edit'])) { ?>
-                                <form method='POST'
-                                      action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>'>
+                                <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id.'/'.$templateData['node']->id; ?>'>
                                     <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
 
-                                    <p><textarea name='mnodetext' cols='60' rows='20'
-                                                 class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
+                                    <p><textarea name='mnodetext' cols='60' rows='20'class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
                                     <input type='submit' name='Submit' value='Submit'/>
                                 </form>
                                 <p>
-                                    - <a href='<?php echo URL::base() . 'linkManager/index/' . $templateData['map']->id; ?>'><?php echo __('links'); ?></a>
-                                    - <a href='<?php echo URL::base() . 'nodeManager/index/' . $templateData['map']->id; ?>'><?php echo __('nodes'); ?></a>
-                                    - <a href='<?php echo URL::base() . 'fileManager/index/' . $templateData['map']->id; ?>'><?php echo __('files'); ?></a>
-                                    - <a href='<?php echo URL::base() . 'counterManager/index/' . $templateData['map']->id; ?>'><?php echo __('counters'); ?></a>
-                                    - <a href='<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $templateData['map']->id; ?>'><?php echo __('main editor'); ?></a>
+                                    - <a href='<?php echo URL::base().'linkManager/index/'.$templateData['map']->id; ?>'><?php echo __('links'); ?></a>
+                                    - <a href='<?php echo URL::base().'nodeManager/index/'.$templateData['map']->id; ?>'><?php echo __('nodes'); ?></a>
+                                    - <a href='<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>'><?php echo __('files'); ?></a>
+                                    - <a href='<?php echo URL::base().'counterManager/index/'.$templateData['map']->id; ?>'><?php echo __('counters'); ?></a>
+                                    - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$templateData['map']->id; ?>'><?php echo __('main editor'); ?></a>
                                 </p>
                             <?php } else {
-                                if (isset($templateData['node_text'])) echo $templateData['node_text'];
+                                echo Arr::get($templateData, 'node_text');
                                 if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>';
                             }
                         } else {
-                            if (isset($templateData['node_text'])) echo $templateData['node_text'];
+                            echo Arr::get($templateData, 'node_text');
                             if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>';
                         } ?>
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -475,7 +473,7 @@ if ($templateData['skin_path'] != NULL) {
                          is-border-transparent="<?php echo $mapPopup->style->is_border_transparent ?>"
                          border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
 
-                         style="<?php if(!$mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
+                         style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
                         <div class="header"><?php echo $mapPopup->title; ?></div>
                         <div class="text"><?php echo $mapPopup->text; ?></div>
                     </div>
