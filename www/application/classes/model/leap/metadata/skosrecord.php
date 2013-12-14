@@ -210,7 +210,8 @@ class Model_Leap_Metadata_SkosRecord extends Model_Leap_Metadata_Record
 
     public function toString(){
         $uri_parts = parse_url($this->uri);
-        $uri_parts["fragment"] = urlencode($uri_parts["fragment"]);
+        if(isset($uri_parts["fragment"]))
+            $uri_parts["fragment"] = urlencode($uri_parts["fragment"]);
 
         $scheme = (!empty($uri_parts['scheme'])) ? $uri_parts['scheme'] : '';
         $host = (!empty($uri_parts['host'])) ? $uri_parts['host'] : '';
