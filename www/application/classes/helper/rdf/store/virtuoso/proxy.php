@@ -34,7 +34,7 @@ class Helper_RDF_Store_Virtuoso_Proxy {
             $s = $triple["s"];
             $p = $triple["p"];
             $o = $triple["o"];
-            if($triple["o_type"]="uri"){
+            if($triple["o_type"]=="uri"){
                 $query .= "<$s> <$p> <$o>. ";
             }
             else{
