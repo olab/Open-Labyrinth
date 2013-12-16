@@ -45,7 +45,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
                     foreach ($extra_triples as $extra_triple) {
                         $store->insert(array($extra_triple),$extra_graph);
                     }
-
                 }
 
                 $store->insert(array($arc_triple),$graph_uri);
@@ -53,7 +52,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
         }
 
         if($external=="on"){
-
 
             $vocabs = Model_Leap_Vocabulary::getAllVocabulary();
 
@@ -84,29 +82,18 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
             $class_triples = $cmapping->getTriples();
 
-
-
             foreach ($class_triples as $triple) {
                 $arc_triple = $triple->toString();
 
                 $store->insert(array($arc_triple),$graph_uri);
 
-
-
-
             }
-
-
         }
-
-
 
         $propertyMappings = Model_Leap_Vocabulary_LegacyPropertyMapping::getAllMappings();
         foreach ($propertyMappings as $pmapping) {
 
             $property_triples = $pmapping->getTriples();
-
-
 
             foreach ($property_triples as $triple) {
 
@@ -125,9 +112,7 @@ class Controller_Sparql_Rebuild extends Controller_Base
                 $store->insert(array($arc_triple),$graph_uri);
             }
 
-
         }
-
 
         $openView = View::factory('sparql/rebuildOK');
         // $openView->set('templateData', $this->templateData);
@@ -136,7 +121,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
         // unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
-
 
     private function discover_triples($data){
 
@@ -151,10 +135,6 @@ class Controller_Sparql_Rebuild extends Controller_Base
     }
 
     public function action_index(){
-
-
-
-
         $View = View::factory('sparql/rebuild');
         // $openView->set('templateData', $this->templateData);
 
