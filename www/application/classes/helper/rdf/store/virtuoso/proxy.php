@@ -14,7 +14,7 @@ class Helper_RDF_Store_Virtuoso_Proxy {
         $url = $sparql_config["endpoint-auth"];
         $username = $sparql_config["username"];
         $pass = $sparql_config["password"];
-        $query="DELETE FROM ?g WHERE { ?s ?p ?o .FILTER regex(?g, '$graph_uri').}";
+        $query="DELETE FROM <$url> WHERE { ?s ?p ?o .}";
         $this->authenticateExecute($url, $username,$pass, array("query"=>$query));
 
     }
