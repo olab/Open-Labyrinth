@@ -63,7 +63,6 @@ class Helper_RDF_Store_Virtuoso_Proxy {
         curl_setopt($process, CURLOPT_POSTFIELDS, $values);
         curl_setopt($process, CURLOPT_RETURNTRANSFER, TRUE);
         $return = curl_exec($process);
-        var_dump($return);
         curl_close($process);
     }
 
