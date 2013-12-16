@@ -37,6 +37,7 @@
 
         public function action_index()
         {
+
             //$maps = DB_ORM::model('map')->getAllEnabledAndKeyMap();
             //$this->templateData['maps'] = $maps;
             $url_base = URL::base(NULL, TRUE);
@@ -56,6 +57,10 @@
 
         public function before()
         {
+            $sparql_config = Kohana::$config->load('sparql');
+            $url = $sparql_config["endpoint"];
+            if(isset($url))
+                $this->request->redirect ($url);
 
             $store = Helper_RDF_Store::getDriver();
 
