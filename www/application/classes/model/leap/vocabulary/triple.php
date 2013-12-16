@@ -59,7 +59,7 @@ class Model_Leap_Vocabulary_Triple extends DB_ORM_Model
         }
 
         if ($this->type == Model_Leap_Vocabulary_Term::Property)
-            $arc_triple['o_type'] = "uri";
+            $arc_triple['o_type'] = "literal";
         else{//var_dump($this->type);
             $arc_triple['o_type'] = "uri";
             if($this->type == Model_Leap_Vocabulary_Term::Reverse){

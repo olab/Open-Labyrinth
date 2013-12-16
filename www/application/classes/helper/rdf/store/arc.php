@@ -51,7 +51,12 @@ class Helper_RDF_Store_Arc extends Helper_RDF_Store {
 
     }
 
+    public static function getEndpoint(){
 
+        if(!isset(self::$endpoint))
+            self::initialize();
+        return self::$endpoint;
+    }
 
 
 }

@@ -20,18 +20,21 @@ class Helper_RDF_Store {
 
     public static function getEndpoint(){
 
-        if(!isset(self::$endpoint))
-            self::initialize();
-        return self::$endpoint;
+    }
+
+
+    public static function getDriver(){
+        $sparql_config = Kohana::$config->load('sparql');
+        if(isset($sparql_config["driver"]))
+            $driver = $sparql_config["driver"];
+        if(!isset($driver))$driver = 'Helper_RDF_Store_Arc';
+        return $driver;
     }
 
 
     public static function getStore(){
 
-        $sparql_config = Kohana::$config->load('sparql');
-
-        $driver = $sparql_config["driver"];
-        if(!isset($driver))$driver = 'Helper_RDF_Store_Arc';
+        $driver = self::getDriver();
 
         if(!isset($driver::$store))
             $driver::initialize();
