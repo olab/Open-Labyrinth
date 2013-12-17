@@ -559,10 +559,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_shownPopup() {
+    public function action_popupAction() {
+        $map_id = $this->request->param('id', NULL);
         $this->auto_render = false;
         $popupId = Arr::get($_POST, 'popupId', null);
         $shownPopups = Session::instance()->get('shownMapPopups', array());
+        Model::factory('labyrinth')->popup_counters($map_id, $popupId);
 
         if($popupId != null && !in_array($popupId, $shownPopups)) {
             $shownPopups[] = $popupId;

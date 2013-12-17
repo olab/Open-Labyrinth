@@ -139,6 +139,28 @@
     </fieldset>
 
     <fieldset class="fieldset">
+        <legend>Counters</legend>
+        <?php foreach (Arr::get($templateData, 'counters', array()) as $counter) { ?>
+            <?php echo __('counter function for'); ?>"<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id;?>"><?php echo $counter->name; ?></a>"
+            <div class="control-group">
+                <label for="cfunc_<?php echo $counter->id; ?>" class="control-label"><?php echo __('Counter Function'); ?></label>
+                <div class="controls">
+                    <input type="text" id="cfunc_<?php echo $counter->id; ?>"
+                           name="counters[<?php echo $counter->id; ?>][function]"
+                           value="<?php $c = (Arr::get($templateData, 'popup')) ? Arr::get($templateData, 'popup')->getCounter($counter->id) : DB_ORM::model('map_popup_counter'); if ($c != NULL) echo $c->function; ?>">
+                    <span>type +, - or = an integer - e.g. '+1' or '=32'</span>
+                </div>
+            </div>
+        <?php } ?>
+        <div class="form-actions">
+
+            <a class="btn btn-info" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>">
+                <i class="icon-dashboard"></i>
+                <?php echo __("Manage"); ?></a>
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset">
         <legend><?php echo __('Message Styling');?> </legend>
         <div class="control-group">
             <label class="control-label"><?php echo __('Font color'); ?></label>
@@ -229,25 +251,32 @@
                         <label class="control-label"><?php echo __('Redirect'); ?></label>
                         <div class="controls">
                             <div class="radio_extended btn-group redirect-options-container">
-                                <input autocomplete="off" type="radio" id="redirectTypeNone" name="redirectType" value="<?php echo Popup_Redirect_Types::NONE; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->redirect_type_id == Popup_Redirect_Types::NONE) { echo 'checked="checked"'; } ?>/>
+                                <input autocomplete="off" type="radio" id="redirectTypeNone" name="redirectType" value="<?php echo Popup_Redirect_Types::NONE; ?>" <?php if(isset($redirect_type_id) AND $redirect_type_id == Popup_Redirect_Types::NONE) { echo 'checked="checked"'; } ?>/>
                                 <label data-class="btn" class="btn" for="redirectTypeNone"><?php echo __('None'); ?></label>
 
-                                <input autocomplete="off" type="radio" id="redirectTypeNode" name="redirectType" value="<?php echo Popup_Redirect_Types::NODE; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->redirect_type_id == Popup_Redirect_Types::NODE) { echo 'checked="checked"'; } ?>/>
+                                <input autocomplete="off" type="radio" id="redirectTypeNode" name="redirectType" value="<?php echo Popup_Redirect_Types::NODE; ?>" <?php if(isset($redirect_type_id) AND $redirect_type_id == Popup_Redirect_Types::NODE) { echo 'checked="checked"'; } ?>/>
                                 <label data-class="btn-info" show-nodes="1" class="btn" for="redirectTypeNode"><?php echo __('Node'); ?></label>
 
-                                <input autocomplete="off" type="radio" id="redirectTypeReport" name="redirectType" value="<?php echo Popup_Redirect_Types::REPORT; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->redirect_type_id == Popup_Redirect_Types::REPORT) { echo 'checked="checked"'; } ?>/>
+                                <input autocomplete="off" type="radio" id="redirectTypeReport" name="redirectType" value="<?php echo Popup_Redirect_Types::REPORT; ?>" <?php if(isset($redirect_type_id) AND $redirect_type_id == Popup_Redirect_Types::REPORT) { echo 'checked="checked"'; } ?>/>
                                 <label data-class="btn-danger" class="btn" for="redirectTypeReport"><?php echo __('Report'); ?></label>
                             </div>
                         </div>
                     </div>
 
                     <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
-                        <div class="control-group <?php if(isset($templateData['popup']) && $templateData['popup']->assign->redirect_type_id != Popup_Redirect_Types::NODE) { echo 'hide'; } ?> redirect-nodes-container">
+                        <div class="control-group <?php if(isset($redirect_type_id) AND $redirect_type_id != Popup_Redirect_Types::NODE) { echo 'hide'; } ?> redirect-nodes-container">
                             <label class="control-label">&nbsp;</label>
                             <div class="controls">
                                 <select name="redirectNodeId" id="redirectNodeId">
                                     <?php foreach($templateData['nodes'] as $node) { ?>
-                                        <option value="<?php echo $node->id; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->redirect_to_id == $node->id) { echo 'selected="selected"'; } ?>><?php echo $node->title; ?></option>
+                                        <option value="<?php echo $node->id; ?>" <?php
+                                                if(isset($templateData['popup'])){
+                                                    foreach ($templateData['popup']->assign as $assign){
+                                                        if ($assign->redirect_to_id == $node->id) echo 'selected="selected"';
+                                                    }
+                                                }?>>
+                                            <?php echo $node->title; ?>
+                                        </option>
                                     <?php } ?>
                                 </select>
                             </div>
@@ -274,7 +303,16 @@
             <div class="controls">
                 <div class="radio_extended btn-group">
                     <?php foreach($templateData['popupAssignTypes'] as $popupAssignType) { ?>
-                        <input autocomplete="off" type="radio" id="assignType_<?php echo $popupAssignType->id; ?>" name="assignType" value="<?php echo $popupAssignType->id; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->assign_type_id == $popupAssignType->id) { echo 'checked="checked"'; } ?>/>
+                        <input autocomplete="off"
+                               type="radio"
+                               id="assignType_<?php echo $popupAssignType->id; ?>"
+                               name="assignType"
+                               value="<?php echo $popupAssignType->id; ?>" <?php
+                                if(isset($templateData['popup'])){
+                                    foreach ($templateData['popup']->assign as $assign){
+                                        if ($assign->assign_type_id == $popupAssignType->id) echo 'checked="checked"';
+                                    }
+                                }?>>
                         <label data-class="btn-info" class="btn" for="assignType_<?php echo $popupAssignType->id; ?>"><?php echo $popupAssignType->title; ?></label>
                     <?php } ?>
                 </div>
@@ -282,12 +320,26 @@
         </div>
 
         <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
-            <div class="control-group popup-assign-<?php echo Popup_Assign_Types::NODE; ?>-container <?php if(isset($templateData['popup']) && $templateData['popup']->assign->assign_type_id != Popup_Assign_Types::NODE) { echo 'hide'; } else if(!isset($templateData['popup'])) { echo 'hide'; } ?>">
+            <div class="control-group popup-assign-<?php echo Popup_Assign_Types::NODE; ?>-container <?php
+                if(isset($templateData['popup'])) {
+                    foreach ($templateData['popup']->assign as $assign) {
+                        if ($assign->assign_type_id != Popup_Assign_Types::NODE) echo 'hide';
+                    }
+                } else {
+                    echo 'hide';
+                } ?>">
                 <label class="control-label">&nbsp;</label>
                 <div class="controls">
-                    <select name="node">
+                    <select name="node[]" multiple>
                         <?php foreach($templateData['nodes'] as $node) { ?>
-                            <option value="<?php echo $node->id; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->assign_to_id == $node->id) { echo 'selected="selected"'; } ?>><?php echo $node->title; ?></option>
+                            <option value="<?php echo $node->id; ?>" <?php
+                                    if(isset($templateData['popup'])) {
+                                        foreach ($templateData['popup']->assign as $assign) {
+                                            if ($assign->assign_to_id == $node->id) echo 'selected="selected"';
+                                        }
+                                    } ?>>
+                            <?php echo $node->title; ?>
+                            </option>
                         <?php } ?>
                     </select>
                 </div>
@@ -295,12 +347,25 @@
         <?php } ?>
 
         <?php if(isset($templateData['sections']) && count($templateData['sections']) > 0) { ?>
-            <div class="control-group popup-assign-<?php echo Popup_Assign_Types::SECTION; ?>-container <?php if(isset($templateData['popup']) && $templateData['popup']->assign->assign_type_id != Popup_Assign_Types::SECTION) { echo 'hide'; } else if(!isset($templateData['popup'])) { echo 'hide'; } ?>">
+            <div class="control-group popup-assign-<?php echo Popup_Assign_Types::SECTION; ?>-container <?php
+                if(isset($templateData['popup'])) {
+                    foreach ($templateData['popup']->assign as $assign) {
+                        if ($assign->assign_type_id != Popup_Assign_Types::SECTION) echo 'hide';
+                    }
+                }
+                else echo 'hide'; ?>">
                 <label class="control-label">&nbsp;</label>
                 <div class="controls">
                     <select name="section">
                         <?php foreach($templateData['sections'] as $section) { ?>
-                            <option value="<?php echo $section->id; ?>" <?php if(isset($templateData['popup']) && $templateData['popup']->assign->assign_to_id == $section->id) { echo 'selected="selected"'; } ?>><?php echo $section->name; ?></option>
+                            <option value="<?php echo $section->id; ?>" <?php
+                                    if (isset($templateData['popup'])) {
+                                        foreach ($templateData['popup']->assign as $assign) {
+                                            if ($assign->assign_to_id == $section->id) echo 'selected="selected"';
+                                        }
+                                    } ?>>
+                                <?php echo $section->name; ?>
+                            </option>
                         <?php } ?>
                     </select>
                 </div>

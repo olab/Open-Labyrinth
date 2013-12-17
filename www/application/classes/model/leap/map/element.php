@@ -399,20 +399,15 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
     }
     
     private function duplicateFile($srcPath, $addName) {
-        if(strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
+        if (strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
         
-        if(!file_exists($srcPath)) return null;
+        if (!file_exists($srcPath)) return null;
         
-        $pathinfo = pathinfo($srcPath);
-        $newFileName = $pathinfo['filename'] . '_' . $addName;
+        $path_info = pathinfo($srcPath);
+        $newFileName = $path_info['filename'].'_'.$addName;
+        $dstPath = $path_info['dirname'].'/'.$newFileName.'.'.Arr::get($path_info, 'extension');
         
-        $dstPath = $pathinfo['dirname'] . '/' . $newFileName . '.' . $pathinfo['extension'];
-        
-        $result = null;
-        if(copy($srcPath, $dstPath))
-            $result = $newFileName . '.' . $pathinfo['extension'];
-        
-        return $result;
+        return (copy($srcPath, $dstPath)) ? $newFileName.'.'.Arr::get($path_info, 'extension') : null;
     }
 
     public function exportMVP($mapId) {

@@ -431,6 +431,7 @@ class Model_Labyrinth extends Model {
 
                     $counterFunction = '';
                     $appearOnNode = 1;
+
                     if (count($node->counters) > 0) {
                         foreach ($node->counters as $nodeCounter) {
                             if ($counter->id == $nodeCounter->counter->id) {
@@ -1169,6 +1170,17 @@ class Model_Labyrinth extends Model {
             }
         }
         return $sessionId;
+    }
+
+    public function popup_counters ($map_id, $popup_id) {
+        $counterString = $this->getCounterString($map_id);
+        $counters = DB_ORM::model('map_popup_counter')->getCountersScore($popup_id);
+        foreach ($counters as $c){
+            $value = $this->getCounterValueFromString($c->counter_id, $counterString);
+            $value = $this->calculateCounterFunction($value, $c->function);
+            $counterString = $this->setCounterValueToString($c->counter_id, $counterString, $value);
+        }
+        $this->updateCounterString($map_id, $counterString);
     }
 }
 

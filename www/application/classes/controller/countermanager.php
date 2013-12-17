@@ -161,6 +161,7 @@ class Controller_CounterManager extends Controller_Base {
         $counterId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $counterId != NULL) {
             DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int) $counterId);
+            DB_ORM::model('map_popup_counter')->deleteCounters((int) $counterId, 'counter_id');
             DB_ORM::model('map_counter', array((int) $counterId))->delete();
             Request::initial()->redirect(URL::base() . 'counterManager/index/' . $mapId);
         } else {
@@ -171,45 +172,46 @@ class Controller_CounterManager extends Controller_Base {
     public function action_grid() {
         $mapId = $this->request->param('id', NULL);
         $counterId = $this->request->param('id2', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counter Grid'))->set_url(URL::base() . 'counterManager/grid/' . $mapId));
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-            if ($counterId != NULL) {
-                $this->templateData['counters'][] = DB_ORM::model('map_counter', array((int) $counterId));
-                $this->templateData['oneCounter'] = true;
-            } else {
-                $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-            }
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+        $this->templateData['popups'] = DB_ORM::model('map_popup')->getAllMapPopups((int) $mapId);
 
-            $gridCounterView = View::factory('labyrinth/counter/grid');
-            $gridCounterView->set('templateData', $this->templateData);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counter Grid'))->set_url(URL::base() . 'counterManager/grid/' . $mapId));
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $gridCounterView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
+        if ($counterId != NULL) {
+            $this->templateData['counters'][] = DB_ORM::model('map_counter', array((int) $counterId));
+            $this->templateData['oneCounter'] = true;
         } else {
-            Request::initial()->redirect(URL::base());
+            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
         }
+
+        $gridCounterView = View::factory('labyrinth/counter/grid');
+        $gridCounterView->set('templateData', $this->templateData);
+
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+
+        $this->templateData['center'] = $gridCounterView;
+        $this->templateData['left'] = $leftView;
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_updateGrid() {
         $mapId = $this->request->param('id', NULL);
         $counterId = $this->request->param('id2', NULL);
-        if ($_POST and $mapId != NULL) {
+        if ($_POST AND $mapId != NULL) {
             if ($counterId != NULL) {
                 DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int) $counterId, (int) $mapId);
-                Request::initial()->redirect(URL::base() . 'counterManager/grid/' . $mapId . '/' . $counterId);
+                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId.'/'.$counterId);
             } else {
                 DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int) $mapId);
-                Request::initial()->redirect(URL::base() . 'counterManager/grid/' . $mapId);
+                DB_ORM::model('map_popup_counter')->updatePopupCounters($_POST, NULL, (int) $mapId);
+                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
             }
         } else {
             Request::initial()->redirect(URL::base());

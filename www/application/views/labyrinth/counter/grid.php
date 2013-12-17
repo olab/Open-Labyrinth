@@ -19,47 +19,65 @@
  *
  */
 if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
-<div class="page-header">
-<h1><?php echo __('Counter grid'); ?></h1></div>
-<?php if(isset($templateData['oneCounter'])) { ?>
+    <div class="page-header"><h1><?php echo __('Counter grid'); ?></h1></div>
+
+    <?php if(isset($templateData['oneCounter'])) : ?>
     <form action="<?php echo URL::base().'counterManager/updateGrid/'.$templateData['map']->id.'/'.$templateData['counters'][0]->id; ?>" method="POST">
-<?php } else { ?>
+    <?php else: ?>
     <form action="<?php echo URL::base().'counterManager/updateGrid/'.$templateData['map']->id; ?>" method="POST">
-<?php } ?>
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th></th>
-            <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                <?php foreach($templateData['counters'] as $counter) { ?>
+    <?php endif; ?>
+
+        <h2>Nodes</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <?php foreach(Arr::get($templateData, 'counters', array()) as $counter): ?>
                     <th style="width:155px;">
                         <?php echo __('Appear on node'); ?>
                         <a href="javascript:void(0)" id="counter_id_<?php echo $counter->id; ?>" class="btn btn-info btn-mini toggle-all-on">all on</a>
                         <a href="javascript:void(0)" id="counter_id_<?php echo $counter->id; ?>" class="btn btn-info btn-mini toggle-all-off">all off</a>
                         <a href="javascript:void(0)" id="counter_id_<?php echo $counter->id; ?>" class="btn btn-info btn-mini toggle-reverse">reverse</a>
                     </th>
-                <?php } ?>
-            <?php } ?>
-        </tr>
-        </thead>
-        <?php if (count($templateData['nodes']) > 0) { ?>
-            <?php foreach ($templateData['nodes'] as $node) { ?>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach (Arr::get($templateData, 'nodes', array()) as $node) { ?>
                 <tr>
                     <td><p><?php echo $node->title; ?> [<?php echo $node->id; ?>]</p></td>
-                    <?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                        <?php foreach($templateData['counters'] as $counter) { ?>
-                            <td>
-                               <div><?php echo $counter->name; ?></div> <input class="input-small not-autocomplete" type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>"><label>
-                              <input autocomplete="off" class="chk_counter_id_<?php echo $counter->id; ?>" type="checkbox" value="1" name="ch_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" <?php if ($c != NULL) {if($c->display == 1) echo 'checked="checked"';}else{echo 'checked="checked"';} ?> /> <?php echo __("appear on node"); ?></label>
-                            </td>
-                        <?php } ?>
+                    <?php foreach(Arr::get($templateData, 'counters', array()) as $counter) { ?>
+                    <td>
+                        <div><?php echo $counter->name; ?></div>
+                        <input class="input-small not-autocomplete" type="text" size="5" name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">
+                        <label>
+                            <input autocomplete="off" class="chk_counter_id_<?php echo $counter->id; ?>" type="checkbox" value="1" name="ch_<?php echo $node->id; ?>_<?php echo $counter->id; ?>" <?php if ($c != NULL) {if($c->display == 1) echo 'checked="checked"';}else{echo 'checked="checked"';} ?> /> <?php echo __("appear on node"); ?>
+                        </label>
+                    </td>
                     <?php } ?>
                 </tr>
             <?php } ?>
-        <?php } ?>
-    </table>
-    <div class="pull-right">
-        <input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>">
-    </div>
-                            </form>
+            </tbody>
+        </table>
+
+        <h2>Popups</h2>
+        <table class="table table-striped table-bordered">
+            <tbody>
+            <?php foreach (Arr::get($templateData, 'popups', array()) as $popup) { ?>
+                <tr>
+                    <td><p><?php echo $popup->title; ?> [<?php echo $popup->id; ?>]</p></td>
+
+                    <?php foreach(Arr::get($templateData, 'counters', array()) as $counter) { ?>
+                        <td style="width:155px;">
+                            <div><?php echo $counter->name; ?></div>
+                            <input class="input-small not-autocomplete" type="text" size="5" name="pc_<?php echo $popup->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $popup->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">
+                        </td>
+                    <?php } ?>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+
+        <div class="pull-right"><input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>"></div>
+    </form>
 <?php } ?>

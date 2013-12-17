@@ -311,22 +311,21 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $mapId = Arr::get($values, 'map_id', NULL);
         if($mapId != NULL) {
             return DB_ORM::model('map_node', array(DB_ORM::insert('map_node')
-                                                           ->column('map_id', $mapId)
-                                                           ->column('title', Arr::get($values, 'mnodetitle', ''))
-                                                           ->column('text', Arr::get($values, 'mnodetext', ''))
-                                                           ->column('info', Arr::get($values, 'mnodeinfo', ''))
-                                                           ->column('probability', Arr::get($values, 'mnodeprobability', FALSE))
-                                                           ->column('link_style_id', Arr::get($values, 'linkstyle', 1))
-                                                           ->column('link_type_id', 2)
-                                                           ->column('priority_id', Arr::get($values, 'priority', 1))
-                                                           ->column('undo', Arr::get($values, 'mnodeUndo', FALSE))
-                                                           ->column('end', Arr::get($values, 'ender', FALSE))
-                                                           ->column('type_id', Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
-                                                           ->column('show_info', Arr::get($values, 'show_info', FALSE) ? 1 : 0)
-                                                           ->column('annotation', Arr::get($values, 'annotation', null))
-                                                           ->execute()));
+                ->column('map_id',           $mapId)
+                ->column('title',            Arr::get($values, 'mnodetitle', ''))
+                ->column('text',             Arr::get($values, 'mnodetext', ''))
+                ->column('type_id',          Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                ->column('probability',      Arr::get($values, 'mnodeprobability', FALSE))
+                ->column('info',             Arr::get($values, 'mnodeinfo', ''))
+                ->column('link_style_id',    Arr::get($values, 'linkstyle', 1))
+                ->column('link_type_id',     2)
+                ->column('priority_id',      Arr::get($values, 'priority', 1))
+                ->column('undo',             Arr::get($values, 'mnodeUndo', FALSE))
+                ->column('end',              Arr::get($values, 'ender', FALSE))
+                ->column('show_info',        Arr::get($values, 'show_info', FALSE) ? 1 : 0)
+                ->column('annotation',       Arr::get($values, 'annotation', null))
+                ->execute()));
         }
-        
         return NULL;
     }
 
@@ -632,10 +631,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                     return $counter;
                 }
             }
-            
             return NULL;
         }
-        
         return NULL;
     }
     

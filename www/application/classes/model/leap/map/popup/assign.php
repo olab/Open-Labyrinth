@@ -29,26 +29,26 @@ class Model_Leap_Map_Popup_Assign extends DB_ORM_Model {
         parent::__construct();
 
         $this->fields = array(
+            'id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
             'map_popup_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-
             'assign_type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-
             'assign_to_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-
             'redirect_type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-
             'redirect_to_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => TRUE,
@@ -65,7 +65,7 @@ class Model_Leap_Map_Popup_Assign extends DB_ORM_Model {
     }
 
     public static function primary_key() {
-        return array('map_popup_id');
+        return array('id');
     }
 
     /**
@@ -74,6 +74,7 @@ class Model_Leap_Map_Popup_Assign extends DB_ORM_Model {
      * @param {integer} $popupId - popup ID
      * @param {integer} $mapId - map ID
      * @param {array} $values - assign values
+     * @param (string) $how_many - one or many
      */
     public function assignPopup($popupId, $mapId, $values) {
         if($popupId == null || $mapId == null || $mapId <= 0 || $values == null || count($values) <= 0) return;
@@ -98,25 +99,50 @@ class Model_Leap_Map_Popup_Assign extends DB_ORM_Model {
                 break;
         }
 
-        $assign = DB_SQL::select('default')->from($this->table())->where('map_popup_id', '=', $popupId)->limit(1)->query();
-        if($assign->is_loaded()) {
-            DB_SQL::update('default')
-                    ->table($this->table())
-                    ->set('assign_type_id',   $assignType)
-                    ->set('assign_to_id',     $assignId)
-                    ->set('redirect_type_id', $redirectType)
-                    ->set('redirect_to_id',   $redirectId)
-                    ->where('map_popup_id', '=', $popupId)
-                    ->execute();
+        $assign_from_db = array();
+        // get all popups assign to node
+        foreach (DB_SQL::select('default')->from($this->table())->where('map_popup_id', '=', $popupId)->query() as $id) {
+            $assign_from_db[$id['id']] = $id['assign_to_id'];
+        }
+
+        // delete assign that not included in $assignId
+        foreach (array_diff($assign_from_db, $assignId) as $id=>$v) {
+            DB_ORM::model('map_popup_assign', $id)->delete();
+        }
+
+        if ($assignType == Popup_Assign_Types::NODE) {
+            foreach ($assignId as $id_node){
+                $id = array_search($id_node, $assign_from_db);
+                if($id) {
+                    DB_SQL::update('default')
+                        ->table($this->table())
+                        ->set('map_popup_id',     $popupId)
+                        ->set('assign_type_id',   $assignType)
+                        ->set('assign_to_id',     $id_node)
+                        ->set('redirect_type_id', $redirectType)
+                        ->set('redirect_to_id',   $redirectId)
+                        ->where('id', '=', $id)
+                        ->execute();
+                } else {
+                    DB_SQL::insert('default')
+                        ->into($this->table())
+                        ->column('map_popup_id',     $popupId)
+                        ->column('assign_type_id',   $assignType)
+                        ->column('assign_to_id',     $id_node)
+                        ->column('redirect_type_id', $redirectType)
+                        ->column('redirect_to_id',   $redirectId)
+                        ->execute();
+                }
+            }
         } else {
             DB_SQL::insert('default')
-                    ->into($this->table())
-                    ->column('map_popup_id',     $popupId)
-                    ->column('assign_type_id',   $assignType)
-                    ->column('assign_to_id',     $assignId)
-                    ->column('redirect_type_id', $redirectType)
-                    ->column('redirect_to_id',   $redirectId)
-                    ->execute();
+                ->into($this->table())
+                ->column('map_popup_id',     $popupId)
+                ->column('assign_type_id',   $assignType)
+                ->column('assign_to_id',     $assignId)
+                ->column('redirect_type_id', $redirectType)
+                ->column('redirect_to_id',   $redirectId)
+                ->execute();
         }
     }
 }

@@ -112,7 +112,57 @@ if (isset($templateData['map'])) {
                 </div>
             </div>
         </fieldset>
+
         <fieldset class="fieldset">
+            <legend>Counters</legend>
+            <?php foreach (Arr::get($templateData, 'counters', array()) as $counter) { ?>
+                <?php echo __('counter function for'); ?>"<a href="<?php echo URL::base().'counterManager/editCounter/'.$templateData['map']->id.'/'.$counter->id;?>"><?php echo $counter->name; ?></a>"
+                <div class="control-group">
+                    <label for="cfunc_<?php echo $counter->id; ?>" class="control-label"><?php echo __('Counter Function'); ?></label>
+                    <div class="controls">
+                        <input type="text" id="cfunc_<?php echo $counter->id; ?>"
+                               name="cfunc_<?php echo $counter->id; ?>">
+                        <span>type +, - or = an integer - e.g. '+1' or '=32'</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="cfunc_ch_<?php echo $counter->id; ?>" class="control-label"><?php echo __('Appear on node'); ?></label>
+                    <div class="controls">
+                        <input type="checkbox" value="1" id="cfunc_ch_<?php echo $counter->id; ?>" name="cfunc_ch_<?php echo $counter->id; ?>"
+                    </div>
+                </div>
+            <?php } ?>
+            <div class="form-actions">
+
+                <a class="btn btn-info" href="<?php  echo URL::base() . 'counterManager/index/' . $templateData['map']->id;?>">
+                    <i class="icon-dashboard"></i>
+                    <?php echo __("Manage"); ?></a>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+            <legend>Pop-ups</legend>
+
+            <?php if ($popups = Arr::get($templateData, 'popups', FALSE)): ?>
+                <select name="popups[]" multiple>
+                    <?php foreach ($popups as $popup): ?>
+                        <option value="<?php echo $popup->id; ?>">
+                            <?php echo $popup->title; ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            <?php endif; ?>
+
+            <div class="form-actions">
+                <a class="btn btn-info" href="<?php  echo URL::base() . 'popupManager/index/' . $templateData['map']->id;?>">
+                    <i class="icon-envelope"></i><?php echo __("Manage"); ?>
+                </a>
+            </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+            <legend>Node Settings</legend>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Exit Node Probability'); ?></label>
 
