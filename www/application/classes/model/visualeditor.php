@@ -128,7 +128,7 @@ class Model_VisualEditor extends Model {
         if($sections != null && count($sections) > 0) {
             $sectionsJSON = '';
             foreach($sections as $section) {
-                $sectionsJSON .= '{ id: ' . $section->id . ', name: "' . $section->name . '"';
+                $sectionsJSON .= '{ id: ' . $section->id . ', name: "' . base64_encode(str_replace('&#43;', '+', $section->name)) . '"';
                 if($section->nodes != null && count($section->nodes) > 0) {
                     $sectionsJSON .= ', nodes: [';
                     foreach($section->nodes as $sectionNode) {
@@ -590,10 +590,10 @@ class Model_VisualEditor extends Model {
             $sectionId = null;
             foreach ($obj['sections'] as $section) {
                 if(isset($section['id']) && strpos($section['id'], 'n') != FALSE) {
-                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => $section['name']))->id;
+                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))))->id;
                 } else {
                     $sectionId = $section['id'];
-                    DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => $section['name']));
+                    DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))));
                 }
 
                 if(isset($section['nodes']) && count($section['nodes']) > 0) {

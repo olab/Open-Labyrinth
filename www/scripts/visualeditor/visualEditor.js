@@ -439,7 +439,7 @@ var VisualEditor = function() {
                 }
                 if(sectionNodes.length > 0) {
                     sectionNodes = sectionNodes.substring(0, sectionNodes.length - 2);
-                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + self.sections[i].name + '", "nodes": [' + sectionNodes + ']}, ';
+                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + encode64(self.sections[i].name) + '", "nodes": [' + sectionNodes + ']}, ';
                 }
             }
 
@@ -561,7 +561,7 @@ var VisualEditor = function() {
         if('sections' in object && object.sections.length > 0) {
             for(var i = object.sections.length; i--;) {
                 var color   = self.GetRandomColor(),
-                    section = new Section(object.sections[i].id, object.sections[i].name, color);
+                    section = new Section(object.sections[i].id, decode64(object.sections[i].name), color);
                 if('nodes' in object.sections[i] && object.sections[i].nodes.length > 0) {
                     for(var j = object.sections[i].nodes.length; j--;) {
                         var n = GetNodeById(object.sections[i].nodes[j].nodeId);
