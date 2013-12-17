@@ -474,11 +474,18 @@ if ($templateData['skin_path'] != NULL) {
                      border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
 
                      style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
-                    <div class="header"><?php
-                        echo $mapPopup->title;
-                        $status = Auth::instance()->get_user()->type_id;
-                        if ($status == 2 OR $status == 4) echo '<br>Popup id:'.$mapPopup->id; ?>
-                    </div>
+
+                        <div class="info_for_admin node_id"><?php
+                            $status = Auth::instance()->get_user()->type_id;
+                            if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;
+                            ?>
+                        </div>
+                        <div class="info_for_admin redirect_to"><?php
+                            if ($status == 2 OR $status == 4) {
+                            if ($assign->redirect_type_id == 3) echo 'to report';
+                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id; }?>
+                        </div>
+                    <div class="header"><?php echo $mapPopup->title; ?></div>
                     <div class="text"><?php echo $mapPopup->text; ?></div>
                 </div><?php
                 }

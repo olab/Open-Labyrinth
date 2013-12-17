@@ -498,4 +498,17 @@ a.file-link:visited {
 .popup .header {
     text-align: center;
     font-size: 18px;
+    clear:both;
+}
+.popup .info_for_admin {
+    position:relative;
+    top:1px;
+    font-size:10px;
+    margin-bottom: 1px;
+}
+.popup .info_for_admin.node_id {
+    float:left;
+}
+.popup .info_for_admin.redirect_to {
+    float:right;
 }
