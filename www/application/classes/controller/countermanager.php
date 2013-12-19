@@ -125,7 +125,7 @@ class Controller_CounterManager extends Controller_Base {
         $counterId = $this->request->param('id2', NULL);
         if ($_POST and $mapId != NULL and $counterId != NULL) {
             DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
-            Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
+            Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
         } else {
             Request::initial()->redirect(URL::base());
         }

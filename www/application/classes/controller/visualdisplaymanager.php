@@ -160,15 +160,19 @@ class Controller_VisualDisplayManager extends Controller_Base {
     }
     
     private function getVisualDisplayImages($mapId) {
-        $dir = DOCROOT . '/files/' . $mapId . '/vdImages';
-        if(!is_dir($dir)) {
-            mkdir(DOCROOT . '/files/' . $mapId);
-            mkdir(DOCROOT . '/files/' . $mapId . '/vdImages');
-            mkdir(DOCROOT . '/files/' . $mapId . '/vdImages/thumbs');
-        }
+        // define all directory
+        $dir_main   = DOCROOT.'/files/'.$mapId;
+        $dir        = $dir_main.'/vdImages';
+        $dir_sub    = $dir.'/thumbs';
+
+        // define directory doesn't exsist, create it
+        if (! is_dir($dir_main)) mkdir($dir_main);
+        if (! is_dir($dir))      mkdir($dir);
+        if (! is_dir($dir_sub))  mkdir($dir_sub);
+
         $images = array();
-        $handle = opendir($dir); 
-        
+        $handle = opendir($dir);
+
         while(($file = readdir($handle)) !== false) { 
             if($file == '.' || $file == '..') { 
                 continue; 

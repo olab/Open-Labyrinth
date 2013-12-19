@@ -193,12 +193,11 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
     }
     
     public function updateNodeCounter($nodeId, $counterId, $function, $display = 0) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('node_id', '=', $nodeId, 'AND')
-                ->where('counter_id', '=', $counterId);
-        
-        $result = $builder->query();
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('node_id', '=', $nodeId, 'AND')
+            ->where('counter_id', '=', $counterId)
+            ->query();
         
         if($result->is_loaded()){
             $this->id = $result[0]['id'];

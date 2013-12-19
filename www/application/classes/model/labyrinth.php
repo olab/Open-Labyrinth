@@ -397,6 +397,8 @@ class Model_Labyrinth extends Model {
                 $remoteCounterString = '';
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($node->map_id);
                 $redirect = NULL;
+                $main_counter['id'] = '';
+                $main_counter['value'] = '';
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
@@ -404,6 +406,10 @@ class Model_Labyrinth extends Model {
                 $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
 
                 foreach ($counters as $counter) {
+                    // if exist main counter get ID of it
+                    $if_main = $counter->status == 1;
+                    if ($if_main) $main_counter['id'] = $counter->id;
+
                     $countersArray[$counter->id]['counter'] = $counter;
                     $currentCountersState = '';
                     if ($rootNode != NULL) {
@@ -420,6 +426,7 @@ class Model_Labyrinth extends Model {
                     $thisCounter = null;
                     if ($isRoot) {
                         $thisCounter = $counter->start_value;
+                        if ($if_main) $main_counter['value'] = $thisCounter;
                     } elseif ($currentCountersState != '') {
                         $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
                         $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
@@ -427,6 +434,13 @@ class Model_Labyrinth extends Model {
                         $tmp = substr($tmp, 0, $e - 1);
                         $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
                         $thisCounter = $tmp;
+
+                        // get current max counter value
+                        if ($if_main)
+                        {
+                            preg_match('/(MCID=)(?<id>\d+),V=(?<value>\d+)/', $currentCountersState, $matches);
+                            $main_counter['value'] = $matches['value'];
+                        }
                     }
 
                     $counterFunction = '';
@@ -449,6 +463,8 @@ class Model_Labyrinth extends Model {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
                         } else {
                             $thisCounter += $counterFunction;
+                            // we need only positive values
+                            if ($if_main) $main_counter['value'] += $counterFunction;
                         }
                     }
 
@@ -486,34 +502,30 @@ class Model_Labyrinth extends Model {
 
                             switch ($rule->relation->value) {
                                 case 'eq':
-                                    if ($thisCounter == $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter == $rule->value) $resultExp = TRUE;
                                     break;
                                 case 'neq':
-                                    if ($thisCounter != $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter != $rule->value) $resultExp = TRUE;
                                     break;
                                 case 'leq':
-                                    if ($thisCounter <= $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter <= $rule->value) $resultExp = TRUE;
                                     break;
                                 case 'lt':
-                                    if ($thisCounter < $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter < $rule->value) $resultExp = TRUE;
                                     break;
                                 case 'geq':
-                                    if ($thisCounter >= $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter >= $rule->value) $resultExp = TRUE;
                                     break;
                                 case 'gt':
-                                    if ($thisCounter > $rule->value)
-                                        $resultExp = TRUE;
+                                    if ($thisCounter > $rule->value) $resultExp = TRUE;
                                     break;
                             }
 
                             if ($resultExp == TRUE) {
                                 if ($rule->function == 'redir') {
                                     $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
+                                    // if main counter and firs spot not sign, add rule value
+                                    if($if_main AND (is_int( (int) $counterFunction[0]))) $main_counter['value'] += $rule->counter_value;
                                     $redirect = $rule->redirect_node_id;
                                 }
                             }
@@ -608,6 +620,7 @@ class Model_Labyrinth extends Model {
 
                     $updateCounter .= '[CID=' . $counter['counter']->id . ',V=' . $counter['value'] . ']';
                 }
+                $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
                 $counterString .="</ul>";
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);

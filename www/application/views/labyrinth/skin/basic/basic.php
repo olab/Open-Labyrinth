@@ -395,7 +395,6 @@ if ($templateData['skin_path'] != NULL) {
                              <h4>Timer: <div id="timer"></div><br /><br />
                         <?php }?>
                         <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
-
                         <h5>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
                             (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)<br/>
                             Node: <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?>

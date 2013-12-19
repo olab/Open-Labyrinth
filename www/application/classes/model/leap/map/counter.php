@@ -84,6 +84,11 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+
+            'status' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'nullable' => FALSE,
+            )),
         );
         
         $this->relations = array(
@@ -115,8 +120,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     
     public function getCountersByMap ($mapId, $lengthSort = false)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
+        $result = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->query();
 
         if ($result->is_loaded())
         {
@@ -132,19 +136,21 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     }
 
     public function addCounter($mapId, $values) {
-        $this->map_id = $mapId;
-        $this->name = Arr::get($values, 'cName', '');
-        $this->description = Arr::get($values, 'cDesc', '');
-        $this->icon_id = Arr::get($values, 'cIconId', NULL);
-        $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', 0));
         $visible = Arr::get($values, 'cVisible', FALSE);
-        $this->visible = $visible;
+
+        $this->map_id       = $mapId;
+        $this->name         = Arr::get($values, 'cName', '');
+        $this->description  = Arr::get($values, 'cDesc', '');
+        $this->icon_id      = Arr::get($values, 'cIconId', NULL);
+        $this->start_value  = str_replace(',','.', Arr::get($values, 'cStartV', 0));
+        $this->visible      = $visible;
+        $this->status       = $this->try_become_a_main(Arr::get($values, 'status', 0), $mapId);
         $this->save();
 
         $lastCounter = $this->getLastAddedCounter($mapId);
-        if ($visible == 2){
-            $visible = 1;
-        }
+
+        if ($visible == 2) $visible = 1;
+
         $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
         if(count($nodes) > 0) {
             foreach($nodes as $node) {
@@ -175,14 +181,16 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         $this->load();
         
         if($this) {
-            $this->name = Arr::get($values, 'cName', $this->name);
-            $this->description = Arr::get($values, 'cDesc', $this->description);
-            $this->icon_id = Arr::get($values, 'cIconId', $this->icon_id);
-            $this->start_value = str_replace(',','.', Arr::get($values, 'cStartV', $this->start_value));
             $visible = Arr::get($values, 'cVisible', $this->visible);
-            $this->visible = $visible;
 
-            if (($visible != 2) & ($updateVisible)){
+            $this->name         = Arr::get($values, 'cName', $this->name);
+            $this->description  = Arr::get($values, 'cDesc', $this->description);
+            $this->icon_id      = Arr::get($values, 'cIconId', $this->icon_id);
+            $this->start_value  = str_replace(',','.', Arr::get($values, 'cStartV', $this->start_value));
+            $this->visible      = $visible;
+            $this->status       = $this->try_become_a_main(Arr::get($values, 'status', $this->status), $this->map_id);
+
+            if (($visible != 2) AND ($updateVisible)){
                 DB_ORM::model('map_node_counter')->updateVisibleForCounters($this->map_id, $counterId, $visible);
             }
             $this->save();
@@ -228,6 +236,47 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         }
 
         return NULL;
+    }
+
+    /**
+     * @param $points string with value of all counters and main counter max_value
+     * @param $map_id
+     * @return info about progress in fraction and percentage
+     */
+    public function progress ($points, $map_id)
+    {
+        $progress = NULL;
+
+        // get main counter for map
+        $main_counter_id = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $map_id, 'AND')->where('status', '=', 1)->query();
+
+        // get max value and id of main counter
+        preg_match('/(MCID=)(?<id>\d+),V=(?<max_value>\d+)/', $points, $main_counter);
+        if ($main_counter_id AND (Arr::get(Arr::get($main_counter_id, 0, array()), 'id') == Arr::get($main_counter, 'id', 'not_exist')))
+        {
+            // get user ms\ain counter score
+            preg_match('/CID='.$main_counter['id'].',V=(?<user_points>\d+)/', $points, $user_points);
+            $progress = $user_points['user_points'].'/'.$main_counter['max_value'].' or '.(round(($user_points['user_points']/$main_counter['max_value'])*100)).'%';
+        }
+        return $progress;
+    }
+
+    /**
+     * If status 1 (main), then all other counters deprived main status
+     * @param $status - status of counter
+     * @param $map_id - map where counter try to be main
+     * @return int status of counter
+     */
+    private function try_become_a_main ($status, $map_id)
+    {
+        if ($status == 0) return $status;
+        foreach (DB_SQL::select('default')->from($this->table())->where('map_id', '=', $map_id, 'AND')->where('status', '=', $status)->query() as $obj)
+        {
+            $counter = DB_ORM::model('map_counter', $obj['id']);
+            $counter->status = 0;
+            $counter->save();
+        }
+        return $status;
     }
 }
 

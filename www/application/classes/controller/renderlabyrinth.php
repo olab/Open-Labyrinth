@@ -144,7 +144,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if ($gotoNode != NULL) {
             Session::instance()->set('goto', NULL);
 
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' .  $gotoNode);
+            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
         }
 
         if ($mapId != NULL) {

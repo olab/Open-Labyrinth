@@ -36,6 +36,15 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label"><?php echo __('Counter status'); ?></label>
+            <div class="controls">
+                <select name="status">
+                    <option value="0">Regular</option>
+                    <option value="1">Main</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
             <label for="cIconId" class="control-label"><?php echo __('Counter image (optional)'); ?></label>
             <div class="controls">
                 <select id="cIconId" name="cIconId">

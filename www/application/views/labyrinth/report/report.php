@@ -101,6 +101,15 @@ function getRandomColor(){
                 }
                 ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
         </tr>
+        <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters, $templateData['session']->map->id)):?>
+        <tr>
+            <td>max score</td>
+            <td>
+                <?php echo $progress; ?>
+            </td>
+
+        </tr>
+        <?php endif; ?>
     </table>
 
     <?php if(isset($templateData['feedbacks']['general'])){?>
