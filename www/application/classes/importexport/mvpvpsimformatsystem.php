@@ -391,7 +391,6 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
         $this->processActivityProperties($activityModelData, $map);
         $this->processActivityNodes($activityModelData, $map);
         $this->processActivityLinks($activityModelData, $map);
-        //die();
         $this->processActivityNodeCoordinates($activityModelData, $map);
 
         //TODO: Add NodeLinksID only order field
@@ -665,21 +664,18 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
         return str_replace('\']', '', str_replace('/ActivityModel/ActivityNodes/NodeSection/ActivityNode[@id=\'', '', $activityNodePath));
     }
 
-    private function processActivityNodes($activityModelData, $map) {
-        if(!isset($activityModelData['ActivityNodes']) || count($activityModelData['ActivityNodes']) <= 0) { return; }
+    private function processActivityNodes ($activityModelData, $map) {
+        foreach(Arr::get($activityModelData, 'ActivityNodes', array()) as $nodeSection) {
+            // create nodes sections
+            $databaseNodeSectionId = $this->mvp2Map->getActivityNodeSectionDatabaseId($this->createNodeSection($nodeSection, $map));
 
-        foreach($activityModelData['ActivityNodes'] as $nodeSection) {
-            $nodeSectionId = $this->createNodeSection($nodeSection, $map);
-
-            $databaseNodeSectionId = $this->mvp2Map->getActivityNodeSectionDatabaseId($nodeSectionId);
-            if(isset($nodeSection['ActivityNode']) && count($nodeSection['ActivityNode']) > 0) {
-                foreach($nodeSection['ActivityNode'] as $activityNode) {
-                    $nodeId = $this->createNode($activityNode, $map);
-                    $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($nodeId);
-                    if($databaseNodeId != null) {
-                        $this->createNodeRule($activityNode, $nodeId);
-                        DB_ORM::model('map_node_section_node')->addNode($databaseNodeId, $databaseNodeSectionId);
-                    }
+            // create nodes
+            foreach(Arr::get($nodeSection,'ActivityNode', array()) as $activityNode) {
+                $nodeId = $this->createNode($activityNode, $map);
+                $databaseNodeId = $this->mvp2Map->getActivityNodeDatabaseId($nodeId);
+                if($databaseNodeId != null) {
+                    $this->createNodeRule($activityNode, $nodeId);
+                    DB_ORM::model('map_node_section_node')->addNode($databaseNodeId, $databaseNodeSectionId);
                 }
             }
         }
@@ -704,17 +700,24 @@ class ImportExport_MVPvpSimFormatSystem implements ImportExport_FormatSystem {
         return $nodeSection['@attributes']['id'];
     }
 
-    private function createNode($activityNode, $map) {
-        if(!isset($activityNode['@attributes']) ||
-           !isset($activityNode['@attributes']['id']) ||
-           !isset($activityNode['Content'])) { return null; }
+    private function createNode($activityNode, $map)
+    {
+        // get all needed data
+        $attributes = Arr::get($activityNode, '@attributes', array());
+        $node_id = Arr::get($attributes, 'id', FALSE);
+        $node_name = Arr::get($attributes, 'label', '');
+        $node_content = Arr::get($activityNode, 'Content', FALSE);
 
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $map->id,
-                                                            'mnodetitle' => (isset($activityNode['@attributes']['label']) ? $activityNode['@attributes']['label'] : '')));
+        // if in name exist word choice, don't create node
+        if( ! ( $node_id AND $node_content AND
+                ((strpos($node_name, 'choice for') === FALSE) AND (strpos($node_name, 'choice for') == 0))
+        )) return NULL;
 
-        $this->mvp2Map->addActivityNode($activityNode['@attributes']['id'], $node->id, $activityNode['Content']);
+        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $map->id, 'mnodetitle' => $node_name));
 
-        return $activityNode['@attributes']['id'];
+        $this->mvp2Map->addActivityNode($node_id, $node->id, $node_content);
+
+        return $node_id;
     }
 
     private function createNodeRule($activityNode, $nodeId) {
