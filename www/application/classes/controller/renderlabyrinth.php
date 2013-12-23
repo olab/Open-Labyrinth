@@ -94,8 +94,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+                        $skin = 'labyrinth/skin/basic/basic';
                         if ($data['map']->skin->enabled){
                             $data['skin_path'] = $data['map']->skin->path;
+                            if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                                $skin = 'labyrinth/skin/' . $data['map']->skin->id . '/skin';
+                            } else {
+                                $skin = 'labyrinth/skin/basic/basic';
+                            }
                         }else{
                             $data['skin_path'] = NULL;
                         }
@@ -106,7 +112,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $data['map_popups'][] = $popup;
                         }
 
-                        $this->template = View::factory('labyrinth/skin/basic/basic');
+                        $this->template = View::factory($skin);
                         $this->template->set('templateData', $data);
                     } else {
                         Request::initial()->redirect(URL::base());
@@ -242,7 +248,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['map_popups'][] = $popup;
                     }
 
-                    $this->template = View::factory('labyrinth/skin/basic/basic');
+                    $skin = 'labyrinth/skin/basic/basic';
+                    if ($data['map']->skin->enabled){
+                        $data['skin_path'] = $data['map']->skin->path;
+                        if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                            $skin = 'labyrinth/skin/' . $data['map']->skin->id . '/skin';
+                        } else {
+                            $skin = 'labyrinth/skin/basic/basic';
+                        }
+                    } else {
+                        $data['skin_path'] = NULL;
+                    }
+
+                    $this->template = View::factory($skin);
                     $this->template->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());

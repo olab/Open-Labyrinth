@@ -57,6 +57,11 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'data' => new DB_ORM_Field_Text($this, array(
+                'nullable' => TRUE,
+                'savable' => TRUE
+            ))
         );
     }
 
@@ -191,6 +196,47 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         }
 
         return NULL;
+    }
+
+    public function updateSkinData($skinId, $data, $html, $body = null) {
+        DB_ORM::update('map_skin')
+                ->set('data', $data)
+                ->where('id', '=', $skinId)
+                ->execute();
+
+        $templateDir = $_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/basic/basic_template.php';
+        $skinDir     = $_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $skinId . '/';
+        if(!is_dir($skinDir)) { mkdir($skinDir); }
+
+        $template = file_get_contents($templateDir);
+
+        $html = preg_replace('/class=".*?"/', '', $html);
+        $html = str_replace('{NODE_CONTENT}', '<?php echo Arr::get($templateData, "node_text");' .
+                                              'if (isset($templateData["node_annotation"]) && $templateData["node_annotation"] != null) echo "<div class=\"annotation\">" . $templateData["node_annotation"] . "</div>"; ?>', $html);
+        $html = str_replace('{NODE_TITLE}', '<?php echo Arr::get($templateData, \'node_title\'); ?>', $html);
+        $html = str_replace('{COUNTERS}', '<?php if (isset($templateData[\'counters\'])) echo $templateData[\'counters\']; ?>', $html);
+        $html = str_replace('{LINKS}', '<?php if(isset($templateData[\'links\'])){echo $templateData[\'links\'];} if(isset($templateData[\'undoLinks\'])){echo $templateData[\'undoLinks\'];} ?>', $html);
+        $html = str_replace('{REVIEW}', '<div><a href="#" onclick="toggle_visibility(\'track\');"><p class=\'style2\'><strong>Review your pathway</strong></p></a><div id=\'track\' style=\'display:none\'><?php if(isset($templateData[\'trace_links\'])){echo $templateData[\'trace_links\'];}?></div>', $html);
+        $html = str_replace('{MAP_INFO}', '<?php if ($templateData[\'map\']->timing) { ?>
+                                              <div>Timer: <div id="timer"></div>
+                                              <br /><br />
+                                           <?php }?>
+                                           <?php if (isset($templateData[\'navigation\'])) echo $templateData[\'navigation\']; ?>
+                                           <div>
+                                              Map: <?php if(isset($templateData[\'map\'])) echo $templateData[\'map\']->name; ?> (<?php if (isset($templateData[\'map\'])) echo $templateData[\'map\']->id; ?>) <br/>
+                                              Node: <?php if (isset($templateData[\'node\'])) echo $templateData[\'node\']->id; ?><br/>
+                                              <strong>Score:</strong>
+                                           </div>', $html);
+        $html = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' name="bookmark" value="bookmark"/>
+                                           <p>
+                                               <a href=\'<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData[\'map\']->id; ?>
+                                               <?php if(isset($templateData[\'webinarId\']) && isset($templateData[\'webinarStep\'])) echo \'/\' . $templateData[\'webinarId\'] . \'/\' . $templateData[\'webinarStep\']; ?>\'>reset</a></p>', $html);
+        $template = str_replace('{HTML}', $html, $template);
+        if($body != null) {
+            $template = str_replace('<body>', '<body style="' . $body . '">', $template);
+        }
+
+        file_put_contents($skinDir . 'skin.php', $template);
     }
 }
 
