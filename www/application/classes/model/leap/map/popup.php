@@ -190,7 +190,7 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
                               ->column('time_before',   Arr::get($values, 'timeBefore',   0))
                               ->column('time_length',   Arr::get($values, 'timeLength',   0))
                               ->column('is_enabled',    Arr::get($values, 'enabled',      false))
-                              ->column('title_hide',    Arr::get($values, 'title_hide',   0))
+                              ->column('title_hide',    (int)Arr::get($values, 'title_hide',   0))
                               ->column('annotation',    Arr::get($values, 'annotation',   ''))
                               ->execute();
 
@@ -216,7 +216,7 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
                     ->set('time_before',   Arr::get($values, 'timeBefore',   0))
                     ->set('time_length',   Arr::get($values, 'timeLength',   0))
                     ->set('is_enabled',    Arr::get($values, 'enabled',      false))
-                    ->set('title_hide',    Arr::get($values, 'title_hide',   0))
+                    ->set('title_hide',    (int)Arr::get($values, 'title_hide',   0))
                     ->set('annotation',    Arr::get($values, 'annotation',   ''))
                     ->where('id', '=', $popupId)
                     ->execute();

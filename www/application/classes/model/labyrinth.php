@@ -749,12 +749,14 @@ class Model_Labyrinth extends Model {
     }
 
     private function calculateCounterFunction($counter, $function){
-        if ($function[0] == '=') {
-            $counter = substr($function, 1, strlen($function));
-        } else if ($function[0] == '-') {
-            $counter -= substr($function, 1, strlen($function));
-        } else {
-            $counter += $function;
+        if (strlen($function) > 0) {
+            if ($function[0] == '=') {
+                $counter = substr($function, 1, strlen($function));
+            } else if ($function[0] == '-') {
+                $counter -= substr($function, 1, strlen($function));
+            } else {
+                $counter += $function;
+            }
         }
         return $counter;
     }
