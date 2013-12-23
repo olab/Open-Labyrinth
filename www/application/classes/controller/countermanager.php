@@ -204,17 +204,20 @@ class Controller_CounterManager extends Controller_Base {
     public function action_updateGrid() {
         $mapId = $this->request->param('id', NULL);
         $counterId = $this->request->param('id2', NULL);
-        if ($_POST AND $mapId != NULL) {
-            if ($counterId != NULL) {
-                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int) $counterId, (int) $mapId);
-                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId.'/'.$counterId);
-            } else {
-                DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int) $mapId);
-                DB_ORM::model('map_popup_counter')->updatePopupCounters($_POST, NULL, (int) $mapId);
-                Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
-            }
+        $post = $this->request->post();
+
+        if ( ! $post OR $mapId == NULL) Request::initial()->redirect(URL::base());
+
+        if ($counterId != NULL) {
+            DB_ORM::model('map_node_counter')->updateNodeCounters($post, (int) $counterId, (int) $mapId);
+            Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId.'/'.$counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            DB_ORM::model('map_node_counter')->updateNodeCounters($post, NULL, (int) $mapId);
+            foreach( Arr::get($post, 'pc', array()) as $popupId=>$counters)
+            {
+                DB_ORM::model('map_popup_counter')->updatePopupCounters($counters, $popupId);
+            }
+            Request::initial()->redirect(URL::base().'counterManager/grid/'.$mapId);
         }
     }
 

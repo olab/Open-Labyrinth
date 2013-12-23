@@ -6067,3 +6067,9 @@ a.badge:hover {
 .affix {
   position: fixed;
 }
+
+.no-intend {
+  margin-bottom: 0px;
+  border-bottom: 0px;
+}
+

@@ -60,6 +60,7 @@ if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
             </tbody>
         </table>
 
+        <?php if (Arr::get($templateData, 'popups', FALSE)) {?>
         <h2>Popups</h2>
         <table class="table table-striped table-bordered">
             <tbody>
@@ -70,13 +71,14 @@ if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
                     <?php foreach(Arr::get($templateData, 'counters', array()) as $counter) { ?>
                         <td style="width:155px;">
                             <div><?php echo $counter->name; ?></div>
-                            <input class="input-small not-autocomplete" type="text" size="5" name="pc_<?php echo $popup->id; ?>_<?php echo $counter->id; ?>" value="<?php $c = $popup->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">
+                            <input class="input-small not-autocomplete" type="text" size="5" name="pc[<?php echo $popup->id.']['.$counter->id; ?>]" value="<?php $c = $popup->getCounter($counter->id); if($c != NULL) echo $c->function; ?>">
                         </td>
                     <?php } ?>
                 </tr>
             <?php } ?>
             </tbody>
         </table>
+        <?php } ?>
 
         <div class="pull-right"><input class="btn btn-primary btn-large" type="submit" name="Submit" value="<?php echo __('Save changes'); ?>"></div>
     </form>

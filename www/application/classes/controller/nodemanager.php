@@ -137,45 +137,35 @@ class Controller_NodeManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_createNode() {
+    public function action_createNode()
+    {
         $mapId = (int) $this->request->param('id', 0);
         $post = $this->request->post();
-        if ($post AND $mapId) {
-            $post['map_id'] = $mapId;
-            $node = DB_ORM::model('map_node')->createNode($post);
-            if ($node) {
-                DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
-                foreach (Arr::get($post, 'popups', array()) as $id_popup){
-                    DB_ORM::model('map_popup_assign')->assignPopup($id_popup, $node->id, $value['assignType'] = Popup_Assign_Types::NODE);
-                }
-                Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
-            } else {
-                Request::initial()->redirect(URL::base().'nodeManager/index/'.$mapId);
-            }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+
+        if ( ! ($post AND $mapId)) Request::initial()->redirect(URL::base());
+
+        $post['map_id'] = $mapId;
+        $node = DB_ORM::model('map_node')->createNode($post);
+
+        if ( ! $node) Request::initial()->redirect(URL::base().'nodeManager/index/'.$mapId);
+
+        DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
+        Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
     }
 
     public function action_updateNode() {
         $nodeId = (int) $this->request->param('id', 0);
         $post = $this->request->post();
 
-        if ($post AND $nodeId) {
-            $node = DB_ORM::model('map_node')->updateNode($nodeId, $post);
-            Model_Leap_Metadata_Record::updateMetadata("map_node",$nodeId,$post);
-            if ($node) {
-                DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
-                foreach ($post['popups'] as $id_popup){
-                    DB_ORM::model('map_popup_assign')->assignPopup($id_popup, $node->id, $value['assignType'] = Popup_Assign_Types::NODE);
-                }
-                Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
-            } else {
-                Request::initial()->redirect(URL::base());
-            }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        if ( ! ($post AND $nodeId)) Request::initial()->redirect(URL::base());
+
+        $node = DB_ORM::model('map_node')->updateNode($nodeId, $post);
+        Model_Leap_Metadata_Record::updateMetadata("map_node",$nodeId,$post);
+
+        if ( ! $node) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
+        Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
     }
 
     public function action_deleteNode(){

@@ -199,21 +199,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         </fieldset>
 
         <fieldset class="fieldset">
-            <legend>Pop-ups</legend>
-
-            <?php if ($popups = Arr::get($templateData, 'popups', FALSE)): ?>
-            <select name="popups[]" multiple>
-                <?php foreach ($popups as $popup): ?>
-                <option value="<?php echo $popup->id; ?>" <?php
-                        foreach ($popup->assign as $assign) {
-                            if ($assign->assign_to_id == $templateData['node']->id ) echo 'selected';
-                        } ?>>
-                    <?php echo $popup->title; ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
-            <?php endif; ?>
-
+            <legend class="no-intend">Pop-ups</legend>
             <div class="form-actions">
                 <a class="btn btn-info" href="<?php  echo URL::base() . 'popupManager/index/' . $templateData['map']->id;?>">
                     <i class="icon-envelope"></i><?php echo __("Manage"); ?>

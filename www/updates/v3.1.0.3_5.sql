@@ -1,0 +1,1 @@
+ALTER TABLE  `map_popups_counters` CHANGE  `function`  `function` TEXT NOT NULL ;

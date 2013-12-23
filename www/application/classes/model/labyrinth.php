@@ -525,7 +525,7 @@ class Model_Labyrinth extends Model {
                                 if ($rule->function == 'redir') {
                                     $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
                                     // if main counter and firs spot not sign, add rule value
-                                    if($if_main AND (is_int( (int) $counterFunction[0]))) $main_counter['value'] += $rule->counter_value;
+                                    if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+') ) $main_counter['value'] += $rule->counter_value;
                                     $redirect = $rule->redirect_node_id;
                                 }
                             }

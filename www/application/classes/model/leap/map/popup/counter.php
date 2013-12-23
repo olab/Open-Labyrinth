@@ -41,12 +41,11 @@ class Model_Leap_Map_Popup_Counter extends DB_ORM_Model {
                 )),
 
             'counter_id' => new DB_ORM_Field_Integer($this, array(
-                    'max_length' => 11,
+                    'max_length' => 10,
                     'nullable' => FALSE,
                 )),
 
-            'function' => new DB_ORM_Field_String($this, array(
-                    'max_length' => 20,
+            'function' => new DB_ORM_Field_Text($this, array(
                     'nullable' => FALSE,
                     'savable' => TRUE,
                 )),
@@ -145,74 +144,26 @@ class Model_Leap_Map_Popup_Counter extends DB_ORM_Model {
         return NULL;
     }
 
-    public function updatePopupCounters($values, $counterId = NULL, $mapId = NULL)
+    public function updatePopupCounters($values, $popupId)
     {
-        $changeToCustom = array();
-        $counters = $this->getPopupCountersByMap($mapId);
-        if(count($counters) > 0) {
-            foreach($counters as $counter) {
-                $inputName = 'pc_'.$counter->popup_id.'_'.$counter->counter_id;
-                $chName = 'pch_'.$counter->popup_id.'_'.$counter->counter_id;
-                if($counterId != NULL) {
-                    if($counterId == $counter->counter_id) {
-                        $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
-                        $counter->save();
-                    }
-                } else {
-                    $counter->function = str_replace(',', '.', Arr::get($values, $inputName, $counter->function));
-                    $counter->save();
-                }
-                if ($inputName) unset($values[$inputName]);
-            }
+        $counters = DB_SQL::select('default')->from($this->table())->where('popup_id', '=', $popupId)->query();
 
-            foreach($values as $key => $value){
-                if ((strpos($key, 'pc_') !== false)){
-                    $array = explode('_', $key);
-                }
-            }
-
-            if (count($changeToCustom) > 0){
-                foreach($changeToCustom as $counterId => $array){
-                    if (count($array) == 2){
-                        $array['cVisible'] = 2;
-                        DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
-                    } else {
-                        if (isset($array[0])){
-                            $array['cVisible'] = 0;
-                            DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
-                        } else {
-                            $array['cVisible'] = 1;
-                            DB_ORM::model('map_counter')->updateCounter($counterId, $array, false);
-                        }
-                    }
-
-                }
-            }
-        } else {
-            if($mapId != NULL) {
-                $popups = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
-                $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-                foreach($counters as $counter) {
-                    foreach($popups as $popup) {
-                        $record = DB_ORM::model('map_popup_counter');
-                        $record->popup_id = $popup->id;
-                        $record->counter_id = $counter->id;
-                        $record->save();
-                    }
-                }
-                $this->updatePopupCounters($values, $counterId, $mapId);
-            }
+        // update records
+        foreach ($counters as $counter) {
+            $counter_id = Arr::get($counter, 'counter_id');
+            $this->updatePopupCounter($popupId, $counter_id, Arr::get($values, $counter_id));
+            unset ($values[$counter_id]);
         }
+
+        // new records
+        foreach ($values as $counterId=>$function) $this->createPopupCounters($popupId, $counterId, $function);
     }
 
     public function saveCounters ($id_popup, $info){
         foreach ($info as $id_counter=>$v){
             $result = DB_SQL::select('default')->from($this->table())->where('popup_id', '=', $id_popup, 'AND')->where('counter_id', '=', $id_counter)->query();
-            if ($result[0]['id']){
-                $this->updatePopupCounter($id_popup, $id_counter, Arr::get($v, 'function'));
-            } else {
-                $this->createPopupCounters($id_popup, $id_counter, Arr::get($v, 'function'));
-            }
+            $result[0]['id'] ? $this->updatePopupCounter($id_popup, $id_counter, Arr::get($v, 'function'))
+                             : $this->createPopupCounters($id_popup, $id_counter, Arr::get($v, 'function'));
         }
     }
 

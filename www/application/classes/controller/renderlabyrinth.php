@@ -100,7 +100,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $data['skin_path'] = NULL;
                         }
                         $data['session'] = (int)$data['traces'][0]->session_id;
-                        $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
+                        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+                        {
+                            $popup->text = $this->parseText($popup->text);
+                            $data['map_popups'][] = $popup;
+                        }
 
                         $this->template = View::factory('labyrinth/skin/basic/basic');
                         $this->template->set('templateData', $data);
