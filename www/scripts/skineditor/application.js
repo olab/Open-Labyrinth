@@ -1,0 +1,3 @@
+$(function() {
+    $('#skinEditor').skingEditor(getSkinData());
+});

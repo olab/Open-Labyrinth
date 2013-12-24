@@ -1,0 +1,1 @@
+ALTER TABLE `map_skins` ADD `data` TEXT NULL;
