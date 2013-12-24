@@ -35,6 +35,8 @@
 
     <!-- GLOBAL VARIABLES -->
     <script>
+        function getPlayURL()   { return '<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>'; }
+        function getCloseURL()  { return '<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>'; }
         function getSkinId()    { return <?php echo $templateData['skinData']->id; ?>; }
         function getUpdateURL() { return '<?php echo URL::base() . 'skinmanager/updateSkinData'; ?>'; }
         function getSkinData()  { return '<?php echo str_replace('\'', '\\\'', $templateData['skinData']->data); ?>'; }

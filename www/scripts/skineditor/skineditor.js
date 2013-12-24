@@ -12,9 +12,11 @@ var SkinEditor = (function() {
                                                '<div class="panel-content" style="display:none"></div>' +
                                            '</div>';
     SkinEditor.UI_CONTENT_CONTAINER_HTML = '<div class="skin-editor-content-container"></div>';
-    SkinEditor.UI_BUTTONS_HTML           = '<div style="position: fixed; bottom: 5px; margin-left: 43%;" class="btn-group">' +
+    SkinEditor.UI_BUTTONS_HTML           = '<div style="position: fixed; bottom: 5px; margin-left: 40%;" class="btn-group">' +
                                                 '<button class="btn btn-success btn-save">Save</button>' +
                                                 '<button class="btn btn-danger btn-delete-component">Delete component</button>' +
+                                                '<a href="' + getPlayURL() + '" target="_blank" class="btn btn-play-labyrinth">Test Play</a>' +
+                                                '<a href="' + getCloseURL() + '" class="btn btn-warning btn-close-editor">Close</a>' +
                                            '</div>';
     SkinEditor.UI_SAVE_DIALOG_HTML       = '<div class="saving-dialog alert alert-warning" style="position:absolute;top:0;left:46%;display: none">Saving...</div>';
     SkinEditor.UI_SAVED_DIALOG_HTML      = '<div class="saved-dialog alert alert-success" style="position:absolute;top:0;left:46%; display: none">Saved</div>';
