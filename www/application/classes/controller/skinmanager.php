@@ -182,7 +182,7 @@ class Controller_SkinManager extends Controller_Base {
 
             $this->templateData['skinError'] = Session::instance()->get('skinError');
             Session::instance()->delete('skinError');
-            $this->template = View::factory('labyrinth/skin/skinEditor');
+            $this->template = View::factory($skinData->data != null ? 'labyrinth/skin/skinEditor' : 'labyrinth/skin/skinEditorOld');
             $this->template->set('templateData', $this->templateData);
         } else {
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -191,6 +191,7 @@ class Controller_SkinManager extends Controller_Base {
             $this->templateData['skinList'] = DB_ORM::model('map_skin')->getSkinsByUserId(Auth::instance()->get_user()->id);
             $previewList = View::factory('labyrinth/skin/editList');
             $previewList->set('templateData', $this->templateData);
+            $this->templateData['center'] = $previewList;
         }
 
         $leftView = View::factory('labyrinth/labyrinthEditorMenu');
