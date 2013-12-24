@@ -450,11 +450,13 @@ if ($templateData['skin_path'] != NULL) {
         <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
         <?php
+            $section_id = '';
+            if(isset($templateData['sections'][0])) $section_id =$templateData['sections'][0]->id;
             foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                 foreach ($mapPopup->assign as $a){
                     if ($a->assign_to_id == $templateData['node']->id OR
                         $a->assign_to_id == $templateData['map']->id OR
-                        $a->assign_to_id == $templateData['sections'][0]->id) $assign = $a;
+                        $a->assign_to_id == $section_id) $assign = $a;
                 }
                 if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
                 <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
