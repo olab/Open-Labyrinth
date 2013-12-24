@@ -192,7 +192,17 @@ var ImagePropertyView = (function(parent) {
                 var fileReader = new FileReader();
                 
                 fileReader.onload = function(e) {
-                    instance._viewModel.SetSrc(e.target.result);
+                    $.ajax({
+                        url: getUploadURL(),
+                        type: 'POST',
+                        data: { skinId: getSkinId(), data: e.target.result},
+                        success: function(data) {
+                            var object = JSON.parse(data);
+                            if(object === null || object.status === 'error') { alert("ERROR"); }
+
+                            instance._viewModel.SetSrc(object.path);
+                        }
+                    });
                 };
                 
                 fileReader.readAsDataURL(this.files[0]);

@@ -522,8 +522,7 @@ var BlockPropertyView = (function(parent) {
            'modelPropertyName'                in parameters &&
            'cssPropertyName'                  in parameters &&
            'viewComponent'                    in parameters) {
-            
-            
+
             $ui = $(BlockPropertyView.LABEL_FILE_INPUT_HTML.replace('@LABEL@', parameters['label'])).appendTo($container);
             
             this[parameters['viewComponent']] = $ui.find('input');
@@ -533,12 +532,22 @@ var BlockPropertyView = (function(parent) {
                 var fileReader = new FileReader();
                 
                 fileReader.onload = function(e) {
-                    instance._viewModel.SetProperty(instance, {
-                        modelPropertyName: parameters['modelPropertyName'],
-                          cssPropertyName: parameters['cssPropertyName'],
-                              properyName: parameters['viewModelProperyName'], 
-                                 newValue: ['url(', e.target.result, ')'].join(''), 
-                            viewComponent: parameters['viewComponent']
+                    $.ajax({
+                        url: getUploadURL(),
+                        type: 'POST',
+                        data: { skinId: getSkinId(), data: e.target.result},
+                        success: function(data) {
+                            var object = JSON.parse(data);
+                            if(object === null || object.status === 'error') { alert("ERROR"); }
+
+                            instance._viewModel.SetProperty(instance, {
+                                modelPropertyName: parameters['modelPropertyName'],
+                                cssPropertyName: parameters['cssPropertyName'],
+                                properyName: parameters['viewModelProperyName'],
+                                newValue: ['url(', object.path, ')'].join(''),
+                                viewComponent: parameters['viewComponent']
+                            });
+                        }
                     });
                 };
                 

@@ -330,4 +330,32 @@ class Controller_SkinManager extends Controller_Base {
 
         echo '{status: "ok"}';
     }
+
+    public function action_uploadSkinImage() {
+        $this->auto_render = false;
+
+        $skinId = Arr::get($_POST, 'skinId', null);
+        if($skinId == null) { echo '{"status": "error", "errorMessage": "Wrong Skin ID"}'; return; }
+
+        $data    = Arr::get($_POST, 'data', null);
+        $skinDir = $_SERVER['DOCUMENT_ROOT'] . '/files/skin_' . $skinId . '/';
+        if(!is_dir($skinDir)) { mkdir($skinDir); }
+        $fileName = time();
+        $file = $skinDir . $fileName;
+
+        $this->base64_to_jpeg($data, $file);
+
+        echo '{"status": "ok", "path": "' . URL::base() . 'files/skin_' . $skinId . '/' . $fileName . '"}';
+    }
+
+    function base64_to_jpeg($base64_string, $output_file) {
+        $ifp = fopen($output_file, "wb");
+
+        $data = explode(',', $base64_string);
+
+        fwrite($ifp, base64_decode($data[1]));
+        fclose($ifp);
+
+        return $output_file;
+    }
 }
