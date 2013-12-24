@@ -44,7 +44,8 @@ var ComponentsManager = (function() {
             { name: 'links',             title: 'Links Component',              icon: '' },
             { name: 'review',            title: 'Review Component',             icon: '' },
             { name: 'mapinfo',           title: 'Map Info Component',           icon: '' },
-            { name: 'bookmark',          title: 'Bookmark Component',           icon: '' }
+            { name: 'bookmark',          title: 'Bookmark Component',           icon: '' },
+            { name: 'reset',             title: 'Reset Component',              icon: '' }
         ];
     };
 
@@ -129,7 +130,7 @@ var ComponentsManager = (function() {
         try {
             object = JSON.parse(source);
 
-            if('html' in object) {  $(B64.decode(object.html)).appendTo($rootContainer); }
+            if('html' in object && object.html !== '') { $(B64.decode(object.html)).appendTo($rootContainer); }
 
             if('components' in object) {
                 for(i = object.components.length; i--;) {
@@ -176,6 +177,9 @@ var ComponentsManager = (function() {
                 break;
             case 'bookmark':
                 component = new BookmarkComponent();
+                break;
+            case 'reset':
+                component = new ResetComponent();
                 break;
         }
         

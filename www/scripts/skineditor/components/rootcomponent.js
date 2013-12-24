@@ -64,9 +64,9 @@ var RootComponent = (function(parent) {
         RootComponent.super.SetObjectData.apply(this, [serializationInfo]);
         this._model.SetObjectData(serializationInfo);
         this.SetProperty(this, { viewModelPropertyName: 'BackgroundColor',
-            modelPropertyName: 'BackgroundColor',
-            newValue: this._model.BackgroundColor,
-            cssPropertyName: 'background-color'});
+                                     modelPropertyName: 'BackgroundColor',
+                                              newValue: this._model.BackgroundColor,
+                                       cssPropertyName: 'background-color'});
         this.SetProperty(this, { viewModelPropertyName: 'BackgroundRepeat',
             modelPropertyName: 'BackgroundRepeat',
             newValue: this._model.BackgroundRepeat,

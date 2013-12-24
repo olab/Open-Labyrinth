@@ -108,6 +108,7 @@
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/reviewcomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/mapinfocomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/bookmarkcomponent.js'); ?>"></script>
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/resetcomponent.js'); ?>"></script>
 
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/componentsmanager.js'); ?>"></script>
 

@@ -210,14 +210,17 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
 
         $template = file_get_contents($templateDir);
 
+        $html = str_replace('<div class="ui-resizable-handle ui-resizable-e" style="z-index: 1000;"></div>', '', $html);
+        $html = str_replace('<div class="ui-resizable-handle ui-resizable-s" style="z-index: 1000;"></div>', '', $html);
+        $html = str_replace('<div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 1000;"></div>', '', $html);
         $html = str_replace(array('ui-resizable-handle', 'ui-resizable-se ui-icon', 'ui-icon-gripsmall-diagonal-se',
-                                  'ui-resizable', 'component-selected', 'ui-resizable-e', 'ui-resizable-s'), '', $html);
+                                  'ui-resizable', 'component-selected'), '', $html);
         $html = str_replace('{NODE_CONTENT}', '<?php echo Arr::get($templateData, "node_text");' .
                                               'if (isset($templateData["node_annotation"]) && $templateData["node_annotation"] != null) echo "<div class=\"annotation\">" . $templateData["node_annotation"] . "</div>"; ?>', $html);
         $html = str_replace('{NODE_TITLE}', '<?php echo Arr::get($templateData, \'node_title\'); ?>', $html);
         $html = str_replace('{COUNTERS}', '<?php if (isset($templateData[\'counters\'])) echo $templateData[\'counters\']; ?>', $html);
         $html = str_replace('{LINKS}', '<?php if(isset($templateData[\'links\'])){echo $templateData[\'links\'];} if(isset($templateData[\'undoLinks\'])){echo $templateData[\'undoLinks\'];} ?>', $html);
-        $html = str_replace('{REVIEW}', '<div><a href="#" onclick="toggle_visibility(\'track\');"><p class=\'style2\'><strong>Review your pathway</strong></p></a><div id=\'track\' style=\'display:none\'><?php if(isset($templateData[\'trace_links\'])){echo $templateData[\'trace_links\'];}?></div>', $html);
+        $html = str_replace('{REVIEW}', '<div><a href="#" onclick="toggle_visibility(\'track\');"><p class=\'style2\'><strong>Review your pathway</strong></p></a></div><div id=\'track\' style=\'display:none\'><?php if(isset($templateData[\'trace_links\'])){echo $templateData[\'trace_links\'];}?></div>', $html);
         $html = str_replace('{MAP_INFO}', '<?php if ($templateData[\'map\']->timing) { ?>
                                               <div>Timer: <div id="timer"></div>
                                               <br /><br />
@@ -227,10 +230,8 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                                               Map: <?php if(isset($templateData[\'map\'])) echo $templateData[\'map\']->name; ?> (<?php if (isset($templateData[\'map\'])) echo $templateData[\'map\']->id; ?>) <br/>
                                               Node: <?php if (isset($templateData[\'node\'])) echo $templateData[\'node\']->id; ?><br/>
                                            </div>', $html);
-        $html = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' name="bookmark" value="bookmark"/>
-                                           <p>
-                                               <a href=\'<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData[\'map\']->id; ?>
-                                               <?php if(isset($templateData[\'webinarId\']) && isset($templateData[\'webinarStep\'])) echo \'/\' . $templateData[\'webinarId\'] . \'/\' . $templateData[\'webinarStep\']; ?>\'>reset</a></p>', $html);
+        $html = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' name="bookmark" value="bookmark"/>', $html);
+        $html = str_replace('{RESET}', '<p><a href=\'<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData[\'map\']->id; ?><?php if(isset($templateData[\'webinarId\']) && isset($templateData[\'webinarStep\'])) echo \'/\' . $templateData[\'webinarId\'] . \'/\' . $templateData[\'webinarStep\']; ?>\'>reset</a></p>', $html);
         $html = '<div class="popup-outside-container">' . $html . '</div>';
         $template = str_replace('{HTML}', $html, $template);
         if($body != null) {
