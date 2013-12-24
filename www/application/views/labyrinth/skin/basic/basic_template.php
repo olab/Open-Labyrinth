@@ -364,20 +364,24 @@
         <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
         <?php
-            if (isset($templateData['map_popups']) && count($templateData['map_popups']) > 0) {
-                $shownMapPopups = Session::instance()->get('shownMapPopups');
-        ?>
-            <?php foreach($templateData['map_popups'] as $mapPopup) { ?>
-                <?php if(!isset($shownMapPopups) || (!in_array($mapPopup->id, $shownMapPopups))) { ?>
+            $assign = null;
+            $shownMapPopups = Session::instance()->get('shownMapPopups');
+            foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
+                foreach ($mapPopup->assign as $a){
+                    if ($a->assign_to_id == $templateData['node']->id OR
+                        $a->assign_to_id == $templateData['map']->id OR
+                        $a->assign_to_id == $templateData['sections'][0]->id) $assign = $a;
+                }
+                if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
                     <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
                          popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
                          time-before="<?php echo $mapPopup->time_before; ?>"
                          time-length="<?php echo $mapPopup->time_length; ?>"
-                         assign-type="<?php echo Popup_Assign_Types::toString($mapPopup->assign->assign_type_id); ?>"
-                         assign-to-id="<?php echo $mapPopup->assign->assign_to_id; ?>"
+                     assign-type="<?php echo Popup_Assign_Types::toString($assign->assign_type_id); ?>"
+                     assign-to-id="<?php echo $assign->assign_to_id; ?>"
                          popup-id="<?php echo $mapPopup->id; ?>"
-                         redirect-type="<?php echo $mapPopup->assign->redirect_type_id; ?>"
-                         redirect-id="<?php echo $mapPopup->assign->redirect_to_id; ?>"
+                     redirect-type="<?php echo $assign->redirect_type_id; ?>"
+                     redirect-id="<?php echo $assign->redirect_to_id; ?>"
                          title-hide="<?php echo $mapPopup->title_hide; ?>"
                          background-color="<?php echo $mapPopup->style->background_color ?>"
                          border-color="<?php echo $mapPopup->style->border_color ?>"
@@ -387,16 +391,27 @@
                          border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
 
                          style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
+
+                        <div class="info_for_admin node_id"><?php
+                            $status = Auth::instance()->get_user()->type_id;
+                            if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;
+                            ?>
+                        </div>
+                        <div class="info_for_admin redirect_to"><?php
+                            if ($status == 2 OR $status == 4) {
+                            if ($assign->redirect_type_id == 3) echo 'to report';
+                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id; }?>
+                        </div>
                         <div class="header"><?php echo $mapPopup->title; ?></div>
                         <div class="text"><?php echo $mapPopup->text; ?></div>
-                    </div>
-                <?php } ?>
-            <?php } ?>
-        <?php } ?>
+                </div><?php
+                }
+            }
+        ?>
 
         <script>
             var reportRedirectType = <?php echo Popup_Redirect_Types::REPORT; ?>,
-                shownPopups = '<?php echo URL::base(); ?>renderLabyrinth/shownPopup',
+                popupsAction = '<?php echo URL::base(); ?>renderLabyrinth/popupAction/<?php echo $templateData['map']->id; ?>',
                 showReport  = '<?php echo URL::base(); ?>reportManager/showReport/<?php echo Session::instance()->get('session_id'); ?>',
                 redirectURL = '<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/#node#',
                 timeForNode = <?php echo isset($templateData['timeForNode']) ? $templateData['timeForNode'] : 0; ?>,
