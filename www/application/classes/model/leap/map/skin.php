@@ -226,7 +226,6 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                                            <div>
                                               Map: <?php if(isset($templateData[\'map\'])) echo $templateData[\'map\']->name; ?> (<?php if (isset($templateData[\'map\'])) echo $templateData[\'map\']->id; ?>) <br/>
                                               Node: <?php if (isset($templateData[\'node\'])) echo $templateData[\'node\']->id; ?><br/>
-                                              <strong>Score:</strong>
                                            </div>', $html);
         $html = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' name="bookmark" value="bookmark"/>
                                            <p>
