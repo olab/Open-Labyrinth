@@ -32,6 +32,9 @@ var BlockPropertyView = (function(parent) {
                                                         '<label class="btn" value="right"><i class="icon-align-right"></i></label>' + 
                                                         '<label class="btn" value="justify"><i class="icon-align-justify"></i></label>' + 
                                                     '</div></div>';
+    BlockPropertyView.LABEL_CHECKBOX_INPUT_HTML = '<div class="label-input-control">' +
+                                                    '<label>@LABEL@: </label>' +
+                                                    '<div><input type="checkbox" style="width: 5%; margin-top: 9px;" value="1"/></div></div>';
     
     function BlockPropertyView(viewModel) { 
         BlockPropertyView.super.constructor.apply(this);
@@ -70,6 +73,7 @@ var BlockPropertyView = (function(parent) {
         this._$top                = null;
         this._$right              = null;
         this._$bottom             = null;
+        this._$isPopupInside      = null;
     };
     
     BlockPropertyView.prototype.AppendTo = function($container) {
@@ -265,6 +269,10 @@ var BlockPropertyView = (function(parent) {
                                                            modelPropertyName: 'Bottom', 
                                                              cssPropertyName: 'bottom', 
                                                                viewComponent: '_$bottom'}]});
+        this._AppendLabelCheckbox($container, {                label: 'Is Popup Inside',
+                                                viewModelProperyName: 'IsPopupInside',
+                                                   modelPropertyName: 'IsPopupInside',
+                                                       viewComponent: '_$isPopupInside' });
         
     };
     
@@ -301,6 +309,53 @@ var BlockPropertyView = (function(parent) {
             
             this._viewModel[parameters['viewModelProperyName']].UnsubscribeAll();
             this._viewModel[parameters['viewModelProperyName']].Subscribe(new Callback(instance.GetId(), function(sender, args) {         
+                if(!('viewComponent' in args)) { args['viewComponent'] = parameters['viewComponent']; }
+                instance.SetValue(sender, args);
+            }));
+        }
+    };
+
+    BlockPropertyView.prototype._AppendLabelCheckbox = function($container, parameters) {
+        var instance = this,
+            $ui      = null;
+
+        if('label'                            in parameters &&
+            parameters['viewModelProperyName'] in this._viewModel &&
+            'modelPropertyName'                in parameters &&
+            'viewComponent'                    in parameters) {
+            $ui = $(BlockPropertyView.LABEL_CHECKBOX_INPUT_HTML.replace('@LABEL@', parameters['label'])).appendTo($container);
+            this[parameters['viewComponent']] = $ui.find('input');
+            if(this._viewModel.GetProperty(parameters['viewModelProperyName'])) {
+                this[parameters['viewComponent']].attr('checked', 'checked');
+            }
+
+            this[parameters['viewComponent']].click(function(e) {
+                var value  = $(this).is(':checked'),
+                    blocks = ComponentsManager.GetInstance().GetAllBlocks();
+
+                for(var i = blocks.length; i--;) {
+                    blocks[i].SetProperty(instance, {
+                        modelPropertyName: parameters['modelPropertyName'],
+                        newValue: false
+                    });
+
+                    blocks[i].RemoveClass('popup-inside-container');
+                }
+
+                instance._viewModel.SetProperty(instance, {
+                    modelPropertyName: parameters['modelPropertyName'],
+                    newValue: value
+                });
+
+                if(value) {
+                    instance._viewModel.AddClass('popup-inside-container');
+                } else {
+                    instance._viewModel.RemoveClass('popup-inside-container');
+                }
+            });
+
+            this._viewModel[parameters['viewModelProperyName']].UnsubscribeAll();
+            this._viewModel[parameters['viewModelProperyName']].Subscribe(new Callback(instance.GetId(), function(sender, args) {
                 if(!('viewComponent' in args)) { args['viewComponent'] = parameters['viewComponent']; }
                 instance.SetValue(sender, args);
             }));

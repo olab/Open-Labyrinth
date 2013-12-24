@@ -9,6 +9,7 @@ var ComponentsManager = (function() {
      */
     function ComponentsManager() {
         this._components    = [];
+        this._blocks        = [];
         this._rootComponent = null;
     };
     
@@ -150,6 +151,7 @@ var ComponentsManager = (function() {
         switch(name) {
             case 'block':
                 component = new BlockComponent();
+                this._blocks.push(component);
                 break;
             case 'image':
                 component = new ImageComponent();
@@ -192,6 +194,10 @@ var ComponentsManager = (function() {
         for(var i = this._components.length; i--;) {
             this._components[i].Deselect();
         }
+    };
+
+    ComponentsManager.prototype.GetAllBlocks = function() {
+        return this._blocks;
     };
     
     return ComponentsManager;

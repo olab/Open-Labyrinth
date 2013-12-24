@@ -44,6 +44,7 @@ var BlockComponent = (function(parent) {
         this.Top                = new ObservableProperty();
         this.Right              = new ObservableProperty();
         this.Bottom             = new ObservableProperty();
+        this.IsPopupInside      = new ObservableProperty();
     };
     
     /**
@@ -148,6 +149,14 @@ var BlockComponent = (function(parent) {
     BlockComponent.prototype.GetProperty = function(name) {
         return this._model.hasOwnProperty(name) ? this._model[name] 
                                                 : null;
+    };
+
+    BlockComponent.prototype.AddClass = function(cssClass) {
+        this._$uiContainer.addClass(cssClass);
+    };
+
+    BlockComponent.prototype.RemoveClass = function(cssClass) {
+        this._$uiContainer.removeClass(cssClass);
     };
     
     /**

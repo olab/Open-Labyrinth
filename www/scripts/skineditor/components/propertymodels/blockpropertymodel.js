@@ -36,6 +36,7 @@ var BlockPropertyModel = (function(parent) {
         this.Top                = 'auto';
         this.Right              = 'auto';
         this.Bottom             = 'auto';
+        this.IsPopupInside      = false;
     };
     
     BlockPropertyModel.prototype.GetObjectData = function(serializationInfo) {
@@ -73,6 +74,7 @@ var BlockPropertyModel = (function(parent) {
         serializationInfo.AddValue("Top", this.Top);
         serializationInfo.AddValue("Right", this.Right);
         serializationInfo.AddValue("Bottom", this.Bottom);
+        serializationInfo.AddValue("IsPopupInside", this.IsPopupInside);
     };
 
     BlockPropertyModel.prototype.SetObjectData = function(serializationInfo) {
@@ -110,6 +112,7 @@ var BlockPropertyModel = (function(parent) {
         this.Top                = serializationInfo.GetValue("Top");
         this.Right              = serializationInfo.GetValue("Right");
         this.Bottom             = serializationInfo.GetValue("Bottom");
+        this.IsPopupInside      = serializationInfo.GetValue("IsPopupInside");
     };
     
     return BlockPropertyModel;

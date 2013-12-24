@@ -210,7 +210,8 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
 
         $template = file_get_contents($templateDir);
 
-        $html = preg_replace('/class=".*?"/', '', $html);
+        $html = str_replace(array('ui-resizable-handle', 'ui-resizable-se ui-icon', 'ui-icon-gripsmall-diagonal-se',
+                                  'ui-resizable', 'component-selected', 'ui-resizable-e', 'ui-resizable-s'), '', $html);
         $html = str_replace('{NODE_CONTENT}', '<?php echo Arr::get($templateData, "node_text");' .
                                               'if (isset($templateData["node_annotation"]) && $templateData["node_annotation"] != null) echo "<div class=\"annotation\">" . $templateData["node_annotation"] . "</div>"; ?>', $html);
         $html = str_replace('{NODE_TITLE}', '<?php echo Arr::get($templateData, \'node_title\'); ?>', $html);
@@ -231,6 +232,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                                            <p>
                                                <a href=\'<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData[\'map\']->id; ?>
                                                <?php if(isset($templateData[\'webinarId\']) && isset($templateData[\'webinarStep\'])) echo \'/\' . $templateData[\'webinarId\'] . \'/\' . $templateData[\'webinarStep\']; ?>\'>reset</a></p>', $html);
+        $html = '<div class="popup-outside-container">' . $html . '</div>';
         $template = str_replace('{HTML}', $html, $template);
         if($body != null) {
             $template = str_replace('<body>', '<body style="' . $body . '">', $template);
