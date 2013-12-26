@@ -181,7 +181,7 @@ class Controller_SkinManager extends Controller_Base {
             $skinData = DB_ORM::model('map_skin')->getSkinById($skinId);
             $this->templateData['skinData'] = $skinData;
 
-            $this->templateData['action_url'] = URL::base() . 'skinmanager/skinsSaveChanges';
+            $this->templateData['action_url'] = URL::base() . 'skinManager/skinEditorUpload/' . $mapId;
             $this->templateData['skinError'] = Session::instance()->get('skinError');
             Session::instance()->delete('skinError');
             $this->template = View::factory($skinData->data != null ? 'labyrinth/skin/skinEditor' : 'labyrinth/skin/skinEditorOld');

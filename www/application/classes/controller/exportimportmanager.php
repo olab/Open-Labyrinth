@@ -853,7 +853,9 @@ class Controller_ExportImportManager extends Controller_Base {
                 $questionsArray[$id]['show_answer'] = (string) $questionAttr->ShowAnswer;
                 $scoreCounter = (string) $questionAttr->ScoreCounter;
                 if (!empty($scoreCounter)) {
-                    $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
+                    if (isset($countersArray[$scoreCounter])) {
+                        $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
+                    }
                 }
 
                 $questionsArray[$id]['stem'] = (string) $question->OL_QuestionStem->div;
@@ -1094,7 +1096,7 @@ class Controller_ExportImportManager extends Controller_Base {
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
-        libxml_use_internal_errors(true);
+        //libxml_use_internal_errors(true);
 
         return simplexml_load_string($xmlString);
     }
