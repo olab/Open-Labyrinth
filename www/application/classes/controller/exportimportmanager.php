@@ -1096,7 +1096,7 @@ class Controller_ExportImportManager extends Controller_Base {
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
-        libxml_use_internal_errors(true);
+        //libxml_use_internal_errors(true);
 
         return simplexml_load_string($xmlString);
     }
