@@ -256,7 +256,7 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         {
             // get user ms\ain counter score
             preg_match('/CID='.$main_counter['id'].',V=(?<user_points>\d+)/', $points, $user_points);
-            $progress = $user_points['user_points'].'/'.$main_counter['max_value'].' or '.(round(($user_points['user_points']/$main_counter['max_value'])*100)).'%';
+            $progress = $user_points['user_points'];
         }
         return $progress;
     }

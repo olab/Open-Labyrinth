@@ -103,18 +103,14 @@ function getRandomColor(){
         </tr>
         <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters, $templateData['session']->map->id)):?>
         <tr>
-            <td>max score</td>
-            <td>
-                <?php echo $progress; ?>
-            </td>
-
+            <td>your score</td>
+            <td><?php echo $progress; ?></td>
         </tr>
         <?php endif; ?>
     </table>
 
     <?php if(isset($templateData['feedbacks']['general'])){?>
     <table class="table table-striped table-bordered">
-
         <tr>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
