@@ -41,6 +41,7 @@
         function getUpdateURL() { return '<?php echo URL::base() . 'skinmanager/updateSkinData'; ?>'; }
         function getSkinData()  { return '<?php echo str_replace('\'', '\\\'', $templateData['skinData']->data); ?>'; }
         function getUploadURL() { return '<?php echo URL::base() . 'skinmanager/uploadSkinImage'; ?>'; }
+        function getSkinHTML()  { return '<?php if(isset($templateData['skinHTML'])) { echo $templateData['skinHTML']; } ?>'; }
     </script>
 
     <!-- SYSTEM SCRIPTS -->

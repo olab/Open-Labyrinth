@@ -124,13 +124,14 @@ var ComponentsManager = (function() {
             root           = null,
             component      = null,
             i              = 0,
+            html           = getSkinHTML(),
             propertyWindow = skinEditor.GetPropertyWindow(),
             componentsTree = skinEditor.GetComponentsTree();
 
         try {
             object = JSON.parse(source);
 
-            if('html' in object && object.html !== '') { $(B64.decode(object.html)).appendTo($rootContainer); }
+            if(html !== '') { $(B64.decode(html)).appendTo($rootContainer); }
 
             if('components' in object) {
                 for(i = object.components.length; i--;) {

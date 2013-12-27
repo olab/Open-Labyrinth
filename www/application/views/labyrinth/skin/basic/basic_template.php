@@ -313,7 +313,7 @@
     </script>
 </head>
 
-    <body>
+    <body <?php if(isset($templateData['bodyStyle'])) { echo 'style="' . $templateData['bodyStyle'] . '"'; } ?>>
         <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
             <script language="javascript" type="text/javascript"
                     src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
@@ -340,7 +340,7 @@
                 });
             </script>
         <?php } ?>
-        {HTML}
+        <?php if(isset($templateData['skin'])) { echo $templateData['skin']; } ?>
 
         <div id="reminder" class="modal hide fade" tabindex="-1" data-width="760">
             <div class="modal-header">

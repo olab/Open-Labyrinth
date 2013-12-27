@@ -90,7 +90,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             }
 
                             $data['node_text'] = $this->parseText($data['node_text'], $mapId);
-
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
@@ -98,7 +97,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         if ($data['map']->skin->enabled){
                             $data['skin_path'] = $data['map']->skin->path;
                             if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
-                                $skin = 'labyrinth/skin/' . $data['map']->skin->id . '/skin';
+                                $skin = 'labyrinth/skin/basic/basic_template';
+
+                                $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+                                $skinContent->set('templateData', $data);
+
+                                $data['skin'] = $skinContent;
+                                $skinData = json_decode($data['map']->skin->data, true);
+                                if($skinData != null && isset($skinData['body'])) {
+                                    $data['bodyStyle'] = base64_decode($skinData['body']);
+                                }
                             } else {
                                 $skin = 'labyrinth/skin/basic/basic';
                             }
@@ -252,7 +260,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data['map']->skin->enabled){
                         $data['skin_path'] = $data['map']->skin->path;
                         if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
-                            $skin = 'labyrinth/skin/' . $data['map']->skin->id . '/skin';
+                            $skin = 'labyrinth/skin/basic/basic_template';
+
+                            $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+                            $skinContent->set('templateData', $data);
+
+                            $data['skin'] = $skinContent;
+                            $skinData = json_decode($data['map']->skin->data, true);
+                            if($skinData != null && isset($skinData['body'])) {
+                                $data['bodyStyle'] = base64_decode($skinData['body']);
+                            }
                         } else {
                             $skin = 'labyrinth/skin/basic/basic';
                         }

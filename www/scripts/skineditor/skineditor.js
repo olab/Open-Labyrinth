@@ -138,13 +138,13 @@ var SkinEditor = (function() {
             var components = ComponentsManager.GetInstance().SerializeAllComponents(),
                 html       = instance._$uiContentContainer.html(),
                 tree       = '"tree": ' +  instance._componentsTree.GetJSON(),
-                data       = '{' + tree + ', ' + components + ', "html": "' + B64.encode(html) + '"}';
+                data       = '{' + tree + ', ' + components + ', "body": "' + B64.encode($('body').attr('style')) + '"}';
 
             instance._$uiSaving.show();
             $.ajax({
                     url: getUpdateURL(),
                    type: 'POST',
-                   data: { skinId: getSkinId(), data: data, html: html, body: $('body').attr('style') },
+                   data: { skinId: getSkinId(), data: data, html: html },
                 success: function(data) {
                     if(data === null || data.status === 'error') { alert("ERROR"); }
 

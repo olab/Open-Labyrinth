@@ -180,6 +180,10 @@ class Controller_SkinManager extends Controller_Base {
         if ($skinId != NULL) {
             $skinData = DB_ORM::model('map_skin')->getSkinById($skinId);
             $this->templateData['skinData'] = $skinData;
+            $skinSourcePath = DOCROOT . '/application/views/labyrinth/skin/' . $skinId . '/skin.source';
+            if(file_exists($skinSourcePath)) {
+                $this->templateData['skinHTML'] = base64_encode(file_get_contents($skinSourcePath));
+            }
 
             $this->templateData['action_url'] = URL::base() . 'skinManager/skinEditorUpload/' . $mapId;
             $this->templateData['skinError'] = Session::instance()->get('skinError');
@@ -326,8 +330,7 @@ class Controller_SkinManager extends Controller_Base {
 
         $data = Arr::get($_POST, 'data', null);
         $html = Arr::get($_POST, 'html', null);
-        $body = Arr::get($_POST, 'body', null);
-        DB_ORM::model('map_skin')->updateSkinData($skinId, $data, $html, $body);
+        DB_ORM::model('map_skin')->updateSkinData($skinId, $data, $html);
 
         echo '{status: "ok"}';
     }
