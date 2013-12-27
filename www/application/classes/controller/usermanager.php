@@ -69,6 +69,29 @@ class Controller_UserManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
+    private function sendNewUserMail($userData) {
+        $emailConfig = Kohana::$config->load('email');
+        $URL = URL::base('http', true);
+        $typeName = DB_ORM::model('user_type', array($userData['usertype']));
+        $langName = DB_ORM::model('language', array($userData['langID']));
+
+        $subject = 'Added new User';
+
+        $mail_body  = 'Username: ' . $userData['uid']    . '"<br/>';
+        $mail_body .= 'Password: ' . $userData['upw']      . '"<br/>';
+        $mail_body .= 'Full name: '. $userData['uname']    . '"<br/>';
+        $mail_body .= 'Language: ' . $langName->name   . '"<br/>';
+        $mail_body .= 'User type: '. $typeName->name . '"<br/>';
+        $mail_body .= '---------------------------------------<br/>';
+        $mail_body .=  "URL: " . $URL;
+
+        $header  = 'MIME-Version: 1.0' . "\r\n";
+        $header .= 'Content-type: text/html;' . "\r\n";
+        $header .= "From: ".  $emailConfig['fromname'] . " <" . $emailConfig['mailfrom'] . ">\r\n";
+
+        mail($userData['uemail'], $subject, $mail_body, $header);
+    }
+
     public function action_saveNewUser() {
         if (isset($_POST) && !empty($_POST)) {
             Session::instance()->set('newUser', $_POST);
@@ -81,6 +104,9 @@ class Controller_UserManager extends Controller_Base {
 
             if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)) {
                 $userData = $_POST;
+                if (isset($userData['sendEmail'])) {
+                    $this->sendNewUserMail($userData);
+                }
                 DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID']);
                 Session::instance()->delete('newUser');
 

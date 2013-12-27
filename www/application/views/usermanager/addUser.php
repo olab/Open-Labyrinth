@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label for="uname" class="control-label"><?php echo __('Nickname'); ?></label>
+                                    <label for="uname" class="control-label"><?php echo __('Full name'); ?></label>
 
                                     <div class="controls">
                                         <input id="uname" class="not-autocomplete" type="text" name="uname" >
@@ -53,6 +53,12 @@
 
                                     <div class="controls">
                                         <input class="not-autocomplete" id="uemail" type="text" name="uemail">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label"><?php echo __('send e-mail'); ?></label>
+                                    <div class="controls">
+                                        <input id="sendEmail" checked="checked" type="checkbox" name="sendEmail" >
                                     </div>
                                 </div>
                                 <div class="control-group">
