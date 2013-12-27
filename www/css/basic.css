@@ -1499,3 +1499,7 @@ table.dataTable tr.even td[class*='sorting'] {
 .contributors-list li a {
     margin-top: 26px;
 }
+
+.report-title {
+    font-size: 28px;
+}

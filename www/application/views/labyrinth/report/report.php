@@ -52,7 +52,7 @@ function getRandomColor(){
     <hr/>
     <?php } ?>
 
-    <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+    <h1 class="report-title"><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
 
     <table class="table  table-striped table-bordered">
         <tr>
@@ -88,18 +88,19 @@ function getRandomColor(){
         </tr>
         <tr>
             <td>nodes visited</td>
-            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
-                <?php if(count($templateData['session']->traces) > 0) {
-                    $nodesIDs = array();
-                    foreach($templateData['session']->traces as $val) {
-                        $nodesIDs[] = $val->node_id;
+            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;
+                <?php
+                    $mustVisited = 0;
+                    $mustAvoid   = 0;
+                    if(count($templateData['session']->traces) > 0) {
+                        foreach($templateData['session']->traces as $trace) {
+                            if($trace->node->priority_id == 3) { $mustVisited++; }
+                            if($trace->node->priority_id == 2) { $mustAvoid++; }
+                        }
                     }
-
-                    if(isset($templateData['nodes'])) {
-                        echo count($templateData['nodes']) - count($nodesIDs);
-                    }
-                }
-                ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
+                ?>
+                <?php echo $mustVisited;  ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
+                <?php echo $mustAvoid; ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
         </tr>
         <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters, $templateData['session']->map->id)):?>
         <tr>
