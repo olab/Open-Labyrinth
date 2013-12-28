@@ -70,12 +70,16 @@ class Controller_UserManager extends Controller_Base {
     }
 
     private function sendNewUserMail($userData) {
-        $emailConfig = Kohana::$config->load('email');
         $URL = URL::base('http', true);
         $typeName = DB_ORM::model('user_type', array($userData['usertype']));
         $langName = DB_ORM::model('language', array($userData['langID']));
 
-        $subject = 'Your account has been created';
+        $mail = new PHPMailer;
+
+        $mail->From = 'no.reply@'.$_SERVER['HTTP_HOST'];
+        $mail->FromName = 'OpenLabyrinth';
+
+        $mail->Subject = 'Your account has been created';
 
         $mail_body = 'Welcome to OpenLabyrinth, '.$userData['uname'].'!</br></br>';
         $mail_body .= 'Here is information about your account:</br>';
@@ -88,12 +92,10 @@ class Controller_UserManager extends Controller_Base {
         $mail_body .= '---------------------------------------<br/>';
         $mail_body .=  'URL to the home page: ' . $URL;
 
-        $header  = 'MIME-Version: 1.0;\r\n';
-        $header .= 'Content-type: text/html;\r\n';
-        $header .= 'From: '.  $emailConfig['fromname'] . ' <' . $emailConfig['mailfrom'] . '>\r\n';
+        $mail->Body = $mail_body;
 
         if (!empty($userData['uemail'])){
-            mail($userData['uemail'], $subject, $mail_body, $header);
+            $mail->Send();
         }
     }
 
