@@ -82,15 +82,15 @@ class Controller_UserManager extends Controller_Base {
 
         $mail->Subject = 'Your account has been created';
 
-        $mail_body = 'Welcome to OpenLabyrinth, '.$userData['uname'].'!</br></br>';
-        $mail_body .= 'Here is information about your account:</br>';
-        $mail_body .= '---------------------------------------<br/>';
-        $mail_body .= 'Username: ' . $userData['uid']    . '<br/>';
-        $mail_body .= 'Password: ' . $userData['upw']      . '<br/>';
-        $mail_body .= 'Full name: '. $userData['uname']    . '<br/>';
-        $mail_body .= 'Language: ' . $langName->name   . '<br/>';
-        $mail_body .= 'User type: '. $typeName->name . '<br/>';
-        $mail_body .= '---------------------------------------<br/>';
+        $mail_body = 'Welcome to OpenLabyrinth, '.$userData['uname'].'!'.PHP_EOL.PHP_EOL;
+        $mail_body .= 'Here is information about your account:'.PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
+        $mail_body .= 'Username: ' . $userData['uid']  . PHP_EOL;
+        $mail_body .= 'Password: ' . $userData['upw']  . PHP_EOL;
+        $mail_body .= 'Full name: '. $userData['uname']. PHP_EOL;
+        $mail_body .= 'Language: ' . $langName->name   . PHP_EOL;
+        $mail_body .= 'User type: '. $typeName->name   . PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
         $mail_body .=  'URL to the home page: ' . $URL;
 
         $mail->Body = $mail_body;
