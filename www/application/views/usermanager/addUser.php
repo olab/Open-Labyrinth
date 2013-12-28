@@ -56,12 +56,6 @@
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label class="control-label"><?php echo __('send e-mail'); ?></label>
-                                    <div class="controls">
-                                        <input id="sendEmail" checked="checked" type="checkbox" name="sendEmail" >
-                                    </div>
-                                </div>
-                                <div class="control-group">
                                     <label class="control-label"><?php echo __('language'); ?></label>
 
                                     <div class="controls">
@@ -85,6 +79,12 @@
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label"><?php echo __('Send information about user account by email'); ?></label>
+                                    <div class="controls">
+                                        <input id="sendEmail" checked="checked" type="checkbox" name="sendEmail" >
                                     </div>
                                 </div>
                             </fieldset>
