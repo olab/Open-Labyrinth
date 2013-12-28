@@ -74,6 +74,7 @@ class Controller_UserManager extends Controller_Base {
         $typeName = DB_ORM::model('user_type', array($userData['usertype']));
         $langName = DB_ORM::model('language', array($userData['langID']));
 
+        require_once(DOCROOT.'application/classes/class.phpmailer.php');
         $mail = new PHPMailer;
 
         $mail->From = 'no.reply@'.$_SERVER['HTTP_HOST'];
