@@ -95,6 +95,7 @@ class Controller_UserManager extends Controller_Base {
         $mail->Body = $mail_body;
 
         if (!empty($userData['uemail'])){
+            $mail->AddAddress($userData['uemail']);
             $mail->Send();
         }
     }
