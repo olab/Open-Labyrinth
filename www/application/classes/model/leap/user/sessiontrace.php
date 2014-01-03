@@ -68,6 +68,11 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 'max_length' => 20,
                 'nullable' => FALSE,
             )),
+
+            'end_date_stamp' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 20,
+                'nullable' => TRUE,
+            )),
             
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
@@ -207,14 +212,28 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     }
 
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
+        $time    = $this->setElapsedTime($sessionId);
         $builder = DB_ORM::insert('user_sessionTrace')
                 ->column('session_id', $sessionId)
                 ->column('user_id', $userId)
                 ->column('map_id', $mapId)
                 ->column('node_id', $nodeId)
-                ->column('date_stamp', time());
+                ->column('date_stamp', $time);
         
         return $builder->execute();
+    }
+
+    public function setElapsedTime($sessionId) {
+        $traceId = $this->getTopTraceBySessionId($sessionId);
+        $time    = time();
+        if($traceId != null) {
+            DB_ORM::update('user_sessionTrace')
+                    ->set('end_date_stamp', $time)
+                    ->where('id', '=', $traceId)
+                    ->execute();
+        }
+
+        return $time;
     }
     
     public function getTopTraceBySessionId($sessionId) {

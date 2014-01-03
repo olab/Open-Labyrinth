@@ -56,8 +56,28 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    public function action_showReport() {
+    public function action_finishAndShowReport() {
         $reportId = $this->request->param('id', NULL);
+
+        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$reportId);
+
+        Request::initial()->redirect(URL::base() . 'reportManager/showReport/' . $reportId);
+    }
+
+    public function action_exportToExcel() {
+        $reportId = $this->request->param('id', null);
+
+        if($reportId != null) {
+            $report = new Report_Session(new Report_Impl_PHPExcel(), $reportId);
+            $report->generate();
+
+            $report->get();
+        }
+    }
+
+    public function action_showReport() {
+        $reportId   = $this->request->param('id', NULL);
+
         if ($reportId != NULL) {
             $this->templateData['session'] = DB_ORM::model('user_session', array((int)$reportId));
             $this->templateData['map'] = $this->templateData['session']->map;

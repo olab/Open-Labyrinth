@@ -257,7 +257,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
 
                     $skin = 'labyrinth/skin/basic/basic';
-                    if ($data['map']->skin->enabled){
+                    if ($data['map']->skin->enabled) {
                         $data['skin_path'] = $data['map']->skin->path;
                         if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
                             $skin = 'labyrinth/skin/basic/basic_template';
@@ -651,7 +651,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function generateLinks($node, $links, $undoNodes = null) {
         $result = NULL;
         $result['links'] = '';
-        $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+        $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/finishAndShowReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
         if (is_array($links) and count($links) > 0) {
             $result['remote_links'] = '';
             $result['links'] = '';
