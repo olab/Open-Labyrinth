@@ -884,7 +884,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private static function getAvatarHTML($id) {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
-        if ($avatar->image != null) {
+        if ($avatar->image != null && file_exists(URL::base() . 'avatars/' . $avatar->image)) {
             $image = '<img src="' . URL::base() . 'avatars/' . $avatar->image . '" />';
         } else {
             $image = '<img src="' . URL::base() . 'avatars/default.png" />';
