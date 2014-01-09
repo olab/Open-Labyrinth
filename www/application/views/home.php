@@ -191,13 +191,10 @@
                         </div>
                     </div>
                     <div id="content" class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
-                        <div>
-                            <?php Breadcrumbs::render(); ?>
-                        </div>
-
+                        <div><?php Breadcrumbs::render(); ?></div>
                         <div class="row-fluid">
-                            <?php if (isset($templateData['error'])) echo $templateData['error']; ?>
-                            <?php if (isset($templateData['center'])) echo $templateData['center']; ?>
+                            <?php echo Arr::get($templateData, 'error'); ?>
+                            <?php echo Arr::get($templateData, 'center'); ?>
                         </div>
                     </div>
                     <?php if(isset($templateData['left'])) ?>

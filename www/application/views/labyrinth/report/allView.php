@@ -18,36 +18,34 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
+if (isset($templateData['map'])) { ?>
 <div class="page-header">
     <div class="pull-right"> <a class="btn btn-primary" href="<?php echo URL::base() ?>reportManager/summaryReport/<?php echo $templateData['map']->id; ?>"><i class="icon-book"></i> Aggregate report</a></div>
     <h1><?php echo __('Labyrinth Report for "') . $templateData['map']->name . '"'; ?></h1>
 </div>
-
-    <p><?php echo __('Click to view performance by session'); ?></p>
-    <table class="table table-striped table-bordered">
-        <thead>
+<p><?php echo __('Click to view performance by session'); ?></p>
+<table class="table table-striped table-bordered">
+    <thead>
         <tr>
             <th>Report</th>
             <th>User</th>
             <th>Traces</th>
-
         </tr>
-        </thead>
-        <tbody>
-        <?php if (isset($templateData['sessions']) and count($templateData['sessions']) > 0) { ?>
-            <?php foreach ($templateData['sessions'] as $session) { ?>
-                <tr>
-                    <td><a href="<?php echo URL::base(); ?>reportManager/showReport/<?php echo $session->id; ?>">
-                        <?php echo date('Y.m.d H:i:s', $session->start_time); ?></a></td>
-                    <td><?php echo $session->user->nickname; ?></td>
-                    <td><?php echo count($session->traces); ?> <?php echo __('clicks'); ?>' (0 bookmarks)</td></tr>
-            <?php } ?>
+    </thead>
+    <tbody>
+        <?php foreach (Arr::get($templateData, 'sessions', array()) as $session) { ?>
+        <tr>
+            <td>
+                <a href="<?php echo URL::base().'reportManager/showReport/'.$session->id; ?>">
+                    <?php echo date('Y.m.d H:i:s', $session->start_time); ?>
+                </a>
+            </td>
+            <td><?php echo $session->user->nickname; ?></td>
+            <td><?php echo count($session->traces).' '.__('clicks').' (0 bookmarks)'; ?></td>
+        </tr>
         <?php } ?>
-
-        </tbody>
-    </table>
+    </tbody>
+</table>
 
 <?php } ?>
 

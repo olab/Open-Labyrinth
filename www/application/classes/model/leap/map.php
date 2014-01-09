@@ -297,7 +297,7 @@ class Model_Leap_Map extends DB_ORM_Model
             return $maps;
         }
 
-        return NULL;
+        return array();
     }
 
     public function getAllEnabledOpenVisibleMap()
@@ -410,7 +410,7 @@ class Model_Leap_Map extends DB_ORM_Model
             return $maps;
         }
 
-        return NULL;
+        return array();
     }
 
     public function getAllEnabledAndCloseMap()
@@ -455,31 +455,21 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function createMap($values, $isCreateRoot = true)
     {
-        $this->name = $this->getMapName(Arr::get($values, 'title', 'empty_title'));
-        $this->author_id = Arr::get($values, 'author', 1);
-        $this->abstract = Arr::get($values, 'description', 'empty_description');
-        $this->keywords = Arr::get($values, 'keywords', 'empty_keywords');
-        $this->type_id = Arr::get($values, 'type', 1);
-        $this->skin_id = Arr::get($values, 'skin', 1);
-        $this->timing = Arr::get($values, 'timing', FALSE);
-        $this->delta_time = Arr::get($values, 'delta_time', 0);
-        $this->security_id = Arr::get($values, 'security', 2);
-        $this->section_id = Arr::get($values, 'section', 1);
-        $this->language_id = Arr::get($values, 'language_id', 1);
-
-        $forum = DB_ORM::model('dforum')->createForum(Arr::get($values, 'title', 'empty_title'), 1, 1);
-        $messageID = DB_ORM::model('dforum_messages')->createMessage($forum, '');
-        DB_ORM::model('dforum_users')->updateUsers($forum, array($this->author_id), 1);
-
-        $this->assign_forum_id = $forum;
-
+        $this->name         = $this->getMapName(Arr::get($values, 'title', 'empty_title'));
+        $this->author_id    = Arr::get($values, 'author', 1);
+        $this->abstract     = Arr::get($values, 'description', 'empty_description');
+        $this->keywords     = Arr::get($values, 'keywords', 'empty_keywords');
+        $this->type_id      = Arr::get($values, 'type', 1);
+        $this->skin_id      = Arr::get($values, 'skin', 1);
+        $this->timing       = Arr::get($values, 'timing', FALSE);
+        $this->delta_time   = Arr::get($values, 'delta_time', 0);
+        $this->security_id  = Arr::get($values, 'security', 2);
+        $this->section_id   = Arr::get($values, 'section', 1);
+        $this->language_id  = Arr::get($values, 'language_id', 1);
         $this->save();
 
         $map = $this->getMapByName($this->name);
-        if ($isCreateRoot) {
-            DB_ORM::model('map_node')->createDefaultRootNode($map->id);
-        }
-
+        if ($isCreateRoot) DB_ORM::model('map_node')->createDefaultRootNode($map->id);
         return $map;
     }
 

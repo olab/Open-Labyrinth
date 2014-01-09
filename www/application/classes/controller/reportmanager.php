@@ -76,8 +76,7 @@ class Controller_ReportManager extends Controller_Base
     }
 
     public function action_showReport() {
-        $reportId   = $this->request->param('id', NULL);
-
+        $reportId = $this->request->param('id', NULL);
         if ($reportId != NULL) {
             $this->templateData['session'] = DB_ORM::model('user_session', array((int)$reportId));
             $this->templateData['map'] = $this->templateData['session']->map;

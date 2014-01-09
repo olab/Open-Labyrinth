@@ -21,7 +21,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for users table in database 
+ * Model for users table in database
  */
 class Model_Leap_User extends DB_ORM_Model {
 

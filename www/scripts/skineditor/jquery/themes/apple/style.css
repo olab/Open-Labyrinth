@@ -57,5 +57,3 @@
 #vakata-contextmenu.jstree-apple-context li.jstree-contextmenu-disabled a:hover { color:silver; background:transparent; border:0; padding:1px 4px; }
 #vakata-contextmenu.jstree-apple-context li.vakata-separator { background:white; border-top:1px solid #e0e0e0; margin:0; }
 #vakata-contextmenu.jstree-apple-context li ul { margin-left:-4px; }
-
-/* TODO: IE6 support - the `>` selectors */

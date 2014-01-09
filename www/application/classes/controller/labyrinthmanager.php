@@ -749,14 +749,15 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_addNewMap() {
-        if (isset($_POST) && !empty($_POST)) {
+    public function action_addNewMap()
+    {
+        if (isset($_POST) AND ! empty($_POST))
+        {
             $_POST['author'] = Auth::instance()->get_user()->id;
             $map = DB_ORM::model('map')->createMap($_POST);
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $map->id);
-        } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$map->id);
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_editMap() {
@@ -835,23 +836,22 @@ class Controller_LabyrinthManager extends Controller_Base {
     }
 
     public function action_addNewForum() {
-        $mapId       = $this->request->param('id', null);
+        $mapId       = $this->request->param('id', NULL);
         $redirectURL = URL::base();
 
-        if($mapId != null) {
-            $message = Arr::get($_POST, 'firstForumMessage', '');
-            $map     = DB_ORM::model('map', array((int)$mapId));
-            if($map != null) {
+        if ($mapId != NULL)
+        {
+            $map = DB_ORM::model('map', array((int)$mapId));
+            if ($map != NULL)
+            {
                 $forum = DB_ORM::model('dforum')->createForum($map->name, 1, 1);
-                $messageID = DB_ORM::model('dforum_messages')->createMessage($forum, $message);
+                DB_ORM::model('dforum_messages')->createMessage($forum, Arr::get($_POST, 'firstForumMessage', ''));
                 DB_ORM::model('dforum_users')->updateUsers($forum, array(Auth::instance()->get_user()->id), 1);
-
                 DB_ORM::model('map')->updateMapForumAssign($mapId, $forum);
 
-                $redirectURL .= 'labyrinthManager/global/' . $mapId;
+                $redirectURL .= 'labyrinthManager/global/'.$mapId;
             }
         }
-
         Request::initial()->redirect($redirectURL);
     }
 
