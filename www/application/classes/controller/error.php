@@ -92,6 +92,7 @@ class Controller_Error extends Controller_Template {
             $message = str_replace('#post#', $this->toString($this->error['post']), $message);
             $message = str_replace('#get#', $this->toString($this->error['get']), $message);
             $message = str_replace('#url#', $this->toString($this->error['url']), $message);
+            $message = str_replace('#ip#', $this->toString($this->error['ip']), $message);
         }
 
         $errorDetails = View::factory('error/error');
@@ -174,7 +175,15 @@ class Controller_Error extends Controller_Template {
         $this->error['get']  = isset($e[6]) && strlen($e[6]) > 2 ? $e[6] : null;
         $this->error['url']  = isset($e[8]) ? $e[8] : null;
         $this->error['trace'] = isset($e[7]) ? json_decode($e[7],true) : null;
-
+        $ip = null;
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        $this->error['ip'] = $ip;
     }
 
     private function toString($input) {
