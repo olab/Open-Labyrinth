@@ -495,6 +495,20 @@ if ($templateData['skin_path'] != NULL) {
             }
         ?>
 
+        <div class="modal hide fade" id="counter-debug">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="alert-heading"><?php echo __('Debbuger window'); ?></h4>
+            </div>
+            <div class="modal-body modal-body-scroll"><?php
+            foreach (Arr::get($templateData, 'c_debug', array()) as $data){?>
+                <h2><?php echo Arr::get($data, 'title'); ?></h2>
+                <p class="c_description"><?php echo Arr::get($data, 'description');; ?></p>
+                <p class="c_info"><?php echo Arr::get($data, 'info');; ?></p><?php
+            }; ?>
+            </div>
+        </div>
+
         <script>
             var reportRedirectType = <?php echo Popup_Redirect_Types::REPORT; ?>,
                 popupsAction = '<?php echo URL::base(); ?>renderLabyrinth/popupAction/<?php echo $templateData['map']->id; ?>',
@@ -508,7 +522,6 @@ if ($templateData['skin_path'] != NULL) {
                                          foreach($templateData['node']->sections as $nodeSection) {
                                             $sections[] = $nodeSection->section_id;
                                          }
-
                                          echo implode(',', $sections);
                                      } ?>];
         </script>

@@ -18,8 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
+if (isset($templateData['map'])) { ?>
     <div class="well" style="padding: 8px 0;">
         <ul class="nav nav-list">
             <li class="nav-header">Labyrinth</li>
@@ -86,6 +85,4 @@ if (isset($templateData['map'])) {
             </p>
         </div>
     </div>
-    <?php
-}
-?>
+<?php }; ?>

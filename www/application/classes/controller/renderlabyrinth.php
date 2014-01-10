@@ -598,7 +598,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_popupAction() {
+    public function action_popupAction()
+    {
         $map_id = $this->request->param('id', NULL);
         $this->auto_render = false;
         $popupId = Arr::get($_POST, 'popupId', null);

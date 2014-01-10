@@ -21,21 +21,27 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class RunTimeLogic {
-    var $values = array();
-    var $questionId = null;
-    var $questionResponse = null;
-    var $errors = array();
 
-    public function parsingString($string){
-        if (!empty($string)){
+    var $values             = array();
+    var $questionId         = null;
+    var $questionResponse   = null;
+    var $errors             = array();
+
+    public function parsingString($string)
+    {
+        if ( ! empty($string))
+        {
             $parseFullString = false;
-            $finalResult = array();
+            $finalResult     = array();
             $changedCounters = array();
-            $errors = array();
-            $r = array();
-            $pattern = '(.*?);\s*(?=IF|\s*$)';
-            if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-                if (count($matches[0]) > 0){
+            $errors          = array();
+            $r               = array();
+            $pattern         = '(.*?);\s*(?=IF|\s*$)';
+
+            if ($c = preg_match_all("/".$pattern."/is", $string, $matches))
+            {
+                if (count($matches[0]) > 0)
+                {
                     foreach($matches[0] as $newIF){
                         $resultCon = $this->replaceConditions($newIF);
                         $resultStr = $this->replaceFunctions($resultCon);
