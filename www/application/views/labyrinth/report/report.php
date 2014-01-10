@@ -239,7 +239,15 @@ function getRandomColor(){
                                                                 <tr>
                                             <td><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</td>
                                             <td><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></td>
-                                            <td><?php if($templateData['session']->traces[$i]->end_date_stamp != null) { echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp; } else { if($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; } ?></td>
+                                            <td><?php if($templateData['session']->traces[$i]->end_date_stamp != null) {
+                                                    echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                                                } else {
+                                                    if(isset($templateData['session']->traces[$i + 1])) {
+                                                        echo $templateData['session']->traces[$i + 1]->date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                                                    } else  {
+                                                        echo '-';
+                                                    }
+                                                } ?></td>
                                         </tr>
                         <?php } ?>
                     <?php } ?>
