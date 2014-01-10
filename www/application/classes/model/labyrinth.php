@@ -1110,6 +1110,15 @@ class Model_Labyrinth extends Model {
         }
 
         if ($rules != NULL and count($rules) > 0) {
+            $mustVisited = 0;
+            $mustAvoid   = 0;
+            if(count($session->traces) > 0) {
+                foreach($session->traces as $trace) {
+                    if($trace->node->priority_id == 3) { $mustVisited++; }
+                    if($trace->node->priority_id == 2) { $mustAvoid++; }
+                }
+            }
+
             foreach ($rules as $rule) {
                 switch ($rule->type->name) {
                     case 'time taken':
@@ -1145,26 +1154,14 @@ class Model_Labyrinth extends Model {
                         break;
                     case 'must visit':
                         if (count($session->traces) > 0) {
-                            $nodesIDs = array();
-                            foreach ($session->traces as $trace) {
-                                $nodesIDs[] = $trace->node_id;
-                            }
-
-                            $count = count(array_unique($nodesIDs));
-                            if (Model_Labyrinth::calculateRule($rule->operator->value, $count, $rule->value)) {
+                            if (Model_Labyrinth::calculateRule($rule->operator->value, $mustVisited, $rule->value)) {
                                 $result['mustVisit'][] = $rule->message;
                             }
                         }
                         break;
                     case 'must avoid':
                         if (count($session->traces) > 0) {
-                            $nodesIDs = array();
-                            foreach ($session->traces as $trace) {
-                                $nodesIDs[] = $trace->node_id;
-                            }
-
-                            $count = count(DB_ORM::model('map_node')->getNodesByMap($mapId)) - count(array_unique($nodesIDs));
-                            if (Model_Labyrinth::calculateRule($rule->operator->value, $count, $rule->value)) {
+                            if (Model_Labyrinth::calculateRule($rule->operator->value, $mustAvoid, $rule->value)) {
                                 $result['mustAvoid'][] = $rule->message;
                             }
                         }
