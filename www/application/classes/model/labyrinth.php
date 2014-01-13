@@ -22,13 +22,10 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Model_Labyrinth extends Model {
 
-    public function execute($nodeId, $bookmark = NULL, $isRoot = false) {
+    public function execute ($nodeId, $bookmark = NULL, $isRoot = false)
+    {
         $result = array();
-
-        $result['userId'] = 0;
-        if (Auth::instance()->logged_in()) {
-            $result['userId'] = Auth::instance()->get_user()->id;
-        }
+        $result['userId'] = (Auth::instance()->logged_in()) ? $result['userId'] = Auth::instance()->get_user()->id : 0;
         $node = DB_ORM::model('map_node', array((int) $nodeId));
 
         if ($node) {
@@ -146,15 +143,15 @@ class Model_Labyrinth extends Model {
         foreach($data as $id_c=>$counter)
         {
             /*-------------------------------- render data for view --------------------------------------------------*/
-            $result[$id_c]['title'] = $counter['name'].' = '.$counter['current_value'];
+            $result[$id_c]['title'] = Arr::get($counter,'name').' = '.Arr::get($counter, 'current_value');
             $result[$id_c]['description'] = DB_ORM::model('map_counter', array($id_c))->description;
             $result[$id_c]['info'] = '';
             /*-------------------------------- end render data for view ----------------------------------------------*/
 
             /*-------------------------------- render info -----------------------------------------------------------*/
             $v_question     = (isset($counter['question_id'])) ? $counter['question_value'] : FALSE;
-            $v_counter      = (isset($counter['counter_value'])) ? $counter['counter_value'] : FALSE;
-            $v_counter_rule = (isset($counter['counter_rule_value'])) ? $counter['counter_rule_value'] : FALSE;
+            $v_counter      = Arr::get($counter, 'counter_value', FALSE);
+            $v_counter_rule = Arr::get($counter, 'counter_rule_value', FALSE);
 
             // counter main result
             $cmr = $counter['previous_value'];
