@@ -30,6 +30,12 @@ function getRandomColor() {
 
 if (isset($templateData['map'])) { ?>
 <div class="page-header">
+    <div class="pull-right"><?php echo
+        View::factory('labyrinth/report/menu')
+            ->set('currentMapId', '/'.$templateData['map']->id)
+            ->set('user_type_name', Auth::instance()->get_user()->type->name)
+            ->set('current_action', Request::current()->action()); ?>
+    </div>
     <h1><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
 </div>
 

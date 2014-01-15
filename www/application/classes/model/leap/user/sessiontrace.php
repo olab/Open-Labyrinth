@@ -119,27 +119,28 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
     public function getUniqueTraceByMapId($mapId) {
         $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId)
-                           ->group_by('node_id')
-                           ->group_by('session_id')
-                           ->order_by('id')
-                           ->column('id')
-                           ->column('session_id')
-                           ->column('user_id')
-                           ->column('node_id')
-                           ->query();
+           ->from($this->table())
+           ->where('map_id', '=', $mapId)
+           ->group_by('node_id')
+           ->group_by('session_id')
+           ->order_by('id')
+           ->column('id')
+           ->column('session_id')
+           ->column('user_id')
+           ->column('node_id')
+           ->query();
 
         $result = array();
-        if($records->is_loaded()) {
-            foreach($records as $record) {
+        if($records->is_loaded())
+        {
+            foreach($records as $record)
+            {
                 $result[] = array('id'         => $record['id'],
                                   'session_id' => $record['session_id'],
                                   'user_id'    => $record['user_id'],
                                   'node_id'    => $record['node_id']);
             }
         }
-
         return $result;
     }
 

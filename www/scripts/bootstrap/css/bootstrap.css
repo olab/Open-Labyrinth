@@ -6073,3 +6073,30 @@ a.badge:hover {
   border-bottom: 0px;
 }
 
+#users_tabs {
+    margin-top: 22px;
+}
+#users_tabs.nav-tabs {
+    border-bottom: none;
+}
+
+#canvas {
+    background-color: #cccccc;
+}
+
+#canvasPreview {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    background-color: #EEEEEE;
+}
+
+#path-select {
+    position: absolute;
+    right: 0px;
+    top: 201px;
+    width: 202px;
+    outline: none;
+}
+
+

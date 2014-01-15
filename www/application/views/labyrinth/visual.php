@@ -580,7 +580,6 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/sectionNode.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
-
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
 
 <?php } ?>

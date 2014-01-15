@@ -20,8 +20,13 @@
  */
 if (isset($templateData['map'])) { ?>
 <div class="page-header">
-    <div class="pull-right"> <a class="btn btn-primary" href="<?php echo URL::base() ?>reportManager/summaryReport/<?php echo $templateData['map']->id; ?>"><i class="icon-book"></i> Aggregate report</a></div>
-    <h1><?php echo __('Labyrinth Report for "') . $templateData['map']->name . '"'; ?></h1>
+    <div class="pull-right"><?php echo
+        View::factory('labyrinth/report/menu')
+            ->set('currentMapId', '/'.$templateData['map']->id)
+            ->set('user_type_name', Auth::instance()->get_user()->type->name)
+            ->set('current_action', Request::current()->action()); ?>
+    </div>
+    <h1><?php echo __('Labyrinth Report for "').$templateData['map']->name.'"'; ?></h1>
 </div>
 <p><?php echo __('Click to view performance by session'); ?></p>
 <table class="table table-striped table-bordered">

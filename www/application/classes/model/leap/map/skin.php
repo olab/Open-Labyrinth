@@ -177,7 +177,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         return false;
     }
 
-    public function addSkin($skinName, $skinPath) {
+    public function addSkin ($skinName, $skinPath) {
         $this->name = $skinName;
         $this->path = $skinPath;
         $this->user_id = Auth::instance()->get_user()->id;

@@ -124,7 +124,7 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
         }
         return $rules;
     }
-    
+
     public function addRule ($counterId, $values)
     {
         $ctrval = Arr::get($values, 'ctrval', '=0');

@@ -34,7 +34,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
         if($mapId != null) {
             $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
             $this->templateData['displays'] = DB_ORM::model('map_visualdisplay')->getMapDisplays($mapId);
-            
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Display')));
 

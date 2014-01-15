@@ -156,13 +156,14 @@ class Model_VisualEditor extends Model {
         return $result;
     }
 
-    private function getClearLinks($links) {
-        if ($links == null || count($links) <= 0)
-            return array();
+    private function getClearLinks($links)
+    {
+        if ($links == null || count($links) <= 0) return array();
 
         $linkMap = array();
+
         foreach ($links as $link) {
-            if (!isset($linkMap[$link->node_id_2][$link->node_id_1])) {
+            if ( ! isset($linkMap[$link->node_id_2][$link->node_id_1])) {
                 $linkMap[$link->node_id_1][$link->node_id_2]['type'] = 'direct';
                 $linkMap[$link->node_id_1][$link->node_id_2]['link'] = $link;
             } else {
@@ -171,9 +172,10 @@ class Model_VisualEditor extends Model {
             }
         }
 
-        if (count($linkMap) <= 0)
-            return array();
+        if (count($linkMap) <= 0) return array();
+
         $result = array();
+
         foreach ($linkMap as $key1 => $l) {
             foreach ($l as $key2 => $v) {
                 $result[$v['link']->id]['type'] = $v['type'];
