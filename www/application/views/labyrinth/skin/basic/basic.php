@@ -20,6 +20,7 @@
  */
 ?>
 <html>
+<head>
 <title><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout_basic.css"/>
@@ -450,13 +451,20 @@ if ($templateData['skin_path'] != NULL) {
         <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
         <?php
-            $section_id = '';
-            if(isset($templateData['sections'][0])) $section_id =$templateData['sections'][0]->id;
+            $assign  = null;
+            $section = false;
+            $shownMapPopups = Session::instance()->get('shownMapPopups');
             foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                 foreach ($mapPopup->assign as $a){
+                    foreach (Arr::get($templateData,'sections', array()) as $s){
+                        if ($a->assign_to_id == $s->id){
+                            $section = true;
+                            break;
+                        }
+                    }
                     if ($a->assign_to_id == $templateData['node']->id OR
                         $a->assign_to_id == $templateData['map']->id OR
-                        $a->assign_to_id == $section_id) $assign = $a;
+                        $section) $assign = $a;
                 }
                 if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
                 <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"

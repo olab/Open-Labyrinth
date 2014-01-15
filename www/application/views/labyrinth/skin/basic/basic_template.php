@@ -21,6 +21,7 @@
 ?>
 <!DOCTYPE html>
 <html>
+<head>
     <title><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
@@ -55,24 +56,26 @@
     </SCRIPT>
 
     <script language="javascript">
-        $(document).ready(function(){
+        $(document).ready(function()
+        {
             var rem = '';
             var remMessage = '';
             var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?> ;
 
             // Timer
-            <?php  if ( ($templateData['map']->timing) && isset($templateData['session']) ) { ?>
-                    <?php if ( isset($templateData['timer_start']) && $templateData['timer_start'] != 0) {?>
+            <?php if (($templateData['map']->timing) && isset($templateData['session'])) {
+                    if (isset($templateData['timer_start']) && $templateData['timer_start'] != 0)
+                    {?>
                         var sec = <?php echo $templateData['map']->delta_time - $templateData['timeForNode']; ?> ;
 
-                        <?php if ( $templateData['map']->reminder_time > 0 && ( $templateData['map']->reminder_time < ($templateData['map']->delta_time - $templateData['timeForNode']) ) ) { ?>
+                        <?php if ($templateData['map']->reminder_time > 0 && ($templateData['map']->reminder_time < ($templateData['map']->delta_time - $templateData['timeForNode']))) { ?>
                             rem = <?php echo $templateData['map']->reminder_time; ?> ;
                             remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;
                         <?php } ?>
 
             <?php } else {?>
 
-            var sec = <?php echo $templateData['map']->delta_time; ?> ;
+                var sec = <?php echo $templateData['map']->delta_time; ?> ;
 
                 <?php if ( $templateData['map']->reminder_time > 0 )  {  ?>
                     rem = <?php echo $templateData['map']->reminder_time; ?> ;
@@ -184,8 +187,7 @@
             else {
                 alert("Your browser does not support XMLHTTP for AJAX!");
             }
-            xmlhttp.onreadystatechange = function () {
-            }
+            xmlhttp.onreadystatechange = function () {};
             xmlhttp.open("POST", URL, true);
             xmlhttp.send(null);
         }
@@ -195,8 +197,6 @@
 
             var remTime = reminder;
             var checkReminder = check;
-            var remMessage = remMsg;
-            var sessionID = session;
 
             var hour    = parseInt(time / 3600);
             if ( hour < 1 ) hour = 0;
@@ -221,32 +221,24 @@
             }
 
             if ( sec > 0 ) {
-                setTimeout(function(){ timer(sec, block,remTime, checkReminder,remMessage,sessionID); }, 1000);
+                setTimeout(function(){ timer(sec, block,remTime, checkReminder,remMsg,session); }, 1000);
             }
             else {
                 document.getElementsByClassName("demo btn btn-primary btn-large")[1].click();
-                setTimeout(function(){ window.location.assign('/reportManager/showReport/' + sessionID); }, 2000);
+                setTimeout(function(){ window.location.assign('/reportManager/showReport/' + session); }, 2000);
             }
         }
 
         function start_countdown(seconds,reminderTime,remMsg,session) {
-            var time = seconds;
-            var remTime = reminderTime;
-            var remMessage = remMsg;
-            var sessionID = session;
             var block = document.getElementById('timer');
-            if (reminderTime != '') {
-                timer(time, block,reminderTime, true, remMessage,sessionID);
-            }
-            else {
-                timer(time,block,'','','',sessionID);
-            }
+            if (reminderTime != '') timer(seconds, block, reminderTime, true, remMsg, session);
+            else timer(seconds, block, '', '', '', session);
         }
 
 
         function ajaxChatShowAnswer(ChatId, ChatElementId) {
             var xmlhttp;
-            var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
+            var labsess = <?php echo Arr::get($templateData, 'sessionId', ''); ?>;
             var URL = "<?php echo URL::base(); ?>renderLabyrinth/chatAnswer/" + ChatId + "/" + ChatElementId + "/" + labsess + <?php if (isset($templateData['node'])) echo '"/" + ' . $templateData['node']->map_id; ?>;
             if (window.XMLHttpRequest) {
                 xmlhttp = new XMLHttpRequest();
@@ -364,50 +356,72 @@
         <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
         <?php
-            $assign = null;
+            $assign  = null;
+            $section = false;
             $shownMapPopups = Session::instance()->get('shownMapPopups');
             foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                 foreach ($mapPopup->assign as $a){
+                    foreach (Arr::get($templateData,'sections', array()) as $s){
+                        if ($a->assign_to_id == $s->id){
+                            $section = true;
+                            break;
+                        }
+                    }
                     if ($a->assign_to_id == $templateData['node']->id OR
                         $a->assign_to_id == $templateData['map']->id OR
-                        $a->assign_to_id == $templateData['sections'][0]->id) $assign = $a;
+                        $section) $assign = $a;
                 }
                 if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
-                    <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
-                         popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
-                         time-before="<?php echo $mapPopup->time_before; ?>"
-                         time-length="<?php echo $mapPopup->time_length; ?>"
-                     assign-type="<?php echo Popup_Assign_Types::toString($assign->assign_type_id); ?>"
-                     assign-to-id="<?php echo $assign->assign_to_id; ?>"
-                         popup-id="<?php echo $mapPopup->id; ?>"
-                     redirect-type="<?php echo $assign->redirect_type_id; ?>"
-                     redirect-id="<?php echo $assign->redirect_to_id; ?>"
-                         title-hide="<?php echo $mapPopup->title_hide; ?>"
-                         background-color="<?php echo $mapPopup->style->background_color ?>"
-                         border-color="<?php echo $mapPopup->style->border_color ?>"
-                         is-background-transparent="<?php echo $mapPopup->style->is_background_transparent ?>"
-                         background-transparent="<?php echo $mapPopup->style->background_transparent ?>"
-                         is-border-transparent="<?php echo $mapPopup->style->is_border_transparent ?>"
-                         border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
+                <div
+                    class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
+                    popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
+                    time-before="<?php echo $mapPopup->time_before; ?>"
+                    time-length="<?php echo $mapPopup->time_length; ?>"
+                    assign-type="<?php echo Popup_Assign_Types::toString($assign->assign_type_id); ?>"
+                    assign-to-id="<?php echo $assign->assign_to_id; ?>"
+                    popup-id="<?php echo $mapPopup->id; ?>"
+                    redirect-type="<?php echo $assign->redirect_type_id; ?>"
+                    redirect-id="<?php echo $assign->redirect_to_id; ?>"
+                    title-hide="<?php echo $mapPopup->title_hide; ?>"
+                    background-color="<?php echo $mapPopup->style->background_color ?>"
+                    border-color="<?php echo $mapPopup->style->border_color ?>"
+                    is-background-transparent="<?php echo $mapPopup->style->is_background_transparent ?>"
+                    background-transparent="<?php echo $mapPopup->style->background_transparent ?>"
+                    is-border-transparent="<?php echo $mapPopup->style->is_border_transparent ?>"
+                    border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
 
-                         style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
+                    style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
 
-                        <div class="info_for_admin node_id"><?php
-                            $status = Auth::instance()->get_user()->type_id;
-                            if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;
-                            ?>
-                        </div>
-                        <div class="info_for_admin redirect_to"><?php
-                            if ($status == 2 OR $status == 4) {
-                            if ($assign->redirect_type_id == 3) echo 'to report';
-                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id; }?>
-                        </div>
-                        <div class="header"><?php echo $mapPopup->title; ?></div>
-                        <div class="text"><?php echo $mapPopup->text; ?></div>
+                    <div class="info_for_admin node_id"><?php
+                        $status = Auth::instance()->get_user()->type_id;
+                        if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;
+                        ?>
+                    </div>
+                    <div class="info_for_admin redirect_to"><?php
+                        if ($status == 2 OR $status == 4) {
+                        if ($assign->redirect_type_id == 3) echo 'to report';
+                        if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id; }?>
+                    </div>
+                    <div class="header"><?php echo $mapPopup->title; ?></div>
+                    <div class="text"><?php echo $mapPopup->text; ?></div>
                 </div><?php
                 }
             }
         ?>
+
+        <div class="modal hide fade" id="counter-debug">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="alert-heading"><?php echo __('Debbuger window'); ?></h4>
+            </div>
+            <div class="modal-body modal-body-scroll"><?php
+                foreach (Arr::get($templateData, 'c_debug', array()) as $data){?>
+                    <h2><?php echo Arr::get($data, 'title'); ?></h2>
+                    <p class="c_description"><?php echo Arr::get($data, 'description');; ?></p>
+                    <p class="c_info"><?php echo Arr::get($data, 'info');; ?></p><?php
+                }; ?>
+            </div>
+        </div>
 
         <script>
             var reportRedirectType = <?php echo Popup_Redirect_Types::REPORT; ?>,
@@ -422,7 +436,6 @@
                                          foreach($templateData['node']->sections as $nodeSection) {
                                             $sections[] = $nodeSection->section_id;
                                          }
-
                                          echo implode(',', $sections);
                                      } ?>];
         </script>
