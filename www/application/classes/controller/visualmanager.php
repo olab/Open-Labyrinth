@@ -48,7 +48,7 @@ class Controller_VisualManager extends Controller_Base {
         $this->templateData['mapJSON']      = Model::factory('visualEditor')->generateJSON($this->mapId);;
 
         if($saveJson != null)
-            $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
+            $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
         if(Auth::instance()->logged_in()) {
             $user = Auth::instance()->get_user();

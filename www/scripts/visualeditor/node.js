@@ -73,16 +73,16 @@ var Node = function() {
     self.nodePriority = 1;
     self.undo = false;
     self.isEnd = false;
-    self.counters = new Array();
+    self.counters = [];
     self.isSelected = false;
     self.isActive = false;
-    self.sections = new Array();
+    self.sections = [];
     self.showInfo = false;
     self.annotation = '';
 
-    // Daraw current node
+    // Draw current node
     // context - canvas context
-    // viewport - Transform viewport transfomration
+    // viewport - Transform viewport transformation
     self.Draw = function(context, viewport) {
         if(context == null) return;
 
@@ -115,9 +115,22 @@ var Node = function() {
             var content = self.content.replace(/<(?:.|\n)*?>/gm, '');
             DrawContent(context, content);
         }
+
+        if (self.undo) DrawUndo(context);
         
         context.restore();
-    }
+    };
+
+    var DrawUndo = function (context)
+    {
+        context.strokeStyle = 'rgb(193, 70, 151)';
+        context.moveTo(-35, 10);
+        context.lineTo(-15, 10);
+        context.lineTo(-23, 7);
+        context.lineTo(-23, 13);
+        context.lineTo(-15, 10);
+        context.stroke();
+    };
     
     // Scale current node by x, y factors
     // sx - number X-scale factor
@@ -344,24 +357,24 @@ var Node = function() {
             grd.addColorStop(1, '#a6a6a6');
         }
         context.save();
-            context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
+        context.beginPath();
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
 
-            context.clip();
+        context.clip();
 
-            context.beginPath();
-            context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
-            context.fill();
+        context.beginPath();
+        context.fillStyle = grd;
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
+        context.fill();
 
-            context.beginPath();
-            context.lineWidth = 4;
-            context.shadowColor   = (self.isRoot) ? self.linkButtonRootBgShadowColor : self.linkButtonBgShadowColor;
-            context.shadowBlur    = 2;
-            context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
-            context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
-            context.stroke();
+        context.beginPath();
+        context.lineWidth = 4;
+        context.shadowColor   = (self.isRoot) ? self.linkButtonRootBgShadowColor : self.linkButtonBgShadowColor;
+        context.shadowBlur    = 2;
+        context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
+        context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
+        context.stroke();
         context.restore();
         
         context.beginPath();
@@ -418,23 +431,23 @@ var Node = function() {
         context.stroke();
     }
     
-    var DrawTitle = function(context, title) {
+    var DrawTitle = function (context, title)
+    {
         context.beginPath();
         context.font = self.titleFontSettings;
         context.fillStyle = self.titleFontColor;
         var line = '';
-        for(var i = 0; i < title.length; i++) {
+        for (var i = 0; i < title.length; i++)
+        {
             var t = line + title[i];
             var m = context.measureText(t);
-            if(m.width > self.contentMaxLineWidth) {
-                break;
-            } else {
-                line = t;
-            }
+
+            if (m.width > self.contentMaxLineWidth) break;
+            else line = t;
         }
         
         context.fillText(line, self.headerHeight + 13, 20);
-    }
+    };
     
     var DrawContent = function(context, content) {
         context.beginPath();
@@ -546,13 +559,11 @@ var Node = function() {
         return null;
     }
     
-    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-        if (typeof stroke == "undefined" ) {
-            stroke = true;
-        }
-        if (typeof radius === "undefined") {
-            radius = 5;
-        }
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke)
+    {
+        if (typeof stroke == "undefined" ) stroke = true;
+        if (typeof radius === "undefined") radius = 5;
+
         ctx.beginPath();
         ctx.moveTo(x + radius, y);
         ctx.lineTo(x + width - radius, y);
@@ -564,12 +575,8 @@ var Node = function() {
         ctx.lineTo(x, y + radius);
         ctx.quadraticCurveTo(x, y, x + radius, y);
         ctx.closePath();
-        if (fill) {
-            ctx.fill();
-        }    
-        if (stroke) {
-            ctx.stroke();
-        }  
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
     }
     
     function roundRectTwo(ctx, x, y, width, height, radius, fill, stroke) {

@@ -151,21 +151,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_go() {
-        $mapId = $this->request->param('id', NULL);
-        $nodeId = $this->request->param('id2', NULL);
-        $editOn = $this->request->param('id3', NULL);
-        $bookMark = $this->request->param('id4', NULL);
+    public function action_go()
+    {
+        $mapId      = $this->request->param('id', NULL);
+        $nodeId     = $this->request->param('id2', NULL);
+        $editOn     = $this->request->param('id3', NULL);
+        $bookMark   = $this->request->param('id4', NULL);
+        $gotoNode   = Session::instance()->get('goto', NULL);
 
-        $gotoNode = Session::instance()->get('goto', NULL);
-
-        if ($gotoNode != NULL) {
+        if ($gotoNode != NULL)
+        {
             Session::instance()->set('goto', NULL);
-
             Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
         }
 
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {
@@ -178,6 +179,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
+
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
             if ($node != NULL) {
@@ -186,22 +188,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 } else {
                     $data = Model::factory('labyrinth')->execute($node->id);
                 }
-                if ($data) {
+                if ($data)
+                {
                     $undoNodes = array();
-                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
-                        $sessionId = (int)$data['traces'][0]->session_id;
+                    if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
+                    {
+                        $sessionId              = (int)$data['traces'][0]->session_id;
+                        $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+                        $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+                        $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+                        $data['timeForNode']    = $timeForNode;
+                        $data['session']        = $sessionId;
 
-                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
-                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-
-                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
-
-                        $data['timeForNode'] = $timeForNode;
-                        $data['session'] = $sessionId;
-
-                        if ($data['node']->undo) {
-                            list($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId);
-
+                        if ($data['node']->undo)
+                        {
+                            list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
                     }
@@ -360,16 +361,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_undo() {
+    public function action_undo()
+    {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $nodeId != NULL) {
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-
+        if ($mapId != NULL AND $nodeId != NULL) Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$nodeId);
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_chatAnswer() {
@@ -1480,24 +1478,35 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
 
-    private function prepareUndoLinks($sessionId,$mapId) {
+    private function prepareUndoLinks ($sessionId, $mapId, $id_node = FALSE)
+    {
         $traces = DB_ORM::model('user_sessiontrace')->getUniqueTraceBySessions(array($sessionId));
+        $nodes  = array();
+        $html   = '';
 
         //Delete root node and current node
         array_shift($traces);
-       // array_pop($traces);
 
-        $html = '<ul class="links navigation">';
-        $nodes = array();
-        if (count($traces) > 0) {
-            foreach($traces as &$trace){
-                $nodes[$trace['node_id']] = $trace['node_id'];
-                $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($trace['node_id']);
-                $html .= '<li><i><font color="#777799">' .$trace['node_name'] . '</font></i><a href=' . URL::base() . 'renderLabyrinth/undo/' . $mapId . '/' .$trace['node_id'] .'>'  . ' [undo]' . '</a></li>';
+        $current_node = ($id_node) ? $id_node : Arr::get($traces[count($traces)-1], 'node_id', 0);
+        $id_section = DB_ORM::model('Map_Node_Section_Node')->getIdSection($current_node);
+
+        if (count($traces) > 0)
+        {
+            $html .= '<ul class="links navigation">';
+            foreach ($traces as $trace)
+            {
+                $id_node = $trace['node_id'];
+                $nodes[$id_node] = $id_node;
+                $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($id_node);
+
+                if ($id_section AND $id_section != DB_ORM::model('Map_Node_Section_Node')->getIdSection($id_node)) continue;
+                $html .= '<li class="undo">';
+                $html .= $trace['node_name'];
+                $html .= '<a href='.URL::base().'renderLabyrinth/undo/'.$mapId.'/'.$id_node.'> [undo]</a>';
+                $html .= '</li>';
             }
+            $html .= '</ul>';
         }
-        $html .= '</ul>';
-
         return array($html, $nodes);
     }
 }

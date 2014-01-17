@@ -101,16 +101,43 @@ $(function () {
     });*/
 
     var autoSaveData = null;
+    var body         = $('body');
     var visualEditor = new VisualEditor();
-    visualEditor.Init(params);
-    visualEditor.copyFunction = copy;
-    visualEditor.pasteFunction = paste;
-    visualEditor.zoomIn = zoomIn;
-    visualEditor.zoomOut = zoomOut;
-    visualEditor.update = update;
-    visualEditor.turnOnPanMode = turnOnPanMode;
-    visualEditor.turnOnSelectMode = turnOnSelectMode;
-    visualEditor.save = save;
+        visualEditor.Init(params);
+        visualEditor.copyFunction = copy;
+        visualEditor.pasteFunction = paste;
+        visualEditor.zoomIn = zoomIn;
+        visualEditor.zoomOut = zoomOut;
+        visualEditor.update = update;
+        visualEditor.turnOnPanMode = turnOnPanMode;
+        visualEditor.turnOnSelectMode = turnOnSelectMode;
+        visualEditor.save = save;
+
+
+    $('#preventRevisit').click(function()
+    {
+        var thisButton  = $(this),
+            active      = (thisButton.hasClass('active')),
+            e_or_d      = (active) ? 'disable' : 'enable';
+
+        for (var i = 0; i < visualEditor.nodes.length; i++)
+        {
+            var node = visualEditor.nodes[i];
+            if (node.isSelected) node.undo = ! active;
+        }
+
+        var data = visualEditor.SerializeSelected();
+
+        if (active) thisButton.removeClass('active');
+        else thisButton.addClass('active');
+
+        data = data.substring(0, data.length - 1);
+
+        if (data != null && data.length > 0)
+        {
+            utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Prevent revisit '+e_or_d, 3000, $veActionButton, false);
+        }
+    });
 
     function copy() {
         var data = visualEditor.SerializeSelected();
@@ -118,9 +145,10 @@ $(function () {
         if(data != null && data.length > 0) {
             utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Copying...', null, $veActionButton, true);
 
-            $.post(bufferCopy, {
-                data: data.substring(0, data.length - 1)
-                }, function(dataResponse) {
+            $.post(
+                bufferCopy,
+                { data: data.substring(0, data.length - 1) },
+                function (dataResponse) {
                 utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Copy has been successful', 3000, $veActionButton, false);
             });
         }
@@ -128,16 +156,18 @@ $(function () {
     
     $('#copySNodesBtn').click(function() {
         copy();
-    })
+    });
 
     function paste() {
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
-        $.post(bufferPaste, {},
+        $.post(
+            bufferPaste,
+            {},
             function (data) {
                 if (data) {
                     visualEditor.DeserializeFromPaste(data);
                     visualEditor.Render();
-                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
+                    utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
                 }
             });
     }
@@ -146,14 +176,11 @@ $(function () {
         paste();
     });
 
-    if (mapJSON != null && mapJSON.length > 0) {
-        if (mapType != null && mapType == 6) {
-            visualEditor.DeserializeLinear(mapJSON);
-        } else if (mapType != null && mapType == 9) {
-            visualEditor.DeserializeBranched(mapJSON);
-        } else {
-            visualEditor.Deserialize(mapJSON);
-        }
+    if (mapJSON != null && mapJSON.length > 0)
+    {
+        if (mapType != null && mapType == 6)        visualEditor.DeserializeLinear(mapJSON);
+        else if (mapType != null && mapType == 9)   visualEditor.DeserializeBranched(mapJSON);
+        else                                        visualEditor.Deserialize(mapJSON);
 
         visualEditor.Render();
     }
@@ -242,15 +269,18 @@ $(function () {
     var $veMessage = $('#ve_message_text');
     var $veActionButton = $('#ve_actionButton');
 
-    function update() {
-        if (autoSaveTimer != null) {
+    function update()
+    {
+        visualEditor.isChanged = false;
+
+        if (autoSaveTimer != null)
+        {
             clearTimeout(autoSaveTimer);
-            visualEditor.isChanged = false;
             autoSaveTimerNotSet = true;
         }
+
         var data = visualEditor.Serialize();
-        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
-        visualEditor.isChanged = false;
+        utils.ShowMessage ($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
         autoSaveData = null;
         $('#leaveBox').modal('hide');
 
@@ -264,9 +294,7 @@ $(function () {
 
                 utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
 
-                if(leaveLink != null) {
-                    $(location).attr('href', leaveLink);
-                }
+                if (leaveLink != null) $(location).attr('href', leaveLink);
 
                 visualEditor.Deserialize(data);
                 visualEditor.Render();
@@ -464,9 +492,10 @@ $(function () {
         turnOnSelectMode();
     });
 
-    function turnOnSelectMode(){
-        $('body').addClass('clearCursor');
-        $('body').css('cursor', 'crosshair');
+    function turnOnSelectMode()
+    {
+        body.addClass('clearCursor');
+        body.css('cursor', 'crosshair');
         $vePan.removeClass('active');
         $veSelect.addClass('active');
         visualEditor.isSelectActive = true;

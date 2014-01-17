@@ -9,7 +9,6 @@ var VisualEditor = function() {
     var minZoom = 0.1;
     var ctrlKeyPressed = false;
     var altKeyPressed = false;
-    var def2PI = Math.PI * 2;
     var sectionNodeId = 0;
     
     self.$canvasContainer = null;
@@ -18,9 +17,9 @@ var VisualEditor = function() {
     self.context = null;
     self.mouse = new Mouse();
     self.lastMouse = new Mouse();
-    self.nodes = new Array();
-    self.links = new Array();
-    self.sections = new Array();
+    self.nodes = [];
+    self.links = [];
+    self.sections = [];
     self.linkConnector = null;
     self.zoomInFactor = 1.2;
     self.zommOutFactor = 0.8;
@@ -77,7 +76,8 @@ var VisualEditor = function() {
             self.$sectionSelect = $(params.sectionSelectId);
         }
         
-        if('aButtonsContianer' in params) {
+        if('aButtonsContainer' in params)
+        {
             self.$aButtonsContianer = $(params.aButtonsContianer);
             
             $('#deleteSNodesBtn').click(function() {
@@ -99,7 +99,7 @@ var VisualEditor = function() {
                     }
                 }
             });
-            
+
             $('#colorSNodesBtn').click(function() {
                 if(self.selectRightPanel != null)
                     self.selectRightPanel.Show();
@@ -210,46 +210,62 @@ var VisualEditor = function() {
         self.Resize(null);
         self.ZoomOut();
         self.ZoomOut();
-    }
+    };
     
     // Render current state of visual editor
-    self.Render = function() {
+    self.Render = function()
+    {
         ClearContext();
 
-        if(self.links.length > 0) {
-            for(var i = 0; i < self.links.length; i++) {
-                self.links[i].Draw(self.context, viewport);
-            }
+        if (self.links.length > 0)
+        {
+            for (var i = 0; i < self.links.length; i++) self.links[i].Draw(self.context, viewport);
         }
         
-        if(self.nodes.length > 0) {
-            for(var i = 0; i < self.nodes.length; i++) {
-                self.nodes[i].Draw(self.context, viewport);
-            }
+        if (self.nodes.length > 0)
+        {
+            for (var i = 0; i < self.nodes.length; i++) self.nodes[i].Draw(self.context, viewport);
         }
 
-        if(self.linkConnector != null)
-            self.linkConnector.Draw(self.context, viewport);
+        if(self.linkConnector != null) self.linkConnector.Draw(self.context, viewport);
         
         self.selectorTool.Draw(self.context, viewport);
         
         self.isChanged = true;
 
-        if(self.preview != null) {
-            self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
-        }
+        if(self.preview != null) self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
         
-        if(self.$aButtonsContianer != null) {
-            if(self.IsExistSelectElements()) {
-                self.$aButtonsContianer.show();
-            } else {
-                self.$aButtonsContianer.hide();
+        if(self.$aButtonsContianer != null)
+        {
+            if(self.IsExistSelectElements())
+            {
+                checkRevisitStatus();
+                self.$aButtonsContianer.show() ;
             }
+            else self.$aButtonsContianer.hide();
         }
                     
+    };
+
+    function checkRevisitStatus ()
+    {
+        var btn     = $('#preventRevisit'),
+            active  = false;
+
+        for (var i = 0; i < self.nodes.length; i++)
+        {
+            var node = self.nodes[i];
+            if (node.isSelected)
+            {
+                active = node.undo;
+                if (active == false) break;
+            }
+        }
+        (active == true) ? btn.addClass('active') : btn.removeClass('active');
     }
     
-    self.IsExistSelectElements = function() {
+    self.IsExistSelectElements = function()
+    {
         if(self.nodes == null || self.nodes.length <= 0) return false;
         
         for(var i = 0; i < self.nodes.length; i++)
@@ -261,7 +277,7 @@ var VisualEditor = function() {
             if(self.links[i].isSelected) return true;
         
         return false;
-    }
+    };
     
     // Zoom in viewport
     self.ZoomIn = function() {
@@ -357,25 +373,26 @@ var VisualEditor = function() {
     }
     
     self.SerializeSelected = function() {
-        var selectedNodes = new Array();
-        var selectedLinks = new Array();
+        var selectedNodes = [];
+        var selectedLinks = [];
         
-        if(self.nodes.length > 0) {
-            for(var i = 0; i < self.nodes.length; i++) {
-                if(self.nodes[i].isSelected)
-                    selectedNodes.push(self.nodes[i]);
+        if (self.nodes.length > 0)
+        {
+            for (var i = 0; i < self.nodes.length; i++)
+            {
+                if(self.nodes[i].isSelected) selectedNodes.push(self.nodes[i]);
             }
         }
         
-        if(self.links.length > 0) {
-            for(var i = 0; i < self.links.length; i++) {
-                if(self.links[i].isSelected)
-                    selectedLinks.push(self.links[i]);
+        if (self.links.length > 0)
+        {
+            for (var i = 0; i < self.links.length; i++)
+            {
+                if(self.links[i].isSelected) selectedLinks.push(self.links[i]);
             }
         }
-        
         return SerializeElements(selectedNodes, selectedLinks);
-    }
+    };
     
     var SerializeElements = function(nodes, links) {
         var result = '';

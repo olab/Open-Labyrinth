@@ -348,30 +348,42 @@ class Controller_NodeManager extends Controller_Base {
         }
     }
 
-    public function action_editSection() {
-        $mapId = (int) $this->request->param('id', 0);
-        $sectionId = (int) $this->request->param('id2', 0);
-        if ($sectionId && $mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
-            $this->templateData['section'] = DB_ORM::model('map_node_section', array($sectionId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getAllNodesNotInSection($mapId);
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['section']->name)->set_url(URL::base() . 'nodeManager/editSection/' . $mapId. '/'. $sectionId));
+    public function action_editSection()
+    {
+        $mapId      = (int) $this->request->param('id', 0);
+        $sectionId  = (int) $this->request->param('id2', 0);
 
-            $editSectionsView = View::factory('labyrinth/node/editSection');
-            $editSectionsView->set('templateData', $this->templateData);
+        if ( ! ($sectionId AND $mapId)) Request::initial()->redirect(URL::base());
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        $this->templateData['map']      = DB_ORM::model('map', array($mapId));
+        $this->templateData['section']  = DB_ORM::model('map_node_section', array($sectionId));
+        $this->templateData['nodes']    = DB_ORM::model('map_node')->getAllNodesNotInSection($mapId);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']   = View::factory('labyrinth/node/editSection')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
 
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $editSectionsView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sections'))->set_url(URL::base() . 'nodeManager/sections/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['section']->name)->set_url(URL::base() . 'nodeManager/editSection/' . $mapId. '/'. $sectionId));
+    }
+
+    public function action_updatePreventRevisit ()
+    {
+        $id_map      = (int) $this->request->param('id', 0);
+        $id_section  = (int) $this->request->param('id2', 0);
+
+        if ( ! ($id_section AND $id_map)) Request::initial()->redirect(URL::base());
+
+        $status = $this->request->post('submit');
+        $section = DB_ORM::model('map_node_section', array($id_section))->nodes;
+
+        foreach ($section as $node)
+        {
+            $node = DB_ORM::model('Map_Node', array($node->node_id));
+            if ($status !== null) $node->undo = $status;
+            $node->save();
         }
+        Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$id_map.'/'.$id_section);
     }
 
     public function action_updateNodeSection() {
@@ -379,7 +391,7 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = (int) $this->request->param('id2', 0);
         if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
             DB_ORM::model('map_node_section')->updateSectionName($sectionId, $_POST);
-            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
+            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
             Request::initial()->redirect(URL::base());
         }

@@ -100,17 +100,17 @@ $(function () {
         editor_selector: "mceEditorLite"
     });*/
 
-    var vZoomIn = $('#zoomIn');
-    var vZoomOut = $('#zoomOut');
-    var vFullScreen = $('#fullScreen');
-    var vCanvas = $('#canvas');
-    var vCanvasContainer = $('#canvasContainer');
-    var canvasWidth;
-    var canvasHeight;
-    var visualEditor = new VisualEditor();
-    visualEditor.Init(params);
-    visualEditor.zoomIn = zoomIn;
-    visualEditor.zoomOut = zoomOut;
+    var vZoomIn          = $('#zoomIn'),
+        vZoomOut         = $('#zoomOut'),
+        vFullScreen      = $('#fullScreen'),
+        vCanvas          = $('#canvas'),
+        vCanvasContainer = $('#canvasContainer'),
+        canvasWidth,
+        canvasHeight,
+        visualEditor     = new VisualEditor();
+        visualEditor.Init(params);
+        visualEditor.zoomIn = zoomIn;
+        visualEditor.zoomOut = zoomOut;
 
 
     if (mapJSON != null && mapJSON.length > 0)

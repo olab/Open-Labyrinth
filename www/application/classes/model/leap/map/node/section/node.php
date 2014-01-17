@@ -171,6 +171,13 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
 
         return NULL;
     }
-}
 
-?>
+    public function getIdSection ($id_node)
+    {
+        $id_section = DB_ORM::select('Map_Node_Section_Node')->where('node_id', '=', $id_node)->query()->fetch(0);
+
+        if ($id_section) $id_section = $id_section->section_id;
+
+        return $id_section;
+    }
+}

@@ -71,11 +71,36 @@ if (isset($templateData['map'])) { ?>
             </div>
             
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px; display: none;">
-                <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
-                <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
-                <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>
-                <p><button type="button" class="round-btn" id="sectionsBtn" data-toggle="tooltip" data-original-title="Sections" data-placement="right"><i class="ve-icon-section"></i></button></p>
-                <p><button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
+                <p>
+                    <button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right">
+                        <i style="color:white;" class="ve-icon-copy"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right">
+                        <i class="ve-icon-paste"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right">
+                        <i class="ve-icon-color"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="sectionsBtn" data-toggle="tooltip" data-original-title="Sections" data-placement="right">
+                        <i class="ve-icon-section"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right">
+                        <i class="ve-icon-delete"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn-not-hovered" id="preventRevisit" data-toggle="tooltip" data-original-title="Prevent&nbsp;revisit" data-placement="right">
+                        <i class="ve-icon-revisit"></i>
+                    </button>
+                </p>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>

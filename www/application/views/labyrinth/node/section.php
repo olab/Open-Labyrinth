@@ -21,7 +21,7 @@
 if (isset($templateData['map'])) {
     ?>
     <div class="page-header">
-        <h1><?php echo __('Edit node sections for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
+        <h1><?php echo __('Edit node sections for Labyrinth "').$templateData['map']->name.'"'; ?></h1>
     </div>
     <?php if (isset($templateData['node_sections'])) { ?>
         <table class="table table-striped table-bordered">

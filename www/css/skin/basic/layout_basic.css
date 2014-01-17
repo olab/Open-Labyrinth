@@ -512,3 +512,8 @@ a.file-link:visited {
 .popup .info_for_admin.redirect_to {
     float:right;
 }
+
+.undo {
+    font-style: italic;
+    color: #777799;
+}
