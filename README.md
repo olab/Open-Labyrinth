@@ -1,6 +1,6 @@
 OpenLabyrinth
 ==============
-OpenLabyrinth is an open-source (GNU-GPL3 licence) platform for creating and playing virtual patients. 
+OpenLabyrinth is an open-source (GNU-GPL3 license) platform for creating and playing virtual patients. 
 
 For more information about OpenLabyrinth generally, see http://openlabyrinth.ca
 
