@@ -158,17 +158,17 @@ class Controller_LabyrinthManager extends Controller_Base {
                 break;
             case 'updateNode':
                 $nodeId = $this->request->param('id3', NULL);
-                if ($_POST and $nodeId != NULL) {
-                    $node = DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-                    if ($node != NULL) {
-                        DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $_POST);
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editNode/' . $node->map_id . '/' . $node->id);
-                    } else {
-                        Request::initial()->redirect(URL::base());
+                if ($post AND $nodeId != NULL)
+                {
+                    $node = DB_ORM::model('map_node')->updateNode($nodeId, $post);
+                    if ($node != NULL)
+                    {
+                        DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
+                        Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/'.$stepId.'/editNode/'.$node->map_id.'/'.$node->id);
                     }
-                } else {
-                    Request::initial()->redirect(URL::base());
+                    else Request::initial()->redirect(URL::base());
                 }
+                else Request::initial()->redirect(URL::base());
                 exit;
                 break;
             case 'addFile':
@@ -218,14 +218,13 @@ class Controller_LabyrinthManager extends Controller_Base {
                 }
                 break;
             case 'updateFile':
-                $mapId = $receivedMapId;
+                $mapId  = $receivedMapId;
                 $fileId = $this->request->param('id4', NULL);
-                if ($_POST and $mapId != NULL and $fileId != NULL) {
+                if ($post AND $mapId != NULL AND $fileId != NULL)
+                {
                     DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/addFile/' . $mapId);
-                } else {
-                    Request::initial()->redirect(URL::base());
-                }
+                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/'.$stepId.'/addFile/'.$mapId);
+                } else Request::initial()->redirect(URL::base());
                 break;
             case 'addQuestion':
                 $mapId = $receivedMapId;
@@ -513,19 +512,24 @@ class Controller_LabyrinthManager extends Controller_Base {
                 else Request::initial()->redirect(URL::base());
                 break;
             case 'updateGrid':
-                $mapId = $receivedMapId;
-                $counterId = $this->request->param('id4', NULL);
-                if ($_POST and $mapId != NULL) {
-                    if ($counterId != NULL) {
-                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, (int) $counterId, (int) $mapId);
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $mapId . '/' . $counterId);
-                    } else {
-                        DB_ORM::model('map_node_counter')->updateNodeCounters($_POST, NULL, (int) $mapId);
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $mapId);
+                $mapId      = $receivedMapId;
+                $counterId  = $this->request->param('id4', NULL);
+                $redirect   = '';
+
+                if ($post AND $mapId != NULL)
+                {
+                    if ($counterId != NULL)
+                    {
+                        DB_ORM::model('map_node_counter')->updateNodeCounters($post, (int) $counterId, (int) $mapId);
+                        $redirect = 'labyrinthManager/caseWizard/'.$stepId.'/grid/'.$mapId.'/'.$counterId;
                     }
-                } else {
-                    Request::initial()->redirect(URL::base());
+                    else
+                    {
+                        DB_ORM::model('map_node_counter')->updateNodeCounters($post, NULL, (int) $mapId);
+                        $redirect = 'labyrinthManager/caseWizard/'.$stepId.'/grid/'.$mapId;
+                    }
                 }
+                Request::initial()->redirect(URL::base().$redirect);
                 break;
             case 'previewCounter':
                 $mapId      = $receivedMapId;

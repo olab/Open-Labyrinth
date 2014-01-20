@@ -44,7 +44,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) { ?>
     });
 </script>
 
-                <form id="form1" class="form-horizontal" name="form1" method="post" action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateNode/'. $templateData['node']->id; ?>">
+                <form id="form1" class="form-horizontal" name="form1" method="post" action="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/updateNode/'. $templateData['node']->id; ?>">
                 <fieldset class="fieldset">
                     <legend>Node Content</legend>
 

@@ -22,43 +22,57 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
     $preview = '';
     $isInput = false;
 
-    if ($templateData['file']->mime == 'image/gif') {
+    if ($templateData['file']->mime == 'image/gif')
+    {
         $preview = '<img src="' . URL::base() . $templateData['file']->path . '">';
         $isInput = true;
-    } else if ($templateData['file']->mime == 'image/jpg') {
+    }
+    else if ($templateData['file']->mime == 'image/jpg')
+    {
         $preview = '<img src="' . URL::base() . $templateData['file']->path . '">';
         $isInput = true;
-    } else if ($templateData['file']->mime == 'image/png') {
+    }
+    else if ($templateData['file']->mime == 'image/png')
+    {
         $preview = '<img src="' . URL::base() . $templateData['file']->path . '">';
         $isInput = true;
-    } else if ($templateData['file']->mime == 'image/jpeg') {
+    }
+    else if ($templateData['file']->mime == 'image/jpeg')
+    {
         $preview = '<img src="' . URL::base() . $templateData['file']->path . '">';
         $isInput = true;
-    } else if ($templateData['file']->mime == 'application/vnd.ms-powerpoint') {
+    }
+    else if ($templateData['file']->mime == 'application/vnd.ms-powerpoint')
+    {
         $preview = '<img src="' . URL::base() . 'images/PPIcon.gif">';
-    } else if ($templateData['file']->mime == 'application/msword') {
+    } else if ($templateData['file']->mime == 'application/msword')
+    {
         $preview = '<img src="' . URL::base() . 'images/wordicon.gif">';
-    } else if ($templateData['file']->mime == 'application/x-shockwave-flash') {
-        if (strstr($_SERVER['HTTP_USER_AGENT'], 'MSIE')) {
+    }
+    else if ($templateData['file']->mime == 'application/x-shockwave-flash')
+    {
+        if (strstr($_SERVER['HTTP_USER_AGENT'], 'MSIE'))
+        {
             $preview = "<p>Shockwave Flash: " . $templateData['file']->name . " <object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0' width='200' height='300'>" .
                     "<param name='movie' value='" . URL::base().$templateData['file']->path . "' />" .
                     "<param name='allowScriptAccess' value='sameDomain' />" .
                     "<param name='quality' value='high' />" .
                     "</object></p>";
-        } else {
+        }
+        else
+        {
             $preview = "<p>Shockwave Flash: " . $templateData['file']->name . " <object type='application/x-shockwave-flash' data='" . URL::base() . $templateData['file']->path . "' width='300' height='200'>" .
                     "<param name='allowScriptAccess' value='sameDomain' />" .
                     "<param name='quality' value='high' />" .
                     "</object></p>";
         }
-    }
-    ?>
+    }?>
 
     <h3 xmlns="http://www.w3.org/1999/html"><?php echo __('Edit file: "') . $templateData['file']->name . '"'; ?></h3>
-                <form class="form-horizontal" method="POST" action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateFile/' . $templateData['map']->id . '/' . $templateData['file']->id; ?>">
+    <form class="form-horizontal" method="POST" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/updateFile/'.$templateData['map']->id.'/'.$templateData['file']->id; ?>">
 
-                      <div><?php echo __('Preview'); ?><?php echo $preview; ?></div>
-                      <div><?php echo __('Path'); ?><?php echo $templateData['file']->path; ?></div>
+          <div><?php echo __('Preview'); ?><?php echo $preview; ?></div>
+          <div><?php echo __('Path'); ?><?php echo $templateData['file']->path; ?></div>
 
 
                         <fieldset class="fieldset">
