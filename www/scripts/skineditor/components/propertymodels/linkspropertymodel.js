@@ -34,6 +34,9 @@ var LinksPropertyModel = (function(parent) {
         this.Top                = 'auto';
         this.Right              = 'auto';
         this.Bottom             = 'auto';
+        this.ButtonColor1       = '#CACACA';
+        this.ButtonColor2       = '#FFFFFF';
+        this.ButtonFontColor    = '#000000';
     };
 
     LinksPropertyModel.prototype.GetObjectData = function(serializationInfo) {
@@ -69,6 +72,9 @@ var LinksPropertyModel = (function(parent) {
         serializationInfo.AddValue("Top", this.Top);
         serializationInfo.AddValue("Right", this.Right);
         serializationInfo.AddValue("Bottom", this.Bottom);
+        serializationInfo.AddValue("ButtonColor1", this.ButtonColor1);
+        serializationInfo.AddValue("ButtonColor2", this.ButtonColor2);
+        serializationInfo.AddValue("ButtonFontColor", this.ButtonFontColor);
     };
 
     LinksPropertyModel.prototype.SetObjectData = function(serializationInfo) {
@@ -104,6 +110,13 @@ var LinksPropertyModel = (function(parent) {
         this.Top                = serializationInfo.GetValue("Top");
         this.Right              = serializationInfo.GetValue("Right");
         this.Bottom             = serializationInfo.GetValue("Bottom");
+        this.ButtonColor1       = serializationInfo.GetValue("ButtonColor1");
+        this.ButtonColor2       = serializationInfo.GetValue("ButtonColor2");
+        this.ButtonFontColor    = serializationInfo.GetValue("ButtonFontColor");
+
+        if(this.ButtonColor1 == null) { this.ButtonColor1 = '#CACACA'; }
+        if(this.ButtonColor2 == null) { this.ButtonColor2 = '#FFFFFF'; }
+        if(this.ButtonFontColor == null) { this.ButtonFontColor = '#000000'; }
     };
 
     return LinksPropertyModel;

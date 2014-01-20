@@ -33,6 +33,9 @@ var LinksPropertyView = (function(parent) {
         this._$top                = null;
         this._$right              = null;
         this._$bottom             = null;
+        this._$buttonColor1       = null;
+        this._$buttonColor2       = null;
+        this._$buttonFontColor    = null;
     };
 
     LinksPropertyView.prototype.AppendTo = function($container) {
@@ -247,6 +250,21 @@ var LinksPropertyView = (function(parent) {
                                                            modelPropertyName: 'Bottom',
                                                              cssPropertyName: 'bottom',
                                                                viewComponent: '_$bottom'}]});
+        this._AppendColorLabelInput($container, {               label: 'Links color 1(btn.)',
+                                                 viewModelProperyName: 'ButtonColor1',
+                                                    modelPropertyName: 'ButtonColor1',
+                                                      cssPropertyName: 'btn',
+                                                        viewComponent: '_$buttonColor1' });
+        this._AppendColorLabelInput($container, {               label: 'Links color 2(btn.)',
+                                                 viewModelProperyName: 'ButtonColor2',
+                                                    modelPropertyName: 'ButtonColor2',
+                                                      cssPropertyName: 'btn',
+                                                        viewComponent: '_$buttonColor2' });
+        this._AppendColorLabelInput($container, {               label: 'Links clr font(btn.)',
+                                                 viewModelProperyName: 'ButtonFontColor',
+                                                    modelPropertyName: 'ButtonFontColor',
+                                                      cssPropertyName: 'btn',
+                                                        viewComponent: '_$buttonFontColor' });
 
     };
 

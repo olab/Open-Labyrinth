@@ -42,6 +42,9 @@ var LinksComponent = (function(parent) {
         this.Top                = new ObservableProperty();
         this.Right              = new ObservableProperty();
         this.Bottom             = new ObservableProperty();
+        this.ButtonColor1       = new ObservableProperty();
+        this.ButtonColor2       = new ObservableProperty();
+        this.ButtonFontColor    = new ObservableProperty();
     };
 
     /**
@@ -150,8 +153,20 @@ var LinksComponent = (function(parent) {
             this._model[args['modelPropertyName']] = args['newValue'];
 
             if(this._$uiContainer !== null && 'cssPropertyName' in args) {
-                var object = JSON.parse(['{"', args['cssPropertyName'], '":"', this._model[args['modelPropertyName']], '"}'].join(''));
-                this._$uiContainer.css(object);
+                if(args['cssPropertyName'] == 'btn') {
+                    this._$uiContainer.find('style').remove();
+                    $('<style>' +
+                        '#' + this.GetId() + ' .btn { color: ' + this._model['ButtonFontColor'] + ';' +
+                        'background-image: -moz-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');' +
+                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] +'), to(' + this._model[args['modelPropertyName']] +'));' +
+                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +');' +
+                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +');' +
+                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +'); ' +
+                        '}</style>').appendTo(this._$uiContainer);
+                } else {
+                    var object = JSON.parse(['{"', args['cssPropertyName'], '":"', this._model[args['modelPropertyName']], '"}'].join(''));
+                    this._$uiContainer.css(object);
+                }
             }
 
             if('properyName' in args && this.hasOwnProperty(args['propertyName'])) {
