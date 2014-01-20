@@ -52,8 +52,8 @@ body {
     border: 1px solid #c6c6c6;
 }
 
-.skin-editor-panel [class^="icon-"],
-.skin-editor-panel [class*=" icon-"] {
+.skin-editor-panel .components-list [class^="icon-"],
+.skin-editor-panel .components-list [class*=" icon-"] {
     display: inline-block;
     background-image: url('skin_ediotr_icons.png');
     background-repeat: no-repeat;
@@ -61,45 +61,45 @@ body {
     margin-right: 5px;
 }
 
-.skin-editor-panel .icon-block {
+.skin-editor-panel .components-list .icon-block {
     background-position: 0px -420px;
 }
 
-.skin-editor-panel .icon-reset {
+.skin-editor-panel .components-list .icon-reset {
     background-position: 0px 1px;
 }
 
-.skin-editor-panel .icon-image {
+.skin-editor-panel .components-list .icon-image {
     background-position: 0px -359px;
 }
 
-.skin-editor-panel .icon-title {
+.skin-editor-panel .components-list .icon-title {
     background-position: 0px -319px;
 }
 
-.skin-editor-panel .icon-content {
+.skin-editor-panel .components-list .icon-content {
     background-position: 0px -279px;
 }
 
-.skin-editor-panel .icon-counters {
+.skin-editor-panel .components-list .icon-counters {
     background-position: 0px -239px;
 }
 
-.skin-editor-panel .icon-links {
+.skin-editor-panel .components-list .icon-links {
     background-position: 0px -200px;
 }
 
-.skin-editor-panel .icon-review {
+.skin-editor-panel .components-list .icon-review {
     background-position: 0px -156px;
     height: 18px;
     margin-top: -3px;
 }
 
-.skin-editor-panel .icon-info {
+.skin-editor-panel .components-list .icon-info {
     background-position: 0px -39px;
 }
 
-.skin-editor-panel .icon-bookmark {
+.skin-editor-panel .components-list .icon-bookmark {
     background-position: 0px -99px;
     height: 18px;
 }
