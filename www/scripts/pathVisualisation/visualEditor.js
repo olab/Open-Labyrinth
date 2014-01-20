@@ -90,8 +90,11 @@ var VisualEditor = function()
             for (var i = 0; i < self.path.length; i++)
             {
                 var link = self.path[i];
-                link.lineColor = '#0088cc';
-                link.Draw(self.context, viewport);
+                if (link.length)
+                {
+                    link.lineColor = '#0088cc';
+                    link.Draw(self.context, viewport);
+                }
             }
         }
 
