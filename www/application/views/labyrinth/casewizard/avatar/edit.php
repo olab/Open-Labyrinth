@@ -39,16 +39,15 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) { ?>
         });
     }
 </script>
-    <table width="100%" height="100%" cellpadding="6">
+    <table width="100%" height="100%" cellpadding="6" style="margin-bottom: 15px;">
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
                 <h3>Avatar Editor: "<?php echo $templateData['avatar']->id; ?>"</h3>
                 <p>Preview:
                     <canvas style="border: 1px solid #000;" id="avatar_canvas"></canvas>
                 </p>
-                <hr/>
-                <form method="POST" action="<?php echo URL::base().'labyrinthManager/caseWizard/4/updateAvatar/'.$templateData['map']->id.'/'.$templateData['avatar']->id; ?>" name="avatar_form">
-                <table width="100%" cellspacing="0" cellpadding="6" border="0">
+                <form method="POST" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/updateAvatar/'.$templateData['map']->id.'/'.$templateData['avatar']->id; ?>" name="avatar_form">
+                <table width="100%" cellspacing="0" cellpadding="6" border="0" style="margin-bottom: 15px;">
                     <tbody><tr bgcolor="#FFFFFF">
                         <td><p>Sex</p></td><td>
                         <select autocomplete="off" id="sex" size="1" name="avsex">
@@ -319,22 +318,25 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) { ?>
                             </select></td>
                     </tr>
 
-                    <tr bgcolor="#EEEEEE">
-                        <td><p>Speech Bubble</p></td><td>
-                        <select autocomplete="off" id="bubble" name="avbubble">
-                            <option <?php if($templateData['avatar']->bubble == 'none') echo 'selected=""'; ?> value="none">None</option>
-                            <option <?php if($templateData['avatar']->bubble == 'normal') echo 'selected=""'; ?> value="normal">Normal</option>
-                            <option <?php if($templateData['avatar']->bubble == 'think') echo 'selected=""'; ?> value="think">Think</option>
-                            <option <?php if($templateData['avatar']->bubble == 'shout') echo 'selected=""'; ?> value="shout">Shout</option>
-                        </select></td>
-                        <td colspan="2"><p>Bubble Text <input type="text" value="<?php echo $templateData['avatar']->bubble_text; ?>" size="30" id="bubbletext" name="avbubbletext"></p></td>
+                    <tr bgcolor="#FFFFFF">
+                        <td><p>Speech Bubble</p></td>
+                        <td>
+                            <select autocomplete="off" id="bubble" name="avbubble">
+                                <option <?php if($templateData['avatar']->bubble == 'none') echo 'selected=""'; ?> value="none">None</option>
+                                <option <?php if($templateData['avatar']->bubble == 'normal') echo 'selected=""'; ?> value="normal">Normal</option>
+                                <option <?php if($templateData['avatar']->bubble == 'think') echo 'selected=""'; ?> value="think">Think</option>
+                                <option <?php if($templateData['avatar']->bubble == 'shout') echo 'selected=""'; ?> value="shout">Shout</option>
+                            </select>
+                        </td>
+                        <td><p>Bubble Text</p></td>
+                        <td><input type="text" value="<?php echo $templateData['avatar']->bubble_text; ?>" size="30" id="bubbletext" name="avbubbletext"></td>
                     </tr>
-                    </tbody></table>
-                    <hr>
-                    <input type="button" id="save" value="Save" name="save">
-                    <input type="button" id="save_exit" value="Save & exit" name="save_exit">
-                    <input autocomplete="off" name="image_data" id="image_data" type="hidden" />
-                    <input autocomplete="off" name="save_exit_value" id="save_exit_value" type="hidden" value="0" />
+                    </tbody>
+                </table>
+                <input type="button" id="save" value="Save" name="save">
+                <input type="button" id="save_exit" value="Save & exit" name="save_exit">
+                <input autocomplete="off" name="image_data" id="image_data" type="hidden" />
+                <input autocomplete="off" name="save_exit_value" id="save_exit_value" type="hidden" value="0" />
                 </form>
             </td>
         </tr>

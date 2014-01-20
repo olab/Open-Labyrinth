@@ -19,7 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <table width="100%" height="100%" cellpadding="6">
+    <table width="100%" height="100%" cellpadding="6" style="margin-bottom: 15px;">
         <tr>
             <td valign="top" bgcolor="#bbbbcb">
                 <h4><?php echo __('avatars for Labyrinth "') . $templateData['map']->name . '"'; ?></h4>
@@ -40,11 +40,16 @@ if (isset($templateData['map'])) { ?>
                                         <td>
                                             <input type="text" size="20" value="[[AV:<?php echo $avatar->id; ?>]]">
                                         </td>
-                                        <td align="center" valign="middle">
+                                        <td>
                                             <p><img src="<?php echo $image; ?>" /></p>
                                         </td>
                                         <td>
-                                            <p>[<a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">edit</a>] [<a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">duplicate</a>] [<a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">delete</a>]</p></td>
+                                            <p>[
+                                                <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">edit</a>] [
+                                                <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">duplicate</a>] [
+                                                <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>">delete</a>]
+                                            </p>
+                                        </td>
                                     </tr>
                                     <tr><td colspan="3"><hr></td></tr>
                                     <?php } ?>
@@ -52,7 +57,7 @@ if (isset($templateData['map'])) { ?>
                             <?php } else { ?>
                                 <p>there are no avatars in this Labyrinth</p>
                             <?php } ?>
-                            <p><a href="<?php echo URL::base().'labyrinthManager/caseWizard/4/addNewAvatar/'.$templateData['map']->id; ?>">add an avatar</a></p>
+                            <p><a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/addNewAvatar/'.$templateData['map']->id; ?>">Add an avatar</a></p>
                         </td>
                     </tr>
                 </table>

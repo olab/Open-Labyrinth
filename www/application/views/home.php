@@ -31,8 +31,7 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
-	<link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
-
+	    <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
         <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/basic.css'); ?>" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
@@ -164,13 +163,11 @@
             </div>
         </div>
         <div class="container-fluid">
-            <div class="row-fluid">
-                <?php
-                if (Auth::instance()->logged_in()) {
-                    ?>
+            <div class="row-fluid"><?php
+                if (Auth::instance()->logged_in()) { ?>
                     <div id="sidebar" class="span2">
-                        <?php if(isset($templateData['labyrinthSearch']) && isset($templateData['map'])) { ?>
-                            <form action="<?php echo URL::base(); ?>labyrinthManager/search<?php echo '/' . (isset($templateData['map']) && !is_numeric($templateData['map'])  ? $templateData['map']->id : $templateData['map']); ?>" method="get">
+                        <?php if(isset($templateData['labyrinthSearch']) AND isset($templateData['map'])) { ?>
+                            <form action="<?php echo URL::base().'labyrinthManager/search/'.(isset($templateData['map']) AND ! is_numeric($templateData['map']) ? $templateData['map']->id : $templateData['map']); ?>" method="get">
                                 <div class="input-prepend">
                                     <span class="add-on"><i class="icon-search"></i></span>
                                     <input class="span10" id="searchText" name="s" type="text" value="<?php if(isset($templateData['searchText'])) echo $templateData['searchText']; ?>" placeholder="Labyrinth Search">

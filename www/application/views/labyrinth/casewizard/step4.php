@@ -23,11 +23,11 @@
             src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
             xmlns="http://www.w3.org/1999/html"></script>
     <script type="text/javascript">
-        var sendURL = '<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/updateVisualEditor/<?php echo $templateData['map']; ?>';
+        var sendURL = '<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/updateVisualEditor/<?php echo $templateData['action']; ?>';
         var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
         var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
         var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
-        var mapId = <?php echo $templateData['map']; ?>;
+        var mapId = <?php echo $templateData['action']; ?>;
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
         var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = <?php if(isset($templateData['mapModel'])) echo $templateData['mapModel']->type_id; ?>;
@@ -539,7 +539,7 @@
             </div>
         </div>
     <div class="wizard-next-buttons">
-        <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/5/editNode/' . $templateData['map']; ?>"
+        <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/editNode/'.$templateData['action']; ?>"
            style="float:right;" class="wizard_button btn btn-primary">Step 5 - Add other elements</a>
         <a href="<?php echo URL::base(); ?>" style="float:right;" class="wizard_button btn btn-primary">Save & return later</a>
     </div>

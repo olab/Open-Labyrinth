@@ -19,62 +19,54 @@
  *
  */
 if (isset($templateData['map'])) { ?>
+<h3><?php echo __('Add Counter'); ?></h3>
+<form id="form1" name="form1" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/saveNewCounter/'.$templateData['map']->id; ?>" class="form-horizontal">
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="cName"  class="control-label"><?php echo __('Counter Name'); ?>
+            </label>
+            <div class="controls">
+                <input type="text" id="cName" name="cName"  value="">
+            </div>
+        </div>
 
-                <h3><?php echo __('Add Counter'); ?></h3>
+        <div class="control-group">
+            <label for="cDesc"  class="control-label"><?php echo __('Counter description (optional)'); ?>
+            </label>
+            <div class="controls">
+                <textarea name="cDesc" id="cDesc" rows="6" cols="40"></textarea>
+            </div>
+        </div>
 
-                            <form id="form1" name="form1" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/4/saveNewCounter/'.$templateData['map']->id; ?>" class="form-horizontal">
-<fieldset class="fieldset">
-                                <div class="control-group">
-                                    <label for="cName"  class="control-label"><?php echo __('Counter Name'); ?>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="text" id="cName" name="cName"  value="">
-                                    </div>
-                                </div>
+        <div class="control-group">
+            <label for="cIconId"  class="control-label"><?php echo __('Counter image (optional'); ?>
+            </label>
+            <div class="controls">
+                <select name="cIconId" id="cIconId">
+                    <option value="" selected="">no image</option><?php
+                    foreach(Arr::get($templateData, 'images', array()) as $image) { ?>
+                    <option value="<?php echo $image->id; ?>"><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option><?php
+                    } ?>
+                </select>
+            </div>
+        </div>
 
-                                <div class="control-group">
-                                    <label for="cDesc"  class="control-label"><?php echo __('Counter description (optional)'); ?>
-                                    </label>
-                                    <div class="controls">
-                                        <textarea name="cDesc" id="cDesc" rows="6" cols="40"></textarea>
-                                    </div>
-                                </div>
+        <div class="control-group">
+            <label for="cStartV"  class="control-label"><?php echo __('Starting value (optional)'); ?>
+            </label>
+            <div class="controls">
+                <input type="text" name="cStartV" id="cStartV" size="4" value="">
+            </div>
+        </div>
 
-                                <div class="control-group">
-                                    <label for="cIconId"  class="control-label"><?php echo __('Counter image (optional'); ?>
-                                    </label>
-                                    <div class="controls">
-                                        <select name="cIconId" id="cIconId">
-                                            <option value="" selected="">no image</option>
-                                            <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                                                <?php foreach($templateData['images'] as $image) { ?>
-                                                    <option value="<?php echo $image->id; ?>"><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
-                                                <?php } ?>
-                                            <?php } ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label for="cStartV"  class="control-label"><?php echo __('Starting value (optional)'); ?>
-                                    </label>
-                                    <div class="controls">
-                                        <input type="text" name="cStartV" id="cStartV" size="4" value="">
-                                    </div>
-                                </div>
-
-                                <div class="control-group">
-                                    <label for="cVisible"  class="control-label"><?php echo __('Visibility'); ?>
-                                    </label>
-                                    <div class="controls">
-                                        <select id="cVisible" name="cVisible"><option value="1" selected=""><?php echo __('show'); ?></option><option value="0"><?php echo __('don\'t show'); ?></option></select>
-                                    </div>
-                                </div>
-
-
-                                </fieldset>
-
-                                <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-                            </form>
-
-<?php } ?>
+        <div class="control-group">
+            <label for="cVisible"  class="control-label"><?php echo __('Visibility'); ?>
+            </label>
+            <div class="controls">
+                <select id="cVisible" name="cVisible"><option value="1" selected=""><?php echo __('show'); ?></option><option value="0"><?php echo __('don\'t show'); ?></option></select>
+            </div>
+        </div>
+    </fieldset>
+    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+</form><?php
+} ?>

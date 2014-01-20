@@ -113,15 +113,11 @@ if (isset($templateData['map'])) { ?>
 
                     </td>
                     <td>
-                          <a class="btn btn-primary" href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editFile/' . $templateData['map']->id . '/' . $file->id; ?>">edit</a>
-
-                        <a class="btn btn-primary" href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/deleteFile/' . $templateData['map']->id . '/' . $file->id; ?>">delete</a>
-
-                        <?php if ($isImage) { ?>
-
-                                <a href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>">image
-                                    editor</a>
-                        <?php } ?>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/editFile/'.$templateData['map']->id.'/'.$file->id; ?>">edit</a>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/deleteFile/' . $templateData['map']->id.'/'.$file->id; ?>">delete</a><?php
+                        if ($isImage) { ?>
+                                <a href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>">image editor</a><?php
+                        } ?>
                     </td>
 
                 </tr>
@@ -131,29 +127,21 @@ if (isset($templateData['map'])) { ?>
         </tbody>
     </table>
 
-    <form method="POST" id="upload-form" enctype="multipart/form-data" class="form-horizontal"
-          action="<?php echo URL::base().'labyrinthManager/caseWizard/4/uploadFile/'.$templateData['map']->id; ?>">
+    <form method="POST" id="upload-form" enctype="multipart/form-data" class="form-horizontal" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/uploadFile/'.$templateData['map']->id; ?>">
         <fieldset class="fieldset">
             <legend><?php echo __('Upload a file to Labyrinth'); ?> "<?php echo $templateData['map']->name; ?>"</legend>
-
             <div class="control-group">
                 <label class="control-label"><?php echo __('Select file to upload'); ?></label>
                 <div class="controls">
                     <input type="FILE"  name="filename">
                 </div>
             </div>
-
         </fieldset>
         <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc),
             Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4
             Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio
             (.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
 
-            <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Upload'); ?>">
-
-
+        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Upload'); ?>">
     </form>
-
-
-
 <?php } ?>

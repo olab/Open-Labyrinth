@@ -90,7 +90,7 @@ if (isset($templateData['section']) and isset($templateData['map'])) {?>
 
 <form class="form-horizontal" action="<?php echo URL::base().'nodeManager/updatePreventRevisit/'.$templateData['map']->id.'/'.$templateData['section']->id; ?>" method="post">
     <fieldset>
-        <legend><?php echo __("PreventRevisit") ?></legend>
+        <legend><?php echo __("Prevent Revisit") ?></legend>
         <div class="control-group">
             <div class="controls">
 

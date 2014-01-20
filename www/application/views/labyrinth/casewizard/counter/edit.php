@@ -18,66 +18,45 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['counter'])) {
-    ?>
-
-    <h3><?php echo __('Edit Counter') . ' ' . $templateData['counter']->id . ' "' . $templateData['counter']->name . '"'; ?></h3>
-
-    <form id="form1" name="form1" method="post"
-          action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateCounter/' . $templateData['map']->id . '/' . $templateData['counter']->id; ?>"
-          class="form-horizontal">
-
+if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
+    <h3><?php echo __('Edit Counter').' '.$templateData['counter']->id.' "'.$templateData['counter']->name.'"'; ?></h3>
+    <form id="form1" name="form1" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/updateCounter/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>" class="form-horizontal">
         <fieldset class="fieldset">
-
             <div class="control-group">
-                <label for="cName" class="control-label"><?php echo __('Counter Name'); ?>
-                </label>
-
+                <label for="cName" class="control-label"><?php echo __('Counter Name'); ?></label>
                 <div class="controls">
                     <input type="text" id="cName" name="cName" value="">
                 </div>
             </div>
 
             <div class="control-group">
-                <label for="cDesc" class="control-label"><?php echo __('Counter description (optional)'); ?>
-                </label>
-
+                <label for="cDesc" class="control-label"><?php echo __('Counter description (optional)'); ?></label>
                 <div class="controls">
                     <textarea name="cDesc" id="cDesc" rows="6" cols="40"></textarea>
                 </div>
             </div>
 
             <div class="control-group">
-                <label for="cIconId" class="control-label"><?php echo __('Counter image (optional'); ?>
-                </label>
-
+                <label for="cIconId" class="control-label"><?php echo __('Counter image (optional'); ?></label>
                 <div class="controls">
                     <select name="cIconId" id="cIconId">
-                        <option value="" selected="">no image</option>
-                        <?php if (isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                            <?php foreach ($templateData['images'] as $image) { ?>
-                                <option value="<?php echo $image->id; ?>"><?php echo $image->name; ?>
-                                    (ID:<?php echo $image->id; ?>)
-                                </option>
-                            <?php } ?>
-                        <?php } ?>
+                        <option value="" selected="">no image</option><?php
+                        foreach (Arr::get($templateData, 'images', array()) as $image) { ?>
+                        <option value="<?php echo $image->id; ?>"><?php echo $image->name.'(ID:'.$image->id; ?>)</option><?php
+                        } ?>
                     </select>
                 </div>
             </div>
 
             <div class="control-group">
-                <label for="cStartV" class="control-label"><?php echo __('Starting value (optional)'); ?>
-                </label>
-
+                <label for="cStartV" class="control-label"><?php echo __('Starting value (optional)'); ?></label>
                 <div class="controls">
                     <input type="text" name="cStartV" id="cStartV" size="4" value="">
                 </div>
             </div>
 
             <div class="control-group">
-                <label for="cVisible" class="control-label"><?php echo __('Visibility'); ?>
-                </label>
-
+                <label for="cVisible" class="control-label"><?php echo __('Visibility'); ?></label>
                 <div class="controls">
                     <select id="cVisible" name="cVisible">
                         <option value="1" selected=""><?php echo __('show'); ?></option>
@@ -85,21 +64,17 @@ if (isset($templateData['map']) and isset($templateData['counter'])) {
                     </select>
                 </div>
             </div>
-
         </fieldset>
-
-
         <input class="btn-primary btn" type="submit" name="Submit" value="submit"/>
-
     </form>
 
     <h4><?php echo __('Counter rules'); ?></h4>
     <table class="table table-striped table-bordered">
         <thead>
-        <tr>
-            <th>Title</th>
-            <th>Actions</th>
-        </tr>
+            <tr>
+                <th>Title</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
         <?php if (isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
@@ -111,19 +86,15 @@ if (isset($templateData['map']) and isset($templateData['counter'])) {
                         is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to
                         node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>')
                     </td>
-                    <td><a class="btn btn-primary"
-                           href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/deleteRule/' . $templateData['map']->id . '/' . $templateData['counter']->id . '/' . $rule->id . '/' . $rule->redirect_node_id; ?>">delete</a>
+                    <td><a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>">delete</a>
                     </td>
                 </tr>
             <?php } ?>
         <?php } ?>
-
-
         </tbody>
     </table>
     <h5><?php echo __('Add counter rule'); ?></h5>
-    <form class="form-horizontal" id="form2" name="form2" method="post"
-          action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addRule/' . $templateData['map']->id . '/' . $templateData['counter']->id; ?>">
+    <form class="form-horizontal" id="form2" name="form2" method="post" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/addRule/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
         <fieldset class="fieldset">
             <div class="control-group">
                 <label for="relation" class="control-label"><?php echo __('If value of counter'); ?>
@@ -176,13 +147,9 @@ if (isset($templateData['map']) and isset($templateData['counter'])) {
                     <?php } ?>
                 </div>
             </div>
-
             <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-
         </fieldset>
-
     </form>
-
 <?php } ?>
 
 
