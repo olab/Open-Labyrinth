@@ -5,7 +5,7 @@ var ComponentsListUIComponent = (function(parent) {
     inherit(parent, ComponentsListUIComponent);
     
     ComponentsListUIComponent.UI_HTML                = '<div class="skin-editor-components-list">' +
-                                                            '<div class="content-header">Components</div>' +
+                                                            '<div class="content-header">Components <div class="pull-right"><button class="btn btn-small cut-down" style="padding: 0px 5px;line-height: 14px">-</button></div></div>' +
                                                             '<div class="content"></div>'
                                                        '</div>';
     ComponentsListUIComponent.UI_ITEM_CONTAINER_HTML = '<ul class="components-list">@ITEMS@</ul>';
@@ -36,6 +36,17 @@ var ComponentsListUIComponent = (function(parent) {
             itemsHTML  = ComponentsListUIComponent.UI_ITEM_CONTAINER_HTML.replace('@ITEMS@', this._CreateUIItemsHTML());
         
         $(itemsHTML).appendTo($uiContent);
+        $ui.find('.cut-down').click(function() {
+            if($(this).hasClass('clicked')) {
+                $(this).closest('.panel-content').find('.content').show();
+                $(this).closest('.panel-content').find('.skin-editor-component-tree-container').show();
+                $(this).removeClass('clicked');
+            } else {
+                $(this).closest('.panel-content').find('.content').hide();
+                $(this).closest('.panel-content').find('.skin-editor-component-tree-container').hide();
+                $(this).addClass('clicked');
+            }
+        });
         
         this._CreateEvents();
     };

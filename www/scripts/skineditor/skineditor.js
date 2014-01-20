@@ -4,12 +4,10 @@
 var SkinEditor = (function() {
     
     SkinEditor.UI_LEFT_PANEL_HTML        = '<div class="skin-editor-panel left">' +
-                                               '<div class="panel-content" style="display:none"></div>' +
-                                               '<div class="close-panel"><i class="icon-chevron-right"></i></div>' +
+                                               '<div class="panel-content"></div>' +
                                            '</div>';
     SkinEditor.UI_RIGHT_PANEL_HTML       = '<div class="skin-editor-panel right">' +
-                                               '<div class="close-panel"><i class="icon-chevron-left"></i></div>' +
-                                               '<div class="panel-content" style="display:none"></div>' +
+                                               '<div class="panel-content"></div>' +
                                            '</div>';
     SkinEditor.UI_CONTENT_CONTAINER_HTML = '<div class="skin-editor-content-container"></div>';
     SkinEditor.UI_BUTTONS_HTML           = '<div style="position: fixed; bottom: 5px; margin-left: 39%;display: block" class="btn-group">' +
@@ -76,7 +74,7 @@ var SkinEditor = (function() {
      */
     SkinEditor.prototype._CreatePanel = function(html, onCSSClass, offCSSClass) {
         var instance = this,
-            $ui      = $(html).appendTo(this._$uiMainContainer);
+            $ui      = $(html).appendTo(this._$uiMainContainer).draggable();
         
         $ui.find('.close-panel').click(function() {
             instance._ToogleClosePanel($(this).find('i'), 

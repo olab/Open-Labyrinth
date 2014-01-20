@@ -167,6 +167,7 @@ body {
     padding-bottom: 5px;
     border-bottom: 1px solid #c6c6c6;
     margin-bottom: 10px;
+    cursor: move;
 }
 
 .skin-editor-panel .components-list {

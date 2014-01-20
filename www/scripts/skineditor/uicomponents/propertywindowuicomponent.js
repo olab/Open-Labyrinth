@@ -6,7 +6,7 @@ var PropertyWindowUIComponent = (function(parent) {
     
     PropertyWindowUIComponent.UI_HTML = '<div class="skin-editor-property-window">' +
                                              '<div class="content-header">' +
-                                                 'Properties <span class="component-name"></span>' +
+                                                 'Properties <span class="component-name"></span><div class="pull-right"><button class="btn btn-small cut-down" style="padding: 0px 5px;line-height: 14px">-</button></div>' +
                                              '</div><div class="content"></div>' +
                                         '</div>';
     
@@ -74,6 +74,16 @@ var PropertyWindowUIComponent = (function(parent) {
         this._$ui              = $(PropertyWindowUIComponent.UI_HTML).appendTo($container);
         this._$uiContent       = this._$ui.find('.content');
         this._$uiComponentName = this._$ui.find('.component-name');
+
+        this._$ui.find('.cut-down').click(function() {
+            if($(this).hasClass('clicked')) {
+                $(this).closest('.panel-content').find('.content').show();
+                $(this).removeClass('clicked');
+            } else {
+                $(this).closest('.panel-content').find('.content').hide();
+                $(this).addClass('clicked');
+            }
+        });
     };
     
     return PropertyWindowUIComponent;
