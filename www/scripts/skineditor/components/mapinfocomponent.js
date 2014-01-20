@@ -51,6 +51,8 @@ var MapInfoComponent = (function(parent) {
      */
     MapInfoComponent.prototype.GetName = function() { return this._model.Name; };
 
+    MapInfoComponent.prototype.GetRelType = function() { return 'info'; };
+
     /**
      * Composite component is composite object
      *

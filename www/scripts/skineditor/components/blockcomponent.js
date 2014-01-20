@@ -53,6 +53,8 @@ var BlockComponent = (function(parent) {
      * @return {string} - block component name
      */
     BlockComponent.prototype.GetName = function() { return this._model.Name; };
+
+    BlockComponent.prototype.GetRelType = function() { return 'block'; };
     
     /**
      * Composite component is composite object

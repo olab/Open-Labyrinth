@@ -42,6 +42,8 @@ var NodeContentComponent = (function(parent) {
      * @return {string} - block component name
      */
     NodeContentComponent.prototype.GetName = function() { return this._model.Name; };
+
+    NodeContentComponent.prototype.GetRelType = function() { return 'node_content'; };
     
     /**
      * Get image property view

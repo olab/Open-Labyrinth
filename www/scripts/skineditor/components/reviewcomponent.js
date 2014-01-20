@@ -51,6 +51,8 @@ var ReviewComponent = (function(parent) {
      */
     ReviewComponent.prototype.GetName = function() { return this._model.Name; };
 
+    ReviewComponent.prototype.GetRelType = function() { return 'review'; };
+
     /**
      * Composite component is composite object
      *

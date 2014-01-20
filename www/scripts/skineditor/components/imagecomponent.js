@@ -42,6 +42,8 @@ var ImageComponent = (function(parent) {
      * @return {string} - block component name
      */
     ImageComponent.prototype.GetName = function() { return this._model.Name; };
+
+    ImageComponent.prototype.GetRelType = function() { return 'image'; };
     
     /**
      * Get image property view

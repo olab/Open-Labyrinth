@@ -51,6 +51,8 @@ var LinksComponent = (function(parent) {
      */
     LinksComponent.prototype.GetName = function() { return this._model.Name; };
 
+    LinksComponent.prototype.GetRelType = function() { return 'links'; };
+
     /**
      * Composite component is composite object
      *

@@ -17,6 +17,8 @@ var BookmarkComponent = (function(parent) {
      */
     BookmarkComponent.prototype.GetName = function() { return 'Bookmark component'; };
 
+    BookmarkComponent.prototype.GetRelType = function() { return 'bookmark'; };
+
     /**
      * Get image property view
      *

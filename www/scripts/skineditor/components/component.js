@@ -113,6 +113,13 @@ var Component = (function(parent) {
     Component.prototype.GetContainer = function() { return null; };
 
     /**
+     * Get component rel type
+     *
+     * @returns {string} - rel type
+     */
+    Component.prototype.GetRelType = function() { return ''; };
+
+    /**
      * Set component container
      *
      * @param {*} $container - container

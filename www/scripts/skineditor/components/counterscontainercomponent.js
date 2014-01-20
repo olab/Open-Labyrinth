@@ -42,6 +42,8 @@ var CountersContainerComponent = (function(parent) {
      * @return {string} - block component name
      */
     CountersContainerComponent.prototype.GetName = function() { return this._model.Name; };
+
+    CountersContainerComponent.prototype.GetRelType = function() { return 'counters'; };
     
     /**
      * Get image property view

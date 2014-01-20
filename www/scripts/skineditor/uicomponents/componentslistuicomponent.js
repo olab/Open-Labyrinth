@@ -8,11 +8,11 @@ var ComponentsListUIComponent = (function(parent) {
                                                             '<div class="content-header">Components</div>' +
                                                             '<div class="content"></div>'
                                                        '</div>';
-    ComponentsListUIComponent.UI_ITEM_CONTAINER_HTML = '<ul>@ITEMS@</ul>';
+    ComponentsListUIComponent.UI_ITEM_CONTAINER_HTML = '<ul class="components-list">@ITEMS@</ul>';
     ComponentsListUIComponent.UI_ITEM_HTML           = '<li>' +
-                                                            '<a href="javascript:void(0)" class="skin-editor-add-component" component-name="@NAME@"><i class="@ICON-CLASS@"></i> @TITLE@</a>' + 
+                                                            '<a href="javascript:void(0)" class="skin-editor-add-component" component-name="@NAME@"><i class="@ICON-CLASS@"></i> @TITLE@</a>' +
                                                        '</li>';
-    
+
     /**
      * Default constructor
      * 

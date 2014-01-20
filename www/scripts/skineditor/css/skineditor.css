@@ -52,6 +52,58 @@ body {
     border: 1px solid #c6c6c6;
 }
 
+.skin-editor-panel [class^="icon-"],
+.skin-editor-panel [class*=" icon-"] {
+    display: inline-block;
+    background-image: url('skin_ediotr_icons.png');
+    background-repeat: no-repeat;
+    width: 18px;
+    margin-right: 5px;
+}
+
+.skin-editor-panel .icon-block {
+    background-position: 0px -420px;
+}
+
+.skin-editor-panel .icon-reset {
+    background-position: 0px 1px;
+}
+
+.skin-editor-panel .icon-image {
+    background-position: 0px -359px;
+}
+
+.skin-editor-panel .icon-title {
+    background-position: 0px -319px;
+}
+
+.skin-editor-panel .icon-content {
+    background-position: 0px -279px;
+}
+
+.skin-editor-panel .icon-counters {
+    background-position: 0px -239px;
+}
+
+.skin-editor-panel .icon-links {
+    background-position: 0px -200px;
+}
+
+.skin-editor-panel .icon-review {
+    background-position: 0px -156px;
+    height: 18px;
+    margin-top: -3px;
+}
+
+.skin-editor-panel .icon-info {
+    background-position: 0px -39px;
+}
+
+.skin-editor-panel .icon-bookmark {
+    background-position: 0px -99px;
+    height: 18px;
+}
+
 .skin-editor-panel.left > .panel-content {
     -webkit-border-bottom-right-radius: 3px;
     -moz-border-radius-bottomright: 3px;
@@ -115,6 +167,11 @@ body {
     padding-bottom: 5px;
     border-bottom: 1px solid #c6c6c6;
     margin-bottom: 10px;
+}
+
+.skin-editor-panel .components-list {
+    list-style: none;
+    margin-left: 8px;
 }
 
 .skin-editor-panel .skin-editor-property-window label {

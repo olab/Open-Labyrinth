@@ -17,6 +17,8 @@ var ResetComponent = (function(parent) {
      */
     ResetComponent.prototype.GetName = function() { return 'Reset component'; };
 
+    ResetComponent.prototype.GetRelType = function() { return 'reset'; };
+
     /**
      * Get image property view
      *

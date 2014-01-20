@@ -36,16 +36,16 @@ var ComponentsManager = (function() {
      */
     ComponentsManager.prototype.GetComponentsList = function() {
         return [
-            { name: 'block',             title: 'Block Component',              icon: '' },
-            { name: 'image',             title: 'Image Component',              icon: '' },
-            { name: 'nodetitle',         title: 'Node Title Component',         icon: '' },
-            { name: 'nodecontent',       title: 'Node Content Component',       icon: '' },
-            { name: 'counterscontainer', title: 'Counters Container Component', icon: '' },
-            { name: 'links',             title: 'Links Component',              icon: '' },
-            { name: 'review',            title: 'Review Component',             icon: '' },
-            { name: 'mapinfo',           title: 'Map Info Component',           icon: '' },
-            { name: 'bookmark',          title: 'Bookmark Component',           icon: '' },
-            { name: 'reset',             title: 'Reset Component',              icon: '' }
+            { name: 'block',             title: 'Block Component',              icon: 'icon-block' },
+            { name: 'image',             title: 'Image Component',              icon: 'icon-image' },
+            { name: 'nodetitle',         title: 'Node Title Component',         icon: 'icon-title' },
+            { name: 'nodecontent',       title: 'Node Content Component',       icon: 'icon-content' },
+            { name: 'counterscontainer', title: 'Counters Container Component', icon: 'icon-counters' },
+            { name: 'links',             title: 'Links Component',              icon: 'icon-links' },
+            { name: 'review',            title: 'Review Component',             icon: 'icon-review' },
+            { name: 'mapinfo',           title: 'Map Info Component',           icon: 'icon-info' },
+            { name: 'bookmark',          title: 'Bookmark Component',           icon: 'icon-bookmark' },
+            { name: 'reset',             title: 'Reset Component',              icon: 'icon-reset' }
         ];
     };
 
