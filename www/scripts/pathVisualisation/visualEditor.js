@@ -90,11 +90,8 @@ var VisualEditor = function()
             for (var i = 0; i < self.path.length; i++)
             {
                 var link = self.path[i];
-                if (link.length)
-                {
-                    link.lineColor = '#0088cc';
+                    link.lineColor = (link.id.toString().indexOf('notExisting') + 1) ? 'red' : '#0088cc';
                     link.Draw(self.context, viewport);
-                }
             }
         }
 
@@ -309,10 +306,18 @@ var VisualEditor = function()
                            return link;
                        }
                     }
-
                     link.pathStart = nodeFirst;
                 }
             }
+        }
+        if (link == null)
+        {
+            link            = new Link;
+            link.id         = 'notExisting'+Math.floor((Math.random()*1000)+1);
+            link.nodeA      = GetNodeById(nodeFirst);
+            link.nodeB      = GetNodeById(nodeSecond);
+            link.type       = 'direct';
+            link.color      = 'red';
         }
         return link;
     };
