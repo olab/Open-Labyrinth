@@ -493,6 +493,83 @@ class Model_Labyrinth extends Model {
         $this->updateCounterString($mapID, $counterString);
 
         Session::instance()->set('countersFunc', json_encode($countersFunc));
+
+        $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+        if (count($arrayAddedQuestions) > 0) {
+            foreach($arrayAddedQuestions as $questionId => $value) {
+                $question = DB_ORM::model('map_question', array((int) $questionId));
+
+                if ($question->settings != '') {
+                    list($rule, $isCorrect) = json_decode($question->settings);
+                }
+
+                $stopRules = Session::instance()->get('stopCommonRules', array());
+                if (!in_array('QU_'.$questionId, $stopRules)) {
+                    if ($question->settings != '' && $isCorrect == 1) {
+                        $mapID = $question->map_id;
+                        $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
+                        $values = array();
+                        if (count($counters) > 0){
+                            foreach($counters as $counter){
+                                $values[$counter->id] = $this->getCounterValueByID($mapID, $counter->id);
+                            }
+                        }
+                        $runtimelogic = new RunTimeLogic();
+                        $runtimelogic->values = $values;
+                        $runtimelogic->questionResponse = NULL;
+
+                        $array = $runtimelogic->parsingString($rule);
+                        $resultLogic = $array['result'];
+                        if (isset($resultLogic['goto'])){
+                            if ($resultLogic['goto'] != NULL){
+                                $nodes = DB_ORM::model('map_node')->getAllNode($mapID);
+                                $inMap = false;
+
+                                foreach ($nodes as $node) {
+                                    if ( $node->id == $resultLogic['goto']) {
+                                        $inMap = true;
+                                    }
+                                }
+
+                                if ($inMap) {
+                                    $goto = Session::instance()->get('goto', NULL);
+
+                                    if ($goto == NULL) {
+                                        Session::instance()->set('goto', $resultLogic['goto']);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (isset($resultLogic['counters'])){
+                            if (count($resultLogic['counters']) > 0){
+                                $counterString = $this->getCounterString($mapID);
+                                if ($counterString != ''){
+                                    foreach($resultLogic['counters'] as $key => $value){
+                                        $previousValue = $this->getCounterValueFromString($key, $counterString);
+                                        $counterString = $this->setCounterValueToString($key, $counterString, $value);
+
+                                        $diff = $value - $previousValue;
+                                        if ($diff > 0){
+                                            $diff = '+'.$diff;
+                                        }
+                                        $countersFunc[$key][] = $diff;
+                                    }
+                                    $this->updateCounterString($mapID, $counterString);
+                                }
+                            }
+                        }
+
+                        if (isset($resultLogic['stop'])){
+                            $stopRules[] = 'QU_'.$questionId;
+                            Session::instance()->set('stopCommonRules', $stopRules);
+                        }
+
+                    }
+                }
+            }
+        }
+        Session::instance()->delete('arrayAddedQuestions');
         return $c_debug;
     }
 
@@ -673,7 +750,7 @@ class Model_Labyrinth extends Model {
                     $runtimelogic->values = $values;
                     $stopRules = Session::instance()->get('stopCommonRules', array());
                     foreach($commonRules as $rule){
-                        if (!in_array($rule->id, $stopRules)){
+                        if (!in_array('RULE_'.$rule->id, $stopRules)){
                             $array = $runtimelogic->parsingString($rule->rule);
                             $c_debug['global_rules'][$rule->id] = $array;
                             $resultLogic = $array['result'];
@@ -698,7 +775,7 @@ class Model_Labyrinth extends Model {
                             }
 
                             if (isset($resultLogic['stop'])){
-                                $stopRules[] = $rule->id;
+                                $stopRules[] = 'RULE_'.$rule->id;
                                 Session::instance()->set('stopCommonRules', $stopRules);
                             }
 
@@ -1053,6 +1130,12 @@ class Model_Labyrinth extends Model {
                     if (isset($resultLogic['incorrect'])){
                         $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
                     }
+                }
+
+                $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+                if (isset($arrayAddedQuestions[$questionId])) {
+                    unset($arrayAddedQuestions[$questionId]);
+                    Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
                 }
             }
 

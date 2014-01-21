@@ -200,6 +200,7 @@ class RunTimeLogic {
                 }
             }
         }
+
         $string = str_replace($search, $replace, $string);
 
         $pattern = '\sMOD\s';
@@ -207,6 +208,9 @@ class RunTimeLogic {
 
         $pattern = '\\[\\[CR:(\d+)\\]\\]';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCounter'), $string);
+
+        $pattern = '\\[\\[QU_ANSWER\\]\\]';
+        $string = preg_replace_callback("/".$pattern."/", array($this, 'replaceQuestionAnswer'), $string);
 
         $pattern = '(?<=[^=|!|<|>])=(?=[^=])';
         $string = preg_replace("/".$pattern."/is", ' == ', $string);
@@ -221,6 +225,10 @@ class RunTimeLogic {
         return '"'.$this->getValue($matches[1]).'"';
     }
 
+    private function replaceQuestionAnswer($matches){
+        return '"'.$this->getQUAnswer().'"';
+    }
+
     public function getValue($id){
         $value = 0;
         if (isset($this->values[$id])){
@@ -229,7 +237,7 @@ class RunTimeLogic {
         return $value;
     }
 
-    public function getQUAnswer($id){
+    public function getQUAnswer($id = null){
         $value = '';
         if ($id == null){
             $id = $this->questionId;
