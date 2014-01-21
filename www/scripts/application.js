@@ -427,7 +427,7 @@ jQuery(document).ready(function(){
         usernames = [],
         users = null;
     if (!currentUserReadOnly) {
-        setTimeout(function() {
+        setInterval(function() {
             $.get(historyAjaxCollaborationURL, function(data) {
                 usernames = [];
                 users = eval('(' + data + ')');
@@ -443,7 +443,7 @@ jQuery(document).ready(function(){
                     utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                 }
             });
-        }, 7000);
+        }, 30000);
     }
 
     function inArray(needle, haystack) {

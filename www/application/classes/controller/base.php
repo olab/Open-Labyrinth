@@ -191,7 +191,7 @@ class Controller_Base extends Controller_Template {
 
             $this->templateData['user_id'] = $user_id;
             $this->templateData['historyShowWarningPopup'] = $historyShowWarningPopup;
-            $this->templateData['currentUserReadOnly'] = $readonly; //TODO
+            $this->templateData['currentUserReadOnly'] = $readonly;
             $this->templateData['historyOfAllUsers'] = json_encode($usersHistory);
 
             I18n::lang(Auth::instance()->get_user()->language->key);
