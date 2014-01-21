@@ -351,6 +351,15 @@ img.member-box-avatar {
     box-shadow: inset 0 1px 0 #ffffff;
 }
 /* Other */
+.lock {
+    background: url('../images/checked_out.png');
+    height: 16px;
+    width: 16px;
+    display: inline-block;
+    position: absolute;
+    right:0;
+    top:5px;
+}
 .action-btn {
     text-align:center;
     background-color: #fbfbfb;

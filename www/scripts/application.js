@@ -383,4 +383,78 @@ jQuery(document).ready(function(){
         var url = $(this).attr('submit-url');
         $('form').attr('action', url).submit();
     });
+
+    $.each(historyOfAllUsers, function(key, value) {
+        if (value['username'] != currentUser && value['readonly'] != 1) {
+            var links = $('a[href="' + value['href'] + '"]');
+            $.each(links, function() {
+                $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                var deleteButton = $(this).nextAll('.btn.btn-danger');
+                if (deleteButton.length) {
+                    deleteButton.remove();
+                }
+                var imageEditButton = $(this).nextAll('.btn.btn-inverse');
+                if (imageEditButton.length) {
+                    imageEditButton.remove();
+                }
+            });
+        }
+    });
+
+    $(".showCustomModalWindow").click(function() {
+        var url = $(this).children('.lock').attr('id');
+        var obj = $('#readonly-notice');
+        obj.find('a.btn').attr('href', url);
+        obj.modal('show');
+
+    });
+
+    $(".lock").tooltip({placement: "right"});
+
+    if (historyShowWarningPopup) {
+        $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
+        $('.btn').attr('href', 'javascript:void(0)');
+        $('.editable-text').attr('contenteditable', 'false');
+        $('.row-fluid form').attr('action','');
+        $('.row-fluid input').attr('onclick','javascript:void(0)');
+    }
+
+    var utils = new Utils(),
+        messageContainer = $('#collaboration_message'),
+        messageTextContainer = $('#collaboration_message_text');
+
+    var stopList = [],
+        usernames = [],
+        users = null;
+    if (!currentUserReadOnly) {
+        setTimeout(function() {
+            $.get(historyAjaxCollaborationURL, function(data) {
+                usernames = [];
+                users = eval('(' + data + ')');
+                $.each(users, function(key, value){
+                    if (inArray(key, stopList)) {
+                        delete users[key];
+                    } else {
+                        stopList.push(key);
+                        usernames.push(value);
+                    }
+                });
+                if (usernames.length) {
+                    utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
+                }
+            });
+        }, 7000);
+    }
+
+    function inArray(needle, haystack) {
+        var length = haystack.length;
+        for(var i = 0; i < length; i++) {
+            if(haystack[i] == needle) return true;
+        }
+        return false;
+    }
+
+    if (historyShowWarningPopup && currentUserReadOnly) {
+        utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'You join edited page in readonly mode', 7000);
+    }
 });

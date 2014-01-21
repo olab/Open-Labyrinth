@@ -334,4 +334,24 @@ class Controller_Home extends Controller_Base {
         }
     }
 
+    public function action_historyAjaxCollaboration() {
+        $this->auto_render = false;
+        $usersInformation = json_decode($this->templateData['historyOfAllUsers'], true);
+        $result = array();
+        $user = $this->templateData['username'];
+        $userArray = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
+        $uri = Arr::get($userArray, 'href', NULL);
+
+        if ($uri != NULL) {
+            foreach ($usersInformation as $key => $value) {
+                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) {
+                    $result[$value['id']] = $value['username'];
+                }
+            }
+        }
+
+        echo json_encode($result);
+        exit;
+    }
+
 }

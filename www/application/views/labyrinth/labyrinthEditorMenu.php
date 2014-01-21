@@ -85,4 +85,16 @@ if (isset($templateData['map'])) { ?>
             </p>
         </div>
     </div>
+    <div class="modal hide fade in" id="readonly-notice">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="alert-heading"><?php echo __('Are you sure?'); ?></h4>
+        </div>
+        <div class="modal-body">
+            <p><?php echo __('You try go to the page on which already another author is working, you can go there with "Read-only" permission.'); ?></p>
+            <p>
+                <a class="btn btn-primary" href="javascript:void(0);"><?php echo __('Enter with Read-only'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </p>
+        </div>
+    </div>
 <?php }; ?>
