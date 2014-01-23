@@ -185,11 +185,14 @@ class Controller_Base extends Controller_Template {
                     break;
                 }
             }
+
+            $userHasBlockedAccess = 0;
             if (!$this->request->is_ajax()) {
-                $this->addUserHistory($user_id, $readonly);
+                $userHasBlockedAccess = $this->addUserHistory($user_id, $readonly);
             }
 
             $this->templateData['user_id'] = $user_id;
+            $this->templateData['userHasBlockedAccess'] = $userHasBlockedAccess;
             $this->templateData['historyShowWarningPopup'] = $historyShowWarningPopup;
             $this->templateData['currentUserReadOnly'] = $readonly;
             $this->templateData['historyOfAllUsers'] = json_encode($usersHistory);
@@ -451,6 +454,7 @@ class Controller_Base extends Controller_Template {
         }
         $timestamp = time();
         DB_ORM::model('user')->updateUserHistory($user_id, $uri, $readonly, $timestamp);
+        return ($uri != NULL) ? 1 : 0;
     }
 }
 

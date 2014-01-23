@@ -234,6 +234,7 @@
 
         <script type="text/javascript">
             var historyAjaxCollaborationURL = '<?php echo URL::base(); ?>home/historyAjaxCollaboration/<?php echo Arr::get($templateData, 'user_id', 0); ?>';
+            var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
             var currentUserReadOnly = '<?php
                 $currentUserReadOnly = !empty($templateData['currentUserReadOnly']) ? $templateData['currentUserReadOnly'] : NULL;
                 echo $currentUserReadOnly;?>';

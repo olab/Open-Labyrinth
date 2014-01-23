@@ -426,7 +426,7 @@ jQuery(document).ready(function(){
     var stopList = [],
         usernames = [],
         users = null;
-    if (!currentUserReadOnly) {
+    if (!currentUserReadOnly && userHasBlockedAccess) {
         setInterval(function() {
             $.get(historyAjaxCollaborationURL, function(data) {
                 usernames = [];
