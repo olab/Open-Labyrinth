@@ -132,10 +132,22 @@ class RunTimeLogic {
             if (count($matches[0]) > 0){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
-                    if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (strpos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') === false) ';
+                    $questionAnswers = $this->getQUAnswer($matches[1][$key]);
+                    if ($questionAnswers != '') {
+                        if (gettype($questionAnswers) == 'array') {
+                            $answerStrPos = $this->strposa($matches[2][$key], $questionAnswers);
+                            $answerStrPos = !empty($answerStrPos) ? $answerStrPos : 0;
+
+                            $replace[$i] = " ( $answerStrPos == false) ";
+                        } else {
+                            if ($matches[3][$key] == 1){
+                                $replace[$i] = ' (strpos("'.$questionAnswers.'", '.$matches[2][$key].') === false) ';
+                            } else {
+                                $replace[$i] = ' (stripos("'.$questionAnswers.'", '.$matches[2][$key].') === false) ';
+                            }
+                        }
                     } else {
-                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') === false) ';
+                        $replace[$i] = " (false) ";
                     }
                     $i++;
                 }
@@ -147,11 +159,20 @@ class RunTimeLogic {
             if (count($matches[0]) > 0){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
-                    if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (strpos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
+                    $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
+                    if (gettype($questionAnswersMatch) == 'array') {
+                        $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
+                        $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
+
+                        $replace[$i] = " ( $answerStrPosMatch != false) ";
                     } else {
-                        $replace[$i] = ' (stripos("'.$this->getQUAnswer($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
+                        if ($matches[3][$key] == 1){
+                            $replace[$i] = ' (strpos("'.$questionAnswersMatch.'", '.$matches[2][$key].') !== false) ';
+                        } else {
+                            $replace[$i] = ' (stripos("'.$questionAnswersMatch.'", '.$matches[2][$key].') !== false) ';
+                        }
                     }
+
                     $i++;
                 }
             }
@@ -238,14 +259,28 @@ class RunTimeLogic {
     }
 
     public function getQUAnswer($id = null){
-        $value = '';
+        $return = '';
         if ($id == null){
             $id = $this->questionId;
         }
         if ($this->questionResponse != null){
-            $value = $this->questionResponse;
+            $return = $this->questionResponse;
+        } else {
+            $sessionId = Session::instance()->get('session_id', $id);
+            $responses = DB_ORM::model('user_response')->getResponce($sessionId, $id);
+            $numberOfResponses = count($responses);
+            if ($responses != null && $numberOfResponses > 1) {
+                foreach ($responses as $key => $value) {
+                    $return[] = $value->response;
+                }
+            } elseif ($numberOfResponses == 1) {
+                foreach ($responses as $key => $value) {
+                    $return = $value->response;
+                }
+            }
         }
-        return $value;
+
+        return $return;
     }
 
     public function replaceConditions($string){
@@ -351,5 +386,19 @@ class RunTimeLogic {
             $returnString = ' $r["correct"] ==== "1"; ';
         }
         return $returnString;
+    }
+
+    public function strposa($haystack, $needle, $offset=0) {
+        if (is_array($needle)) {
+            foreach ($needle as $key => $value) {
+                if (strpos($haystack, $value) !== false) {
+                    return true;
+                }
+            }
+        }else {
+            if (strpos($haystack, $needle) !== false) {
+                return true;
+            }
+        }
     }
 }

@@ -1145,6 +1145,12 @@ class Model_Labyrinth extends Model {
                 $qChoices[$questionId][$response]['response'] = $responseObj->response;
 
                 $qChoices['counter_ids'][$questionId] = $question->counter_id;
+
+                $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+                if (isset($arrayAddedQuestions[$questionId])) {
+                    unset($arrayAddedQuestions[$questionId]);
+                    Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
+                }
             }
 
             if ($question->type->value == 'mcq') {
@@ -1158,6 +1164,12 @@ class Model_Labyrinth extends Model {
                 }
 
                 $qChoices['counter_ids'][$questionId] = $question->counter_id;
+
+                $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+                if (isset($arrayAddedQuestions[$questionId])) {
+                    unset($arrayAddedQuestions[$questionId]);
+                    Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
+                }
             }
 
             Session::instance()->set('questionChoices', json_encode($qChoices));
