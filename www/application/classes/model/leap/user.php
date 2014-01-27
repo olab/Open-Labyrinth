@@ -90,6 +90,19 @@ class Model_Leap_User extends DB_ORM_Model {
                 'nullable' => TRUE,
                 'savable' => TRUE,
             )),
+            'history' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => TRUE,
+                'savable' => TRUE,
+            )),
+            'history_readonly' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'nullable' => TRUE,
+            )),
+            'history_timestamp' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -389,6 +402,55 @@ private static function initialize_metadata($object)
 
     public function updateSettings($userId, $settings) {
         DB_ORM::update('user')->set('visualEditorAutosaveTime', Arr::get($settings, 'time', 50000))->where('id', '=', $userId)->execute();
+    }
+
+    public function updateUserHistory($id, $url, $readonly, $timestamp) {
+        $this->id = $id;
+        $this->load();
+
+        $this->history = $url;
+        $this->history_readonly = $readonly;
+        $this->history_timestamp = $timestamp;
+
+        $this->save();
+    }
+
+    public function getUsersHistory($user_id) {
+        $this->id = $user_id;
+        $this->load();
+
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('history', 'IS NOT', NULL);
+
+        $return = array();
+        $result = $builder->query();
+        if($result->is_loaded()) {
+            foreach($result as $record) {
+                $user_id = $record['id'];
+                $return[$user_id]['id'] = $record['id'];
+                $return[$user_id]['href'] = $record['history'];
+                $return[$user_id]['username'] = $record['nickname'];
+                $return[$user_id]['readonly'] = $record['history_readonly'];
+
+                $time = time();
+                $maxHistoryLiveTime = 1800;
+
+                if ($record['history_timestamp'] != NULL && ($time - $record['history_timestamp']) > $maxHistoryLiveTime) {
+                    $user_id = $record['id'];
+                    $uri = NULL;
+                    $readonly = NULL;
+                    $timestamp = NULL;
+                    $this->updateUserHistory($user_id, $uri, $readonly, $timestamp);
+
+                    if (($record['history'] == $this->history) && $this->history_readonly) {
+                        $this->history_readonly = 0;
+                        $this->save();
+                    }
+                }
+            }
+        }
+        return $return;
     }
 }
 

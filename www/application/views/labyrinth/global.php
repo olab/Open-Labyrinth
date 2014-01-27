@@ -40,7 +40,10 @@ if (isset($templateData['map'])) {
             theme_advanced_toolbar_align: "left",
             theme_advanced_statusbar_location: "bottom",
             theme_advanced_resizing: true,
-            editor_selector: "mceEditor"
+            editor_selector: "mceEditor",
+            <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
+            readonly: 1
+            <?php } ?>
         });
 
     </script>

@@ -51,10 +51,11 @@ $(function () {
         tinyMCE.settings = tinyMCEConfigs[configNumber];
         tinyMCE.execCommand('mceAddControl', true, id);
     }
-
-    setTinyMCE(0, 'nodecontent');
-    setTinyMCE(0, 'nodesupport');
-    setTinyMCE(1, 'annotation');
+    if(!currentUserReadOnly) {
+        setTinyMCE(0, 'nodecontent');
+        setTinyMCE(0, 'nodesupport');
+        setTinyMCE(1, 'annotation');
+    }
 
     /*tinyMCE.init({
         // General options
@@ -271,35 +272,37 @@ $(function () {
 
     function update()
     {
-        visualEditor.isChanged = false;
-
-        if (autoSaveTimer != null)
-        {
-            clearTimeout(autoSaveTimer);
-            autoSaveTimerNotSet = true;
-        }
-
-        var data = visualEditor.Serialize();
-        utils.ShowMessage ($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
-        autoSaveData = null;
-        $('#leaveBox').modal('hide');
-
-        $.post(sendURL, {
-            data:data.substring(0, data.length - 1),
-            id:mapId
-        }, function (data) {
-            if (data && data.length > 0) {
-                data = data.substring(1, data.length - 1);
-                data = data.substring(0, data.length - 1);
-
-                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
-
-                if (leaveLink != null) $(location).attr('href', leaveLink);
-
-                visualEditor.Deserialize(data);
-                visualEditor.Render();
+        if (!currentUserReadOnly) {
+            visualEditor.isChanged = false;
+    
+            if (autoSaveTimer != null)
+            {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimerNotSet = true;
             }
-        });
+    
+            var data = visualEditor.Serialize();
+            utils.ShowMessage ($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
+            autoSaveData = null;
+            $('#leaveBox').modal('hide');
+    
+            $.post(sendURL, {
+                data:data.substring(0, data.length - 1),
+                id:mapId
+            }, function (data) {
+                if (data && data.length > 0) {
+                    data = data.substring(1, data.length - 1);
+                    data = data.substring(0, data.length - 1);
+    
+                    utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
+    
+                    if (leaveLink != null) $(location).attr('href', leaveLink);
+    
+                    visualEditor.Deserialize(data);
+                    visualEditor.Render();
+                }
+            });
+        }
     }
 
     $('.breadcrumb a').click(function() { return leaveBox($(this)); });
@@ -315,7 +318,7 @@ $(function () {
     });
 
     function leaveBox($object) {
-        if(autoSaveData != null) {
+        if(autoSaveData != null && !currentUserReadOnly) {
             if($object != null) {
                 leaveLink = $object.attr('href');
             }
@@ -525,11 +528,13 @@ $(function () {
     }
 
     function save() {
-        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Saving...', null, $veActionButton, false);
-        visualEditor.isChanged = false;
-        autoSaveTimerNotSet = true;
-        autoSaveData = visualEditor.Serialize();
-        utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Save has been completed.', 3000, $veActionButton, false);
+        if (!currentUserReadOnly) {
+            utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Saving...', null, $veActionButton, false);
+            visualEditor.isChanged = false;
+            autoSaveTimerNotSet = true;
+            autoSaveData = visualEditor.Serialize();
+            utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Save has been completed.', 3000, $veActionButton, false);
+        }
     }
 
     var canvasWidth;

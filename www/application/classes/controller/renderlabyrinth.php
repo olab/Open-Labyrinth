@@ -51,6 +51,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Session::instance()->delete('counterFunc');
                 Session::instance()->delete('stopCommonRules');
                 Session::instance()->delete('shownMapPopups');
+                Session::instance()->delete('arrayAddedQuestions');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
                 if ($rootNode != NULL) {
@@ -157,13 +158,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId     = $this->request->param('id2', NULL);
         $editOn     = $this->request->param('id3', NULL);
         $bookMark   = $this->request->param('id4', NULL);
-        $gotoNode   = Session::instance()->get('goto', NULL);
-
-        if ($gotoNode != NULL)
-        {
-            Session::instance()->set('goto', NULL);
-            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
-        }
+        //$gotoNode   = Session::instance()->get('goto', NULL);
+        
+//        if ($gotoNode != NULL)
+//        {
+//            Session::instance()->set('goto', NULL);
+//            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
+//        }
 
         if ($mapId != NULL)
         {
@@ -188,7 +189,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 } else {
                     $data = Model::factory('labyrinth')->execute($node->id);
                 }
-                if ($data)
+
+                $gotoNode = Session::instance()->get('goto', NULL);
+                if ($gotoNode != NULL) {
+                    Session::instance()->set('goto', NULL);
+
+                    Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
+                }
+
+                if ($data) 
                 {
                     $undoNodes = array();
                     if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
@@ -929,9 +938,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result .= 'onKeyUp="if (event.keyCode == 13) {ajaxFunction(' . $question->id . ');$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');}"/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span>';
                 }
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($question->type->value == 'area') {
                 $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '">' . $question->feedback . '</textarea><p><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'readonly\', \'readonly\');">Submit</button></p>';
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if($question->type->value == 'mcq') {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
@@ -1055,6 +1068,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return '';
+    }
+
+    private static function addQuestionIdToSession($id) {
+        $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+        $arrayAddedQuestions[$id] = true;
+        Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
     }
 
     private static function getCurrentCounterValue($mapId, $counterId) {

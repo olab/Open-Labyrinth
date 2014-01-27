@@ -50,6 +50,7 @@
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     </head>
     <body>
+        <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message" class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
@@ -228,5 +229,25 @@
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/utils.js'); ?>"></script>
+
+
+        <script type="text/javascript">
+            var historyAjaxCollaborationURL = '<?php echo URL::base(); ?>home/historyAjaxCollaboration/<?php echo Arr::get($templateData, 'user_id', 0); ?>';
+            var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
+            var currentUserReadOnly = '<?php
+                $currentUserReadOnly = !empty($templateData['currentUserReadOnly']) ? $templateData['currentUserReadOnly'] : NULL;
+                echo $currentUserReadOnly;?>';
+            <?php if (isset($templateData['historyOfAllUsers'])) { ?>
+                var historyOfAllUsers = eval('(<?php echo $templateData['historyOfAllUsers']; ?>)');
+            <?php }
+            if (isset($templateData['historyShowWarningPopup'])) { ?>
+                var historyShowWarningPopup = <?php echo $templateData['historyShowWarningPopup']; ?>;
+            <?php } ?>
+            <?php if (isset($templateData['username'])) { ?>
+                var currentUser = '<?php echo $templateData['username']; ?>';
+            <?php } ?>
+        </script>
+
     </body>
 </html>

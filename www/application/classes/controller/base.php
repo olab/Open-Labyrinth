@@ -139,6 +139,29 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'webinarManager', 'action' => 'statistics')
     );
 
+    private $blockedAccess = array(
+        array('controller' => 'labyrinthManager', 'action' => 'global'),
+        array('controller' => 'visualManager', 'action' => 'index'),
+        array('controller' => 'nodeManager', 'action' => 'editNode'),
+        array('controller' => 'nodeManager', 'action' => 'grid'),
+        array('controller' => 'linkManager', 'action' => 'editLinks'),
+        array('controller' => 'nodeManager', 'action' => 'editSection'),
+        array('controller' => 'chatManager', 'action' => 'editChat'),
+        array('controller' => 'questionManager', 'action' => 'question'),
+        array('controller' => 'avatarManager', 'action' => 'editAvatar'),
+        array('controller' => 'counterManager', 'action' => 'editCounter'),
+        array('controller' => 'counterManager', 'action' => 'grid'),
+        array('controller' => 'visualdisplaymanager', 'action' => 'display'),
+        array('controller' => 'counterManager', 'action' => 'editCommonRule'),
+        array('controller' => 'popupManager', 'action' => 'editPopup'),
+        array('controller' => 'elementManager', 'action' => 'editVpd'),
+        array('controller' => 'clusterManager', 'action' => 'editCluster'),
+        array('controller' => 'feedbackManager', 'action' => 'index'),
+        array('controller' => 'fileManager', 'action' => 'editFile'),
+        array('controller' => 'fileManager', 'action' => 'imageEditor'),
+        array('controller' => 'mapUserManager', 'action' => 'index'),
+    );
+
     public function before() {
         parent::before();
 
@@ -148,6 +171,31 @@ class Controller_Base extends Controller_Template {
 
             $user_type_name = Auth::instance()->get_user()->type->name;
             $user_id        = Auth::instance()->get_user()->id;
+
+
+            $usersHistory = DB_ORM::model('user')->getUsersHistory($user_id);
+            $uri = $this->request->detect_uri();
+            $historyShowWarningPopup = 0;
+            $readonly = NULL;
+
+            foreach($usersHistory as $value) {
+                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                    $readonly = 1;
+                    $historyShowWarningPopup = 1;
+                    break;
+                }
+            }
+
+            $userHasBlockedAccess = 0;
+            if (!$this->request->is_ajax()) {
+                $userHasBlockedAccess = $this->addUserHistory($user_id, $readonly);
+            }
+
+            $this->templateData['user_id'] = $user_id;
+            $this->templateData['userHasBlockedAccess'] = $userHasBlockedAccess;
+            $this->templateData['historyShowWarningPopup'] = $historyShowWarningPopup;
+            $this->templateData['currentUserReadOnly'] = $readonly;
+            $this->templateData['historyOfAllUsers'] = json_encode($usersHistory);
 
             I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username'] = Auth::instance()->get_user()->nickname;
@@ -390,6 +438,23 @@ class Controller_Base extends Controller_Template {
             }
         }
         return false;
+    }
+
+    private function addUserHistory($user_id, $readonly) {
+        $rules = $this->blockedAccess;
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+
+        $uri = NULL;
+        foreach($rules as $rule) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action) {
+                $uri = $this->request->detect_uri();
+                break;
+            }
+        }
+        $timestamp = time();
+        DB_ORM::model('user')->updateUserHistory($user_id, $uri, $readonly, $timestamp);
+        return ($uri != NULL) ? 1 : 0;
     }
 }
 

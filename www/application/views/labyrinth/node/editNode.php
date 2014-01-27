@@ -42,6 +42,9 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             theme_advanced_resizing: true,
             editor_selector: "mceEditor",
             entity_encoding: "raw"
+            <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
+            readonly: 1
+            <?php } ?>
         });
 
         tinyMCE.init({
@@ -61,6 +64,9 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             theme_advanced_resizing: true,
             editor_selector: "mceEditorLite",
             entity_encoding: "raw"
+            <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
+            readonly: 1
+            <?php } ?>
         });
     </script>
 
