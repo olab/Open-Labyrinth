@@ -413,6 +413,36 @@ class Model_Leap_Map extends DB_ORM_Model
         return array();
     }
 
+    public function getLastEnabledAndAuthoredMap($authorId, $limit = 1)
+    {
+        $limit = (int)$limit;
+        $builder = DB_SQL::select('default')
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $authorId, 'AND')
+            ->where('mu.user_id', '=', $authorId, 'OR')
+            ->group_by('m.id')
+            ->order_by('m.id', 'DESC');
+        if ($limit) {
+            $builder->limit($limit);
+        }
+
+        $result = $builder->query();
+        if ($result->is_loaded()) {
+            $map = NULL;
+            foreach ($result as $record) {
+                $map = $record['id'];
+            }
+
+            return $map;
+        }
+
+        return NULL;
+    }
+
     public function getAllEnabledAndCloseMap()
     {
         $builder = DB_SQL::select('default')
@@ -517,6 +547,11 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $this->enabled = FALSE;
         $this->save();
+    }
+
+    public function deleteMap($id) {
+        $this->id = $id;
+        $this->delete();
     }
 
     public function updateMap($id, $values)
