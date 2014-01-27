@@ -124,11 +124,11 @@ var Node = function() {
     var DrawUndo = function (context)
     {
         context.strokeStyle = 'rgb(193, 70, 151)';
-        context.moveTo(-35, 10);
-        context.lineTo(-15, 10);
-        context.lineTo(-23, 7);
-        context.lineTo(-23, 13);
-        context.lineTo(-15, 10);
+        context.moveTo(4, 35);
+        context.lineTo(23, 35);
+        context.lineTo(15, 32);
+        context.lineTo(15, 38);
+        context.lineTo(23, 35);
         context.stroke();
     };
     
@@ -137,7 +137,7 @@ var Node = function() {
     // sy - number Y-scale factor
     self.Scale = function(sx, sy) {
         self.transform.Scale(sx, sy);
-    }
+    };
     
     // Mouse move event hadler
     self.MouseMove = function(mouse, viewport, anotherNodes) {
