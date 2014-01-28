@@ -16,17 +16,33 @@ $(document).ready(function () {
     loadEditor($(".textarea"));
 
     function loadEditor (elem){
+        try{
         elem.tinymce(
             {
-                mode : "textareas",
-                theme : "advanced",
-                plugins : "pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
-                theme_advanced_buttons3_add : "tablecontrols",
-                skin: 'bootstrap',
-                entity_encoding : "raw"
+
+                theme: "modern",
+                content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+                entity_encoding: "raw",
+                contextmenu: "link image inserttable | cell row column rdfaceMain",
+                closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+                valid_elements : "+*[*]",
+                plugins: ["compat3x",
+                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                    "searchreplace wordcount visualblocks visualchars code fullscreen",
+                    "insertdatetime media nonbreaking save table contextmenu directionality",
+                    "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+                ],
+                toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+                toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+                image_advtab: true,
+                templates: [
+
+                ]
 
             }
         );
+        }
+        catch(ex) {}
     }
 
 

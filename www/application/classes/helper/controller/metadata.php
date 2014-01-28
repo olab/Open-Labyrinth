@@ -55,7 +55,7 @@ class Helper_Controller_Metadata
         $html .='</fieldset>';
 
 
-        Helper_Html_Javascript::add('scripts/tinymce/jscripts/tiny_mce/jquery.tinymce.js');
+        Helper_Html_Javascript::add('scripts/tinymce/js/tinymce/jquery.tinymce.min.js');
         Helper_Html_Javascript::add('scripts/olab/inputHandler.js');
         Helper_Html_Javascript::add('scripts/olab/calendarHandler.js');
         Helper_Html_Javascript::render(true);
