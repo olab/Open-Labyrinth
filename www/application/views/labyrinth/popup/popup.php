@@ -51,7 +51,7 @@
         image_advtab: true,
         templates: [
 
-        ]
+        ],
         <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
         readonly: 1
         <?php } ?>
