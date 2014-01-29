@@ -243,7 +243,6 @@
         }
     }
 
-
     function ajaxChatShowAnswer(ChatId, ChatElementId) {
         var xmlhttp;
         var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
@@ -324,32 +323,30 @@ if ($templateData['skin_path'] != NULL) {
 
     <body>
         <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-            <script language="javascript" type="text/javascript"
-                    src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
-            <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
-            <script language="javascript" type="text/javascript">
+        <script language="javascript" type="text/javascript"
+                src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
+        <script language="javascript" type="text/javascript">
                 tinymce.init({
-                    selector: "textarea",
-                    theme: "modern",
-                    content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-                    entity_encoding: "raw",
-                    contextmenu: "link image inserttable | cell row column rdfaceMain",
-                    closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-                    valid_elements : "+*[*]",
-                    plugins: ["compat3x",
-                        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
-                        "searchreplace wordcount visualblocks visualchars code fullscreen",
-                        "insertdatetime media nonbreaking save table contextmenu directionality",
-                        "emoticons template paste textcolor layer advtextcolor rdface imgmap"
-                    ],
-                    toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-                    toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
-                    image_advtab: true,
-                    templates: [
-
-                    ]
-                });
-            </script>
+                selector: "textarea",
+                theme: "modern",
+                content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+                entity_encoding: "raw",
+                contextmenu: "link image inserttable | cell row column rdfaceMain",
+                closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+                valid_elements : "+*[*]",
+                plugins: ["compat3x",
+                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                    "searchreplace wordcount visualblocks visualchars code fullscreen",
+                    "insertdatetime media nonbreaking save table contextmenu directionality",
+                    "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+                ],
+                toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+                toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+                image_advtab: true,
+                templates: []
+            });
+        </script>
         <?php } ?>
         <div align="center" class="popup-outside-container">
             <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
@@ -379,16 +376,14 @@ if ($templateData['skin_path'] != NULL) {
                             echo Arr::get($templateData, 'node_text');
                             if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>';
                         } ?>
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <table width="100%">
                             <tr>
-                                <td>
-                                    <?php
-                                        echo Arr::get($templateData, 'links');
-                                        echo Arr::get($templateData, 'undoLinks');
-                                    ?>
+                                <td><?php
+                                    echo Arr::get($templateData, 'links');
+                                    echo Arr::get($templateData, 'undoLinks'); ?>
                                 </td>
                                 <td align="right" valign="bottom">
-                                    <?php echo Arr::get($templateData, 'counters');?>
+                                    <?php echo Arr::get($templateData, 'counters'); ?>
                                 </td>
                             </tr>
                         </table>
@@ -485,25 +480,30 @@ if ($templateData['skin_path'] != NULL) {
                      background-transparent="<?php echo $mapPopup->style->background_transparent ?>"
                      is-border-transparent="<?php echo $mapPopup->style->is_border_transparent ?>"
                      border-transparent="<?php echo $mapPopup->style->border_transparent ?>"
-
                      style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
 
-                    <div class="info_for_admin node_id"><?php
-                        $status = Auth::instance()->get_user()->type_id;
-                        if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;?>
-                    </div>
-                    <div class="info_for_admin redirect_to"><?php
-                        if ($status == 2 OR $status == 4) {
+                    <?php
+                    $user = Auth::instance()->get_user();
+                    if ($user)
+                    {
+                        $status = $user->type_id;
+                        if ($status == 2 OR $status == 4) { ?>
+                        <div class="info_for_admin node_id"><?php
+                            echo '#:'.$mapPopup->id;?>
+                        </div>
+                        <div class="info_for_admin redirect_to"><?php
                             if ($assign->redirect_type_id == 3) echo 'to report';
-                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id;
-                        }?>
-                    </div>
+                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id;?>
+                        </div>
+                        <?php
+                        }
+                    }
+                    ?>
                     <div class="header"><?php echo $mapPopup->title; ?></div>
                     <div class="text"><?php echo $mapPopup->text; ?></div>
                 </div><?php
                 }
-            }
-        ?>
+            } ?>
 
         <div class="modal hide fade" id="counter-debug">
             <div class="modal-header">
