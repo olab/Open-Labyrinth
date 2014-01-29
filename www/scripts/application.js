@@ -388,7 +388,7 @@ jQuery(document).ready(function(){
         if (value['username'] != currentUser && value['readonly'] != 1) {
             var links = $('a[href="' + value['href'] + '"]');
             var re = /(grid|visualManager)/i;
-            var labyrinthIdRe = /\/\w+\/\w+\/(\d)/i;
+            var labyrinthIdRe = /\/\w+\/\w+\/(\d+)/i;
             var labyrinthId = labyrinthIdRe.exec(value['href']);
 
             $.each(links, function() {
