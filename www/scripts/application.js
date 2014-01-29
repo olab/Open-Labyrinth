@@ -387,8 +387,18 @@ jQuery(document).ready(function(){
     $.each(historyOfAllUsers, function(key, value) {
         if (value['username'] != currentUser && value['readonly'] != 1) {
             var links = $('a[href="' + value['href'] + '"]');
+            var re = /(grid|visualManager)/i;
+            var labyrinthIdRe = /\/\w+\/\w+\/(\d)/i;
+            var labyrinthId = labyrinthIdRe.exec(value['href']);
+
             $.each(links, function() {
-                $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                if (re.test(value['href'])) {
+                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/counterManager/grid/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/nodeManager/grid/' + labyrinthId[1] + '/1" />').parent().css('position', 'relative');
+                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/visualManager/index/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                } else {
+                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                }
                 var deleteButton = $(this).nextAll('.btn.btn-danger');
                 if (deleteButton.length) {
                     deleteButton.remove();
