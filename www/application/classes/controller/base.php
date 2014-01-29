@@ -179,7 +179,13 @@ class Controller_Base extends Controller_Template {
             $readonly = NULL;
 
             foreach($usersHistory as $value) {
-                if (((strcmp($value['href'], $uri) == 0) OR ((boolean) preg_match('#(grid|visualManager)#i', $uri))) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                    $readonly = 1;
+                    $historyShowWarningPopup = 1;
+                    break;
+                }
+
+                if (((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;
