@@ -460,13 +460,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_addBookmark() {
-        $sessionId = $this->request->param('id', NULL);
-        $nodeId = $this->request->param('id2', NULL);
+    public function action_addBookmark()
+    {
+        $this->auto_render = FALSE;
+        $sessionId  = $this->request->param('id', NULL);
+        $nodeId     = $this->request->param('id2', NULL);
 
-        if ($sessionId != NULL and $nodeId != NULL) {
+        if ($sessionId != NULL AND $nodeId != NULL)
+        {
             DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
         }
+        echo TRUE;
+        exit;
     }
 
     private function remote_go($nodeId, $mapId) {

@@ -20,9 +20,13 @@
  */
 if (isset($templateData['map']) && isset($templateData['file']) && (strstr($templateData['file']->mime, 'image'))) {
     $src = URL::base().$templateData['file']->path;
-    $size = getimagesize($_SERVER["DOCUMENT_ROOT"] . $src);
+    if (file_exists ( $_SERVER["DOCUMENT_ROOT"].$src )) $size = getimagesize($_SERVER["DOCUMENT_ROOT"].$src);
+    else {
+        echo 'File not exist';
+        die;
+    }
     ?>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery.cropzoom.js"></script>
+<script type="text/javascript" src="<?php echo URL::base().'scripts/jquery.cropzoom.js'; ?>"></script>
 <script type="text/javascript">
     jQuery(document).ready(function(){
         var cropzoom = $('#image_editor').cropzoom({
@@ -42,8 +46,8 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
             },
             image:{
                 source:'<?php echo $src.'?'.time(); ?>',
-                width:<?php echo $size[0]; ?>,
-                height:<?php echo $size[1]; ?>,
+                width:<?php echo Arr::get($size, 0); ?>,
+                height:<?php echo Arr::get($size, 1); ?>,
                 snapToContainer:false,
                 minZoom:50,
                 maxZoom:500
@@ -62,15 +66,11 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
     });
 </script>
 
-            <h1><?php echo __('Image Editor: "') . $templateData['file']->name . '"'; ?></h1>
-
-                        <div id="image_editor"></div>
-
-
-                        <div id="buttons">
-                            <input id="submit" type="submit" name="Submit" value="<?php echo __('Crop and Save'); ?>" />
-                            <input id="restore" type="button" value="<?php echo __('Undo'); ?>" />
-                        </div>
-                        <div style="display:none;" id="processing"><?php echo __("Processing...") ?></div>
-
-<?php } ?>
+<h1><?php echo __('Image Editor: "').$templateData['file']->name.'"'; ?></h1>
+<div id="image_editor"></div>
+<div id="buttons">
+    <input id="submit" type="submit" name="Submit" value="<?php echo __('Crop and Save'); ?>" />
+    <input id="restore" type="button" value="<?php echo __('Undo'); ?>" />
+</div>
+<div style="display:none;" id="processing"><?php echo __("Processing...") ?></div><?php
+} ?>
