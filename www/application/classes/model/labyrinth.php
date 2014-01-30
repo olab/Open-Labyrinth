@@ -227,10 +227,10 @@ class Model_Labyrinth extends Model {
     private function check_sign ($str)
     {
         $str = trim($str);
-
-        if      ($str[0] == '-') $str = str_replace('-', ' - ',$str);
-        elseif  ($str[0] == '+') $str = str_replace('+', ' + ',$str);
-        else                           $str = ' + '.$str;
+        if      (strlen($str) == 0) $str = ' + 0';
+        elseif  ($str[0] == '-')    $str = str_replace('-', ' - ',$str);
+        elseif  ($str[0] == '+')    $str = str_replace('+', ' + ',$str);
+        else                        $str = ' + '.$str;
 
         return $str;
     }
