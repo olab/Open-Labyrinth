@@ -699,6 +699,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     
     public function duplicateNodes ($fromMapId, $toMapId)
     {
+        $nodesMap = array();
         foreach($this->getNodesByMap($fromMapId) as $node)
         {
             $newNode = $this->createFullNode($toMapId, array(
@@ -723,7 +724,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             ));
             $nodesMap[$node->id] = $newNode->id;
         }
-        return $nodesMap ? $nodesMap : array();
+        return $nodesMap;
     }
     
     public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)

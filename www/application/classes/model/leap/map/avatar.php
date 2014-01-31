@@ -287,8 +287,8 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
 
             if ( ! empty($avatarImage))
             {
-                $upload_dir = DOCROOT . 'avatars/';
-                $file = uniqid() . '.png';
+                $upload_dir = DOCROOT.'avatars\\';
+                $file = uniqid().'.png';
 				if (is_dir($upload_dir)) copy($upload_dir . $avatarImage, $upload_dir . $file);
             }
             else $file = NULL;
