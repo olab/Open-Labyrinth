@@ -49,14 +49,13 @@
 <h1><?php echo __('Step 3. VP creator'); ?> - <?php if (isset($templateData['map'])) echo $templateData['map']->type->name; ?></h1>
 
 <div class="span6">
-    <form class="form-horizontal left" method="post" action="<?php echo URL::base(); ?>labyrinthManager/caseWizard/4<?php
+    <form class="form-horizontal left" method="post" action="<?php echo URL::base(); ?>labyrinthManager/caseWizard/4/<?php
     $action = '';
     if($templateData['map']->type_id == 6) {
         $action = 'createLinear';
     } else if($templateData['map']->type_id == 9) {
         $action = 'createBranched';
     }
-
     echo $action;
     ?>/<?php echo $templateData['map']->id; ?>">
         <input type="hidden" name="nodesCount" id="formNodeCount" value="0"/>
