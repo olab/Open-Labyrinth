@@ -68,7 +68,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($data)
                     {
                         /* update virtual patient */
-                        $data['patients'] = Arr::get($this->patient_sessions_update($rootNode->id), 'patients', array());
+                        //$data['patients'] = Arr::get($this->patient_sessions_update($rootNode->id), 'patients', array());
 
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -148,6 +148,125 @@ class Controller_RenderLabyrinth extends Controller_Template {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function patient_session_check ($id_patient)
+    {
+        if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
+        else return FALSE;
+        $session = DB_ORM::select('Patient_Sessions')->where('id_group', '=', $id_group)->where('id_patient', '=', $id_patient)->query()->fetch(0);
+        return $session;
+    }
+
+    public function patient_path_update($id_node, $id_patient, $session = FALSE)
+    {
+        $path = array();
+        if ($session)
+        {
+            $patient_session = DB_ORM::model('Patient_Sessions', array($session->id));
+
+            $path = json_decode($patient_session->path);
+        }
+        else
+        {
+            if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
+            else return;
+
+            $patient_session = DB_ORM::model('Patient_Sessions');
+            $patient_session->id_group      = $id_group;
+            $patient_session->id_patient    = $id_patient;
+        }
+        $path[] = (int)$id_node;
+        $path = json_encode($path);
+        $patient_session->path = $path;
+        $patient_session->save();
+    }
+
+    public function patient_condition_update($id_node, $id_patient, $session)
+    {
+        $pc  = json_decode($session->patient_condition, TRUE);
+        foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($id_patient) as $condition)
+        {
+            $id_condition = (int) $condition->id;
+            $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
+            $pc[$id_condition]['name'] = (string) $condition->name;
+            $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
+            if ($change) $pc[$id_condition]['value'] += (int) $change->value;
+        }
+        $pc = json_encode($pc);
+        $session->patient_condition = $pc;
+        $session->save();
+    }
+
+    public function patient_sessions_update ($id_node)
+    {
+        $data     = array();
+        $patients = DB_ORM::select('Patient_ConditionChange')->where('id_node', '=', $id_node)->query();
+
+        foreach ($patients as $patient)
+        {
+            $id_patient = $patient->id_patient;
+            $session    = $this->patient_session_check($id_patient);
+            $this->patient_path_update($id_node, $id_patient, $session);
+
+            // after path update, session create if didn't exist earlier
+            $session    = $this->patient_session_check($id_patient);
+            if ( ! $session) return $data;
+            $this->patient_condition_update($id_node, $id_patient, $session);
+
+            if ( ! $patient->appear) continue;
+
+            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation)
+            {
+                $condition          = DB_ORM::model('Patient_Condition', array($relation->id_condition));
+                $id_condition       = $condition->id;
+                $pc                 = json_decode($session->patient_condition, TRUE);
+                $condition->value   = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : $condition->value;
+
+
+                $data['patients'][] =
+                    '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
+                    '<li>'.$condition->name.': '.$condition->value.'</li>';
+            }
+        }
+        if ($this->request->is_ajax()){
+
+        } else {
+            return $data;
+        }
+    }
+
+    public function action_patient_ajax()
+    {
+        $id_node = $this->request->param('id');
+        $data     = array();
+        $patients = DB_ORM::select('Patient_ConditionChange')->where('id_node', '=', $id_node)->query();
+
+        foreach ($patients as $patient)
+        {
+            $id_patient = $patient->id_patient;
+
+            $session    = $this->patient_session_check($id_patient);
+            if ( ! $session) return $data;
+
+            if ( ! $patient->appear) continue;
+
+            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation)
+            {
+                $condition          = DB_ORM::model('Patient_Condition', array($relation->id_condition));
+                $id_condition       = $condition->id;
+                $pc                 = json_decode($session->patient_condition, TRUE);
+                $condition->value   = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : $condition->value;
+
+
+                $data[] =
+                    '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
+                    '<li>'.$condition->name.': '.$condition->value.'</li>';
+            }
+        }
+        $data = json_encode($data);
+        echo $data;
+        exit;
     }
 
     public function action_checkKey() {
