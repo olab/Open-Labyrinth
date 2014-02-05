@@ -160,7 +160,7 @@
         });
     }
 
-    function ajaxDrag (id){
+    function ajaxDrag(id) {
         $('#questionSubmit'+id).show();
 
         var response = $('#qresponse_'+id);

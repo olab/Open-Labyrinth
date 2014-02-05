@@ -49,7 +49,7 @@ if (isset($templateData['map'])) { ?>
     <canvas id="canvas" tabindex='1'>Not supported</canvas>
 </div>
 
-<script language="javascript" type="text/javascript" src="<?php echo URL::base().'scripts/tinymce/jscripts/tiny_mce/tiny_mce.js'; ?>" xmlns="http://www.w3.org/1999/html"></script>
+<script language="javascript" type="text/javascript" src="<?php echo URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'; ?>" xmlns="http://www.w3.org/1999/html"></script>
 <script type="text/javascript">
     var mapJSON          = <?php echo Arr::get($templateData, 'mapJSON', 'null'); ?>;
     var mapType          = null;

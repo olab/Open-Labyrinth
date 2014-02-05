@@ -273,8 +273,7 @@ if ($templateData['skin_path'] != NULL) {
 
 <body>
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'; ?>"></script>
     <script language="javascript" type="text/javascript">
         tinyMCE.init({
             // General options
