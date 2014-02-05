@@ -52,12 +52,20 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    public function action_finishAndShowReport() {
-        $reportId = $this->request->param('id', NULL);
+    public function action_finishAndShowReport()
+    {
+        $sessionId      = $this->request->param('id', NULL);
+        $mapId          = $this->request->param('id2', NULL);
+        $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
 
-        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$reportId);
+        if ($sessionId == NULL) {
+            $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
+        }
 
-        Request::initial()->redirect(URL::base() . 'reportManager/showReport/' . $reportId);
+        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previewNodeId);
+        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
+
+        Request::initial()->redirect(URL::base().'reportManager/showReport/'.$sessionId);
     }
 
     public function action_exportToExcel() {

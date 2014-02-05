@@ -141,9 +141,9 @@ class RunTimeLogic {
                             $replace[$i] = " ( $answerStrPos == false) ";
                         } else {
                             if ($matches[3][$key] == 1){
-                                $replace[$i] = ' (strpos("'.$questionAnswers.'", '.$matches[2][$key].') === false) ';
+                                $replace[$i] = ' (strpos(\''.$questionAnswers.'\', '.$matches[2][$key].') === false) ';
                             } else {
-                                $replace[$i] = ' (stripos("'.$questionAnswers.'", '.$matches[2][$key].') === false) ';
+                                $replace[$i] = ' (stripos(\''.$questionAnswers.'\', '.$matches[2][$key].') === false) ';
                             }
                         }
                     } else {
@@ -167,9 +167,9 @@ class RunTimeLogic {
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
                     } else {
                         if ($matches[3][$key] == 1){
-                            $replace[$i] = ' (strpos("'.$questionAnswersMatch.'", '.$matches[2][$key].') !== false) ';
+                            $replace[$i] = ' (strpos(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false) ';
                         } else {
-                            $replace[$i] = ' (stripos("'.$questionAnswersMatch.'", '.$matches[2][$key].') !== false) ';
+                            $replace[$i] = ' (stripos(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false) ';
                         }
                     }
 
@@ -247,7 +247,7 @@ class RunTimeLogic {
     }
 
     private function replaceQuestionAnswer($matches){
-        return '"'.$this->getQUAnswer().'"';
+        return '\''.$this->getQUAnswer().'\'';
     }
 
     public function getValue($id){

@@ -28,20 +28,15 @@ class Model_Labyrinth extends Model {
         $result['userId'] = (Auth::instance()->logged_in()) ? $result['userId'] = Auth::instance()->get_user()->id : 0;
         $node = DB_ORM::model('map_node', array((int) $nodeId));
 
-        if ($node) {
-            $result['node'] = $node;
-            $result['map'] = DB_ORM::model('map', array((int) $node->map_id));
-            if ($node->kfp) {
-                $matches = $this->getMatch($nodeId);
-            }
+        if ($node)
+        {
+            if ($node->kfp) $matches = $this->getMatch($nodeId);
 
-            $result['editor'] = FALSE;
-            if ($this->checkUser($node->map_id)) {
-                $result['editor'] = TRUE;
-            }
-
-            $result['node_title'] = $node->title;
-            $result['node_text'] = $node->text;
+            $result['node']         = $node;
+            $result['map']          = DB_ORM::model('map', array((int) $node->map_id));
+            $result['editor']       = $this->checkUser($node->map_id) ? TRUE : FALSE;
+            $result['node_title']   = $node->title;
+            $result['node_text']    = $node->text;
 
             $clearAnnotation = strip_tags($node->annotation, '<img>');
             if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0)) {
@@ -66,12 +61,8 @@ class Model_Labyrinth extends Model {
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL && isset($_COOKIE['OL'])) {
-                    $sessionId = $_COOKIE['OL'];
-                } else {
-                    if ($sessionId == NULL){
-                        $sessionId = 'notExist';
-                    }
+                if ($sessionId == NULL) {
+                    $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
                 }
             }
 
@@ -391,7 +382,7 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId, $nodeId = null)
+    public function addQuestionResponsesAndChangeCounterValues($mapID, $sessionId, $nodeId = null)
     {
         // array that contain info for counter debugger
         $c_debug = array();
@@ -403,7 +394,8 @@ class Model_Labyrinth extends Model {
         $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
 
         $counterIDs = array();
-        if (isset($questionChoices['counter_ids'])){
+        if (isset($questionChoices['counter_ids']))
+        {
             $counterIDs = $questionChoices['counter_ids'];
             unset($questionChoices['counter_ids']);
         }
@@ -489,7 +481,6 @@ class Model_Labyrinth extends Model {
 
             Session::instance()->delete('dragQuestionResponses');
         }
-
         $this->updateCounterString($mapID, $counterString);
 
         Session::instance()->set('countersFunc', json_encode($countersFunc));

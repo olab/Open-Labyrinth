@@ -26,6 +26,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout_basic.css"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
+<script type="text/javascript" src="<?php echo URL::base().'scripts/jquery-ui-touch-punch.min.js'; ?>"></script>
 
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
 <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
@@ -143,26 +144,39 @@
         }
     }
 
-    function ajaxQU(obj, qid, qresp, qnts) {
-        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/' + qresp + '/' + qid + '/' + <?php echo $templateData['node']->id; ?>;
+    function ajaxQU(obj, qid, qresp, qnts)
+    {
+        var URL = '<?php echo URL::base(); ?>renderLabyrinth/questionResponse/'+qresp+'/'+qid+'/'+<?php echo $templateData['node']->id; ?>;
         var check = $(obj).is(':checked');
-        if (check){
-            URL += '/1';
-        } else {
-            URL += '/0';
-        }
+
+        URL += (check) ? '/1' : '/0';
 
         var $response = $('#AJAXresponse' + qresp);
-        if (qnts == 1){
-            $('.questionForm_'+qid+' .click').remove();
-        }
+        if (qnts == 1) $('.questionForm_'+qid+' .click').remove();
 
-        $.get(URL, function(data) {
-            if(data != '') {
-                $response.html(data);
-            }
+        $.get(URL, function(data)
+        {
+            if(data != '') $response.html(data);
+        });
+    }
+
+    function ajaxDrag (id){
+        $('#questionSubmit'+id).show();
+
+        var response = $('#qresponse_'+id);
+        response.sortable( "option", "cancel", "li" );
+
+        var responsesObject = [];
+
+        response.children('.sortable').each(function(index, value) {
+            responsesObject.push($(value).attr('responseId'));
+            $(value).css('color','gray');
         });
 
+        $.post('<?php echo URL::base().'renderLabyrinth/ajaxDraggingQuestionResponse'; ?>', {
+            questionId: id,
+            responsesJSON: JSON.stringify(responsesObject)
+        }, function(data) {});
     }
 
     function sendSliderValue(qid, value) {
@@ -184,8 +198,7 @@
         else {
             alert("Your browser does not support XMLHTTP for AJAX!");
         }
-        xmlhttp.onreadystatechange = function () {
-        }
+        xmlhttp.onreadystatechange = function () {};
         xmlhttp.open("POST", URL, true);
         xmlhttp.send(null);
     }
@@ -318,6 +331,9 @@ if ($templateData['skin_path'] != NULL) {
         echo '<link rel="stylesheet" type="text/css" href="' . ScriptVersions::get($css_file) . '" />';
     }
 }
+
+$id_map  = $templateData['map']->id;
+$id_node = $templateData['node']->id;
 ?>
 </head>
 
@@ -355,18 +371,18 @@ if ($templateData['skin_path'] != NULL) {
                         <h4><?php echo Arr::get($templateData, 'node_title'); ?></h4>
                         <?php if (Arr::get($templateData, 'editor') == TRUE) { ?>
                             <?php if (isset($templateData['node_edit'])) { ?>
-                                <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id.'/'.$templateData['node']->id; ?>'>
+                                <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
                                     <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
 
                                     <p><textarea name='mnodetext' cols='60' rows='20'class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
                                     <input type='submit' name='Submit' value='Submit'/>
                                 </form>
                                 <p>
-                                    - <a href='<?php echo URL::base().'linkManager/index/'.$templateData['map']->id; ?>'><?php echo __('links'); ?></a>
-                                    - <a href='<?php echo URL::base().'nodeManager/index/'.$templateData['map']->id; ?>'><?php echo __('nodes'); ?></a>
-                                    - <a href='<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>'><?php echo __('files'); ?></a>
-                                    - <a href='<?php echo URL::base().'counterManager/index/'.$templateData['map']->id; ?>'><?php echo __('counters'); ?></a>
-                                    - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$templateData['map']->id; ?>'><?php echo __('main editor'); ?></a>
+                                    - <a href='<?php echo URL::base().'linkManager/index/'.$id_map; ?>'><?php echo __('links'); ?></a>
+                                    - <a href='<?php echo URL::base().'nodeManager/index/'.$id_map; ?>'><?php echo __('nodes'); ?></a>
+                                    - <a href='<?php echo URL::base().'fileManager/index/'.$id_map; ?>'><?php echo __('files'); ?></a>
+                                    - <a href='<?php echo URL::base().'counterManager/index/'.$id_map; ?>'><?php echo __('counters'); ?></a>
+                                    - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$id_map; ?>'><?php echo __('main editor'); ?></a>
                                 </p>
                             <?php } else {
                                 echo Arr::get($templateData, 'node_text');
@@ -381,7 +397,12 @@ if ($templateData['skin_path'] != NULL) {
                                 <td><?php
                                     echo Arr::get($templateData, 'links');
                                     echo Arr::get($templateData, 'undoLinks'); ?>
-                                </td>
+                                </td><?php
+                                foreach (Arr::get($templateData, 'patients', array()) as $patient){ ?>
+                                <td align="right" valign="bottom">
+                                    <ul class="navigation patient-js"><?php echo $patient; ?></ul>
+                                </td><?php
+                                }; ?>
                                 <td align="right" valign="bottom">
                                     <?php echo Arr::get($templateData, 'counters'); ?>
                                 </td>
@@ -394,21 +415,21 @@ if ($templateData['skin_path'] != NULL) {
                         <?php }?>
                         <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
                         <h5>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
-                            (<?php if (isset($templateData['map'])) echo $templateData['map']->id; ?>)<br/>
-                            Node: <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?>
+                            (<?php if (isset($templateData['map'])) echo $id_map; ?>)<br/>
+                            Node: <?php if (isset($templateData['node'])) echo $id_node; ?>
                             <br/><strong>Score:</strong>
                         </h5>
 
                         <input type="button" onclick='ajaxBookmark();' name="bookmark" value="bookmark"/>
                         <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                             <h5>
-                                <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
+                                <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $id_map; ?>/<?php echo $id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
                                     <?php echo !isset($templateData['node_edit']) ? __('turn editing on') : __('turn editing off'); ?>
                                 </a>
                             </h5>
                         <?php } ?>
                         <p>
-                            <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $templateData['map']->id; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
+                            <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $id_map; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
                         </p>
 
                         <a href="<?php echo URL::base(); ?>">
@@ -459,8 +480,8 @@ if ($templateData['skin_path'] != NULL) {
                             break;
                         }
                     }
-                    if ($a->assign_to_id == $templateData['node']->id OR
-                        $a->assign_to_id == $templateData['map']->id OR
+                    if ($a->assign_to_id == $id_node OR
+                        $a->assign_to_id == $id_map OR
                         $section) $assign = $a;
                 }
                 if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
@@ -520,21 +541,23 @@ if ($templateData['skin_path'] != NULL) {
         </div>
 
         <script>
-            var reportRedirectType = <?php echo Popup_Redirect_Types::REPORT; ?>,
-                popupsAction = '<?php echo URL::base(); ?>renderLabyrinth/popupAction/<?php echo $templateData['map']->id; ?>',
-                showReport  = '<?php echo URL::base(); ?>reportManager/showReport/<?php echo Session::instance()->get('session_id'); ?>',
-                redirectURL = '<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $templateData['map']->id; ?>/#node#',
-                timeForNode = <?php echo isset($templateData['timeForNode']) ? $templateData['timeForNode'] : 0; ?>,
-                nodeId      = <?php echo $templateData['node']->id; ?>,
-                popupStart  = <?php echo (isset($templateData['popup_start']) && $templateData['popup_start'] != 0) ? $templateData['popup_start'] : 0; ?>;
-                sections    = [<?php if(count($templateData['node']->sections) > 0) {
+            var reportRedirectType  = <?php echo Popup_Redirect_Types::REPORT; ?>,
+                popupsAction        = '<?php echo URL::base().'renderLabyrinth/popupAction/'.$id_map; ?>',
+                showReport          = '<?php echo URL::base().'reportManager/showReport/'.Session::instance()->get('session_id'); ?>',
+                redirectURL         = '<?php echo URL::base().'renderLabyrinth/go/'.$id_map; ?>/#node#',
+                timeForNode         = <?php echo isset($templateData['timeForNode']) ? $templateData['timeForNode'] : 0; ?>,
+                nodeId              = <?php echo $id_node; ?>,
+                popupStart          = <?php echo (isset($templateData['popup_start']) AND $templateData['popup_start'] != 0) ? $templateData['popup_start'] : 0; ?>,
+                sections            = [<?php if(count($templateData['node']->sections) > 0) {
                                          $sections = array();
                                          foreach($templateData['node']->sections as $nodeSection) {
                                             $sections[] = $nodeSection->section_id;
                                          }
                                          echo implode(',', $sections);
-                                     } ?>];
+                                     } ?>],
+                patientUpdate       = '<?php echo URL::base().'renderLabyrinth/patient_ajax/'.$id_node; ?>';
         </script>
-        <script src="<?php echo URL::base(); ?>scripts/popupRender.js"></script>
+        <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
+        <script src="<?php echo URL::base().'scripts/patient.js'; ?>"></script>
     </body>
 </html>

@@ -222,22 +222,23 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId($order = 'DESC') {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order);
-        $result = $builder->query();
-        
+    public function getAllUsersId ($order = 'DESC')
+    {
+        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
         
         $ids = array();
-        if ($result->is_loaded()) {
-            foreach ($result as $record) {
+        if ($result->is_loaded())
+        {
+            foreach ($result as $record)
+            {
                 $ids[] = (int)$record['id'];
             }
         }
-
         return $ids;
     }
     
-    public function getAllUsers($order = 'DESC') {
+    public function getAllUsers($order = 'DESC')
+    {
         $result = array();
         $ids = $this->getAllUsersId($order);
         

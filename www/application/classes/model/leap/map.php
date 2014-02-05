@@ -225,18 +225,16 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllMap()
     {
-        $builder = DB_SQL::select('default')->from($this->table())->order_by('name');
-        $result = $builder->query();
+        $result = DB_SQL::select('default')->from($this->table())->order_by('name')->query();
 
-        if ($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $maps = array();
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
             return $maps;
         }
-
         return NULL;
     }
 
@@ -279,25 +277,19 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllEnabledMap($limit = 0)
     {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('enabled', '=', 1)
-            ->order_by('id', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
+        $maps = array();
+        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1)->order_by('id', 'DESC');
+        if ($limit) $builder->limit($limit);
         $result = $builder->query();
 
-        if ($result->is_loaded()) {
-            $maps = array();
+        if ($result->is_loaded())
+        {
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
-            return $maps;
         }
 
-        return array();
+        return $maps;
     }
 
     public function getAllEnabledOpenVisibleMap()
