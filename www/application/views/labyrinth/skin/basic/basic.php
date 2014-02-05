@@ -39,9 +39,7 @@
 <!--<script  src="--><?php //echo URL::base(); ?><!--scripts/bootstrap/js/bootstrap.js"></script>-->
 <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 
-
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
-
 
 <script language="JavaScript">
     window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
@@ -59,7 +57,7 @@
     $(document).ready(function(){
         var rem = '';
         var remMessage = '';
-        var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?> ;
+        var session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
 
         // Timer
         <?php  if ( ($templateData['map']->timing) && isset($templateData['session']) ) { ?>
@@ -558,6 +556,5 @@ $id_node = $templateData['node']->id;
                 patientUpdate       = '<?php echo URL::base().'renderLabyrinth/patient_ajax/'.$id_node; ?>';
         </script>
         <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
-        <script src="<?php echo URL::base().'scripts/patient.js'; ?>"></script>
     </body>
 </html>

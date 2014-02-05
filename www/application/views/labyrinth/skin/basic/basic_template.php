@@ -60,7 +60,7 @@
         {
             var rem = '';
             var remMessage = '';
-            var session = <?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?> ;
+            var session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
 
             // Timer
             <?php if (($templateData['map']->timing) && isset($templateData['session'])) {
@@ -167,6 +167,26 @@
             });
 
         }
+
+        function ajaxDrag(id) {
+            $('#questionSubmit'+id).show();
+
+            var response = $('#qresponse_'+id);
+            response.sortable( "option", "cancel", "li" );
+
+            var responsesObject = [];
+
+            response.children('.sortable').each(function(index, value) {
+                responsesObject.push($(value).attr('responseId'));
+                $(value).css('color','gray');
+            });
+
+            $.post('<?php echo URL::base().'renderLabyrinth/ajaxDraggingQuestionResponse'; ?>', {
+                questionId: id,
+                responsesJSON: JSON.stringify(responsesObject)
+            }, function(data) {});
+        }
+
 
         function sendSliderValue(qid, value) {
             var URL = '<?php echo URL::base(); ?>renderLabyrinth/saveSliderQuestionResponse/' + qid;
