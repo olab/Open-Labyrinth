@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map']) and isset($templateData['node'])) {
     ?>
-    <?php if ($templateData['tinyMCEv3'] === 'v3') { echo 'TEST';?>
+    <?php if ($templateData['tinyMCEv3'] === 'v3') {?>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/jscripts.old/tiny_mce/tiny_mce.js"></script>
     <script language="javascript" type="text/javascript">
         tinyMCE.init({
