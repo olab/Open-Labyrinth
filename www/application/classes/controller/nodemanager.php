@@ -113,10 +113,10 @@ class Controller_NodeManager extends Controller_Base {
 
     public function action_editNode () {
         $nodeId = (int) $this->request->param('id', 0);
-        $editMode = (int) $this->request->param('id2', 0);
+        $tinyMCEv3 = $this->request->param('id2', 0);
         if ( ! $nodeId) Request::initial()->redirect(URL::base());
 
-        $this->templateData['editMode']     = $editMode ? $editMode : 'w';
+        $this->templateData['tinyMCEv3']     = $tinyMCEv3;
         $this->templateData['node']         = DB_ORM::model('map_node', array($nodeId));
         $this->templateData['map']          = DB_ORM::model('map', array((int) $this->templateData['node']->map_id));
         $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
