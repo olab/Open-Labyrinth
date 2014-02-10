@@ -1505,13 +1505,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
                 foreach($visualDisplay->panels as $panel) {
-                    $result .= '<div style="        position: absolute;
-                                                         top: ' . $panel->y . 'px;
+                    $result .= '<div style="position: absolute; top: '.$panel->y.'px;
                                                         left: ' . $panel->x . 'px;
                                                      z-index: ' . $panel->z_index . ';
                                             background-color: ' . $panel->background_color . ';
-                                                       width: ' . $panel->width . ';
-                                                      height: ' . $panel->height . ';
+                                                       width: ' . $panel->width . 'px;
+                                                      height: ' . $panel->height . 'px;
                                                 border-width: ' . $panel->border_size . 'px;
                                                 border-style: solid;
                                                 border-color: ' . $panel->border_color . ';
@@ -1565,8 +1564,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $valueFont = explode('%#%', $counter->value_font_style);
 
                     $result .= '<div style="position: absolute;
-                                                 top: ' . $counter->label_y . ';
-                                                left: ' . $counter->label_x . ';
+                                                 top: ' . $counter->label_y . 'px;
+                                                left: ' . $counter->label_x . 'px;
                                              z-index: ' . $counter->label_z_index . ';
                                       -moz-transform: rotate(' . $counter->label_angle . 'deg);
                                    -webkit-transform: rotate(' . $counter->label_angle . 'deg);
@@ -1581,8 +1580,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                      text-decoration: \'' . $labelFont[5] . '\';
                                 ">' . $counter->label_text . '</div>
                                 <div style="position: absolute;
-                                                 top: ' . $counter->value_y . ';
-                                                left: ' . $counter->value_x . ';
+                                                 top: ' . $counter->value_y . 'px;
+                                                left: ' . $counter->value_x . 'px;
                                              z-index: ' . $counter->value_z_index . ';
                                       -moz-transform: rotate(' . $counter->value_angle . 'deg);
                                    -webkit-transform: rotate(' . $counter->value_angle . 'deg);
