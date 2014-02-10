@@ -37,7 +37,6 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
         <!--[if IE 7]>
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" />
-
         <![endif]-->
         <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -54,10 +53,8 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
-                    <a href="<?php echo URL::base(); ?>" class="brand"><img src="<?php echo URL::base(); ?>images/openlabyrinth-header.png" alt="" /> <span>Open</span>Labyrinth</a>
-                    <?php
-                    if (Auth::instance()->logged_in()) {
-                        ?>
+                    <a href="<?php echo URL::base(); ?>" class="brand"><img src="<?php echo URL::base(); ?>images/openlabyrinth-header.png" alt="" /> <span>Open</span>Labyrinth</a><?php
+                    if (Auth::instance()->logged_in()) { ?>
                         <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
@@ -77,10 +74,11 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="nav-collapse">
+                        <div class="nav-collapse"><?php
+                            $type_name = Auth::instance()->get_user()->type->name; ?>
                             <ul class="nav">
-                                <li><a href="<?php echo URL::base(); ?>"><?php echo __('Home'); ?></a></li>
-                                <?php if(Auth::instance()->get_user()->type->name != 'learner') { ?>
+                                <li><a href="<?php echo URL::base(); ?>"><?php echo __('Home'); ?></a></li><?php
+                                if($type_name != 'learner') { ?>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Labyrinths'); ?> <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
@@ -99,39 +97,27 @@
                                         <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('XML'); ?></a></li>
                                         <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous ANSI'); ?></a></li>
                                     </ul>
-                                </li>
-                                <?php if(Auth::instance()->get_user()->type->name != 'author') { ?>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?> <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Manage Presentations'); ?></a></li>
-                                        <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Manage Remote Services'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Manage Users & Groups'); ?></a></li>
-                                        <?php
-                                        if (Auth::instance()->get_user()->type->name == 'superuser') {
-                                            ?>
+                                </li><?php
+                                    if($type_name != 'author') { ?>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?> <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Manage Presentations'); ?></a></li>
+                                            <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Manage Remote Services'); ?></a></li>
+                                            <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Manage Users & Groups'); ?></a></li><?php
+                                            if ($type_name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li>
-                                            <?php
-                                        }
-                                        ?>
-
-                                        <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
-
-                                        <?php if (Auth::instance()->get_user()->type->name == 'superuser') { ?>
+                                            <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
-                                            <li>
-                                            <a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Semantics'); ?></a></li>
-                                        <?php
-                                        }
-                                        ?>
-                                    </ul>
-                                </li>
-                                <?php } ?>
-                                <?php } ?>
-
-                                <?php if(Auth::instance()->get_user()->type->name == 'author' || Auth::instance()->get_user()->type->name == 'superuser') { ?>
+                                            <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Semantics'); ?></a></li><?php
+                                            } ?>
+                                        </ul>
+                                    </li><?php
+                                    }
+                                }
+                                if($type_name == 'author' || $type_name == 'superuser') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenario Management'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
@@ -139,21 +125,18 @@
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li>
                                         </ul>
-                                    </li>
-                                <?php } else { ?>
-                                    <?php if (Auth::instance()->get_user()->type->name != 'reviewer') {?>
-                                        <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
-                                    <?php } ?>
-                                    <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
-                                <?php } ?>
-
+                                    </li><?php
+                                } else {
+                                    if ($type_name != 'reviewer') {?>
+                                    <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li><?php
+                                    } ?>
+                                    <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li><?php
+                                } ?>
                                 <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>
                             </ul>
-                        </div>
-                        <?php
-                    }
-                    ?>
+                        </div><?php
+                    } ?>
                 </div>
             </div>
         </div>
@@ -229,14 +212,12 @@
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
-        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/utils.js'); ?>"></script>
-
 
         <script type="text/javascript">
-            var historyAjaxCollaborationURL = '<?php echo URL::base(); ?>home/historyAjaxCollaboration/<?php echo Arr::get($templateData, 'user_id', 0); ?>';
+            var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>';
             var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
             var currentUserReadOnly = '<?php
-                $currentUserReadOnly = !empty($templateData['currentUserReadOnly']) ? $templateData['currentUserReadOnly'] : NULL;
+                $currentUserReadOnly = ! empty($templateData['currentUserReadOnly']) ? $templateData['currentUserReadOnly'] : NULL;
                 echo $currentUserReadOnly;?>';
             <?php if (isset($templateData['historyOfAllUsers'])) { ?>
                 var historyOfAllUsers = eval('(<?php echo $templateData['historyOfAllUsers']; ?>)');

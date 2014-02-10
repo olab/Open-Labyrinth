@@ -1059,9 +1059,7 @@ input[readonly].code, textarea[readonly].code{
     margin-bottom: 0;
 }
 
-.vusial-display {
-    width: 100%;
-    height: 1000px;
+#visualDisplay {
     position: relative;
 }
 

@@ -320,7 +320,7 @@
     <p>&nbsp</p>
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span10 vusial-display" id="visualDisplay"></div>
+        <div class="span10" id="visualDisplay"></div>
         <div class="span2"><div class="visual-display-layout-panel" id="visualDisplayLayoutContianer"></div></div>
     </div>
 </div>

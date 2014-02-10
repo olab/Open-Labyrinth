@@ -1,5 +1,6 @@
 jQuery(document).ready(function(){
     var browserUpdateWarning = new BrowserUpdateWarning();
+    var body = $('body');
     browserUpdateWarning.Check();
     
     //------------------Case Wizard--------------------//
@@ -374,12 +375,12 @@ jQuery(document).ready(function(){
         });
     }
 
-    $('body').on('click', '#createNewForum', function() {
+    body.on('click', '#createNewForum', function() {
         var url = $(this).attr('submit-url');
         $('form').attr('action', url).submit();
     });
 
-    $('body').on('click', '.unassign-forum', function() {
+    body.on('click', '.unassign-forum', function() {
         var url = $(this).attr('submit-url');
         $('form').attr('action', url).submit();
     });
@@ -429,8 +430,7 @@ jQuery(document).ready(function(){
         $('.row-fluid input').attr('onclick','javascript:void(0)');
     }
 
-    var utils = new Utils(),
-        messageContainer = $('#collaboration_message'),
+    var messageContainer = $('#collaboration_message'),
         messageTextContainer = $('#collaboration_message_text');
 
     var stopList = [],
@@ -450,6 +450,7 @@ jQuery(document).ready(function(){
                     }
                 });
                 if (usernames.length) {
+                    utils = new Utils();
                     utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                 }
             });
@@ -465,6 +466,76 @@ jQuery(document).ready(function(){
     }
 
     if (historyShowWarningPopup && currentUserReadOnly) {
+        utils = new Utils();
         utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'You join edited page in readonly mode', 7000);
     }
+
+
+    $('.add-condition-js').click(function(){
+        var block = $('.add-condition-bl').last().clone().show();
+        block.insertBefore($(this));
+    });
+
+    $('.add-labyrinth-js').click(function(){
+        var block = $('.add-labyrinth-bl').last().clone().show();
+        block.insertBefore($(this));
+    });
+
+    var assignIterator = 0;
+    $('.add-assign-js').click(function(){
+        var block = $('.add-assign-bl').last().clone().show(),
+            radio = block.find('.assign-type');
+            queue = block.find('.assign-queue');
+
+        for (var i=0; i<radio.length; i++)
+        {
+            radio.eq(i).attr('name','assign-type-'+assignIterator);
+            queue.text('Place in a queue '+(assignIterator+2));
+        }
+        block.insertBefore($(this));
+        assignIterator++;
+    });
+
+    $('.remove-condition-js').live('click', function(){
+        $(this).parent().remove();
+    });
+
+    $('#choose-patient').change(function(){
+        window.location.href = $(this).find('option:selected').attr('data-href');
+    });
+
+    body.on('change', '.assign-type', function(){
+        var mainBlock = $(this).parents('.condition-control-group'),
+            selectUser = $('.assign-user').last().clone().show(),
+            selectGroup = $('.assign-group').last().clone().show();
+
+        if($(this).val() == 'users')
+        {
+            mainBlock.children('.assign-group').remove();
+            mainBlock.append(selectUser);
+        }
+        if($(this).val() == 'groups')
+        {
+            mainBlock.children('.assign-user').remove();
+            mainBlock.append(selectGroup);
+        }
+    });
+
+    $('#assign-type').change(function(){
+        var type        = $(this).find('option:selected').val(),
+            assignField = $('.assign-bl-js'),
+            assignBlocks = assignField.children('.condition-control-group');
+
+        if (type == 2 || type == 4) assignField.removeClass('assign-same');
+        if ((type == 1 || type == 3) && assignField.not('assign-same'))
+        {
+            assignIterator = 0;
+            assignField.addClass('assign-same');
+            for (var i=0; i<assignBlocks.length; i++)
+            {
+                var assignBlock = assignBlocks.eq(i);
+                if (assignBlock.hasClass('add-assign-bl')) assignBlock.remove();
+            }
+        }
+    });
 });

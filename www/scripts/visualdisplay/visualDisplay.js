@@ -1,12 +1,11 @@
-var VisualDisplay = function() {
-    var PI180 = 180 / Math.PI;
-    
+var VisualDisplay = function()
+{
     var self = this,
         $container = $('#visualDisplay');
     
     var id = null,
         
-        panels = new Array(),
+        panels = [],
         panelsIDIndex = 1,
         currentActivePanel = null,
         $panelWidthInput = $('#panelWidth'),
@@ -18,13 +17,13 @@ var VisualDisplay = function() {
         $panelBackgroundInput = $('#panelBackgroundColor'),
         $panelAngleInput = $('#panelAngle'),
         
-        images = new Array(),
+        images = [],
         imageIDIndex = 1,
         currentActiveImage = null,
         $imageZIndexInput = $('#panelImageZIndex'),
         $imageAngleInput = $('#panelImageAngle'),
         
-        counters = new Array(),
+        counters = [],
         counterIDIndex = 1,
         currentActiveCounter = null,
         $counterFontLabelFamilySelect = $('#counterFontLabelFamily'),
@@ -79,7 +78,7 @@ var VisualDisplay = function() {
         $counterValueBoldCheck.click(ChangeValueBold);
         $counterValueItalicCheck.click(ChangeValueItalic);
         $counterValueUnderlineCheck.click(ChangeValueUnderline);
-    }
+    };
     
     this.CreatePanel = function() {
         if($container == null) return;
@@ -93,7 +92,7 @@ var VisualDisplay = function() {
         
         panels.push(panel);
         panelsIDIndex += 1;
-    }
+    };
     
     this.CreateImage = function($object) {
         if($container == null || $object == null) return;
@@ -108,7 +107,7 @@ var VisualDisplay = function() {
         
         images.push(image);
         imageIDIndex += 1;
-    }
+    };
 
     this.CreateCounter = function($object) {
         if($container == null || $object == null) return;
@@ -126,13 +125,16 @@ var VisualDisplay = function() {
         
         counters.push(counter);
         counterIDIndex += 1;
-    }
+    };
     
-    this.SelectPanel = function(panel) {
+    this.SelectPanel = function(panel)
+    {
         if(panel == null) return;
-        
+
         currentActivePanel = panel;
-        if(currentActivePanel.$panel != null) {
+
+        if(currentActivePanel.$panel != null)
+        {
             $panelWidthInput.val(currentActivePanel.$panel.css('width').replace('px', ''));
             $panelHeightInput.val(currentActivePanel.$panel.css('height').replace('px', ''));
             $panelBorderInput.val(currentActivePanel.$panel.css('border-top-width').replace('px', ''));
@@ -142,15 +144,12 @@ var VisualDisplay = function() {
             $panelZIndexInput.val(currentActivePanel.$panel.css('z-index'));
             $panelBackgroundInput.val(currentActivePanel.$panel.css('background-color'));
             $panelBackgroundInput.css('background-color', currentActivePanel.$panel.css('background-color'));
-            
+
             var angle = utils.GetRotationAngle(currentActivePanel.$panel);
-            if(angle != null) {
-                $panelAngleInput.val(angle);
-            } else {
-                $panelAngleInput.val(0);
-            }
+            if(angle != null) $panelAngleInput.val(angle);
+            else $panelAngleInput.val(0);
         }
-    }
+    };
     
     this.SelectImage = function(image) {
         if(image == null) return;
@@ -166,7 +165,7 @@ var VisualDisplay = function() {
                 $imageAngleInput.val(0);
             }
         }
-    }
+    };
     
     this.SelectCounter = function(counter) {
         if(counter == null) return;
@@ -243,7 +242,7 @@ var VisualDisplay = function() {
                 $counterValueUnderlineCheck.removeClass('active');
             }
         }
-    }
+    };
     
     this.HidePanel = function(panelId) {
         if(panelId == null) return;
@@ -252,7 +251,7 @@ var VisualDisplay = function() {
         if(panel != null && panel.$panel != null) {
             panel.$panel.hide();
         }
-    }
+    };
     
     this.ShowPanel = function(panelId) {
         if(panelId == null) return;
@@ -261,7 +260,7 @@ var VisualDisplay = function() {
         if(panel != null && panel.$panel != null) {
             panel.$panel.show();
         }
-    }
+    };
     
     this.HideImage = function(imageId) {
         if(imageId == null) return;
@@ -270,7 +269,7 @@ var VisualDisplay = function() {
         if(image != null && image.$image != null) {
             image.$image.hide();
         }
-    }
+    };
     
     this.ShowImage = function(imageId) {
         if(imageId == null) return;
@@ -279,7 +278,7 @@ var VisualDisplay = function() {
         if(image != null && image.$image != null) {
             image.$image.show();
         }
-    }
+    };
     
     this.HideCounter = function(counterId) {
         if(counterId == null) return;
@@ -294,7 +293,7 @@ var VisualDisplay = function() {
                 counter.$value.hide();
             }
         }
-    }
+    };
     
     this.ShowCounter = function(counterId) {
         if(counterId == null) return;
@@ -309,7 +308,7 @@ var VisualDisplay = function() {
                 counter.$value.show();
             }
         }
-    }
+    };
     
     this.DeletePanel = function(panelId) {
         if(panelId == null) return;
@@ -319,7 +318,7 @@ var VisualDisplay = function() {
             panel.$panel.remove();
             RemoveElementById(panels, panelId);
         }
-    }
+    };
     
     this.DeleteImage = function(imageId) {
         if(imageId == null) return;
@@ -329,7 +328,7 @@ var VisualDisplay = function() {
             image.$image.remove();
             RemoveElementById(images, imageId);
         }
-    }
+    };
     
     this.DeleteCounter = function(counterId) {
         if(counterId == null) return;
@@ -346,7 +345,7 @@ var VisualDisplay = function() {
             
             RemoveElementById(counters, counterId);
         }
-    }
+    };
     
     this.Serialize = function() {
         var result = '',
@@ -385,14 +384,14 @@ var VisualDisplay = function() {
         }
         
         return result;
-    }
+    };
     
     this.Deserialize = function(object) {
         if(object == null) return;
         
-        panels = new Array();
-        images = new Array();
-        counters = new Array();
+        panels = [];
+        images = [];
+        counters = [];
         
         if('id' in object) {
             id = object.id;
