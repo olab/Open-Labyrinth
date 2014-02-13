@@ -412,16 +412,22 @@
 
                     style="<?php if ( ! $mapPopup->style->font_color) echo 'color:'.$mapPopup->style->font_color.';'; ?>">
 
-                    <div class="info_for_admin node_id"><?php
-                        $status = Auth::instance()->get_user()->type_id;
-                        if ($status == 2 OR $status == 4) echo '#:'.$mapPopup->id;
-                        ?>
-                    </div>
-                    <div class="info_for_admin redirect_to"><?php
-                        if ($status == 2 OR $status == 4) {
-                        if ($assign->redirect_type_id == 3) echo 'to report';
-                        if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id; }?>
-                    </div>
+                    <?php
+                    $user = Auth::instance()->get_user();
+                    if ($user)
+                    {
+                        $status = $user->type_id;
+                        if ($status == 2 OR $status == 4)
+                        { ?>
+                        <div class="info_for_admin node_id"><?php
+                            echo '#:'.$mapPopup->id; ?>
+                        </div>
+                        <div class="info_for_admin redirect_to"><?php
+                            if ($assign->redirect_type_id == 3) echo 'to report';
+                            if ($assign->redirect_type_id == 2) echo 'to #'.$assign->redirect_to_id;?>
+                        </div><?php
+                        }
+                    } ?>
                     <div class="header"><?php echo $mapPopup->title; ?></div>
                     <div class="text"><?php echo $mapPopup->text; ?></div>
                 </div><?php
