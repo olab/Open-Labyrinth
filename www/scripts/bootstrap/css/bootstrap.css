@@ -25,8 +25,6 @@ audio,
 canvas,
 video {
   display: inline-block;
-  *display: inline;
-  *zoom: 1;
 }
 
 audio:not([controls]) {
@@ -5889,9 +5887,7 @@ a.badge:hover {
 .accordion-group {
   margin-bottom: 2px;
   border: 1px solid #e5e5e5;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 .accordion-heading {
@@ -6107,6 +6103,72 @@ a.badge:hover {
     top: 201px;
     width: 202px;
     outline: none;
+}
+h1 > .pull-right {
+    margin-top: 10px;
+}
+
+.required-patient .no-margin {
+    margin: 0;
+}
+
+.patient-name {
+    display: block;
+}
+
+.patient-t td:nth-child(1){
+    width: 10%;
+    min-width: 66px;
+}
+.patient-t td:nth-child(2){ width: 65%;}
+.patient-t td:nth-child(3){
+    width: 25%;
+    min-width: 150px;
+}
+
+.no-maps {
+    display: block;
+    margin: 0 20px 15px;
+}
+label .condition_checkbox {
+    margin: 0 5px 0 0;
+}
+
+input.assign-type {
+    position: relative;
+    margin: -2px 5px 0 0;
+}
+
+.add-assign-bl {
+    height: 85px;
+}
+.assign-empty {
+    display: block;
+    height: 30px;
+    margin-left: 165px;
+}
+
+.assign-same .add-assign-js {
+    display: none;
+}
+
+.assign-same .assign-queue {
+    opacity: 0;
+}
+
+.assign-t td:nth-child(1){
+    width: 15%;
+    min-width: 155px;
+}
+.assign-t td:nth-child(2){ width: 35%;}
+.assign-t td:nth-child(3){ width: 35%;}
+.assign-t td:nth-child(4){
+    width: 15%;
+    min-width: 150px;
+}
+
+.condition-control-group:nth-child(2) .dra{
+    display: none;
 }
 
 .wizard_button img {

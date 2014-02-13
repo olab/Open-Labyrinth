@@ -1061,6 +1061,7 @@ input[readonly].code, textarea[readonly].code{
 
 #visualDisplay {
     position: relative;
+    height: 700px;
 }
 
 .visual-display-images-container {

@@ -67,8 +67,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
                     if ($data)
                     {
-                        /* update virtual patient */
-                        //$data['patients'] = Arr::get($this->patient_sessions_update($rootNode->id), 'patients', array());
+                        /* update virtual patient, third parameter check for redirect */
+                        //$data['patients'] = Arr::get($this->patient_sessions_update($mapId, $rootNode->id, $mapId), 'patients', array());
 
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -150,90 +150,88 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function patient_session_check ($id_patient)
+    public function patient_path_update($id_node, array $sessions, $check_for_redirect)
+    {
+        foreach ($sessions as $session)
+        {
+            $path   = json_decode($session->path);
+
+            if ($check_for_redirect AND $path != null) {
+                Session::instance()->set('patient_redirect', true);
+                Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$check_for_redirect.'/'.array_pop($path));
+            }
+
+            $path[] = (int)$id_node;
+            $path   = json_encode($path);
+
+            $session->path = $path;
+            $session->save();
+        }
+    }
+
+    public function patient_condition_update($id_node, array $sessions)
+    {
+        foreach ($sessions as $session)
+        {
+            $pc  = json_decode($session->patient_condition, TRUE);
+            foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($session->id_patient) as $condition)
+            {
+                $id_condition = (int) $condition->id;
+                $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
+                $pc[$id_condition]['name'] = (string) $condition->name;
+                $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
+                if ($change) $pc[$id_condition]['value'] += (int) $change->value;
+            }
+            $pc = json_encode($pc);
+            $session->patient_condition = $pc;
+            $session->save();
+        }
+    }
+
+    public function patient_sessions_update ($mapId, $id_node, $check_for_redirect = false)
     {
         if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
         else return FALSE;
-        $session = DB_ORM::select('Patient_Sessions')->where('id_group', '=', $id_group)->where('id_patient', '=', $id_patient)->query()->fetch(0);
-        return $session;
-    }
 
-    public function patient_path_update($id_node, $id_patient, $session = FALSE)
-    {
-        $path = array();
-        if ($session)
-        {
-            $patient_session = DB_ORM::model('Patient_Sessions', array($session->id));
-
-            $path = json_decode($patient_session->path);
-        }
-        else
-        {
-            if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
-            else return;
-
-            $patient_session = DB_ORM::model('Patient_Sessions');
-            $patient_session->id_group      = $id_group;
-            $patient_session->id_patient    = $id_patient;
-        }
-        $path[] = (int)$id_node;
-        $path = json_encode($path);
-        $patient_session->path = $path;
-        $patient_session->save();
-    }
-
-    public function patient_condition_update($id_node, $id_patient, $session)
-    {
-        $pc  = json_decode($session->patient_condition, TRUE);
-        foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($id_patient) as $condition)
-        {
-            $id_condition = (int) $condition->id;
-            $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
-            $pc[$id_condition]['name'] = (string) $condition->name;
-            $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
-            if ($change) $pc[$id_condition]['value'] += (int) $change->value;
-        }
-        $pc = json_encode($pc);
-        $session->patient_condition = $pc;
-        $session->save();
-    }
-
-    public function patient_sessions_update ($id_node)
-    {
         $data     = array();
-        $patients = DB_ORM::select('Patient_ConditionChange')->where('id_node', '=', $id_node)->query();
+        $patients = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
 
         foreach ($patients as $patient)
         {
             $id_patient = $patient->id_patient;
-            $session    = $this->patient_session_check($id_patient);
-            $this->patient_path_update($id_node, $id_patient, $session);
+            $id_assigns = $this->get_patient_assign($id_user);
 
-            // after path update, session create if didn't exist earlier
-            $session    = $this->patient_session_check($id_patient);
-            if ( ! $session) return $data;
-            $this->patient_condition_update($id_node, $id_patient, $session);
-
-            if ( ! $patient->appear) continue;
-
-            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation)
+            $sessions = array();
+            foreach ($id_assigns as $id_assign)
             {
-                $condition          = DB_ORM::model('Patient_Condition', array($relation->id_condition));
+                $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->where('id_patient', '=', $id_patient)->query()->fetch(0);
+                if($session) $sessions[] = $session;
+            }
+
+            $this->patient_path_update($id_node, $sessions, $check_for_redirect);
+            $this->patient_condition_update($id_node, $sessions);
+
+            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation_condition)
+            {
+                $condition          = DB_ORM::model('Patient_Condition', array($relation_condition->id_condition));
                 $id_condition       = $condition->id;
-                $pc                 = json_decode($session->patient_condition, TRUE);
-                $condition->value   = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : $condition->value;
 
+                foreach ($id_assigns as $id_assign)
+                {
+                    //$session_record = DB_ORM::select('Patient_Sessions')->column('id_assign', $id_assign)->column('id_patient', $id_patient)->query();
+                    //$pc                 = json_decode($session->patient_condition, TRUE);
 
-                $data['patients'][] =
-                    '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
-                    '<li>'.$condition->name.': '.$condition->value.'</li>';
+                    $data['patients'][] =
+                        '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
+                        '<li>'.$condition->name.': '.$condition->value.'</li>';
+                }
             }
         }
-        if ($this->request->is_ajax()){
 
-        } else {
-            return $data;
+        if ($this->request->is_ajax())
+        {
         }
+        else return $data;
     }
 
     public function action_patient_ajax()
@@ -267,6 +265,29 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $data = json_encode($data);
         echo $data;
         exit;
+    }
+
+    public function get_patient_assign($id_user)
+    {
+        $id_assign = array();
+        $assign_records = DB_ORM::select('Patient_Assign')->where('id_user', '=', $id_user)->query()->as_array();
+
+        if ($assign_records)
+        {
+            foreach ($assign_records as $record) $id_assign[] = $record->id_assign;
+        }
+        else
+        {
+            $groups = DB_ORM::select('User_Group')->where('user_id', '=', $id_user)->query()->as_array();
+
+            if ( ! $groups) return false;
+            foreach ($groups as $group)
+            {
+                $assign_records = DB_ORM::select('Patient_Assign')->where('id_group', '=', $group->group_id)->query()->fetch(0);
+                if ($assign_records) $id_assign[] = $assign_records->id_assign;
+            }
+        }
+        return $id_assign;
     }
 
     public function action_checkKey() {
@@ -307,6 +328,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
+
+//            if ( ! Session::instance()->get('patient_redirect'))
+//            {
+//                Session::instance()->delete('patient_redirect');
+//            }
+//            $data['patients'] = Arr::get($this->patient_sessions_update($mapId, $nodeId), 'patients', array());
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
@@ -353,18 +380,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             }
                         } else {
                             $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
-                            if(!empty($result['links']))
-                                $data['links'] = $result['links'];
+                            if( ! empty($result['links'])) $data['links'] = $result['links'];
                             else $data['links'] = "";
                         }
-                    } else {
-                        $data['links'] = $data['node_links']['linker'];
                     }
+                    else $data['links'] = $data['node_links']['linker'];
 
-                    if ($editOn != NULL and $editOn == 1) {
-                        $data['node_edit'] = TRUE;
-                    } else {
-
+                    if ($editOn != NULL and $editOn == 1) $data['node_edit'] = TRUE;
+                    else
+                    {
                         if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
                         {
                             $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
@@ -378,6 +402,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                         $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
+
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
 
@@ -1497,10 +1522,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
         $result = '';
 
-        $traceId = Session::instance()->get('trace_id');
         $traceCountersValues = Session::instance()->get('traceCountersValues');
 
-        if($visualDisplay != null) {
+        if($visualDisplay != null)
+        {
             $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
 
             if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
@@ -1572,12 +1597,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         -o-transform: rotate(' . $counter->label_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->label_angle . 'deg);
                                            transform: rotate(' . $counter->label_angle . 'deg);
-                                         font-family: \'' . $labelFont[0] . '\';
+                                         font-family: '.$labelFont[0].';
                                            font-size: ' . $labelFont[1] . 'px;
-                                         font-weight: \'' . $labelFont[2] . '\';
+                                         font-weight: ' . $labelFont[2] . ';
                                                color: ' . $labelFont[3] . ';
-                                          font-style: \'' . $labelFont[4] . '\';
-                                     text-decoration: \'' . $labelFont[5] . '\';
+                                          font-style: ' . $labelFont[4] . ';
+                                     text-decoration: ' . $labelFont[5] . ';
                                 ">' . $counter->label_text . '</div>
                                 <div style="position: absolute;
                                                  top: ' . $counter->value_y . 'px;
@@ -1588,16 +1613,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         -o-transform: rotate(' . $counter->value_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->value_angle . 'deg);
                                            transform: rotate(' . $counter->value_angle . 'deg);
-                                         font-family: \'' .  $valueFont[0] . '\';
+                                         font-family: ' .  $valueFont[0] . ';
                                            font-size: ' . $valueFont[1] . 'px;
-                                         font-weight: \'' . $valueFont[2] . '\';
+                                         font-weight: ' . $valueFont[2] . ';
                                                color: ' . $valueFont[3] . ';
-                                          font-style: \'' . $valueFont[4] . '\';
-                                     text-decoration: \'' . $valueFont[5] . '\';
-                                ">' . $thisCounter . '</div>';
+                                          font-style: ' . $valueFont[4] . ';
+                                     text-decoration: ' . $valueFont[5] . ';
+                                ">'.$thisCounter.'</div>';
                 }
             }
-
             $result .= '</div>';
         }
 

@@ -56,10 +56,12 @@ var Panel = function() {
 
         dPanel.draggable({containment: $container, scroll: false, cursor: 'move'});
         dPanel.resizable();
-        
+
         this.$panel = $('#panel_' + this.id);
         this.$panel.css('position', 'absolute').css('top', y).css('left', x);
+        this.$panel.text(x+', '+y);
         this.$panel.live('click', Click);
+        this.Coordinate();
     };
     
     this.CreateFromJSON = function(jsonObject, $container, panelId, vDisplay)
@@ -103,5 +105,17 @@ var Panel = function() {
         if(visualDisplay != null) {
             visualDisplay.SelectPanel(self);
         }
+    }
+
+    this.Coordinate = function (){
+        $(this.$panel).draggable({
+            containment: "#visualDisplay",
+            drag: function() {
+                var $this = $(this);
+                var thisPos = $(this).position();
+
+                $this.text(thisPos.left + ", " + thisPos.top);
+            }
+        });
     }
 };

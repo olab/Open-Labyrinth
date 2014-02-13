@@ -144,7 +144,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
             DB_ORM::model('map_visualdisplay')->deleteImage($displayId, $mapId, $imageName);
         }
         
-        Request::initial()->redirect(URL::base() . 'visualdisplaymanager/display/' . $mapId . '/' . $displayId);
+        Request::initial()->redirect(URL::base().'visualdisplaymanager/display/'.$mapId.'/'.$displayId.'#imagesTab');
     }
     
     public function action_deleteDisplay() {

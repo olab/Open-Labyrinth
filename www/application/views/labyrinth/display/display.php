@@ -303,7 +303,7 @@
                     <?php foreach($templateData['counters'] as $counter) { ?>
                     <div class="counter-container" 
                         counterId="<?php echo $counter->id; ?>" 
-                        counterName="<?php echo $counter->name; ?>" 
+                        counterName="<?php echo $counter->name; ?>"
                         counterValue="<?php echo $counter->start_value; ?>">
                         <?php echo $counter->name; ?>
                     </div>
@@ -327,11 +327,11 @@
 
 <div class="form-actions">
     <div class="pull-right">
-        <input class="btn btn-primary btn-large" 
-               type="button" 
-               mapId="<?php echo $templateData['map']->id; ?>" 
+        <input class="btn btn-primary btn-large"
+               type="button"
+               mapId="<?php echo $templateData['map']->id; ?>"
                postURL="<?php echo URL::base(); ?>visualdisplaymanager/save"
-               id="saveVisualDisplayBtn" 
+               id="saveVisualDisplayBtn"
                value="Save changes"/>
     </div>
 </div>

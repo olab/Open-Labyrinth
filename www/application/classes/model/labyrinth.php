@@ -114,7 +114,12 @@ class Model_Labyrinth extends Model {
 
             $this->clearQuestionResponses();
 
-            $result['traces'] = $this->getReviewLinks($sessionId);
+            $trace = $this->getReviewLinks($sessionId);
+            $result['traces'] = $trace;
+
+            // Records trace info for visual display counters
+            Session::instance()->set('traceCountersValues', $trace[0]->counters);
+
             $result['sessionId'] = $sessionId;
         }
 
@@ -897,12 +902,12 @@ class Model_Labyrinth extends Model {
                                         -o-transform: rotate(' . $counter->label_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->label_angle . 'deg);
                                            transform: rotate(' . $counter->label_angle . 'deg);
-                                         font-family: \'' . $labelFont[0] . '\';
+                                         font-family: ' . $labelFont[0] . ';
                                            font-size: ' . $labelFont[1] . 'px;
-                                         font-weight: \'' . $labelFont[2] . '\';
+                                         font-weight: ' . $labelFont[2] . ';
                                                color: ' . $labelFont[3] . ';
-                                          font-style: \'' . $labelFont[4] . '\';
-                                     text-decoration: \'' . $labelFont[5] . '\';
+                                          font-style: ' . $labelFont[4] . ';
+                                     text-decoration: ' . $labelFont[5] . ';
                                 ">' . $counter->label_text . '</div>
                                 <div style="position: absolute;
                                                  top: ' . $counter->value_y . 'px;
@@ -913,12 +918,12 @@ class Model_Labyrinth extends Model {
                                         -o-transform: rotate(' . $counter->value_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->value_angle . 'deg);
                                            transform: rotate(' . $counter->value_angle . 'deg);
-                                         font-family: \'' .  $valueFont[0] . '\';
+                                         font-family: ' .  $valueFont[0] . ';
                                            font-size: ' . $valueFont[1] . 'px;
-                                         font-weight: \'' . $valueFont[2] . '\';
+                                         font-weight: ' . $valueFont[2] . ';
                                                color: ' . $valueFont[3] . ';
-                                          font-style: \'' . $valueFont[4] . '\';
-                                     text-decoration: \'' . $valueFont[5] . '\';
+                                          font-style: ' . $valueFont[4] . ';
+                                     text-decoration: ' . $valueFont[5] . ';
                                 ">' . $thisCounter . '</div>';
                 }
             }
@@ -942,13 +947,11 @@ class Model_Labyrinth extends Model {
         return $counter;
     }
 
-    private function getReviewLinks($sesionId) {
+    private function getReviewLinks($sesionId)
+    {
         $traces = DB_ORM::model('user_sessionTrace')->getTraceBySessionID($sesionId);
 
-        if ($traces != NULL) {
-            return $traces;
-        }
-
+        if ($traces != NULL) return $traces;
         return NULL;
     }
 

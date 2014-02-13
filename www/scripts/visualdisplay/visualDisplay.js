@@ -476,7 +476,6 @@ var VisualDisplay = function()
         if(result.length > 2) {
             result = '"' + name + '": [' + result.substring(0, result.length - 2) + ']';
         }
-        
         return result;
     }
     
