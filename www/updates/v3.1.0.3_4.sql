@@ -1,1 +1,0 @@
-ALTER TABLE  `map_counters` ADD  `status` INT( 1 ) NOT NULL ;
