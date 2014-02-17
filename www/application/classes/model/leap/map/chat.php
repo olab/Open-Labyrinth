@@ -84,23 +84,21 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getChatsByMap($mapId) {
+    public function getChatsByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('map_id', '=', $mapId);
         
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $chats = array();
-            foreach($result as $record) {
-                $chats[] = DB_ORM::model('map_chat', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $chats[] = DB_ORM::model('map_chat', array((int)$record['id']));
             return $chats;
         }
-        
-        return NULL;
+        return array();
     }
     
     public function addChat($mapId, $values) {
@@ -135,24 +133,22 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         DB_ORM::model('map_chat_element')->updateElementsByChatId($chatId, $values);
     }
 
-    public function duplicateChats($fromMapId, $toMapId, $counterMap) {
-        $chats = $this->getChatsByMap($fromMapId);
-
-        if($chats == null || $toMapId == null || $toMapId <= 0) return array();
+    public function duplicateChats($fromMapId, $toMapId, $counterMap)
+    {
+        if ( ! $toMapId) return array();
 
         $chatMap = array();
-        foreach($chats as $chat) {
-            $builder = DB_ORM::insert('map_chat')
-                    ->column('map_id', $toMapId)
-                    ->column('stem', $chat->stem);
-            if(isset($counterMap[$chat->counter_id]))
-                $builder = $builder->column ('counter_id', $counterMap[$chat->counter_id]);
 
-            $chatMap[$chat->id] = $builder->execute();
+        foreach ($this->getChatsByMap($fromMapId) as $chat)
+        {
+            $chatMap[$chat->id] = DB_ORM::insert('map_chat')
+                    ->column('map_id', $toMapId)
+                    ->column('stem', $chat->stem)
+                    ->column('counter_id', Arr::get($counterMap, $chat->counter_id))
+                    ->execute();
 
             DB_ORM::model('map_chat_element')->duplicateElements($chat->id, $chatMap[$chat->id]);
         }
-
         return $chatMap;
     }
 

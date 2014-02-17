@@ -68,7 +68,6 @@
                             Remove</a>
                     </td>
                 </tr>
-
             <?php } ?>
         <?php } else {?>
             <tr class="info">
@@ -77,34 +76,27 @@
         <?php } ?>
         </tbody>
     </table>
-    <form class="form-horizontal" action="<?php echo URL::base() . 'usermanager/addMemberToGroup/' . $templateData['group']->id; ?>"
-          method="post">
-
+    <form class="form-horizontal" action="<?php echo URL::base() . 'usermanager/addMemberToGroup/' . $templateData['group']->id; ?>" method="post">
         <fieldset class="fieldset">
             <legend></legend>
             <div class="control-group">
                 <label for="userid" class="control-label">User</label>
 
                 <div class="controls">
-                    <select id="userid" name="userid">
-                        <?php foreach ($templateData['users'] as $user) { ?>
-                            <option value="<?php echo $user->id; ?>"><?php echo $user->nickname; ?>
-                                (<?php echo $user->username; ?>)
-                            </option>
-                        <?php } ?>
+                    <select id="userid" name="userid"><?php
+                        foreach (Arr::get($templateData, 'users', array()) as $user) { ?>
+                        <option value="<?php echo $user->id; ?>">
+                            <?php echo $user->nickname.' ('.$user->username.')'; ?>
+                        </option><?php
+                        } ?>
                     </select>
                 </div>
             </div>
-        </fieldset>
-
-
-        <?php if (isset($templateData['users'])) { ?>
-<div class="form-actions">
-            <input class="btn btn-primary" type="submit" name="AddUserToGroupSubmit"
-                   value="<?php echo __('Add'); ?>"></div>
-        <?php } ?>
-    </form>
-
-
-
-<?php } ?>
+        </fieldset><?php
+        if (isset($templateData['users'])) { ?>
+        <div class="form-actions">
+            <input class="btn btn-primary" type="submit" name="AddUserToGroupSubmit" value="<?php echo __('Add'); ?>">
+        </div><?php
+        } ?>
+    </form><?php
+} ?>

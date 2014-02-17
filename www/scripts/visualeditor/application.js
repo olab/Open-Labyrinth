@@ -8,53 +8,69 @@ $(function () {
 
     var tinyMCEConfigs = [{
         // General options
-        mode:"textareas",
-        relative_urls:false,
-        entity_encoding:"raw",
-        theme:"advanced",
-        skin:"bootstrap",
-        plugins:"autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,imgmap",
-        // Theme options
-        theme_advanced_buttons1:"bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,|,bullist,numlist,|,blockquote,",
-        theme_advanced_buttons2:"styleselect,formatselect,fontselect,fontsizeselect,visualchars",
-        theme_advanced_buttons3:"link,unlink,anchor,image,template,code,forecolor,backcolor,iespell,media,advhr,fullscreen,attribs,nonbreaking,outdent,indent",
-        theme_advanced_buttons4:"tablecontrols,|,hr,removeformat,visualaid,help,",
-        theme_advanced_toolbar_location:"top",
-        theme_advanced_toolbar_align:"left",
-        theme_advanced_statusbar_location:"bottom",
-        theme_advanced_resizing:true,
+
+        theme: "modern",
+//        content_css: "../tinymce/js/tinymce/plugins/rdface/css/rdface.css,../tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime media nonbreaking save table contextmenu directionality",
+            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+        image_advtab: true,
+        templates: [
+
+        ],
         setup: function(ed) {
-            ed.onClick.add(function(ed, e) {
-                veUnsavedData();
+
+            ed.on("init", function(e){
+
+                ed.on("click",function(e) {
+
+                    veUnsavedData();
+                });
             });
+
+
         }
     },{
         // General options
-        mode: "textareas",
-        relative_urls: false,
-        theme: "advanced",
-        skin: "bootstrap",
-        plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,wordcount,advlist,autosave,imgmap",
-        // Theme options
-        theme_advanced_buttons1: "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,cut,copy,paste,pastetext,pasteword",
-        theme_advanced_buttons2: "styleselect,formatselect,fontselect,fontsizeselect",
-        theme_advanced_buttons3: "bullist,numlist,|,outdent,indent,blockquote,|,link,unlink,anchor,image,code,forecolor,backcolor,sub,sup",
-        theme_advanced_buttons4: "charmap,iespell,media,advhr,|,fullscreen,del,ins,attribs,|,visualchars,nonbreaking,template",
-        theme_advanced_toolbar_location: "top",
-        theme_advanced_toolbar_align: "left",
-        theme_advanced_statusbar_location: "bottom",
-        theme_advanced_resizing: true,
-        entity_encoding: "raw"
+
+        theme: "modern",
+//        content_css: "../tinymce/js/tinymce/plugins/rdface/css/rdface.css,../tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime media nonbreaking save table contextmenu directionality",
+            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+        image_advtab: true,
+        templates: [
+
+        ]
     }];
 
     function setTinyMCE(configNumber, id) {
         tinyMCE.settings = tinyMCEConfigs[configNumber];
-        tinyMCE.execCommand('mceAddControl', true, id);
+        tinyMCE.execCommand('mceAddEditor', true, id);
     }
-
-    setTinyMCE(0, 'nodecontent');
-    setTinyMCE(0, 'nodesupport');
-    setTinyMCE(1, 'annotation');
+    if(!currentUserReadOnly) {
+        setTinyMCE(0, 'nodecontent');
+        setTinyMCE(0, 'nodesupport');
+        setTinyMCE(1, 'annotation');
+    }
 
     /*tinyMCE.init({
         // General options
@@ -101,16 +117,43 @@ $(function () {
     });*/
 
     var autoSaveData = null;
+    var body         = $('body');
     var visualEditor = new VisualEditor();
-    visualEditor.Init(params);
-    visualEditor.copyFunction = copy;
-    visualEditor.pasteFunction = paste;
-    visualEditor.zoomIn = zoomIn;
-    visualEditor.zoomOut = zoomOut;
-    visualEditor.update = update;
-    visualEditor.turnOnPanMode = turnOnPanMode;
-    visualEditor.turnOnSelectMode = turnOnSelectMode;
-    visualEditor.save = save;
+        visualEditor.Init(params);
+        visualEditor.copyFunction = copy;
+        visualEditor.pasteFunction = paste;
+        visualEditor.zoomIn = zoomIn;
+        visualEditor.zoomOut = zoomOut;
+        visualEditor.update = update;
+        visualEditor.turnOnPanMode = turnOnPanMode;
+        visualEditor.turnOnSelectMode = turnOnSelectMode;
+        visualEditor.save = save;
+
+
+    $('#preventRevisit').click(function()
+    {
+        var thisButton  = $(this),
+            active      = (thisButton.hasClass('active')),
+            e_or_d      = (active) ? 'disable' : 'enable';
+
+        for (var i = 0; i < visualEditor.nodes.length; i++)
+        {
+            var node = visualEditor.nodes[i];
+            if (node.isSelected) node.undo = ! active;
+        }
+
+        var data = visualEditor.SerializeSelected();
+
+        if (active) thisButton.removeClass('active');
+        else thisButton.addClass('active');
+
+        data = data.substring(0, data.length - 1);
+
+        if (data != null && data.length > 0)
+        {
+            utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Prevent revisit '+e_or_d, 3000, $veActionButton, false);
+        }
+    });
 
     function copy() {
         var data = visualEditor.SerializeSelected();
@@ -118,9 +161,10 @@ $(function () {
         if(data != null && data.length > 0) {
             utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Copying...', null, $veActionButton, true);
 
-            $.post(bufferCopy, {
-                data: data.substring(0, data.length - 1)
-                }, function(dataResponse) {
+            $.post(
+                bufferCopy,
+                { data: data.substring(0, data.length - 1) },
+                function (dataResponse) {
                 utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Copy has been successful', 3000, $veActionButton, false);
             });
         }
@@ -128,16 +172,18 @@ $(function () {
     
     $('#copySNodesBtn').click(function() {
         copy();
-    })
+    });
 
     function paste() {
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Pasting...', null, $veActionButton, true);
-        $.post(bufferPaste, {},
+        $.post(
+            bufferPaste,
+            {},
             function (data) {
                 if (data) {
                     visualEditor.DeserializeFromPaste(data);
                     visualEditor.Render();
-                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
+                    utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Pasting has been successful', 3000, $veActionButton, false);
                 }
             });
     }
@@ -146,14 +192,11 @@ $(function () {
         paste();
     });
 
-    if (mapJSON != null && mapJSON.length > 0) {
-        if (mapType != null && mapType == 6) {
-            visualEditor.DeserializeLinear(mapJSON);
-        } else if (mapType != null && mapType == 9) {
-            visualEditor.DeserializeBranched(mapJSON);
-        } else {
-            visualEditor.Deserialize(mapJSON);
-        }
+    if (mapJSON != null && mapJSON.length > 0)
+    {
+        if (mapType != null && mapType == 6)        visualEditor.DeserializeLinear(mapJSON);
+        else if (mapType != null && mapType == 9)   visualEditor.DeserializeBranched(mapJSON);
+        else                                        visualEditor.Deserialize(mapJSON);
 
         visualEditor.Render();
     }
@@ -208,42 +251,73 @@ $(function () {
         $('#visual_editor_set_root').modal();
 
         return false;
-    })
+    });
+
+    var timerRange = 600000, // 10 min
+        timerRangeBeforeLogout = 120000, // 2 min
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    $('#canvas, #veRightPanel').mousemove(function(){
+        clearTimeout(timer);
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    });
+
+    $('#setAsideTimeout').click(function()
+    {
+        $('#visual_editor_timeout').modal('hide');
+        clearTimeout(timer);
+        timer = setTimeout (showTimeoutPopupMassage, timerRange);
+    });
+
+    function showTimeoutPopupMassage ()
+    {
+        $('#visual_editor_timeout').modal('show');
+        timer = setTimeout (saveAndLogout, timerRangeBeforeLogout);
+    }
+
+    function saveAndLogout ()
+    {
+        $('#visual_editor_timeout').modal('hide');
+        leaveLink = logoutUrl;
+        update();
+    }
 
     var $veMessageContainer = $('#ve_message');
     var $veMessage = $('#ve_message_text');
     var $veActionButton = $('#ve_actionButton');
 
-    function update() {
-        if (autoSaveTimer != null) {
-            clearTimeout(autoSaveTimer);
+    function update()
+    {
+        if (!currentUserReadOnly) {
             visualEditor.isChanged = false;
-            autoSaveTimerNotSet = true;
-        }
-        var data = visualEditor.Serialize();
-        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
-        visualEditor.isChanged = false;
-        autoSaveData = null;
-        $('#leaveBox').modal('hide');
-
-        $.post(sendURL, {
-            data:data.substring(0, data.length - 1),
-            id:mapId
-        }, function (data) {
-            if (data && data.length > 0) {
-                data = data.substring(1, data.length - 1);
-                data = data.substring(0, data.length - 1);
-
-                utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
-
-                if(leaveLink != null) {
-                    $(location).attr('href', leaveLink);
-                }
-
-                visualEditor.Deserialize(data);
-                visualEditor.Render();
+    
+            if (autoSaveTimer != null)
+            {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimerNotSet = true;
             }
-        });
+    
+            var data = visualEditor.Serialize();
+            utils.ShowMessage ($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
+            autoSaveData = null;
+            $('#leaveBox').modal('hide');
+    
+            $.post(sendURL, {
+                data:data.substring(0, data.length - 1),
+                id:mapId
+            }, function (data) {
+                if (data && data.length > 0) {
+                    data = data.substring(1, data.length - 1);
+                    data = data.substring(0, data.length - 1);
+    
+                    utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Update has been successful', 3000, $veActionButton, false);
+    
+                    if (leaveLink != null) $(location).attr('href', leaveLink);
+    
+                    visualEditor.Deserialize(data);
+                    visualEditor.Render();
+                }
+            });
+        }
     }
 
     $('.breadcrumb a').click(function() { return leaveBox($(this)); });
@@ -259,7 +333,7 @@ $(function () {
     });
 
     function leaveBox($object) {
-        if(autoSaveData != null) {
+        if(autoSaveData != null && !currentUserReadOnly) {
             if($object != null) {
                 leaveLink = $object.attr('href');
             }
@@ -318,11 +392,11 @@ $(function () {
 
     $('#veCountContainer button').click(function () {
         $('#veCount').attr('disabled', 'disabled');
-    })
+    });
 
     $('#veCustom').click(function () {
         $('#veCount').removeAttr('disabled');
-    })
+    });
 
     $('#backgroundColor').click(function () {
         $('#visual_editor_background_color').modal();
@@ -436,9 +510,10 @@ $(function () {
         turnOnSelectMode();
     });
 
-    function turnOnSelectMode(){
-        $('body').addClass('clearCursor');
-        $('body').css('cursor', 'crosshair');
+    function turnOnSelectMode()
+    {
+        body.addClass('clearCursor');
+        body.css('cursor', 'crosshair');
         $vePan.removeClass('active');
         $veSelect.addClass('active');
         visualEditor.isSelectActive = true;
@@ -468,11 +543,13 @@ $(function () {
     }
 
     function save() {
-        utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Saving...', null, $veActionButton, false);
-        visualEditor.isChanged = false;
-        autoSaveTimerNotSet = true;
-        autoSaveData = visualEditor.Serialize();
-        utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Save has been completed.', 3000, $veActionButton, false);
+        if (!currentUserReadOnly) {
+            utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Saving...', null, $veActionButton, false);
+            visualEditor.isChanged = false;
+            autoSaveTimerNotSet = true;
+            autoSaveData = visualEditor.Serialize();
+            utils.ShowMessage($veMessageContainer, $veMessage, 'success', 'Save has been completed.', 3000, $veActionButton, false);
+        }
     }
 
     var canvasWidth;
@@ -530,7 +607,7 @@ $(function () {
         veUnsavedData();
     });
 
-    $('#veRightPanel button:not("#veDeleteNodeBtn")').click(function(){
+    $('#veRightPanel button:not(#veDeleteNodeBtn)').click(function(){
         veUnsavedData();
     });
 

@@ -43,13 +43,13 @@ if (isset($templateData['map'])) {
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple>
                 </span>
-                    <button id="uploadBtn" type="submit" class="btn btn-primary start" style="display: none"></button>
-
-                    <button id="opener" type="button" name="Submit" class="btn btn-primary">
-                        <i class="glyphicon glyphicon-upload"></i>
-                        <span>Start upload</span>
-                    </button>
-                    <span class="fileupload-loading"></span>
+                <button id="uploadBtn" type="submit" class="btn btn-primary start" style="display: none"></button>
+                <a data-toggle="modal" href="#upload-by-url" class="btn btn-primary" >Add file by URL</a>
+                <button id="opener" type="button" name="Submit" class="btn btn-primary">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start upload</span>
+                </button>
+                <span class="fileupload-loading"></span>
             </div>
             <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio(.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
             <div class="col-lg-5 fileupload-progress fade" style="margin-top: 22px;">
@@ -59,6 +59,22 @@ if (isset($templateData['map'])) {
                 <div class="progress-extended">&nbsp;</div>
             </div>
             <table role="presentation" id="filesTable" class="table table-striped"><tbody class="files"></tbody></table>
+        </form>
+        <form action="<?php echo URL::base().'fileManager/saveByUrl/'.$templateData['map']->id ?>" method="POST">
+            <div id="upload-by-url" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h3>Add file by URL</h3>
+                </div>
+                <div class="modal-body">
+                    Add URL of file below:<br>
+                    <input type="url" name="url" value="" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary add-from-url" value="Add" />
+                </div>
+            </div>
         </form>
     </div>
 

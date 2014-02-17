@@ -32,27 +32,50 @@ class Controller_ReportManager extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL and $this->checkUser()) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+
+        if ($mapId != NULL AND $this->checkUser())
+        {
+            $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
             $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $mapId));
-
-            $allReportView = View::factory('labyrinth/report/allView');
-            $allReportView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $allReportView;
+            $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->templateData['center']   = View::factory('labyrinth/report/allView')->set('templateData', $this->templateData);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$mapId));
         } else {
             Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_finishAndShowReport()
+    {
+        $sessionId      = $this->request->param('id', NULL);
+        $mapId          = $this->request->param('id2', NULL);
+        $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
+
+        if ($sessionId == NULL) {
+            $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
+        }
+
+        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previewNodeId);
+        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
+
+        Request::initial()->redirect(URL::base().'reportManager/showReport/'.$sessionId);
+    }
+
+    public function action_exportToExcel() {
+        $reportId = $this->request->param('id', null);
+
+        if($reportId != null) {
+            $report = new Report_Session(new Report_Impl_PHPExcel(), $reportId);
+            $report->generate();
+
+            $report->get();
         }
     }
 
@@ -177,12 +200,43 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    private function checkUser() {
-        if (Auth::instance()->get_user()->type->name == 'author' or Auth::instance()->get_user()->type->name == 'superuser') {
-            return TRUE;
-        }
-
-        return FALSE;
+    private function checkUser()
+    {
+        $user_type = Auth::instance()->get_user()->type->name;
+        return (bool) ($user_type == 'author' OR $user_type == 'superuser');
     }
 
+    public function action_pathVisualisation ()
+    {
+        $id_map     = $this->request->param('id', NULL);
+        $id_session = $this->request->param('id2', NULL);
+
+        if ($id_map == NULL AND ! $this->checkUser()) Request::initial()->redirect(URL::base());
+
+        // selected_session needed for build path by javascript
+        if ($id_session)
+        {
+            $sessions_for_encode = array();
+            foreach (DB_ORM::select('user_sessiontrace')->where('session_id', '=', $id_session)->query() as $session)
+            {
+                $sessions_for_encode[] = array(
+                    'id_node'   =>$session->node_id,
+                    'start'     =>$session->date_stamp,
+                    'end'       =>$session->end_date_stamp,
+                );
+            }
+            $this->templateData['selected_session'] = json_encode($sessions_for_encode);
+        }
+
+        $this->templateData['map']      = DB_ORM::model('map', array((int)$id_map));
+        $this->templateData['mapJSON']  = Model::factory('visualEditor')->generateJSON($id_map);
+        $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$id_map);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['current_s']= $id_session;
+        $this->templateData['center']   = View::factory('labyrinth/report/pathVisualisation')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$id_map));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$id_map));
+    }
 }

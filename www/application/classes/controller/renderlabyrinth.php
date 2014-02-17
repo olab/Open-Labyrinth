@@ -25,41 +25,57 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public $template = 'home'; // Default
 
-    public function action_index() {
-        $continue = true;
-        $mapId = $this->request->param('id', NULL);
-        $editOn = $this->request->param('id2', NULL);
-        if ($mapId != NULL) {
+    public function action_index()
+    {
+        $continue   = true;
+        $mapId      = $this->request->param('id', null);
+        $editOn     = $this->request->param('id2', null);
+
+        if ($mapId != null)
+        {
             $mapDB = DB_ORM::model('map', array($mapId));
-            if ($mapDB->security_id == 4) {
-                $sessionId = Session::instance()->id();
-                $checkValue = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
-                $checkSession = Session::instance()->get($checkValue);
-                if ($checkSession != '1') {
-                    $this->template = View::factory('labyrinth/security');
-                    $templateData['mapDB'] = $mapDB;
-                    $templateData['title'] = 'OpenLabyrinth';
-                    $templateData['keyError'] = Session::instance()->get('keyError');
+            if ($mapDB->security_id == 4)
+            {
+                $sessionId      = Session::instance()->id();
+                $checkValue     = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
+                $checkSession   = Session::instance()->get($checkValue);
+                if ($checkSession != '1')
+                {
+                    $this->template             = View::factory('labyrinth/security');
+                    $templateData['mapDB']      = $mapDB;
+                    $templateData['title']      = 'OpenLabyrinth';
+                    $templateData['keyError']   = Session::instance()->get('keyError');
+
                     Session::instance()->delete('keyError');
+
                     $this->template->set('templateData', $templateData);
                     $continue = false;
                 }
             }
-            if ($continue) {
+            if ($continue)
+            {
                 Session::instance()->delete('questionChoices');
                 Session::instance()->delete('dragQuestionResponses');
                 Session::instance()->delete('counterFunc');
                 Session::instance()->delete('stopCommonRules');
                 Session::instance()->delete('shownMapPopups');
+                Session::instance()->delete('arrayAddedQuestions');
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
-                if ($rootNode != NULL) {
+                if ($rootNode != NULL)
+                {
                     $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
-                    if ($data) {
+                    if ($data)
+                    {
+                        /* update virtual patient, third parameter check for redirect */
+                        //$data['patients'] = Arr::get($this->patient_sessions_update($mapId, $rootNode->id, $mapId), 'patients', array());
+
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
-                        if (!isset($data['node_links']['linker'])){
-                            if ($data['node']->link_style->name == 'type in text') {
+                        if ( ! isset($data['node_links']['linker']))
+                        {
+                            if ($data['node']->link_style->name == 'type in text')
+                            {
                                 $result = $this->generateLinks($data['node'], $data['node_links']);
                                 $data['links'] = $result['links']['display'];
                                 if(isset($data['alinkfil']) && isset($data['alinknod'])) {
@@ -74,35 +90,53 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             $data['links'] = $data['node_links']['linker'];
                         }
 
-                        if ($editOn != NULL and $editOn == 1) {
+                        if ($editOn != null AND $editOn == 1)
+                        {
                             $data['node_edit'] = TRUE;
-                        } else {
-
+                        }
+                        else
+                        {
                             if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
                             {
                                 $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
                             }
-
                             if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
                             {
                                 $search = '[[INFO:' . $data['node']->id . ']]';
                                 $data['node_text'] = str_replace($search, '',$data['node_text']);
                             }
-
                             $data['node_text'] = $this->parseText($data['node_text'], $mapId);
-
                         }
 
                         $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+                        $skin = 'labyrinth/skin/basic/basic';
                         if ($data['map']->skin->enabled){
                             $data['skin_path'] = $data['map']->skin->path;
+                            if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                                $skin = 'labyrinth/skin/basic/basic_template';
+
+                                $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+                                $skinContent->set('templateData', $data);
+
+                                $data['skin'] = $skinContent;
+                                $skinData = json_decode($data['map']->skin->data, true);
+                                if($skinData != null && isset($skinData['body'])) {
+                                    $data['bodyStyle'] = base64_decode($skinData['body']);
+                                }
+                            } else {
+                                $skin = 'labyrinth/skin/basic/basic';
+                            }
                         }else{
                             $data['skin_path'] = NULL;
                         }
                         $data['session'] = (int)$data['traces'][0]->session_id;
-                        $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
+                        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+                        {
+                            $popup->text = $this->parseText($popup->text);
+                            $data['map_popups'][] = $popup;
+                        }
 
-                        $this->template = View::factory('labyrinth/skin/basic/basic');
+                        $this->template = View::factory($skin);
                         $this->template->set('templateData', $data);
                     } else {
                         Request::initial()->redirect(URL::base());
@@ -114,6 +148,146 @@ class Controller_RenderLabyrinth extends Controller_Template {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function patient_path_update($id_node, array $sessions, $check_for_redirect)
+    {
+        foreach ($sessions as $session)
+        {
+            $path   = json_decode($session->path);
+
+            if ($check_for_redirect AND $path != null) {
+                Session::instance()->set('patient_redirect', true);
+                Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$check_for_redirect.'/'.array_pop($path));
+            }
+
+            $path[] = (int)$id_node;
+            $path   = json_encode($path);
+
+            $session->path = $path;
+            $session->save();
+        }
+    }
+
+    public function patient_condition_update($id_node, array $sessions)
+    {
+        foreach ($sessions as $session)
+        {
+            $pc  = json_decode($session->patient_condition, TRUE);
+            foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($session->id_patient) as $condition)
+            {
+                $id_condition = (int) $condition->id;
+                $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
+                $pc[$id_condition]['name'] = (string) $condition->name;
+                $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
+                if ($change) $pc[$id_condition]['value'] += (int) $change->value;
+            }
+            $pc = json_encode($pc);
+            $session->patient_condition = $pc;
+            $session->save();
+        }
+    }
+
+    public function patient_sessions_update ($mapId, $id_node, $check_for_redirect = false)
+    {
+        if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
+        else return FALSE;
+
+        $data     = array();
+        $patients = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
+
+        foreach ($patients as $patient)
+        {
+            $id_patient = $patient->id_patient;
+            $id_assigns = $this->get_patient_assign($id_user);
+
+            $sessions = array();
+            foreach ($id_assigns as $id_assign)
+            {
+                $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->where('id_patient', '=', $id_patient)->query()->fetch(0);
+                if($session) $sessions[] = $session;
+            }
+
+            $this->patient_path_update($id_node, $sessions, $check_for_redirect);
+            $this->patient_condition_update($id_node, $sessions);
+
+            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation_condition)
+            {
+                $condition          = DB_ORM::model('Patient_Condition', array($relation_condition->id_condition));
+                $id_condition       = $condition->id;
+
+                foreach ($id_assigns as $id_assign)
+                {
+                    //$session_record = DB_ORM::select('Patient_Sessions')->column('id_assign', $id_assign)->column('id_patient', $id_patient)->query();
+                    //$pc                 = json_decode($session->patient_condition, TRUE);
+
+                    $data['patients'][] =
+                        '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
+                        '<li>'.$condition->name.': '.$condition->value.'</li>';
+                }
+            }
+        }
+
+        if ($this->request->is_ajax())
+        {
+        }
+        else return $data;
+    }
+
+    public function action_patient_ajax()
+    {
+        $id_node = $this->request->param('id');
+        $data     = array();
+        $patients = DB_ORM::select('Patient_ConditionChange')->where('id_node', '=', $id_node)->query();
+
+        foreach ($patients as $patient)
+        {
+            $id_patient = $patient->id_patient;
+
+            $session    = $this->patient_session_check($id_patient);
+            if ( ! $session) return $data;
+
+            if ( ! $patient->appear) continue;
+
+            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation)
+            {
+                $condition          = DB_ORM::model('Patient_Condition', array($relation->id_condition));
+                $id_condition       = $condition->id;
+                $pc                 = json_decode($session->patient_condition, TRUE);
+                $condition->value   = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : $condition->value;
+
+
+                $data[] =
+                    '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
+                    '<li>'.$condition->name.': '.$condition->value.'</li>';
+            }
+        }
+        $data = json_encode($data);
+        echo $data;
+        exit;
+    }
+
+    public function get_patient_assign($id_user)
+    {
+        $id_assign = array();
+        $assign_records = DB_ORM::select('Patient_Assign')->where('id_user', '=', $id_user)->query()->as_array();
+
+        if ($assign_records)
+        {
+            foreach ($assign_records as $record) $id_assign[] = $record->id_assign;
+        }
+        else
+        {
+            $groups = DB_ORM::select('User_Group')->where('user_id', '=', $id_user)->query()->as_array();
+
+            if ( ! $groups) return false;
+            foreach ($groups as $group)
+            {
+                $assign_records = DB_ORM::select('Patient_Assign')->where('id_group', '=', $group->group_id)->query()->fetch(0);
+                if ($assign_records) $id_assign[] = $assign_records->id_assign;
+            }
+        }
+        return $id_assign;
     }
 
     public function action_checkKey() {
@@ -133,21 +307,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_go() {
-        $mapId = $this->request->param('id', NULL);
-        $nodeId = $this->request->param('id2', NULL);
-        $editOn = $this->request->param('id3', NULL);
-        $bookMark = $this->request->param('id4', NULL);
+    public function action_go()
+    {
+        $mapId      = $this->request->param('id', NULL);
+        $nodeId     = $this->request->param('id2', NULL);
+        $editOn     = $this->request->param('id3', NULL);
+        $bookMark   = $this->request->param('id4', NULL);
 
-        $gotoNode = Session::instance()->get('goto', NULL);
-
-        if ($gotoNode != NULL) {
-            Session::instance()->set('goto', NULL);
-
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' .  $gotoNode);
-        }
-
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {
@@ -160,30 +328,43 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
+
+//            if ( ! Session::instance()->get('patient_redirect'))
+//            {
+//                Session::instance()->delete('patient_redirect');
+//            }
+//            $data['patients'] = Arr::get($this->patient_sessions_update($mapId, $nodeId), 'patients', array());
+
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
-            if ($node != NULL) {
-                if ($bookMark != NULL) {
-                    $data = Model::factory('labyrinth')->execute($node->id, (int) $bookMark);
-                } else {
-                    $data = Model::factory('labyrinth')->execute($node->id);
+            if ($node != NULL)
+            {
+                $data = ($bookMark != NULL)
+                    ? Model::factory('labyrinth')->execute($node->id, (int) $bookMark)
+                    : Model::factory('labyrinth')->execute($node->id);
+
+                $gotoNode = Session::instance()->get('goto', NULL);
+                if ($gotoNode != NULL)
+                {
+                    Session::instance()->set('goto', NULL);
+                    Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
                 }
-                if ($data) {
+
+                if ($data) 
+                {
                     $undoNodes = array();
-                    if (isset($data['traces'][0]) && $data['traces'][0]->session_id != null) {
-                        $sessionId = (int)$data['traces'][0]->session_id;
+                    if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
+                    {
+                        $sessionId              = (int)$data['traces'][0]->session_id;
+                        $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+                        $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+                        $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+                        $data['timeForNode']    = $timeForNode;
+                        $data['session']        = $sessionId;
 
-                        $lastNode = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
-                        $startSession = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-
-                        $timeForNode = $lastNode[0]['date_stamp'] - $startSession;
-
-                        $data['timeForNode'] = $timeForNode;
-                        $data['session'] = $sessionId;
-
-                        if ($data['node']->undo) {
-                            list($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId);
-
+                        if ($data['node']->undo)
+                        {
+                            list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
                     }
@@ -199,18 +380,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             }
                         } else {
                             $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
-                            if(!empty($result['links']))
-                                $data['links'] = $result['links'];
+                            if( ! empty($result['links'])) $data['links'] = $result['links'];
                             else $data['links'] = "";
                         }
-                    } else {
-                        $data['links'] = $data['node_links']['linker'];
                     }
+                    else $data['links'] = $data['node_links']['linker'];
 
-                    if ($editOn != NULL and $editOn == 1) {
-                        $data['node_edit'] = TRUE;
-                    } else {
-
+                    if ($editOn != NULL and $editOn == 1) $data['node_edit'] = TRUE;
+                    else
+                    {
                         if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
                         {
                             $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
@@ -224,16 +402,43 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                         $data['node_text'] = $this->parseText($data['node_text'], $mapId);
                     }
+
                     $data['trace_links'] = $this->generateReviewLinks($data['traces']);
                     $data['skin_path'] = $data['map']->skin->path;
 
                     //Calculate time for Timer and Pop-up messages
                     $data['timer_start'] = 1;
-
                     $data['popup_start'] = 1;
-                    $data['map_popups'] = DB_ORM::model('map_popup')->getEnabledMapPopups($mapId);
 
-                    $this->template = View::factory('labyrinth/skin/basic/basic');
+                    // Parse text key for each nodes
+                    foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+                    {
+                        $popup->text = $this->parseText($popup->text);
+                        $data['map_popups'][] = $popup;
+                    }
+
+                    $skin = 'labyrinth/skin/basic/basic';
+                    if ($data['map']->skin->enabled) {
+                        $data['skin_path'] = $data['map']->skin->path;
+                        if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                            $skin = 'labyrinth/skin/basic/basic_template';
+
+                            $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+                            $skinContent->set('templateData', $data);
+
+                            $data['skin'] = $skinContent;
+                            $skinData = json_decode($data['map']->skin->data, true);
+                            if($skinData != null && isset($skinData['body'])) {
+                                $data['bodyStyle'] = base64_decode($skinData['body']);
+                            }
+                        } else {
+                            $skin = 'labyrinth/skin/basic/basic';
+                        }
+                    } else {
+                        $data['skin_path'] = NULL;
+                    }
+
+                    $this->template = View::factory($skin);
                     $this->template->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());
@@ -316,16 +521,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_undo() {
+    public function action_undo()
+    {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $nodeId != NULL) {
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-
+        if ($mapId != NULL AND $nodeId != NULL) Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$nodeId);
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_chatAnswer() {
@@ -409,13 +611,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_addBookmark() {
-        $sessionId = $this->request->param('id', NULL);
-        $nodeId = $this->request->param('id2', NULL);
+    public function action_addBookmark()
+    {
+        $this->auto_render = FALSE;
+        $sessionId  = $this->request->param('id', NULL);
+        $nodeId     = $this->request->param('id2', NULL);
 
-        if ($sessionId != NULL and $nodeId != NULL) {
+        if ($sessionId != NULL AND $nodeId != NULL)
+        {
             DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
         }
+        echo TRUE;
+        exit;
     }
 
     private function remote_go($nodeId, $mapId) {
@@ -501,21 +708,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
         Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
     }
 
-    public function action_ajaxDraggingQuestionResponse() {
+    public function action_ajaxDraggingQuestionResponse()
+    {
         $this->auto_render = false;
-        $questionId    = Arr::get($_POST, 'questionId', null);
-        $responsesJSON = Arr::get($_POST, 'responsesJSON', null);
+        $post           = $this->request->post();
+        $questionId     = Arr::get($post, 'questionId', null);
+        $responsesJSON  = Arr::get($post, 'responsesJSON', null);
 
-        if($questionId != null && $questionId > 0) {
+        if ($questionId != null AND $questionId > 0)
+        {
             $prevResponses = Session::instance()->get('dragQuestionResponses');
-            if($prevResponses == null) { $prevResponses = array(); }
+            if ($prevResponses == null) $prevResponses = array();
 
             $isNew = true;
-            if(count($prevResponses) > 0) {
-                foreach($prevResponses as $key => $response) {
+            if(count($prevResponses) > 0)
+            {
+                foreach($prevResponses as $key => $response)
+                {
                     $object = json_decode($response, true);
-                    if($object != null && isset($object['id'])) {
-                        if((int)$object['id'] == (int)$questionId) {
+                    if($object != null && isset($object['id']))
+                    {
+                        if((int)$object['id'] == (int)$questionId)
+                        {
                             $prevResponses[$key] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
                             $isNew = false;
                             break;
@@ -524,9 +738,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
 
-            if($isNew) {
-                $prevResponses[] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
-            }
+            if ($isNew) $prevResponses[] = '{"id": ' . $questionId . ', "responses": ' . $responsesJSON . '}';
 
             Session::instance()->set('dragQuestionResponses', $prevResponses);
         }
@@ -554,10 +766,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_shownPopup() {
+    public function action_popupAction()
+    {
+        $map_id = $this->request->param('id', NULL);
         $this->auto_render = false;
         $popupId = Arr::get($_POST, 'popupId', null);
         $shownPopups = Session::instance()->get('shownMapPopups', array());
+        Model::factory('labyrinth')->popup_counters($map_id, $popupId);
 
         if($popupId != null && !in_array($popupId, $shownPopups)) {
             $shownPopups[] = $popupId;
@@ -605,7 +820,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function generateLinks($node, $links, $undoNodes = null) {
         $result = NULL;
         $result['links'] = '';
-        $endNodeTemplate = '<div><a href="' . URL::base() . 'reportManager/showReport/' . Session::instance()->get('session_id') . '">End Session and View Feedback</a></div>';
+        $endNodeTemplate = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
         if (is_array($links) and count($links) > 0) {
             $result['remote_links'] = '';
             $result['links'] = '';
@@ -716,20 +931,26 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return NULL;
     }
 
-    public static function parseText($text, $mapId = NULL) {
+    public static function parseText($text, $mapId = NULL)
+    {
         $result = $text;
+        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD', 'CR');
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD', 'CR');
-
-        foreach ($codes as $code) {
-            $regExp = '/[\[' . $code . ':\d\]]+/';
-            if (preg_match_all($regExp, $text, $matches)) {
-                foreach ($matches as $match) {
-                    foreach ($match as $value) {
-                        if (stristr($value, '[[' . $code . ':')) {
+        foreach ($codes as $code)
+        {
+            $regExp = '/[\['.$code.':\d\]]+/';
+            if (preg_match_all($regExp, $text, $matches))
+            {
+                foreach ($matches as $match)
+                {
+                    foreach ($match as $value)
+                    {
+                        if (stristr($value, '[[' . $code . ':'))
+                        {
                             $m = explode(':', $value);
                             $id = substr($m[1], 0, strlen($m[1]) - 2);
-                            if (is_numeric($id)) {
+                            if (is_numeric($id))
+                            {
                                 $replaceString = '';
                                 switch ($code) {
                                     case 'MR':
@@ -777,7 +998,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
         }
-
         return $result;
     }
 
@@ -838,7 +1058,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private static function getAvatarHTML($id) {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
-        if ($avatar->image != null) {
+        if ($avatar->image != null AND file_exists(DOCROOT . URL::base() . '/avatars/' . $avatar->image)) {
             $image = '<img src="' . URL::base() . 'avatars/' . $avatar->image . '" />';
         } else {
             $image = '<img src="' . URL::base() . 'avatars/default.png" />';
@@ -865,35 +1085,54 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '';
     }
 
-    private static function getQuestionHTML($id) {
-        $question = DB_ORM::model('map_question', array((int) $id));
+    private static function getQuestionHTML ($id)
+    {
+        $question   = DB_ORM::model('map_question', array((int) $id));
+        $result     = '';
 
-        if ($question) {
-            $result = '';
-
-            if ($question->type->value == 'text') {
-                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="' . $question->width . '" name="qresponse_' . $question->id . '" value="' . $question->feedback . '" id="qresponse_' . $question->id . '" ' ;
+        if ($question)
+        {
+            if ($question->type->value == 'text')
+            {
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" value="'.$question->feedback.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
-                if ($question->show_submit == 1) {
-                    if ($question->submit_text != null) {
-                        $submitText = $question->submit_text;
-                    }
-                    $result .= '/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');">' . $submitText. '</button>';
+                if ($question->show_submit == 1)
+                {
+                    if ($question->submit_text != null) $submitText = $question->submit_text;
+                    $result .= '/>
+                        <span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
+                        <button onclick="ajaxFunction('.$question->id.');$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'disabled\', \'disabled\');">'.$submitText.'</button>';
                 }
                 else {
                     $result .= 'onKeyUp="if (event.keyCode == 13) {ajaxFunction(' . $question->id . ');$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');}"/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span>';
                 }
                 $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
-            } else if ($question->type->value == 'area') {
-                $result = '<textarea autocomplete="off" class="clearQuestionPrompt" cols="' . $question->width . '" rows="' . $question->height . '" name="qresponse_' . $question->id . '" id="qresponse_' . $question->id . '">' . $question->feedback . '</textarea><p><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span><button onclick="ajaxFunction(' . $question->id . ');$(this).hide();$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'readonly\', \'readonly\');">Submit</button></p>';
-                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
-            } else if($question->type->value == 'mcq') {
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
+            }
+            else if ($question->type->value == 'area')
+            {
+                $result =
+                    '<textarea autocomplete="off" class="clearQuestionPrompt" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'">'.
+                        $question->feedback.
+                    '</textarea>
+                    <p>
+                        <span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
+                        <button onclick="ajaxFunction('.$question->id.');$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
+                    </p>';
+                $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
+            }
+            else if($question->type->value == 'mcq')
+            {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
                     $result .= '"><ul class="navigation">';
                     $i = 1;
-                    foreach ($question->responses as $responce) {
+                    foreach ($question->responses as $responce)
+                    {
                         $result .= '<li>';
                         $result .= '<span id="click' . $responce->id . '"><input type="checkbox" name="option-'.$id.'" onclick="ajaxQU(this, ' . $question->id . ',' . $responce->id . ',' . $question->num_tries . ');" /></span>';
                         $result .= '<span class="text">' . $responce->response . '</span>';
@@ -901,13 +1140,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $result .= '</li>';
                         $i++;
                     }
-                    
                     $result .= '</ul></div>';
-                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
-                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
+                    {
+                        $result .=
+                           '<div class="questionSubmitButton">
+                            <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'"/></a>
+                            </div>';
                     }
                 }
-            } else if($question->type->value == 'pcq') {
+            }
+            else if($question->type->value == 'pcq')
+            {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces questionForm_'.$question->id.' ';
                     $result .= ($question->type_display == 1) ? 'horizontal' : '';
@@ -921,12 +1165,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $result .= '</li>';
                         $i++;
                     }
-                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0) {
-                        $result .= '<div class="questionSubmitButton"><a href="' . URL::base() . 'renderLabyrinth/go/' . $question->map_id . '/' . $question->redirect_node_id . '"><input type="button" value="' . $question->submit_text . '" /></a></div>';
+                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
+                    {
+                        $result .=
+                           '<div class="questionSubmitButton">
+                            <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'" /></a>
+                            </div>';
                     }
                 }
-            } else if($question->type->value == 'slr') {
-                if($question->settings != null) {
+            }
+            else if($question->type->value == 'slr')
+            {
+                if($question->settings != null)
+                {
                     $settings = json_decode($question->settings);
                     $sliderValue = $settings->minValue;
 
@@ -942,74 +1193,85 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $sliderValue = $settings->minValue;
                     }
 
-                        if($settings->showValue == 1) {
-                            $result .= '<div style="margin-bottom: 22px;position:relative">
-                                            <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
-                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 51px;" : "top: 2px;left: 74px;") . '">' . $settings->minValue . '</div>
-                                            <script>
-                                                var slider' . $question->id . ' = new dhtmlxSlider({
-                                                    size: 300,
-                                                    value: '    . $sliderValue                       . ',
-                                                    min: '      . $settings->minValue                       . ',
-                                                    max: '      . $settings->maxValue                       . ',
-                                                    skin: "'    . $settings->sliderSkin                     . '",
-                                                    step: '     . $settings->stepValue                      . ',
-                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
-                                                    onChange: function(n) { $("#sliderQuestionR_' . $question->id . '").val(n); },
-                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
-                                                });
-                                                slider' . $question->id . '.init();
-                                                $("#sliderQuestionR_' . $question->id . '").val(' . $sliderValue . ');
-                                                $("#sliderQuestionR_' . $question->id . '").change(function() {
-                                                    var value = $(this).val();
-                                                    if(value > ' . $settings->maxValue . ') {
-                                                        value = ' . $settings->maxValue . ';
-                                                        $(this).val(value);
-                                                    } else if(value < ' . $settings->minValue . ') {
-                                                        value = ' . $settings->minValue . ';
-                                                        $(this).val(value);
-                                                    }
+                    if($settings->showValue == 1) {
+                        $result .= '<div style="margin-bottom: 22px;position:relative">
+                                        <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                        <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 51px;" : "top: 2px;left: 74px;") . '">' . $settings->minValue . '</div>
+                                        <script>
+                                            var slider' . $question->id . ' = new dhtmlxSlider({
+                                                size: 300,
+                                                value: '    . $sliderValue                       . ',
+                                                min: '      . $settings->minValue                       . ',
+                                                max: '      . $settings->maxValue                       . ',
+                                                skin: "'    . $settings->sliderSkin                     . '",
+                                                step: '     . $settings->stepValue                      . ',
+                                                vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                onChange: function(n) { $("#sliderQuestionR_' . $question->id . '").val(n); },
+                                                onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
+                                            });
+                                            slider' . $question->id . '.init();
+                                            $("#sliderQuestionR_' . $question->id . '").val(' . $sliderValue . ');
+                                            $("#sliderQuestionR_' . $question->id . '").change(function() {
+                                                var value = $(this).val();
+                                                if(value > ' . $settings->maxValue . ') {
+                                                    value = ' . $settings->maxValue . ';
+                                                    $(this).val(value);
+                                                } else if(value < ' . $settings->minValue . ') {
+                                                    value = ' . $settings->minValue . ';
+                                                    $(this).val(value);
+                                                }
 
-                                                    slider' . $question->id . '.setValue(value);
-                                                    sendSliderValue(' . $question->id . ', value);
-                                                });
-                                            </script>
-                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 330px;" : "top: 284px;left: 74px;") . '">' . $settings->maxValue . '</div>
-                                        </div>';
-                        } else {
-                            $result .= '<div style="margin-bottom: 22px;position:relative">
-                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 5px;" : "top: 2px;left: 34px;") . '">' . $settings->minValue . '</div>
-                                            <script>
-                                                var slider = new dhtmlxSlider({
-                                                    size: 300,
-                                                    value: '    . $sliderValue                       . ',
-                                                    min: '      . $settings->minValue                       . ',
-                                                    max: '      . $settings->maxValue                       . ',
-                                                    skin: "'    . $settings->sliderSkin                     . '",
-                                                    step: '     . $settings->stepValue                      . ',
-                                                    vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
-                                                    onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
-                                                });
-                                                slider.init();
-                                            </script>
-                                            <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
-                                        </div>';
-                        }
+                                                slider' . $question->id . '.setValue(value);
+                                                sendSliderValue(' . $question->id . ', value);
+                                            });
+                                        </script>
+                                        <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 330px;" : "top: 284px;left: 74px;") . '">' . $settings->maxValue . '</div>
+                                    </div>';
+                    } else {
+                        $result .= '<div style="margin-bottom: 22px;position:relative">
+                                        <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 5px;" : "top: 2px;left: 34px;") . '">' . $settings->minValue . '</div>
+                                        <script>
+                                            var slider = new dhtmlxSlider({
+                                                size: 300,
+                                                value: '    . $sliderValue                       . ',
+                                                min: '      . $settings->minValue                       . ',
+                                                max: '      . $settings->maxValue                       . ',
+                                                skin: "'    . $settings->sliderSkin                     . '",
+                                                step: '     . $settings->stepValue                      . ',
+                                                vertical: ' . ($settings->orientation == 'hor' ? 0 : 1) . ',
+                                                onSlideEnd: function(value) { sendSliderValue(' . $question->id . ', value); }
+                                            });
+                                            slider.init();
+                                        </script>
+                                        <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 290px;" : "top: 284px;left: 34px;") . '">' . $settings->maxValue . '</div>
+                                    </div>';
+                    }
                 }
-            } else if($question->type->value == 'dd') {
-                $result .= '<ul class="drag-question-container" questionId="' . $question->id . '">';
-                foreach ($question->responses as $response) {
-                    $result .= '<li class="sortable" responseId="' . $response->id . '">' . $response->response . '</li>';
+            }
+            else if ($question->type->value == 'dd')
+            {
+                $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
+                foreach ($question->responses as $response)
+                {
+                    $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
                 }
                 $result .= '</ul>';
+                if ($question->show_submit == 1)
+                {
+                    $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submit';
+                    $result .= '<span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
+                        <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
+                }
             }
-
-            $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>' . $question->stem . '</p>' . $result . '</td></tr></table>';
-
-            return $result;
+            $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>'.$question->stem.'</p>'.$result.'</td></tr></table>';
         }
+        return $result;
+    }
 
-        return '';
+    private static function addQuestionIdToSession($id) {
+        $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
+        $arrayAddedQuestions[$id] = true;
+        Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
     }
 
     private static function getCurrentCounterValue($mapId, $counterId) {
@@ -1260,21 +1522,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $visualDisplay = DB_ORM::model('map_visualdisplay', array((int) $visualDisplayId));
         $result = '';
 
-        $traceId = Session::instance()->get('trace_id');
         $traceCountersValues = Session::instance()->get('traceCountersValues');
 
-        if($visualDisplay != null) {
+        if($visualDisplay != null)
+        {
             $result .= '<div class="visual-display-container" style="position:relative; display:block; height: 100%; width: 100%;">';
 
             if($visualDisplay->panels != null && count($visualDisplay->panels) > 0) {
                 foreach($visualDisplay->panels as $panel) {
-                    $result .= '<div style="        position: absolute;
-                                                         top: ' . $panel->y . 'px;
+                    $result .= '<div style="position: absolute; top: '.$panel->y.'px;
                                                         left: ' . $panel->x . 'px;
                                                      z-index: ' . $panel->z_index . ';
                                             background-color: ' . $panel->background_color . ';
-                                                       width: ' . $panel->width . ';
-                                                      height: ' . $panel->height . ';
+                                                       width: ' . $panel->width . 'px;
+                                                      height: ' . $panel->height . 'px;
                                                 border-width: ' . $panel->border_size . 'px;
                                                 border-style: solid;
                                                 border-color: ' . $panel->border_color . ';
@@ -1328,40 +1589,39 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $valueFont = explode('%#%', $counter->value_font_style);
 
                     $result .= '<div style="position: absolute;
-                                                 top: ' . $counter->label_y . ';
-                                                left: ' . $counter->label_x . ';
+                                                 top: ' . $counter->label_y . 'px;
+                                                left: ' . $counter->label_x . 'px;
                                              z-index: ' . $counter->label_z_index . ';
                                       -moz-transform: rotate(' . $counter->label_angle . 'deg);
                                    -webkit-transform: rotate(' . $counter->label_angle . 'deg);
                                         -o-transform: rotate(' . $counter->label_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->label_angle . 'deg);
                                            transform: rotate(' . $counter->label_angle . 'deg);
-                                         font-family: \'' . $labelFont[0] . '\';
+                                         font-family: '.$labelFont[0].';
                                            font-size: ' . $labelFont[1] . 'px;
-                                         font-weight: \'' . $labelFont[2] . '\';
+                                         font-weight: ' . $labelFont[2] . ';
                                                color: ' . $labelFont[3] . ';
-                                          font-style: \'' . $labelFont[4] . '\';
-                                     text-decoration: \'' . $labelFont[5] . '\';
+                                          font-style: ' . $labelFont[4] . ';
+                                     text-decoration: ' . $labelFont[5] . ';
                                 ">' . $counter->label_text . '</div>
                                 <div style="position: absolute;
-                                                 top: ' . $counter->value_y . ';
-                                                left: ' . $counter->value_x . ';
+                                                 top: ' . $counter->value_y . 'px;
+                                                left: ' . $counter->value_x . 'px;
                                              z-index: ' . $counter->value_z_index . ';
                                       -moz-transform: rotate(' . $counter->value_angle . 'deg);
                                    -webkit-transform: rotate(' . $counter->value_angle . 'deg);
                                         -o-transform: rotate(' . $counter->value_angle . 'deg);
                                        -ms-transform: rotate(' . $counter->value_angle . 'deg);
                                            transform: rotate(' . $counter->value_angle . 'deg);
-                                         font-family: \'' .  $valueFont[0] . '\';
+                                         font-family: ' .  $valueFont[0] . ';
                                            font-size: ' . $valueFont[1] . 'px;
-                                         font-weight: \'' . $valueFont[2] . '\';
+                                         font-weight: ' . $valueFont[2] . ';
                                                color: ' . $valueFont[3] . ';
-                                          font-style: \'' . $valueFont[4] . '\';
-                                     text-decoration: \'' . $valueFont[5] . '\';
-                                ">' . $thisCounter . '</div>';
+                                          font-style: ' . $valueFont[4] . ';
+                                     text-decoration: ' . $valueFont[5] . ';
+                                ">'.$thisCounter.'</div>';
                 }
             }
-
             $result .= '</div>';
         }
 
@@ -1433,24 +1693,35 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
 
-    private function prepareUndoLinks($sessionId,$mapId) {
+    private function prepareUndoLinks ($sessionId, $mapId, $id_node = FALSE)
+    {
         $traces = DB_ORM::model('user_sessiontrace')->getUniqueTraceBySessions(array($sessionId));
+        $nodes  = array();
+        $html   = '';
 
         //Delete root node and current node
         array_shift($traces);
-       // array_pop($traces);
 
-        $html = '<ul class="links navigation">';
-        $nodes = array();
-        if (count($traces) > 0) {
-            foreach($traces as &$trace){
-                $nodes[$trace['node_id']] = $trace['node_id'];
-                $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($trace['node_id']);
-                $html .= '<li><i><font color="#777799">' .$trace['node_name'] . '</font></i><a href=' . URL::base() . 'renderLabyrinth/undo/' . $mapId . '/' .$trace['node_id'] .'>'  . ' [undo]' . '</a></li>';
+        $current_node = ($id_node) ? $id_node : Arr::get($traces[count($traces)-1], 'node_id', 0);
+        $id_section = DB_ORM::model('Map_Node_Section_Node')->getIdSection($current_node);
+
+        if (count($traces) > 0)
+        {
+            $html .= '<ul class="links navigation">';
+            foreach ($traces as $trace)
+            {
+                $id_node = $trace['node_id'];
+                $nodes[$id_node] = $id_node;
+                $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($id_node);
+
+                if ($id_section AND $id_section != DB_ORM::model('Map_Node_Section_Node')->getIdSection($id_node)) continue;
+                $html .= '<li class="undo">';
+                $html .= $trace['node_name'];
+                $html .= '<a href='.URL::base().'renderLabyrinth/undo/'.$mapId.'/'.$id_node.'> [undo]</a>';
+                $html .= '</li>';
             }
+            $html .= '</ul>';
         }
-        $html .= '</ul>';
-
         return array($html, $nodes);
     }
 }

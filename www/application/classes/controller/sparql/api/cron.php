@@ -57,6 +57,7 @@ class Controller_Sparql_API_cron extends RESTful_Controller
     {
 
         $store = Helper_RDF_Store::getStore();
+
         $graph_uri = Model_Leap_Vocabulary::getGraphUri();
         $metadata = Model_Leap_Metadata::getMetadataByModelName();
         $total = count($metadata);

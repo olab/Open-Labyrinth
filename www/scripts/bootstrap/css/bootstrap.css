@@ -25,8 +25,6 @@ audio,
 canvas,
 video {
   display: inline-block;
-  *display: inline;
-  *zoom: 1;
 }
 
 audio:not([controls]) {
@@ -1940,7 +1938,21 @@ legend + .control-group {
 
 .form-horizontal .control-group {
   margin-bottom: 20px;
-  *zoom: 1;
+}
+
+.condition-control-group {
+    padding: 10px 10px 5px 0;
+    border-radius: 4px;
+    background: #f5f5f5;
+    margin-bottom: 20px;
+}
+
+.condition-control-group .f-col,
+.control-group .f-col {
+    display: inline-block;
+    width: 150px;
+    margin-right: 10px;
+    text-align: right;
 }
 
 .form-horizontal .control-group:before,
@@ -5875,9 +5887,7 @@ a.badge:hover {
 .accordion-group {
   margin-bottom: 2px;
   border: 1px solid #e5e5e5;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 .accordion-heading {
@@ -5976,9 +5986,7 @@ a.badge:hover {
   text-align: center;
   background: #222222;
   border: 3px solid #ffffff;
-  -webkit-border-radius: 23px;
-     -moz-border-radius: 23px;
-          border-radius: 23px;
+  border-radius: 23px;
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
@@ -6027,9 +6035,7 @@ a.badge:hover {
   line-height: 30px;
   color: inherit;
   background-color: #eeeeee;
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
+  border-radius: 6px;
 }
 
 .hero-unit h1 {
@@ -6066,4 +6072,105 @@ a.badge:hover {
 
 .affix {
   position: fixed;
+}
+
+.no-intend {
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+#users_tabs {
+    margin-top: 22px;
+}
+#users_tabs.nav-tabs {
+    border-bottom: none;
+}
+
+#canvas {
+    background-color: #cccccc;
+}
+
+#canvasPreview {
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    background-color: #EEEEEE;
+}
+
+#path-select {
+    position: absolute;
+    right: 0;
+    top: 201px;
+    width: 202px;
+    outline: none;
+}
+h1 > .pull-right {
+    margin-top: 10px;
+}
+
+.required-patient .no-margin {
+    margin: 0;
+}
+
+.patient-name {
+    display: block;
+}
+
+.patient-t td:nth-child(1){
+    width: 10%;
+    min-width: 66px;
+}
+.patient-t td:nth-child(2){ width: 65%;}
+.patient-t td:nth-child(3){
+    width: 25%;
+    min-width: 150px;
+}
+
+.no-maps {
+    display: block;
+    margin: 0 20px 15px;
+}
+label .condition_checkbox {
+    margin: 0 5px 0 0;
+}
+
+input.assign-type {
+    position: relative;
+    margin: -2px 5px 0 0;
+}
+
+.add-assign-bl {
+    height: 85px;
+}
+.assign-empty {
+    display: block;
+    height: 30px;
+    margin-left: 165px;
+}
+
+.assign-same .add-assign-js {
+    display: none;
+}
+
+.assign-same .assign-queue {
+    opacity: 0;
+}
+
+.assign-t td:nth-child(1){
+    width: 15%;
+    min-width: 155px;
+}
+.assign-t td:nth-child(2){ width: 35%;}
+.assign-t td:nth-child(3){ width: 35%;}
+.assign-t td:nth-child(4){
+    width: 15%;
+    min-width: 150px;
+}
+
+.condition-control-group:nth-child(2) .dra{
+    display: none;
+}
+
+.wizard_button img {
+    width: 100%;
 }

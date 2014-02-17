@@ -219,25 +219,32 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllFilesByMap($mapId) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('map_id', '=', $mapId);
+    public function getAllFilesByMap ($mapId)
+    {
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $elements = array();
-            foreach($result as $record) {
-                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
-            }
-            
+            foreach ($result as $record) $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
             return $elements;
         }
-        
-        return NULL;
+        return array();
     }
-    
+
+    public function addFile($mapId, $values) {
+        return DB_ORM::insert('map_element')
+                       ->column('map_id', $mapId)
+                       ->column('name', Arr::get($values, 'name', ''))
+                       ->column('mime', Arr::get($values, 'mime', ''))
+                       ->column('path', Arr::get($values, 'path', ''))
+                       ->column('width', Arr::get($values, 'width', 0))
+                       ->column('height', Arr::get($values, 'height', 0))
+                       ->execute();
+    }
+
     public function uploadFile($mapId, $values) {
         if($values['filename']['size'] < 1024 * 3 * 1024) {
             if(is_uploaded_file($values['filename']['tmp_name'])) {
@@ -359,17 +366,19 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->save();
     }
     
-    public function duplicateElements($fromMapId, $toMapId) {
-        $elements = $this->getAllFilesByMap($fromMapId);
-        
-        if($elements == null || $toMapId == null || $toMapId <= 0) return null;
+    public function duplicateElements ($fromMapId, $toMapId)
+    {
+        if ( ! $toMapId) return null;
         
         $elementMap = array();
-        foreach($elements as $element) {
+
+        foreach ($this->getAllFilesByMap($fromMapId) as $element)
+        {
             $newFileName = $this->duplicateFile(DOCROOT.'/'.$element->path, $toMapId);
+
             if($newFileName == null) continue;
             
-            $newPath = 'files/' . $newFileName;
+            $newPath = 'files/'.$newFileName;
             
             $builder = DB_ORM::insert('map_element')
                     ->column('map_id', $toMapId)
@@ -386,25 +395,19 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             
             $elementMap[$element->id] = $builder->execute();
         }
-        
         return $elementMap;
     }
     
     private function duplicateFile($srcPath, $addName) {
-        if(strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
+        if (strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
         
-        if(!file_exists($srcPath)) return null;
+        if (!file_exists($srcPath)) return null;
         
-        $pathinfo = pathinfo($srcPath);
-        $newFileName = $pathinfo['filename'] . '_' . $addName;
+        $path_info = pathinfo($srcPath);
+        $newFileName = $path_info['filename'].'_'.$addName;
+        $dstPath = $path_info['dirname'].'/'.$newFileName.'.'.Arr::get($path_info, 'extension');
         
-        $dstPath = $pathinfo['dirname'] . '/' . $newFileName . '.' . $pathinfo['extension'];
-        
-        $result = null;
-        if(copy($srcPath, $dstPath))
-            $result = $newFileName . '.' . $pathinfo['extension'];
-        
-        return $result;
+        return (copy($srcPath, $dstPath)) ? $newFileName.'.'.Arr::get($path_info, 'extension') : null;
     }
 
     public function exportMVP($mapId) {

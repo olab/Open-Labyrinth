@@ -78,7 +78,8 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return FALSE;
     }
     
-    public function getAllUsers($mapId, $order = "DESC") {
+    public function getAllUsers ($mapId, $order = "DESC")
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_users.map_id', '=', $mapId)
@@ -86,16 +87,13 @@ class Model_Leap_Map_User extends DB_ORM_Model {
             ->order_by('nickname', $order);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $users = array();
-            foreach($result as $record) {
-                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
-            }
-            
+            foreach($result as $record) $users[] = DB_ORM::model('user', array((int)$record['user_id']));
             return $users;
         }
-        
-        return NULL;
+        return array();
     }
 
     public function getAllAuthors($mapId, $order = 'DESC'){
@@ -193,8 +191,10 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function addUser($mapId, $userId) {
-        if($mapId != NULL and $userId != NULL) {
+    public function addUser ($mapId, $userId)
+    {
+        if ($mapId != NULL and $userId != NULL)
+        {
             DB_ORM::insert('map_user')
                 ->column('map_id', $mapId)
                 ->column('user_id', $userId)
@@ -268,14 +268,9 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         }
     }
     
-    public function duplicateUsers($fromMapId, $toMapId) {
-        $users = $this->getAllUsers($fromMapId);
-        
-        if($users == null) return;
-        
-        foreach($users as $user) {
-            $this->addUser($toMapId, $user->id);
-        }
+    public function duplicateUsers($fromMapId, $toMapId)
+    {
+        foreach($this->getAllUsers($fromMapId) as $user) $this->addUser($toMapId, $user->id);
     }
 
     public function exportMVP($mapId) {

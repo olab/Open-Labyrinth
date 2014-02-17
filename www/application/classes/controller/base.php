@@ -139,66 +139,116 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'webinarManager', 'action' => 'statistics')
     );
 
+    private $blockedAccess = array(
+        array('controller' => 'labyrinthManager', 'action' => 'global'),
+        array('controller' => 'visualManager', 'action' => 'index'),
+        array('controller' => 'nodeManager', 'action' => 'editNode'),
+        array('controller' => 'nodeManager', 'action' => 'grid'),
+        array('controller' => 'linkManager', 'action' => 'editLinks'),
+        array('controller' => 'nodeManager', 'action' => 'editSection'),
+        array('controller' => 'chatManager', 'action' => 'editChat'),
+        array('controller' => 'questionManager', 'action' => 'question'),
+        array('controller' => 'avatarManager', 'action' => 'editAvatar'),
+        array('controller' => 'counterManager', 'action' => 'editCounter'),
+        array('controller' => 'counterManager', 'action' => 'grid'),
+        array('controller' => 'visualdisplaymanager', 'action' => 'display'),
+        array('controller' => 'counterManager', 'action' => 'editCommonRule'),
+        array('controller' => 'popupManager', 'action' => 'editPopup'),
+        array('controller' => 'elementManager', 'action' => 'editVpd'),
+        array('controller' => 'clusterManager', 'action' => 'editCluster'),
+        array('controller' => 'feedbackManager', 'action' => 'index'),
+        array('controller' => 'fileManager', 'action' => 'editFile'),
+        array('controller' => 'fileManager', 'action' => 'imageEditor'),
+        array('controller' => 'mapUserManager', 'action' => 'index'),
+    );
+
     public function before() {
         parent::before();
 
-        if (Auth::instance()->logged_in()) {
+        if (Auth::instance()->logged_in())
+        {
+            if ($this->checkUserRoleRules() OR $this->checkAllowedMaps() OR $this->checkAllowedForums() OR $this->checkAllowedWebinars() OR $this->checkAllowedTopics()) Request::initial()->redirect(URL::base());
 
-            if($this->checkUserRoleRules() || $this->checkAllowedMaps()     || $this->checkAllowedForums()
-                                           || $this->checkAllowedWebinars() || $this->checkAllowedTopics()){
-                Request::initial()->redirect(URL::base());
+            $user_type_name = Auth::instance()->get_user()->type->name;
+            $user_id        = Auth::instance()->get_user()->id;
+
+
+            $usersHistory = DB_ORM::model('user')->getUsersHistory($user_id);
+            $uri = $this->request->detect_uri();
+            $historyShowWarningPopup = 0;
+            $readonly = NULL;
+
+            foreach($usersHistory as $value) {
+                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                    $readonly = 1;
+                    $historyShowWarningPopup = 1;
+                    break;
+                }
+
+                if (((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                    $readonly = 1;
+                    $historyShowWarningPopup = 1;
+                    break;
+                }
             }
+
+            $userHasBlockedAccess = 0;
+            if (!$this->request->is_ajax()) {
+                $userHasBlockedAccess = $this->addUserHistory($user_id, $readonly);
+            }
+
+            $this->templateData['user_id'] = $user_id;
+            $this->templateData['userHasBlockedAccess'] = $userHasBlockedAccess;
+            $this->templateData['historyShowWarningPopup'] = $historyShowWarningPopup;
+            $this->templateData['currentUserReadOnly'] = $readonly;
+            $this->templateData['historyOfAllUsers'] = json_encode($usersHistory);
 
             I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username'] = Auth::instance()->get_user()->nickname;
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
 
-            if (Auth::instance()->get_user()->type->name == 'superuser' or Auth::instance()->get_user()->type->name == 'author') {
-                $centerView = View::factory('adminMenu');
+            if ($user_type_name == 'superuser' OR $user_type_name == 'author')
+            {
                 $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();
-                /*
-                 * Fetch the latest authored labyrinths.
-                 */
-                if (Auth::instance()->get_user()->type->name == 'superuser') {
-                    $maps = DB_ORM::model('map')->getAllEnabledMap(7);
-                } else {
-                    $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id, 7);
-                }
+
+                /* Fetch the latest authored labyrinths. */
+                $maps = ($user_type_name == 'superuser')
+                        ? $maps = DB_ORM::model('map')->getAllEnabledMap(7)
+                        : $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user_id, 7);
 
                 $this->templateData['latestAuthoredLabyrinths'] = $maps;
-                    $rooNodesMap = array();
-                    $rootNodeMaps = null;
-                    if (Auth::instance()->get_user()->type->name == 'superuser') {
-                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledMap();
-                    } else {
-                        $rootNodeMaps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
-                    }
-                    if($rootNodeMaps != null && count($rootNodeMaps) > 0) {
-                        foreach($rootNodeMaps as $map) {
-                            $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
-                        }
-                    }
 
-                    $this->templateData['rootNodeMap'] = $rooNodesMap;
+                $rooNodesMap = array();
 
-                /*
-                 * Fetch the latest played labyrinths.
-                 */
+                $rootNodeMaps = ($user_type_name == 'superuser')
+                                ? DB_ORM::model('map')->getAllEnabledMap()
+                                : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user_id);
+
+                if($rootNodeMaps != NULL AND count($rootNodeMaps) > 0)
+                {
+                    foreach($rootNodeMaps as $map)
+                    {
+                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
+                    }
+                }
+
+                $this->templateData['rootNodeMap'] = $rooNodesMap;
+
+                /* Fetch the latest played labyrinths. */
                 $mapIDs = array();
-                $sessions = DB_ORM::model('user_session')->getAllSessionByUser(Auth::instance()->get_user()->id, 7);
+                $sessions = DB_ORM::model('user_session')->getAllSessionByUser($user_id, 7);
                 if (count($sessions) > 0) {
                     foreach ($sessions as $s) {
                         $mapIDs[] = $s->map_id;
                     }
                 }
 
-                if (count($mapIDs) > 0) {
-                    $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
-                }
+                if (count($mapIDs) > 0)  $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
 
-                $centerView->set('templateData', $this->templateData);
+                $centerView = View::factory('adminMenu');
                 $this->templateData['center'] = $centerView;
+                $centerView->set('templateData', $this->templateData);
             } else {
 
                 $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
@@ -214,14 +264,14 @@ class Controller_Base extends Controller_Template {
 
                 if ( Auth::instance()->get_user()->type->name == 'learner' )
                 {
-                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner(Auth::instance()->get_user()->id));
+                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner($user_id));
                 }
                 else
                 {
-                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser(Auth::instance()->get_user()->id));
+                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
                 }
 
-                $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId(Auth::instance()->get_user()->id));
+                $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId($user_id));
 
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
@@ -396,5 +446,21 @@ class Controller_Base extends Controller_Template {
         return false;
     }
 
+    private function addUserHistory($user_id, $readonly) {
+        $rules = $this->blockedAccess;
+        $controller = strtolower($this->request->controller());
+        $action = strtolower($this->request->action());
+
+        $uri = NULL;
+        foreach($rules as $rule) {
+            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action) {
+                $uri = $this->request->detect_uri();
+                break;
+            }
+        }
+        $timestamp = time();
+        DB_ORM::model('user')->updateUserHistory($user_id, $uri, $readonly, $timestamp);
+        return ($uri != NULL) ? 1 : 0;
+    }
 }
 

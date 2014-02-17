@@ -17,17 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-jQuery.fn.farbtastic = function (callback) {
-  $.farbtastic(this, callback);
+jQuery.fn.farbtastic = function (callback, callback2) {
+  $.farbtastic(this, callback, callback2);
   return this;
 };
 
-jQuery.farbtastic = function (container, callback) {
+jQuery.farbtastic = function (container, callback, callback2) {
   var container = $(container).get(0);
-  return container.farbtastic || (container.farbtastic = new jQuery._farbtastic(container, callback));
+  return container.farbtastic || (container.farbtastic = new jQuery._farbtastic(container, callback, callback2));
 }
 
-jQuery._farbtastic = function (container, callback) {
+jQuery._farbtastic = function (container, callback, callback2) {
   // Store farbtastic object
   var fb = this;
 
@@ -39,6 +39,7 @@ jQuery._farbtastic = function (container, callback) {
   fb.radius = 84;
   fb.square = 100;
   fb.width = 194;
+  fb.callback2 = callback2;
 
   // Fix background PNGs in IE6
   if (navigator.appVersion.match(/MSIE [0-6]\./)) {
@@ -253,6 +254,10 @@ jQuery._farbtastic = function (container, callback) {
     }
     else if (typeof fb.callback == 'function') {
       fb.callback.call(fb, fb.color);
+    }
+      
+    if(typeof fb.callback2 !== 'undefined') {
+        fb.callback2.call(fb, fb.color);
     }
   }
 

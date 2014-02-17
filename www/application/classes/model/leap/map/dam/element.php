@@ -125,39 +125,38 @@ class Model_Leap_Map_Dam_Element extends DB_ORM_Model {
         }
     }
     
-    public function duplicateElements($fromDamId, $toDamId, $vpdMap, $elemMap, $damMap) {
+    public function duplicateElements ($fromDamId, $toDamId, $vpdMap, $elemMap, $damMap)
+    {
         $b = DB_SQL::select('default')->from($this->table())->where('dam_id', '=', $fromDamId)->column('id');
         $q = $b->query();
         
-        if($q->is_loaded() && $q->count() > 0) {
+        if ($q->is_loaded() AND $q->count() > 0)
+        {
             $elements = array();
-            foreach($q as $r)
-                $elements[] = DB_ORM::model('map_dam_element', array((int)$r['id']));
+            foreach ($q as $r) $elements[] = DB_ORM::model('map_dam_element', array((int)$r['id']));
             
-            if(count($elements) <= 0) return;
+            if (count($elements) <= 0) return;
             
-            foreach($elements as $element) {
+            foreach ($elements as $element)
+            {
                 $builder = DB_ORM::insert('map_dam_element')
                         ->column('dam_id', $toDamId)
                         ->column('order', $element->order)
                         ->column('element_type', $element->element_type)
                         ->column('display', $element->display);
 
-                switch($element->element_type) {
+                switch($element->element_type)
+                {
                     case 'vpd':
-                        if(isset($vpdMap[$element->element_id]))
-                            $builder = $builder->column('element_id', $vpdMap[$element->element_id]);
+                        $builder->column('element_id', Arr::get($vpdMap, $element->element_id));
                         break;
                     case 'mr':
-                        if(isset($elemMap[$element->element_id]))
-                            $builder = $builder->column('element_id', $elemMap[$element->element_id]);
+                        $builder->column('element_id', Arr::get($elemMap, $element->element_id));
                         break;
                     case 'dam':
-                        if(isset($damMap[$element->element_id]))
-                            $builder = $builder->column('element_id', $damMap[$element->element_id]);
+                        $builder->column('element_id', Arr::get($damMap, $element->element_id));
                         break;
                 }
-                
                 $builder->execute();
             }
         }

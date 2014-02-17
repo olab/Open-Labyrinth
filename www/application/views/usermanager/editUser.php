@@ -19,6 +19,8 @@
  *
  */
 ?>
+<script language="javascript" type="text/javascript"
+        src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <div class="page-header">
     <div class="pull-right">
         <a class="btn btn-danger" href="<?php echo URL::base().'usermanager/deleteUser/'.$templateData['user']->id; ?>">

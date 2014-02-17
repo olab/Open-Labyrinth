@@ -34,7 +34,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
         if($mapId != null) {
             $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
             $this->templateData['displays'] = DB_ORM::model('map_visualdisplay')->getMapDisplays($mapId);
-            
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Display')));
 
@@ -82,20 +82,21 @@ class Controller_VisualDisplayManager extends Controller_Base {
         }
     }
     
-    public function action_save() {
+    public function action_save()
+    {
+        $post = $this->request->post();
         $this->auto_render = false;
         
-        $mapId = Arr::get($_POST, 'mapId', null);
-        $json = Arr::get($_POST, 'data', null);
-        $showOnAllPages = Arr::get($_POST, 'allPages', 'false') == 'true' ? 1 : 0;
+        $mapId          = Arr::get($post, 'mapId', null);
+        $json           = Arr::get($post, 'data', null);
+        $showOnAllPages = Arr::get($post, 'allPages', 'false') == 'true' ? 1 : 0;
 
         $status = 'fail';
-        
-        if($mapId != null) {
-            $id = DB_ORM::model('map_visualdisplay')->updateFromJSON($mapId, $json);
-            DB_ORM::model('map_visualdisplay')->updateShowOnAllPages($id, $showOnAllPages);
 
-            $status = $id;
+        if($mapId != null)
+        {
+            $status = DB_ORM::model('map_visualdisplay')->updateFromJSON($mapId, $json);
+            DB_ORM::model('map_visualdisplay')->updateShowOnAllPages($status, $showOnAllPages);
         }
         
         echo $status;
@@ -143,7 +144,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
             DB_ORM::model('map_visualdisplay')->deleteImage($displayId, $mapId, $imageName);
         }
         
-        Request::initial()->redirect(URL::base() . 'visualdisplaymanager/display/' . $mapId . '/' . $displayId);
+        Request::initial()->redirect(URL::base().'visualdisplaymanager/display/'.$mapId.'/'.$displayId.'#imagesTab');
     }
     
     public function action_deleteDisplay() {
@@ -160,15 +161,19 @@ class Controller_VisualDisplayManager extends Controller_Base {
     }
     
     private function getVisualDisplayImages($mapId) {
-        $dir = DOCROOT . '/files/' . $mapId . '/vdImages';
-        if(!is_dir($dir)) {
-            mkdir(DOCROOT . '/files/' . $mapId);
-            mkdir(DOCROOT . '/files/' . $mapId . '/vdImages');
-            mkdir(DOCROOT . '/files/' . $mapId . '/vdImages/thumbs');
-        }
+        // define all directory
+        $dir_main   = DOCROOT.'/files/'.$mapId;
+        $dir        = $dir_main.'/vdImages';
+        $dir_sub    = $dir.'/thumbs';
+
+        // define directory doesn't exsist, create it
+        if (! is_dir($dir_main)) mkdir($dir_main);
+        if (! is_dir($dir))      mkdir($dir);
+        if (! is_dir($dir_sub))  mkdir($dir_sub);
+
         $images = array();
-        $handle = opendir($dir); 
-        
+        $handle = opendir($dir);
+
         while(($file = readdir($handle)) !== false) { 
             if($file == '.' || $file == '..') { 
                 continue; 

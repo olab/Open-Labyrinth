@@ -57,6 +57,11 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'data' => new DB_ORM_Field_Text($this, array(
+                'nullable' => TRUE,
+                'savable' => TRUE
+            ))
         );
     }
 
@@ -172,7 +177,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         return false;
     }
 
-    public function addSkin($skinName, $skinPath) {
+    public function addSkin ($skinName, $skinPath) {
         $this->name = $skinName;
         $this->path = $skinPath;
         $this->user_id = Auth::instance()->get_user()->id;
@@ -191,6 +196,23 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         }
 
         return NULL;
+    }
+
+    public function updateSkinData($skinId, $data, $html) {
+        DB_ORM::update('map_skin')
+                ->set('data', $data)
+                ->where('id', '=', $skinId)
+                ->execute();
+
+        $skinDir = DOCROOT . '/application/views/labyrinth/skin/' . $skinId . '/';
+        if(!is_dir($skinDir)) { mkdir($skinDir); }
+
+        file_put_contents($skinDir . 'skin.source', $html);
+        $skinBuilder         = new Skin_Basic_Builder($html);
+        $skinBuilderDirector = new Skin_Basic_Director();
+
+        $skinBuilderDirector->construct($skinBuilder);
+        file_put_contents($skinDir . 'skin.php', $skinBuilder->getSkin());
     }
 }
 

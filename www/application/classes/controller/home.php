@@ -77,7 +77,13 @@ class Controller_Home extends Controller_Base {
         if (Auth::instance()->logged_in()) {
             Auth::instance()->logout();
         }
-		
+
+        $uri = ($this->request->referrer())
+            ? str_replace(URL::base(true),'',$this->request->referrer())
+            : '';
+
+        Session::instance()->set('redirectURL', $uri);
+
         Request::initial()->redirect(URL::base());
     }
 
@@ -326,6 +332,26 @@ class Controller_Home extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function action_historyAjaxCollaboration() {
+        $this->auto_render = false;
+        $usersInformation = json_decode($this->templateData['historyOfAllUsers'], true);
+        $result = array();
+        $user = $this->templateData['username'];
+        $userArray = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
+        $uri = Arr::get($userArray, 'href', NULL);
+
+        if ($uri != NULL) {
+            foreach ($usersInformation as $key => $value) {
+                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) {
+                    $result[$value['id']] = $value['username'];
+                }
+            }
+        }
+
+        echo json_encode($result);
+        exit;
     }
 
 }

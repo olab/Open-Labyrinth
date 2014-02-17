@@ -18,48 +18,32 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
-
-    <h3><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?></h3>
-    <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+if (isset($templateData['map'])) {?>
+    <h3><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?></h3><?php
+    if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
         <table class="table table-striped table-bordered">
             <thead>
-            <tr>
-                <th>Title</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($templateData['counters'] as $counter) { ?>
                 <tr>
-                    <td>
-                        <?php echo $counter->name; ?>
-                    </td>
-                    <td>
-                        <a class="btn btn-primary"
-                           href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $templateData['map']->id . '/' . $counter->id; ?>"><?php echo __('Edit'); ?></a>
-
-                        <a class="btn btn-primary"
-                           href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/previewCounter/' . $templateData['map']->id . '/' . $counter->id; ?>"><?php echo __('preview'); ?></a>
-
-                        <a class="btn btn-primary"
-                           href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $templateData['map']->id . '/' . $counter->id; ?>">grid</a>
-                        <a class="btn btn-primary"
-                           href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/deleteCounter/' . $templateData['map']->id . '/' . $counter->id; ?>"><?php echo __('delete'); ?></a>
-                    </td>
-
+                    <th>Title</th>
+                    <th>Actions</th>
                 </tr>
-            <?php } ?>
+            </thead>
+            <tbody><?php
+            foreach ($templateData['counters'] as $counter) { ?>
+                <tr>
+                    <td><?php echo $counter->name; ?></td>
+                    <td>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/editCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('Edit'); ?></a>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/previewCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('preview'); ?></a>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/grid/'.$templateData['map']->id.'/'.$counter->id; ?>">grid</a>
+                        <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('delete'); ?></a>
+                    </td>
+                </tr><?php
+            } ?>
             </tbody>
-        </table>
-    <?php } ?>
-
-
-    <a class="btn btn-primary"
-       href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/addNewCounter/' . $templateData['map']->id; ?>"><?php echo __('add counter'); ?></a>
-
-    <a class="btn btn-primary"
-       href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/grid/' . $templateData['map']->id; ?>"><?php echo __('counter grid'); ?></a>
-
-<?php } ?>
+        </table><?php
+    } ?>
+    <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/addNewCounter/'.$templateData['map']->id; ?>"><?php echo __('add counter'); ?></a>
+    <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/caseWizard/5/grid/'.$templateData['map']->id; ?>"><?php echo __('counter grid'); ?></a>
+    <hr style="border: white;"><?php
+} ?>

@@ -128,7 +128,7 @@ class Model_VisualEditor extends Model {
         if($sections != null && count($sections) > 0) {
             $sectionsJSON = '';
             foreach($sections as $section) {
-                $sectionsJSON .= '{ id: ' . $section->id . ', name: "' . $section->name . '"';
+                $sectionsJSON .= '{ id: ' . $section->id . ', name: "' . base64_encode(str_replace('&#43;', '+', $section->name)) . '"';
                 if($section->nodes != null && count($section->nodes) > 0) {
                     $sectionsJSON .= ', nodes: [';
                     foreach($section->nodes as $sectionNode) {
@@ -156,13 +156,14 @@ class Model_VisualEditor extends Model {
         return $result;
     }
 
-    private function getClearLinks($links) {
-        if ($links == null || count($links) <= 0)
-            return array();
+    private function getClearLinks($links)
+    {
+        if ($links == null || count($links) <= 0) return array();
 
         $linkMap = array();
+
         foreach ($links as $link) {
-            if (!isset($linkMap[$link->node_id_2][$link->node_id_1])) {
+            if ( ! isset($linkMap[$link->node_id_2][$link->node_id_1])) {
                 $linkMap[$link->node_id_1][$link->node_id_2]['type'] = 'direct';
                 $linkMap[$link->node_id_1][$link->node_id_2]['link'] = $link;
             } else {
@@ -171,9 +172,10 @@ class Model_VisualEditor extends Model {
             }
         }
 
-        if (count($linkMap) <= 0)
-            return array();
+        if (count($linkMap) <= 0) return array();
+
         $result = array();
+
         foreach ($linkMap as $key1 => $l) {
             foreach ($l as $key2 => $v) {
                 $result[$v['link']->id]['type'] = $v['type'];
@@ -590,10 +592,10 @@ class Model_VisualEditor extends Model {
             $sectionId = null;
             foreach ($obj['sections'] as $section) {
                 if(isset($section['id']) && strpos($section['id'], 'n') != FALSE) {
-                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => $section['name']))->id;
+                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))))->id;
                 } else {
                     $sectionId = $section['id'];
-                    DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => $section['name']));
+                    DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))));
                 }
 
                 if(isset($section['nodes']) && count($section['nodes']) > 0) {

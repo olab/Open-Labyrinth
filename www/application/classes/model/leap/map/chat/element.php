@@ -91,7 +91,7 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
             return $elements;
         }
         
-        return NULL;
+        return array();
     }
     
     public function deleteElementsByChatId($chatId) {
@@ -162,19 +162,17 @@ class Model_Leap_Map_Chat_Element extends DB_ORM_Model {
         }
     }
 
-    public function duplicateElements($fromChatId, $toChatId) {
-        $elements = $this->getAllElementsByChatId($fromChatId);
+    public function duplicateElements($fromChatId, $toChatId)
+    {
+        if( ! $toChatId) return;
         
-        if($elements == null || $toChatId == null || $toChatId <= 0) return;
-        
-        foreach($elements as $element) {
-            $builder = DB_ORM::insert('map_chat_element')
-                    ->column('chat_id', $toChatId)
-                    ->column('question', $element->question)
-                    ->column('response', $element->response)
-                    ->column('function', $element->function);
-            
-            $builder->execute();
+        foreach($this->getAllElementsByChatId($fromChatId) as $element) {
+            DB_ORM::insert('map_chat_element')
+                ->column('chat_id', $toChatId)
+                ->column('question', $element->question)
+                ->column('response', $element->response)
+                ->column('function', $element->function)
+                ->execute();
         }
     }
 

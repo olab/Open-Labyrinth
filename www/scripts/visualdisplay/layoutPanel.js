@@ -43,3 +43,17 @@ var LayoutPanel = function() {
                                      .replace('%counterName%', counterName));
     }
 }
+
+var lastTab = window.location.hash,
+    currentTab = null;
+if (lastTab != '') {
+    $('ul.nav-tabs').children().removeClass('active');
+    $('a[href='+ lastTab +']').parents('li:first').addClass('active');
+    $('div.tab-content').children().removeClass('active');
+    $(lastTab).addClass('active');
+    currentTab = lastTab;
+}
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    currentTab = $(e.target).attr('href');
+});

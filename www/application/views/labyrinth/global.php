@@ -22,8 +22,34 @@ if (isset($templateData['map'])) {
     ?>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
     <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
-            xmlns="http://www.w3.org/1999/html"></script>
+            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script language="javascript" type="text/javascript">
+        tinymce.init({
+            selector: "textarea",
+            theme: "modern",
+            content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column rdfaceMain",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+            valid_elements : "+*[*]",
+            plugins: ["compat3x",
+                "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime media nonbreaking save table contextmenu directionality",
+                "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+            image_advtab: true,
+            templates: [
+
+            ],
+            <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
+            readonly: 1
+            <?php } ?>
+        });
+    </script>
+
     <h1><?php echo __('Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
 
     <form class="form-horizontal" id="globalMapFrom" name="globalMapFrom" method="post"
@@ -144,6 +170,31 @@ if (isset($templateData['map'])) {
                 </div>
             </div>
         <?php } ?>
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <legend><?php echo ('Labyrinth Forum Details'); ?></legend>
+        <div class="control-group forum-details-container">
+            <?php if($templateData['map']->assign_forum_id != null) { ?>
+                <div class="control-group">
+                    <div class="controls">
+                        <button submit-url="<?php echo URL::base(); ?>labyrinthManager/unassignForum/<?php echo $templateData['map']->id; ?>" class="btn btn-danger unassign-forum" type="button"><?php echo __('Unassign map forum'); ?></button>
+                    </div>
+                </div>
+            <?php } else { ?>
+                <div class="control-group">
+                    <label class="control-label"><?php echo __('First forum message'); ?></label>
+                    <div class="controls">
+                        <textarea class="mceEditor" name="firstForumMessage" id="firstForumMessage"></textarea>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button submit-url="<?php echo URL::base(); ?>labyrinthManager/addNewForum/<?php echo $templateData['map']->id; ?>" class="btn btn-info" type="button" id="createNewForum" map-id="<?php echo $templateData['map']->id; ?>"><i class="icon-plus"></i><?php echo __('Create and assign new forum'); ?></button>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
     </fieldset>
 
     <fieldset class="fieldset">

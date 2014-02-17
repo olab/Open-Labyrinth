@@ -26,11 +26,11 @@
             <img src="<?php echo URL::base(); ?>images/openlabyrinth-large.png" alt="" class="brand-large" />
         </div>
         <h1><?php echo __('Welcome to <span class="text-info">OpenLabyrinth</strong>'); ?></h1>
-        <p class="lead">
-            <?php echo __('OpenLabyrinth is a standards compliant open source virtual
-                    patient authoring and player environment. It is maintained
-                    by a group of enthusiasts who love the capability of
-                    OpenLabyrinth for virtual patients.'); ?>
+        <p class="lead"><?php echo __(
+            'OpenLabyrinth is a standards compliant open source virtual
+            patient authoring and player environment. It is maintained
+            by a group of enthusiasts who love the capability of
+            OpenLabyrinth for virtual patients.'); ?>
         </p>
         <?php if(isset($templateData['todayTip']) && $templateData['todayTip'] != null) { ?>
                 <div class="box">

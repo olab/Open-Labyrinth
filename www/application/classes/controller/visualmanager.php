@@ -41,17 +41,14 @@ class Controller_VisualManager extends Controller_Base {
 
         $saveJson = '';
 
-        $this->templateData['node'] = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
-        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
-        $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
-
-        $json = Model::factory('visualEditor')->generateJSON($this->mapId);
-
-        $this->templateData['mapJSON'] = $json;
+        $this->templateData['node']         = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
+        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
+        $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
+        $this->templateData['mapJSON']      = Model::factory('visualEditor')->generateJSON($this->mapId);;
 
         if($saveJson != null)
-            $this->templateData['saveMapJSON'] = '\'' . (strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
+            $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
 
         if(Auth::instance()->logged_in()) {
             $user = Auth::instance()->get_user();
@@ -60,11 +57,8 @@ class Controller_VisualManager extends Controller_Base {
             }
         }
 
-        $visualView = View::factory('labyrinth/visual');
-        $visualView->set('templateData', $this->templateData);
-
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-        $leftView->set('templateData', $this->templateData);
+        $visualView = View::factory('labyrinth/visual')->set('templateData', $this->templateData);
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
 
         $this->templateData['left'] = $leftView;
         $this->templateData['center'] = $visualView;

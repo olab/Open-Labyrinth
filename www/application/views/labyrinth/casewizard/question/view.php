@@ -18,41 +18,29 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-?>
-<script language="javascript" type="text/javascript">
-    function jumpMenu(targ, selObj, restore) {
-        eval(targ + ".location='<?php echo URL::base(); ?>labyrinthManager/caseWizard/4/addNewQuestion/<?php echo $templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
-        if (restore) selObj.selectedIndex = 0;
-    }
-</script>
+if (isset($templateData['map'])) { ?>
+    <script language="javascript" type="text/javascript">
+        function jumpMenu(targ, selObj, restore) {
+            eval(targ + ".location='<?php echo URL::base().'labyrinthManager/caseWizard/5/addNewQuestion/'.$templateData['map']->id; ?>/" + selObj.options[selObj.selectedIndex].value + "'");
+            if (restore) selObj.selectedIndex = 0;
+        }
+    </script>
 
-<h3><?php echo __('Questions "') . $templateData['map']->name . '"'; ?></h3>
+    <h3><?php echo __('Questions "') . $templateData['map']->name . '"'; ?></h3><?php
+    foreach (Arr::get($templateData, 'questions', array()) as $question) { ?>
+    <input type="text" value="[[QU:<?php echo $question->id; ?>]]">
+    <?php echo $question->stem.' ('.$question->type->value.', '.$question->width.', '.$question->height.')' ?> [
+    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/editQuestion/'.$templateData['map']->id.'/'.$question->entry_type_id.'/'.$question->id; ?>">edit</a> -
+    <a href="<?php echo URL::base().'labyrinthManager/caseWizard/5/deleteQuestion/'.$templateData['map']->id.'/'.$question->id; ?>">delete</a>]<?php
+    } ?>
 
-<?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
-    <?php foreach ($templateData['questions'] as $question) { ?>
-
-
-        <input type="text"
-               value="[[QU:<?php echo $question->id; ?>]]"><?php echo $question->stem; ?> (<?php echo $question->type->value; ?>, <?php echo $question->width; ?>, <?php echo $question->height; ?>)
-        [
-        <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/editQuestion/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>">edit</a>
-        - <a
-            href="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/deleteQuestion/' . $templateData['map']->id . '/' . $question->id; ?>">delete</a>]
-
-    <?php } ?>
-<?php } ?>
-
-<p>add question
-    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+    <p>add question<?php
+    if (isset($templateData['question_types']) AND count($templateData['question_types']) > 0) { ?>
         <select onchange="jumpMenu('parent',this,0)" name="qt">
             <option value=""><?php echo __('select'); ?> ...</option>
             <?php foreach ($templateData['question_types'] as $type) { ?>
                 <option value="<?php echo $type->id ?>"><?php echo $type->title; ?></option>
             <?php } ?>
-        </select>
-    <?php } ?>
-
-    <?php } ?>
-
-
+        </select><?php
+    }
+} ?>

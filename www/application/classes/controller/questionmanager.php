@@ -104,28 +104,29 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
     
-    public function action_questionPOST() {
-        $mapId = $this->request->param('id', 0);
-        $postType = Arr::get($_POST, 'question_type', NULL);
-        $typeId = ($postType != NULL) ? $postType : $this->request->param('id2', 0);
+    public function action_questionPOST()
+    {
+        $mapId      = $this->request->param('id', 0);
+        $postType   = Arr::get($_POST, 'question_type', null);
+        $typeId     = ($postType != null) ? $postType : $this->request->param('id2', 0);
         $questionId = $this->request->param('id3', 0);
-        
-        $map = DB_ORM::model('map', array((int)$mapId));
-        $type = DB_ORM::model('map_question_type', array((int) $typeId));
-        if($_POST != null && $map != null && $type != null) {
+        $map        = DB_ORM::model('map', array((int)$mapId));
+        $type       = DB_ORM::model('map_question_type', array((int)$typeId));
 
+        if ($_POST != null && $map != null && $type != null)
+        {
             if (isset($_POST['isCorrect'])) {
                 $rule = $_POST['settings'];
                 $_POST['settings'] = json_encode(array($rule, $_POST['isCorrect']));
             }
 
-            if($questionId == null || $questionId <= 0) {
+            if ($questionId == null || $questionId <= 0) {
                 DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
             } else {
                 DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
             }
             
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }

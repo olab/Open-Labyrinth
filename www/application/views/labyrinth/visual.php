@@ -20,8 +20,7 @@
  */
 if (isset($templateData['map'])) { ?>
     <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"
-            xmlns="http://www.w3.org/1999/html"></script>
+            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
 
 
@@ -47,6 +46,7 @@ if (isset($templateData['map'])) { ?>
         var mapType = null;
         var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
         var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
+        var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -70,11 +70,36 @@ if (isset($templateData['map'])) { ?>
             </div>
             
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px; display: none;">
-                <p><button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right"><i style="color:white;" class="ve-icon-copy"></i></button></p>
-                <p><button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right"><i class="ve-icon-paste"></i></button></p>
-                <p><button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right"><i class="ve-icon-color"></i></button></p>
-                <p><button type="button" class="round-btn" id="sectionsBtn" data-toggle="tooltip" data-original-title="Sections" data-placement="right"><i class="ve-icon-section"></i></button></p>
-                <p><button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right"><i class="ve-icon-delete"></i></button></p>
+                <p>
+                    <button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right">
+                        <i style="color:white;" class="ve-icon-copy"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="pasteSNodesBtn" data-toggle="tooltip" data-original-title="Paste" data-placement="right">
+                        <i class="ve-icon-paste"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="colorSNodesBtn" data-toggle="tooltip" data-original-title="Change&nbsp;color" data-placement="right">
+                        <i class="ve-icon-color"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn" id="sectionsBtn" data-toggle="tooltip" data-original-title="Sections" data-placement="right">
+                        <i class="ve-icon-section"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn delete" id="deleteSNodesBtn" data-toggle="tooltip" data-original-title="Delete&nbsp;selected" data-placement="right">
+                        <i class="ve-icon-delete"></i>
+                    </button>
+                </p>
+                <p>
+                    <button type="button" class="round-btn-not-hovered" id="preventRevisit" data-toggle="tooltip" data-original-title="Prevent&nbsp;revisit" data-placement="right">
+                        <i class="ve-icon-revisit"></i>
+                    </button>
+                </p>
             </div>
 
             <div style="position: absolute;left:50%;z-index: 1500;" id="ve_message" class="alert alert-success hide"><span id="ve_message_text">Message</span></div>
@@ -531,6 +556,17 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
 
+        <div class="modal hide block" id="visual_editor_timeout">
+            <div class="modal-header block">
+                <h3>Timeout</h3>
+            </div>
+
+            <div class="modal-body block">
+                <p>No events by last 10 min. If you want to continue, please, press the confirm button, or you will be redirected to login page.</p>
+                <a href="javascript:void(0);" class="btn btn-primary" id="setAsideTimeout">Yes, I'm here</a>
+            </div>
+        </div>
+
         <div class="modal hide block" id="leaveBox">
             <div class="modal-header block">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true" id="closeLeaveBox">&times;</button>
@@ -568,7 +604,6 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/sectionNode.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
-
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
 
 <?php } ?>

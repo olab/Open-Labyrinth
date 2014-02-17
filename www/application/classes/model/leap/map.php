@@ -149,6 +149,11 @@ class Model_Leap_Map extends DB_ORM_Model
             'verification' => new DB_ORM_Field_Text($this, array(
                 'savable' => TRUE,
             )),
+            'assign_forum_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+                'savable' => TRUE
+            ))
         );
 
         $this->relations = array(
@@ -220,18 +225,16 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllMap()
     {
-        $builder = DB_SQL::select('default')->from($this->table())->order_by('name');
-        $result = $builder->query();
+        $result = DB_SQL::select('default')->from($this->table())->order_by('name')->query();
 
-        if ($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $maps = array();
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
             return $maps;
         }
-
         return NULL;
     }
 
@@ -274,25 +277,19 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllEnabledMap($limit = 0)
     {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('enabled', '=', 1)
-            ->order_by('id', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
+        $maps = array();
+        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1)->order_by('id', 'DESC');
+        if ($limit) $builder->limit($limit);
         $result = $builder->query();
 
-        if ($result->is_loaded()) {
-            $maps = array();
+        if ($result->is_loaded())
+        {
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
-            return $maps;
         }
 
-        return NULL;
+        return $maps;
     }
 
     public function getAllEnabledOpenVisibleMap()
@@ -405,6 +402,36 @@ class Model_Leap_Map extends DB_ORM_Model
             return $maps;
         }
 
+        return array();
+    }
+
+    public function getLastEnabledAndAuthoredMap($authorId, $limit = 1)
+    {
+        $limit = (int)$limit;
+        $builder = DB_SQL::select('default')
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $authorId, 'AND')
+            ->where('mu.user_id', '=', $authorId, 'OR')
+            ->group_by('m.id')
+            ->order_by('m.id', 'DESC');
+        if ($limit) {
+            $builder->limit($limit);
+        }
+
+        $result = $builder->query();
+        if ($result->is_loaded()) {
+            $map = NULL;
+            foreach ($result as $record) {
+                $map = $record['id'];
+            }
+
+            return $map;
+        }
+
         return NULL;
     }
 
@@ -450,26 +477,30 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function createMap($values, $isCreateRoot = true)
     {
-        $this->name = $this->getMapName(Arr::get($values, 'title', 'empty_title'));
-        $this->author_id = Arr::get($values, 'author', 1);
-        $this->abstract = Arr::get($values, 'description', 'empty_description');
-        $this->keywords = Arr::get($values, 'keywords', 'empty_keywords');
-        $this->type_id = Arr::get($values, 'type', 1);
-        $this->skin_id = Arr::get($values, 'skin', 1);
-        $this->timing = Arr::get($values, 'timing', FALSE);
-        $this->delta_time = Arr::get($values, 'delta_time', 0);
-        $this->security_id = Arr::get($values, 'security', 2);
-        $this->section_id = Arr::get($values, 'section', 1);
-        $this->language_id = Arr::get($values, 'language_id', 1);
-
+        $this->name         = $this->getMapName(Arr::get($values, 'title', 'empty_title'));
+        $this->author_id    = Arr::get($values, 'author', 1);
+        $this->abstract     = Arr::get($values, 'description', 'empty_description');
+        $this->keywords     = Arr::get($values, 'keywords', 'empty_keywords');
+        $this->type_id      = Arr::get($values, 'type', 1);
+        $this->skin_id      = Arr::get($values, 'skin', 1);
+        $this->timing       = Arr::get($values, 'timing', FALSE);
+        $this->delta_time   = Arr::get($values, 'delta_time', 0);
+        $this->security_id  = Arr::get($values, 'security', 2);
+        $this->section_id   = Arr::get($values, 'section', 1);
+        $this->language_id  = Arr::get($values, 'language_id', 1);
         $this->save();
 
         $map = $this->getMapByName($this->name);
-        if ($isCreateRoot) {
-            DB_ORM::model('map_node')->createDefaultRootNode($map->id);
-        }
-
+        if ($isCreateRoot) DB_ORM::model('map_node')->createDefaultRootNode($map->id);
         return $map;
+    }
+
+    public function updateMapForumAssign($mapId, $newForumId) {
+        DB_SQL::update('default')
+                ->table($this->table())
+                ->set('assign_forum_id', $newForumId)
+                ->where('id', '=', $mapId)
+                ->execute();
     }
 
     public function createVUEMap($title, $authorId)
@@ -508,6 +539,11 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $this->enabled = FALSE;
         $this->save();
+    }
+
+    public function deleteMap($id) {
+        $this->id = $id;
+        $this->delete();
     }
 
     public function updateMap($id, $values)
@@ -644,53 +680,56 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
-    public function duplicateMap($mapId)
+    public function duplicateMap ($mapId)
     {
         $this->id = $mapId;
         $this->load();
 
         if (strlen($this->name) <= 0) return;
 
-        $builder = DB_ORM::insert('map')
-            ->column('name', $this->getMapName($this->name))
-            ->column('author_id', $this->author_id)
-            ->column('abstract', $this->abstract)
-            ->column('startScore', $this->startScore)
-            ->column('threshold', $this->threshold)
-            ->column('keywords', $this->keywords)
-            ->column('type_id', $this->type_id)
-            ->column('units', $this->units)
-            ->column('security_id', $this->security_id)
-            ->column('guid', $this->guid)
-            ->column('timing', $this->timing)
-            ->column('delta_time', $this->delta_time)
-            ->column('show_bar', $this->show_bar)
-            ->column('show_score', $this->show_score)
-            ->column('skin_id', $this->skin_id)
-            ->column('enabled', $this->enabled)
-            ->column('section_id', $this->section_id)
-            ->column('language_id', $this->language_id)
-            ->column('feedback', $this->feedback)
-            ->column('dev_notes', $this->dev_notes)
-            ->column('source', $this->source)
-            ->column('source_id', $this->source_id)
-            ->column('verification', $this->verification);
+        $newMapId = DB_ORM::insert('map')
+            ->column('name',            $this->getMapName($this->name))
+            ->column('author_id',       $this->author_id)
+            ->column('abstract',        $this->abstract)
+            ->column('startScore',      $this->startScore)
+            ->column('threshold',       $this->threshold)
+            ->column('keywords',        $this->keywords)
+            ->column('type_id',         $this->type_id)
+            ->column('units',           $this->units)
+            ->column('security_id',     $this->security_id)
+            ->column('guid',            $this->guid)
+            ->column('timing',          $this->timing)
+            ->column('delta_time',      $this->delta_time)
+            ->column('reminder_msg',    $this->reminder_msg)
+            ->column('reminder_time',   $this->reminder_time)
+            ->column('show_bar',        $this->show_bar)
+            ->column('show_score',      $this->show_score)
+            ->column('skin_id',         $this->skin_id)
+            ->column('enabled',         $this->enabled)
+            ->column('section_id',      $this->section_id)
+            ->column('language_id',     $this->language_id)
+            ->column('feedback',        $this->feedback)
+            ->column('dev_notes',       $this->dev_notes)
+            ->column('source',          $this->source)
+            ->column('source_id',       $this->source_id)
+            ->column('verification',    $this->verification)
+            ->column('assign_forum_id', $this->assign_forum_id)
+            ->execute();
 
-        $newMapId = $builder->execute();
-        $nodeMap = DB_ORM::model('map_node')->duplicateNodes($mapId, $newMapId);
-        DB_ORM::model('map_node_section')->duplicateSections($mapId, $newMapId, $nodeMap);
-        $elementMap = DB_ORM::model('map_element')->duplicateElements($mapId, $newMapId);
-        DB_ORM::model('map_node_link')->duplicateLinks($mapId, $newMapId, $nodeMap, $elementMap);
-        $counterMap = DB_ORM::model('map_counter')->duplicateCounters($mapId, $newMapId, $nodeMap, $elementMap);
-        $chatMap = DB_ORM::model('map_chat')->duplicateChats($mapId, $newMapId, $counterMap);
-        $questionMap = DB_ORM::model('map_question')->duplicateQuestions($mapId, $newMapId, $counterMap);
-        $avartMap = DB_ORM::model('map_avatar')->duplicateAvatars($mapId, $newMapId);
-        $vpdMap = DB_ORM::model('map_vpd')->duplicateElements($mapId, $newMapId);
-        $damsMap = DB_ORM::model('map_dam')->duplicateDam($mapId, $newMapId, $vpdMap, $elementMap);
-        DB_ORM::model('map_feedback_rule')->duplicateRules($mapId, $newMapId);
-        DB_ORM::model('map_user')->duplicateUsers($mapId, $newMapId);
-        DB_ORM::model('map_key')->duplicateKeys($mapId, $newMapId);
-        DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avartMap, $chatMap, $questionMap, $damsMap);
+        $nodeMap =      DB_ORM::model('map_node')         ->duplicateNodes        ($mapId, $newMapId);
+                        DB_ORM::model('map_node_section') ->duplicateSections     ($mapId, $newMapId, $nodeMap);
+        $elementMap =   DB_ORM::model('map_element')      ->duplicateElements     ($mapId, $newMapId);
+                        DB_ORM::model('map_node_link')    ->duplicateLinks        ($mapId, $newMapId, $nodeMap);
+        $counterMap =   DB_ORM::model('map_counter')      ->duplicateCounters     ($mapId, $newMapId, $nodeMap, $elementMap);
+        $chatMap =      DB_ORM::model('map_chat')         ->duplicateChats        ($mapId, $newMapId, $counterMap);
+        $questionMap =  DB_ORM::model('map_question')     ->duplicateQuestions    ($mapId, $newMapId, $counterMap);
+        $avatarMap =    DB_ORM::model('map_avatar')       ->duplicateAvatars      ($mapId, $newMapId);
+        $vpdMap =       DB_ORM::model('map_vpd')          ->duplicateElements     ($mapId, $newMapId);
+        $damsMap =      DB_ORM::model('map_dam')          ->duplicateDam          ($mapId, $newMapId, $vpdMap, $elementMap);
+                        DB_ORM::model('map_feedback_rule')->duplicateRules        ($mapId, $newMapId);
+                        DB_ORM::model('map_user')         ->duplicateUsers        ($mapId, $newMapId);
+                        DB_ORM::model('map_key')          ->duplicateKeys         ($mapId, $newMapId);
+                        DB_ORM::model('map_node')         ->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damsMap);
     }
 
     public function getMapName($mapName, $mapId = 0)

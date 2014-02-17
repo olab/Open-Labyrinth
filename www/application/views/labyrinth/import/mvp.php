@@ -23,11 +23,17 @@
             <h1><?php echo __('MVP to Labyrinth upload'); ?></h1>
 
                 <form class="form-horizontal" action="<?php echo URL::base(); ?>exportImportManager/uploadMVP" enctype="multipart/form-data" method="POST">
-                    <?php if(count(Notice::get()) > 0) { ?>
+                    <?php if(count(Notice::get('success')) > 0) { ?>
                     <div class="alert alert-success">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <?php $m = Notice::get(); echo $m[0]; ?>
+                        <?php $m = Notice::get('success'); echo $m; ?>
                     </div>
+                    <?php } ?>
+                    <?php if(count(Notice::get('error')) > 0) { ?>
+                        <div class="alert alert-error">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <?php $m = Notice::get('error'); echo $m; ?>
+                        </div>
                     <?php } ?>
                     <fieldset class="fieldset">
                         <div class="control-group">

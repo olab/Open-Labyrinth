@@ -69,6 +69,38 @@ class Controller_UserManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
+    private function sendNewUserMail($userData) {
+        $URL = URL::base('http', true);
+        $typeName = DB_ORM::model('user_type', array($userData['usertype']));
+        $langName = DB_ORM::model('language', array($userData['langID']));
+
+        require_once(DOCROOT.'application/classes/class.phpmailer.php');
+        $mail = new PHPMailer;
+
+        $mail->From = 'no.reply@'.$_SERVER['HTTP_HOST'];
+        $mail->FromName = 'OpenLabyrinth';
+
+        $mail->Subject = 'Your account has been created';
+
+        $mail_body = 'Welcome to OpenLabyrinth, '.$userData['uname'].'!'.PHP_EOL.PHP_EOL;
+        $mail_body .= 'Here is information about your account:'.PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
+        $mail_body .= 'Username: ' . $userData['uid']  . PHP_EOL;
+        $mail_body .= 'Password: ' . $userData['upw']  . PHP_EOL;
+        $mail_body .= 'Full name: '. $userData['uname']. PHP_EOL;
+        $mail_body .= 'Language: ' . $langName->name   . PHP_EOL;
+        $mail_body .= 'User type: '. $typeName->name   . PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
+        $mail_body .=  'URL to the home page: ' . $URL;
+
+        $mail->Body = $mail_body;
+
+        if (!empty($userData['uemail'])){
+            $mail->AddAddress($userData['uemail']);
+            $mail->Send();
+        }
+    }
+
     public function action_saveNewUser() {
         if (isset($_POST) && !empty($_POST)) {
             Session::instance()->set('newUser', $_POST);
@@ -81,7 +113,13 @@ class Controller_UserManager extends Controller_Base {
 
             if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)) {
                 $userData = $_POST;
+
                 DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID']);
+
+                if (isset($userData['sendEmail'])) {
+                    $this->sendNewUserMail($userData);
+                }
+
                 Session::instance()->delete('newUser');
 
                 $this->templateData['newUser'] = $_POST;

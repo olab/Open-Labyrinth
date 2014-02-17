@@ -78,7 +78,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 		$this->node_id = $nodeId;
 		$this->session_id = $sessionId;
 		$this->time_stamp = time();
-		
+
 		$this->save();
 	}
 	

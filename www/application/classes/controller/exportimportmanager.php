@@ -421,17 +421,29 @@ class Controller_ExportImportManager extends Controller_Base {
     }
 
     public function action_uploadMVP() {
-        if (isset($_FILES) && !empty($_FILES)) {
-            set_time_limit(0);
-            if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
-                move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
-                $fileName = 'files/' . $_FILES['filename']['name'];
-                $data = $this->importMVP(DOCROOT . $fileName);
+        try {
+            $lastMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
 
+            if (isset($_FILES) && !empty($_FILES)) {
+                set_time_limit(0);
+                if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
+                    move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
+                    $fileName = 'files/' . $_FILES['filename']['name'];
+                    $data = $this->importMVP(DOCROOT . $fileName);
+
+                }
             }
+            Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.', 'success');
+            Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
+        } catch (Exception $e) {
+            $message = $e->getMessage();
+            Notice::add("Error, labyrinth was not imported correctly." . PHP_EOL . $message, 'error');
+            $lastAddedMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
+            if ($lastMapOfCurrentUser != $lastAddedMapOfCurrentUser) {
+                DB_ORM::model('map')->deleteMap($lastAddedMapOfCurrentUser);
+            }
+            Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
         }
-        Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.');
-        Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
     }
 
     public function getIdFromString($string) {
@@ -478,6 +490,13 @@ class Controller_ExportImportManager extends Controller_Base {
 
         if (isset($xml->metadata->version)){
             ImportExport_Manager::getFormatSystem('MVP')->import($tmpFolder);
+            return true;
+        }
+
+        if(isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim') {
+            ImportExport_Manager::getFormatSystem('MVPvpSim')->import(array('tmpFolder'        => $tmpFolder,
+                                                                            'filesFolder'      => DOCROOT . 'files',
+                                                                            'filesShortFolder' => 'files'));
             return true;
         }
 
@@ -615,7 +634,7 @@ class Controller_ExportImportManager extends Controller_Base {
                     if (isset($section->ActivityNode)) {
                         foreach ($section->ActivityNode as $node) {
                             $nodeAttr = $node->attributes();
-                            $id = (int) $nodeAttr->id;
+                            $id = (int) preg_replace('/\D+/', '', $nodeAttr->id);
                             $nodeArray[$id]['title'] = $this->html_entity_decode_numeric(((string) $nodeAttr->label)) ;
 
                             $nodeArray[$id]['text'] = $this->getIdFromString($node->Content);
@@ -846,7 +865,9 @@ class Controller_ExportImportManager extends Controller_Base {
                 $questionsArray[$id]['show_answer'] = (string) $questionAttr->ShowAnswer;
                 $scoreCounter = (string) $questionAttr->ScoreCounter;
                 if (!empty($scoreCounter)) {
-                    $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
+                    if (isset($countersArray[$scoreCounter])) {
+                        $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
+                    }
                 }
 
                 $questionsArray[$id]['stem'] = (string) $question->OL_QuestionStem->div;
@@ -1087,7 +1108,7 @@ class Controller_ExportImportManager extends Controller_Base {
         $xmlString = str_replace($searchArray, $replaceArray, $content);
         $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
-        libxml_use_internal_errors(true);
+        //libxml_use_internal_errors(true);
 
         return simplexml_load_string($xmlString);
     }

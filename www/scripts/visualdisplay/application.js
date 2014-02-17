@@ -92,20 +92,24 @@ $(function() {
         var mapId   = $(this).attr('mapId'),
             postURL = $(this).attr('postURL'),
             data    = visualDisplay.Serialize();
-            
+
         if(mapId == null || postURL == null) return;
 
-        $.post(postURL, 
+        $.post(postURL,
                {
                    mapId: mapId,
                    allPages: $('#showOnAllPage').is(':checked'),
                    data: data
-               }, 
+               },
                function(responseData) {
-                   $(location).attr('href', displayBaseURL + responseData);
+                   var url = displayBaseURL + responseData;
+                   if (currentTab != null) {
+                       url += currentTab;
+                   }
+                   $(location).attr('href', url);
                });
     });
-    
+
     var $displayImagesContainer = $('#displayImagesContainer');
 
     $('#fileupload').fileupload({

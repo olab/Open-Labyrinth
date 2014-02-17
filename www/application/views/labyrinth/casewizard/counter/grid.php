@@ -18,64 +18,38 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['nodes'])) {
-?>
-
+if (isset($templateData['map']) and isset($templateData['nodes'])) { ?>
 <h3><?php echo __('counter grid'); ?></h3>
 
-
-<?php if (isset($templateData['oneCounter'])) { ?>
-<form class="form-horizontal"
-      action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateGrid/' . $templateData['map']->id . '/' . $templateData['counters'][0]->id; ?>"
-      method="POST">
-    <?php } else { ?>
-    <form class="form-horizontal"
-          action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateGrid/' . $templateData['map']->id; ?>"
-          method="POST">
-        <?php } ?>
-        <table class="table table-striped table-bordered">
-            <thead>
+<?php $id_counter = (isset($templateData['oneCounter'])) ? $templateData['counters'][0]->id : ''; ?>
+<form class="form-horizontal" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/updateGrid/'.$templateData['map']->id.'/'.$id_counter; ?>" method="POST">
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody><?php
+            foreach (Arr::get($templateData, 'nodes', array()) as $node) { ?>
             <tr>
-                <th>Title</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php if (count($templateData['nodes']) > 0) { ?>
-                <?php foreach ($templateData['nodes'] as $node) { ?>
-                    <tr>
-                        <td><?php echo $node->title; ?></p></td>
-                        <td>
-                            <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-                                <?php foreach ($templateData['counters'] as $counter) { ?>
-                                    <fieldset>
-                                        <div class="control-group">
-                                            <label for="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"
-                                                   class="control-label"><?php echo $counter->name; ?>
-                                            </label>
-
-                                            <div class="controls">
-                                                <input type="text"
-                                                     id="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"  name="nc_<?php echo $node->id; ?>_<?php echo $counter->id; ?>"
-                                                       value="<?php $c = $node->getCounter($counter->id); if ($c != NULL) echo $c->function; ?>"/>
-                                            </div>
-                                        </div>
-                                    </fieldset>
-
-
-
-                                <?php } ?>
-                            <?php } ?>
-                        </td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
-            </tbody>
-        </table>
-
-
-        <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
-
-    </form>
-
-    <?php } ?>
+                <td><?php echo $node->title; ?></p></td>
+                <td><?php
+                    foreach (Arr::get($templateData, 'counters', array()) as $counter) { ?>
+                        <fieldset>
+                            <div class="control-group">
+                                <label for="nc_<?php echo $node->id.'_'.$counter->id; ?>" class="control-label"><?php echo $counter->name; ?></label>
+                                <div class="controls">
+                                    <input type="text" id="nc_<?php echo $node->id.'_'.$counter->id; ?>"  name="nc_<?php echo $node->id.'_'.$counter->id; ?>" value="<?php $c = $node->getCounter($counter->id); if ($c != NULL) echo $c->function; ?>"/>
+                                </div>
+                            </div>
+                        </fieldset><?php
+                    } ?>
+                </td>
+            </tr><?php
+            } ?>
+        </tbody>
+    </table>
+    <input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('submit'); ?>">
+</form><?php
+} ?>

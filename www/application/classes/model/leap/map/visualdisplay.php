@@ -239,14 +239,16 @@ class Model_Leap_Map_VisualDisplay extends DB_ORM_Model {
         $countersJSON = array();
         if($visualDisplay->counters != null && count($visualDisplay->counters) > 0) {
             foreach($visualDisplay->counters as $counter) {
+                $counterName = DB_ORM::model('Map_Counter', array($counter->counter_id))->name;
                 $countersJSON[] = '{         id: '  . $counter->id . ', ' .
                                      'counterId: '  . $counter->counter_id . ', ' .
                                         'labelX: '  . $counter->label_x . ', ' . 
                                         'labelY: '  . $counter->label_y . ', ' . 
                                     'labelAngle: '  . $counter->label_angle . ', ' . 
                                      'labelFont: "' . $counter->label_font_style . '", ' . 
-                                     'labelText: "' . base64_encode(str_replace('&#43;', '+', $counter->label_text)) . '", ' . 
-                                   'labelZIndex: '  . $counter->label_z_index . ', ' . 
+                             'labelTextOriginal: "' . base64_encode(str_replace('&#43;', '+', $counterName)) . '", ' .
+                                     'labelText: "' . base64_encode(str_replace('&#43;', '+', $counter->label_text)) . '", ' .
+                                   'labelZIndex: '  . $counter->label_z_index . ', ' .
                                         'valueX: '  . $counter->value_x . ', ' . 
                                         'valueY: '  . $counter->value_y . ', ' . 
                                     'valueAngle: '  . $counter->value_angle . ', ' . 

@@ -105,20 +105,18 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getRulesByMap($mapId) {
+    public function getRulesByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if($result->is_loaded())
+        {
             $rules = array();
-            foreach($result as $record) {
-                $rules[] = DB_ORM::model('map_feedback_rule', array((int)$record['id']));
-            }
-            
+            foreach($result as $record)$rules[] = DB_ORM::model('map_feedback_rule', array((int)$record['id']));
             return $rules;
         }
-        
-        return NULL;
+        return array();
     }
     
     public function getAllRules() {
@@ -195,21 +193,20 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         }
     }
     
-    public function duplicateRules($fromMapId, $toMapId) {
-        $rules = $this->getRulesByMap($fromMapId);
+    public function duplicateRules($fromMapId, $toMapId)
+    {
+        if( ! $toMapId) return;
         
-        if($rules == null || $toMapId == null || $toMapId <= 0) return;
-        
-        foreach($rules as $rule) {
-            $builder = DB_ORM::insert('map_feedback_rule')
-                    ->column('map_id', $toMapId)
-                    ->column('rule_type_id', $rule->rule_type_id)
-                    ->column('operator_id', $rule->operator_id)
-                    ->column('counter_id', $rule->counter_id)
-                    ->column('value', $rule->value)
-                    ->column('message', $rule->message);
-            
-            $builder->execute();
+        foreach($this->getRulesByMap($fromMapId) as $rule)
+        {
+            DB_ORM::insert('map_feedback_rule')
+                ->column('map_id', $toMapId)
+                ->column('rule_type_id', $rule->rule_type_id)
+                ->column('operator_id', $rule->operator_id)
+                ->column('counter_id', $rule->counter_id)
+                ->column('value', $rule->value)
+                ->column('message', $rule->message)
+                ->execute();
         }
     }
     

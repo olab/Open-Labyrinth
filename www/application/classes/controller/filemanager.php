@@ -130,6 +130,34 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
+    public function action_saveByUrl(){
+        $mapId = $this->request->param('id', NULL);
+        $url = Arr::get($this->request->post(), 'url', NULL);
+        $meta_values['originURL'] = $url;
+
+        if (($url != NULL) && ($url != '')){
+            $url_info = pathinfo ($url);
+            if(isset($url_info['basename'])){
+                $name = $url_info['basename'];
+
+                $path = DOCROOT . '/files/'.$mapId.'/';
+                if (file_exists($path.$name)){
+                    $name = uniqid().'_'.$name;
+                }
+
+                $img = file_get_contents($url, FILE_USE_INCLUDE_PATH);
+                file_put_contents($path.$name, $img);
+
+                $values['path'] = 'files/'.$mapId.'/'.$name;
+                $values['name'] = $name;
+                $obj = DB_ORM::model('map_element')->saveElement($mapId, $values);
+                DB_ORM::model('map_element_metadata')->saveMetadata($obj->id, $meta_values);
+            }
+        }
+
+        Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
+    }
+
     private function getArrayValueByKey($needle, $haystack) {
         if(array_key_exists($needle, $haystack)) { return array(true, $haystack[$needle]); }
 
@@ -220,75 +248,74 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
-    public function action_imageEditorPost() {
-        $_POST["imageSource"] = DOCROOT . $_POST["filesrc"];
-        $filesrc = DOCROOT . $_POST["filesrc"];
-        list($width, $height) = getimagesize($_POST["imageSource"]);
-        $viewPortW = $_POST["viewPortW"];
-        $viewPortH = $_POST["viewPortH"];
-        $pWidth = $_POST["imageW"];
-        $pHeight = $_POST["imageH"];
-        $ext = $this->endc(explode(".", $_POST["imageSource"]));
-        $function = $this->returnCorrectFunction($ext);
-        $image = $function($_POST["imageSource"]);
-        $width = imagesx($image);
-        $height = imagesy($image);
+    public function action_imageEditorPost()
+    {
+        $post           = $this->request->post();
+        $file_src       = Arr::get($post, 'filesrc', FALSE);
+        if ( ! $file_src)
+        {
+            echo TRUE;
+            exit();
+        }
+        $imageSource    = DOCROOT.$file_src;
+        if ( ! file_exists($imageSource)) return TRUE;
+        $viewPortW      = Arr::get($post, 'viewPortW');
+        $viewPortH      = Arr::get($post, 'viewPortH');
+        $pWidth         = Arr::get($post, 'imageW');
+        $pHeight        = Arr::get($post, 'imageH');
+        $imageRotate    = Arr::get($post, 'imageRotate');
+        $ext            = $this->endc(explode(".", $imageSource));
+        $function       = $this->returnCorrectFunction($ext);
+        $image          = $function($imageSource);
+        $imageX         = Arr::get($post, '$imageX');
+        $imageY         = Arr::get($post, '$imageY');
+
         // Resample
         $image_p = imagecreatetruecolor($pWidth, $pHeight);
         $this->setTransparency($image, $image_p, $ext);
-        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $pWidth, $pHeight, $width, $height);
+        imagecopyresampled($image_p, $image, 0, 0, 0, 0, $pWidth, $pHeight, imagesx($image), imagesy($image));
         imagedestroy($image);
         $widthR = imagesx($image_p);
-        $hegihtR = imagesy($image_p);
+        $heightR = imagesy($image_p);
 
-        $selectorX = $_POST["selectorX"];
-        $selectorY = $_POST["selectorY"];
-
-        if ($_POST["imageRotate"]) {
-            $angle = 360 - $_POST["imageRotate"];
+        if ($imageRotate)
+        {
+            $angle = 360 - $imageRotate;
             $image_p = imagerotate($image_p, $angle, 0);
 
             $pWidth = imagesx($image_p);
             $pHeight = imagesy($image_p);
 
             $diffW = abs($pWidth - $widthR) / 2;
-            $diffH = abs($pHeight - $hegihtR) / 2;
+            $diffH = abs($pHeight - $heightR) / 2;
 
-            $_POST["imageX"] = ($pWidth > $widthR ? $_POST["imageX"] - $diffW : $_POST["imageX"] + $diffW);
-            $_POST["imageY"] = ($pHeight > $hegihtR ? $_POST["imageY"] - $diffH : $_POST["imageY"] + $diffH);
+            $imageX = $pWidth > $widthR ? $imageX - $diffW : $imageX + $diffW;
+            $imageY = ($pHeight > $heightR ? $imageY - $diffH : $imageY + $diffH);
         }
 
         $dst_x = $src_x = $dst_y = $src_y = 0;
 
-        if ($_POST["imageX"] > 0) {
-            $dst_x = abs($_POST["imageX"]);
-        } else {
-            $src_x = abs($_POST["imageX"]);
-        }
-        if ($_POST["imageY"] > 0) {
-            $dst_y = abs($_POST["imageY"]);
-        } else {
-            $src_y = abs($_POST["imageY"]);
-        }
+        if ($imageX > 0)  $dst_x = abs($imageX);
+        else $src_x = abs($imageX);
 
+        if ($imageY > 0) $dst_y = abs($imageY);
+        else $src_y = abs($imageY);
 
-        $viewport = imagecreatetruecolor($_POST["viewPortW"], $_POST["viewPortH"]);
-        $this->setTransparency($image_p, $viewport, $ext);
+        $viewPort = imagecreatetruecolor($viewPortW, $viewPortH);
+        $this->setTransparency($image_p, $viewPort, $ext);
 
-        imagecopy($viewport, $image_p, $dst_x, $dst_y, $src_x, $src_y, $pWidth, $pHeight);
+        imagecopy($viewPort, $image_p, $dst_x, $dst_y, $src_x, $src_y, $pWidth, $pHeight);
         imagedestroy($image_p);
 
+        $selector = imagecreatetruecolor(Arr::get($post, 'selectorW'), Arr::get($post, 'selectorH'));
+        $this->setTransparency($viewPort, $selector, $ext);
+        imagecopy($selector, $viewPort, 0, 0, Arr::get($post, 'selectorX'), Arr::get($post, 'selectorY'), $viewPortW, $viewPortH);
 
-        $selector = imagecreatetruecolor($_POST["selectorW"], $_POST["selectorH"]);
-        $this->setTransparency($viewport, $selector, $ext);
-        imagecopy($selector, $viewport, 0, 0, $selectorX, $selectorY, $_POST["viewPortW"], $_POST["viewPortH"]);
-
-        $this->parseImage($ext, $selector, $filesrc);
-        imagedestroy($viewport);
+        $this->parseImage($ext, $selector, $imageSource);
+        imagedestroy($viewPort);
         //Return value
-        echo true;
-        die();
-        /* Functions */
+        echo TRUE;
+        exit();
     }
 
     private function endc($array) {

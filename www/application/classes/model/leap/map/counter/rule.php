@@ -113,41 +113,35 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
     }
     
     
-    public function getRulesByCounterId($counterId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('counter_id', '=', $counterId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $rules = array();
-            foreach($result as $record) {
-                $rules[] = DB_ORM::model('map_counter_rule', array((int)$record['id']));
-            }
-            
-            return $rules;
+    public function getRulesByCounterId ($counterId)
+    {
+        $rules = array();
+        $result = DB_SQL::select('default')->from($this->table())->where('counter_id', '=', $counterId)->query();
+
+        if($result->is_loaded())
+        {
+            foreach($result as $record) $rules[] = DB_ORM::model('map_counter_rule', array((int)$record['id']));
         }
-        
-        return NULL;
+        return $rules;
     }
-    
-    public function addRule($counterId, $values) {
-        $this->counter_id = $counterId;
-        $this->relation_id = Arr::get($values, 'relation', 1);
-        $this->value = str_replace(',','.', Arr::get($values, 'rulevalue', 0));
-        $this->function = 'redir';                                              // In current version
-        $this->redirect_node_id = Arr::get($values, 'node', 0);
+
+    public function addRule ($counterId, $values)
+    {
         $ctrval = Arr::get($values, 'ctrval', '=0');
-        if (!empty($ctrval)){
-            $this->counter_value = $ctrval;
-        }else{
-            $this->counter_value = '=0';
-        }
+
+        $this->counter_id       = $counterId;
+        $this->relation_id      = Arr::get($values, 'relation', 1);
+        $this->value            = str_replace(',','.', Arr::get($values, 'rulevalue', 0));
+        $this->function         = 'redir';                                              // In current version
+        $this->redirect_node_id = Arr::get($values, 'node', 0);
+        $this->counter_value    = ( ! empty($ctrval)) ? $ctrval : '=0';
         $this->save();
     }
     
     public function duplicateRules($fromCounterId, $toCounterId, $nodeMap) {
         $rules = $this->getRulesByCounterId($fromCounterId);
         
-        if($rules == null || $toCounterId == null || $toCounterId <= 0) return;
+        if($toCounterId == null || $toCounterId <= 0) return;
         
         foreach($rules as $rule) {
             $builder = DB_ORM::insert('map_counter_rule')

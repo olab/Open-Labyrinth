@@ -81,20 +81,18 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getAllVpdByMap($mapId) {
+    public function getAllVpdByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('vpd_type_id', 'ASC');
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $vpds = array();
-            foreach($result as $record) {
-                $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
             return $vpds;
         }
-        
-        return NULL;
+        return array();
     }
     
     public function getVpdNotInArrayIDs($ids) {
@@ -136,13 +134,16 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         return $id;
     }
     
-    public function duplicateElements($fromMapId, $toMapId) {
+    public function duplicateElements ($fromMapId, $toMapId)
+    {
+        if ( ! $toMapId) return null;
+
         $vpds = $this->getAllVpdByMap($fromMapId);
-        
-        if($vpds == null || $toMapId == null || $toMapId <= 0) return null;
-        
+
         $vpdMap = array();
-        foreach($vpds as $vpd) {
+
+        foreach ($vpds as $vpd)
+        {
             $builder = DB_ORM::insert('map_vpd')
                     ->column('map_id', $toMapId)
                     ->column('vpd_type_id', $vpd->vpd_type_id);
@@ -150,10 +151,7 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
             $vpdMap[$vpd->id] = $builder->execute();
         }
         
-        foreach($vpdMap as $k => $v) {
-            DB_ORM::model('map_vpd_element')->duplicateElement($k, $v);
-        }
-        
+        foreach($vpdMap as $k => $v) DB_ORM::model('map_vpd_element')->duplicateElement($k, $v);
         return $vpdMap;
     }
 

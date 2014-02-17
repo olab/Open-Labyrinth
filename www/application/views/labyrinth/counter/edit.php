@@ -18,9 +18,10 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
-    <div class="page-header">
-<h1><?php echo __('Edit Counter') . ' ' . $templateData['counter']->id . ' "' . $templateData['counter']->name . '"'; ?></h1></div>
+if (isset($templateData['map']) AND isset($templateData['counter'])) { ?>
+<div class="page-header">
+    <h1><?php echo __('Edit Counter').' '.$templateData['counter']->id.' "'.$templateData['counter']->name.'"'; ?></h1>
+</div>
 <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCounter/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
     <fieldset class="fieldset">
         <legend><?php echo __('Counter Content'); ?></legend>
@@ -37,15 +38,24 @@ if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label"><?php echo __('Counter status'); ?></label>
+            <div class="controls">
+                <select name="status">
+                    <option value="0">Regular</option>
+                    <option value="1" <?php if($templateData['counter']->status == 1) echo 'selected'; ?>>Main</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
             <label  for="cIconId" class="control-label"><?php echo __('Counter image (optional)'); ?></label>
             <div class="controls">
-                <select id="cIconId" name="cIconId">
-                    <?php if($templateData['counter']->icon_id == 0) echo '<option value="0" selected="">no image</option>'; ?>
-                    <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                    <?php foreach($templateData['images'] as $image) { ?>
-                        <option value="<?php echo $image->id; ?>" <?php if($templateData['counter']->icon_id == $image->id) echo 'selected=""'; ?>><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
-                        <?php } ?>
-                    <?php } ?>
+                <select id="cIconId" name="cIconId"><?php
+                    if($templateData['counter']->icon_id == 0) echo '<option value="0" selected="">no image</option>';
+                    if(isset($templateData['images']) and count($templateData['images']) > 0) {
+                        foreach($templateData['images'] as $image) { ?>
+                            <option value="<?php echo $image->id; ?>" <?php if($templateData['counter']->icon_id == $image->id) echo 'selected=""'; ?>><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
+                        <?php }
+                    } ?>
                 </select>
             </div>
         </div>
@@ -71,35 +81,33 @@ if (isset($templateData['map']) and isset($templateData['counter'])) { ?>
     </fieldset>
 </form>
 
-    <h4><?php echo __('Counter rules'); ?></h4>
-    <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-            <th>Rule</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
-            <?php foreach($templateData['rules'] as $rule) { ?>
-                <tr>
+<h4><?php echo __('Counter rules'); ?></h4>
+<table class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>Rule</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
+        <?php foreach($templateData['rules'] as $rule) { ?>
+            <tr>
 
-                   <td>
-                        if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') and reset counter '<?php echo $rule->counter_value; ?>' </td>
-                    <td>
-                        <div class="control-group">
-                        <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>"><i class="icon-trash"></i>Delete</a></div></td>
-                    </tr>
-            <?php } ?>
-        <?php } else{?>
-            <tr class="info"><td colspan="2">There are no counter rules yet. You may add a rule, using the form below.</td></tr>
+               <td>
+                    if '<?php echo $templateData['counter']->name; ?>' is <?php echo $rule->relation->title; ?> <?php echo $rule->value; ?> then go to node <?php echo $rule->redirect_node_id; ?> ('<?php echo $rule->redirect_node->title; ?>') and reset counter '<?php echo $rule->counter_value; ?>' </td>
+                <td>
+                    <div class="control-group">
+                    <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteRule/'.$templateData['map']->id.'/'.$templateData['counter']->id.'/'.$rule->id.'/'.$rule->redirect_node_id; ?>"><i class="icon-trash"></i>Delete</a></div></td>
+                </tr>
         <?php } ?>
+    <?php } else{?>
+        <tr class="info"><td colspan="2">There are no counter rules yet. You may add a rule, using the form below.</td></tr>
+    <?php } ?>
 
-        </tbody>
+    </tbody>
 
-    </table>
-
-
+</table>
 
 <form class="form-horizontal" id="form2" name="form1" method="post" action="<?php echo URL::base().'counterManager/addRule/'.$templateData['map']->id.'/'.$templateData['counter']->id; ?>">
     <fieldset class="fieldset">

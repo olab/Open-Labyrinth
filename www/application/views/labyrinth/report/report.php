@@ -52,7 +52,9 @@ function getRandomColor(){
     <hr/>
     <?php } ?>
 
-    <h1><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+    <div class="pull-right"><a href="<?php echo URL::base() ?>reportManager/exportToExcel/<?php echo $templateData['session']->id; ?>" class="btn btn-primary"><?php echo __('Export to Excel'); ?></a></div>
+    <h1 class="report-title"><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+
 
     <table class="table  table-striped table-bordered">
         <tr>
@@ -77,7 +79,9 @@ function getRandomColor(){
                 if (count($templateData['session']->traces) > 0) {
                     $max = $templateData['session']->start_time;
                     foreach($templateData['session']->traces as $val) {
-                        if($val->date_stamp > $max) {
+                        if($val->end_date_stamp != null &&  $val->end_date_stamp > $max ) {
+                            $max = $val->end_date_stamp;
+                        } else if($val->date_stamp > $max) {
                             $max = $val->date_stamp;
                         }
                     }
@@ -88,24 +92,30 @@ function getRandomColor(){
         </tr>
         <tr>
             <td>nodes visited</td>
-            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php if(count($templateData['session']->traces) > 0) { echo count($templateData['session']->traces); } ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
-                <?php if(count($templateData['session']->traces) > 0) {
-                    $nodesIDs = array();
-                    foreach($templateData['session']->traces as $val) {
-                        $nodesIDs[] = $val->node_id;
+            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;
+                <?php
+                    $mustVisited = 0;
+                    $mustAvoid   = 0;
+                    if(count($templateData['session']->traces) > 0) {
+                        foreach($templateData['session']->traces as $trace) {
+                            if($trace->node->priority_id == 3) { $mustVisited++; }
+                            if($trace->node->priority_id == 2) { $mustAvoid++; }
+                        }
                     }
-
-                    if(isset($templateData['nodes'])) {
-                        echo count($templateData['nodes']) - count($nodesIDs);
-                    }
-                }
-                ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
+                ?>
+                <?php echo $mustVisited;  ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
+                <?php echo $mustAvoid; ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
         </tr>
+        <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters, $templateData['session']->map->id)):?>
+        <tr>
+            <td>your score</td>
+            <td><?php echo $progress; ?></td>
+        </tr>
+        <?php endif; ?>
     </table>
 
-    <?php if(isset($templateData['feedbacks']['general'])){?>
+    <?php if(isset($templateData['feedbacks']['general'])){ ?>
     <table class="table table-striped table-bordered">
-
         <tr>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
@@ -229,7 +239,15 @@ function getRandomColor(){
                                                                 <tr>
                                             <td><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</td>
                                             <td><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></td>
-                                            <td><?php if ($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; ?></td>
+                                            <td><?php if($templateData['session']->traces[$i]->end_date_stamp != null) {
+                                                    echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                                                } else {
+                                                    if(isset($templateData['session']->traces[$i + 1])) {
+                                                        echo $templateData['session']->traces[$i + 1]->date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                                                    } else  {
+                                                        echo '-';
+                                                    }
+                                                } ?></td>
                                         </tr>
                         <?php } ?>
                     <?php } ?>
@@ -242,7 +260,7 @@ function getRandomColor(){
                         <?php if (count($templateData['session']->traces) > 0) {
                             $flag = true; ?>
                                             <?php for ($i = 0; $i < count($templateData['session']->traces); $i++) { ?>
-                                                    <set name='<?php echo $templateData['session']->traces[$i]->node_id; ?>' value='<?php if ($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; ?>' color='<?php if ($flag) {
+                                                    <set name='<?php echo $templateData['session']->traces[$i]->node_id; ?>' value='<?php if($templateData['session']->traces[$i]->end_date_stamp != null) { echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp; } else { if($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; } ?>' color='<?php if ($flag) {
                                         echo '#666696';
                                         $flag = false;
                                     } else {
@@ -259,7 +277,7 @@ function getRandomColor(){
                         <?php if (count($templateData['session']->traces) > 0) {
                             $flag = true; ?>
                             <?php for ($i = 0; $i < count($templateData['session']->traces); $i++) { ?>
-                                                    <set name='<?php echo $templateData['session']->traces[$i]->node_id; ?>' value='<?php if ($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; ?>' color='<?php if ($flag) {
+                                                    <set name='<?php echo $templateData['session']->traces[$i]->node_id; ?>' value='<?php if($templateData['session']->traces[$i]->end_date_stamp != null) { echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp; } else { if($i > 0) echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->traces[$i - 1]->date_stamp; else echo 0; } ?>' color='<?php if ($flag) {
                                     echo '#666696';
                                     $flag = false;
                                 } else {
@@ -285,7 +303,7 @@ function getRandomColor(){
                            <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                            <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php $v[$counter[0]] = getRandomColor(); echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
-                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <?php if(isset($templateData['startValueCounters']) && (isset($templateData['startValueCounters'][$counter[2]]))) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if (isset($counter[1])){
@@ -311,7 +329,7 @@ function getRandomColor(){
                            <?php if(count($templateData['counters']) > 0) { ?>
                            <?php foreach($templateData['counters'] as $counter) { ?>
                                 <dataset seriesName='Counter: <?php echo $counter[0]; ?>' color='<?php echo $v[$counter[0]]; ?>' anchorBorderColor='<?php echo $v[$counter[0]]; ?>' >
-                                    <?php if(isset($templateData['startValueCounters'])) { ?>
+                                    <?php if(isset($templateData['startValueCounters']) && (isset($templateData['startValueCounters'][$counter[2]]))) { ?>
                                     <s v='<?php echo $templateData['startValueCounters'][$counter[2]]; ?>' />
                                     <?php } ?>
                                     <?php if (isset($counter[1])){
@@ -327,6 +345,4 @@ function getRandomColor(){
                            <?php } ?>
                            </graph>"  name="Line" width="565" height="420" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
                 </object>
-
-
 <?php } ?>

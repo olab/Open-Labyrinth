@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                                 <div class="control-group">
-                                    <label for="uname" class="control-label"><?php echo __('Nickname'); ?></label>
+                                    <label for="uname" class="control-label"><?php echo __('Full name'); ?></label>
 
                                     <div class="controls">
                                         <input id="uname" class="not-autocomplete" type="text" name="uname" >
@@ -79,6 +79,12 @@
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label"><?php echo __('Send information about user account by email'); ?></label>
+                                    <div class="controls">
+                                        <input id="sendEmail" checked="checked" type="checkbox" name="sendEmail" >
                                     </div>
                                 </div>
                             </fieldset>

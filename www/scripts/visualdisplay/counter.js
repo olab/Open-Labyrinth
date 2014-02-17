@@ -11,12 +11,12 @@ var Counter = function() {
         labelY = 0,
         labelAngle = 0,
         labelFont = '',
-        labelZIndex = 0,
+        labelZIndex = 10,
         valueX = 0,
         valueY = 14,
         valueAngle = 0,
         valueFont = '',
-        valueZIndex = 0,
+        valueZIndex = 10,
         visualDisplay;
     
     this.id = null;
@@ -106,7 +106,7 @@ var Counter = function() {
         
         this.$label.live('click', CounterClick);
         this.$value.live('click', CounterClick);
-    }
+    };
     
     this.CreateFromJSON = function(jsonObject, $container, elementId, cValue, vDisplay) {
         if(jsonObject == null) return;
@@ -164,7 +164,7 @@ var Counter = function() {
         }
         
         this.Create($container, elementId, counterId, label, cValue, vDisplay);
-    }
+    };
     
     this.ToJSON = function() {
         if(this.$label == null || this.$value == null) return null;
@@ -194,11 +194,11 @@ var Counter = function() {
                               + '%#%' + this.$value.css('text-decoration') + '",\
             "valueZIndex": "' + this.$value.css('z-index') + '"\
         }';
-    }
+    };
     
     var CounterClick = function() {
         if(visualDisplay != null) {
             visualDisplay.SelectCounter(self);
         }
     }
-}
+};

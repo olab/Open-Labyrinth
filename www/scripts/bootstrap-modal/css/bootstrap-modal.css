@@ -212,3 +212,23 @@ Copyright (c) 2012 Dan Eden*/
 	-o-animation-name: shake;
 	animation-name: shake;
 }
+
+.modal-body h2 {
+    margin: 0px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.modal-body .c_info {
+    margin-top: 5px;
+    margin-left: 20px;
+    text-align: left;
+}
+.modal-body .c_description {
+    margin: 5px 0;
+    text-align: left;
+}
+.modal-body-scroll {
+    max-height: 350px;
+    overflow-y: scroll;
+}

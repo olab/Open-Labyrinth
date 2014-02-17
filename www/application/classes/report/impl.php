@@ -121,6 +121,32 @@ abstract class Report_Impl {
     public abstract function addHorizontalBarChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisTickValue, $dataSeriesValues, $title, $yAxisLabel);
 
     /**
+     * Add column bar chart
+     *
+     * @param $startPosition - start chart position
+     * @param $endPosition - end chart position
+     * @param $dataSeriesLabels - data series labels
+     * @param $xAxisValue - x axis values
+     * @param $dataSeriesValues - data series values
+     * @param $title - title of chart
+     * @param $yAxisLabel - y axis label
+     */
+    public abstract function addColumnBarChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisValue, $dataSeriesValues, $title, $yAxisLabel);
+
+    /**
+     * Add line bar chart
+     *
+     * @param $startPosition - start chart position
+     * @param $endPosition - end chart position
+     * @param $dataSeriesLabels - data series labels
+     * @param $xAxisValue - x axis values
+     * @param $dataSeriesValues - data series values
+     * @param $title - title of chart
+     * @param $yAxisLabel - y axis label
+     */
+    public abstract function addLineChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisValue, $dataSeriesValues, $title, $yAxisLabel);
+
+    /**
      * Set font size for need cells
      *
      * @param string $cells - cells

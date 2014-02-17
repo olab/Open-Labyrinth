@@ -1,5 +1,6 @@
 jQuery(document).ready(function(){
     var browserUpdateWarning = new BrowserUpdateWarning();
+    var body = $('body');
     browserUpdateWarning.Check();
     
     //------------------Case Wizard--------------------//
@@ -228,6 +229,9 @@ jQuery(document).ready(function(){
         $(this).select();
     });
 
+    $('[data-toggle=tooltip]').tooltip({placement:"left"});
+
+
     jQuery('#nodeCountContainer button').click(function() {
         if($(this).attr('id') != 'applyCount')
             $('#nodeCount').attr('disabled', 'disabled');
@@ -370,4 +374,168 @@ jQuery(document).ready(function(){
             $(value).val(index + 1);
         });
     }
+
+    body.on('click', '#createNewForum', function() {
+        var url = $(this).attr('submit-url');
+        $('form').attr('action', url).submit();
+    });
+
+    body.on('click', '.unassign-forum', function() {
+        var url = $(this).attr('submit-url');
+        $('form').attr('action', url).submit();
+    });
+
+    $.each(historyOfAllUsers, function(key, value) {
+        if (value['username'] != currentUser && value['readonly'] != 1) {
+            var links = $('a[href="' + value['href'] + '"]');
+            var re = /(grid|visualManager)/i;
+            var labyrinthIdRe = /\/\w+\/\w+\/(\d+)/i;
+            var labyrinthId = labyrinthIdRe.exec(value['href']);
+
+            $.each(links, function() {
+                if (re.test(value['href'])) {
+                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/counterManager/grid/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/nodeManager/grid/' + labyrinthId[1] + '/1" />').parent().css('position', 'relative');
+                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/visualManager/index/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                } else {
+                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                }
+                var deleteButton = $(this).nextAll('.btn.btn-danger');
+                if (deleteButton.length) {
+                    deleteButton.remove();
+                }
+                var imageEditButton = $(this).nextAll('.btn.btn-inverse');
+                if (imageEditButton.length) {
+                    imageEditButton.remove();
+                }
+            });
+        }
+    });
+
+    $(".showCustomModalWindow").click(function() {
+        var url = $(this).children('.lock').attr('id');
+        var obj = $('#readonly-notice');
+        obj.find('a.btn').attr('href', url);
+        obj.modal('show');
+
+    });
+
+    $(".lock").tooltip({placement: "right"});
+
+    if (historyShowWarningPopup) {
+        $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
+        $('.btn').attr('href', 'javascript:void(0)');
+        $('.editable-text').attr('contenteditable', 'false');
+        $('.row-fluid form').attr('action','');
+        $('.row-fluid input').attr('onclick','javascript:void(0)');
+    }
+
+    var messageContainer = $('#collaboration_message'),
+        messageTextContainer = $('#collaboration_message_text');
+
+    var stopList = [],
+        usernames = [],
+        users = null;
+    if (!currentUserReadOnly && userHasBlockedAccess) {
+        setInterval(function() {
+            $.get(historyAjaxCollaborationURL, function(data) {
+                usernames = [];
+                users = eval('(' + data + ')');
+                $.each(users, function(key, value){
+                    if (inArray(key, stopList)) {
+                        delete users[key];
+                    } else {
+                        stopList.push(key);
+                        usernames.push(value);
+                    }
+                });
+                if (usernames.length) {
+                    utils = new Utils();
+                    utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
+                }
+            });
+        }, 30000);
+    }
+
+    function inArray(needle, haystack) {
+        var length = haystack.length;
+        for(var i = 0; i < length; i++) {
+            if(haystack[i] == needle) return true;
+        }
+        return false;
+    }
+
+    if (historyShowWarningPopup && currentUserReadOnly) {
+        utils = new Utils();
+        utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'You join edited page in readonly mode', 7000);
+    }
+
+
+    $('.add-condition-js').click(function(){
+        var block = $('.add-condition-bl').last().clone().show();
+        block.insertBefore($(this));
+    });
+
+    $('.add-labyrinth-js').click(function(){
+        var block = $('.add-labyrinth-bl').last().clone().show();
+        block.insertBefore($(this));
+    });
+
+    var assignIterator = 0;
+    $('.add-assign-js').click(function(){
+        var block = $('.add-assign-bl').last().clone().show(),
+            radio = block.find('.assign-type');
+            queue = block.find('.assign-queue');
+
+        for (var i=0; i<radio.length; i++)
+        {
+            radio.eq(i).attr('name','assign-type-'+assignIterator);
+            queue.text('Place in a queue '+(assignIterator+2));
+        }
+        block.insertBefore($(this));
+        assignIterator++;
+    });
+
+    $('.remove-condition-js').live('click', function(){
+        $(this).parent().remove();
+    });
+
+    $('#choose-patient').change(function(){
+        window.location.href = $(this).find('option:selected').attr('data-href');
+    });
+
+    body.on('change', '.assign-type', function(){
+        var mainBlock = $(this).parents('.condition-control-group'),
+            selectUser = $('.assign-user').last().clone().show(),
+            selectGroup = $('.assign-group').last().clone().show();
+
+        if($(this).val() == 'users')
+        {
+            mainBlock.children('.assign-group').remove();
+            mainBlock.append(selectUser);
+        }
+        if($(this).val() == 'groups')
+        {
+            mainBlock.children('.assign-user').remove();
+            mainBlock.append(selectGroup);
+        }
+    });
+
+    $('#assign-type').change(function(){
+        var type        = $(this).find('option:selected').val(),
+            assignField = $('.assign-bl-js'),
+            assignBlocks = assignField.children('.condition-control-group');
+
+        if (type == 2 || type == 4) assignField.removeClass('assign-same');
+        if ((type == 1 || type == 3) && assignField.not('assign-same'))
+        {
+            assignIterator = 0;
+            assignField.addClass('assign-same');
+            for (var i=0; i<assignBlocks.length; i++)
+            {
+                var assignBlock = assignBlocks.eq(i);
+                if (assignBlock.hasClass('add-assign-bl')) assignBlock.remove();
+            }
+        }
+    });
 });

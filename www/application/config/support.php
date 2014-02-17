@@ -41,7 +41,8 @@ $config['support'] = array(
         User: #username#
         POST(json): #post#
         GET(json): #get#
-        URL: #url#'
+        URL: #url#
+        IP: #ip#'
     )
 );
 

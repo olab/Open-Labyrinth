@@ -256,7 +256,6 @@
         if (navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod') {
             $("#footer").css("position", "static");
         }
-        ;
     });
 </script>
 <?php
@@ -274,8 +273,7 @@ if ($templateData['skin_path'] != NULL) {
 
 <body>
 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base() ?>scripts/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'; ?>"></script>
     <script language="javascript" type="text/javascript">
         tinyMCE.init({
             // General options
@@ -320,14 +318,9 @@ if ($templateData['skin_path'] != NULL) {
             <div id="nodetext">
                 <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                     <?php if (isset($templateData['node_edit'])) { ?>
-                        <form method='POST'
-                              action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['node']->id; ?>'>
-                            <h1><input placeholder="Title" id="mnodetitle" type='text' name='mnodetitle'
-                                       value='<?php echo $templateData['node']->title; ?>'/></h1>
-
-
-                            <textarea name='mnodetext' cols='60' rows='20'
-                                      class='mceEditor'><?php echo $templateData['node_text']; ?></textarea>
+                        <form method='POST' action='<?php echo URL::base().'renderLabyrinth/updateNode/'.$templateData['map']->id.'/'.$templateData['node']->id; ?>'>
+                            <h1><input placeholder="Title" id="mnodetitle" type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></h1>
+                            <textarea name='mnodetext' cols='60' rows='20' class='mceEditor'><?php echo $templateData['node_text']; ?></textarea>
                             <input class="btn btn-primary" type='submit' name='Submit' value='Submit'/>
                         </form>
                         <a class="btn btn-primary"
@@ -395,8 +388,7 @@ if ($templateData['skin_path'] != NULL) {
                     </div>
                 </div>
                 <div id="node-info" class="row-fluid pane-title">
-                    <div class="span8 ">
-                        Node <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
+                    <div class="span8 ">Node <?php if (isset($templateData['node'])) echo $templateData['node']->id; ?></div>
                     <div class="span4">
                     <?php if (Auth::instance()->logged_in()) {
                         if (!isset($templateData['node_edit'])) {
@@ -413,48 +405,37 @@ if ($templateData['skin_path'] != NULL) {
                 </div>
                 <div id="navigation">
                     <div  class="pane-title">Navigation</div>
-                    <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
+                    <?php echo Arr::get($templateData, 'navigation'); ?>
                     <div  id="nav-buttons" class="row-fluid">
                         <a class="btn span8" href="#pathway" id="timeline_link"><i class="icon-time"></i>review your pathway</a>
-                        <a class="btn span4"
-                           href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'><i class="icon-repeat"></i>reset</a>
+                        <a class="btn span4" href='<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $templateData['map']->id; ?>'>
+                            <i class="icon-repeat"></i>
+                            reset
+                        </a>
                     </div>
                 </div>
 
-                <div id="operations">
-
-                </div>
+                <div id="operations"></div>
 
                 <div id="counters-desktop">
-
                     <?php if (isset($templateData['counters'])){?>
                     <div class="pane-title">Counters</div>
                     <?php echo $templateData['counters']; ?>
-
                     <?php }?>
                 </div>
 
-
                 <div id="branding" class="row-fluid">
                     <div class="span2" id="footer-logo">
-                        <a href="<?php echo URL::base(); ?>"><img
-                                src="<?php echo URL::base(); ?>images/footer-logo.png"
-                                alt="OpenLabyrinth logo"/></a>
-
+                        <a href="<?php echo URL::base(); ?>">
+                            <img src="<?php echo URL::base(); ?>images/footer-logo.png" alt="OpenLabyrinth logo"/>
+                        </a>
                     </div>
                     <div class="span10">
-                        <a href="<?php echo URL::base(); ?>">OpenLabyrinth is an open source educational pathway
-                            system</a>
+                        <a href="<?php echo URL::base(); ?>">OpenLabyrinth is an open source educational pathway system</a>
                     </div>
                 </div>
-
-
             </div>
-
-
         </div>
-
-
     </div>
 </div>
 
