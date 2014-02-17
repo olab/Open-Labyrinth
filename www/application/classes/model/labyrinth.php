@@ -118,7 +118,7 @@ class Model_Labyrinth extends Model {
             $result['traces'] = $trace;
 
             // Records trace info for visual display counters
-            if ($trace[0]) Session::instance()->set('traceCountersValues', $trace[0]->counters);
+            if (Arr::get($trace, 0, false)) Session::instance()->set('traceCountersValues', $trace[0]->counters);
 
             $result['sessionId'] = $sessionId;
         }
