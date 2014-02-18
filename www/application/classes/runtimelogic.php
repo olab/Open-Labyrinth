@@ -106,6 +106,77 @@ class RunTimeLogic {
         return null;
     }
 
+    public function parsingPatientRule($string)
+    {
+        if ( ! empty($string))
+        {
+            $parseFullString = false;
+            $finalResult     = array();
+            $changedCounters = array();
+            $errors          = array();
+            $r               = array();
+            $pattern         = '(.*?);\s*(?=IF|\s*$)';
+
+            if ($c = preg_match_all("/".$pattern."/is", $string, $matches))
+            {
+                if (count($matches[0]) > 0)
+                {
+                    foreach($matches[0] as $newIF){
+                        $resultCon = $this->replaceConditions($newIF);
+                        $resultStr = $this->replaceFunctions($resultCon);
+                        ob_start();
+                        $result = eval($resultStr['str']);
+                        $checkErrors = ob_get_contents();
+                        ob_end_clean();
+                        if ($checkErrors != ''){
+                            $this->errors[] = $newIF;
+                        } else {
+                            if (isset($result['counters'])){
+                                if (count($result['counters']) > 0){
+                                    foreach($result['counters'] as $key => $value){
+                                        $this->values[$key] = $value;
+                                        $changedCounters[$key] = $value;
+                                    }
+                                }
+                            }
+
+                            $finalResult = array_merge($result, $finalResult);
+                            if (isset($finalResult['stop'])){
+                                if ($finalResult['stop'] == 1){
+                                    break;
+                                }
+                            }
+
+                            if (isset($finalResult['break'])){
+                                if ($finalResult['break'] == 1){
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    $finalResult['counters'] = $changedCounters;
+                }
+            }
+            else
+            {
+                $resultCon = $this->replaceConditions($string);
+                $resultStr = $this->replaceFunctions($resultCon);
+                ob_start();
+                $finalResult = @eval($resultStr['str']);
+                $checkErrors = ob_get_contents();
+                ob_end_clean();
+                if ($checkErrors != '') $this->errors[] = $string;
+            }
+
+            if (empty($finalResult)) $finalResult = null;
+
+            $array['result'] = $finalResult;
+            $array['errors'] = $this->errors;
+            return $array;
+        }
+        return null;
+    }
+
     public function replaceFunctions($string){
         $error = false;
         $search = array();

@@ -126,6 +126,16 @@
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li>
                                         </ul>
                                     </li><?php
+                                    if(false) { ?>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Virtual patient'); ?> <b class="caret"></b></a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="<?php echo URL::base().'patient/index'; ?>"><?php echo __('Patients managment'); ?></a></li>
+                                            <li><a href="<?php echo URL::base().'patient/assign_grid'; ?>"><?php echo __('Assign managment'); ?></a></li>
+                                            <li><a href="<?php echo URL::base().'patient/rule'; ?>"><?php echo __('Rule'); ?></a></li>
+                                        </ul>
+                                    </li><?php
+                                    }
                                 } else {
                                     if ($type_name != 'reviewer') {?>
                                     <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li><?php

@@ -64,11 +64,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 if ($rootNode != NULL)
                 {
-                    $data = Model::factory('labyrinth')->execute($rootNode->id, NULL, true);
+                    $idRootNode = $rootNode->id;
+                    $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
                     if ($data)
                     {
                         /* update virtual patient, third parameter check for redirect */
-                        //$data['patients'] = Arr::get($this->patient_sessions_update($mapId, $rootNode->id, $mapId), 'patients', array());
+                        $this->patient_sessions_update($mapId, $idRootNode, $mapId);
+                        $data['patients'] = $this->render_patient($idRootNode, $mapId);
 
                         $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -155,8 +157,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         foreach ($sessions as $session)
         {
             $path   = json_decode($session->path);
-
-            if ($check_for_redirect AND $path != null) {
+            if ($check_for_redirect AND $path != null)
+            {
                 Session::instance()->set('patient_redirect', true);
                 Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$check_for_redirect.'/'.array_pop($path));
             }
@@ -193,8 +195,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
         else return FALSE;
 
-        $data     = array();
-        $patients = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
+        $patients   = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
 
         foreach ($patients as $patient)
         {
@@ -210,61 +211,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $this->patient_path_update($id_node, $sessions, $check_for_redirect);
             $this->patient_condition_update($id_node, $sessions);
-
-            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation_condition)
-            {
-                $condition          = DB_ORM::model('Patient_Condition', array($relation_condition->id_condition));
-                $id_condition       = $condition->id;
-
-                foreach ($id_assigns as $id_assign)
-                {
-                    //$session_record = DB_ORM::select('Patient_Sessions')->column('id_assign', $id_assign)->column('id_patient', $id_patient)->query();
-                    //$pc                 = json_decode($session->patient_condition, TRUE);
-
-                    $data['patients'][] =
-                        '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
-                        '<li>'.$condition->name.': '.$condition->value.'</li>';
-                }
-            }
         }
-
-        if ($this->request->is_ajax())
-        {
-        }
-        else return $data;
-    }
-
-    public function action_patient_ajax()
-    {
-        $id_node = $this->request->param('id');
-        $data     = array();
-        $patients = DB_ORM::select('Patient_ConditionChange')->where('id_node', '=', $id_node)->query();
-
-        foreach ($patients as $patient)
-        {
-            $id_patient = $patient->id_patient;
-
-            $session    = $this->patient_session_check($id_patient);
-            if ( ! $session) return $data;
-
-            if ( ! $patient->appear) continue;
-
-            foreach (DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->query() as $relation)
-            {
-                $condition          = DB_ORM::model('Patient_Condition', array($relation->id_condition));
-                $id_condition       = $condition->id;
-                $pc                 = json_decode($session->patient_condition, TRUE);
-                $condition->value   = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : $condition->value;
-
-
-                $data[] =
-                    '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.
-                    '<li>'.$condition->name.': '.$condition->value.'</li>';
-            }
-        }
-        $data = json_encode($data);
-        echo $data;
-        exit;
     }
 
     public function get_patient_assign($id_user)
@@ -307,6 +254,56 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function render_patient ($id_node, $mapId)
+    {
+        if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
+        else return FALSE;
+
+        $data           = array();
+        $condition_li   = '';
+        $patients       = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
+
+        foreach ($patients as $patient)
+        {
+            $id_patient = $patient->id_patient;
+            $id_assigns = $this->get_patient_assign($id_user);
+
+            foreach ($id_assigns as $id_assign)
+            {
+                $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->where('id_patient', '=', $id_patient)->query()->fetch(0);
+                if( ! $session) continue;
+
+                $conditions = json_decode($session->patient_condition, true);
+
+                if($conditions)
+                {
+                    foreach($conditions as $id_condition=>$condition)
+                    {
+                        $appear_condition = DB_ORM::select('Patient_ConditionChange')
+                            ->where('id_condition', '=', $id_condition)
+                            ->where('id_node', '=', $id_node)
+                            ->where('appear', '=', 1)
+                            ->query()
+                            ->fetch(0);
+
+                        if( ! $appear_condition) continue;
+                        $condition_li .= '<li>'.$condition['name'].': '.$condition['value'].'</li>';
+                    }
+                    if($condition_li) $data[] = '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.$condition_li;
+                }
+            }
+        }
+        return $data;
+    }
+
+    public function action_renderPatientAjax ()
+    {
+        $id_node = $this->request->param('id');
+        $mapId = $this->request->param('id2');
+        echo json_encode($this->render_patient($id_node, $mapId));
+        exit;
+    }
+
     public function action_go()
     {
         $mapId      = $this->request->param('id', NULL);
@@ -329,12 +326,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
 
-//            if ( ! Session::instance()->get('patient_redirect'))
-//            {
-//                Session::instance()->delete('patient_redirect');
-//            }
-//            $data['patients'] = Arr::get($this->patient_sessions_update($mapId, $nodeId), 'patients', array());
-
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
 
             if ($node != NULL)
@@ -342,6 +333,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $data = ($bookMark != NULL)
                     ? Model::factory('labyrinth')->execute($node->id, (int) $bookMark)
                     : Model::factory('labyrinth')->execute($node->id);
+
+                /* patient block */
+                if ( ! Session::instance()->get('patient_redirect'))
+                {
+                    $this->patient_sessions_update($mapId, $nodeId); // if patient redirect, not update patient session
+                }
+                Session::instance()->set('patient_redirect', false);
+                $data['patients'] = $this->render_patient($nodeId, $mapId);
 
                 $gotoNode = Session::instance()->get('goto', NULL);
                 if ($gotoNode != NULL)
@@ -437,9 +436,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     } else {
                         $data['skin_path'] = NULL;
                     }
-
-                    $this->template = View::factory($skin);
-                    $this->template->set('templateData', $data);
+                    $this->template = View::factory($skin)->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
