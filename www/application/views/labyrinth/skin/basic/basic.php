@@ -553,8 +553,9 @@ $id_node = $templateData['node']->id;
                                          }
                                          echo implode(',', $sections);
                                      } ?>],
-                patientUpdate       = '<?php echo URL::base().'renderLabyrinth/patient_ajax/'.$id_node; ?>';
+                patientUpdate       = '<?php echo URL::base().'renderLabyrinth/renderPatientAjax/'.$id_node.'/'.$id_map; ?>';
         </script>
         <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
+        <script src="<?php echo URL::base().'scripts/patient.js'; ?>"></script>
     </body>
 </html>

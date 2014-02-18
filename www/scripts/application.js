@@ -485,13 +485,9 @@ jQuery(document).ready(function(){
     $('.add-assign-js').click(function(){
         var block = $('.add-assign-bl').last().clone().show(),
             radio = block.find('.assign-type');
-            queue = block.find('.assign-queue');
 
-        for (var i=0; i<radio.length; i++)
-        {
-            radio.eq(i).attr('name','assign-type-'+assignIterator);
-            queue.text('Place in a queue '+(assignIterator+2));
-        }
+        for (var i=0; i<radio.length; i++) radio.eq(i).attr('name','assign-type-'+assignIterator);
+
         block.insertBefore($(this));
         assignIterator++;
     });
@@ -537,5 +533,16 @@ jQuery(document).ready(function(){
                 if (assignBlock.hasClass('add-assign-bl')) assignBlock.remove();
             }
         }
+    });
+
+    $('.add-r-patient-js').click(function(){
+        var block = $('.r-patient-js').last().clone().show();
+        block.insertBefore($(this));
+        $(this).fadeToggle(0);
+    });
+
+    $('.remove-relation-js').live('click', function(){
+        $(this).parent().remove();
+        $('.add-r-patient-js').fadeToggle(0);
     });
 });

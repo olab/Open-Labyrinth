@@ -6120,8 +6120,9 @@ h1 > .pull-right {
     width: 10%;
     min-width: 66px;
 }
-.patient-t td:nth-child(2){ width: 65%;}
-.patient-t td:nth-child(3){
+.patient-t td:nth-child(2){ width: 35%;}
+.patient-t td:nth-child(3){ width: 30%;}
+.patient-t td:nth-child(4){
     width: 25%;
     min-width: 150px;
 }
@@ -6150,10 +6151,6 @@ input.assign-type {
 
 .assign-same .add-assign-js {
     display: none;
-}
-
-.assign-same .assign-queue {
-    opacity: 0;
 }
 
 .assign-t td:nth-child(1){
