@@ -257,7 +257,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public function render_patient ($id_node, $mapId)
     {
         if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
-        else return FALSE;
+        else return array();
 
         $data           = array();
         $condition_li   = '';
@@ -1086,10 +1086,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
     {
         $question   = DB_ORM::model('map_question', array((int) $id));
         $result     = '';
+        $q_type     = $question->type->value;
 
         if ($question)
         {
-            if ($question->type->value == 'text')
+            if ($q_type == 'text')
             {
                 $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" value="'.$question->feedback.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
@@ -1107,7 +1108,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
-            else if ($question->type->value == 'area')
+            else if ($q_type == 'area')
             {
                 $result =
                     '<textarea autocomplete="off" class="clearQuestionPrompt" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'">'.
@@ -1121,7 +1122,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
-            else if($question->type->value == 'mcq')
+            else if($q_type == 'mcq')
             {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces ';
@@ -1147,7 +1148,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
-            else if($question->type->value == 'pcq')
+            else if($q_type == 'pcq')
             {
                 if (count($question->responses) > 0) {
                     $result = '<div class="questionResponces questionForm_'.$question->id.' ';
@@ -1171,7 +1172,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
-            else if($question->type->value == 'slr')
+            else if($q_type == 'slr')
             {
                 if($question->settings != null)
                 {
@@ -1245,7 +1246,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             }
-            else if ($question->type->value == 'dd')
+            else if ($q_type == 'dd')
             {
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
                 foreach ($question->responses as $response)
@@ -1260,9 +1261,38 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
                 }
             }
+            if ($q_type == 'sct')
+            {
+                $disposable = ($question->num_tries == 1) ? ' disposable' : '';
+                $horizontal = ($question->type_display == 1) ? ' horizontal' : '';
+                $result .= '<ul class="navigation'.$horizontal.'">';
+                foreach($question->responses as $response)
+                {
+                    $result .= '<li>';
+                    $result .= '<label>';
+                    $result .= '<input class="sct-question'.$disposable.'" data-response="'.$response->id.'" data-question="'.$response->question_id.'" type="radio" name="option-'.$id.'"/>';
+                    $result .= $response->response;
+                    $result .= '</label>';
+                    $result .= '</li>';
+
+                };
+                $result .= '</ul>';
+            }
             $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>'.$question->stem.'</p>'.$result.'</td></tr></table>';
         }
         return $result;
+    }
+
+    public function action_ajaxScriptConcordanceTesting ()
+    {
+        $this->auto_render  = false;
+        $idResponse         = $this->request->post('idResponse');
+        $idQuestion         = $this->request->post('idQuestion');
+        $data               = Session::instance()->get('sctResponses');
+        $data[$idQuestion]  = $idResponse;
+
+        Session::instance()->set('sctResponses', $data);
+        exit;
     }
 
     private static function addQuestionIdToSession($id) {
