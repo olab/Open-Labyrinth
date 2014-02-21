@@ -83,7 +83,8 @@
     <?php }?>
 
         $(".clearQuestionPrompt").focus(function(){
-            if (!$(this).hasClass('cleared')){
+            if ( ! $(this).hasClass('cleared'))
+            {
                 $(this).val('');
                 $(this).text('');
                 $(this).addClass('cleared');
@@ -319,6 +320,26 @@
                 }, function(data) {});
             }
         });
+
+        $('.sct-question').on('change', function(){
+            var idQuestion = $(this).data('question');
+
+            if($(this).hasClass('disposable')){
+                $('.sct-question').each(function(i, v){
+                    var current = $('.sct-question').eq(i);
+                    if(current.data('question') == idQuestion) current.prop('disabled', true);
+                });
+            }
+
+            $.post(
+                '<?php echo URL::base(); ?>renderLabyrinth/ajaxScriptConcordanceTesting',
+                {
+                    idResponse: $(this).data('response'),
+                    idQuestion: idQuestion
+                },
+                function(data){}
+            );
+        });
     });
 </script>
 <?php
@@ -337,52 +358,51 @@ $id_node = $templateData['node']->id;
 
     <body>
         <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-        <script language="javascript" type="text/javascript"
-                src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
-        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
-        <script language="javascript" type="text/javascript">
-                tinymce.init({
-                selector: "textarea",
-                theme: "modern",
-                content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-                entity_encoding: "raw",
-                contextmenu: "link image inserttable | cell row column rdfaceMain",
-                closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-                valid_elements : "+*[*]",
-                plugins: ["compat3x",
-                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",
-                    "searchreplace wordcount visualblocks visualchars code fullscreen",
-                    "insertdatetime media nonbreaking save table contextmenu directionality",
-                    "emoticons template paste textcolor layer advtextcolor rdface imgmap"
-                ],
-                toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-                toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
-                image_advtab: true,
-                templates: []
-            });
-        </script>
+<!--        <script type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?><!--"></script>-->
+<!--        <script language="javascript" type="text/javascript" src="--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/tinymce.min.js"></script>-->
+<!--        <script language="javascript" type="text/javascript">-->
+<!--                tinymce.init({-->
+<!--                selector: "textarea",-->
+<!--                theme: "modern",-->
+<!--                content_css: "--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",-->
+<!--                entity_encoding: "raw",-->
+<!--                contextmenu: "link image inserttable | cell row column rdfaceMain",-->
+<!--                closed: /^(br|hr|input|meta|img|link|param|area|source)$/,-->
+<!--                valid_elements : "+*[*]",-->
+<!--                plugins: ["compat3x",-->
+<!--                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",-->
+<!--                    "searchreplace wordcount visualblocks visualchars code fullscreen",-->
+<!--                    "insertdatetime media nonbreaking save table contextmenu directionality",-->
+<!--                    "emoticons template paste textcolor layer advtextcolor rdface imgmap"-->
+<!--                ],-->
+<!--                toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",-->
+<!--                toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",-->
+<!--                image_advtab: true,-->
+<!--                templates: []-->
+<!--            });-->
+<!--        </script>-->
         <?php } ?>
         <div align="center" class="popup-outside-container">
             <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
                 <tr>
                     <td class="centre_td popup-inside-container" width="81%" bgcolor="#FFFFFF" align="left">
-                        <h4><?php echo Arr::get($templateData, 'node_title'); ?></h4>
-                        <?php if (Arr::get($templateData, 'editor') == TRUE) { ?>
-                            <?php if (isset($templateData['node_edit'])) { ?>
-                                <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
-                                    <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
+                        <h4><?php echo Arr::get($templateData, 'node_title'); ?></h4><?php
+                        if (Arr::get($templateData, 'editor') == TRUE) {
+                            if (isset($templateData['node_edit'])) { ?>
+                            <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
+                                <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
+                                <p><textarea name='mnodetext' cols='60' rows='20'class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
+                                <input type='submit' name='Submit' value='Submit'/>
+                            </form>
 
-                                    <p><textarea name='mnodetext' cols='60' rows='20'class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
-                                    <input type='submit' name='Submit' value='Submit'/>
-                                </form>
-                                <p>
-                                    - <a href='<?php echo URL::base().'linkManager/index/'.$id_map; ?>'><?php echo __('links'); ?></a>
-                                    - <a href='<?php echo URL::base().'nodeManager/index/'.$id_map; ?>'><?php echo __('nodes'); ?></a>
-                                    - <a href='<?php echo URL::base().'fileManager/index/'.$id_map; ?>'><?php echo __('files'); ?></a>
-                                    - <a href='<?php echo URL::base().'counterManager/index/'.$id_map; ?>'><?php echo __('counters'); ?></a>
-                                    - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$id_map; ?>'><?php echo __('main editor'); ?></a>
-                                </p>
-                            <?php } else {
+                            <p>
+                                - <a href='<?php echo URL::base().'linkManager/index/'.$id_map; ?>'><?php echo __('links'); ?></a>
+                                - <a href='<?php echo URL::base().'nodeManager/index/'.$id_map; ?>'><?php echo __('nodes'); ?></a>
+                                - <a href='<?php echo URL::base().'fileManager/index/'.$id_map; ?>'><?php echo __('files'); ?></a>
+                                - <a href='<?php echo URL::base().'counterManager/index/'.$id_map; ?>'><?php echo __('counters'); ?></a>
+                                - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$id_map; ?>'><?php echo __('main editor'); ?></a>
+                            </p><?php
+                            } else {
                                 echo Arr::get($templateData, 'node_text');
                                 if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>';
                             }
