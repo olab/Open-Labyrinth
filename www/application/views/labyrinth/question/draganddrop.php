@@ -82,6 +82,7 @@
                     <label for="response"><?php echo __('Response'); ?></label>
                     <input type="text" class="response-input" value="<?php echo  $response->response; ?>"/>
                     <button type="button" class="btn-remove-response btn btn-danger btn-small"><i class="icon-trash"></i></button>
+                    <span><?php echo 'Response id: '.$response->id ?></span>
                 </div>
             <?php } ?>
         <?php } ?>
