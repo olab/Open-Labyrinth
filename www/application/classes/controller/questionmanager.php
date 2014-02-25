@@ -58,23 +58,26 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
     
-    public function action_question() {
-        $mapId = $this->request->param('id', 0);
-        $typeId = $this->request->param('id2', 0);
+    public function action_question()
+    {
+        $mapId      = $this->request->param('id', 0);
+        $typeId     = $this->request->param('id2', 0);
         $questionId = $this->request->param('id3', 0);
+        $map        = DB_ORM::model('map', array((int)$mapId));
+        $type       = DB_ORM::model('map_question_type', array((int) $typeId));
 
-        $map = DB_ORM::model('map', array((int)$mapId));
-        $type = DB_ORM::model('map_question_type', array((int) $typeId));
-        if($map != null && $type != null) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['type'] = DB_ORM::model('map_question_type', array((int) $typeId));
+        if($map != null && $type != null)
+        {
+            $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
+            $this->templateData['type']     = DB_ORM::model('map_question_type', array((int) $typeId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+            $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
             
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
             
-            if($questionId != null) {
+            if($questionId != null)
+            {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
                 if($this->templateData['question']->settings != null) {
@@ -85,51 +88,41 @@ class Controller_QuestionManager extends Controller_Base {
                         $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
                     }
                 }
-            } else {
-                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
             }
-            
-            $view = View::factory('labyrinth/question/' . $type->template_name);
-            $view->set('templateData', $this->templateData);
-            
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-            
-            $this->templateData['center'] = $view;
-            $this->templateData['left'] = $leftView;
+            else Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
+
+            $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
+            $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
     
     public function action_questionPOST()
     {
+        $post       = $this->request->post();
         $mapId      = $this->request->param('id', 0);
-        $postType   = Arr::get($_POST, 'question_type', null);
+        $postType   = Arr::get($post, 'question_type', null);
         $typeId     = ($postType != null) ? $postType : $this->request->param('id2', 0);
         $questionId = $this->request->param('id3', 0);
         $map        = DB_ORM::model('map', array((int)$mapId));
         $type       = DB_ORM::model('map_question_type', array((int)$typeId));
 
-        if ($_POST != null && $map != null && $type != null)
+        if ($post != null && $map != null && $type != null)
         {
-            if (isset($_POST['isCorrect'])) {
+            if (isset($_POST['isCorrect']))
+            {
                 $rule = $_POST['settings'];
                 $_POST['settings'] = json_encode(array($rule, $_POST['isCorrect']));
             }
 
-            if ($questionId == null || $questionId <= 0) {
-                DB_ORM::model('map_question')->addQuestion($mapId, $type, $_POST);
-            } else {
-                DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
-            }
+            if ($questionId == null || $questionId <= 0) DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
+            else DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
             
             Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_deleteQuestion() {
@@ -167,5 +160,12 @@ class Controller_QuestionManager extends Controller_Base {
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function action_deleteResponseSCT ()
+    {
+        $idResponse = $this->request->param('id');
+        DB_ORM::delete('Map_Question_Response')->where('id', '=', $idResponse)->execute();
+        Request::initial()->redirect($this->request->referrer());
     }
 }

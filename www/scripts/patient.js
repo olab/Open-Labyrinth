@@ -8,7 +8,6 @@ $(document).ready(function(){
             type: 'POST',
             success: function(data)
             {
-                console.log(data);
                 var ulPatient = $('.patient-js');
                 var patientArray = $.parseJSON(data);
 

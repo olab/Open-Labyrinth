@@ -51,7 +51,12 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE
-            ))
+            )),
+
+            'expert' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'nullable' => FALSE
+            )),
         );
 
         $this->relations = array(
@@ -100,21 +105,29 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
                        ->execute();
     }
 
-    public function updateInclude4R($id,$isInclude) {
+    public function updateInclude4R($id,$isInclude)
+    {
         $this->id = $id;
         $this->load();
         $this->include_4R = $isInclude;
         $this->save();
     }
 
+    public function updateExpert($idUser, $expert)
+    {
+        $this->id = $idUser;
+        $this->load();
+        $this->expert = $expert;
+        $this->save();
+    }
+
     public function getNotIncludedUsers($webId) {
 
-        $builder = DB_SQL::select('default',array(DB::expr('user_id')))
+        $result = DB_SQL::select('default',array(DB::expr('user_id')))
             ->from($this->table())
             ->where('webinar_id', '=', $webId,'AND')
-            ->where('include_4R', '=', 0);
-
-        $result = $builder->query();
+            ->where('include_4R', '=', 0)
+            ->query();
 
         $users = array();
         if ($result->is_loaded()) {
@@ -123,5 +136,16 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
             }
         }
         return $users;
+    }
+
+    public function getExperts ($idWeb)
+    {
+        $result = array();
+        $result_db = DB_ORM::select('Webinar_User')->where('webinar_id', '=', $idWeb)->where('expert', '=', 1)->query()->as_array();
+        foreach ($result_db as $record)
+        {
+            $result[] = $record->id;
+        }
+        return $result;
     }
 }
