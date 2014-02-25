@@ -110,7 +110,6 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model {
             
             return $responses;
         }
-        
         return NULL;
     }
     

@@ -175,28 +175,28 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         return array();
     }
 
-    public function getQuestionsByMapAndTypes($mapId, $types) {
-        $builder = DB_SQL::select('default')
+    public function getQuestionsByMapAndTypes($mapId, $types)
+    {
+        $result = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
             ->where('entry_type_id', 'IN', $types)
-            ->column('id');
+            ->column('id')
+            ->query();
 
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
+        if($result->is_loaded())
+        {
             $questions = array();
-            foreach($result as $record) {
+            foreach ($result as $record) {
                 $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
             }
-
             return $questions;
         }
-
         return NULL;
     }
 
-    public function addQuestion($mapId, $type, $values) {
+    public function addQuestion ($mapId, $type, $values)
+    {
         switch($type->value)
         {
             case "text":
@@ -207,6 +207,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 break;
             case 'slr':
                 $this->saveSliderQuestion($mapId, $type, $values);
+                break;
+            case 'sct':
+                $this->saveScriptConcordanceTesting($mapId, $type, $values);
                 break;
             default:
                 $this->saveResponceQuestion($mapId, $type, $values);
@@ -221,7 +224,8 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                        ->execute();
     }
 
-    public function updateQuestion($questionId, $type, $values) {
+    public function updateQuestion($questionId, $type, $values)
+    {
         $this->id = $questionId;
         $this->load();
 
@@ -236,10 +240,47 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case 'slr':
                 $this->updateSliderQuestion($questionId, $values);
                 break;
+            case 'sct':
+                $this->updateScriptConcordanceTesting($questionId, $values);
+                break;
             default:
                 $this->updateResponseQuestion($values, $type->id);
                 break;
         }
+    }
+
+    private function updateScriptConcordanceTesting($questionId, $values)
+    {
+        DB_ORM::update('Map_Question')
+            ->set('stem', Arr::get($values, 'stem', ''))
+            ->set('num_tries', Arr::get($values, 'tries', 1))
+            ->set('type_display', Arr::get($values, 'typeDisplay', 0))
+            ->where('id', '=', $questionId)
+            ->execute();
+
+        $order = 0;
+        foreach (Arr::get($values, 'responses', array()) as $k=>$response)
+        {
+            if(is_int($k))
+            {
+                DB_ORM::insert('Map_Question_Response')
+                    ->column('question_id', $questionId)
+                    ->column('response', $response)
+                    ->column('order', $order)
+                    ->execute();
+            }
+            else
+            {
+                $k = substr($k, 2);
+                DB_ORM::update('Map_Question_Response')
+                    ->set('response', $response)
+                    ->set('order', $order)
+                    ->where('id', '=', $k)
+                    ->execute();
+            }
+            $order++;
+        }
+
     }
 
     private function updateSliderQuestion($questionId, $values) {
@@ -367,6 +408,27 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->settings = Arr::get($values, 'settings', '');
 
         $this->save();
+    }
+
+    private function saveScriptConcordanceTesting($mapId, $type, $values)
+    {
+        $question = DB_ORM::insert('Map_Question')
+            ->column('map_id', $mapId)
+            ->column('stem', Arr::get($values, 'stem', ''))
+            ->column('entry_type_id', $type->id)
+            ->column('show_answer', 1)
+            ->column('type_display', Arr::get($values, 'typeDisplay', 0))
+            ->column('num_tries', Arr::get($values, 'tries', 1))
+            ->execute();
+
+        foreach (Arr::get($values, 'responses', array()) as $k=>$response)
+        {
+            DB_ORM::insert('Map_Question_Response')
+                ->column('question_id', $question)
+                ->column('response', $response)
+                ->column('order', $k)
+                ->execute();
+        }
     }
 
     public function addFullQuestion($mapId, $values){

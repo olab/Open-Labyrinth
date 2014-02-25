@@ -33,8 +33,6 @@ audio:not([controls]) {
 
 html {
   font-size: 100%;
-  -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
 }
 
 a:focus {
@@ -65,7 +63,6 @@ sub {
 }
 
 img {
-  width: auto\9;
   height: auto;
   max-width: 100%;
   vertical-align: middle;
@@ -89,7 +86,6 @@ textarea {
 
 button,
 input {
-  *overflow: visible;
   line-height: normal;
 }
 
@@ -979,9 +975,7 @@ pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 pre.prettyprint {
@@ -1076,9 +1070,7 @@ input[type="color"],
   line-height: 20px;
   color: #555555;
   vertical-align: middle;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 input,
@@ -1147,8 +1139,6 @@ input[type="color"]:focus,
 input[type="radio"],
 input[type="checkbox"] {
   margin: 4px 0 0;
-  margin-top: 1px \9;
-  *margin-top: 0;
   line-height: normal;
 }
 
@@ -6170,4 +6160,14 @@ input.assign-type {
 
 .wizard_button img {
     width: 100%;
+}
+
+.report-type {
+    margin-bottom: 30px;
+}
+
+.report-type-title {
+    position: relative;
+    top: 1px;
+    padding-right: 5px;
 }

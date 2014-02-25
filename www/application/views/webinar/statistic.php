@@ -23,16 +23,27 @@
     <h1><?php echo __('Scenario Progress'); ?> <?php if(isset($templateData['webinar'])) { ?> - "<?php echo $templateData['webinar']->title; ?>" <?php } ?></h1>
 </div>
 
+<div class="report-type">
+    <span class="report-type-title"><?php echo __('Repoet type') ?></span>
+    <div class="radio_extended btn-group">
+        <input type="radio" name="typeReport" id="4R" checked/>
+        <label class="btn" for="4R" data-class="btn-info"><?php echo __('4R Report'); ?></label>
+        <input type="radio" name="typeReport" id="SCT"/>
+        <label class="btn" for="SCT" data-class="btn-info"><?php echo __('SCT Report'); ?></label>
+    </div>
+</div>
+
 <?php if(isset($templateData['webinar']) && isset($templateData['webinarData']) && isset($templateData['usersMap'])) { ?>
     <table class="table table-striped table-bordered" id="my-labyrinths">
         <tbody>
         <tr>
             <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2" colspan="2">Users</td>
             <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px" rowspan="2">Include in report</td>
+            <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px; display: none;" rowspan="2" id="expert-th-js">Expert</td>
             <?php
             $stepsHeaders = array();
 
-            // formate publish steps
+            // format publish steps
             $mapSteps = array();
             foreach($templateData['webinarData'] as $userId => $steps) {
                 foreach($steps as $stepKey => $step) {
@@ -61,10 +72,16 @@
                         if(Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') {
                             $changeStepLink = ' <a data-toggle="tooltip" data-placement="left" title="" data-original-title="Change Scenario to this step" href="' . URL::base() . 'webinarManager/changeStep/' . $templateData['webinar']->id . '/' . $stepKey . '/1" style="text-decoration: none;font-size: 120%;"><i class="icon-off"></i></a>';
                         }
-                        $stepsHeaders[$stepKey]['html']  = '<td colspan="' . $stepsHeaders[$stepKey]['count'] . '">' .
-                                                            (isset($templateData['webinarStepMap'][$stepKey]) ? ($templateData['webinar']->current_step == $stepKey) ? '<span style="color:#0088cc;font-weight:bold">' . $templateData['webinarStepMap'][$stepKey]->name . '</span>'
-                                                                                                                                                                     : $templateData['webinarStepMap'][$stepKey]->name . $changeStepLink : '-') . (($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') ? ' <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="' . URL::base() . 'webinarManager/stepReport/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="' . URL::base() . 'webinarManager/publishStep/' . $templateData['webinar']->id . '/' . $stepKey . '" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
-                                                                                                              : '') . '</td>';
+                        $stepsHeaders[$stepKey]['html']  =
+                            '<td colspan="'.$stepsHeaders[$stepKey]['count'].'">'.
+                            (isset($templateData['webinarStepMap'][$stepKey]) ?
+                                ($templateData['webinar']->current_step == $stepKey)
+                                ? '<span style="color:#0088cc;font-weight:bold">'.$templateData['webinarStepMap'][$stepKey]->name.'</span>'
+                                : $templateData['webinarStepMap'][$stepKey]->name.$changeStepLink : '-').(
+                                    ($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer')
+                                    ? ' <a class="reportStepType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="'.URL::base().'webinarManager/stepReport/'.$templateData['webinar']->id.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+                                        <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="'.URL::base().'webinarManager/publishStep/'.$templateData['webinar']->id.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
+                                    : '') . '</td>';
                     }
                 }
             }
@@ -91,7 +108,7 @@
                 <td style="text-align: center; font-weight: bold;">
                     <?php echo $v['map']->name;?>
                     <?php if(isset($v['showReport']) && $v['showReport'] && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') { ?>
-                        <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base(); ?>webinarManager/mapReport/<?php echo $templateData['webinar']->id; ?>/<?php echo $v['map']->id; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
+                        <a class="reportMapType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base().'webinarManager/mapReport/'.$templateData['webinar']->id.'/'.$v['map']->id; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
                     <?php } ?>
                 </td>
             <?php }} ?>
@@ -101,7 +118,8 @@
             <?php $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
             <td style="width: 50px;text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
             <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
-            <td style="width: 120px; text-align: center;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" <?php echo 'checked="checked"'; ?> onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId]; ?> , $('#check<?php echo $userId; ?> ').attr('checked') ? 1 : 0 )" ></td>
+            <td style="width: 120px; text-align: center;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?>></td>
+            <td style="width: 120px; text-align: center; display: none;" class="expert-td-js"><input type="checkbox" id="expert<?php echo $userId; ?>" onclick="ajaxExpert(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)" <?php if($templateData['experts'][$userId]) echo 'checked="checked"'; ?>></td>
             <?php
             foreach($steps as $stepKey => $step) {
                 foreach($step as $mapId => $map) {
@@ -138,13 +156,62 @@
 
 
 <script>
-    function ajaxCheck(id,isInclude) {
-        var URL = "<?php echo URL::base(); ?>webinarManager/updateInclude4R/" + id + "/" + isInclude ;
-        $.get(URL, function(data) {
-            if(data != '') {
-               return true;
-            }
+    function ajaxCheck(id, idUser) {
+        var isInclude = $('#check'+idUser).attr('checked') ? 1 : 0;
+        var URL = "<?php echo URL::base(); ?>webinarManager/updateInclude4R/"+id+"/"+isInclude;
+        $.get(
+            URL,
+            function(data) {
+                if(data != '') return true;
         });
     }
+    function ajaxExpert(id, idUser) {
+        var isInclude = $('#expert'+idUser).attr('checked') ? 1 : 0;
+        var URL = "<?php echo URL::base(); ?>webinarManager/updateExpert/"+id+"/"+isInclude;
+        $.get(
+            URL,
+            function(data){}
+        );
+    }
 
+    var th              = $('#expert-th-js'),
+        td              = $('.expert-td-js'),
+        reportMapType   = $('.reportMapType'),
+        reportStepType  = $('.reportStepType'),
+        hrefMapType     = reportMapType.attr('href'),
+        popupMapTitle   = reportMapType.data('original-title'),
+        hrefStepType    = reportStepType.attr('href'),
+        popupStepTitle  = reportStepType.data('original-title');
+
+    $('#4R').change(function(){
+        th.hide();
+        td.hide();
+
+        hrefMapType     = hrefMapType.replace('mapReportSCT', 'mapReport');
+        popupMapTitle   = popupMapTitle.replace('SCR', '4R');
+        hrefStepType    = hrefStepType.replace('stepReportSCT', 'stepReport');
+        popupStepTitle  = popupStepTitle.replace('SCR', '4R');
+
+        changeType();
+    });
+
+    $('#SCT').change(function(){
+        th.show();
+        td.show();
+
+        hrefMapType     = hrefMapType.replace('mapReport', 'mapReportSCT');
+        popupMapTitle   = popupMapTitle.replace('4R', 'SCR');
+        hrefStepType    = hrefStepType.replace('stepReport', 'stepReportSCT');
+        popupStepTitle  = popupStepTitle.replace('4R', 'SCR');
+
+        changeType();
+    });
+
+    function changeType()
+    {
+        reportMapType.attr('href', hrefMapType);
+        reportMapType.attr('data-original-title', popupMapTitle);
+        reportStepType.attr('href', hrefStepType);
+        reportStepType.attr('data-original-title', popupStepTitle);
+    }
 </script>

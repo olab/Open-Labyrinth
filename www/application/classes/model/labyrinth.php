@@ -24,9 +24,9 @@ class Model_Labyrinth extends Model {
 
     public function execute ($nodeId, $bookmark = NULL, $isRoot = false)
     {
-        $result = array();
-        $result['userId'] = (Auth::instance()->logged_in()) ? $result['userId'] = Auth::instance()->get_user()->id : 0;
-        $node = DB_ORM::model('map_node', array((int) $nodeId));
+        $result             = array();
+        $result['userId']   = (Auth::instance()->logged_in()) ? Auth::instance()->get_user()->id : 0;
+        $node               = DB_ORM::model('map_node', array((int) $nodeId));
 
         if ($node)
         {
@@ -39,9 +39,8 @@ class Model_Labyrinth extends Model {
             $result['node_text']    = $node->text;
 
             $clearAnnotation = strip_tags($node->annotation, '<img>');
-            if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0)) {
-                $result['node_annotation'] = $node->annotation;
-            }
+
+            if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0))  $result['node_annotation'] = $node->annotation;
 
             $sessionId = NULL;
             if($bookmark != NULL) {
@@ -61,9 +60,7 @@ class Model_Labyrinth extends Model {
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL) {
-                    $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
-                }
+                if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
             }
 
             $webinarSession = DB_ORM::model('user_session', array((int)$sessionId));
@@ -72,17 +69,17 @@ class Model_Labyrinth extends Model {
                 $result['webinarStep'] = $webinarSession->webinar_step;
             }
 
-            $conditional = $this->conditional($sessionId, $node);
-            $result['previewNodeId'] = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-            $result['node_links'] = $this->generateLinks($result['node']);
-            $result['sections'] = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
+            $conditional                = $this->conditional($sessionId, $node);
+            $result['previewNodeId']    = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
+            $result['node_links']       = $this->generateLinks($result['node']);
+            $result['sections']         = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
-            $previewSessionTrace = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
-            $result['c_debug'] = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
+            $previewSessionTrace        = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
+            $result['c_debug']          = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
 
-            $result['counters'] = '';
-            $result['redirect'] = NULL;
-            $result['remoteCounters'] = '';
+            $result['counters']         = '';
+            $result['redirect']         = NULL;
+            $result['remoteCounters']   = '';
 
             if ($conditional == NULL)
             {
@@ -436,7 +433,6 @@ class Model_Labyrinth extends Model {
         }
 
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
-
         if($sliderQuestionChoices != null && count($sliderQuestionChoices) > 0) {
             $slidersSum = 0;
             foreach($sliderQuestionChoices as $qID => $sliderValue) {
@@ -486,6 +482,7 @@ class Model_Labyrinth extends Model {
 
             Session::instance()->delete('dragQuestionResponses');
         }
+
         $this->updateCounterString($mapID, $counterString);
 
         Session::instance()->set('countersFunc', json_encode($countersFunc));
@@ -565,6 +562,19 @@ class Model_Labyrinth extends Model {
                 }
             }
         }
+
+        $sctResponses = Session::instance()->get('sctResponses', array());
+        foreach ($sctResponses as $idQuestion=>$idResponse)
+        {
+            DB_ORM::insert('User_Response')
+                ->column('question_id', $idQuestion)
+                ->column('response', $idResponse)
+                ->column('session_id', $sessionId)
+                ->column('node_id', $nodeId)
+                ->execute();
+        }
+        Session::instance()->delete('sctResponses');
+
         Session::instance()->delete('arrayAddedQuestions');
         return $c_debug;
     }

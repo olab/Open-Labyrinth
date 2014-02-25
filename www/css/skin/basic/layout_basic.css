@@ -517,3 +517,14 @@ a.file-link:visited {
     font-style: italic;
     color: #777799;
 }
+
+.sct-question{
+    position: relative;
+    top: 3px;
+    padding: 3px 5px 3px 0;
+}
+
+.navigation.horizontal li{
+    display: inline-block;
+    margin-right: 10px;
+}
