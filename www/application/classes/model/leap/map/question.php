@@ -208,9 +208,6 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case 'slr':
                 $this->saveSliderQuestion($mapId, $type, $values);
                 break;
-            case 'sct':
-                $this->saveScriptConcordanceTesting($mapId, $type, $values);
-                break;
             default:
                 $this->saveResponceQuestion($mapId, $type, $values);
                 break;
@@ -240,47 +237,10 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case 'slr':
                 $this->updateSliderQuestion($questionId, $values);
                 break;
-            case 'sct':
-                $this->updateScriptConcordanceTesting($questionId, $values);
-                break;
             default:
                 $this->updateResponseQuestion($values, $type->id);
                 break;
         }
-    }
-
-    private function updateScriptConcordanceTesting($questionId, $values)
-    {
-        DB_ORM::update('Map_Question')
-            ->set('stem', Arr::get($values, 'stem', ''))
-            ->set('num_tries', Arr::get($values, 'tries', 1))
-            ->set('type_display', Arr::get($values, 'typeDisplay', 0))
-            ->where('id', '=', $questionId)
-            ->execute();
-
-        $order = 0;
-        foreach (Arr::get($values, 'responses', array()) as $k=>$response)
-        {
-            if(is_int($k))
-            {
-                DB_ORM::insert('Map_Question_Response')
-                    ->column('question_id', $questionId)
-                    ->column('response', $response)
-                    ->column('order', $order)
-                    ->execute();
-            }
-            else
-            {
-                $k = substr($k, 2);
-                DB_ORM::update('Map_Question_Response')
-                    ->set('response', $response)
-                    ->set('order', $order)
-                    ->where('id', '=', $k)
-                    ->execute();
-            }
-            $order++;
-        }
-
     }
 
     private function updateSliderQuestion($questionId, $values) {
@@ -408,27 +368,6 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->settings = Arr::get($values, 'settings', '');
 
         $this->save();
-    }
-
-    private function saveScriptConcordanceTesting($mapId, $type, $values)
-    {
-        $question = DB_ORM::insert('Map_Question')
-            ->column('map_id', $mapId)
-            ->column('stem', Arr::get($values, 'stem', ''))
-            ->column('entry_type_id', $type->id)
-            ->column('show_answer', 1)
-            ->column('type_display', Arr::get($values, 'typeDisplay', 0))
-            ->column('num_tries', Arr::get($values, 'tries', 1))
-            ->execute();
-
-        foreach (Arr::get($values, 'responses', array()) as $k=>$response)
-        {
-            DB_ORM::insert('Map_Question_Response')
-                ->column('question_id', $question)
-                ->column('response', $response)
-                ->column('order', $k)
-                ->execute();
-        }
     }
 
     public function addFullQuestion($mapId, $values){
