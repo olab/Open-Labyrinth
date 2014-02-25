@@ -284,7 +284,6 @@ class Report_SCT_Map extends Report_SCT_Element {
             foreach ($user_responses_db as $response)
             {
                 $user_id = DB_ORM::model('User_Session', array($response->session_id))->user_id;
-
                 if (in_array($user_id, $this->experts)) $score[$id_question][$response->response] += 1;
             }
             $max_score = max($score[$id_question]);
