@@ -118,7 +118,10 @@ class Report_SCT_Map extends Report_SCT_Element {
                 {
                     $id_session = $session->session_id;
                     $id_user = DB_ORM::model('User_Session', array($id_session))->user_id;
-                    $id_response = $session->response;
+                    $response = $session->response;
+                    $id_response = (is_int($response))
+                        ? $response
+                        : DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->where('response', '=', $response)->query()->get('id');
                     $user_response[$id_user][$id_question] = $this->scoreForResponse[$id_question][$id_response];
                 }
                 // -------- end question user value -------- //
@@ -275,23 +278,23 @@ class Report_SCT_Map extends Report_SCT_Element {
         foreach ($this->questions as $questions)
         {
             $id_question = $questions->question->id;
+
             foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->order_by('order')->query() as $response)
             {
                 $score[$id_question][$response->id] = 0;
             }
 
-            $user_responses_db = DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query();
-            foreach ($user_responses_db as $response)
+            foreach (DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query() as $response)
             {
                 $user_id = DB_ORM::model('User_Session', array($response->session_id))->user_id;
                 if (in_array($user_id, $this->experts)) $score[$id_question][$response->response] += 1;
             }
+
             $max_score = max($score[$id_question]);
             foreach ($score[$id_question] as $k=>$v)
             {
-                $this->scoreForResponse[$id_question][$k] = round($v / $max_score, 2);
+                $this->scoreForResponse[$id_question][$k] = ($max_score == 0 ) ? 0 : round($v / $max_score, 2);
             }
-
         }
     }
 }
