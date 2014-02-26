@@ -144,7 +144,7 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
         $result_db = DB_ORM::select('Webinar_User')->where('webinar_id', '=', $idWeb)->where('expert', '=', 1)->query()->as_array();
         foreach ($result_db as $record)
         {
-            $result[] = $record->id;
+            $result[] = $record->user_id;
         }
         return $result;
     }
