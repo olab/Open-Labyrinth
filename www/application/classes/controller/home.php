@@ -127,39 +127,40 @@ class Controller_Home extends Controller_Base {
         }
     }
 
-    public function action_search() {
+    public function action_search()
+    {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Search')));
 
-        if (isset($_POST) && !empty($_POST)) {
-            $scope = Arr::get($_POST, 'scope', NULL);
-            $key = Arr::get($_POST, 'searchterm', NULL);
-            $title = TRUE;
-            if ($scope == 'a') {
-                $title = FALSE;
-            }
+        if (isset($_POST) && !empty($_POST))
+        {
+            $scope  = Arr::get($_POST, 'scope', NULL);
+            $key    = Arr::get($_POST, 'searchterm', NULL);
+            $title  = TRUE;
 
-            if ($key != NULL) {
+            if ($scope == 'a') $title = FALSE;
+
+            if ($key != NULL)
+            {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
 
                 $rootNodes = array();
-                if (count($maps) > 0){
+                if (count($maps) > 0)
+                {
                     foreach($maps as $map){
                         $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                     }
                 }
 
-                $view = View::factory('search');
-                $view->set('maps', $maps);
-                $view->set('term', $key);
-                $view->set('rootNodes', $rootNodes);
+                $this->templateData['center'] = View::factory('search')
+                    ->set('maps', $maps)
+                    ->set('term', $key)
+                    ->set('rootNodes', $rootNodes);
 
-                $this->templateData['center'] = $view;
                 unset($this->templateData['right']);
                 $this->template->set('templateData', $this->templateData);
             }
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_resetPassword() {

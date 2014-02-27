@@ -249,8 +249,9 @@ class Controller_Base extends Controller_Template {
                 $centerView = View::factory('adminMenu');
                 $this->templateData['center'] = $centerView;
                 $centerView->set('templateData', $this->templateData);
-            } else {
-
+            }
+            else
+            {
                 $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
                 $rooNodesMap = array();
                 if($maps != null && count($maps) > 0) {
