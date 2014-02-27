@@ -103,6 +103,11 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
                 'savable' => TRUE,
                 'nullable' => FALSE,
                 'default' => TRUE
+            )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
             ))
         );
         
@@ -360,6 +365,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->width_type = Arr::get($values, 'wv', $this->width_type);
         $this->height_type = Arr::get($values, 'hv', $this->height_type);
         $this->is_shared = Arr::get($values, 'shared', false);
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         DB_ORM::model('map_element_metadata')->saveMetadata($this->id, $values);
         

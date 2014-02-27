@@ -37,6 +37,19 @@ class Controller_ClusterManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['dams'] = DB_ORM::model('map_dam')->getAllDamByMap((int) $mapId);
 
+            $ses = Session::instance();
+            $x = $ses->get('dam_ses');
+            switch ($x){
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'The claster is did not set to private. Please, check other labyrinths on reference on this claster.';
+                    $ses->delete('avatar_ses');
+                    break;
+                case 'delDAM':
+                    $this->templateData['warningMessage'] = 'The claster did not deleted. Please, check other labyrinths on reference on this claster.';
+                    $ses->delete('avatar_ses');
+                    break;
+            }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
 
@@ -95,7 +108,13 @@ class Controller_ClusterManager extends Controller_Base {
         $damId = $this->request->param('id2', NULL);
 
         if ($damId != NULL and $mapId != NULL) {
-            Db_ORM::model('map_dam', array((int) $damId))->delete();
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($damId, 'DAM');
+            if($reference != NULL){
+                $ses = Session::instance();
+                $ses->set('dam_ses', 'delDAM');
+            } else {
+                DB_ORM::model('map_dam', array((int) $damId))->delete();
+            }
             Request::initial()->redirect(URL::base() . 'clusterManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -113,6 +132,14 @@ class Controller_ClusterManager extends Controller_Base {
             $this->templateData['files'] = DB_ORM::model('map_dam')->getMediaFilesNotAdded((int) $damId);
             $this->templateData['dams'] = DB_ORM::model('map_dam')->getDamNotAdded((int) $damId);
             $this->templateData['preview'] = Controller_RenderLabyrinth::parseText('[[DAM:' . $damId . ']]');
+
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($damId, 'DAM');
+            $this->templateData['used'] = count($usedElements);
+            $ses = Session::instance();
+            if($ses->get('dam_ses') == 'setPrivate'){
+                $this->templateData['warningMessage'] = 'The claster is did not set to private. Please, check other labyrinths on reference on this claster.';
+                $ses->delete('avatar_ses');
+            }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
@@ -138,6 +165,13 @@ class Controller_ClusterManager extends Controller_Base {
         $damId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $damId != NULL) {
+            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $damId, 'DAM');
+            $privete = Arr::get($_POST, 'is_private');
+            if($reference != NULL && $privete){
+                $ses = Session::instance();
+                $ses->set('dam_ses', 'setPrivate');
+                $_POST['is_private'] = FALSE;
+            }
             DB_ORM::model('map_dam')->updateDamName($damId, $_POST);
             Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {

@@ -30,7 +30,9 @@ if (isset($templateData['map'])) {
     </div>
         <h1><?php echo __('Edit nodes of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
     </div>
-
+    <?php if(isset($templateData['warningMessage'])){ ?>
+    <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+    <?php }?>
 
     <?php if (isset($templateData['nodes'])) { ?>
         <table class="table table-striped table-bordered">

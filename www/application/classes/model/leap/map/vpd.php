@@ -170,6 +170,16 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
 
         return NULL;
     }
+    public function getMapId($vpdId){
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $vpdId);
+        $results = $builder->query();
+        if($results->is_loaded()){
+            foreach($results as $record){
+                $mapId = $record['map_id'];
+            }
+            return $mapId;
+        }
+    }
 }
 
 ?>

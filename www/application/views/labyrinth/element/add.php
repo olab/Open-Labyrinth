@@ -598,6 +598,13 @@ if (isset($templateData['map'])) {
                 break;
         }
         ?>
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Private'); ?>
+        </label>
+        <div class="controls">
+            <input type="checkbox" name="Private">
+        </div>
+    </div>
     <div class="form-actions">
         <div class="pull-right">
         <input class="btn btn-primary btn-large" type="submit" value="Add"></div></div>

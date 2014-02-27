@@ -37,6 +37,19 @@ class Controller_AvatarManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int) $mapId);
 
+            $ses = Session::instance();
+            $x = $ses->get('avatar_ses');
+            switch ($x){
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'The avatar is did not set to private. Please, check other labyrinths on reference on this avatar.';
+                    $ses->delete('avatar_ses');
+                    break;
+                case 'delAV':
+                    $this->templateData['warningMessage'] = 'The avatar did not deleted. Please, check other labyrinths on reference on this avatar.';
+                    $ses->delete('avatar_ses');
+                    break;
+            }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
 
@@ -71,7 +84,13 @@ class Controller_AvatarManager extends Controller_Base {
         if ($mapId != NULL and $avatarId != NULL) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int) $avatarId));
-
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($avatarId, 'AV');
+            $this->templateData['used'] = count($usedElements);
+            $ses = Session::instance();
+            if($ses->get('avatar_ses') == 'setPrivate'){
+                $this->templateData['warningMessage'] = 'The avatar is did not set to private. Please, check other labyrinths on reference on this avatar.';
+                $ses->delete('avatar_ses');
+            }
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($avatarId)->set_url(URL::base() . 'avatarManager/editAvatar/' . $mapId.'/'.$avatarId));
@@ -94,12 +113,18 @@ class Controller_AvatarManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $avatarId != NULL) {
-            $upload_dir = DOCROOT . '/avatars/';
-            $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
-            if (!empty($avatarImage)) {
-                @unlink($upload_dir . $avatarImage);
-            }
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($avatarId, 'AV');
+            if($reference != NULL){
+                $ses = Session::instance();
+                $ses->set('avatar_ses', 'delAV');
+            } else {
+                $upload_dir = DOCROOT . '/avatars/';
+                $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
+                if (!empty($avatarImage)) {
+                    @unlink($upload_dir . $avatarImage);
+                }
             DB_ORM::model('map_avatar', array((int) $avatarId))->delete();
+            }
             Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -122,6 +147,13 @@ class Controller_AvatarManager extends Controller_Base {
             $file = uniqid() . '.png';
             file_put_contents($upload_dir . $file, $data);
             $_POST['image_data'] = $file;
+            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $avatarId, 'AV');
+            $privete = Arr::get($_POST, 'is_private');
+            if($reference != NULL && $privete){
+                $ses = Session::instance();
+                $ses->set('avatar_ses', 'setPrivate');
+                $_POST['is_private'] = FALSE;
+            }
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
             if ($_POST['save_exit_value'] == 0) {
                 Request::initial()->redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);

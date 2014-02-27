@@ -40,6 +40,19 @@ class Controller_ElementManager extends Controller_Base {
             $this->templateData['map'] = $map;
             $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($map->id);
 
+            $ses = Session::instance();
+            $x = $ses->get('vpdmanager_ses');
+            switch ($x){
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'Element is did not set to private. Please, check other labyrinths on reference on this element.';
+                    $ses->delete('vpdmanager_ses');
+                    break;
+                case 'delVpd':
+                    $this->templateData['warningMessage'] = 'The element did not deleted. Please, check other labyrinths on reference on this element.';
+                    $ses->delete('vpdmanager_ses');
+                    break;
+            }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
 
@@ -96,6 +109,12 @@ class Controller_ElementManager extends Controller_Base {
         $type = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $type != NULL) {
+            $private = Arr::get($_POST, 'Private');
+            if($private){
+                $_POST['Private'] = 'On';
+            }else {
+                $_POST['Private'] = 'Off';
+            }
             DB_ORM::model('map_vpd')->createNewElement($mapId, $type, $_POST);
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
@@ -108,6 +127,18 @@ class Controller_ElementManager extends Controller_Base {
         $vpdId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $vpdId != NULL) {
+            $private = Arr::get($_POST, 'Private');
+            if($private){
+                $_POST['Private'] = 'On';
+            }else {
+                $_POST['Private'] = 'Off';
+            }
+            $vpd = DB_ORM::model('map_node_reference')->getNotParent($mapId, $vpdId, 'VPD');
+            if($private && $vpd != NULL){
+                $ses = Session::instance();
+                $ses->set('vpdmanager_ses', 'setPrivate');
+                $_POST['Private'] = 'Off';
+            }
             DB_ORM::model('map_vpd_element')->saveElementValues($vpdId, $_POST);
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
@@ -120,7 +151,13 @@ class Controller_ElementManager extends Controller_Base {
         $vpdId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $vpdId != NULL) {
-            DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
+            $vpd = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
+            if($vpd != NULL){
+              $ses = Session::instance();
+              $ses->set('vpdmanager_ses', 'delVpd');
+            } else {
+                DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
+            }
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -139,6 +176,9 @@ class Controller_ElementManager extends Controller_Base {
             $this->templateData['files'] = DB_ORM::model('map_element')->getAllMediaFiles((int) $mapId);
 
             $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
+
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
+            $this->templateData['used'] = count($usedElements);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));

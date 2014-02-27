@@ -78,6 +78,7 @@ var Node = function() {
     self.isActive = false;
     self.sections = [];
     self.showInfo = false;
+    self.isPrivate = false;
     self.annotation = '';
 
     // Draw current node

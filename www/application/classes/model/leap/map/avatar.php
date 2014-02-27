@@ -153,6 +153,11 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
+            ))
         );
         
         $this->relations = array(
@@ -217,6 +222,7 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $this->bubble = Arr::get($values, 'avbubble', $this->bubble);
             $this->bubble_text = Arr::get($values, 'avbubbletext', $this->bubble_text);
             $this->image = Arr::get($values, 'image_data', $this->image);
+            $this->is_private = Arr::get($values, 'is_private', false);
 
             $this->save();
         }
@@ -270,6 +276,7 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $duplicateAvatar->eyes = $this->eyes;
             $duplicateAvatar->hair_color = $this->hair_color;
             $duplicateAvatar->image = $file;
+            $duplicateAvatar->is_private = $this->is_private;
 
             $duplicateAvatar->save();
         }
@@ -314,6 +321,7 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                     ->column('eyes', $avatar->eyes)
                     ->column('hair_color', $avatar->hair_color)
                     ->column('image', $file)
+                    ->column('is_private', $avatar->is_private)
                     ->execute();
         }
         return $avatarMap;

@@ -653,6 +653,21 @@ if (isset($templateData['map']) and isset($templateData['vpd'])) { ?>
                                     break;
                             }
                             ?>
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('Private'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="checkbox" name="Private" <?php if(Arr::get($values, 'Private') == 'On') { echo 'checked="checked"';} ?>>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('Used'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" readonly value="<?php echo $templateData['used']; ?>"/>
+                            </div>
+                        </div>
 
                         <div class="form-actions">
                             <div class="pull-right">

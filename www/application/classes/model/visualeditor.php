@@ -101,7 +101,7 @@ class Model_VisualEditor extends Model {
                     }
                 }
 
-                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", annotation: "' . $annotation . '", showInfo: "' . $node->show_info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . ', y: ' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
+                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", annotation: "' . $annotation . '", isPrivate: "' . $node->is_private . '", showInfo: "' . $node->show_info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . ', y: ' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
             }
 
             if (strlen($nodesJSON) > 2) {
@@ -652,9 +652,9 @@ class Model_VisualEditor extends Model {
     private function updateNodes($nodes) {
         if ($nodes == null || count($nodes) <= 0)
             return;
-
+        $mapId = Arr::get($_POST, 'id');
         foreach ($nodes as $node) {
-            DB_ORM::model('map_node')->updateNodeFromJSON($node['id'], $node);
+            DB_ORM::model('map_node')->updateNodeFromJSON($mapId, $node['id'], $node);
             $this->updateNodeCountersFromJSON($node, $node['id']);
         }
     }
@@ -714,10 +714,14 @@ class Model_VisualEditor extends Model {
     private function deleteNodesWithLinks($nodes) {
         if ($nodes == null || count($nodes) <= 0)
             return;
-
+        $mapId = Arr::get($_POST, 'id', NULL);
         $model = DB_ORM::model('map_node');
         foreach ($nodes as $node) {
-            $model->deleteNode($node->id);
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($node->id, 'INFO');
+            if($reference == NULL){
+                DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $node->id);
+                $model->deleteNode($node->id);
+            }
         }
     }
 
