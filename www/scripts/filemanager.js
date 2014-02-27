@@ -39,3 +39,12 @@ $(function () {
         }
     });
 });
+$(document).ready( function() {
+       $("#maincb").click( function() {
+            if($('#maincb').attr('checked')){
+                $('.check_box:enabled').attr('checked', true);
+            } else {
+                $('.check_box:enabled').attr('checked', false);
+            }
+       });
+    });

@@ -42,6 +42,9 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) {
     </script>
     <div class="page-header">
         <h1>Avatar Editor: "<?php echo $templateData['avatar']->id; ?>"</h1></div>
+    <?php if(isset($templateData['warningMessage'])){ ?>
+    <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+    <?php }?>
 <form class="form-horizontal" method="POST"
       action="<?php echo URL::base() . 'avatarManager/updateAvatar/' . $templateData['map']->id . '/' . $templateData['avatar']->id; ?>"
       name="avatar_form">
@@ -803,8 +806,22 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) {
         </div>
     </div>
     </div>
+        <hr >
+    <div class="control-group">
+        <label class="control-label" for="v"><?php echo __('Private'); ?>
+        </label>
+        <div class="controls">
+            <input type="checkbox" name="is_private" <?php if(isset($templateData['avatar'])) { echo $templateData['avatar']->is_private ? 'checked=""' : '"checked"';} ?>>
+        </div>
+    </div>
 
-
+    <div class="control-group">
+        <label class="control-label"><?php echo __('Used'); ?>
+        </label>
+        <div class="controls">
+            <input type="text" readonly value="<?php if(isset($templateData['used'])) { echo $templateData['used']; }?>"/>
+        </div>
+    </div>
     </fieldset>
 
     <input autocomplete="off" name="image_data" id="image_data" type="hidden"/>

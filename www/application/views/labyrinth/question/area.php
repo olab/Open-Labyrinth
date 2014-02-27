@@ -76,6 +76,22 @@ if (isset($templateData['map'])) { ?>
                 <textarea onkeypress="resetCheck();" id="code" name="settings"><?php if(isset($templateData['question'])) echo $templateData['question']->settings; ?></textarea>
             </div>
         </div>
+        <div class="control-group">
+            <label class="control-label" for="v"><?php echo __('Private'); ?>
+            </label>
+            <div class="controls">
+                <input type="checkbox" name="is_private" <?php if(isset($templateData['question'])) { echo $templateData['question']->is_private ? 'checked=""' : '"checked"';} ?>>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Used'); ?>
+            </label>
+            <div class="controls">
+                <input type="text" readonly value="<?php if(isset($templateData['used'])) { echo $templateData['used']; } ?>"/>
+            </div>
+        </div>
+
     </fieldset>
     <div class="form-actions">
         <div class="pull-left" style="margin-left: -250px; margin-top: -20px;">

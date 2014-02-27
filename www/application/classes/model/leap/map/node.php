@@ -79,7 +79,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
+
             'link_style_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
@@ -133,6 +133,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'default' => FALSE,
                 'nullable' => FALSE,
                 'savable' => TRUE,
+            )),
+
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
             )),
 
             'annotation' => new DB_ORM_Field_Text($this, array(
@@ -314,7 +320,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('map_id',           $mapId)
                 ->column('title',            Arr::get($values, 'mnodetitle', ''))
                 ->column('text',             Arr::get($values, 'mnodetext', ''))
-                ->column('type_id',          Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                ->column('is_private',       Arr::get($values, 'is_private', FALSE) ? 1 : 0)
                 ->column('probability',      Arr::get($values, 'mnodeprobability', FALSE))
                 ->column('info',             Arr::get($values, 'mnodeinfo', ''))
                 ->column('link_style_id',    Arr::get($values, 'linkstyle', 1))
@@ -343,6 +349,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $record->conditional          = Arr::get($values, 'conditional', '');
         $record->conditional_message  = Arr::get($values, 'conditional_message', '');
         $record->info                 = Arr::get($values, 'info', '');
+        $record->is_private           = Arr::get($values, 'is_private', FALSE) ? 1 : 0;;
         $record->link_style_id        = Arr::get($values, 'link_style_id', 1);
         $record->link_type_id         = Arr::get($values, 'link_type_id', 1);
         $record->priority_id          = Arr::get($values, 'priority_id', 1);
@@ -368,6 +375,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('title', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', '')))))
                 ->column('text', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', '')))))
                 ->column('info', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', '')))))
+                ->column('is_private', (int) Arr::get($values, 'is_private', 0) ? 1 : 0)
                 ->column('probability', (Arr::get($values, 'isExit', 'false') == 'true'))
                 ->column('type_id', (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2)
                 ->column('link_style_id', Arr::get($values, 'linkStyle', 1))
@@ -383,13 +391,31 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $builder->execute();
     }
 
-    public function updateNodeFromJSON($nodeId, $values) {
+    public function updateNodeFromJSON($mapId, $nodeId, $values) {
         $this->id = $nodeId;
         $this->load();
         if($this) {
             $this->title = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
-            $this->text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
-            $this->info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
+            $info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $nodetext = $this->checkReference($mapId, $nodeId, $text, $info);
+            if(isset($nodetext['text'])){
+                $this->text = $nodetext['text'];
+            }else{
+                $this->text = $text;
+            }
+            if(isset($nodetext['info'])){
+                $this->info = $nodetext['info'];
+            }else {
+                $this->info = $info;
+            }
+            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
+            $privete = (int) Arr::get($values, 'isPrivate', 0);
+            if($reference != NULL && $privete){
+                $this->is_private = FALSE;
+            } else {
+                $this->is_private = $privete;
+            }
             $this->probability = Arr::get($values, 'isExit', 'false') == 'true';
             $this->type_id = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
             $this->link_style_id = Arr::get($values, 'linkStyle', 1);
@@ -430,6 +456,16 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
 
+    public function updateNodeInfo($nodeId, $text) {
+        $this->id = $nodeId;
+        $this->load();
+
+        if($this->is_loaded()) {
+            $this->info = $text;
+            $this->save();
+        }
+    }
+
     public function getLastAddedNode($mapId)
     {
         $result = DB_SQL::select('default')
@@ -448,6 +484,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->title = 'Root Node';
             $this->text = '';
             $this->info = '';
+            $this->is_private = FALSE;
             $this->probability = FALSE;
             $this->link_style_id = 1;
             $this->link_type_id = 2;
@@ -468,6 +505,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->title = Arr::get($values, 'mnodetitle', $this->title);
             $this->text = Arr::get($values, 'mnodetext', $this->text);
             $this->info = Arr::get($values, 'mnodeinfo', $this->info);
+            $this->is_private = Arr::get($values, 'is_private', FALSE) ? 1 : 0;
             $this->probability = Arr::get($values, 'mnodeprobability', $this->probability);
             $this->link_style_id = Arr::get($values, 'linkstyle', $this->link_style_id);
             $this->link_type_id = Arr::get($values, 'linktype', $this->link_type_id);
@@ -710,6 +748,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'conditional'           => $node->conditional,
                 'conditional_message'   => $node->conditional_message,
                 'info'                  => $node->info,
+                'is_private'            => $node->is_private,
                 'link_style_id'         => $node->link_style_id,
                 'link_type_id'          => $node->link_type_id,
                 'priority_id'           => $node->priority_id,
@@ -840,6 +879,173 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
 
         return $name;
+    }
+
+    private function checkReference($mapId, $nodeId, $text, $info){
+        $textRecords = array();
+        $textRecords[] = $this->getReferenceField($mapId, $nodeId, $text);
+        $textRecords[] = $this->getReferenceField($mapId, $nodeId, $info);
+        $replace = array();
+        for($i = 0; $i<=1; $i++){
+            if($textRecords[$i]){
+                foreach($textRecords[$i] as $record){
+                    $key = false;
+                    $parent = false;
+                    switch ($record['type']){
+                        case 'MR':
+                            $element = DB_ORM::model('map_element', array((int) $record['element_id']));
+                            if($element->map_id && !$element->is_private){
+                                $key = true;
+                            }
+                            if($element->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'VPD':
+                            $vpdElements = DB_ORM::model('map_vpd_element')->getValuesByVpdId($record['element_id']);
+                            if($vpdElements){
+                                foreach($vpdElements as $vpdElement){
+                                    if($vpdElement->key == 'Private'){
+                                        $vpdPrivate = $vpdElement->value;
+                                    }
+                                }
+                            }
+                            if(empty($vpdPrivate)) {
+                                $vpdPrivate = 'Off';
+                            }
+                            if($vpdPrivate == 'Off'){
+                                $key = true;
+                            }
+                            $vpdMapId = DB_ORM::model('map_vpd')->getMapId($record['element_id']);
+                            if($vpdMapId == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'QU':
+                            $question = DB_ORM::model('map_question', array((int) $record['element_id']));
+                            if($question->map_id && !$question->is_private){
+                                $key = true;
+                            }
+                            if($question->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'INFO':
+                            $nod = DB_ORM::model('map_node', array((int) $record['element_id']));
+                            if($nod->map_id && !$nod->is_private){
+                                $key = true;
+                            }
+                            if($nod->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'AV':
+                            $avatar = DB_ORM::model('map_avatar', array((int) $record['element_id']));
+                            if($avatar->map_id && !$avatar->is_private){
+                                $key = true;
+                            }
+                            if($avatar->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'CHAT':
+                            $chat = DB_ORM::model('map_chat', array((int) $record['element_id']));
+                            if($chat->map_id && !$chat->is_private){
+                                $key = true;
+                            }
+                            if($chat->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                        case 'DAM':
+                            $dam = DB_ORM::model('map_dam', array((int) $record['element_id']));
+                            if($dam->map_id && !$dam->is_private){
+                                $key = true;
+                            }
+                            if($dam->map_id == $mapId){
+                                $parent = true;
+                            }
+                            break;
+                    }
+                    if($key || $parent){
+                        $this->addReferenceToBD($mapId, $nodeId, $record);
+                    } else {
+                        $search = '[['.$record['type'].':'.$record['element_id'].']]';
+                        if($i == 0){
+                            $text = str_replace($search, '', $text);
+                            $replace['text'] = $text;
+                        }
+                        if($i == 1){
+                            $info = str_replace($search, '', $info);
+                            $replace['info'] = $info;
+                        }
+                    }
+                }
+            }
+        }
+        $this->deleteReferenceFromBD($mapId, $nodeId, $textRecords);
+        return $replace;
+    }
+
+    private function deleteReferenceFromBD($mapId, $nodeId, $records){
+        $dbRecords = DB_ORM::model('map_node_reference')->getByMapeNodeId($mapId, $nodeId);
+        if(is_array($records[0]) && is_array($records[1])){
+            $records = array_merge($records[0],$records[1]);
+        } else{
+            $records = $records[0];
+        }
+        if(is_array($records) && is_array($dbRecords)){
+            foreach($dbRecords as $dbRecord){
+                $flag = false;
+                foreach($records as $record){
+                    if($dbRecord->element_id == $record['element_id'] && $dbRecord->type == $record['type']){
+                        $flag = true;
+                    }
+                }
+                if(!$flag){
+                    DB_ORM::model('map_node_reference')->deleteById($dbRecord->id);
+                }
+            }
+        } else {
+            DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $nodeId);
+        }
+    }
+
+    private function addReferenceToBD($mapId, $nodeId, $record){
+        $dbRecords = DB_ORM::model('map_node_reference')->getByMapeNodeId($mapId, $nodeId);
+        $flag = false;
+        if($dbRecords){
+            foreach($dbRecords as $dbRecord){
+                if($dbRecord->element_id == $record['element_id'] && $dbRecord->type == $record['type']){
+                  $flag = true;
+                }
+            }
+        }
+        if(!$flag){
+            $reference = DB_ORM::model('map_node_reference')->addReference($nodeId, $record);
+        }
+    }
+
+    private function getReferenceField($mapId, $nodeId, $text){
+       $codes = array('MR', 'VPD', 'QU', 'INFO', 'AV', 'CHAT', 'DAM');
+        $result = array();
+        foreach ($codes as $code) {
+            $regExp = '/[\[' . $code . ':\d\]]+/';
+            if (preg_match_all($regExp, $text, $matches)) {
+                foreach ($matches as $match) {
+                    foreach ($match as $value) {
+                        if (stristr($value, '[[' . $code . ':')) {
+                            $m = explode(':', $value);
+                            $id = substr($m[1], 0, strlen($m[1]) - 2);
+                            if (is_numeric($id)) {
+                                $result[] = array('map_id'=>$mapId,'node_id'=>$nodeId,'element_id'=>$id, 'type'=>$code);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
     }
 }
 

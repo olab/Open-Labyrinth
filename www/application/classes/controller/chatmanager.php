@@ -38,6 +38,19 @@ class Controller_ChatManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
 
+            $ses = Session::instance();
+            $x = $ses->get('chat_ses');
+            switch ($x){
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'The chat is did not set to private. Please, check other labyrinths on reference on this cahat.';
+                    $ses->delete('chat_ses');
+                    break;
+                case 'delCHAT':
+                    $this->templateData['warningMessage'] = 'The chat did not deleted. Please, check other labyrinths on reference on this chat.';
+                    $ses->delete('chat_ses');
+                    break;
+            }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
 
@@ -100,8 +113,14 @@ class Controller_ChatManager extends Controller_Base {
         $chatId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $chatId != NULL) {
-            DB_ORM::model('map_chat', array((int) $chatId))->delete();
-            DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
+            if($reference != NULL){
+                $ses = Session::instance();
+                $ses->set('chat_ses', 'delCHAT');
+            } else {
+                DB_ORM::model('map_chat', array((int) $chatId))->delete();
+                DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
+            }
             Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -117,6 +136,8 @@ class Controller_ChatManager extends Controller_Base {
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['chat'] = DB_ORM::model('map_chat', array((int) $chatId));
             $this->templateData['question_count'] = count($this->templateData['chat']->elements);
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
+            $this->templateData['used'] = count($usedElements);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
@@ -143,7 +164,14 @@ class Controller_ChatManager extends Controller_Base {
         $chatId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $chatId != NULL) {
-            DB_ORM::model('map_chat')->updateChat($chatId, $_POST);
+            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $chatId, 'CHAT');
+            $privete = Arr::get($_POST, 'is_private');
+            if($reference != NULL && $privete){
+                $ses = Session::instance();
+                $ses->set('chat_ses', 'setPrivate');
+                $_POST['is_private'] = FALSE;
+            }
+                DB_ORM::model('map_chat')->updateChat($chatId, $_POST);
             Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());

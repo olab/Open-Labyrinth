@@ -23,6 +23,9 @@ if (isset($templateData['map'])) { ?>
         <div class="pull-right">  <a class="btn btn-primary" href='<?php echo URL::base(); ?>clusterManager/addDam/<?php echo $templateData['map']->id; ?>'><i class="icon-plus-sign"></i> <?php echo __('Add data cluster'); ?></a></div>
     <h1><?php echo __('Data clusters for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
 <p><?php echo __('Data clusters act as aggregating and bringing mechanisms between data and media elements'); ?></p>
+<?php if(isset($templateData['warningMessage'])){ ?>
+<span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+<?php }?>
 <table class="table table-striped table-bordered" id="my-labyrinths">
 
 

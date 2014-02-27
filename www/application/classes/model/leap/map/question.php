@@ -108,6 +108,11 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             'settings' => new DB_ORM_Field_Text($this, array(
                 'nullable' => TRUE,
                 'savable' => TRUE,
+            )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
             ))
         );
         
@@ -247,6 +252,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         DB_ORM::update('map_question')
             ->set('stem', Arr::get($values, 'stem', ''))
             ->set('counter_id', (int)Arr::get($values, 'counter', 0))
+            ->set('is_private', (int)Arr::get($values, 'is-private', 0) ? 1 : 0)
             ->set('settings', json_encode(array(
                 'minValue' => Arr::get($values, 'minValue', 0),
                 'maxValue' => Arr::get($values, 'maxValue', 0),
@@ -314,6 +320,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->settings = Arr::get($values, 'settings', $this->feedback);
         $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
         $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
@@ -324,7 +331,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->height = Arr::get($values, 'qheight', $this->height);
         $this->feedback = Arr::get($values, 'fback', $this->feedback);
         $this->settings = Arr::get($values, 'settings', $this->feedback);
-
+        $this->is_private = Arr::get($values, 'is_private', false);
         $this->save();
     }
     
@@ -341,6 +348,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->redirect_node_id = Arr::get($values, 'redirectNode', $this->redirect_node_id);
         $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
         $this->type_display = Arr::get($values, 'typeDisplay', $this->submit_text);
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         $this->save();
         
@@ -354,6 +362,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->width = Arr::get($values, 'qwidth', 0);
         $this->feedback = Arr::get($values, 'fback', '');
         $this->settings = Arr::get($values, 'settings', '');
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
@@ -366,6 +375,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $this->height = Arr::get($values, 'qheight', 0);
         $this->feedback = Arr::get($values, 'fback', '');
         $this->settings = Arr::get($values, 'settings', '');
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
@@ -480,6 +490,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                             'abilityValue' => Arr::get($values, 'question_ability_input', 0),
                             'defaultValue' => Arr::get($values, 'defaultValue', 0)
                         )))
+                ->column('is_private', (int) Arr::get($values, 'is_private', false) ? 1 : 0)
                 ->execute();
 
         $responses = array();
@@ -525,6 +536,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->column('redirect_node_id', (int)Arr::get($values, 'redirectNode', null))
                 ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
                 ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0))
+                ->column('is_private', (int)Arr::get($values, 'is_private', false)? 1 : 0)
                 ->execute();
         
         $responses = array();

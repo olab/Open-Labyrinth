@@ -25,7 +25,9 @@ if (isset($templateData['map'])) { ?>
                 <h1><?php echo __('Avatars for Labyrinth "') . $templateData['map']->name . '"'; ?></h1></div>
                 <p>The following avatars have been created for this Labyrinth. Click the [edit] link to change their appearance. Copy and paste the wiki link (that looks like [[AV:1234567]]) into the content for a node.</p>
 
-
+                <?php if(isset($templateData['warningMessage'])){ ?>
+                <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+                <?php }?>
                                 <table class="table table-bordered  table-striped">
                                     <thead>
                                     <tr>

@@ -152,6 +152,14 @@ if (isset($templateData['map'])) { ?>
                                 </div>
                             </div>
                             <div class="control-group block">
+                                <label for="is_private"
+                                       class="control-label"><strong><?php echo __('Set "Supporting Information" to private'); ?></strong></label>
+
+                                <div class="controls block">
+                                    <input id="is_private" name="is_private" type="checkbox"/>
+                                </div>
+                            </div>
+                            <div class="control-group block">
                                 <label for="show_info"
                                        class="control-label"><strong><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></strong></label>
 

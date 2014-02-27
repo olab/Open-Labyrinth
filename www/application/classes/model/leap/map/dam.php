@@ -46,6 +46,11 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
+            ))
         );
         
         $this->relations = array(
@@ -102,6 +107,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
         
         if($this->is_loaded()) {
             $this->name = Arr::get($values, 'damname', $this->name);
+            $this->is_private = Arr::get($values, 'is_private', false);
             $this->save();
         }
     }
@@ -242,6 +248,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
             $damsMap[$dam->id] = DB_ORM::insert('map_dam')
                 ->column('map_id', $toMapId)
                 ->column('name', $dam->name)
+                ->column('is_private', $dam->is_private)
                 ->execute();
         }
 

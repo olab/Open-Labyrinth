@@ -40,6 +40,19 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
             $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
+            $ses = Session::instance();
+            $x = $ses->get('question_ses');
+            switch ($x){
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'The question is did not set to private. Please, check other labyrinths on reference on this qestion.';
+                    $ses->delete('question_ses');
+                    break;
+                case 'delQU':
+                    $this->templateData['warningMessage'] = 'The question did not deleted. Please, check other labyrinths on reference on this question.';
+                    $ses->delete('question_ses');
+                    break;
+            }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
 
@@ -80,6 +93,9 @@ class Controller_QuestionManager extends Controller_Base {
             {
                 Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
+                $usedElements = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
+                $this->templateData['used'] = count($usedElements);
+
                 if($this->templateData['question']->settings != null) {
                     $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
 
@@ -118,8 +134,17 @@ class Controller_QuestionManager extends Controller_Base {
             }
 
             if ($questionId == null || $questionId <= 0) DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
-            else DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
-            
+            else
+                {
+                    $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
+                    $privete = Arr::get($post, 'is_private');
+                    if($reference != NULL && $privete){
+                        $ses = Session::instance();
+                        $ses->set('question_ses', 'setPrivate');
+                        $post['is_private'] = FALSE;
+                    }
+                    DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
+                }
             Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
         }
         else Request::initial()->redirect(URL::base());
@@ -130,9 +155,14 @@ class Controller_QuestionManager extends Controller_Base {
         $questionId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $questionId != NULL) {
-            DB_ORM::model('map_question', array((int) $questionId))->delete();
-            DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
-
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');       
+            if($reference != NULL){
+              $ses = Session::instance();
+              $ses->set('question_ses', 'delQU');        
+            } else {
+                DB_ORM::model('map_question', array((int) $questionId))->delete();
+                DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
+            }
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());

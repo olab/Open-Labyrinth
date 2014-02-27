@@ -55,6 +55,27 @@ class Controller_FileManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
 
+            $ses = Session::instance();
+            $x = $ses->get('filemanager_ses');
+            switch ($x){
+                case 'xml_parse':
+                    $this->templateData['warningMessage'] = 'Please, validate "order.XML" file.';
+                    $ses->delete('filemanager_ses');
+                    break;
+                case 'setPrivate':
+                    $this->templateData['warningMessage'] = 'File is did not set to private. Please, check other labyrinths on reference on this file.';
+                    $ses->delete('filemanager_ses');
+                    break;
+                case 'delFile':
+                    $this->templateData['warningMessage'] = 'The file did not deleted. Please, check other labyrinths on reference on this file.';
+                    $ses->delete('filemanager_ses');
+                    break;
+                case NULL: break;
+                default : $this->templateData['warningMessage'] = 'The following files were not removed: '. $x .'. Please, check other labyrinths on reference on this files.';
+                    $ses->delete('filemanager_ses');
+            }
+
+
             $fileView = View::factory('labyrinth/file/view');
             $fileView->set('templateData', $this->templateData);
 
@@ -123,7 +144,13 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('map_element')->deleteFile($fileId);
+            $reference = DB_ORM::model('map_node_reference')->getByElementType($fileId, 'MR');
+            if($reference != NULL){
+              $ses = Session::instance();
+              $ses->set('filemanager_ses', 'delFile');
+            } else {
+                DB_ORM::model('map_element')->deleteFile($fileId);
+            }
             Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -181,6 +208,8 @@ class Controller_FileManager extends Controller_Base {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($this->templateData['file']->id, 'MR');
+            $this->templateData['used'] = count($usedElements);
             $extensionExist = extension_loaded('exif');
             if($extensionExist && isset($this->templateData['file']) && $this->templateData['file']->mime == 'image/jpeg') {
                 $jpegInfo     = exif_read_data(DOCROOT . $this->templateData['file']->path, 0, true);
@@ -219,6 +248,13 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($_POST and $mapId != NULL and $fileId != NULL) {
+            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $fileId, 'MR');
+            $privete = Arr::get($_POST, 'is_private');
+            if($reference != NULL && $privete){
+                $ses = Session::instance();
+                $ses->set('filemanager_ses', 'setPrivate');
+                $_POST['is_private'] = FALSE;
+            } 
             DB_ORM::model('map_element')->updateFile($fileId, $_POST);
             Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
@@ -391,6 +427,131 @@ class Controller_FileManager extends Controller_Base {
             }
         }
     }
+    public function action_arhiveUnZip() {
+        $mapId = $this->request->param('id', NULL);
+        $fileId = $this->request->param('id2', NULL);
+        if ($mapId != NULL and $fileId != NULL) {
+            $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
+            $arhfile = DOCROOT . $this->templateData['file']->path;
+            $pathToArhFile = str_replace($this->templateData['file']->name, '', $arhfile);
+            $tempFolder = 'tmp/' . md5($this->templateData['file']->name . rand()). '/';
 
+            $zip = new ZipArchive();
+            if ($zip->open($arhfile) === true) {
+                $zip->extractTo($tempFolder);
+                $zip->close();
+            }
+            $listOfFile =  $this->getListFiles($tempFolder);
+            foreach($listOfFile as $file){
+                if(is_dir($tempFolder . $file)){
+                    $this->removeDirectory($tempFolder . $file);
+                }
+            }
+            DB_ORM::model('map_element')->deleteFile($fileId);
+            try{
+            if(file_exists($tempFolder . 'order.xml')){
+                $simplexml = new SimpleXMLElement($tempFolder . 'order.xml', NULL, TRUE);
+                foreach($simplexml->order->item as $item){
+                    if(is_file($tempFolder . (string)$item)){
+                        $orderListByXML[] = (string)$item;
+                    }
+                }
+                unlink($tempFolder . 'order.xml');
+
+                $listOfFile = $this->getListFiles($tempFolder);
+                $orderedList = $this->sortingList($listOfFile, $orderListByXML);
+                } else {
+                    $listOfFile = $this->getListFiles($tempFolder);
+                    sort($listOfFile);
+                    $orderedList = $listOfFile;
+                    unset($listOfFile);
+                }
+
+        $this->moveUnpackFile($tempFolder, $pathToArhFile, $orderedList);
+        foreach($orderedList as $fileName){
+            $path = 'files/' . $mapId . '/' . $fileName;
+            $dataSave = array(
+                'name' => $fileName,
+                'path' => $path,
+            );
+            DB_ORM::model('map_element')->saveElement($mapId,$dataSave);
+
+        }
+        }catch(Exception $e){
+                $this->removeDirectory($tempFolder);
+                $ses = Session::instance();
+                $ses->set('filemanager_ses', 'xml_parse');
+        }
+        Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    private function getListFiles($dir){
+        $listOfFile = array();
+        if(is_dir($dir)) {
+            $listOfFile = scandir($dir);
+            array_shift($listOfFile);
+            array_shift($listOfFile);
+        }
+        return $listOfFile;
+    }
+
+    private function sortingList($notorderlist, $orderListXML){
+        $orderedList = $notorderlist;
+        for($i_xml = 0; $i_xml<count($orderListXML); $i_xml++){
+            for($i_file=0; $i_file<count($notorderlist); $i_file++){
+                if($orderListXML[$i_xml]===$notorderlist[$i_file]){
+                    unset($orderedList[$i_file]);
+                 }
+             }
+         }
+         sort($orderedList);
+         return array_merge($orderListXML, $orderedList);
+    }
+
+    private function moveUnpackFile($from, $to, $list){
+        foreach($list as $nameFile){
+            if(is_file($from . $nameFile)){
+                rename($from . $nameFile, $to . $nameFile);
+            }
+        }
+        $this->removeDirectory($from);
+
+    }
+
+    private function removeDirectory($dir) {
+        if ($objs = glob($dir."/*")) {
+            foreach($objs as $obj) {
+                is_dir($obj) ? removeDirectory($obj) : unlink($obj);
+            }
+        }
+        rmdir($dir);
+    }
+    public function action_delCheked(){
+        $mapId = $this->request->param('id', NULL);
+        $files = Arr::get($_POST, 'namecb',NULL);
+        $notDeleted = NULL;
+        if ($mapId != NULL ) {
+            if(!empty($files)){
+                foreach($files as $file){
+                    $reference = DB_ORM::model('map_node_reference')->getByElementType($file, 'MR');
+                    if($reference != NULL){
+                        $notDeleted = $notDeleted . '[[MR:' . $file . ']] ';
+                    } else {
+                        DB_ORM::model('map_element')->deleteFile($file);
+                    }
+                }
+                if($notDeleted != NULL){
+                    $ses = Session::instance();
+                    $ses->set('filemanager_ses', $notDeleted);
+                }
+            }
+            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
 }
 

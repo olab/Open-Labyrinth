@@ -64,6 +64,21 @@
             <label for="feedback" class="control-label"><?php echo __('Feedback'); ?></label>
             <div class="controls"><textarea id="feedback" name="feedback"><?php echo (isset($templateData['question']) ? $templateData['question']->feedback : ''); ?></textarea></div>
         </div>
+        <div class="control-group">
+            <label class="control-label" for="v"><?php echo __('Private'); ?>
+            </label>
+            <div class="controls">
+                <input type="checkbox" name="is_private" <?php if(isset($templateData['question'])) { echo $templateData['question']->is_private ? 'checked=""' : '"checked"';} ?>>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Used'); ?>
+            </label>
+            <div class="controls">
+                <input type="text" readonly value="<?php if(isset($templateData['used'])) { echo $templateData['used']; } ?>"/>
+            </div>
+        </div>
     </fieldset>
 
     <div class="question-response-draggable-panel-group">

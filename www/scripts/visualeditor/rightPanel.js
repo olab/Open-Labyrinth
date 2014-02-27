@@ -33,6 +33,7 @@ var RightPanel = function() {
     self.$unsavedDataBtnClose = null;
     self.$unsavedDataForm = null;
     self.$showInfo = null;
+    self.$isPrivate = null;
     self.$annotation = null;
     self.annotationId = '';
 
@@ -193,6 +194,9 @@ var RightPanel = function() {
 
         if('showInfo' in parameters)
             self.$showInfo = $(parameters.showInfo);
+
+        if('isPrivate' in parameters)
+            self.$isPrivate = $(parameters.isPrivate);
     }
     
     self.Close = function() {
@@ -256,6 +260,7 @@ var RightPanel = function() {
             self.node.undo = GetBooleanValueFromField(self.$nodeUndoLinks);
             self.node.isEnd = GetBooleanValueFromField(self.$endNode);
             self.node.showInfo = self.$showInfo.attr('checked') ? true : false;
+            self.node.isPrivate = self.$isPrivate.attr('checked') ? true : false;
             self.node.annotation = tinymce.get(self.annotationId).getContent({format : 'raw', no_events : 1});
 
             var counters = GetCountersData();
@@ -360,6 +365,12 @@ var RightPanel = function() {
                     self.$showInfo.attr('checked', 'checked');
                 } else {
                     self.$showInfo.removeAttr('checked');
+                }
+
+                if(self.$isPrivate != null && self.node.isPrivate) {
+                    self.$isPrivate.attr('checked', 'checked');
+                } else {
+                    self.$isPrivate.removeAttr('checked');
                 }
 
                 if(self.node.counters.length > 0 && self.$nodeCounters != null) {

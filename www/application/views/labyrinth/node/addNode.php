@@ -100,13 +100,20 @@ if (isset($templateData['map'])) {
                               id="mnodeinfo" <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Set "Supporting Information" to private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" id="is_private" name="is_private">
+                </div>
+            </div>
 
             <div class="control-group">
                 <label for="show_info"
                        class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
 
                 <div class="controls">
-                    <input id="show_info" name="show_info" name="show_info" type="checkbox"/>
+                    <input id="show_info" name="show_info" type="checkbox"/>
                 </div>
             </div>
 

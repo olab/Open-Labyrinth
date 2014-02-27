@@ -35,7 +35,9 @@ if (isset($templateData['map'])) { ?>
         </div>
     <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
     </div>
-
+    <?php if(isset($templateData['warningMessage'])){ ?>
+    <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+    <?php }?>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>

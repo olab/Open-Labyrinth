@@ -335,6 +335,7 @@ ul.icons li [class*=" icon-"] {
 .icon-indent-right:before         { content: "\f03c"; }
 .icon-facetime-video:before       { content: "\f03d"; }
 .icon-picture:before              { content: "\f03e"; }
+.icon-arhive:before               { content: "\f093"; }
 
 .icon-pencil:before               { content: "\f040"; }
 .icon-map-marker:before           { content: "\f041"; }

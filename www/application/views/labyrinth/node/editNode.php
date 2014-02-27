@@ -205,6 +205,14 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
             </div>
 
             <div class="control-group">
+                <label class="control-label" for="mnodekeyword"><?php echo __('Set "Supporting Information" to private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" id="is_private" name="is_private" <?php if(isset($templateData['node'])) { echo $templateData['node']->is_private ? 'checked=""' : '"checked"';} ?>>
+                </div>
+            </div>
+
+            <div class="control-group">
                 <label for="mnodekeyword"
                        class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
 
@@ -359,6 +367,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
         <div class="form-actions">
             <div class="pull-right">
+            <input type="hidden" name="map_id" value="<?php echo $templateData['map']->id; ?>">
             <input class="btn btn-large btn-primary" type="submit" name="Submit"
                    value="<?php echo __('Save changes'); ?>"></div></div>
     </form>
