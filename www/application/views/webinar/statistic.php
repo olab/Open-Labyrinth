@@ -178,40 +178,52 @@
         td              = $('.expert-td-js'),
         reportMapType   = $('.reportMapType'),
         reportStepType  = $('.reportStepType'),
-        hrefMapType     = reportMapType.attr('href'),
-        popupMapTitle   = reportMapType.data('original-title'),
-        hrefStepType    = reportStepType.attr('href'),
-        popupStepTitle  = reportStepType.data('original-title');
+        href            = null,
+        title           = null;
 
     $('#4R').change(function(){
         th.hide();
         td.hide();
 
-        hrefMapType     = hrefMapType.replace('mapReportSCT', 'mapReport');
-        popupMapTitle   = popupMapTitle.replace('SCR', '4R');
-        hrefStepType    = hrefStepType.replace('stepReportSCT', 'stepReport');
-        popupStepTitle  = popupStepTitle.replace('SCR', '4R');
+        reportMapType.each(function() {
+            href = replaceFunction($(this), 'href', 'mapReportSCT', 'mapReport');
+            title = replaceFunction($(this), 'data-original-title', 'SCR', '4R');
+            changeType($(this), href, title);
+        });
 
-        changeType();
+        reportStepType.each(function() {
+            href = replaceFunction($(this), 'href', 'stepReportSCT', 'stepReport');
+            title = replaceFunction($(this), 'data-original-title', 'SCR', '4R');
+            changeType($(this), href, title);
+        });
     });
 
     $('#SCT').change(function(){
         th.show();
         td.show();
 
-        hrefMapType     = hrefMapType.replace('mapReport', 'mapReportSCT');
-        popupMapTitle   = popupMapTitle.replace('4R', 'SCR');
-        hrefStepType    = hrefStepType.replace('stepReport', 'stepReportSCT');
-        popupStepTitle  = popupStepTitle.replace('4R', 'SCR');
+        reportMapType.each(function() {
+            href = replaceFunction($(this), 'href', 'mapReport', 'mapReportSCT');
+            title = replaceFunction($(this), 'data-original-title', '4R', 'SCR');
+            changeType($(this), href, title);
+        });
 
-        changeType();
+        reportStepType.each(function() {
+            href = replaceFunction($(this), 'href', 'stepReport', 'stepReportSCT');
+            title = replaceFunction($(this), 'data-original-title', '4R', 'SCR');
+            changeType($(this), href, title);
+        });
     });
 
-    function changeType()
+    function replaceFunction(obj, attr, search, replace)
     {
-        reportMapType.attr('href', hrefMapType);
-        reportMapType.attr('data-original-title', popupMapTitle);
-        reportStepType.attr('href', hrefStepType);
-        reportStepType.attr('data-original-title', popupStepTitle);
+        var value = obj.attr(attr);
+        return value.replace(search, replace);
+    }
+
+    function changeType(obj, href, title)
+    {
+        obj.attr('href', href);
+        obj.attr('data-original-title', title);
     }
 </script>

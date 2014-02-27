@@ -29,6 +29,7 @@ class Report_SCT extends Report {
     private $countOfChoices;
     private $mapElements;
     public  $experts;
+    public  $users;
 
     /**
      * Default constructor
@@ -93,7 +94,8 @@ class Report_SCT extends Report {
                 $mapData['webinarStep'],
                 $mapData['notInUsers'],
                 $mapData['dateStatistics'],
-                $this->experts
+                $this->experts,
+                $this->users
             );
         }
     }
