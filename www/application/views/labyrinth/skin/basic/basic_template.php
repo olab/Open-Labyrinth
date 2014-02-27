@@ -322,6 +322,26 @@
                     }, function(data) {});
                 }
             });
+
+            $('.sct-question').on('change', function(){
+                var idQuestion = $(this).data('question');
+
+                if($(this).hasClass('disposable')){
+                    $('.sct-question').each(function(i, v){
+                        var current = $('.sct-question').eq(i);
+                        if(current.data('question') == idQuestion) current.prop('disabled', true);
+                    });
+                }
+
+                $.post(
+                    '<?php echo URL::base(); ?>renderLabyrinth/ajaxScriptConcordanceTesting',
+                    {
+                        idResponse: $(this).data('response'),
+                        idQuestion: idQuestion
+                    },
+                    function(data){}
+                );
+            });
         });
     </script>
 </head>

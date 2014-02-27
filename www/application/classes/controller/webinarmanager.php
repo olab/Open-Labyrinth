@@ -430,6 +430,7 @@ class Controller_WebinarManager extends Controller_Base {
 
         $report  = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT Report '.$mapName);
         $report->experts = DB_ORM::model('Webinar_User')->getExperts($webinarId);
+        $report->users = DB_ORM::model('Webinar_User')->getUsers($webinarId);
         $report->add($mapId, $webinarId, '' , $notIncludeUsers, $dateId);
         $report->generate();
         $report->get();
@@ -460,6 +461,7 @@ class Controller_WebinarManager extends Controller_Base {
 
             $report  = new Report_SCT(new Report_Impl_PHPExcel(), $webinar->title);
             $report->experts = DB_ORM::model('Webinar_User')->getExperts($webinarId);
+            $report->users = DB_ORM::model('Webinar_User')->getUsers($webinarId);
             if($webinar != null && count($webinar->maps) > 0) {
                 foreach($webinar->maps as $webinarMap) {
                     if($webinarMap->step == $stepKey) {

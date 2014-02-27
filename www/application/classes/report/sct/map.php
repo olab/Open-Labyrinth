@@ -32,6 +32,7 @@ class Report_SCT_Map extends Report_SCT_Element {
     private $countOfChoices;
     public $scoreForResponse;
     public $experts;
+    public $users;
 
     private $choicesMap = array(
         1 => 'C',
@@ -40,7 +41,7 @@ class Report_SCT_Map extends Report_SCT_Element {
         4 => 'F'
     );
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $experts = array()) {
+    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $experts = array(), $users) {
         parent::__construct($impl);
 
         if($mapId == null || $mapId <= 0) return;
@@ -52,6 +53,7 @@ class Report_SCT_Map extends Report_SCT_Element {
         $this->notInUsers     = $notInUsers;
         $this->dateStatistics = $dateStatistics;
         $this->experts        = $experts;
+        $this->users          = $users;
 
         $this->elements       = array();
         $this->sections       = array();
@@ -119,7 +121,7 @@ class Report_SCT_Map extends Report_SCT_Element {
                     $id_session = $session->session_id;
                     $id_user = DB_ORM::model('User_Session', array($id_session))->user_id;
                     $response = $session->response;
-                    $id_response = (is_int($response))
+                    $id_response = ((int)$response)
                         ? $response
                         : DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->where('response', '=', $response)->query()->get('id');
                     $user_response[$id_user][$id_question] = $this->scoreForResponse[$id_question][$id_response];
@@ -156,6 +158,10 @@ class Report_SCT_Map extends Report_SCT_Element {
             $stdeva_start_row  = $offset + $localOffset;
             $stdeva_end_row    = 0;
             $stdeva_end_column = 0;
+
+            // --- delete users who not displayed --- //
+            $user_response = array_intersect_key($user_response, $this->users);
+
             foreach ($user_response as $id_user=>$value)
             {
                 $amount_of_user = count($user_response);
