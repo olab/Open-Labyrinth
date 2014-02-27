@@ -34,24 +34,18 @@ if (isset($presentations) && is_array($presentations) && !empty($presentations))
     <?php
 }
 
-if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinths)) {
-    ?>
+if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinths)) { ?>
     <h3><?php echo __('Open Labyrinths'); ?></h3>
-    <ul class="unstyled">
-    <?php
-    foreach ($openLabyrinths as $labyrinth) {
-        ?>
+    <ul class="unstyled"><?php
+    foreach ($openLabyrinths as $labyrinth) { ?>
         <li>
-            <i class="icon-arrow-right"></i>
-            <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$labyrinth->id]) && $templateData['rootNodeMap'][$labyrinth->id] != null) { ?>
-                <a href="<?php echo URL::base() . 'renderLabyrinth/index/' . $labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a>
-            <?php } else { ?>
-                <a class="show-root-error" href="javascript:void(0)"><?php echo $labyrinth->name; ?></a>
-            <?php } ?>
-        </li>
-        <?php
-    }
-    ?>
-    </ul>
-    <?php
-}
+            <i class="icon-arrow-right"></i><?php
+            if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$labyrinth->id]) && $templateData['rootNodeMap'][$labyrinth->id] != null) { ?>
+            <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a><?php
+            } else {?>
+            <a class="show-root-error" href="javascript:void(0)"><?php echo $labyrinth->name; ?></a><?php
+            } ?>
+        </li><?php
+    } ?>
+    </ul><?php
+} ?>

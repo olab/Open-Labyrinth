@@ -19,12 +19,9 @@
  *
  */
 
-
 if (isset($templateData['map'])) { ?>
-    <link rel="stylesheet" type="text/css"
-          href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
-    <script type="text/javascript" charset="utf8"
-            src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/olab/dataTablesTB.js"></script>
 
     <div class="page-header">
@@ -54,24 +51,55 @@ if (isset($templateData['map'])) { ?>
                 </th>
             </tr>
             </thead>
-            <tbody>
-            <?php if(isset($templateData['existAuthors']) and count($templateData['existAuthors']) > 0) { ?>
-                <?php foreach($templateData['existAuthors'] as $author) { ?>
+            <tbody><?php
+            if(isset($templateData['existAuthors']) and count($templateData['existAuthors']) > 0) {
+                foreach($templateData['existAuthors'] as $author) { ?>
                     <tr>
                         <td style="text-align: center"><input type="checkbox" name="user<?php echo $author->id; ?>" checked="checked"></td>
                         <td><?php echo $author->nickname; ?></td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
-            <?php if(isset($templateData['allAdmins']) and count($templateData['allAdmins']) > 0) { ?>
-                <?php foreach($templateData['allAdmins'] as $admin) { ?>
-                    <?php if($admin->id == Auth::instance()->get_user()->id) continue; ?>
+                    </tr><?php
+                }
+            }
+            if(isset($templateData['allAdmins']) and count($templateData['allAdmins']) > 0) {
+                foreach($templateData['allAdmins'] as $admin) {
+                    if($admin->id == Auth::instance()->get_user()->id) continue; ?>
                     <tr>
                         <td style="text-align: center"><input type="checkbox" name="user<?php echo $admin->id; ?>"></td>
                         <td><?php echo $admin->nickname; ?></td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
+                    </tr><?php
+                }
+            } ?>
+            </tbody>
+        </table>
+
+    <h3><?php echo __('Reviewers'); ?></h3>
+        <div class="btn-group users" style="margin-bottom: 10px">
+            <a class="btn btn-primary" href="<?php echo URL::base().'mapUserManager/addAllReviewers/'.$templateData['map']->id; ?>">Add All</a>
+            <a class="btn btn-danger" href="<?php echo URL::base().'mapUserManager/removeAllReviewers/'.$templateData['map']->id; ?>">Remove All</a>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <colgroup>
+                <col style="width: 5%" />
+                <col style="width: 80%" />
+            </colgroup>
+            <thead>
+            <tr>
+                <th style="text-align: center">Actions</th>
+                <th>
+                    <a href="<?php echo URL::base().'mapUserManager/index/'.$templateData['map']->id.'/'.$templateData['authorOrder'].'/'.$templateData['learnerOrder'].'/'.$templateData['reviewerOrder']; ?>">
+                        Users <div class="pull-right"><i class="icon-chevron-<?php echo ($templateData['reviewerOrder'] == 'DESC') ? 'down' : 'up'; ?> icon-white"></i></div>
+                    </a>
+                </th>
+            </tr>
+            </thead>
+            <tbody><?php
+            foreach(Arr::get($templateData, 'reviewers', array()) as $reviewer) { $idReviewer = $reviewer->id ?>
+                <tr>
+                    <td style="text-align: center"><input type="checkbox" name="reviewer[]" value="<?php echo $idReviewer; ?>" <?php if (in_array($idReviewer, $templateData['tiedUsers'])) echo 'checked'; ?>></td>
+                    <td><?php echo $reviewer->nickname; ?></td>
+                </tr><?php
+            } ?>
             </tbody>
         </table>
 
