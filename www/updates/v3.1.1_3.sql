@@ -20,3 +20,4 @@ ALTER TABLE `map_questions` ADD `is_private` INT( 4 ) NOT NULL DEFAULT '0';
 ALTER TABLE `map_chats` ADD `is_private` INT( 4 ) NOT NULL DEFAULT '0';
 ALTER TABLE `map_dams` ADD `is_private` INT( 4 ) NOT NULL DEFAULT '0';
 ALTER TABLE `map_nodes` ADD `is_private` INT( 4 ) NOT NULL DEFAULT '0' AFTER `info` ;
+ALTER TABLE `map_avatars` ADD `is_private` INT( 4 ) NOT NULL DEFAULT '0';
