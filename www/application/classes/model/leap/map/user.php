@@ -267,6 +267,30 @@ class Model_Leap_Map_User extends DB_ORM_Model {
             }
         }
     }
+
+    public function addAllReviewers($mapId)
+    {
+        if ($mapId == null) return;
+
+        $reviewers = DB_ORM::model('User')->getAllReviewers();
+
+        foreach($reviewers as $reviewer)
+        {
+            $this->addUser($mapId, $reviewer->id);
+        }
+    }
+
+    public function removeAllReviewers($mapId)
+    {
+        if($mapId == null) return;
+
+        $reviewers = DB_ORM::model('User')->getAllReviewers();
+
+        foreach($reviewers as $reviewer)
+        {
+                $this->deleteByUserId($mapId, $reviewer->id);
+        }
+    }
     
     public function duplicateUsers($fromMapId, $toMapId)
     {
@@ -289,5 +313,3 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return NULL;
     }
 }
-
-?>

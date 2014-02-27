@@ -368,7 +368,16 @@ private static function initialize_metadata($object)
         
         return NULL;
     }
-    
+
+    public function getAllReviewers ($order = 'ASC')
+    {
+        return DB_ORM::select('User')
+            ->where('type_id', '=', 3)
+            ->order_by('nickname' ,$order)
+            ->query()
+            ->as_array();
+    }
+
     public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC') {
         $users = array();
         if($ids != NULL) {

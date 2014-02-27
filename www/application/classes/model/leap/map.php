@@ -297,7 +297,13 @@ class Model_Leap_Map extends DB_ORM_Model
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1, 'AND')
-            ->where('security_id', '=', 1);
+            ->where('security_id', '=', 1, 'OR');
+
+        if (Auth::instance()->logged_in())
+        {
+            if (Auth::instance()->get_user()->type_id == 1 ) $builder->where('security_id', '=', 2);
+        }
+
         $result = $builder->query();
 
         if ($result->is_loaded()) {
@@ -661,22 +667,29 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('enabled', '=', 1)
             ->where('name', 'LIKE', '%'.$key.'%');
 
-        if (!$onlyTitle){
-            $builder->where('abstract', 'LIKE', '%'.$key.'%', 'OR');
-        }
-
+        if ( ! $onlyTitle) $builder->where('abstract', 'LIKE', '%'.$key.'%', 'OR');
 
         $result = $builder->query();
 
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
+        if ($result->is_loaded())
+        {
+            $maps           = array();
+            $userMaps       = array();
+            $user           = Auth::instance()->get_user();
+            $userId         = $user->id;
+            $userType       = $user->type_id;
+            $userMapsObj    = ($userType == 4)
+                ? DB_ORM::model('map')->getAllEnabledMap()
+                : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($userId);
 
+            foreach ($userMapsObj as $map) $userMaps[] = $map->id;
+
+            foreach ($result as $record)
+            {
+                if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            }
             return $maps;
         }
-
         return NULL;
     }
 
