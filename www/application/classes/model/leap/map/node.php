@@ -320,6 +320,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('map_id',           $mapId)
                 ->column('title',            Arr::get($values, 'mnodetitle', ''))
                 ->column('text',             Arr::get($values, 'mnodetext', ''))
+                ->column('type_id',          Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
                 ->column('is_private',       Arr::get($values, 'is_private', FALSE) ? 1 : 0)
                 ->column('probability',      Arr::get($values, 'mnodeprobability', FALSE))
                 ->column('info',             Arr::get($values, 'mnodeinfo', ''))
@@ -327,7 +328,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('link_type_id',     2)
                 ->column('priority_id',      Arr::get($values, 'priority', 1))
                 ->column('undo',             Arr::get($values, 'mnodeUndo', FALSE))
-                ->column('end',              Arr::get($values, 'ender', FALSE))
+                ->column('end',              (int) Arr::get($values, 'ender', FALSE))
                 ->column('show_info',        Arr::get($values, 'show_info', FALSE) ? 1 : 0)
                 ->column('annotation',       Arr::get($values, 'annotation', null))
                 ->execute()));
