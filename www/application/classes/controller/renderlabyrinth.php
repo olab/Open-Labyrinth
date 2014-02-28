@@ -30,9 +30,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $continue   = true;
         $mapId      = $this->request->param('id', null);
         $editOn     = $this->request->param('id2', null);
+        $this->checkTypeCompatibility($mapId);
 
         if ($mapId != null)
         {
+            if( ! $this->checkTypeCompatibility($mapId)) Request::initial()->redirect(URL::base());
+
             $mapDB = DB_ORM::model('map', array($mapId));
             if ($mapDB->security_id == 4)
             {
@@ -313,6 +316,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         if ($mapId != NULL)
         {
+            if( ! $this->checkTypeCompatibility($mapId)) Request::initial()->redirect(URL::base());
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {
@@ -1750,6 +1754,48 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $html .= '</ul>';
         }
         return array($html, $nodes);
+    }
+
+    /**
+     * @param $idMap
+     * @return bool - compatibility user type to map type
+     */
+    public function checkTypeCompatibility ($idMap)
+    {
+        $logged         = Auth::instance()->logged_in();
+        $userType       = false;
+        $idUser         = false;
+        $map            = DB_ORM::model('Map', array($idMap));
+        $labyrinthType  = $map->security_id;
+        $idScenario     = false;
+        if ($logged)
+        {
+            $user       = Auth::instance()->get_user();
+            $userType   = $user->type_id;
+            $idUser     = $user->id;
+            $idScenario = Session::instance()->get('webinarId');
+        }
+        $owner          = $map->author_id == $idUser;
+
+        switch ($userType)
+        {
+            case '1':
+                if (($labyrinthType == 1) OR
+                    ($labyrinthType == 2 AND $idScenario) OR
+                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                return false;
+            case '2':
+                if (($labyrinthType == 1) OR
+                    ($labyrinthType == 2) OR
+                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                return false;
+            case '3':
+            case '4':
+                return true;
+            default:
+                if ($labyrinthType == 1) return true;
+                return false;
+        }
     }
 }
 

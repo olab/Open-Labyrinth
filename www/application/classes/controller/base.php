@@ -252,7 +252,7 @@ class Controller_Base extends Controller_Template {
             }
             else
             {
-                $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
+                $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap($user_type_name);
                 $rooNodesMap = array();
                 if($maps != null && count($maps) > 0) {
                     foreach($maps as $map) {
