@@ -292,17 +292,14 @@ class Model_Leap_Map extends DB_ORM_Model
         return $maps;
     }
 
-    public function getAllEnabledOpenVisibleMap()
+    public function getAllEnabledOpenVisibleMap($type = false)
     {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1, 'AND')
-            ->where('security_id', '=', 1, 'OR');
+            ->where('security_id', '=', 1);
 
-        if (Auth::instance()->logged_in())
-        {
-            if (Auth::instance()->get_user()->type_id == 1 ) $builder->where('security_id', '=', 2);
-        }
+        if ($type == 'reviewer') $builder->where('security_id', '=', 2, 'OR');
 
         $result = $builder->query();
 
@@ -311,7 +308,6 @@ class Model_Leap_Map extends DB_ORM_Model
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
             return $maps;
         }
 
@@ -362,6 +358,7 @@ class Model_Leap_Map extends DB_ORM_Model
             ->from('maps', 'm')
             ->join('LEFT', 'map_users', 'mu')
             ->on('mu.map_id', '=', 'm.id')
+            ->where('m.enabled', '=', 1)
             ->where('security_id', '=', 1)
             ->where('mu.user_id', '=', $learnerId, 'OR')
             ->order_by('m.id', 'DESC');

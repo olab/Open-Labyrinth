@@ -875,6 +875,7 @@ class Controller_LabyrinthManager extends Controller_Base {
                 }
 
                 Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
+                if ($this->request->post('edit_key')) Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
                 Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
 
             } else {

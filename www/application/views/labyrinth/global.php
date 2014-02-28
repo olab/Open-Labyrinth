@@ -363,13 +363,8 @@ if (isset($templateData['map'])) {
                             <?php echo $security->name; ?>
                         </label>
                     <?php } ?>
-                    <a <?php if ($templateData['map']->security_id !== '4') echo 'style="display:none;"'; ?>
-                        id="edit_keys" class="btn btn-primary"
-                        href="<?php echo URL::base() . 'labyrinthManager/editKeys/' . $templateData['map']->id; ?>">edit
-                        keys</a>
+                    <button <?php if ($templateData['map']->security_id !== '4') echo 'style="display:none;"'; ?> id="edit_keys" class="btn btn-primary" value="1" name="edit_key">Edit keys</button>
                 </div>
-
-
             </div>
         <?php } ?>
 
