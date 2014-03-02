@@ -38,16 +38,11 @@ class Controller_NodeManager extends Controller_Base {
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
 
             $ses = Session::instance();
-            $x = $ses->get('node_ses');
-            switch ($x){
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'Node is not set to private. Please, check other labyrinths on reference (INFO) on this node.';
-                    $ses->delete('node_ses');
-                    break;
-                case 'delNode':
-                    $this->templateData['warningMessage'] = 'Node is not deleted. Please, check other labyrinths on reference (INFO) on this node.';
-                    $ses->delete('node_ses');
-                    break;
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -162,7 +157,8 @@ class Controller_NodeManager extends Controller_Base {
         
         $text = Arr::get($post, 'mnodetext', '');
         $info = Arr::get($post, 'mnodeinfo', '');
-        $nodetext = $this->checkReference($mapId, $node->id, $text, $info);
+        $crossreferences = new CrossReferences();
+        $nodetext = $crossreferences->checkReference($mapId, $node->id, $text, $info);
         if(isset($nodetext['text'])){
             DB_ORM::model('map_node')->updateNodeText($node->id, $nodetext['text']);
         }
@@ -184,18 +180,20 @@ class Controller_NodeManager extends Controller_Base {
 
         $text = Arr::get($post, 'mnodetext', '');
         $info = Arr::get($post, 'mnodeinfo', '');
-        $nodetext = $this->checkReference($mapId, $nodeId, $text, $info);
+        $crossreferences = new CrossReferences();
+        $nodetext = $crossreferences->checkReference($mapId, $nodeId, $text, $info);
         if(isset($nodetext['text'])){
             $post['mnodetext'] = $nodetext['text'];
         }
         if(isset($nodetext['info'])){
             $post['mnodeinfo'] = $nodetext['info'];
         }
-        $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
+        $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
         $privete = Arr::get($post, 'is_private');
-        if($reference != NULL && $privete){
+        if($references != NULL && $privete){
             $ses = Session::instance();
-            $ses->set('node_ses', 'setPrivate');
+            $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+            $ses->set('warningMessage', 'The node wasn\'t set to private. Field with supporting information of the selected node is used in the following labyrinths:');
             $post['is_private'] = FALSE;
         } 
         
@@ -212,10 +210,11 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         $nodeId = (int) $this->request->param('id2', 0);
         if ($nodeId){
-            $reference = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
-            if($reference != NULL){
+            $references = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
+            if($references != NULL){
                 $ses = Session::instance();
-                $ses->set('node_ses', 'delNode');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The node wasn\'t deleted. Field with supporting information of the selected node is used in the following labyrinths:');
             } else {
                 DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $nodeId);
                 DB_ORM::model('map_node')->deleteNode($nodeId);
@@ -492,169 +491,4 @@ class Controller_NodeManager extends Controller_Base {
         }
     }
 
-    private function checkReference($mapId, $nodeId, $text, $info){
-        $textRecords[] = $this->parseText($mapId, $nodeId, $text);
-        $textRecords[] = $this->parseText($mapId, $nodeId, $info);
-        $replace = array();
-        for($i = 0; $i<=1; $i++){
-            if($textRecords[$i]){
-                foreach($textRecords[$i] as $record){
-                    $key = false;
-                    $parent = false;
-                    switch ($record['type']){
-                        case 'MR':
-                            $element = DB_ORM::model('map_element', array((int) $record['element_id']));
-                            if($element->map_id && !$element->is_private){
-                                $key = true;
-                            }
-                            if($element->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'VPD':
-                            $vpdElements = DB_ORM::model('map_vpd_element')->getValuesByVpdId($record['element_id']);
-                            if($vpdElements){
-                                foreach($vpdElements as $vpdElement){
-                                    if($vpdElement->key == 'Private'){
-                                        $vpdPrivate = $vpdElement->value;
-                                    }
-                                }
-                            }
-                            if(empty($vpdPrivate)) {
-                                $vpdPrivate = 'Off';
-                            }
-                            if($vpdPrivate == 'Off'){
-                                $key = true;
-                            }
-                            $vpdMapId = DB_ORM::model('map_vpd')->getMapId($record['element_id']);
-                            if($vpdMapId == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'QU':
-                            $question = DB_ORM::model('map_question', array((int) $record['element_id']));
-                            if($question->map_id && !$question->is_private){
-                                $key = true;
-                            }
-                            if($question->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'INFO':
-                            $nod = DB_ORM::model('map_node', array((int) $record['element_id']));
-                            if($nod->map_id && !$nod->is_private){
-                                $key = true;
-                            }
-                            if($nod->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'AV':
-                            $avatar = DB_ORM::model('map_avatar', array((int) $record['element_id']));
-                            if($avatar->map_id && !$avatar->is_private){
-                                $key = true;
-                            }
-                            if($avatar->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'CHAT':
-                            $chat = DB_ORM::model('map_chat', array((int) $record['element_id']));
-                            if($chat->map_id && !$chat->is_private){
-                                $key = true;
-                            }
-                            if($chat->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                        case 'DAM':
-                            $dam = DB_ORM::model('map_dam', array((int) $record['element_id']));
-                            if($dam->map_id && !$dam->is_private){
-                                $key = true;
-                            }
-                            if($dam->map_id == $mapId){
-                                $parent = true;
-                            }
-                            break;
-                    }
-                    if($key || $parent){
-                        $this->addReferenceToBD($mapId, $nodeId, $record);
-                    } else {
-                        $search = '[['.$record['type'].':'.$record['element_id'].']]';
-                        if($i == 0){
-                            $text = str_replace($search, '', $text);
-                            $replace['text'] = $text;
-                        }
-                        if($i == 1){
-                            $info = str_replace($search, '', $info);
-                            $replace['info'] = $info;
-                        }
-                    }
-                }
-            }
-        }
-        $this->deleteReferenceFromBD($mapId, $nodeId, $textRecords);
-        return $replace;
-    }
-
-    private function parseText($mapId, $nodeId, $text){
-        $codes = array('MR', 'VPD', 'QU', 'INFO', 'AV', 'CHAT', 'DAM');
-        $result = array();
-        foreach ($codes as $code) {
-            $regExp = '/[\[' . $code . ':\d\]]+/';
-            if (preg_match_all($regExp, $text, $matches)) {
-                foreach ($matches as $match) {
-                    foreach ($match as $value) {
-                        if (stristr($value, '[[' . $code . ':')) {
-                            $m = explode(':', $value);
-                            $id = substr($m[1], 0, strlen($m[1]) - 2);
-                            if (is_numeric($id)) {
-                                $result[] = array('map_id'=>$mapId,'node_id'=>$nodeId,'element_id'=>$id, 'type'=>$code);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-    private function deleteReferenceFromBD($mapId, $nodeId, $records){
-        $dbRecords = DB_ORM::model('map_node_reference')->getByMapeNodeId($mapId, $nodeId);
-        if(is_array($records[0]) && is_array($records[1])){
-            $records = array_merge($records[0],$records[1]);
-        } else{
-            $records = $records[0];
-        }
-        if(is_array($records) && is_array($dbRecords)){
-            foreach($dbRecords as $dbRecord){
-                $flag = false;
-                foreach($records as $record){
-                    if($dbRecord->element_id == $record['element_id'] && $dbRecord->type == $record['type']){
-                        $flag = true;
-                    }
-                }
-                if(!$flag){
-                    DB_ORM::model('map_node_reference')->deleteById($dbRecord->id);
-                }
-            }
-        } else {
-            DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $nodeId);
-        }
-    }
-
-    private function addReferenceToBD($mapId, $nodeId, $record){
-        $dbRecords = DB_ORM::model('map_node_reference')->getByMapeNodeId($mapId, $nodeId);
-        $flag = false;
-        if($dbRecords){
-            foreach($dbRecords as $dbRecord){
-                if($dbRecord->element_id == $record['element_id'] && $dbRecord->type == $record['type']){
-                  $flag = true;
-                }
-            }
-        }
-        if(!$flag){
-            $reference = DB_ORM::model('map_node_reference')->addReference($nodeId, $record);
-        }
-    }
 }

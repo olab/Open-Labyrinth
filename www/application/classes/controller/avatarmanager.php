@@ -38,16 +38,11 @@ class Controller_AvatarManager extends Controller_Base {
             $this->templateData['avatars'] = DB_ORM::model('map_avatar')->getAvatarsByMap((int) $mapId);
 
             $ses = Session::instance();
-            $x = $ses->get('avatar_ses');
-            switch ($x){
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'The avatar is did not set to private. Please, check other labyrinths on reference on this avatar.';
-                    $ses->delete('avatar_ses');
-                    break;
-                case 'delAV':
-                    $this->templateData['warningMessage'] = 'The avatar did not deleted. Please, check other labyrinths on reference on this avatar.';
-                    $ses->delete('avatar_ses');
-                    break;
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -86,11 +81,15 @@ class Controller_AvatarManager extends Controller_Base {
             $this->templateData['avatar'] = DB_ORM::model('map_avatar', array((int) $avatarId));
             $usedElements = DB_ORM::model('map_node_reference')->getByElementType($avatarId, 'AV');
             $this->templateData['used'] = count($usedElements);
+
             $ses = Session::instance();
-            if($ses->get('avatar_ses') == 'setPrivate'){
-                $this->templateData['warningMessage'] = 'The avatar is did not set to private. Please, check other labyrinths on reference on this avatar.';
-                $ses->delete('avatar_ses');
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Avatars'))->set_url(URL::base() . 'avatarManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($avatarId)->set_url(URL::base() . 'avatarManager/editAvatar/' . $mapId.'/'.$avatarId));
@@ -113,10 +112,11 @@ class Controller_AvatarManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $avatarId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $avatarId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getByElementType($avatarId, 'AV');
-            if($reference != NULL){
+            $references = DB_ORM::model('map_node_reference')->getByElementType($avatarId, 'AV');
+            if($references != NULL){
                 $ses = Session::instance();
-                $ses->set('avatar_ses', 'delAV');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The avatar wasn\'t deleted. The selected avatar is used in the following labyrinths:');
             } else {
                 $upload_dir = DOCROOT . '/avatars/';
                 $avatarImage = DB_ORM::model('map_avatar')->getAvatarImage($avatarId);
@@ -147,11 +147,12 @@ class Controller_AvatarManager extends Controller_Base {
             $file = uniqid() . '.png';
             file_put_contents($upload_dir . $file, $data);
             $_POST['image_data'] = $file;
-            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $avatarId, 'AV');
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $avatarId, 'AV');
             $privete = Arr::get($_POST, 'is_private');
-            if($reference != NULL && $privete){
+            if($references != NULL && $privete){
                 $ses = Session::instance();
-                $ses->set('avatar_ses', 'setPrivate');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The avatar wasn\'t set to private. The selected avatar is used in the following labyrinths:');
                 $_POST['is_private'] = FALSE;
             }
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);

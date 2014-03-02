@@ -56,25 +56,12 @@ class Controller_FileManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
 
             $ses = Session::instance();
-            $x = $ses->get('filemanager_ses');
-            switch ($x){
-                case 'xml_parse':
-                    $this->templateData['warningMessage'] = 'Please, validate "order.XML" file.';
-                    $ses->delete('filemanager_ses');
-                    break;
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'File is did not set to private. Please, check other labyrinths on reference on this file.';
-                    $ses->delete('filemanager_ses');
-                    break;
-                case 'delFile':
-                    $this->templateData['warningMessage'] = 'The file did not deleted. Please, check other labyrinths on reference on this file.';
-                    $ses->delete('filemanager_ses');
-                    break;
-                case NULL: break;
-                default : $this->templateData['warningMessage'] = 'The following files were not removed: '. $x .'. Please, check other labyrinths on reference on this files.';
-                    $ses->delete('filemanager_ses');
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
-
 
             $fileView = View::factory('labyrinth/file/view');
             $fileView->set('templateData', $this->templateData);
@@ -144,10 +131,11 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getByElementType($fileId, 'MR');
-            if($reference != NULL){
-              $ses = Session::instance();
-              $ses->set('filemanager_ses', 'delFile');
+            $references = DB_ORM::model('map_node_reference')->getByElementType($fileId, 'MR');
+            if($references != NULL){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The file wasn\'t deleted. The selected file is used in the following labyrinths:');
             } else {
                 DB_ORM::model('map_element')->deleteFile($fileId);
             }
@@ -248,11 +236,12 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($_POST and $mapId != NULL and $fileId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $fileId, 'MR');
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $fileId, 'MR');
             $privete = Arr::get($_POST, 'is_private');
-            if($reference != NULL && $privete){
+            if($references != NULL && $privete){
                 $ses = Session::instance();
-                $ses->set('filemanager_ses', 'setPrivate');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The file wasn\'t set to private. The selected file is used in the following labyrinths:');
                 $_POST['is_private'] = FALSE;
             } 
             DB_ORM::model('map_element')->updateFile($fileId, $_POST);
@@ -480,7 +469,7 @@ class Controller_FileManager extends Controller_Base {
         }catch(Exception $e){
                 $this->removeDirectory($tempFolder);
                 $ses = Session::instance();
-                $ses->set('filemanager_ses', 'xml_parse');
+                $ses->set('warningMessage', 'Please, validate "order.xml".');
         }
         Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
@@ -538,14 +527,15 @@ class Controller_FileManager extends Controller_Base {
                 foreach($files as $file){
                     $reference = DB_ORM::model('map_node_reference')->getByElementType($file, 'MR');
                     if($reference != NULL){
-                        $notDeleted = $notDeleted . '[[MR:' . $file . ']] ';
+                        $notDeleted = $notDeleted .
+                            '<a href="' . URL::base() . 'fileManager/deleteFile/' . $mapId . '/' . $file . '">'.'[[MR:' . $file . ']]'.'</a>'.' ';
                     } else {
                         DB_ORM::model('map_element')->deleteFile($file);
                     }
                 }
                 if($notDeleted != NULL){
                     $ses = Session::instance();
-                    $ses->set('filemanager_ses', $notDeleted);
+                    $ses->set('warningMessage', 'The following files were not removed: '. $notDeleted .'. Please, check other labyrinths on reference on this files.');
                 }
             }
             Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);

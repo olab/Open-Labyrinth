@@ -41,16 +41,11 @@ class Controller_ElementManager extends Controller_Base {
             $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($map->id);
 
             $ses = Session::instance();
-            $x = $ses->get('vpdmanager_ses');
-            switch ($x){
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'Element is did not set to private. Please, check other labyrinths on reference on this element.';
-                    $ses->delete('vpdmanager_ses');
-                    break;
-                case 'delVpd':
-                    $this->templateData['warningMessage'] = 'The element did not deleted. Please, check other labyrinths on reference on this element.';
-                    $ses->delete('vpdmanager_ses');
-                    break;
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -133,10 +128,11 @@ class Controller_ElementManager extends Controller_Base {
             }else {
                 $_POST['Private'] = 'Off';
             }
-            $vpd = DB_ORM::model('map_node_reference')->getNotParent($mapId, $vpdId, 'VPD');
-            if($private && $vpd != NULL){
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $vpdId, 'VPD');
+            if($private && $references != NULL){
                 $ses = Session::instance();
-                $ses->set('vpdmanager_ses', 'setPrivate');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The element wasn\'t set to private. The selected element is used in the following labyrinths:');
                 $_POST['Private'] = 'Off';
             }
             DB_ORM::model('map_vpd_element')->saveElementValues($vpdId, $_POST);
@@ -151,10 +147,11 @@ class Controller_ElementManager extends Controller_Base {
         $vpdId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $vpdId != NULL) {
-            $vpd = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
-            if($vpd != NULL){
-              $ses = Session::instance();
-              $ses->set('vpdmanager_ses', 'delVpd');
+            $references = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
+            if($references != NULL){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The element wasn\'t deleted. The selected element is used in the following labyrinths:');
             } else {
                 DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
             }

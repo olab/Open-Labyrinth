@@ -41,16 +41,11 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
             $ses = Session::instance();
-            $x = $ses->get('question_ses');
-            switch ($x){
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'The question is did not set to private. Please, check other labyrinths on reference on this qestion.';
-                    $ses->delete('question_ses');
-                    break;
-                case 'delQU':
-                    $this->templateData['warningMessage'] = 'The question did not deleted. Please, check other labyrinths on reference on this question.';
-                    $ses->delete('question_ses');
-                    break;
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -136,11 +131,12 @@ class Controller_QuestionManager extends Controller_Base {
             if ($questionId == null || $questionId <= 0) DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
             else
                 {
-                    $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
+                    $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
                     $privete = Arr::get($post, 'is_private');
-                    if($reference != NULL && $privete){
+                    if($references != NULL && $privete){
                         $ses = Session::instance();
-                        $ses->set('question_ses', 'setPrivate');
+                        $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                        $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
                         $post['is_private'] = FALSE;
                     }
                     DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
@@ -155,10 +151,11 @@ class Controller_QuestionManager extends Controller_Base {
         $questionId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $questionId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');       
-            if($reference != NULL){
-              $ses = Session::instance();
-              $ses->set('question_ses', 'delQU');        
+            $references = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
+            if($references != NULL){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The question wasn\'t deleted. The selected question is used in the following labyrinths:');
             } else {
                 DB_ORM::model('map_question', array((int) $questionId))->delete();
                 DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
