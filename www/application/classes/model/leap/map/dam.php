@@ -125,7 +125,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
             }
             
             if(count($vpdIDs) > 0) {
-                return DB_ORM::model('map_vpd')->getVpdNotInArrayIDs($vpdIDs);
+                return DB_ORM::model('map_vpd')->getVpdNotInArrayIDs($vpdIDs, $this->map_id);
             } else {
                 return DB_ORM::model('map_vpd')->getAllVpdByMap($this->map_id);
             }
@@ -148,7 +148,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
             }
             
             if(count($filesIDs) > 0) {
-                return DB_ORM::model('map_element')->getAllMediaFilesNotInIds($filesIDs);
+                return DB_ORM::model('map_element')->getAllMediaFilesNotInIds($filesIDs, $this->map_id);
             } else {
                 return DB_ORM::model('map_element')->getAllMediaFiles($this->map_id);
             }
@@ -173,7 +173,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
             
             if(count($damIDs) > 0) {
                 
-                return $this->getDamNotInIds($damIDs);
+                return $this->getDamNotInIds($damIDs, $this->map_id);
             } else {
                 return $this->getAllDamByMap($this->map_id);
             }
@@ -182,7 +182,7 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getDamNotInIds($ids) {
+    public function getDamNotInIds($ids, $mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('id', 'NOT IN', $ids);
@@ -192,7 +192,9 @@ class Model_Leap_Map_Dam extends DB_ORM_Model {
         if($result->is_loaded()) {
             $dams = array();
             foreach($result as $record) {
-                $dams[] = DB_ORM::model('map_dam', array((int)$record['id']));
+                if($record['map_id'] == $mapId || ($record['map_id'] != $mapId && !$record['is_private'])){
+                    $dams[] = DB_ORM::model('map_dam', array((int)$record['id']));
+                }
             }
             
             return $dams;

@@ -30,9 +30,22 @@ if (isset($templateData['map'])) {
     </div>
         <h1><?php echo __('Edit nodes of Labyrinth') . ' "' . $templateData['map']->name . '"'; ?></h1>
     </div>
-    <?php if(isset($templateData['warningMessage'])){ ?>
-    <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
-    <?php }?>
+
+    <?php if(isset($templateData['warningMessage'])){
+        echo '<div class="alert alert-error">';
+        echo $templateData['warningMessage'];
+        if(isset($templateData['listOfUsedReferences']) && count($templateData['listOfUsedReferences']) > 0){
+            echo '<ul class="nav nav-tabs nav-stacked">';
+            foreach($templateData['listOfUsedReferences'] as $referense){
+                list($map, $node) = $referense;
+                echo '<li><a href="' . URL::base() . 'nodeManager/editNode/' . $node['node_id'] . '">'
+                    .$map['map_name'].' / '.$node['node_title'].'('.$node['node_id'].')'.'</a></li>';
+            }
+            echo '</ul>';
+        }
+        echo '</div>';
+    }
+    ?>
 
     <?php if (isset($templateData['nodes'])) { ?>
         <table class="table table-striped table-bordered">

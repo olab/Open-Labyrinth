@@ -95,14 +95,22 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         return array();
     }
     
-    public function getVpdNotInArrayIDs($ids) {
+    public function getVpdNotInArrayIDs($ids, $mapId) {
         $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids);
         $result = $builder->query();
         
         if($result->is_loaded()) {
             $vpds = array();
             foreach($result as $record) {
-                $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
+                $vpdElements = DB_ORM::model('map_vpd_element')->getValuesByVpdId($record['id']);
+                foreach($vpdElements as $vpdElement){
+                    if($vpdElement->key == 'Private'){
+                        $vpdPrivate = $vpdElement->value;
+                    }
+                }
+                if($record['map_id'] == $mapId || ($record['map_id'] != $mapId && $vpdPrivate == 'Off')){
+                    $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
+                }
             }
             
             return $vpds;

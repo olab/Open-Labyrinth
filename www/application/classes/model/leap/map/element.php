@@ -205,7 +205,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllMediaFilesNotInIds($ids) {
+    public function getAllMediaFilesNotInIds($ids, $mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('id', 'NOT IN', $ids, 'AND')
@@ -215,7 +215,9 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         if($result->is_loaded()) {
             $elements = array();
             foreach($result as $record) {
-                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+                if($record['map_id'] == $mapId || ($record['map_id'] != $mapId && !$record['is_private'])){
+                    $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+                }
             }
             
             return $elements;

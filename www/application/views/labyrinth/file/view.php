@@ -160,9 +160,23 @@ if (isset($templateData['map'])) {
         </tr>
         {% } %}
     </script>
-    <?php if(isset($templateData['warningMessage'])){ ?>
-    <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
-    <?php }?>
+
+    <?php if(isset($templateData['warningMessage'])){
+        echo '<div class="alert alert-error">';
+        echo $templateData['warningMessage'];
+        if(isset($templateData['listOfUsedReferences']) && count($templateData['listOfUsedReferences']) > 0){
+            echo '<ul class="nav nav-tabs nav-stacked">';
+            foreach($templateData['listOfUsedReferences'] as $referense){
+                    list($map, $node) = $referense;
+                    echo '<li><a href="' . URL::base() . 'nodeManager/editNode/' . $node['node_id'] . '">'
+                          .$map['map_name'].' / '.$node['node_title'].'('.$node['node_id'].')'.'</a></li>';
+            }
+            echo '</ul>';
+        }
+        echo '</div>';
+    }
+    ?>
+
     <form method="POST" action="<?php echo URL::base() . 'fileManager/delCheked/' . $templateData['map']->id; ?>"  id="form_del_cheked">
     <table class="table table-striped table-bordered">
         <colgroup>

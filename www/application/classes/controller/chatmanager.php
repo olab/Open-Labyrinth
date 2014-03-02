@@ -39,16 +39,11 @@ class Controller_ChatManager extends Controller_Base {
             $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
 
             $ses = Session::instance();
-            $x = $ses->get('chat_ses');
-            switch ($x){
-                case 'setPrivate':
-                    $this->templateData['warningMessage'] = 'The chat is did not set to private. Please, check other labyrinths on reference on this cahat.';
-                    $ses->delete('chat_ses');
-                    break;
-                case 'delCHAT':
-                    $this->templateData['warningMessage'] = 'The chat did not deleted. Please, check other labyrinths on reference on this chat.';
-                    $ses->delete('chat_ses');
-                    break;
+            if($ses->get('warningMessage')){
+                $this->templateData['warningMessage'] = $ses->get('warningMessage');
+                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+                $ses->delete('listOfUsedReferences');
+                $ses->delete('warningMessage');
             }
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -113,10 +108,11 @@ class Controller_ChatManager extends Controller_Base {
         $chatId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $chatId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
-            if($reference != NULL){
+            $references = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
+            if($references != NULL){
                 $ses = Session::instance();
-                $ses->set('chat_ses', 'delCHAT');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The chat wasn\'t deleted. The selected chat is used in the following labyrinths:');
             } else {
                 DB_ORM::model('map_chat', array((int) $chatId))->delete();
                 DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
@@ -164,11 +160,12 @@ class Controller_ChatManager extends Controller_Base {
         $chatId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $chatId != NULL) {
-            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $chatId, 'CHAT');
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $chatId, 'CHAT');
             $privete = Arr::get($_POST, 'is_private');
-            if($reference != NULL && $privete){
+            if($references != NULL && $privete){
                 $ses = Session::instance();
-                $ses->set('chat_ses', 'setPrivate');
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The chat wasn\'t set to private. The selected chat is used in the following labyrinths:');
                 $_POST['is_private'] = FALSE;
             }
                 DB_ORM::model('map_chat')->updateChat($chatId, $_POST);
