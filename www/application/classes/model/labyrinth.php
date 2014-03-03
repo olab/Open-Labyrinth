@@ -489,15 +489,17 @@ class Model_Labyrinth extends Model {
 
         $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
         if (count($arrayAddedQuestions) > 0) {
-            foreach($arrayAddedQuestions as $questionId => $value) {
+            foreach($arrayAddedQuestions as $questionId => $value)
+            {
+                $checkForResponseTextQuestion = DB_ORM::select('User_Response')->where('session_id', '=',$sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
+                if ( ! $checkForResponseTextQuestion) $this->question($questionId, '', NULL, $nodeId);
+
                 $question = DB_ORM::model('map_question', array((int) $questionId));
 
-                if ($question->settings != '') {
-                    list($rule, $isCorrect) = json_decode($question->settings);
-                }
+                if ($question->settings != '')  list($rule, $isCorrect) = json_decode($question->settings);
 
                 $stopRules = Session::instance()->get('stopCommonRules', array());
-                if (!in_array('QU_'.$questionId, $stopRules)) {
+                if ( ! in_array('QU_'.$questionId, $stopRules)) {
                     if ($question->settings != '' && $isCorrect == 1) {
                         $mapID = $question->map_id;
                         $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
@@ -518,18 +520,15 @@ class Model_Labyrinth extends Model {
                                 $nodes = DB_ORM::model('map_node')->getAllNode($mapID);
                                 $inMap = false;
 
-                                foreach ($nodes as $node) {
-                                    if ( $node->id == $resultLogic['goto']) {
-                                        $inMap = true;
-                                    }
+                                foreach ($nodes as $node)
+                                {
+                                    if ( $node->id == $resultLogic['goto']) $inMap = true;
                                 }
 
-                                if ($inMap) {
+                                if ($inMap)
+                                {
                                     $goto = Session::instance()->get('goto', NULL);
-
-                                    if ($goto == NULL) {
-                                        Session::instance()->set('goto', $resultLogic['goto']);
-                                    }
+                                    if ($goto == NULL) Session::instance()->set('goto', $resultLogic['goto']);
                                 }
                             }
                         }
@@ -1066,8 +1065,8 @@ class Model_Labyrinth extends Model {
                     list($rule, $isCorrect) = json_decode($question->settings);
                 }
 
-                if ($question->settings != '' && $isCorrect == 1) {
-
+                if ($question->settings != '' && $isCorrect == 1)
+                {
                     $mapID = $question->map_id;
                     $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
                     $values = array();

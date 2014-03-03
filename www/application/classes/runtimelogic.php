@@ -49,9 +49,10 @@ class RunTimeLogic {
                         $result = eval($resultStr['str']);
                         $checkErrors = ob_get_contents();
                         ob_end_clean();
-                        if ($checkErrors != ''){
-                            $this->errors[] = $newIF;
-                        } else {
+
+                        if ($checkErrors != '') $this->errors[] = $newIF;
+                        else
+                        {
                             if (isset($result['counters'])){
                                 if (count($result['counters']) > 0){
                                     foreach($result['counters'] as $key => $value){
@@ -188,11 +189,8 @@ class RunTimeLogic {
             if (count($matches[0]) > 0){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
-                    if ($matches[3][$key] == 1){
-                        $replace[$i] = ' (strpos("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
-                    } else {
-                        $replace[$i] = ' (stripos("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
-                    }
+                    $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
+                    $replace[$i] = ' ('.$register.'("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
                     $i++;
                 }
             }
@@ -211,11 +209,8 @@ class RunTimeLogic {
 
                             $replace[$i] = " ( $answerStrPos == false) ";
                         } else {
-                            if ($matches[3][$key] == 1){
-                                $replace[$i] = ' (strpos(\''.$questionAnswers.'\', '.$matches[2][$key].') === false) ';
-                            } else {
-                                $replace[$i] = ' (stripos(\''.$questionAnswers.'\', '.$matches[2][$key].') === false) ';
-                            }
+                            $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
+                            $replace[$i] = ' ('.$register.'(\''.$questionAnswers.'\', '.$matches[2][$key].') === false OR \''.$questionAnswers.'\'!='.$matches[2][$key].')';
                         }
                     } else {
                         $replace[$i] = " (false) ";
@@ -237,13 +232,9 @@ class RunTimeLogic {
 
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
                     } else {
-                        if ($matches[3][$key] == 1){
-                            $replace[$i] = ' (strpos(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false) ';
-                        } else {
-                            $replace[$i] = ' (stripos(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false) ';
-                        }
+                        $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
+                        $replace[$i] = '('.$register.'(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false OR \''.$questionAnswersMatch.'\'=='.$matches[2][$key].')';
                     }
-
                     $i++;
                 }
             }

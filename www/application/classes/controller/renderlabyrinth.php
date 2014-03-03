@@ -553,7 +553,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         if ($optionNumber != NULL and $questionId != NULL) {
             $this->auto_render = false;
-            
+
             echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
         }
     }
