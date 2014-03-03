@@ -169,57 +169,60 @@ function getRandomColor(){
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php if($templateData['questions'] != NULL) { ?>
-                                    <?php
-                                        foreach($templateData['questions'] as $question) {
-                                            $responseMap = array();
-                                            if($question->type->value == 'dd' && count($question->responses) > 0) {
-                                                foreach($question->responses as $r) {
-                                                    $responseMap[$r->id] = $r;
-                                                }
+                                <?php if($templateData['questions'] != NULL) {
+                                    foreach($templateData['questions'] as $question) {
+                                        $responseMap = array();
+                                        $user_response = '';
+                                        if($question->type->value == 'dd' && count($question->responses) > 0) {
+                                            foreach($question->responses as $r) {
+                                                $responseMap[$r->id] = $r;
                                             }
-                                    ?>
+                                        } ?>
                                         <tr>
                                             <td><?php echo $question->id; ?></td>
                                             <td><?php echo $question->type->title; ?></td>
                                             <td><?php echo $question->stem; ?></td>
-                                            <td><?php if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
-                                                        if(count($templateData['responses'][$question->id]) > 0){
-                                                            foreach($templateData['responses'][$question->id] as $response){
-                                                                if($question->type->value == 'dd') {
-                                                                    $jsonObj = json_decode($response->response, true);
-                                                                    if($jsonObj != null && count($jsonObj) > 0) {
-                                                                        foreach($jsonObj as $o) {
-                                                                            if(isset($responseMap[$o])) {
-                                                                                echo '<p>' . $responseMap[$o]->response . '</p>';
-                                                                            }
-
+                                            <td><?php
+                                                if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
+                                                    if(count($templateData['responses'][$question->id]) > 0){
+                                                        foreach($templateData['responses'][$question->id] as $response){
+                                                            if($question->type->value == 'dd') {
+                                                                $jsonObj = json_decode($response->response, true);
+                                                                if($jsonObj != null && count($jsonObj) > 0) {
+                                                                    foreach($jsonObj as $o) {
+                                                                        if(isset($responseMap[$o])) {
+                                                                            echo '<p>' . $responseMap[$o]->response . '</p>';
                                                                         }
+
                                                                     }
-                                                                } else {
-                                                                    echo '<p>'.$response->response.'</p>';
                                                                 }
+                                                            } else {
+                                                                $user_response = $response->response;
+                                                                echo '<p>'.$response->response.'</p>';
                                                             }
-                                                        } else {
-                                                            echo 'no response';
                                                         }
-                                                    } else { echo 'no response'; }
-                                                    ?></td>
-                                            <td>
-                                                <?php if($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' ) { ?>
-                                                    <?php if(count($question->responses) > 0) { ?>
-                                                        <?php foreach($question->responses as $resp) { ?>
-                                                            <?php if($resp->is_correct == 1) { ?>
-                                                                <?php echo '<p>'.$resp->response.'</p>'; ?>
-                                                            <?php } ?>
-                                                        <?php } ?>
-                                                    <?php } else { echo 'n/a'; } ?>
-                                                <?php } else { echo 'n/a'; } ?>
+                                                    } else {
+                                                        echo 'no response';
+                                                    }
+                                                } else { echo 'no response'; } ?>
                                             </td>
-                                            <td><?php echo $question->feedback; ?></td>
+                                            <td><?php
+                                                if ($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' ) {
+                                                    if(count($question->responses) > 0) {
+                                                        foreach($question->responses as $resp) {
+                                                            if ($user_response == $resp->response) $user_response = $resp->feedback;
+                                                            if($resp->is_correct == 1) echo '<p>'.$resp->response.'</p>';
+                                                        }
+                                                    } else { echo 'n/a'; }
+                                                } else { echo 'n/a'; } ?>
+                                            </td>
+                                            <td><?php
+                                                if ($question->feedback) echo 'Question: '.$question->feedback.'<br>';
+                                                if ($user_response) echo 'Answer: '.$user_response; ?>
+                                            </td>
                                         </tr>
-                                    <?php } ?>
-                                <?php } ?>
+                                    <?php }
+                                } ?>
                                 </tbody>
                             </table>
 

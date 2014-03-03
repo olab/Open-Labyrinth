@@ -96,7 +96,7 @@ class Controller_QuestionManager extends Controller_Base {
 
                     if ($this->templateData['question']->type->value == 'area' || $this->templateData['question']->type->value == 'text') {
                         $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
-                        $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
+                        if ($this->templateData['questionSettings'][0]) $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
                     }
                 }
             }
@@ -122,11 +122,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ($post != null && $map != null && $type != null)
         {
-            if (isset($_POST['isCorrect']))
-            {
-                $rule = $_POST['settings'];
-                $_POST['settings'] = json_encode(array($rule, $_POST['isCorrect']));
-            }
+            if (isset($_POST['isCorrect'])) $post['settings'] = json_encode(array($post['settings'], $post['isCorrect']));
 
             if ($questionId == null || $questionId <= 0) DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
             else
