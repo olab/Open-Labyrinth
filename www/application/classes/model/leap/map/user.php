@@ -118,27 +118,24 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         return $users;
     }
 
-    public function getAllLearners($mapId, $order = "DESC"){
-        $builder = DB_SQL::select('default')
+    public function getAllLearners($mapId, $order = "DESC")
+    {
+        $users = array();
+        $result = DB_SQL::select('default')
             ->from($this->table())
             ->join('LEFT', 'users')
             ->on('map_users.user_id', '=', 'users.id')
             ->where('map_users.map_id', '=', $mapId, 'AND')
             ->where('users.type_id', '=', '1')
             ->order_by('users.nickname', $order)
-            ->column('map_users.user_id');
-        $result = $builder->query();
+            ->column('map_users.user_id')
+            ->query();
 
-        if($result->is_loaded()) {
-            $users = array();
-            foreach($result as $record) {
-                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
-            }
-
-            return $users;
+        if($result->is_loaded())
+        {
+            foreach($result as $record) $users[] = DB_ORM::model('user', array((int)$record['user_id']));
         }
-
-        return NULL;
+        return $users;
     }
 
     public function getAllUsersIds($mapId) {
