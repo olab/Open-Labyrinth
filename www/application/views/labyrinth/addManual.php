@@ -43,22 +43,6 @@
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="type"><?php echo __('Labyrinth Type'); ?></label>
-            <div class="controls">
-                <select id="type" name="type" class="span6">
-                <?php
-                if (isset($templateData['types'])) {
-                    foreach ($templateData['types'] as $type) {
-                        ?>
-                        <option value="<?php echo $type->id; ?>"><?php echo $type->name; ?></option>
-                        <?php
-                    }
-                }
-                ?>
-                </select>
-            </div>
-        </div>
-        <div class="control-group">
             <label class="control-label" for="skin"><?php echo __('Labyrinth Skin'); ?></label>
             <div class="controls">
                 <select id="skin" name="skin" class="span6">

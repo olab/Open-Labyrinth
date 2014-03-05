@@ -6171,3 +6171,20 @@ input.assign-type {
     top: 1px;
     padding-right: 5px;
 }
+
+#globalMapFrom {
+    position: relative;
+}
+
+.save-details {
+    position: absolute;
+    right: 0;
+    top: -15px;
+}
+
+.details-column:nth-child(1) {
+    width: 25%;
+}
+.details-column:nth-child(2) {
+    width: 75%;
+}

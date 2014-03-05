@@ -50,69 +50,34 @@ if (isset($templateData['map'])) {
         });
     </script>
 
-    <h1><?php echo __('Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
+    <h1><?php echo __('Labyrinth ').'"'.$templateData['map']->name.'"'; ?></h1>
 
-    <form class="form-horizontal" id="globalMapFrom" name="globalMapFrom" method="post"
-          action=<?php echo URL::base() . 'labyrinthManager/saveGlobal/' . $templateData['map']->id; ?>>
+    <form class="form-horizontal" id="globalMapFrom" name="globalMapFrom" method="post" action=<?php echo URL::base().'labyrinthManager/saveGlobal/'.$templateData['map']->id; ?>>
+
+    <input type="submit" class="btn btn-primary btn-large save-details" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>" onclick="return checkForm();">
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Info'); ?></legend>
         <table class="table table-bordered table-striped">
             <tbody>
             <tr>
-                <td><?php echo __('title'); ?></td>
-                <td><?php echo $templateData['map']->name; ?></td>
+                <td class="details-column"><?php echo __('number of nodes'); ?></td>
+                <td class="details-column"><?php echo (count($templateData['map']->nodes) > 0) ? count($templateData['map']->nodes) : '0'; ?></td>
             </tr>
             <tr>
-                <td><?php echo __('authors'); ?></td>
-                <td>
-                    <?php if (count($templateData['map']->authors) > 0) { ?>
-                        <?php foreach ($templateData['map']->authors as $author) { ?>
-                            <?php echo $author->user->nickname; ?> (<?php echo $author->user->username; ?>),
-                        <?php } ?>
-                    <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td><?php echo __('keywords'); ?></td>
-                <td><?php echo $templateData['map']->keywords; ?></td>
-            </tr>
-            <tr>
-                <td><?php echo __('Labyrinth type'); ?></td>
-                <td><?php echo $templateData['map']->type->name; ?></td>
-            </tr>
-            <tr>
-                <td><?php echo __('security'); ?></td>
-                <td><?php echo $templateData['map']->security->name; ?></td>
-            </tr>
-            <tr>
-                <td><?php echo __('number of nodes'); ?></td>
-                <td>
-                    <?php
-                    if (count($templateData['map']->nodes) > 0) {
-                        echo count($templateData['map']->nodes);
-                    } else {
-                        echo '0';
-                    }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td><?php echo __('number of links'); ?></td>
-                <td><?php echo $templateData['map']->countLinks();?></td>
-            </tr>
-            <?php
+                <td class="details-column"><?php echo __('number of links'); ?></td>
+                <td class="details-column"><?php echo $templateData['map']->countLinks();?></td>
+            </tr><?php
             $vars = $templateData["map"]->as_array();
-
-            foreach ($vars as $property):?>    <?php if (Helper_Controller_Metadata::isMetadataRecord($property)): ?>
-                <tr>
-                    <?php $view =  Helper_Controller_Metadata::getView($property); ?>
-                    <td><?php echo $view["label"]?></td>
-                    <td>
-                        <?php echo $view["body"]?>
-                    </td>
-                </tr>  <?php endif; ?>
-            <?php endforeach;?>
+            foreach ($vars as $property){
+            if (Helper_Controller_Metadata::isMetadataRecord($property)){ ?>
+            <tr>
+                <?php $view =  Helper_Controller_Metadata::getView($property); ?>
+                <td><?php echo $view["label"]?></td>
+                <td><?php echo $view["body"]?></td>
+            </tr> <?php
+            };
+            };?>
             </tbody>
         </table>
     </fieldset>
@@ -142,142 +107,127 @@ if (isset($templateData['map'])) {
                 <input name="keywords" type="text" id="keywords" class="span6"
                        value="<?php echo $templateData['map']->keywords; ?>">
             </div>
-        </div>
-        <?php if (isset($templateData['types'])) { ?>
-            <div class="control-group">
-                <label class="control-label" for="type"><?php echo __('Labyrinth Type'); ?></label>
-                <div class="controls">
-                    <select name="type" id="type" class="span6">
-                        <?php foreach ($templateData['types'] as $type) { ?>
-                            <option
-                                value="<?php echo $type->id; ?>" <?php if ($type->id == $templateData['map']->type_id) echo 'selected=""'; ?> ><?php echo $type->name; ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
+        </div><?php
+        if (isset($templateData['skins'])) { ?>
+        <div class="control-group">
+            <label class="control-label" for="skin"><?php echo __('Labyrinth Skin'); ?></label>
+            <div class="controls">
+                <select name="skin" id="skin" class="span6"><?php
+                    foreach ($templateData['skins'] as $skin) { ?>
+                        <option value="<?php echo $skin->id; ?>" <?php if ($skin->id == $templateData['map']->skin_id) echo 'selected'; ?>><?php echo $skin->name; ?></option><?php
+                    } ?>
+                </select>
             </div>
-        <?php } ?>
-
-        <?php if (isset($templateData['skins'])) { ?>
-            <div class="control-group">
-                <label class="control-label" for="skin"><?php echo __('Labyrinth Skin'); ?></label>
-                <div class="controls">
-                    <select name="skin" id="skin" class="span6">
-                        <?php foreach ($templateData['skins'] as $skin) { ?>
-                            <option
-                                value="<?php echo $skin->id; ?>" <?php if ($skin->id == $templateData['map']->skin_id) echo 'selected=""'; ?>><?php echo $skin->name; ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-        <?php } ?>
+        </div><?php
+        } ?>
     </fieldset>
 
     <fieldset class="fieldset">
-        <legend><?php echo ('Labyrinth Forum Details'); ?></legend>
-        <div class="control-group forum-details-container">
-            <?php if($templateData['map']->assign_forum_id != null) { ?>
-                <div class="control-group">
-                    <div class="controls">
-                        <button submit-url="<?php echo URL::base(); ?>labyrinthManager/unassignForum/<?php echo $templateData['map']->id; ?>" class="btn btn-danger unassign-forum" type="button"><?php echo __('Unassign map forum'); ?></button>
-                    </div>
+        <legend><?php echo __('Labyrinth Users'); ?></legend><?php
+        if (isset($templateData['securities'])) { ?>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Security'); ?></label>
+                <div class="controls">
+                    <select  name="security"><?php
+                        foreach ($templateData['securities'] as $security) { ?>
+                        <option value="<?php echo $security->id; ?>"<?php if ($security->id == $templateData['map']->security_id) echo ' selected'; ?>><?php echo $security->name; ?></option><?php
+                        } ?>
+                    </select>
+                    <button <?php if ($templateData['map']->security_id !== '4') echo 'style="display:none;"'; ?> id="edit_keys" class="btn btn-primary" value="1" name="edit_key">Edit keys</button>
                 </div>
-            <?php } else { ?>
-                <div class="control-group">
-                    <label class="control-label"><?php echo __('First forum message'); ?></label>
-                    <div class="controls">
-                        <textarea class="mceEditor" name="firstForumMessage" id="firstForumMessage"></textarea>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <button submit-url="<?php echo URL::base(); ?>labyrinthManager/addNewForum/<?php echo $templateData['map']->id; ?>" class="btn btn-info" type="button" id="createNewForum" map-id="<?php echo $templateData['map']->id; ?>"><i class="icon-plus"></i><?php echo __('Create and assign new forum'); ?></button>
-                    </div>
-                </div>
-            <?php } ?>
-        </div>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend><?php echo __('Labyrinth Contributors'); ?></legend>
+            </div>
+        <?php } ?>
         <div class="control-group">
             <label class="control-label">
                 <span><?php echo __('Contributors'); ?></span>
-                    <div class="pull-right">
-                        <a class="btn btn-info"
-                           href=<?php echo URL::base() . 'labyrinthManager/addContributor/' . $templateData['map']->id; ?>>
-                            <i class="icon-plus"></i><?php echo __('Add'); ?></a>
-                    </div>
+                <div class="pull-right">
+                    <a class="btn btn-info add-contributor" href=<?php echo URL::base().'labyrinthManager/addContributor/'.$templateData['map']->id; ?>><i class="icon-plus"></i><?php echo __('Add'); ?></a>
+                </div>
             </label>
+            <ul class="contributors-list add-contributor-parent"><?php $orderIndex=1;
+                foreach (Arr::get($templateData, 'contributors', array()) as $contributor) { ?>
+                <li>
+                    <p>
+                        <input type="hidden" name="corder_<?php echo $contributor->id; ?>" value="<?php echo $orderIndex; ?>"/>
+                        <label><?php echo __('Name'); ?></label>
+                        <input type="text" id="cname_<?php echo $contributor->id; ?>" name="cname_<?php echo $contributor->id; ?>" value="<?php echo $contributor->name; ?>">
+                    </p>
+                    <p>
+                        <label><?php echo __('Organization'); ?></label>
+                        <input type="text" name="cnorg_<?php echo $contributor->id; ?>" id="cnorg_<?php echo $contributor->id; ?>" value="<?php echo $contributor->organization; ?>">
+                    </p>
+                    <p>
+                        <label><?php echo __('Role'); ?></label><?php
+                        if (isset($templateData['contributor_roles'])) { ?>
+                            <select name="role_<?php echo $contributor->id; ?>" id="role_<?php echo $contributor->id; ?>"><?php
+                            foreach ($templateData['contributor_roles'] as $role) { ?>
+                                <option value="<?php echo $role->id; ?>" <?php if ($role->id == $contributor->role_id) echo 'selected=""'; ?>><?php echo $role->name; ?></option><?php
+                            } ?>
+                            </select><?php
+                        } ?>
+                    </p>
+                    <p><a href="<?php echo URL::base().'labyrinthManager/deleteContributor/'.$templateData['map']->id.'/'.$contributor->id; ?>" class="btn btn-small btn-danger"><i class="icon-trash"></i></a></p>
+                </li><?php $orderIndex++;
+                } ?>
+            </ul>
+        </div>
 
-            <?php if (isset($templateData['contributors']) && count($templateData['contributors']) > 0) { ?>
-                <ul class="contributors-list">
-                    <?php $orderIndex=1; foreach ($templateData['contributors'] as $contributor) { ?>
-                    <li>
-                        <p>
-                            <input type="hidden" name="corder_<?php echo $contributor->id; ?>" value="<?php echo $orderIndex; ?>"/>
-                            <label><?php echo __('Name'); ?></label>
-                                    <input type="text"
-                                           id="cname_<?php echo $contributor->id; ?>"
-                                           name="cname_<?php echo $contributor->id; ?>"
-                                           value="<?php echo $contributor->name; ?>">
-                        </p>
-                        <p>
-                            <label><?php echo __('Organization'); ?></label>
-                                    <input type="text" name="cnorg_<?php echo $contributor->id; ?>"
-                                           id="cnorg_<?php echo $contributor->id; ?>"
-                                           value="<?php echo $contributor->organization; ?>">
-                        </p>
-                        <p>
-                            <label><?php echo __('Role'); ?></label>
-                                    <?php if (isset($templateData['contributor_roles'])) { ?>
-                                        <select name="role_<?php echo $contributor->id; ?>"
-                                                id="role_<?php echo $contributor->id; ?>">
-                                            <?php foreach ($templateData['contributor_roles'] as $role) { ?>
-                                                <option
-                                                    value="<?php echo $role->id; ?>" <?php if ($role->id == $contributor->role_id) echo 'selected=""'; ?>><?php echo $role->name; ?></option>
-                                            <?php } ?>
-
-                                        </select>
-                                    <?php } ?>
-                        </p>
-                        <p><a href="<?php echo URL::base() . 'labyrinthManager/deleteContributor/' . $templateData['map']->id . '/' . $contributor->id; ?>" class="btn btn-small btn-danger"><i class="icon-trash"></i></a></p>
-                    </li>
-                    <?php $orderIndex++; } ?>
-                </ul>
-                <div style="clear: both"></div>
-            <?php } ?>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Creator'); ?>:</label>
+            <div class="controls">
+                <select <?php if ( ! $templateData['editCreator']) echo 'disabled'; ?>><?php
+                foreach (Arr::get($templateData, 'creators', array()) as $creators) { ?>
+                    <option><?php echo $creators->nickname; ?></option><?php
+                } ?>
+                </select>
+            </div>
         </div>
 
         <div class="control-group">
             <label class="control-label"><?php echo __('Registered Labyrinth Authors'); ?>:</label>
-            <div class="controls">
-                <?php if (isset($templateData['regAuthors'])) { ?>
-                    <?php foreach ($templateData['regAuthors'] as $user) { ?>
-
-                        <?php echo $user->nickname . ', '; ?>
-
-                    <?php
-                    }
-                } ?>
+            <div class="controls"><?php
+            foreach (Arr::get($templateData, 'regAuthors', array()) as $user) {
+                echo $user->nickname.', ';
+            } ?>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Registered Labyrinth Learners'); ?></label>
-            <div class="controls">
-                <?php if (isset($templateData['regLearners'])) { ?>
-                    <?php foreach ($templateData['regLearners'] as $user) { ?>
-                        <?php echo $user->nickname . ', '; ?>
-                    <?php
-                    }
-                } ?>
+            <label class="control-label"><?php echo __('Registered Labyrinth Groups'); ?></label>
+            <div class="controls"><?php
+            foreach (Arr::get($templateData, 'groupsOfLearner', array()) as $groupName) {
+                echo $groupName.', ';
+            } ?>
             </div>
         </div>
     </fieldset>
 
     <fieldset class="fieldset">
-        <legend><?php echo __(' Labyrinth Timing');?> </legend>
-        <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to
-        navigate it in a certain time.">
+        <legend><?php echo __('Labyrinth Navigation');?> </legend><?php
+        if (isset($templateData['linkStyles'])) { ?>
+            <div class="control-group">
+            <label class="control-label"><?php echo __('Link Function Style'); ?></label>
+            <div class="controls">
+                <select name="linkStyle"><?php
+                    foreach ($templateData['linkStyles'] as $linkStyle) { ?>
+                        <option value="<?php echo $linkStyle->id; ?>" <?php if ($linkStyle->id == $templateData['selectedLinkStyles']) echo 'selected'; ?>><?php echo $linkStyle->name; ?></option><?php
+                    } ?>
+                </select>
+            </div>
+            </div><?php
+        }
+        if (isset($templateData['sections'])) { ?>
+            <div class="control-group">
+            <label class="control-label"><?php echo __('Section Browsing'); ?></label>
+            <div class=" controls"><?php
+                foreach ($templateData['sections'] as $section) { ?>
+                    <label class="radio">
+                    <input type="radio" name="section" value="<?php echo $section->id; ?>" <?php if ($section->id == $templateData['map']->section_id) echo 'checked'; ?>/> <?php echo $section->name; ?>
+                    </label><?php
+                } ?>
+            </div>
+            </div><?php
+        } ?>
+        <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to navigate it in a certain time.">
             <label class="control-label"><?php echo __('Timing'); ?></label>
             <div class="controls">
                 <label class="radio">
@@ -349,186 +299,172 @@ if (isset($templateData['map'])) {
     </fieldset>
 
     <fieldset class="fieldset">
-        <legend><?php echo __('Labyrinth Security'); ?></legend>
-        <?php if (isset($templateData['securities'])) { ?>
-            <div class="control-group">
-                <label class="control-label"><?php echo __('Security'); ?></label>
-
+        <legend><?php echo ('Labyrinth Forum Details'); ?></legend>
+        <div class="control-group forum-details-container"><?php
+            if($templateData['map']->assign_forum_id != null) { ?>
+                <div class="control-group">
                 <div class="controls">
-                    <?php foreach ($templateData['securities'] as $security) { ?>
-                        <label class="radio">
-                            <input type="radio"
-                                   name="security"
-                                   value=<?php echo $security->id; ?> <?php if ($security->id == $templateData['map']->security_id) echo 'checked=""'; ?>>
-                            <?php echo $security->name; ?>
-                        </label>
-                    <?php } ?>
-                    <button <?php if ($templateData['map']->security_id !== '4') echo 'style="display:none;"'; ?> id="edit_keys" class="btn btn-primary" value="1" name="edit_key">Edit keys</button>
+                    <button submit-url="<?php echo URL::base(); ?>labyrinthManager/unassignForum/<?php echo $templateData['map']->id; ?>" class="btn btn-danger unassign-forum" type="button"><?php echo __('Unassign map forum'); ?></button>
                 </div>
-            </div>
-        <?php } ?>
-
-        <?php if (isset($templateData['sections'])) { ?>
-            <div class="control-group">
-                <label class="control-label"><?php echo __('Section Browsing'); ?></label>
-
-                <div class=" controls">
-                    <?php foreach ($templateData['sections'] as $section) { ?>
-                        <label class="radio">
-                            <input type="radio" name="section" value=<?php echo $section->id; ?>
-                                <?php if ($section->id == $templateData['map']->section_id) echo 'checked=""'; ?>/> <?php echo $section->name; ?>
-                        </label>
-                    <?php } ?>
-
+                </div><?php
+            } else { ?>
+                <div class="control-group">
+                    <label class="control-label"><?php echo __('First forum message'); ?></label>
+                    <div class="controls">
+                        <textarea class="mceEditor" name="firstForumMessage" id="firstForumMessage"></textarea>
+                    </div>
                 </div>
-
-            </div>
-        <?php } ?>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend><?php echo __('Labyrinth Link Function Style'); ?></legend>
-        <?php if (isset($templateData['linkStyles'])) { ?>
-            <div class="control-group">
-                <label class="control-label"><?php echo __('Link Function Style'); ?></label>
+                <div class="control-group">
                 <div class="controls">
-                    <?php $isFirst = true; foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                        <label class="radio">
-                            <input type="radio"
-                                   name="linkStyle"
-                                   value=<?php echo $linkStyle->id; ?>>
-                            <?php echo $linkStyle->name; ?>
-                        </label>
-                    <?php } ?>
+                    <button submit-url="<?php echo URL::base(); ?>labyrinthManager/addNewForum/<?php echo $templateData['map']->id; ?>" class="btn btn-info" type="button" id="createNewForum" map-id="<?php echo $templateData['map']->id; ?>"><i class="icon-plus"></i><?php echo __('Create and assign new forum'); ?></button>
                 </div>
-            </div>
-        <?php } ?>
+                </div><?php
+            } ?>
+        </div>
     </fieldset>
 
     <fieldset class="fieldset fieldset-verification">
-        <legend><?php echo __(' Labyrinth verification'); ?></legend>
-            <?php $verificationArray = array(
-                'link_logic' => 'Link Logic verified',
-                'node_cont' => 'Node Content verified',
-                'clinical_acc' => 'Clinical Accuracy verified',
-                'media_cont' => 'Media Content complete',
-                'media_copy' => 'Media Copyright verified',
-                'metadata' => 'Metadata complete'
-            );
+        <legend><?php echo __('Reviewer Information'); ?></legend><?php
+        $verificationArray = array(
+            'link_logic' => 'Link Logic verified',
+            'node_cont' => 'Node Content verified',
+            'clinical_acc' => 'Clinical Accuracy verified',
+            'media_cont' => 'Media Content complete',
+            'media_copy' => 'Media Copyright verified',
+            'metadata' => 'Semantic Metadata'
+        );
 
-            foreach($verificationArray as $key => $value) { ?>
-            <div class="control-group">
-                <label class="control-label"><?php echo __($value) ?></label>
-                <div class="controls">
-                    <div class="radio_extended btn-group" style="float:left;">
-                        <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"
-                            <?php if (isset($templateData['verification'][$key])){
-                            echo ($templateData['verification'][$key] == null) ? 'checked="checked"' : '';
+        foreach($verificationArray as $key => $value) { ?>
+        <div class="control-group">
+            <label class="control-label"><?php echo __($value) ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float:left;">
+                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"
+                        <?php if (isset($templateData['verification'][$key])){
+                        echo ($templateData['verification'][$key] == null) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                        ?>
+                            />
+                    <label data-class="btn-danger" data-value="no" class="btn" for="<?php echo $key; ?>0"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>1" name="<?php echo $key; ?>" value="1" <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-success" data-value="yes" class="btn" for="<?php echo $key; ?>1"><?php echo __('Yes'); ?></label>
+                </div>
+
+                <div class="verification span2 <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? '' : 'hide') ?>">
+                    <div class="input-append date" data-date="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>" data-date-format="mm/dd/yyyy">
+                        <input name="verification[<?php echo $key; ?>]" style="width:120px;" type="text" value="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>">
+                        <span class="add-on"><i class="icon-th"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div><?php
+        } ?>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Instructor guide complete') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float: left;">
+                    <input autocomplete="off" type="radio" id="inst_guide0" name="inst_guide" value="0"
+                        <?php if (isset($templateData['verification']['inst_guide'])){
+                            echo ($templateData['verification']['inst_guide'] == 0) ? 'checked="checked"' : '';
                         } else {
                             echo 'checked="checked"';
                         }
-                            ?>
-                                />
-                        <label data-class="btn-danger" data-value="no" class="btn" for="<?php echo $key; ?>0"><?php echo __('No'); ?></label>
+                        ?>
+                        />
+                    <label data-class="btn-danger" data-value="no" class="btn" for="inst_guide0"><?php echo __('No'); ?></label>
 
-                        <input autocomplete="off" type="radio" id="<?php echo $key; ?>1" name="<?php echo $key; ?>" value="1" <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? 'checked="checked"' : '') ?>/>
-                        <label data-class="btn-success" data-value="yes" class="btn" for="<?php echo $key; ?>1"><?php echo __('Yes'); ?></label>
-                    </div>
-
-                    <div class="verification span2 <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? '' : 'hide') ?>">
-                        <div class="input-append date" data-date="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>" data-date-format="mm/dd/yyyy">
-                            <input name="verification[<?php echo $key; ?>]" style="width:120px;" type="text" value="<?php if (isset($templateData['verification'][$key]) && $templateData['verification'][$key]) echo date('m/d/Y',$templateData['verification'][$key]); else echo date('m/d/Y');?>">
-                            <span class="add-on"><i class="icon-th"></i></span>
-                        </div>
-                    </div>
+                    <input autocomplete="off" type="radio" id="inst_guide1" name="inst_guide" value="1" <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-success" data-value="yes" class="btn" for="inst_guide1"><?php echo __('Yes'); ?></label>
                 </div>
-            </div>
-            <?php } ?>
 
-            <div class="control-group">
-                <label class="control-label"><?php echo __('Instructor guide complete') ?></label>
-                <div class="controls">
-                    <div class="radio_extended btn-group" style="float: left;">
-                        <input autocomplete="off" type="radio" id="inst_guide0" name="inst_guide" value="0"
-                            <?php if (isset($templateData['verification']['inst_guide'])){
-                                echo ($templateData['verification']['inst_guide'] == 0) ? 'checked="checked"' : '';
-                            } else {
-                                echo 'checked="checked"';
-                            }
-                            ?>
-                            />
-                        <label data-class="btn-danger" data-value="no" class="btn" for="inst_guide0"><?php echo __('No'); ?></label>
-
-                        <input autocomplete="off" type="radio" id="inst_guide1" name="inst_guide" value="1" <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? 'checked="checked"' : '') ?>/>
-                        <label data-class="btn-success" data-value="yes" class="btn" for="inst_guide1"><?php echo __('Yes'); ?></label>
-                    </div>
-
-                    <div class="verification span2 <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? '' : 'hide') ?>">
-                        <select id="file_id" name="inst_guide_select">
-                            <?php if(isset($templateData['files'])) { ?>
-                                <?php foreach($templateData['files'] as $file) { ?>
-                                    <option value="<?php echo $file->id; ?>" <?php if( isset($templateData['verification']['inst_guide']) && $file->id == $templateData['verification']['inst_guide']) echo 'selected'; ?>><?php echo $file->name; ?></option>
-                                <?php } ?>
+                <div class="verification span2 <?php echo ((isset($templateData['verification']['inst_guide']) && $templateData['verification']['inst_guide']) ? '' : 'hide') ?>">
+                    <select id="file_id" name="inst_guide_select">
+                        <?php if(isset($templateData['files'])) { ?>
+                            <?php foreach($templateData['files'] as $file) { ?>
+                                <option value="<?php echo $file->id; ?>" <?php if( isset($templateData['verification']['inst_guide']) && $file->id == $templateData['verification']['inst_guide']) echo 'selected'; ?>><?php echo $file->name; ?></option>
                             <?php } ?>
-                        </select>
-                    </div>
+                        <?php } ?>
+                    </select>
                 </div>
             </div>
-    </fieldset>
+        </div>
 
-    <fieldset class="fieldset">
-        <legend><?php echo __('Labyrinth Notes'); ?></legend>
         <div class="control-group">
-            <label class="control-label"><?php echo __('Notes'); ?>:</label>
+            <label class="control-label"><?php echo __('Author notes'); ?>:</label>
             <div class="controls">
                 <textarea name="devnotes"><?php echo $templateData['map']->dev_notes; ?></textarea>
             </div>
         </div>
-    </fieldset>
-
-    <?php
+    </fieldset><?php
     echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
 
     <div class="pull-right">
-        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit"
-               value="<?php echo __('Save changes'); ?>" onclick="return checkForm();"></div>
+        <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>" onclick="return checkForm();">
+    </div>
+</form>
 
-    </form>
 
-    <script>
-        createEditableSelect(document.getElementById('delta_time_seconds'));
-        createEditableSelect(document.getElementById('delta_time_minutes'));
-        createEditableSelect(document.getElementById('reminder_seconds'));
-        createEditableSelect(document.getElementById('reminder_minutes'));
+<li class="add-contributor-bl" style="display: none;">
+    <p>
+        <input type="hidden" name="contributor[order][<?php echo $orderIndex ?>]">
+        <label><?php echo __('Name'); ?></label>
+        <input type="text" name="contributor[name][]">
+    </p>
+    <p>
+        <label><?php echo __('Organization'); ?></label>
+        <input type="text" name="contributor[org][]">
+    </p>
+    <p>
+        <label><?php echo __('Role'); ?></label><?php
+        if (isset($templateData['contributor_roles'])) { ?>
+            <select name="contributor[role][]"><?php
+            foreach ($templateData['contributor_roles'] as $role) { ?>
+                <option value="<?php echo $role->id; ?>" <?php if ($role->id == 13) echo 'selected'; ?>><?php echo $role->name; ?></option><?php
+            } ?>
+            </select><?php
+        } ?>
+    </p>
+    <p><a class="btn btn-small btn-danger del-contributor-js"><i class="icon-trash"></i></a></p>
+</li>
 
-        function checkForm (){
-            if(document.getElementById('delta_time_seconds').value == '' && document.getElementById('delta_time_minutes').value == ''
-                && document.getElementById('timing-on').checked ) {
-                alert('Please enter you time interval for Timing!');
-                return false;
-            }
-            if(document.getElementById('delta_time_seconds').value == 0 && document.getElementById('delta_time_minutes').value == 0
-                && document.getElementById('timing-on').checked ) {
-                alert('Please enter you time interval for Timing!');
-                return false;
-            }
-            if(document.getElementById('reminder_seconds').value == 0 && document.getElementById('reminder_minutes').value == 0
-                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
-                alert('Please enter you time interval for Reminder Message!');
-                return false;
-            }
-            if(document.getElementById('reminder_seconds').value == '' && document.getElementById('reminder_minutes').value == ''
-                && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
-                alert('Please enter you time interval for Reminder Message!');
-                return false;
-            }
-            if(( parseInt(document.getElementById('reminder_seconds').value) + parseInt(document.getElementById('reminder_minutes').value) * 60)
-                >= ( parseInt(document.getElementById('delta_time_seconds').value) + parseInt(document.getElementById('delta_time_minutes').value) * 60)
-                && document.getElementById('timing-on').checked ) {
-                alert('Reminder-interval must be less than Timing interval!');
-                return false;
-            }
+<script>
+    createEditableSelect(document.getElementById('delta_time_seconds'));
+    createEditableSelect(document.getElementById('delta_time_minutes'));
+    createEditableSelect(document.getElementById('reminder_seconds'));
+    createEditableSelect(document.getElementById('reminder_minutes'));
+
+    function checkForm (){
+        if(document.getElementById('delta_time_seconds').value == '' && document.getElementById('delta_time_minutes').value == ''
+            && document.getElementById('timing-on').checked ) {
+            alert('Please enter you time interval for Timing!');
+            return false;
         }
+        if(document.getElementById('delta_time_seconds').value == 0 && document.getElementById('delta_time_minutes').value == 0
+            && document.getElementById('timing-on').checked ) {
+            alert('Please enter you time interval for Timing!');
+            return false;
+        }
+        if(document.getElementById('reminder_seconds').value == 0 && document.getElementById('reminder_minutes').value == 0
+            && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+            alert('Please enter you time interval for Reminder Message!');
+            return false;
+        }
+        if(document.getElementById('reminder_seconds').value == '' && document.getElementById('reminder_minutes').value == ''
+            && document.getElementById('timing-on').checked && document.getElementById('reminder_msg').value != '' ) {
+            alert('Please enter you time interval for Reminder Message!');
+            return false;
+        }
+        if(( parseInt(document.getElementById('reminder_seconds').value) + parseInt(document.getElementById('reminder_minutes').value) * 60)
+            >= ( parseInt(document.getElementById('delta_time_seconds').value) + parseInt(document.getElementById('delta_time_minutes').value) * 60)
+            && document.getElementById('timing-on').checked ) {
+            alert('Reminder-interval must be less than Timing interval!');
+            return false;
+        }
+    }
 
-    </script>
-<?php } ?>
+</script><?php
+} ?>

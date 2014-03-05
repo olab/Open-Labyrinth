@@ -484,7 +484,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->author_id    = Arr::get($values, 'author', 1);
         $this->abstract     = Arr::get($values, 'description', 'empty_description');
         $this->keywords     = Arr::get($values, 'keywords', 'empty_keywords');
-        $this->type_id      = Arr::get($values, 'type', 1);
+        $this->type_id      = 2;
         $this->skin_id      = Arr::get($values, 'skin', 1);
         $this->timing       = Arr::get($values, 'timing', FALSE);
         $this->delta_time   = Arr::get($values, 'delta_time', 0);
@@ -554,18 +554,18 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->id = $id;
         $this->load();
 
-        $this->name = $this->getMapName(Arr::get($values, 'title', 'empty_title'), $id);
-        $this->abstract = Arr::get($values, 'description', 'empty_description');
-        $this->keywords = Arr::get($values, 'keywords', 'empty_keywords');
-        $this->type_id = Arr::get($values, 'type', 1);
-        $this->skin_id = Arr::get($values, 'skin', 1);
-        $this->timing = Arr::get($values, 'timing', FALSE);
-        $this->delta_time = Arr::get($values, 'delta_time', 0);
-        $this->reminder_msg = Arr::get($values, 'reminder_msg', 'empty_reminder_msg');
-        $this->reminder_time = Arr::get($values, 'reminder_time', 0);
-        $this->security_id = Arr::get($values, 'security', 2);
-        $this->section_id = Arr::get($values, 'section', 1);
-        $this->verification = Arr::get($values, 'verification', NULL);
+        $this->name             = $this->getMapName(Arr::get($values, 'title', 'empty_title'), $id);
+        $this->abstract         = Arr::get($values, 'description', 'empty_description');
+        $this->keywords         = Arr::get($values, 'keywords', 'empty_keywords');
+        $this->type_id          = 2;
+        $this->skin_id          = Arr::get($values, 'skin', 1);
+        $this->timing           = Arr::get($values, 'timing', FALSE);
+        $this->delta_time       = Arr::get($values, 'delta_time', 0);
+        $this->reminder_msg     = Arr::get($values, 'reminder_msg', 'empty_reminder_msg');
+        $this->reminder_time    = Arr::get($values, 'reminder_time', 0);
+        $this->security_id      = Arr::get($values, 'security', 2);
+        $this->section_id       = Arr::get($values, 'section', 1);
+        $this->verification     = Arr::get($values, 'verification', NULL);
 
         $this->save();
     }
