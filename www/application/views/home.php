@@ -90,28 +90,26 @@
                                         <li><a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Import Labyrinths'); ?></li>
-                                        <li><a href="<?php echo URL::base() . 'exportImportManager/importVUE'; ?>"><?php echo __('VUE'); ?></a></li>
                                         <li><a href="<?php echo URL::base() . 'exportImportManager/importMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Export Labyrinths'); ?></li>
-                                        <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('XML'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous ANSI'); ?></a></li>
+                                        <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                     </ul>
                                 </li><?php
                                     if($type_name != 'author') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Manage Presentations'); ?></a></li>
-                                            <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Manage Remote Services'); ?></a></li>
-                                            <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Manage Users & Groups'); ?></a></li><?php
+                                            <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Presentations'); ?></a></li>
+                                            <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
+                                            <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li><?php
                                             if ($type_name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li>
                                             <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
                                             <li class="divider"></li>
-                                            <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Manage Metadata'); ?></a></li>
-                                            <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Manage Semantics'); ?></a></li><?php
+                                            <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
+                                            <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li><?php
                                             } ?>
                                         </ul>
                                     </li><?php
@@ -119,7 +117,7 @@
                                 }
                                 if($type_name == 'author' || $type_name == 'superuser') { ?>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenario Management'); ?> <b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Management'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                             <li class="divider"></li>

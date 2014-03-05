@@ -621,15 +621,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
 
-    public function setLinkStyle($linkStyleId) {
-        $linkStyles = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        if($linkStyles != null && count($linkStyles) > 0) {
-            foreach($linkStyles as $style) {
-                if($style->id == $linkStyleId) {
-                    DB_ORM::update('map_node')->set('link_style_id', $linkStyleId)->execute();
-                    break;
-                }
-            }
+    public function setLinkStyle($mapId, $linkStyleId)
+    {
+        $mainLinkStyle = $this->getMainLinkStyles($mapId);
+        foreach (DB_ORM::select('map_node')->where('map_id', '=', $mapId)->where('link_style_id', '=', $mainLinkStyle)->query()->as_array() as $nodeObj)
+        {
+            $nodeObj->link_style_id = $linkStyleId;
+            $nodeObj->save();
         }
     }
 
@@ -883,6 +881,21 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $name;
     }
 
-}
+    public function getMainLinkStyles ($mapId)
+    {
+        // 5 link style create
+        $linkStyle[1] = 0;
+        $linkStyle[2] = 0;
+        $linkStyle[3] = 0;
+        $linkStyle[4] = 0;
+        $linkStyle[5] = 0;
 
-?>
+        foreach (DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj)
+        {
+            $linkStyle[$nodeObj->link_style_id] += 1;
+        }
+        // sort array, first key element contain main link style
+        arsort($linkStyle);
+        return key($linkStyle);
+    }
+}

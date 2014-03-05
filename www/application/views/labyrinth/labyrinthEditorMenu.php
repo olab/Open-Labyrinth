@@ -47,7 +47,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'avatarManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Avatars'); ?></a></li>
             <li><a href="<?php echo URL::base().'counterManager/index/'.$id_map; ?>"><i class="icon-dashboard"></i> <?php echo __('Counters'); ?></a></li>
             <li><a href="<?php echo URL::base().'counterManager/grid/'.$id_map; ?>"><i class="icon-th-large"></i> <?php echo __('Counter Grid'); ?></a></li>
-            <li><a href="<?php echo URL::base().'visualdisplaymanager/index/'.$id_map; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Visual displays of counters'); ?></a><div class="pull-right arrow"></div></li>
+            <li><a href="<?php echo URL::base().'visualdisplaymanager/index/'.$id_map; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Counter Displays'); ?></a><div class="pull-right arrow"></div></li>
             <li><a href="<?php echo URL::base().'counterManager/rules/'.$id_map; ?>"><i class="icon-check"></i> <?php echo __('Rules'); ?></a></li>
             <li><a href="<?php echo URL::base().'popupManager/index/'.$id_map; ?>"><i class="icon-envelope"></i> <?php echo __('Pop-up messages'); ?></a></li>
             <li><a href="<?php echo URL::base().'elementManager/index/'.$id_map; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>

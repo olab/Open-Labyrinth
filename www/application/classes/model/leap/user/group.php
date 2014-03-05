@@ -130,5 +130,18 @@ class Model_Leap_User_Group extends DB_ORM_Model {
         }
         return false;
     }
+
+    public function getGroupOfLearners ($mapId)
+    {
+        $result = array();
+        foreach (DB_ORM::model('map_user')->getAllLearners($mapId) as $userObj)
+        {
+            foreach(DB_ORM::select('user_group')->where('user_id', '=', $userObj->id)->query()->as_array() as $userGroupObj)
+            {
+                $result[] = DB_ORM::model('Group', array($userGroupObj->group_id))->name;
+            }
+        }
+        return $result;
+    }
 }
 

@@ -71,8 +71,8 @@ jQuery(document).ready(function(){
         $('#reminder_minutes').prop('disabled', true);
     });
 
-    jQuery('input:radio[name=security]').change(function(){
-        if(this.value==4)$("#edit_keys").show();
+    jQuery('select[name=security]').change(function(){
+        if(this.value == 4) $("#edit_keys").show();
         else $("#edit_keys").hide();
     });
 
@@ -545,4 +545,15 @@ jQuery(document).ready(function(){
         $(this).parent().remove();
         $('.add-r-patient-js').fadeToggle(0);
     });
+
+    $('.add-contributor').live('click', function(e){
+        e.preventDefault();
+        var bl = $('.add-contributor-bl').last().clone().show();
+        $('.add-contributor-parent').append(bl);
+    });
+
+    $('.del-contributor-js').live('click' ,function(){
+        $(this).parents('.add-contributor-bl').remove();
+    });
+
 });

@@ -36,32 +36,29 @@ class Controller_VisualManager extends Controller_Base {
         }
     }
 
-    public function action_index() {
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base() . 'visualManager/index/' . $this->mapId));
+    public function action_index()
+    {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base().'visualManager/index/'.$this->mapId));
 
         $saveJson = '';
 
-        $this->templateData['node']         = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
-        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
-        $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
-        $this->templateData['mapJSON']      = Model::factory('visualEditor')->generateJSON($this->mapId);;
+        $this->templateData['node']             = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
+        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
+        $this->templateData['linkStyles']       = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['mainLinkStyles']   = DB_ORM::model('map_node')->getMainLinkStyles($this->mapId);
+        $this->templateData['priorities']       = DB_ORM::model('map_node_priority')->getAllPriorities();
+        $this->templateData['mapJSON']          = Model::factory('visualEditor')->generateJSON($this->mapId);;
 
-        if($saveJson != null)
-            $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
+        if ($saveJson != null) $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty').'\'';
 
-        if(Auth::instance()->logged_in()) {
+        if(Auth::instance()->logged_in())
+        {
             $user = Auth::instance()->get_user();
-            if($user != null) {
-                $this->templateData['user'] = DB_ORM::model('user', array($user->id));
-            }
+            if ($user != null) $this->templateData['user'] = DB_ORM::model('user', array($user->id));
         }
 
-        $visualView = View::factory('labyrinth/visual')->set('templateData', $this->templateData);
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-
-        $this->templateData['left'] = $leftView;
-        $this->templateData['center'] = $visualView;
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/visual')->set('templateData', $this->templateData);
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }

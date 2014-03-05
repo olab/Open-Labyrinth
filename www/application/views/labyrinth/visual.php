@@ -47,6 +47,7 @@ if (isset($templateData['map'])) { ?>
         var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
         var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
         var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
+        var mainLinkStyles = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -218,10 +219,11 @@ if (isset($templateData['map'])) { ?>
                                         <label class="control-label"><strong>Link Function Style</strong></label>
 
                                         <div class="controls" id="linkStyleOptions">
-                                            <?php if (isset($templateData['linkStyles'])) { ?>
-                                                <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                                                    <label class="radio"><input type="radio" name="style" value="<?php echo $linkStyle->id ?>"><?php echo __($linkStyle->name); ?></label>
-                                                <?php } ?>
+                                            <?php foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                                                <label class="radio">
+                                                    <input type="radio" name="style" value="<?php echo $linkStyle->id ?>">
+                                                    <?php echo __($linkStyle->name); ?>
+                                                </label>
                                             <?php } ?>
                                         </div>
                                     </div>
