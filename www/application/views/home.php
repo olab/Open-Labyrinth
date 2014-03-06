@@ -117,7 +117,7 @@
                                 }
                                 if($type_name == 'author' || $type_name == 'superuser') { ?>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Management'); ?> <b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                             <li class="divider"></li>

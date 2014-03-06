@@ -30,128 +30,120 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $continue   = true;
         $mapId      = $this->request->param('id', null);
         $editOn     = $this->request->param('id2', null);
-        $this->checkTypeCompatibility($mapId);
+        $access     = $this->checkTypeCompatibility($mapId);
 
-        if ($mapId != null)
+        if ($mapId == null) Request::initial()->redirect(URL::base());
+
+        if( ! $access) Request::initial()->redirect(URL::base());
+
+        $mapDB = DB_ORM::model('map', array($mapId));
+        if ($mapDB->security_id == 4)
         {
-            if( ! $this->checkTypeCompatibility($mapId)) Request::initial()->redirect(URL::base());
-
-            $mapDB = DB_ORM::model('map', array($mapId));
-            if ($mapDB->security_id == 4)
+            $sessionId      = Session::instance()->id();
+            $checkValue     = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
+            $checkSession   = Session::instance()->get($checkValue);
+            if ($checkSession != '1')
             {
-                $sessionId      = Session::instance()->id();
-                $checkValue     = Auth::instance()->hash('checkvalue' . $mapId . $sessionId);
-                $checkSession   = Session::instance()->get($checkValue);
-                if ($checkSession != '1')
-                {
-                    $this->template             = View::factory('labyrinth/security');
-                    $templateData['mapDB']      = $mapDB;
-                    $templateData['title']      = 'OpenLabyrinth';
-                    $templateData['keyError']   = Session::instance()->get('keyError');
+                $this->template             = View::factory('labyrinth/security');
+                $templateData['mapDB']      = $mapDB;
+                $templateData['title']      = 'OpenLabyrinth';
+                $templateData['keyError']   = Session::instance()->get('keyError');
 
-                    Session::instance()->delete('keyError');
+                Session::instance()->delete('keyError');
 
-                    $this->template->set('templateData', $templateData);
-                    $continue = false;
-                }
+                $this->template->set('templateData', $templateData);
+                $continue = false;
             }
-            if ($continue)
+        }
+        if ($continue)
+        {
+            Session::instance()->delete('questionChoices');
+            Session::instance()->delete('dragQuestionResponses');
+            Session::instance()->delete('counterFunc');
+            Session::instance()->delete('stopCommonRules');
+            Session::instance()->delete('shownMapPopups');
+            Session::instance()->delete('arrayAddedQuestions');
+            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+
+            if ($rootNode == NULL) Request::initial()->redirect(URL::base());
+
+            $idRootNode = $rootNode->id;
+            $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
+
+            if ( ! $data) Request::initial()->redirect(URL::base());
+
+            /* update virtual patient, third parameter check for redirect */
+            $this->patient_sessions_update($mapId, $idRootNode, $mapId);
+            $data['patients'] = $this->render_patient($idRootNode, $mapId);
+
+            $data['navigation'] = $this->generateNavigation($data['sections']);
+
+            if ( ! isset($data['node_links']['linker']))
             {
-                Session::instance()->delete('questionChoices');
-                Session::instance()->delete('dragQuestionResponses');
-                Session::instance()->delete('counterFunc');
-                Session::instance()->delete('stopCommonRules');
-                Session::instance()->delete('shownMapPopups');
-                Session::instance()->delete('arrayAddedQuestions');
-                $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-
-                if ($rootNode != NULL)
+                if ($data['node']->link_style->name == 'type in text')
                 {
-                    $idRootNode = $rootNode->id;
-                    $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
-                    if ($data)
-                    {
-                        /* update virtual patient, third parameter check for redirect */
-                        $this->patient_sessions_update($mapId, $idRootNode, $mapId);
-                        $data['patients'] = $this->render_patient($idRootNode, $mapId);
-
-                        $data['navigation'] = $this->generateNavigation($data['sections']);
-
-                        if ( ! isset($data['node_links']['linker']))
-                        {
-                            if ($data['node']->link_style->name == 'type in text')
-                            {
-                                $result = $this->generateLinks($data['node'], $data['node_links']);
-                                $data['links'] = $result['links']['display'];
-                                if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                                     $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                                     $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
-                                }
-                            } else {
-                                $result = $this->generateLinks($data['node'], $data['node_links']);
-                                $data['links'] = $result['links'];
-                            }
-                        } else {
-                            $data['links'] = $data['node_links']['linker'];
-                        }
-
-                        if ($editOn != null AND $editOn == 1)
-                        {
-                            $data['node_edit'] = TRUE;
-                        }
-                        else
-                        {
-                            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
-                            {
-                                $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
-                            }
-                            if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
-                            {
-                                $search = '[[INFO:' . $data['node']->id . ']]';
-                                $data['node_text'] = str_replace($search, '',$data['node_text']);
-                            }
-                            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
-                        }
-
-                        $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-                        $skin = 'labyrinth/skin/basic/basic';
-                        if ($data['map']->skin->enabled){
-                            $data['skin_path'] = $data['map']->skin->path;
-                            if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
-                                $skin = 'labyrinth/skin/basic/basic_template';
-
-                                $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
-                                $skinContent->set('templateData', $data);
-
-                                $data['skin'] = $skinContent;
-                                $skinData = json_decode($data['map']->skin->data, true);
-                                if($skinData != null && isset($skinData['body'])) {
-                                    $data['bodyStyle'] = base64_decode($skinData['body']);
-                                }
-                            } else {
-                                $skin = 'labyrinth/skin/basic/basic';
-                            }
-                        }else{
-                            $data['skin_path'] = NULL;
-                        }
-                        $data['session'] = (int)$data['traces'][0]->session_id;
-                        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
-                        {
-                            $popup->text = $this->parseText($popup->text);
-                            $data['map_popups'][] = $popup;
-                        }
-
-                        $this->template = View::factory($skin);
-                        $this->template->set('templateData', $data);
-                    } else {
-                        Request::initial()->redirect(URL::base());
+                    $result = $this->generateLinks($data['node'], $data['node_links']);
+                    $data['links'] = $result['links']['display'];
+                    if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+                         $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                         $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                     }
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    $result = $this->generateLinks($data['node'], $data['node_links']);
+                    $data['links'] = $result['links'];
                 }
+            } else {
+                $data['links'] = $data['node_links']['linker'];
             }
-        } else {
-            Request::initial()->redirect(URL::base());
+
+            if ($editOn != null AND $editOn == 1)
+            {
+                $data['node_edit'] = TRUE;
+            }
+            else
+            {
+                if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
+                {
+                    $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+                }
+                if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+                {
+                    $search = '[[INFO:' . $data['node']->id . ']]';
+                    $data['node_text'] = str_replace($search, '',$data['node_text']);
+                }
+                $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+            }
+
+            $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+            $skin = 'labyrinth/skin/basic/basic';
+            if ($data['map']->skin->enabled){
+                $data['skin_path'] = $data['map']->skin->path;
+                if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                    $skin = 'labyrinth/skin/basic/basic_template';
+
+                    $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+                    $skinContent->set('templateData', $data);
+
+                    $data['skin'] = $skinContent;
+                    $skinData = json_decode($data['map']->skin->data, true);
+                    if($skinData != null && isset($skinData['body'])) {
+                        $data['bodyStyle'] = base64_decode($skinData['body']);
+                    }
+                } else {
+                    $skin = 'labyrinth/skin/basic/basic';
+                }
+            }else{
+                $data['skin_path'] = NULL;
+            }
+            $data['session'] = (int)$data['traces'][0]->session_id;
+            foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+            {
+                $popup->text = $this->parseText($popup->text);
+                $data['map_popups'][] = $popup;
+            }
+
+            $this->template = View::factory($skin);
+            $this->template->set('templateData', $data);
         }
     }
 
@@ -1785,9 +1777,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '2':
-                if (($labyrinthType == 1) OR
-                    ($labyrinthType == 2) OR
-                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                if (($labyrinthType == 1) OR ($labyrinthType == 2) OR ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '3':
             case '4':
