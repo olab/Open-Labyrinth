@@ -31,34 +31,33 @@ class Controller_LinkManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Links'))->set_url(URL::base() . 'linkManager/index/' . $mapId));
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-            $linksView = View::factory('labyrinth/link/view');
-            $linksView->set('templateData', $this->templateData);
+        DB_ORM::model('Map')->editRight($mapId);
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        $this->templateData['map']      = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $this->templateData['center']   = View::factory('labyrinth/link/view')->set('templateData', $this->templateData);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
 
-            $this->templateData['center'] = $linksView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Links'))->set_url(URL::base() . 'linkManager/index/' . $mapId));
     }
 
-    public function action_editLinks() {
+    public function action_editLinks()
+    {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $nodeId != NULL) {
+
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['node'] = DB_ORM::model('map_node', array($nodeId));
             $this->templateData['link_nodes'] = DB_ORM::model('map_node')->getNodesWithoutLink($nodeId);

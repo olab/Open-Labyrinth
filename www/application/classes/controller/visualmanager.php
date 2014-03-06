@@ -38,16 +38,18 @@ class Controller_VisualManager extends Controller_Base {
 
     public function action_index()
     {
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base().'visualManager/index/'.$this->mapId));
+        $mapId = $this->mapId;
+        DB_ORM::model('Map')->editRight($mapId);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base().'visualManager/index/'.$mapId));
 
         $saveJson = '';
 
-        $this->templateData['node']             = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
-        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
+        $this->templateData['node']             = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap($mapId);
         $this->templateData['linkStyles']       = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        $this->templateData['mainLinkStyles']   = DB_ORM::model('map_node')->getMainLinkStyles($this->mapId);
+        $this->templateData['mainLinkStyles']   = DB_ORM::model('map_node')->getMainLinkStyles($mapId);
         $this->templateData['priorities']       = DB_ORM::model('map_node_priority')->getAllPriorities();
-        $this->templateData['mapJSON']          = Model::factory('visualEditor')->generateJSON($this->mapId);;
+        $this->templateData['mapJSON']          = Model::factory('visualEditor')->generateJSON($mapId);;
 
         if ($saveJson != null) $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty').'\'';
 

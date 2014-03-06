@@ -35,6 +35,9 @@ class Controller_ChatManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
 
         if ($mapId != NULL) {
+
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
 
@@ -64,32 +67,26 @@ class Controller_ChatManager extends Controller_Base {
         }
     }
 
-    public function action_addChat() {
+    public function action_addChat()
+    {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-            $this->templateData['question_count'] = 1;
+        DB_ORM::model('Map')->editRight($mapId);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'chatManager/addChat/' . $mapId));
+        $this->templateData['map']              = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+        $this->templateData['question_count']   = 1;
+        $this->templateData['center']           = View::factory('labyrinth/chat/add')->set('templateData', $this->templateData);
+        $this->templateData['left']             = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
 
-            $addChatView = View::factory('labyrinth/chat/add');
-            $addChatView->set('templateData', $this->templateData);
+        unset($this->templateData['right']);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'chatManager/addChat/' . $mapId));
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $addChatView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_saveNewChat() {
@@ -108,6 +105,9 @@ class Controller_ChatManager extends Controller_Base {
         $chatId = $this->request->param('id2', NULL);
 
         if ($mapId != NULL and $chatId != NULL) {
+
+            DB_ORM::model('Map')->editRight($mapId);
+
             $references = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
             if($references != NULL){
                 $ses = Session::instance();
@@ -127,7 +127,10 @@ class Controller_ChatManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $chatId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $chatId != NULL) {
+        if ($mapId != NULL and $chatId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['chat'] = DB_ORM::model('map_chat', array((int) $chatId));

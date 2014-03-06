@@ -31,7 +31,8 @@ class Controller_MapUserManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId          = $this->request->param('id', NULL);
         $authorOrder    = $this->request->param('id2', 0);
         $learnerOrder   = $this->request->param('id3', 0);
@@ -39,6 +40,8 @@ class Controller_MapUserManager extends Controller_Base {
         $tiedUsers      = array();
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('Map')->editRight($mapId);
 
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
@@ -89,6 +92,8 @@ class Controller_MapUserManager extends Controller_Base {
 
         if ($_POST and $mapId != NULL)
         {
+            DB_ORM::model('Map')->editRight($mapId);
+
             // ---- reviewer ---- //
             $allReviewers   = array();
             $map_reviewers  = array();
@@ -153,6 +158,7 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $userId = $this->request->param('id2', NULL);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
@@ -165,6 +171,7 @@ class Controller_MapUserManager extends Controller_Base {
         $authorOrder = $this->request->param('id2', 0);
         $learnerOrder = $this->request->param('id3', 0);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->addAllLearners($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         } else {
@@ -177,6 +184,7 @@ class Controller_MapUserManager extends Controller_Base {
         $authorOrder = $this->request->param('id2', 0);
         $learnerOrder = $this->request->param('id3', 0);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->removeAllLearners($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         } else {
@@ -187,6 +195,7 @@ class Controller_MapUserManager extends Controller_Base {
     public function action_addAllAuthors() {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->addAllAuthors($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
@@ -197,6 +206,7 @@ class Controller_MapUserManager extends Controller_Base {
     public function action_removeAllAuthors() {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->removeAllAuthors($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         } else {
@@ -209,6 +219,7 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id');
         if ($mapId != NULL)
         {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->addAllReviewers($mapId);
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
@@ -220,6 +231,7 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id');
         if ($mapId != NULL)
         {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_user')->removeAllReviewers($mapId);
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
