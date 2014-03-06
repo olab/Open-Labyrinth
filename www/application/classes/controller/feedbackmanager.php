@@ -33,7 +33,9 @@ class Controller_FeedbackManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['operators'] = DB_ORM::model('map_feedback_operator')->getAllOperators();
             $this->templateData['time_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('time taken');
@@ -65,6 +67,7 @@ class Controller_FeedbackManager extends Controller_Base {
     public function action_updateGeneral() {
         $mapId = $this->request->param('id', NULL);
         if ($_POST and $mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', NULL));
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {
@@ -76,6 +79,7 @@ class Controller_FeedbackManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $typeName = $this->request->param('id2', NULL);
         if ($_POST and $mapId != NULL and $typeName != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_feedback_rule')->addRule($mapId, $typeName, $_POST);
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {
@@ -87,6 +91,7 @@ class Controller_FeedbackManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $ruleId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $ruleId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             DB_ORM::model('map_feedback_rule', array((int) $ruleId))->delete();
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {

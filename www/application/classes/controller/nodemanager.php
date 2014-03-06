@@ -31,8 +31,11 @@ class Controller_NodeManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = (int) $this->request->param('id', 0);
+        DB_ORM::model('Map')->editRight($mapId);
+
         if ($mapId) {
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
@@ -119,29 +122,32 @@ class Controller_NodeManager extends Controller_Base {
         }
     }
 
-    public function action_editNode () {
-        $nodeId = (int) $this->request->param('id', 0);
-        $tinyMCEv3 = $this->request->param('id2', 0);
+    public function action_editNode ()
+    {
+        $nodeId     = (int) $this->request->param('id', 0);
+        $tinyMCEv3  = $this->request->param('id2', 0);
+
         if ( ! $nodeId) Request::initial()->redirect(URL::base());
 
-        $this->templateData['tinyMCEv3']     = $tinyMCEv3;
-        $this->templateData['node']         = DB_ORM::model('map_node', array($nodeId));
-        $this->templateData['map']          = DB_ORM::model('map', array((int) $this->templateData['node']->map_id));
+        $node   = DB_ORM::model('map_node', array($nodeId));
+        $mapId  = $node->map_id;
+
+        DB_ORM::model('Map')->editRight($mapId);
+
+        $this->templateData['tinyMCEv3']    = $tinyMCEv3;
+        $this->templateData['node']         = $node;
+        $this->templateData['map']          = DB_ORM::model('map', array($mapId));
         $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
         $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
-        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['node']->map_id);
-        $this->templateData['popups']       = DB_ORM::model('map_popup')->getAllMapPopups($this->templateData['node']->map_id);
+        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['popups']       = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
+        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']       = View::factory('labyrinth/node/editNode')->set('templateData', $this->templateData);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$this->templateData['map']->id));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Nodes'))->set_url(URL::base().'nodeManager/index/'.$this->templateData['map']->id));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base().'nodeManager/editNode/'.$this->templateData['node']->id));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Nodes'))->set_url(URL::base().'nodeManager/index/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base().'nodeManager/editNode/'.$node->id));
 
-        $editNodeView = View::factory('labyrinth/node/editNode')->set('templateData', $this->templateData);
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-
-        $this->templateData['left'] = $leftView;
-        $this->templateData['center'] = $editNodeView;
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -206,23 +212,26 @@ class Controller_NodeManager extends Controller_Base {
         Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
     }
 
-    public function action_deleteNode(){
-        $mapId = (int) $this->request->param('id', 0);
+    public function action_deleteNode()
+    {
+        $mapId  = (int) $this->request->param('id', 0);
         $nodeId = (int) $this->request->param('id2', 0);
-        if ($nodeId){
-            $references = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
-            if($references != NULL){
-                $ses = Session::instance();
-                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
-                $ses->set('warningMessage', 'The node wasn\'t deleted. Field with supporting information of the selected node is used in the following labyrinths:');
-            } else {
-                DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $nodeId);
-                DB_ORM::model('map_node')->deleteNode($nodeId);
-            }
-            Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
+
+        DB_ORM::model('Map')->editRight($mapId);
+
+        if ( ! $nodeId) Request::initial()->redirect(URL::base());
+
+        $references = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
+        if($references != NULL){
+            $ses = Session::instance();
+            $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+            $ses->set('warningMessage', 'The node wasn\'t deleted. Field with supporting information of the selected node is used in the following labyrinths:');
         } else {
-            Request::initial()->redirect(URL::base());
+            DB_ORM::model('map_node_reference')->deleteByNodeId($mapId, $nodeId);
+            DB_ORM::model('map_node')->deleteNode($nodeId);
         }
+
+        Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
     }
 
     public function action_setRootNode() {
@@ -311,32 +320,34 @@ class Controller_NodeManager extends Controller_Base {
         }
     }
 
-    public function action_grid() {
-        $mapId = (int) $this->request->param('id', 0);
-        $orderBy = $this->request->param('id2', null);
-        $logicSort = $this->request->param('id3', 0);
-        if ($mapId) {
-            $this->templateData['orderBy'] = $orderBy;
-            $this->templateData['logicSort'] = $logicSort;
-            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
-            $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId, $orderBy, $logicSort);
+    public function action_grid()
+    {
+        $mapId      = (int) $this->request->param('id', 0);
+        $orderBy    = $this->request->param('id2', null);
+        $logicSort  = $this->request->param('id3', 0);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Node Grid'))->set_url(URL::base() . 'nodeManager/grid/' . $mapId));
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            $nodeGridView = View::factory('labyrinth/node/grid');
-            $nodeGridView->set('templateData', $this->templateData);
+        DB_ORM::model('Map')->editRight($mapId);
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        $this->templateData['orderBy']      = $orderBy;
+        $this->templateData['logicSort']    = $logicSort;
+        $this->templateData['map']          = DB_ORM::model('map', array($mapId));
+        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($mapId, $orderBy, $logicSort);
 
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $nodeGridView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Node Grid'))->set_url(URL::base() . 'nodeManager/grid/' . $mapId));
+
+        $nodeGridView = View::factory('labyrinth/node/grid');
+        $nodeGridView->set('templateData', $this->templateData);
+
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+
+        $this->templateData['left'] = $leftView;
+        $this->templateData['center'] = $nodeGridView;
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_saveGrid() {
@@ -352,6 +363,9 @@ class Controller_NodeManager extends Controller_Base {
     public function action_sections() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {
+
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['node_sections'] = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
             $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();

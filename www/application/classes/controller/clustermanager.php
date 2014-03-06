@@ -33,7 +33,10 @@ class Controller_ClusterManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['dams'] = DB_ORM::model('map_dam')->getAllDamByMap((int) $mapId);
 
@@ -66,6 +69,8 @@ class Controller_ClusterManager extends Controller_Base {
     public function action_addDam() {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -102,7 +107,10 @@ class Controller_ClusterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $damId = $this->request->param('id2', NULL);
 
-        if ($damId != NULL and $mapId != NULL) {
+        if ($damId != NULL and $mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $references = DB_ORM::model('map_node_reference')->getByElementType($damId, 'DAM');
             if($references != NULL){
                 $ses = Session::instance();
@@ -121,7 +129,10 @@ class Controller_ClusterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $damId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $damId != NULL) {
+        if ($mapId != NULL and $damId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['dam'] = DB_ORM::model('map_dam', array((int) $damId));
             $this->templateData['vpds'] = DB_ORM::model('map_dam')->getElementsNotAdded((int) $damId);

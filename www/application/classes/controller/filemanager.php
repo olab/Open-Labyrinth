@@ -42,7 +42,9 @@ class Controller_FileManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
             $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int) $mapId);
@@ -131,6 +133,7 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             $references = DB_ORM::model('map_node_reference')->getByElementType($fileId, 'MR');
             if($references != NULL){
                 $ses = Session::instance();
@@ -193,6 +196,7 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
@@ -255,6 +259,7 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
+            DB_ORM::model('Map')->editRight($mapId);
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 

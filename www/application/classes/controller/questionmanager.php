@@ -34,7 +34,10 @@ class Controller_QuestionManager extends Controller_Base {
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
@@ -76,6 +79,8 @@ class Controller_QuestionManager extends Controller_Base {
 
         if($map != null && $type != null)
         {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
             $this->templateData['type']     = DB_ORM::model('map_question_type', array((int) $typeId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
@@ -142,11 +147,15 @@ class Controller_QuestionManager extends Controller_Base {
         else Request::initial()->redirect(URL::base());
     }
 
-    public function action_deleteQuestion() {
-        $mapId = $this->request->param('id', NULL);
+    public function action_deleteQuestion()
+    {
+        $mapId      = $this->request->param('id', NULL);
         $questionId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $questionId != NULL) {
+        if ($mapId != NULL and $questionId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $references = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
             if($references != NULL){
                 $ses = Session::instance();

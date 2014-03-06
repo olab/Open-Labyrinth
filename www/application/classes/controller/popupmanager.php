@@ -36,68 +36,61 @@ class Controller_PopupManager extends Controller_Base {
         parent::after();
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', null);
 
-        if($mapId != null) {
-            $this->templateData['map']    = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['popups'] = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
+        if ($mapId == null) Request::initial()->redirect(URL::base());
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
+        DB_ORM::model('Map')->editRight($mapId);
 
-            $popupListView = View::factory('labyrinth/popup/list');
-            $popupListView->set('templateData', $this->templateData);
+        $this->templateData['map']    = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['popups'] = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
+        $this->templateData['center'] = View::factory('labyrinth/popup/list')->set('templateData', $this->templateData);
+        $this->templateData['left']   = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $popupListView;
-            $this->templateData['left']   = $leftView;
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Messages'))->set_url(URL::base() . 'popupManager/index/' . $mapId));
     }
 
-    public function action_newPopup() {
+    public function action_newPopup()
+    {
         $mapId = $this->request->param('id', null);
 
-        if($mapId != null) {
-            $this->preparePopupData($mapId);
+        if ($mapId == null) Request::initial()->redirect(URL::base());
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Message'))->set_url(URL::base() . 'popupManager/addMessage/' . $mapId));
+        DB_ORM::model('Map')->editRight($mapId);
 
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-            $popupListView = View::factory('labyrinth/popup/popup')->set('templateData', $this->templateData);
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->preparePopupData($mapId);
 
-            $this->templateData['center'] = $popupListView;
-            $this->templateData['left']   = $leftView;
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['center']   = View::factory('labyrinth/popup/popup')->set('templateData', $this->templateData);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Message'))->set_url(URL::base() . 'popupManager/addMessage/' . $mapId));
     }
 
-    public function action_editPopup() {
+    public function action_editPopup()
+    {
         $popupId = $this->request->param('id', null);
 
         if($popupId == null) Request::initial()->redirect(URL::base());
 
-        $this->templateData['popup'] = DB_ORM::model('map_popup', array((int)$popupId));
+        $popup = DB_ORM::model('map_popup', array((int)$popupId));
+        $mapId = $popup->map_id;
+
+        DB_ORM::model('Map')->editRight($mapId);
 
         // get redirect_type_id
         foreach (DB_ORM::model('map_popup', array((int)$popupId))->assign as $obj) $redirect_type_id = $obj->redirect_type_id;
 
-        $this->preparePopupData($this->templateData['popup']->map_id);
-        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $this->templateData['popup']->map_id);
+        $this->preparePopupData($mapId);
+        $this->templateData['popup']    = $popup;
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['center']   = View::factory('labyrinth/popup/popup')->set('templateData', $this->templateData)->bind('redirect_type_id', $redirect_type_id);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Message'))->set_url(URL::base() . 'popupManager/editPopup/' . $this->templateData['popup']->map_id));
-
-        $popupListView = View::factory('labyrinth/popup/popup')->set('templateData', $this->templateData)->bind('redirect_type_id', $redirect_type_id);
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $popupListView;
-        $this->templateData['left']   = $leftView;
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Message'))->set_url(URL::base() . 'popupManager/editPopup/' . $mapId));
     }
 
     public function action_savePopup() {
@@ -114,12 +107,16 @@ class Controller_PopupManager extends Controller_Base {
         Request::initial()->redirect($redirect);
     }
 
-    public function action_deletePopup(){
+    public function action_deletePopup()
+    {
         $mapId       = $this->request->param('id', null);
         $popupId     = $this->request->param('id2', null);
         $redirectURL = URL::base();
 
-        if ($mapId != NULL & $popupId != NULL) {
+        if ($mapId != NULL & $popupId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             DB_ORM::model('map_popup_assign', array((int) $popupId))->delete();
             DB_ORM::model('map_popup_style', array((int) $popupId))->delete();
             DB_ORM::model('map_popup_counter')->deleteCounters((int) $popupId, 'popup_id');

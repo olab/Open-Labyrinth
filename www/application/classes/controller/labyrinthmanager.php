@@ -695,13 +695,12 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_disableMap() {
+    public function action_disableMap()
+    {
         $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
-            DB_ORM::model('map')->disableMap($mapId);
-        }
-
-        Request::initial()->redirect(URL::base() . 'authoredLabyrinth');
+        DB_ORM::model('Map')->editRight($mapId);;
+        if ($mapId) DB_ORM::model('map')->disableMap($mapId);
+        Request::initial()->redirect(URL::base().'authoredLabyrinth');
     }
 
     public function action_global()
@@ -711,9 +710,7 @@ class Controller_LabyrinthManager extends Controller_Base {
 
         $selectedLinkStyle  = DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->get('link_style_id');
         $map                = DB_ORM::model('map', array($mapId));
-        $user               = Auth::instance()->get_user();
-        $editRight          = ($user->type_id == 4 OR $user->id == $map->author_id);
-        if ( ! $editRight) Request::initial()->redirect(URL::base());
+        $editRight          = DB_ORM::model('Map')->editRight($mapId);;
         $this->templateData['map']                  = $map;
         $this->templateData['verification']         = ($map->verification != null) ? json_decode($map->verification, true) : array();
         $this->templateData['types']                = DB_ORM::model('map_type')->getAllTypes();
@@ -732,7 +729,6 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->templateData['rootNodeMap'][$mapId]  = $editRight;
         $this->templateData['left']                 = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->templateData['center']               = View::factory('labyrinth/global')->set('templateData', $this->templateData);
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));

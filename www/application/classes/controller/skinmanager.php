@@ -33,7 +33,10 @@ class Controller_SkinManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
             $map = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['map'] = $map;
             $this->templateData['skin'] = DB_ORM::model('map_skin')->getSkinById($map->skin_id);
@@ -60,14 +63,20 @@ class Controller_SkinManager extends Controller_Base {
         }
     }
 
-    public function action_createSkin() {
+    public function action_createSkin()
+    {
         $mapId = $this->request->param('id', NULL);
+        $skinId = $this->request->param('id2', NULL);
+
+        DB_ORM::model('Map')->editRight($mapId);
+
         $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['action_url'] = URL::base() . 'skinManager/skinEditorUpload/' . $mapId;
-        $skinId = $this->request->param('id2', NULL);
+
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Skin'))->set_url(URL::base() . 'skinManager/index/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Create a new skin'))->set_url(URL::base() . 'skinManager/createSkin/' . $mapId));
+
         if ($skinId != NULL) {
             $this->templateData['skinData'] = DB_ORM::model('map_skin', array($skinId));
             $this->template = View::factory('labyrinth/skin/skinEditor');
@@ -93,8 +102,12 @@ class Controller_SkinManager extends Controller_Base {
 
     }
 
-    public function action_saveSkin() {
+    public function action_saveSkin()
+    {
         $mapId = $this->request->param('id', NULL);
+
+        DB_ORM::model('Map')->editRight($mapId);
+
         if (isset($_POST['save'])) {
             $skin_name = $_POST['skin_name'];
             if ($skin_name == '') {
@@ -168,15 +181,17 @@ class Controller_SkinManager extends Controller_Base {
         }
     }
 
-    public function action_editSkins() {
+    public function action_editSkins()
+    {
         $mapId = $this->request->param('id', NULL);
+        $skinId = $this->request->param('id2', NULL);
+
+        DB_ORM::model('Map')->editRight($mapId);
+
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['action'] = 'editSkins';
-        $navigation = View::factory('labyrinth/skin/navigation');
-        $navigation->set('templateData', $this->templateData);
-        $this->templateData['navigation'] = $navigation;
+        $this->templateData['navigation'] = View::factory('labyrinth/skin/navigation')->set('templateData', $this->templateData);
 
-        $skinId = $this->request->param('id2', NULL);
         if ($skinId != NULL) {
             $skinData = DB_ORM::model('map_skin')->getSkinById($skinId);
             $this->templateData['skinData'] = $skinData;
@@ -232,6 +247,9 @@ class Controller_SkinManager extends Controller_Base {
     public function action_listSkins()
     {
         $mapId = $this->request->param('id', NULL);
+
+        DB_ORM::model('Map')->editRight($mapId);
+
         $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['skinList'] = DB_ORM::model('map_skin')->getAllSkins();
         $this->templateData['skinId'] = $this->request->param('id2', NULL);
