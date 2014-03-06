@@ -29,19 +29,11 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
-        if (Auth::instance()->get_user()->type->name == 'superuser') {
-            $maps = DB_ORM::model('map')->getAllEnabledMap();
-        } else {
-            $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
-        }
-        $this->templateData['maps'] = $maps;
-
-        $openView = View::factory('labyrinth/authored');
-        $openView->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $openView;
-        unset($this->templateData['right']);
+    public function action_index()
+    {
+        $user = Auth::instance()->get_user();
+        $this->templateData['maps']     = ($user->type->name == 'superuser') ? DB_ORM::model('map')->getAllEnabledMap() : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
+        $this->templateData['center']   = View::factory('labyrinth/authored')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 

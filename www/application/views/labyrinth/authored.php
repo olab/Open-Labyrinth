@@ -18,6 +18,14 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$user       = Auth::instance()->get_user();
+$userId     = 0;
+$userType   = 0;
+if ($user)
+{
+    $userId     = $user->id;
+    $userType   = $user->type_id;
+}
 ?>
 <div class="page-header">
     <div class="pull-right">
@@ -37,18 +45,14 @@
                 <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('Duplicate Existing'); ?></a></li>
             </ul>
         </div>
-    </div>
-    <?php
-    if (isset($templateData['maps'])) {
-    ?>
+    </div><?php
+    if (isset($templateData['maps'])) { ?>
 
     <h1><?php echo __('My Labyrinths'); ?></h1>
-</div>
+    </div>
     <!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css"
-      href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
-    <script type="text/javascript" charset="utf8"
-            src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css"/>
+    <script type="text/javascript" charset="utf8" src="http://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/olab/dataTablesTB.js"></script>
 
     <table class="table table-striped table-bordered dataTable" id="my-labyrinths">
@@ -68,45 +72,37 @@
         </thead>
         <tbody>
         <?php
-        foreach ($templateData['maps'] as $map) {
-            ?>
+        foreach ($templateData['maps'] as $map) { ?>
             <tr>
-                <td>
-                    <?php echo $map->id; ?>
-                </td>
-                <td>
-                    <a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a>
-                </td>
-                <td>
-                    <?php
+                <td><?php echo $map->id; ?></td>
+                <td><a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a></td>
+                <td><?php
                     if (count($map->contributors) > 0) {
                         $contributors = array();
                         foreach ($map->contributors as $contributor) {
                             $contributors[] = '<a href="#" rel="tooltip" title="' . ucwords($contributor->role->name) . '">' . $contributor->name . '</a>';
                         }
                         echo implode(', ', $contributors);
-                    }
-                    ?>
+                    } ?>
                 </td>
                 <td class="center">
-                    <div class="btn-group">
-                        <?php if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
-                            <a class="btn btn-success"
-                               href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
-                                <i class="icon-play icon-white"></i>
-                                <span class="visible-desktop">Play</span>
-                            </a>
-                        <?php } else { ?>
-                            <a class="btn btn-success show-root-error" href="javascript:void(0)">
-                                <i class="icon-play icon-white"></i>
-                                <span class="visible-desktop">Play</span>
-                            </a>
-                        <?php } ?>
-                        <a class="btn btn-info"
-                           href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>">
-                            <i class="icon-edit icon-white"></i>
-                            Edit
-                        </a>
+                    <div class="btn-group"><?php
+                        if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                        <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a><?php
+                        } else { ?>
+                        <a class="btn btn-success show-root-error" href="javascript:void(0)">
+                            <i class="icon-play icon-white"></i>
+                            <span class="visible-desktop">Play</span>
+                        </a><?php
+                        }
+                        if ($map->author_id == $userId OR $userType == 4 ) { ?>
+                        <a class="btn btn-info" href="<?php echo URL::base().'labyrinthManager/global/'.$map->id; ?>">
+                            <i class="icon-edit icon-white"></i> Edit
+                        </a><?php
+                        } ?>
                         <a class="btn" data-toggle="modal" data-target="#duplicate_labyrinth<?php echo $map->id; ?>"
                            href="#">
                             <i class="icon-th icon-white"></i>
