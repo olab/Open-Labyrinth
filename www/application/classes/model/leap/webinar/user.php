@@ -98,11 +98,13 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
      * @param integer $webinarId - webinar id
      * @param integer $userId - user id
      */
-    public function addUser($webinarId, $userId) {
+    public function addUser($webinarId, $userId, $expert = 0)
+    {
         return DB_ORM::insert('webinar_user')
-                       ->column('webinar_id', $webinarId)
-                       ->column('user_id', $userId)
-                       ->execute();
+           ->column('webinar_id', $webinarId)
+           ->column('user_id', $userId)
+           ->column('expert', $expert)
+           ->execute();
     }
 
     public function updateInclude4R($id,$isInclude)
@@ -113,9 +115,9 @@ class Model_Leap_Webinar_User extends DB_ORM_Model {
         $this->save();
     }
 
-    public function updateExpert($idUser, $expert)
+    public function updateExpert($id, $expert)
     {
-        $this->id = $idUser;
+        $this->id = $id;
         $this->load();
         $this->expert = $expert;
         $this->save();

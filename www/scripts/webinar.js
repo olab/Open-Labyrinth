@@ -128,5 +128,4 @@ $(function() {
             $(".topics").addClass('hide');
         }
     });
-
 });

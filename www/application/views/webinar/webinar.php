@@ -20,12 +20,9 @@
  */
 ?>
 
-<h1>
-    <?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; ?> <?php echo __("Scenario"); ?>
-</h1>
+<h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __("Scenario"); ?></h1>
 
-<script language="javascript" type="text/javascript"
-        src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script language="javascript" type="text/javascript">
     tinymce.init({
         selector: "textarea",
@@ -66,10 +63,7 @@
         <?php if(!isset($templateData['webinar'])) { ?>
         <div class="control-group">
             <label for="firstmessage" class="control-label"><?php echo __('First message'); ?></label>
-
-            <div class="controls">
-                <textarea name="firstmessage" id="firstmessage" class="mceEditor"></textarea>
-            </div>
+            <div class="controls"><textarea name="firstmessage" id="firstmessage" class="mceEditor"></textarea></div>
         </div>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Use existing forum') ?></label>
@@ -167,42 +161,62 @@
         <colgroup>
             <col style="width: 5%" />
             <col style="width: 5%" />
-            <col style="width: 90%" />
+            <col style="width: 5%" />
+            <col style="width: 85%" />
         </colgroup>
         <thead>
         <tr>
             <th style="text-align: center">Actions</th>
+            <th style="text-align: center">Expert</th>
             <th style="text-align: center">Auth type</th>
             <th><a href="javascript:void(0);">User</a></th>
         </tr>
         </thead>
-        <tbody>
-        <?php if(isset($templateData['webinar']) and count($templateData['webinar']->users) > 0) { ?>
-            <?php foreach($templateData['webinar']->users as $existUser) { ?>
-                <tr>
-                    <?php if($existUser->user_id == Auth::instance()->get_user()->id) { ?>
-                        <td style="text-align: center">Author</td>
-                        <input type="hidden" name="users[]" value="<?php echo $existUser->user_id; ?>">
-                    <?php } else { ?>
-                        <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser->user_id; ?>" checked="checked"></td>
-                    <?php } ?>
-                    <?php $icon = (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'oauth/'.$templateData['usersMap'][$existUser->user_id]['icon'] : 'openlabyrinth-header.png' ; ?>
-                    <td style="text-align: center;"> <img <?php echo (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-                    <td><?php echo $existUser->user->nickname; ?></td>
-                </tr>
-            <?php } ?>
-        <?php } ?>
-        <?php if(isset($templateData['users']) and count($templateData['users']) > 0) { ?>
-            <?php foreach($templateData['users'] as $user) { ?>
-                <?php if($user['id'] == Auth::instance()->get_user()->id) continue; ?>
-                <tr>
-                    <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
-                    <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
-                    <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-                    <td><?php echo $user['nickname']; ?></td>
-                </tr>
-            <?php } ?>
-        <?php } ?>
+        <tbody><?php
+        $loggedUserId = Auth::instance()->get_user()->id;
+        if(isset($templateData['webinar']) and count($templateData['webinar']->users) > 0) {
+            foreach($templateData['webinar']->users as $existUser) { ?>
+            <tr><?php
+                $userArray = isset($templateData['usersMap'][$existUser->user_id]) ? $templateData['usersMap'][$existUser->user_id] : false;
+                if($existUser->user_id == $loggedUserId) { ?>
+                <td style="text-align: center">Author</td><input type="hidden" name="users[]" value="<?php echo $existUser->user_id; ?>"><?php
+                } else { ?>
+                <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser->user_id; ?>" checked="checked"></td><?php
+                } ?>
+                <td style="text-align: center"><?php
+                    if ($userArray) {
+                        if($userArray['type_id'] != 1) { ?>
+                        <input
+                            id="expert<?php echo $userArray['id']; ?>"
+                            type="checkbox"
+                            name="experts[]"
+                            value="<?php echo $userArray['id']; ?>"
+                            <?php if (in_array($userArray['id'], $templateData['experts'])) echo 'checked'; ?>><?php
+                        }
+                    } ?>
+                </td>
+                <?php $icon = (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'oauth/'.$templateData['usersMap'][$existUser->user_id]['icon'] : 'openlabyrinth-header.png' ; ?>
+                <td style="text-align: center;">
+                    <img <?php echo (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/>
+                </td>
+                <td><?php echo $existUser->user->nickname; ?></td>
+            </tr><?php
+            }
+        }
+        foreach(Arr::get($templateData, 'users', array()) as $user) {
+            if($user['id'] == $loggedUserId) continue; ?>
+            <tr>
+                <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
+                <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
+                <td style="text-align: center"><?php
+                    if ($user['type_id'] != 1) { ?>
+                        <input type="checkbox" name="experts[]" value="<?php echo $user['id']; ?>"><?php
+                    } ?>
+                </td>
+                <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+                <td><?php echo $user['nickname']; ?></td>
+            </tr><?php
+        } ?>
         </tbody>
     </table>
 

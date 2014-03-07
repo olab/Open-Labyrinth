@@ -18,9 +18,10 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$webinarId = $templateData['webinar']->id;
 ?>
 <div class="page-header">
-    <h1><?php echo __('Scenario Progress'); ?> <?php if(isset($templateData['webinar'])) { ?> - "<?php echo $templateData['webinar']->title; ?>" <?php } ?></h1>
+    <h1><?php echo __('Scenario Progress').'- '.$templateData['webinar']->title; ?>"</h1>
 </div>
 
 <div class="report-type">
@@ -31,9 +32,19 @@
         <input type="radio" name="typeReport" id="SCT"/>
         <label class="btn" for="SCT" data-class="btn-info"><?php echo __('SCT Report'); ?></label>
     </div>
+    <select id="sct-webinars" style="display: none;"><?php
+        foreach ($templateData['scenario'] as $webinarObj) { ?>
+        <option value="<?php echo $webinarObj->id ?>" <?php if($webinarObj->id == $webinarId) echo 'selected'; ?>><?php echo $webinarObj->title ?></option><?php
+        } ?>
+    </select>
+
+    <div id="discrepancyMap" class="alert alert-error hide">
+        <button type="button" class="root-error-close close">×</button>
+        You select scenario where is no such labyrinth.
+    </div>
 </div>
 
-<?php if(isset($templateData['webinar']) && isset($templateData['webinarData']) && isset($templateData['usersMap'])) { ?>
+<?php if(isset($templateData['webinarData']) && isset($templateData['usersMap'])) { ?>
     <table class="table table-striped table-bordered" id="my-labyrinths">
         <tbody>
         <tr>
@@ -42,7 +53,6 @@
             <td style="text-align: center; font-weight: bold; background: #FFFFFF;font-style: normal; font-size: 14px; display: none;" rowspan="2" id="expert-th-js">Expert</td>
             <?php
             $stepsHeaders = array();
-
             // format publish steps
             $mapSteps = array();
             foreach($templateData['webinarData'] as $userId => $steps) {
@@ -70,7 +80,7 @@
                         $stepsHeaders[$stepKey]['count'] = count($step);
                         $changeStepLink = '';
                         if(Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') {
-                            $changeStepLink = ' <a data-toggle="tooltip" data-placement="left" title="" data-original-title="Change Scenario to this step" href="' . URL::base() . 'webinarManager/changeStep/' . $templateData['webinar']->id . '/' . $stepKey . '/1" style="text-decoration: none;font-size: 120%;"><i class="icon-off"></i></a>';
+                            $changeStepLink = ' <a data-toggle="tooltip" data-placement="left" title="" data-original-title="Change Scenario to this step" href="' . URL::base() . 'webinarManager/changeStep/'.$webinarId.'/'.$stepKey.'/1" style="text-decoration: none;font-size: 120%;"><i class="icon-off"></i></a>';
                         }
                         $stepsHeaders[$stepKey]['html']  =
                             '<td colspan="'.$stepsHeaders[$stepKey]['count'].'">'.
@@ -79,14 +89,13 @@
                                 ? '<span style="color:#0088cc;font-weight:bold">'.$templateData['webinarStepMap'][$stepKey]->name.'</span>'
                                 : $templateData['webinarStepMap'][$stepKey]->name.$changeStepLink : '-').(
                                     ($isShowReport && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer')
-                                    ? ' <a class="reportStepType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="'.URL::base().'webinarManager/stepReport/'.$templateData['webinar']->id.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
-                                        <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="'.URL::base().'webinarManager/publishStep/'.$templateData['webinar']->id.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
+                                    ? ' <a class="reportStepType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="'.URL::base().'webinarManager/stepReport/'.$webinarId.'/'.$stepKey.'/'.$webinarId.'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+                                        <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="'.URL::base().'webinarManager/publishStep/'.$webinarId.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                     : '') . '</td>';
                     }
                 }
             }
-            ?>
-            <?php foreach($stepsHeaders as $stepKey => $stepHeader) { echo $stepHeader['html']; } ?>
+            foreach ($stepsHeaders as $stepKey => $stepHeader) echo $stepHeader['html']; ?>
         </tr>
         <tr>
             <?php
@@ -101,29 +110,48 @@
                     }
                 }
             }
-
             foreach($maps as $stepKey => $m) {
-                foreach($m as $mapId => $v) {
-            ?>
+                foreach($m as $mapId => $v) { ?>
                 <td style="text-align: center; font-weight: bold;">
                     <?php echo $v['map']->name;?>
                     <?php if(isset($v['showReport']) && $v['showReport'] && Auth::instance()->get_user()->type->name != 'learner' && Auth::instance()->get_user()->type->name != 'reviewer') { ?>
-                        <a class="reportMapType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base().'webinarManager/mapReport/'.$templateData['webinar']->id.'/'.$v['map']->id; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
+                        <a class="reportMapType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base().'webinarManager/mapReport/'.$webinarId.'/'.$v['map']->id.'/'.$webinarId; ?>" style="text-decoration: none;"><i class="icon-eye-open"></i></a>
                     <?php } ?>
-                </td>
-            <?php }} ?>
+                </td><?php
+                }
+            } ?>
         </tr>
         <?php foreach($templateData['webinarData'] as $userId => $steps) { ?>
-        <tr>
-            <?php $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
-            <td style="width: 50px;text-align: center;"> <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+        <tr><?php
+            $icon = (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'oauth/'.$templateData['usersAuthMap'][$userId]['icon'] : 'openlabyrinth-header.png' ; ?>
+            <td style="width: 50px;text-align: center;">
+                <img <?php echo (isset($templateData['usersAuthMap'][$userId]) && $templateData['usersAuthMap'][$userId]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base().'images/'.$icon ; ?>" border="0"/>
+            </td>
             <td><?php echo isset($templateData['usersMap'][$userId]) ? $templateData['usersMap'][$userId]->nickname : '-'; ?></td>
-            <td style="width: 120px; text-align: center;"><input type="checkbox" id="check<?php echo $userId; ?>" name="users_include[]" value="<?php echo $userId; ?>" onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)" <?php if($templateData['includeUsers'][$userId]) echo 'checked="checked"'; ?>></td>
-            <td style="width: 120px; text-align: center; display: none;" class="expert-td-js"><input type="checkbox" id="expert<?php echo $userId; ?>" onclick="ajaxExpert(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)" <?php if($templateData['experts'][$userId]) echo 'checked="checked"'; ?>></td>
-            <?php
-            foreach($steps as $stepKey => $step) {
-                foreach($step as $mapId => $map) {
-                    switch($map['status']) {
+            <td style="width: 120px; text-align: center;">
+                <input
+                    type="checkbox"
+                    id="check<?php echo $userId; ?>"
+                    value="<?php echo $userId; ?>"
+                    onclick="ajaxCheck(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)"
+                    <?php if($templateData['includeUsers'][$userId]) echo 'checked'; ?>>
+            </td>
+            <td style="width: 120px; text-align: center; display: none;" class="expert-td-js"><?php
+                if (isset($templateData['experts'][$userId])) { ?>
+                <input
+                    class="expert-js"
+                    type="checkbox"
+                    id="expert<?php echo $userId; ?>"
+                    onclick="ajaxExpert(<?php echo $templateData['includeUsersData'][$userId].', '.$userId; ?>)"
+                    <?php if($templateData['experts'][$userId]) echo 'checked'; ?>><?php
+                } ?>
+            </td><?php
+            foreach($steps as $stepKey => $step)
+            {
+                foreach($step as $mapId => $map)
+                {
+                    switch($map['status'])
+                    {
                         case 0:
                             echo '<td style="text-align: center;"><i class="icon-remove"></i></td>';
                             break;
@@ -137,13 +165,12 @@
                             echo '<td></td>';
                     }
                 }
-            }
-            ?>
-        </tr>
-        <?php } ?>
+            } ?>
+        </tr><?php
+        } ?>
         </tbody>
-    </table>
-<?php } ?>
+    </table><?php
+} ?>
 
 <div class="form-actions">
     <div class="pull-right">
@@ -153,7 +180,6 @@
         </a>
     </div>
 </div>
-
 
 <script>
     function ajaxCheck(id, idUser) {
@@ -165,9 +191,9 @@
                 if(data != '') return true;
         });
     }
-    function ajaxExpert(id, idUser) {
-        var isInclude = $('#expert'+idUser).attr('checked') ? 1 : 0;
-        var URL = "<?php echo URL::base(); ?>webinarManager/updateExpert/"+id+"/"+isInclude;
+    function ajaxExpert(idWebinarUser, idUser) {
+        var isExpert = $('#expert'+idUser).attr('checked') ? 1 : 0;
+        var URL = "<?php echo URL::base(); ?>webinarManager/updateExpert/"+idWebinarUser+"/"+isExpert;
         $.get(
             URL,
             function(data){}
@@ -176,14 +202,17 @@
 
     var th              = $('#expert-th-js'),
         td              = $('.expert-td-js'),
+        webinar         = $('#sct-webinars'),
         reportMapType   = $('.reportMapType'),
         reportStepType  = $('.reportStepType'),
+        selectedWeb     = webinar.val(),
         href            = null,
         title           = null;
 
     $('#4R').change(function(){
         th.hide();
         td.hide();
+        webinar.hide();
 
         reportMapType.each(function() {
             href = replaceFunction($(this), 'href', 'mapReportSCT', 'mapReport');
@@ -201,6 +230,7 @@
     $('#SCT').change(function(){
         th.show();
         td.show();
+        webinar.show();
 
         reportMapType.each(function() {
             href = replaceFunction($(this), 'href', 'mapReport', 'mapReportSCT');
@@ -226,4 +256,59 @@
         obj.attr('href', href);
         obj.attr('data-original-title', title);
     }
+
+    function checkForMap(maps) {
+        reportMapType.each(function(){
+            var getMapId = $(this).attr('href').split('/').reverse()[1];
+
+            if($.inArray(parseInt(getMapId), maps) == -1) $(this).addClass('discrepancyMap');
+            else $(this).removeClass('discrepancyMap');
+        });
+    }
+
+    webinar.change(function(){
+        // change visual expert check box
+        var expertBox = $('.expert-js');
+
+        if ($(this).val() != selectedWeb) expertBox.prop('disabled', true);
+        else expertBox.prop('disabled', false);
+
+        // change href of all SCT report
+        var selectedScenarioId  = $(this).val();
+
+        $.getJSON("<?php echo URL::base(); ?>webinarManager/getMapByWebinar/"+selectedScenarioId, function(data){
+            checkForMap(data);
+        });
+
+        var changeScenarioId = function (obj){
+            var currentScenarioId   = obj.attr('href').split('/').pop(),
+                objHref             = obj.attr('href'),
+                newHref             = objHref.substr(0, objHref.length - currentScenarioId.length) + selectedScenarioId;
+
+            obj.attr('href', newHref);
+        };
+
+        reportMapType.each(function(){
+            changeScenarioId($(this));
+        });
+
+        reportStepType.each(function(){
+            changeScenarioId($(this));
+        });
+    });
+
+    // ----------- discrepancyMap error massage ---------- //
+    var Message = $('#discrepancyMap');
+    $('.discrepancyMap').live('click', function(e){
+        e.preventDefault();
+
+        Message.removeClass('hide');
+        setTimeout(function() { Message.addClass('hide'); }, 5000);
+    });
+
+    $('.root-error-close').click(function() {
+        if(Message != null) Message.addClass('hide');
+    });
+    // ----------- end discrepancyMap error massage ---------- //
+
 </script>

@@ -41,7 +41,7 @@ class Report_SCT_Map extends Report_SCT_Element {
         4 => 'F'
     );
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $experts = array(), $users) {
+    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $expertWebinarId, $users) {
         parent::__construct($impl);
 
         if($mapId == null || $mapId <= 0) return;
@@ -52,7 +52,7 @@ class Report_SCT_Map extends Report_SCT_Element {
         $this->webinarStep    = $webinarStep;
         $this->notInUsers     = $notInUsers;
         $this->dateStatistics = $dateStatistics;
-        $this->experts        = $experts;
+        $this->expertWebinarId= $expertWebinarId;
         $this->users          = $users;
 
         $this->elements       = array();
@@ -280,7 +280,14 @@ class Report_SCT_Map extends Report_SCT_Element {
 
     public function scoreForResponse ()
     {
-        $score = array();
+        $score      = array();
+        $experts    = array();
+
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertWebinarId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
+        {
+            $experts[] = $wUserObj->user_id;
+        }
+
         foreach ($this->questions as $questions)
         {
             $id_question = $questions->question->id;
@@ -293,7 +300,7 @@ class Report_SCT_Map extends Report_SCT_Element {
             foreach (DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query() as $response)
             {
                 $user_id = DB_ORM::model('User_Session', array($response->session_id))->user_id;
-                if (in_array($user_id, $this->experts)) $score[$id_question][$response->response] += 1;
+                if (in_array($user_id, $experts) AND isset($score[$id_question][$response->response])) $score[$id_question][$response->response] += 1;
             }
 
             $max_score = max($score[$id_question]);
