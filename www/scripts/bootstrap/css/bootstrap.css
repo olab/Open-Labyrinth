@@ -6163,6 +6163,7 @@ input.assign-type {
 }
 
 .report-type {
+    position: relative;
     margin-bottom: 30px;
 }
 
@@ -6187,4 +6188,14 @@ input.assign-type {
 }
 .details-column:nth-child(2) {
     width: 75%;
+}
+
+#sct-webinars {
+    margin: 1px 0 0 30px;
+}
+
+#discrepancyMap {
+    position: relative;
+    margin-top: -38px;
+    z-index: 2;
 }

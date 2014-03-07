@@ -148,13 +148,15 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      *
      * @param array $values - values
      */
-    public function saveWebinar($values) {
-        $webinarId = Arr::get($values, 'webinarId', null);
-        $webinar   = null;
-        $isNew     = false;
+    public function saveWebinar($values)
+    {
+        $webinarId      = Arr::get($values, 'webinarId', null);
+        $webinar        = null;
+        $isNew          = false;
         $isUseForumName = Arr::get($values, 'use', null);
-        $useForumId = Arr::get($values, 'forum', null);
-        $useTopicId = Arr::get($values, 'topic', null);
+        $useForumId     = Arr::get($values, 'forum', null);
+        $useTopicId     = Arr::get($values, 'topic', null);
+        $experts        = Arr::get($values, 'experts', array());
 
         if($webinarId == null || $webinarId < 0) {
             $webinarBuilder = DB_ORM::insert('webinar')
@@ -273,21 +275,25 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         DB_ORM::model('webinar_group')->removeAllGroups($webinarId);
         DB_ORM::model('webinar_user')->removeUsers($webinarId);
 
-        if($users != null && count($users) > 0) {
-            foreach($users as $userId) {
-                DB_ORM::model('webinar_user')->addUser($webinarId, $userId);
+        if(count($users) > 0)
+        {
+            foreach($users as $userId)
+            {
+                $expert = (in_array($userId, $experts)) ? 1 : 0;
+                DB_ORM::model('webinar_user')->addUser($webinarId, $userId, $expert);
                 $usersMap[$userId] = $userId;
             }
         }
 
-        if($groups != null && count($groups) > 0) {
+        if(count($groups) > 0) {
             foreach($groups as $groupId) {
                 DB_ORM::model('webinar_group')->addGroup($webinarId, $groupId);
                 $usersGroup = DB_ORM::model('group')->getAllUsersInGroup($groupId);
-                if($usersGroup != null && count($usersGroup) > 0) {
+                if(count($usersGroup) > 0) {
                     foreach($usersGroup as $userGroup) {
-                        if(!isset($usersMap[$userGroup->id])) {
-                            DB_ORM::model('webinar_user')->addUser($webinarId, $userGroup->id);
+                        if( ! isset($usersMap[$userGroup->id])) {
+                            $expert = (in_array($userGroup->id, $experts)) ? 1 : 0;
+                            DB_ORM::model('webinar_user')->addUser($webinarId, $userGroup->id, $expert);
                         }
                     }
                 }

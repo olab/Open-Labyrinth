@@ -19,8 +19,7 @@
  *
  */
 ?>
-<script language="javascript" type="text/javascript"
-        src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script language="javascript" type="text/javascript">
 
     tinymce.init({
@@ -44,9 +43,6 @@
 
         ]
     });
-
-
-
  /*   tinyMCE.init({
         // General options
         mode: "textareas",
@@ -65,15 +61,10 @@
         theme_advanced_resizing: true,
         editor_selector: "mceEditor"
     });*/
-
 </script>
 
 <div class="page-header">
-    <?php if (isset($templateData['name'])){ ?>
-        <h1><?php echo __('Edit forum') . ' - "' .  $templateData['name'] . '"'; ?></h1>
-    <?php } else { ?>
-        <h1><?php echo __('Add new forum'); ?></h1>
-    <?php } ?>
+    <h1><?php echo (isset($templateData['name'])) ? __('Edit forum') . ' - "' .  $templateData['name'] . '"' : __('Add new forum'); ?></h1>
 </div>
 
 <form class="form-horizontal" id="form1" name="form1" method="post"
@@ -221,38 +212,31 @@
                 <col style="width: 90%" />
             </colgroup>
             <thead>
-            <tr>
-                <th style="text-align: center">Actions</th>
-                <th style="text-align: center">Auth type</th>
-                <th>
-                    <a href="javascript:void(0);">
-                        User <div class="pull-right"><i class="icon-chevron-down icon-white"></i></div>
-                    </a>
-                </th>
-            </tr>
+                <tr>
+                    <th style="text-align: center">Actions</th>
+                    <th style="text-align: center">Auth type</th>
+                    <th style="text-align: center">Experts</th>
+                    <th><a href="javascript:void(0);">User<div class="pull-right"><i class="icon-chevron-down icon-white"></i></div></a></th>
+                </tr>
             </thead>
-            <tbody>
-            <?php if(isset($templateData['existUsers']) and count($templateData['existUsers']) > 0) { ?>
-                <?php foreach($templateData['existUsers'] as $existUser) { ?>
-                    <tr>
-                        <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser['id']; ?>" checked="checked"></td>
-                        <?php $icon = ($existUser['icon'] != NULL) ? 'oauth/'.$existUser['icon'] : 'openlabyrinth-header.png' ; ?>
-                        <td style="text-align: center;"> <img <?php echo ($existUser['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-                        <td><?php echo $existUser['nickname']; ?></td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
-            <?php if(isset($templateData['users']) and count($templateData['users']) > 0) { ?>
-                <?php foreach($templateData['users'] as $user) { ?>
-                    <tr>
-                        <?php if(!isset($templateData['name']) && $user['id'] == Auth::instance()->get_user()->id) continue; ?>
-                        <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
-                        <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
-                        <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
-                        <td><?php echo $user['nickname']; ?></td>
-                    </tr>
-                <?php } ?>
-            <?php } ?>
+            <tbody><?php
+            foreach(Arr::get($templateData, 'existUsers', array()) as $existUser) { ?>
+                <tr>
+                    <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser['id']; ?>" checked="checked"></td>
+                    <?php $icon = ($existUser['icon'] != NULL) ? 'oauth/'.$existUser['icon'] : 'openlabyrinth-header.png' ; ?>
+                    <td style="text-align: center;"> <img <?php echo ($existUser['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base().'images/'.$icon ; ?>" border="0"/></td>
+                    <td><?php echo $existUser['nickname']; ?></td>
+                </tr><?php
+            }
+            foreach(Arr::get($templateData, 'users', array()) as $user) { ?>
+                <tr><?php
+                if( ! isset($templateData['name']) && $user['id'] == Auth::instance()->get_user()->id) continue; ?>
+                    <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
+                    <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
+                    <td style="text-align: center;"> <img <?php echo ($user['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/></td>
+                    <td><?php echo $user['nickname']; ?></td>
+                </tr><?php
+            } ?>
             </tbody>
         </table>
 

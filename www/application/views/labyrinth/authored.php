@@ -75,12 +75,13 @@ if ($user)
         foreach ($templateData['maps'] as $map) { ?>
             <tr>
                 <td><?php echo $map->id; ?></td>
-                <td><a href="<?php echo URL::base(); ?>labyrinthManager/info/<?php echo $map->id; ?>"><?php echo $map->name; ?></a></td>
+                <td><a <?php if ($map->author_id == $userId OR $userType == 4)  echo 'href='.URL::base().'labyrinthManager/info/'.$map->id; ?>><?php echo $map->name; ?></a>
+                </td>
                 <td><?php
                     if (count($map->contributors) > 0) {
                         $contributors = array();
                         foreach ($map->contributors as $contributor) {
-                            $contributors[] = '<a href="#" rel="tooltip" title="' . ucwords($contributor->role->name) . '">' . $contributor->name . '</a>';
+                            $contributors[] = '<a href="#" rel="tooltip" title="'.ucwords($contributor->role->name).'">'.$contributor->name . '</a>';
                         }
                         echo implode(', ', $contributors);
                     } ?>
@@ -98,7 +99,7 @@ if ($user)
                             <span class="visible-desktop">Play</span>
                         </a><?php
                         }
-                        if ($map->author_id == $userId OR $userType == 4 ) { ?>
+                        if ($map->author_id == $userId OR $userType == 4) { ?>
                         <a class="btn btn-info" href="<?php echo URL::base().'labyrinthManager/global/'.$map->id; ?>">
                             <i class="icon-edit icon-white"></i> Edit
                         </a><?php
