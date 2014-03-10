@@ -710,7 +710,8 @@ class Controller_LabyrinthManager extends Controller_Base {
 
         $selectedLinkStyle  = DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->get('link_style_id');
         $map                = DB_ORM::model('map', array($mapId));
-        $editRight          = DB_ORM::model('Map')->editRight($mapId);;
+        $editRight          = DB_ORM::model('Map')->editRight($mapId);
+
         $this->templateData['map']                  = $map;
         $this->templateData['verification']         = ($map->verification != null) ? json_decode($map->verification, true) : array();
         $this->templateData['types']                = DB_ORM::model('map_type')->getAllTypes();
@@ -722,7 +723,7 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->templateData['linkStyles']           = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
         $this->templateData['selectedLinkStyles']   = $selectedLinkStyle ? $selectedLinkStyle : 5;
         $this->templateData['files']                = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
-        $this->templateData['creators']             = DB_ORM::select('user')->where('type_id', '=', 2)->where('type_id', '=', 4, 'OR')->query()->as_array();
+        $this->templateData['creators']             = DB_ORM::select('user')->where('type_id', '=', 2)->where('type_id', '=', 4, 'OR')->order_by('nickname')->query()->as_array();
         $this->templateData['editCreator']          = $editRight;
         $this->templateData['regAuthors']           = DB_ORM::model('map_user')->getAllAuthors($mapId);
         $this->templateData['groupsOfLearner']      = DB_ORM::model('User_Group')->getGroupOfLearners($mapId);
