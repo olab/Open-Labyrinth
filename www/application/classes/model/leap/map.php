@@ -632,19 +632,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getMapsIn($mapIDs)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'IN', $mapIDs);
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-
-            return $maps;
-        }
-
-        return NULL;
+        return DB_ORM::select('Map')->where('id', 'IN', $mapIDs)->where('enabled', '=', 1)->query()->as_array();
     }
 
     public function updateMapSecurity($mapId, $securityId)
