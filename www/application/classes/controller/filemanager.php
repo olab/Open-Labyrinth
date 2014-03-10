@@ -90,28 +90,30 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
-    public function action_replaceFiles() {
+    public function action_replaceFiles()
+    {
         set_time_limit(0);
         $this->auto_render = false;
 
-        $mapId = Arr::get($_POST, 'mapId', null);
-        $fileName = Arr::get($_POST, 'fileName', null);
+        $mapId      = Arr::get($_POST, 'mapId', null);
+        $fileName   = Arr::get($_POST, 'fileName', null);
+        $result     = '';
 
-        $result = '';
-        if($mapId != null && $fileName != null) {
-            $dir = DOCROOT . '/files/' . $mapId ;
-            if(!is_dir($dir)) {
-                mkdir(DOCROOT . '/files/' . $mapId);
+        if ($mapId != null && $fileName != null)
+        {
+            $dir = DOCROOT.'/files/'.$mapId ;
+            if( ! is_dir($dir)) mkdir(DOCROOT.'/files/'.$mapId);
+
+            $dest = $dir.'/'.$fileName;
+            $src  = DOCROOT.'/scripts/fileupload/php/files/'.$fileName;
+
+            if (getimagesize($src))
+            {
+                $src2 = DOCROOT.'/scripts/fileupload/php/thumbnails/'.$fileName;
+                if (file_exists($src2)) unlink($src2);
             }
 
-            $dest = DOCROOT . '/files/' . $mapId . '/' . $fileName;
-            $src  = DOCROOT . '/scripts/fileupload/php/files/' . $fileName;
-            if (getimagesize($src)) {
-                $src2 = DOCROOT . '/scripts/fileupload/php/thumbnails/' . $fileName;
-                unlink($src2);
-            }
-
-            $path = 'files/' . $mapId . '/' . $fileName;
+            $path = 'files/'.$mapId.'/'.$fileName;
 
             $dataSave = array(
                 'name' => $fileName,
@@ -125,7 +127,6 @@ class Controller_FileManager extends Controller_Base {
 
             $result = $fileName;
         }
-
         echo $result;
     }
 
