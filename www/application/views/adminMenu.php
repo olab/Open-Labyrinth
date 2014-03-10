@@ -85,44 +85,34 @@
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (isset($templateData['latestPlayedLabyrinths'])) : ?>
+        <?php endif;
+        if (isset($templateData['latestPlayedLabyrinths'])) { ?>
         <div class="box">
             <h4 class="box-header round-top"><?php echo __('Latest Played Labyrinths'); ?></h4>
-            <div class="box-container-toggle">
-                <div class="box-content">
-                    <ul class="unstyled">
-                    <?php
-                    foreach ($templateData['latestPlayedLabyrinths'] as $map) {
-                        ?>
-                        <li style="margin-bottom: 10px">
-                            <div class="row-fluid">
-                                <div class="pull-left">
-                                    <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
-                                </div>
-                                <div class="pull-right">
-                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
-                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                            <i class="icon-play icon-white"></i>
-                                            Play
-                                        </a>
-                                    <?php } else { ?>
-                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
-                                            <i class="icon-play icon-white"></i>
-                                            Play
-                                        </a>
-                                    <?php } ?>
-                                </div>
+                <ul class="box-container-toggle box-content unstyled"><?php
+                foreach ($templateData['latestPlayedLabyrinths'] as $map) { ?>
+                    <li style="margin-bottom: 10px">
+                        <div class="row-fluid">
+                            <div class="pull-left">
+                                <a href="<?php echo URL::base().'labyrinthManager/global/'.$map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                             </div>
-                        </li>
-                        <?php
-                    }
-                    ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
+                            <div class="pull-right">
+                                <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
+                                        <i class="icon-play icon-white"></i> Play
+                                    </a>
+                                <?php } else { ?>
+                                    <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
+                                        <i class="icon-play icon-white"></i> Play
+                                    </a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </li><?php
+                } ?>
+                </ul>
+        </div><?php
+        } ?>
     </div>
 </div>
 
