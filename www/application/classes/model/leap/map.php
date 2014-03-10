@@ -555,6 +555,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->load();
 
         $this->name             = $this->getMapName(Arr::get($values, 'title', 'empty_title'), $id);
+        $this->author_id        = Arr::get($values, 'creator', $this->author_id);
         $this->abstract         = Arr::get($values, 'description', 'empty_description');
         $this->keywords         = Arr::get($values, 'keywords', 'empty_keywords');
         $this->type_id          = 2;

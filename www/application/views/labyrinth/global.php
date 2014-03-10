@@ -175,9 +175,9 @@ if (isset($templateData['map'])) {
         <div class="control-group">
             <label class="control-label"><?php echo __('Creator'); ?>:</label>
             <div class="controls">
-                <select <?php if ( ! $templateData['editCreator']) echo 'disabled'; ?>><?php
+                <select name="creator" <?php if ( ! $templateData['editCreator']) echo 'disabled'; ?>><?php
                 foreach (Arr::get($templateData, 'creators', array()) as $creators) { ?>
-                    <option><?php echo $creators->nickname; ?></option><?php
+                    <option value="<?php echo $creators->id; ?>" <?php if($templateData['map']->author_id == $creators->id) echo 'selected'; ?>><?php echo $creators->nickname; ?></option><?php
                 } ?>
                 </select>
             </div>
