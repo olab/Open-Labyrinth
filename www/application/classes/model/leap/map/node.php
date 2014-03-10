@@ -365,7 +365,6 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $record->save();
 
         return $record->getLastAddedNode($mapId);
-
     }
 
     public function createNodeFromJSON($mapId, $values) {
@@ -737,33 +736,35 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     
     public function duplicateNodes ($fromMapId, $toMapId)
     {
-        $nodesMap = array();
-        foreach($this->getNodesByMap($fromMapId) as $node)
+        $mapNodes = array();
+
+        foreach(DB_ORM::select('Map_Node')->where('map_id', '=', $fromMapId)->query()->as_array() as $node)
         {
-            $newNode = $this->createFullNode($toMapId, array(
-                'title'                 => $node->title,
-                'text'                  => $node->text,
-                'type_id'               => $node->type_id,
-                'probability'           => $node->probability,
-                'conditional'           => $node->conditional,
-                'conditional_message'   => $node->conditional_message,
-                'info'                  => $node->info,
-                'is_private'            => $node->is_private,
-                'link_style_id'         => $node->link_style_id,
-                'link_type_id'          => $node->link_type_id,
-                'priority_id'           => $node->priority_id,
-                'kfp'                   => $node->kfp,
-                'undo'                  => $node->undo,
-                'end'                   => $node->end,
-                'x'                     => $node->x,
-                'y'                     => $node->y,
-                'rgb'                   => $node->rgb,
-                'show_info'             => $node->show_info,
-                'annotation'            => $node->annotation,
-            ));
-            $nodesMap[$node->id] = $newNode->id;
+            $newNode = DB_ORM::insert('Map_Node')
+                ->column('map_id',              $toMapId)
+                ->column('title',               $node->title)
+                ->column('text',                $node->text)
+                ->column('type_id',             $node->type_id)
+                ->column('probability',         $node->probability)
+                ->column('conditional',         $node->conditional)
+                ->column('conditional_message', $node->conditional_message)
+                ->column('info',                $node->info)
+                ->column('is_private',          $node->is_private)
+                ->column('link_style_id',       $node->link_style_id)
+                ->column('priority_id',         $node->priority_id)
+                ->column('kfp',                 $node->kfp)
+                ->column('undo',                $node->undo)
+                ->column('end',                 $node->end)
+                ->column('x',                   $node->x)
+                ->column('y',                   $node->y)
+                ->column('rgb',                 $node->rgb)
+                ->column('show_info',           $node->show_info)
+                ->column('annotation',          $node->annotation)
+                ->execute();
+
+            $mapNodes[$node->id] = $newNode;
         }
-        return $nodesMap;
+        return $mapNodes;
     }
     
     public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
@@ -778,13 +779,15 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
+    {
         $result = $text;
 
         $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
 
-        foreach ($codes as $code) {
-            $regExp = '/[\[' . $code . ':\d\]]+/';
+        foreach ($codes as $code)
+        {
+            $regExp = '/[\['.$code.':\d\]]+/';
             if (preg_match_all($regExp, $text, $matches)) {
                 foreach ($matches as $match) {
                     foreach ($match as $value) {
@@ -821,8 +824,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                                     case 'INFO':
                                         break;
                                 }
-
-                                $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
+                                $result = str_replace('[['.$code.':'.$id.']]', $replaceString, $result);
                             }
                         }
                     }

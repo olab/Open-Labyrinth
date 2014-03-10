@@ -384,38 +384,43 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         {
             $newFileName = $this->duplicateFile(DOCROOT.'/'.$element->path, $toMapId);
 
-            if($newFileName == null) continue;
-            
-            $newPath = 'files/'.$newFileName;
-            
-            $builder = DB_ORM::insert('map_element')
-                    ->column('map_id', $toMapId)
-                    ->column('mime', $element->mime)
-                    ->column('name', $newFileName)
-                    ->column('path', $newPath)
-                    ->column('args', $element->args)
-                    ->column('width', $element->width)
-                    ->column('height', $element->height)
-                    ->column('h_align', $element->h_align)
-                    ->column('v_align', $element->v_align)
-                    ->column('width_type', $element->width_type)
-                    ->column('height_type', $element->height_type);
-            
-            $elementMap[$element->id] = $builder->execute();
+            if ($newFileName == null) continue;
+
+            $newElement = DB_ORM::insert('map_element')
+                ->column('map_id',      $toMapId)
+                ->column('mime',        $element->mime)
+                ->column('name',        $newFileName)
+                ->column('path',        'files/'.$toMapId.'/'.$newFileName)
+                ->column('args',        $element->args)
+                ->column('width',       $element->width)
+                ->column('height',      $element->height)
+                ->column('h_align',     $element->h_align)
+                ->column('v_align',     $element->v_align)
+                ->column('width_type',  $element->width_type)
+                ->column('height_type', $element->height_type)
+                ->execute();
+
+            $elementMap[$element->id] = $newElement;
         }
         return $elementMap;
     }
     
-    private function duplicateFile($srcPath, $addName) {
-        if (strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
-        
-        if (!file_exists($srcPath)) return null;
+    private function duplicateFile($srcPath, $newMap)
+    {
+        if ( ! file_exists($srcPath)) return null;
         
         $path_info = pathinfo($srcPath);
-        $newFileName = $path_info['filename'].'_'.$addName;
-        $dstPath = $path_info['dirname'].'/'.$newFileName.'.'.Arr::get($path_info, 'extension');
-        
-        return (copy($srcPath, $dstPath)) ? $newFileName.'.'.Arr::get($path_info, 'extension') : null;
+
+        // create new directory
+        $oldDirectory = $path_info['dirname'];
+        $newDirectory = substr($oldDirectory, 0, strrpos($oldDirectory, '/')).'/'.$newMap.'/';
+        mkdir($newDirectory);
+
+        // new file name path
+        $fileName = Arr::get($path_info,'basename');
+        $newPath  = $newDirectory.$fileName;
+
+        return (copy($srcPath, $newPath)) ? $fileName : null;
     }
 
     public function exportMVP($mapId) {
