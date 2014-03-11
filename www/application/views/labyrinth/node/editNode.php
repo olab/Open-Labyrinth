@@ -305,16 +305,11 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link Function Style'); ?></label>
-                <div class="controls">
-                    <?php if (isset($templateData['linkStyles'])) { ?>
-                        <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                            <label class="radio">
-                                <input type="radio" name="linkstyle"
-                                       value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'checked=""'; ?>><?php echo __($linkStyle->name); ?>
-                            </label>
-                        <?php } ?>
-                    <?php } ?>
-                </div>
+                <select name="linkstyle" style="margin-left: 18px; "><?php
+                    foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                        <option value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'selected'; ?>><?php echo __($linkStyle->name); ?></option><?php
+                    } ?>
+                </select>
             </div>
 
             <div class="control-group">

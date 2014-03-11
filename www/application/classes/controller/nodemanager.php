@@ -91,35 +91,25 @@ class Controller_NodeManager extends Controller_Base {
         Request::initial()->redirect($redirectURL);
     }
 
-    public function action_addNode() {
-        $mapId = (int) $this->request->param('id', 0);
-        $editMode = (int) $this->request->param('id2', 0);
-        if ($mapId) {
-            if ($editMode) {
-                $this->templateData['editMode'] = $editMode;
-            } else {
-                $this->templateData['editMode'] = 'w';
-            }
+    public function action_addNode()
+    {
+        $mapId      = (int) $this->request->param('id', 0);
+        $editMode   = (int) $this->request->param('id2', 0);
 
-            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
-            $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-            $this->templateData['priorities'] = DB_ORM::model('map_node_priority')->getAllPriorities();
-            $this->templateData['counters']   = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-            $this->templateData['popups']     = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            $addNodeView = View::factory('labyrinth/node/addNode');
-            $addNodeView->set('templateData', $this->templateData);
+        $this->templateData['map']          = DB_ORM::model('map', array($mapId));
+        $this->templateData['editMode']     = $editMode ? $editMode : 'w';
+        $this->templateData['linkStyles']   = DB_ORM::select('map_node_link_style')->query()->as_array();
+        $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
+        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+        $this->templateData['popups']       = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
+        $this->templateData['mainLinkStyle']= DB_ORM::model('map_node')->getMainLinkStyles($mapId);
+        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']       = View::factory('labyrinth/node/addNode')->set('templateData', $this->templateData);
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
 
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $addNodeView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_editNode ()
@@ -137,7 +127,7 @@ class Controller_NodeManager extends Controller_Base {
         $this->templateData['tinyMCEv3']    = $tinyMCEv3;
         $this->templateData['node']         = $node;
         $this->templateData['map']          = DB_ORM::model('map', array($mapId));
-        $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['linkStyles']   = DB_ORM::select('map_node_link_style')->query()->as_array();
         $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
         $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap($mapId);
         $this->templateData['popups']       = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
