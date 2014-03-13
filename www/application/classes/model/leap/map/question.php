@@ -673,6 +673,56 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
         return NULL;
     }
+    public function getQuestionById($id) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $id);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $questions = array();
+            foreach($result as $record) {
+                $questions[] = $record;
+            }
+
+            return $questions;
+        }
+
+        return NULL;
+    }
+
+    public function importQuestion($question, $responses) {
+        $builder = DB_ORM::insert('map_question')
+            ->column('map_id', $question->map_id)
+            ->column('stem', $question->stem)
+            ->column('entry_type_id', $question->entry_type_id)
+            ->column('width', $question->width)
+            ->column('height', $question->height)
+            ->column('feedback', $question->feedback)
+            ->column('show_answer', $question->show_answer)
+            ->column('num_tries', $question->num_tries)
+            ->column('counter_id', NULL)
+            ->column('show_submit', $question->show_submit)
+            ->column('redirect_node_id', NULL)
+            ->column('submit_text', $question->submit_text)
+            ->column('type_display', $question->type_display)
+            ->column('settings', $question->settings);
+
+        $newId = $builder->execute();
+
+        if(count($responses) > 0) {
+            foreach($responses as $response) {
+                DB_ORM::insert('map_question_response')
+                    ->column('question_id', $newId)
+                    ->column('response', $response->response)
+                    ->column('feedback', $response->feedback)
+                    ->column('is_correct', $response->is_correct)
+                    ->column('score', $response->score)
+                    ->column('from', $response->from)
+                    ->column('to', $response->to)
+                    ->execute();
+            }
+        }
+    }
+
 }
 
 ?>

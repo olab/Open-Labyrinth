@@ -77,6 +77,9 @@ if (isset($templateData['map'])) { ?>
                             <a class="btn btn-info" href="<?php echo URL::base() . 'questionManager/question/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
                             <a class="btn" href="<?php echo URL::base() . 'questionManager/duplicateQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-th"></i>Duplicate</a>
                             <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-question-<?php echo $question->id; ?>"><i class="icon-trash"></i>Delete</a>
+                            <?php if(isset($templateData['isSuperuser'])) { ?>
+                                <a class="btn btn-info" href="<?php echo URL::base().'questionManager/exportQuestion/'.$templateData['map']->id.'/'.$question->id; ?>"><i class="icon-edit"></i>Export</a>
+                            <?php } ?>
                         </div>
                         <div class="modal hide alert alert-block alert-error fade in" id="delete-question-<?php echo $question->id; ?>">
                             <div class="modal-header">

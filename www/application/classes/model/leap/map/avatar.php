@@ -342,6 +342,23 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
 
         return NULL;
     }
+
+    public function getAvatarById($id) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $id);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            $avatars = array();
+
+            foreach($result as $key => $value){
+                $avatars[$key] = $value;
+            }
+
+            return $avatars;
+        }
+
+        return NULL;
+    }
 }
 
 ?>

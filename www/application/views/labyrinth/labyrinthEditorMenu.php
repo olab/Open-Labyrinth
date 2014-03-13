@@ -63,6 +63,10 @@ if (isset($templateData['map'])) {
             <li class="nav-header">Control</li>
             <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users'); ?></a></li>
             <li><a href="<?php echo URL::base().'reportManager/index/'.$id_map; ?>"><i class="icon-calendar"></i> <?php echo __('Sessions'); ?></a></li>
+            <li class="nav-header">Global elements</li>
+            <li><a href="<?php echo URL::base().'fileManager/globalFiles/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Global files'); ?></a></li>
+            <li><a href="<?php echo URL::base().'avatarManager/globalAvatars/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Global avatars'); ?></a></li>
+            <li><a href="<?php echo URL::base().'questionManager/globalQuestions/'.$id_map; ?>"><i class="icon-question-sign"></i> <?php echo __('Global questions'); ?></a></li>
         </ul>
     </div>
     <div class="modal hide fade" id="developer-notes">

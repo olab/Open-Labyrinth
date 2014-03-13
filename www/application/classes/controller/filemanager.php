@@ -484,13 +484,16 @@ class Controller_FileManager extends Controller_Base {
     }
 
     private function getListFiles($dir){
-        $listOfFile = array();
+        $result = array();
         if(is_dir($dir)) {
+            $result = array();
             $listOfFile = scandir($dir);
-            array_shift($listOfFile);
-            array_shift($listOfFile);
+            foreach($listOfFile as $file){
+                if($file != '.' && $file != '..' && $file != 'empty.folder')
+                    $result[] = $file;
+            }
         }
-        return $listOfFile;
+        return $result;
     }
 
     private function sortingList($notorderlist, $orderListXML){
@@ -544,6 +547,83 @@ class Controller_FileManager extends Controller_Base {
                     $ses->set('warningMessage', 'The following files were not removed: '. $notDeleted .'. Please, check other labyrinths on reference on this files.');
                 }
             }
+            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_globalFiles(){
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $path = 'global/files/';
+            $filesArray = $this->getListFiles($path);
+            $elements = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
+            $this->templateData['files'] = array();
+            $list = array();
+            foreach($filesArray as $file){
+                $list['there'] = false;
+                foreach($elements as $element){
+                    if($element->name == $file) $list['there'] = true;
+                }
+            $list['name'] = $file;
+            $this->templateData['files'][] = $list;
+            }
+
+            $totalsize = 0;
+            if (count($filesArray) > 0){
+                foreach($filesArray as $file){
+                    $filePath = DOCROOT.$path.$file;
+                    if(file_exists($filePath)){
+                        $totalsize += filesize($filePath);
+                    }
+                }
+            }
+
+            $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($totalsize);
+            $this->templateData['files_count'] = count($this->templateData['files']);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
+
+            $fileView = View::factory('labyrinth/file/global');
+            $fileView->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['left'] = $leftView;
+            $this->templateData['center'] = $fileView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_addToLabyrinth(){
+        $mapId = $this->request->param('id', NULL);
+        $fileName = base64_decode($this->request->param('id2', NULL));
+
+        if($mapId != null && $fileName != null) {
+            $dir = 'files/' . $mapId ;
+            if(!is_dir($dir)) {
+                mkdir('files/' . $mapId);
+            }
+            $dest = 'files/' . $mapId . '/' . $fileName;
+            $src  = 'global/files/' . $fileName;
+            $path = 'files/' . $mapId . '/' . $fileName;
+            $dataSave = array(
+                'name' => $fileName,
+                'path' => $path,
+            );
+            copy($src, $dest);
+
+            DB_ORM::model('map_element')->saveElement($mapId,$dataSave);
+
             Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
