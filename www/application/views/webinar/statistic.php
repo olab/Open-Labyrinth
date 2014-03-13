@@ -21,7 +21,7 @@
 $webinarId = $templateData['webinar']->id;
 ?>
 <div class="page-header">
-    <h1><?php echo __('Scenario Progress').'- '.$templateData['webinar']->title; ?>"</h1>
+    <h1><?php echo __('Scenario Progress').'- "'.$templateData['webinar']->title; ?>"</h1>
 </div>
 
 <div class="report-type">

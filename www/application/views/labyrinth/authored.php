@@ -18,9 +18,10 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-$user       = Auth::instance()->get_user();
-$userId     = 0;
-$userType   = 0;
+$user           = Auth::instance()->get_user();
+$userId         = 0;
+$userType       = 0;
+$authorRight    = Arr::get($templateData, 'authorRight', array());
 if ($user)
 {
     $userId     = $user->id;
@@ -31,18 +32,12 @@ if ($user)
     <div class="pull-right">
         <div class="btn-group">
             <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                <i class="icon-plus-sign icon-white"></i>
-                Create Labyrinth
-                <span class="caret"></span>
+                <i class="icon-plus-sign icon-white"></i>Create Labyrinth<span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li>
-                    <a href="<?php echo URL::base() . 'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a>
-                </li>
-                <li>
-                    <a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a>
-                </li>
-                <li><a href="<?php echo URL::base() . '#'; ?>"><?php echo __('Duplicate Existing'); ?></a></li>
+                <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
+                <li><a href="<?php echo URL::base().'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
+                <li><a href="<?php echo URL::base().'#'; ?>"><?php echo __('Duplicate Existing'); ?></a></li>
             </ul>
         </div>
     </div><?php
@@ -88,7 +83,7 @@ if ($user)
                 </td>
                 <td class="center">
                     <div class="btn-group"><?php
-                        if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                        if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null OR Arr::get($authorRight, $map->id, false)) { ?>
                         <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
                             <i class="icon-play icon-white"></i>
                             <span class="visible-desktop">Play</span>
@@ -99,7 +94,7 @@ if ($user)
                             <span class="visible-desktop">Play</span>
                         </a><?php
                         }
-                        if ($map->author_id == $userId OR $userType == 4) { ?>
+                        if ($map->author_id == $userId OR $userType == 4 OR Arr::get($authorRight, $map->id, false)) { ?>
                         <a class="btn btn-info" href="<?php echo URL::base().'labyrinthManager/global/'.$map->id; ?>">
                             <i class="icon-edit icon-white"></i> Edit
                         </a><?php

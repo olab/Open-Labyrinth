@@ -166,14 +166,15 @@ class Model_Leap_DTopic extends DB_ORM_Model {
 
     }
 
-    public function getFullAllTopicsByForumId($forumId) {
-
-        $where = '';
-        $join = '';
-        $orderBy = 'message_date DESC';
+    public function getFullAllTopicsByForumId($forumId)
+    {
+        $where      = '';
+        $join       = '';
+        $orderBy    = 'message_date DESC';
+        $userType   = Auth::instance()->get_user()->type->name;
 
         // Get only visible topics
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
+        if ($userType != 'superuser' AND $userType != 'Director') {
             $where = ' AND topic.security_id = 0';
         }
 
@@ -222,15 +223,11 @@ class Model_Leap_DTopic extends DB_ORM_Model {
 
         $res = array();
 
-        if($result != null && $result->is_loaded()) {
-
-            foreach($result as $record) {
-                $res[] = $record;
-            }
-
+        if($result != null && $result->is_loaded())
+        {
+            foreach($result as $record) $res[] = $record;
             return $res;
         }
-
         return NULL;
     }
 

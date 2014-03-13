@@ -116,14 +116,14 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getAllForums($sortBy = null, $typeSort = null){
-
-        $where = '';
-        $join = '';
-
-        $type = ($typeSort == 0) ? 'ASC' : 'DESC';
-
-        $columName = '';
+    public function getAllForums($sortBy = null, $typeSort = null)
+    {
+        $where      = '';
+        $join       = '';
+        $type       = ($typeSort == 0) ? 'ASC' : 'DESC';
+        $columName  = '';
+        $user       = Auth::instance()->get_user();
+        $userType   = $user->type->name;
 
         switch($sortBy) {
             case 1 :
@@ -140,10 +140,10 @@ class Model_Leap_DForum extends DB_ORM_Model {
                 break;
         }
 
-        $orderBy = $columName . ' ' . $type;
+        $orderBy = $columName.' '.$type;
 
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
-
+        if ($userType != 'superuser' AND $userType != 'Director')
+        {
             $join = ' LEFT JOIN
                         dforum_users  as dfuu ON dfuu.id_forum = forum.id
                       LEFT JOIN
@@ -152,9 +152,9 @@ class Model_Leap_DForum extends DB_ORM_Model {
                         user_groups as ug  ON ug.group_id  = dfg.id_group ';
 
             $where = ' AND (
-                            (forum.author_id = ' . Auth::instance()->get_user()->id . ')
-                         OR (dfuu.id_user = ' . Auth::instance()->get_user()->id . ' AND forum.status = 1)
-                         OR (ug.user_id = ' . Auth::instance()->get_user()->id .' AND forum.status = 1)
+                            (forum.author_id = ' . $user->id . ')
+                         OR (dfuu.id_user = ' . $user->id . ' AND forum.status = 1)
+                         OR (ug.user_id = ' . $user->id .' AND forum.status = 1)
                          OR forum.security_id = 0
                       )';
         }
@@ -201,18 +201,16 @@ class Model_Leap_DForum extends DB_ORM_Model {
         ");
 
         $res = array();
-
-        if($result != null && $result->is_loaded()) {
-
-            foreach($result as $key => $record) {
-                $topics = DB_ORM::model('dtopic')->getFullAllTopicsByForumId($record['id']);
-                $res[$key] = $record;
-                $res[$key]['topics'] = $topics;
+        if($result != null && $result->is_loaded())
+        {
+            foreach ($result as $key => $record)
+            {
+                $topics                 = DB_ORM::model('dtopic')->getFullAllTopicsByForumId($record['id']);
+                $res[$key]              = $record;
+                $res[$key]['topics']    = $topics;
             }
-
             return $res;
         }
-
         return NULL;
     }
 

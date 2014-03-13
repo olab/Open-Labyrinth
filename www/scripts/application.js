@@ -556,4 +556,19 @@ jQuery(document).ready(function(){
         $(this).parents('.add-contributor-bl').remove();
     });
 
+    $('.add-author').click(function(){
+        var bl = $('.add-author-bl').last().clone().show();
+        $('.author-bl').append(bl);
+    });
+
+    $('.delete-author-bl').live('click', function(){
+        $(this).parent().remove();
+    });
+
+    $('.delete-author').live('click', function(){
+        var id  = $(this).data('id'),
+            url = window.location.origin + '/labyrinthManager/deleteAuthor/' + id;
+        $.get(url, function() {});
+        $(this).parent().remove();
+    });
 });

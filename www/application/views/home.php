@@ -115,7 +115,7 @@
                                     </li><?php
                                     }
                                 }
-                                if($type_name == 'author' || $type_name == 'superuser') { ?>
+                                if($type_name == 'author' || $type_name == 'superuser' || $type_name == 'Director') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
@@ -136,9 +136,9 @@
                                     }
                                 } else {
                                     if ($type_name != 'reviewer') {?>
-                                    <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li><?php
+                                    <li><a href="<?php echo URL::base().'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li><?php
                                     } ?>
-                                    <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li><?php
+                                    <li><a href="<?php echo URL::base().'webinarManager/my'; ?>"><?php echo __('My Scenarios'); ?></a></li><?php
                                 } ?>
                                 <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
                                 <li><a href="#"><?php echo __('Help'); ?></a></li>

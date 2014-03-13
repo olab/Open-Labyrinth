@@ -30,8 +30,8 @@ class Report_SCT_Map extends Report_SCT_Element {
     private $notInUsers;
     private $dateStatistics;
     private $countOfChoices;
+    private $experts;
     public $scoreForResponse;
-    public $experts;
     public $users;
 
     private $choicesMap = array(
@@ -54,6 +54,7 @@ class Report_SCT_Map extends Report_SCT_Element {
         $this->dateStatistics = $dateStatistics;
         $this->expertWebinarId= $expertWebinarId;
         $this->users          = $users;
+        $this->experts        = $this->getExperts();
 
         $this->elements       = array();
         $this->sections       = array();
@@ -75,11 +76,21 @@ class Report_SCT_Map extends Report_SCT_Element {
 
         if($this->map == null) return $localOffset;
 
-        $this->implementation->setCursor('A' . $offset);
-        $this->implementation->setFontSize('A' . $offset, 16);
+        $this->implementation->setCursor('A'.$offset);
+        $this->implementation->setFontSize('A'.$offset, 16);
         $this->implementation->setValue($this->map->name);
-        $localOffset = 2;
-        $columnOffset = 0; // start from letter B
+
+        // ------ displayed list of experts, on A2 ------ //
+        $offset += 1;
+        $expertsList = 'Experts:';
+        foreach ($this->experts as $userId) $expertsList .= '
+'.DB_ORM::model('User', array($userId))->nickname;
+        $this->implementation->setCursor('A'.$offset);
+        $this->implementation->setValue($expertsList);
+        // ------ end displayed list of experts ------ //
+
+        $localOffset    = 2;
+        $columnOffset   = 0; // start from letter B
 
         if($this->questions != null && count($this->questions) > 0)
         {
@@ -159,8 +170,10 @@ class Report_SCT_Map extends Report_SCT_Element {
             $stdeva_end_row    = 0;
             $stdeva_end_column = 0;
 
-            // --- delete users who not displayed --- //
-            $user_response = array_intersect_key($user_response, $this->users);
+            // --- delete users who not displayed, and get right order of users --- //
+            $getOrder = array_intersect_key($this->users, $user_response);
+            foreach ($user_response as $k=>$v) $getOrder[$k] = $user_response[$k];
+            $user_response = $getOrder;
 
             foreach ($user_response as $id_user=>$value)
             {
@@ -281,12 +294,6 @@ class Report_SCT_Map extends Report_SCT_Element {
     public function scoreForResponse ()
     {
         $score      = array();
-        $experts    = array();
-
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertWebinarId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
-        {
-            $experts[] = $wUserObj->user_id;
-        }
 
         foreach ($this->questions as $questions)
         {
@@ -300,7 +307,7 @@ class Report_SCT_Map extends Report_SCT_Element {
             foreach (DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query() as $response)
             {
                 $user_id = DB_ORM::model('User_Session', array($response->session_id))->user_id;
-                if (in_array($user_id, $experts) AND isset($score[$id_question][$response->response])) $score[$id_question][$response->response] += 1;
+                if (in_array($user_id, $this->experts) AND isset($score[$id_question][$response->response])) $score[$id_question][$response->response] += 1;
             }
 
             $max_score = max($score[$id_question]);
@@ -309,5 +316,15 @@ class Report_SCT_Map extends Report_SCT_Element {
                 $this->scoreForResponse[$id_question][$k] = ($max_score == 0 ) ? 0 : round($v / $max_score, 2);
             }
         }
+    }
+
+    public function getExperts()
+    {
+        $experts = array();
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertWebinarId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
+        {
+            $experts[] = $wUserObj->user_id;
+        }
+        return $experts;
     }
 }
