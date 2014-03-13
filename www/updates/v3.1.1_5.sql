@@ -1,1 +1,1 @@
-UPDATE  `openlabyrinth_prod`.`map_node_link_stylies` SET  `name` =  'hyperlinks' WHERE  `map_node_link_stylies`.`id` =1;
+UPDATE `map_node_link_stylies` SET `name` = 'hyperlinks' WHERE `map_node_link_stylies`.`id` = 1;
