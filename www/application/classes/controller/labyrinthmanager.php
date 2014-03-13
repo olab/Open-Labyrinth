@@ -28,7 +28,7 @@ class Controller_LabyrinthManager extends Controller_Base {
 
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'authoredLabyrinth'));
     }
 
     public function action_index() {

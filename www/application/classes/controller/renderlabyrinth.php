@@ -1767,7 +1767,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $idUser     = $user->id;
             $idScenario = Session::instance()->get('webinarId');
         }
+        // first check by author_id, second check for author right
         $owner          = $map->author_id == $idUser;
+        $owner          = $owner ? $owner : (bool) DB_ORM::select('AuthorRight')->where('user_id', '=', $idUser)->query()->as_array();
 
         switch ($userType)
         {
@@ -1777,6 +1779,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '2':
+            case '6':
                 if (($labyrinthType == 1) OR ($labyrinthType == 2) OR ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '3':

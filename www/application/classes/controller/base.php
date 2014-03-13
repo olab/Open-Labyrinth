@@ -208,7 +208,7 @@ class Controller_Base extends Controller_Template {
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
 
-            if ($user_type_name == 'superuser' OR $user_type_name == 'author')
+            if ($user_type_name == 'superuser' OR $user_type_name == 'author' OR $user_type_name == 'Director')
             {
                 $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();
 
@@ -371,12 +371,13 @@ class Controller_Base extends Controller_Template {
         return false;
     }
 
-    private function checkAllowedMaps() {
+    private function checkAllowedMaps()
+    {
 
-        $rules = $this->mapActions;
+        $rules      = $this->mapActions;
         $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
-        $mapId = (int) $this->request->param('id', 0);
+        $action     = strtolower($this->request->action());
+        $mapId      = (int) $this->request->param('id', 0);
         $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
 
         if ( Auth::instance()->get_user()->type->name == 'author') {

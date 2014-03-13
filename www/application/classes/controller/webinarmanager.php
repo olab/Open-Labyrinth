@@ -26,17 +26,18 @@ class Controller_WebinarManager extends Controller_Base {
     public function before() {
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Scenario Management'))->set_url(URL::base() . 'webinarManager'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Scenario Management'))->set_url(URL::base().'webinarManager'));
     }
 
-    public function action_index() {
-        unset($this->templateData['right']);
+    public function action_index()
+    {
+        $user       = Auth::instance()->get_user();
+        $userType   = $user->type->name;
 
-        $this->templateData['webinars'] = (Auth::instance()->get_user()->type->name == 'superuser') ? DB_ORM::model('webinar')->getAllWebinars()
-                                                                                                    : DB_ORM::model('webinar')->getAllWebinars(Auth::instance()->get_user()->id);
-
-        $this->templateData['center'] = View::factory('webinar/view');
-        $this->templateData['center']->set('templateData', $this->templateData);
+        $this->templateData['webinars'] = ($userType == 'superuser' OR $userType == 'Director')
+            ? DB_ORM::model('webinar')->getAllWebinars()
+            : DB_ORM::model('webinar')->getAllWebinars($user->id);
+        $this->templateData['center'] = View::factory('webinar/view')->set('templateData', $this->templateData);
 
         $this->template->set('templateData', $this->templateData);
     }
@@ -191,66 +192,63 @@ class Controller_WebinarManager extends Controller_Base {
         $webinarId = $this->request->param('id', null);
 
         if($webinarId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
-        else
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base() . 'webinarManager/progress'));
+
+        $wData          = array();
+        $usersMap       = array();
+        $webinar        = DB_ORM::model('webinar', array((int)$webinarId));
+        $webinarStepMap = array();
+
+        if($webinar != null && count($webinar->users) && count($webinar->maps) > 0)
         {
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base() . 'webinarManager/progress'));
-
-            $wData          = array();
-            $usersMap       = array();
-            $webinar        = DB_ORM::model('webinar', array((int)$webinarId));
-            $webinarStepMap = array();
-
-            if($webinar != null && count($webinar->users) && count($webinar->maps) > 0)
+            foreach($webinar->users as $wUser)
             {
-                foreach($webinar->users as $wUser)
+                $wUserId = $wUser->user_id;
+                $userType =DB_ORM::model('User', array($wUserId))->type_id;
+                if( ! isset($usersMap[$wUserId])) $usersMap[$wUserId] = $wUser->user;
+
+                $this->templateData['includeUsersData'][$wUserId] = $wUser->id;
+                $this->templateData['includeUsers'][$wUserId] = $wUser->include_4R;
+                if ($userType != 1) $this->templateData['experts'][$wUserId] = $wUser->expert;
+
+                foreach($webinar->maps as $wMapObj)
                 {
-                    $wUserId = $wUser->user_id;
-                    $userType =DB_ORM::model('User', array($wUserId))->type_id;
-                    if( ! isset($usersMap[$wUserId])) $usersMap[$wUserId] = $wUser->user;
+                    $wStep          = $wMapObj->step;
+                    $wMapId         = $wMapObj->map_id;
+                    $wCurrentStep   = $webinar->current_step;
 
-                    $this->templateData['includeUsersData'][$wUserId] = $wUser->id;
-                    $this->templateData['includeUsers'][$wUserId] = $wUser->include_4R;
-                    if ($userType != 1) $this->templateData['experts'][$wUserId] = $wUser->expert;
-
-                    foreach($webinar->maps as $wMapObj)
-                    {
-                        $wStep          = $wMapObj->step;
-                        $wMapId         = $wMapObj->map_id;
-                        $wCurrentStep   = $webinar->current_step;
-
-                        $wData[$wUserId][$wStep][$wMapId]['map']    = DB_ORM::model('map', array((int)$wMapId));
-                        $wData[$wUserId][$wStep][$wMapId]['status'] = ($wStep <= $wCurrentStep) ? DB_ORM::model('user_session')->isUserFinishMap($wMapId, $wUserId, $webinar->id, $wCurrentStep) : 0;
-                        $wData[$wUserId][$wStep][$wMapId]['user']   = $wUser->user;
-                    }
-                }
-                if(count($webinar->steps) > 0)
-                {
-                    foreach($webinar->steps as $webinarStep)
-                    {
-                        $webinarStepMap[$webinarStep->id] = $webinarStep;
-                    }
+                    $wData[$wUserId][$wStep][$wMapId]['map']    = DB_ORM::model('map', array((int)$wMapId));
+                    $wData[$wUserId][$wStep][$wMapId]['status'] = ($wStep <= $wCurrentStep) ? DB_ORM::model('user_session')->isUserFinishMap($wMapId, $wUserId, $webinar->id, $wCurrentStep) : 0;
+                    $wData[$wUserId][$wStep][$wMapId]['user']   = $wUser->user;
                 }
             }
-
-            $this->templateData['scenario']       = DB_ORM::select('Webinar')->query()->as_array();
-            $this->templateData['webinarStepMap'] = $webinarStepMap;
-            $this->templateData['webinar']        = $webinar;
-            $this->templateData['usersMap']       = $usersMap;
-            $this->templateData['webinarData']    = $wData;
-
-            $allUsers = DB_ORM::model('user')->getAllUsersAndAuth('ASC');
-            if(count($allUsers) > 0)
+            if(count($webinar->steps) > 0)
             {
-                foreach($allUsers as $user)
+                foreach($webinar->steps as $webinarStep)
                 {
-                    $this->templateData['usersAuthMap'][$user['id']] = $user;
+                    $webinarStepMap[$webinarStep->id] = $webinarStep;
                 }
             }
-
-            $this->templateData['center'] = View::factory('webinar/statistic')->set('templateData', $this->templateData);
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
         }
+
+        $this->templateData['scenario']       = DB_ORM::select('Webinar')->query()->as_array();
+        $this->templateData['webinarStepMap'] = $webinarStepMap;
+        $this->templateData['webinar']        = $webinar;
+        $this->templateData['usersMap']       = $usersMap;
+        $this->templateData['webinarData']    = $wData;
+
+        $allUsers = DB_ORM::model('user')->getAllUsersAndAuth('ASC');
+        if(count($allUsers) > 0)
+        {
+            foreach($allUsers as $user)
+            {
+                $this->templateData['usersAuthMap'][$user['id']] = $user;
+            }
+        }
+
+        $this->templateData['center'] = View::factory('webinar/statistic')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_statistic() {

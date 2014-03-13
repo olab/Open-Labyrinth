@@ -153,6 +153,10 @@ class Model_Leap_Map extends DB_ORM_Model
                 'max_length' => 11,
                 'nullable' => TRUE,
                 'savable' => TRUE
+            )),
+            'author_rights' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE
             ))
         );
 
@@ -396,16 +400,19 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
 
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
 
-            return $maps;
+        $maps = array();
+        foreach ($result as $record)
+        {
+            $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
 
-        return array();
+        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        {
+            $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
+        }
+
+        return $maps;
     }
 
     public function getLastEnabledAndAuthoredMap($authorId, $limit = 1)
@@ -853,26 +860,30 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
-    public function getAllowedMap($userId) {
-
-        $builder = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
+    public function getAllowedMap($userId)
+    {
+        $result = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
             ->from('maps', 'm')
             ->join('LEFT', 'map_users', 'mu')
             ->on('mu.map_id', '=', 'm.id')
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $userId, 'AND')
             ->where('mu.user_id', '=', $userId, 'OR')
-            ->order_by('m.id', 'DESC');
-
-        $result = $builder->query();
+            ->order_by('m.id', 'DESC')
+            ->query();
 
         $res = array();
 
-        if ($result->is_loaded()) {
-            foreach ($result as $record => $val) {
-                $res[] =  $val['id'];
-            }
+        foreach ($result as $val)
+        {
+            $res[] =  $val['id'];
         }
+
+        foreach (DB_ORM::select('AuthorRight')->query()->as_array() as $authorRightObj)
+        {
+            $res[] = $authorRightObj->map_id;
+        }
+
         return $res;
     }
 
@@ -880,7 +891,8 @@ class Model_Leap_Map extends DB_ORM_Model
     {
         $map                = DB_ORM::model('map', array($mapId));
         $user               = Auth::instance()->get_user();
-        $editRight          = $user ? ($user->type_id == 4 OR $user->id == $map->author_id) : false;
+        $authorRight        = DB_ORM::select('authorRight')->where('user_id', '=', $user->id)->query()->as_array();
+        $editRight          = $user ? ($user->type_id == 4 OR $user->id == $map->author_id OR $authorRight) : false;
         if ( ! $editRight) Request::initial()->redirect(URL::base());
         return true;
     }
