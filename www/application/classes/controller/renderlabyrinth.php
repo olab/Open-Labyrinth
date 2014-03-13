@@ -826,7 +826,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 switch ($node->link_style->name) {
-                    case 'hyperlinks (default)':
+                    case 'hyperlinks':
                         if ($link->image_id != 0) {
                             $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
                         } else {
@@ -855,7 +855,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             switch ($node->link_style->name) {
-                case 'hyperlinks (default)':
+                case 'hyperlinks':
                     $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
                 case 'dropdown':

@@ -487,7 +487,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->info = '';
             $this->is_private = FALSE;
             $this->probability = FALSE;
-            $this->link_style_id = 1;
+            $this->link_style_id = 5;
             $this->link_type_id = 2;
             $this->priority_id = 1;
             $this->type_id = 1;

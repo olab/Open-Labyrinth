@@ -69,7 +69,7 @@ var Node = function() {
     self.support = '';
     self.supportKeywords = '';
     self.isExit = false;
-    self.linkStyle = mainLinkStyles;
+    self.linkStyle = (typeof mainLinkStyles === 'undefined') ? 5 : mainLinkStyles;
     self.nodePriority = 1;
     self.undo = false;
     self.isEnd = false;
