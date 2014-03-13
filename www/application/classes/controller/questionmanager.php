@@ -43,6 +43,10 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
             $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
+            if (Auth::instance()->get_user()->type->name == 'superuser') {
+                $this->templateData['isSuperuser'] = true;
+            }
+
             $ses = Session::instance();
             if($ses->get('warningMessage')){
                 $this->templateData['warningMessage'] = $ses->get('warningMessage');
@@ -200,4 +204,198 @@ class Controller_QuestionManager extends Controller_Base {
         DB_ORM::delete('Map_Question_Response')->where('id', '=', $idResponse)->execute();
         Request::initial()->redirect($this->request->referrer());
     }
+
+    public function action_globalQuestions(){
+        $mapId = $this->request->param('id', NULL);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('Map')->editRight($mapId);
+
+            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $allTypes = DB_ORM::model('map_question_type')->getAllTypes();
+            $array = array();
+            foreach($allTypes as $key=>$type){
+                $array[$key]['id'] = $type->id;
+                $array[$key]['title'] = $type->title;
+            }
+            $this->templateData['question_types'] = $array;
+            $this->templateData['questions'] = $this->getFiledsArray('global/questions/', 'question');
+
+            if (Auth::instance()->get_user()->type->name == 'superuser') {
+                $this->templateData['isSuperuser'] = true;
+            }
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
+
+            $questionView = View::factory('labyrinth/question/global');
+            $questionView->set('templateData', $this->templateData);
+
+            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+            $leftView->set('templateData', $this->templateData);
+
+            $this->templateData['center'] = $questionView;
+            $this->templateData['left'] = $leftView;
+            unset($this->templateData['right']);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_exportQuestion(){
+        $mapId = $this->request->param('id', NULL);
+        $questionId = $this->request->param('id2', NULL);
+        if ($mapId != NULL && $questionId!= NULL) {
+            $rand = uniqid();
+            $tmpfolder = 'tmp/' . $rand . '/';
+            if(mkdir($tmpfolder)){
+                $questionName = 'question_'.$rand . '.xml';
+                $responseName = 'response_'.$rand . '.xml';
+                $question = DB_ORM::model('map_question')->getQuestionById($questionId);
+                $question[0]['name_file'] = $questionName;
+                $this->createXMLFile($tmpfolder, $questionName, $question);
+                $elementsArray = $this->mergeArraysFromDB($question, 'map_question_response');
+                $this->createXMLFile($tmpfolder, $responseName, $elementsArray);
+                $this->createZipArchive($tmpfolder, $rand);
+                $this->removeDirectory($tmpfolder);
+                $zipFile = 'tmp/' . $rand . '.zip';
+               $pathInfo = pathinfo($zipFile);
+                header("Cache-Control: public");
+                header("Content-Description: File Transfer");
+                header("Content-Disposition: attachment; filename=" . $pathInfo['basename']);
+                header("Content-Type: application/zip");
+                header("Content-Transfer-Encoding: binary");
+                readfile('tmp/' . $rand . '.zip');
+                unlink($zipFile);
+            } else Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else Request::initial()->redirect(URL::base());
+    }
+
+    private function createZipArchive($folderPath, $name) {
+        $dest = 'tmp/' . $name . '.zip';
+        $zip = new ZipArchive();
+
+        if($h = opendir($folderPath)) {
+            if($zip->open($dest, ZIPARCHIVE::CREATE)) {
+                while(false !== ($f = readdir($h))) {
+                    if(strstr($f, '.') && file_exists($folderPath . '/' . $f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
+                        $zip->addFile($folderPath . '/' . $f, $f);
+                    }
+                }
+            }
+            closedir($h);
+        }
+        $zip->close();
+        return true;
+    }
+
+    private function removeDirectory($dir) {
+        if ($objs = glob($dir."/*")) {
+            foreach($objs as $obj) {
+                is_dir($obj) ? removeDirectory($obj) : unlink($obj);
+            }
+        }
+        rmdir($dir);
+    }
+
+    private function createXMLFile($path, $name, $array){
+        if (count($array) > 0){
+            $xml = new SimpleXMLElement('<xml />');
+            $arrayXml = $xml->addChild($name);
+            $this->createXMLTree($arrayXml, $name, $array);
+
+            $filePath =  $path . $name;
+            $f = fopen($filePath, 'w');
+            $dom = dom_import_simplexml($xml)->ownerDocument;
+            $dom->formatOutput = true;
+            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $dom->saveXML());
+            fwrite($f, $outputXML);
+            fclose($f);
+        }
+    }
+
+    private function createXMLTree($xml, $name, $array){
+        if (count($array) > 0){
+            foreach($array as $key => $value){
+                if(is_array($value)){
+                    $this->createXMLTree($xml->addChild($name.'_'.$key), $name.'_'.$key, $value);
+                }else{
+                    $xml->addChild($key, $value);
+                }
+            }
+        }
+    }
+
+    private function mergeArraysFromDB($rootElements, $model, $key = 'id'){
+        $elementsArray = array();
+        if (count($rootElements) > 0){
+            foreach($rootElements as $element){
+                $array = DB_ORM::model($model)->exportMVP($element[$key]);
+                if (count($array) > 0){
+                    $elementsArray = array_merge($elementsArray, $array);
+                }
+            }
+        }
+        return $elementsArray;
+    }
+
+    public function action_importQuestion(){
+        $mapId = $this->request->param('id', NULL);
+        $questionFile = base64_decode($this->request->param('id2', NULL));
+        if($mapId != NULL){
+            if(file_exists('global/questions/' . $questionFile)){
+                $response = NULL;
+                $qustions = $this->getFiledsArray('global/questions/', 'question');
+                $xmlResponse = explode('_',$questionFile);
+                $xmlResponse = explode('.',$xmlResponse[1]);
+                if(is_file('global/questions/' . 'response_' . $xmlResponse[0].'.xml')){
+                    $xmlfile = file_get_contents('global/questions/' . 'response_' . $xmlResponse[0].'.xml');
+                    $responses = simplexml_load_string($xmlfile);
+                    foreach($responses as $key=>$item){
+                        if($key == 'response_' . $xmlResponse[0] . '.xml'){
+                            $response =  $item;
+                        }
+                    }
+                }
+                foreach($qustions as $question){
+                    if($question->name_file == $questionFile){
+                        DB_ORM::model('map_question')->importQuestion($question, $response);
+                    }
+                }
+            }
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    private function getFiledsArray($dir, $name){
+        if(is_dir($dir)) {
+            $listOfFile = scandir($dir);
+            $listFileQuestion = array();
+            foreach($listOfFile as $file){
+                $part  = explode('_', $file);
+                if($part[0] == $name){
+                    $listFileQuestion[] = $file;
+                }
+            }
+            $data = array();
+            foreach($listFileQuestion as $file){
+                $xmlfile = file_get_contents($dir . $file);
+                $ob = simplexml_load_string($xmlfile);
+                foreach($ob as $files){
+                    $data[] = $files;
+                }
+            }
+            $dataarray = array();
+            foreach($data as $key=>$tags){
+                foreach($tags as $tag){
+                    $dataarray[$key] = $tag;
+                }
+            }
+        }
+        return $dataarray;
+    }
+
 }

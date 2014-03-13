@@ -68,10 +68,13 @@ if (isset($templateData['map'])) { ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group">
-                                                <a class="btn btn-info" href="<?php echo URL::base().'avatarManager/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-edit"></i>Edit</a>
-
-                                                <a class="btn" href="<?php echo URL::base().'avatarManager/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-copy"></i> Duplicate</a>
-                                                <a class="btn btn-danger" href="<?php echo URL::base().'avatarManager/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-trash"></i>Delete</a></div>
+                                                    <a class="btn btn-info" href="<?php echo URL::base().'avatarManager/editAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-edit"></i>Edit</a>
+                                                    <a class="btn" href="<?php echo URL::base().'avatarManager/duplicateAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-copy"></i> Duplicate</a>
+                                                    <a class="btn btn-danger" href="<?php echo URL::base().'avatarManager/deleteAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-trash"></i>Delete</a>
+                                                </div>
+                                                <?php if(isset($templateData['isSuperuser'])) { ?>
+                                                    <a class="btn btn-info" href="<?php echo URL::base().'avatarManager/exportAvatar/'.$templateData['map']->id.'/'.$avatar->id; ?>"><i class="icon-edit"></i>Export</a>
+                                                 <?php } ?>
                                             </td>
                                         </tr>
 
