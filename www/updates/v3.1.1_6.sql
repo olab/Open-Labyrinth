@@ -1,4 +1,5 @@
-UPDATE  `user_types` SET  `name` =  'Director' WHERE  `user_types`.`id` =6;
+INSERT INTO  `user_types` (`id` , `name` , `description`) VALUES (NULL ,  'Director', NULL);
+
 ALTER TABLE  `maps` ADD  `author_rights` INT NOT NULL ;
 CREATE TABLE IF NOT EXISTS `author_rights` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
