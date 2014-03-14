@@ -32,9 +32,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn     = $this->request->param('id2', null);
         $access     = $this->checkTypeCompatibility($mapId);
 
-        if ($mapId == null) Request::initial()->redirect(URL::base());
-
-        if( ! $access) Request::initial()->redirect(URL::base());
+        if ($mapId == null OR ! $access) Request::initial()->redirect(URL::base());
 
         $mapDB = DB_ORM::model('map', array($mapId));
         if ($mapDB->security_id == 4)
@@ -357,23 +355,27 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['timeForNode']    = $timeForNode;
                         $data['session']        = $sessionId;
 
+                        list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId, $nodeId);
                         if ($data['node']->undo)
                         {
-                            list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
                     }
 
                     $data['navigation'] = $this->generateNavigation($data['sections']);
-                    if (!isset($data['node_links']['linker'])){
-                        if ($data['node']->link_style->name == 'type in text') {
+                    if ( ! isset($data['node_links']['linker']))
+                    {
+                        if ($data['node']->link_style->name == 'type in text')
+                        {
                             $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             $data['links'] = $result['links']['display'];
                             if(isset($data['alinkfil']) && isset($data['alinknod'])) {
                                  $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
                                  $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
                             }
-                        } else {
+                        }
+                        else
+                        {
                             $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                             if( ! empty($result['links'])) $data['links'] = $result['links'];
                             else $data['links'] = "";
@@ -810,22 +812,24 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '';
     }
 
-    private function generateLinks($node, $links, $undoNodes = null) {
-        $result = NULL;
-        $result['links'] = '';
-        $endNodeTemplate = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
-        if (is_array($links) and count($links) > 0) {
+    private function generateLinks($node, $links, $undoNodes = null)
+    {
+        $result             = NULL;
+        $result['links']    = '';
+        $endNodeTemplate    = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
+
+        if (is_array($links) and count($links) > 0)
+        {
             $result['remote_links'] = '';
-            $result['links'] = '';
-            foreach ($links as $link) {
+            $result['links']        = '';
+            foreach ($links as $link)
+            {
                 if($undoNodes != null && isset($undoNodes[$link->node_2->id])) continue;
 
-                $title = $link->node_2->title;
-                if ($link->text != '' and $link->text != ' ') {
-                    $title = $link->text;
-                }
+                $title = ($link->text != '' and $link->text != ' ') ? $link->text : $link->node_2->title;
 
-                switch ($node->link_style->name) {
+                switch ($node->link_style->name)
+                {
                     case 'hyperlinks':
                         if ($link->image_id != 0) {
                             $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
@@ -849,12 +853,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         }
                         break;
                     case 'buttons':
-                        $result['links'] .= '<div><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '" class="btn">' . $title . '</a></div>';
+                        $result['links'] .= '<div><a href="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$link->node_id_2.'" class="btn">'.$title.'</a></div>';
                         break;
                 }
             }
 
-            switch ($node->link_style->name) {
+            switch ($node->link_style->name)
+            {
                 case 'hyperlinks':
                     $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
@@ -1718,23 +1723,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function prepareUndoLinks ($sessionId, $mapId, $id_node = FALSE)
     {
-        $traces = DB_ORM::model('user_sessiontrace')->getUniqueTraceBySessions(array($sessionId));
+        $undo   = DB_ORM::model('Map_Node', array($id_node))->undo;
+        $traces = DB_ORM::model('user_sessiontrace')->getUniqueTraceBySessions(array($sessionId), $id_node, $undo);
         $nodes  = array();
         $html   = '';
 
-        //Delete root node and current node
-        array_shift($traces);
-
-        $current_node = ($id_node) ? $id_node : Arr::get($traces[count($traces)-1], 'node_id', 0);
-        $id_section = DB_ORM::model('Map_Node_Section_Node')->getIdSection($current_node);
+        $current_node   = ($id_node) ? $id_node : Arr::get($traces[count($traces)-1], 'node_id', 0);
+        $id_section     = DB_ORM::model('Map_Node_Section_Node')->getIdSection($current_node);
 
         if (count($traces) > 0)
         {
             $html .= '<ul class="links navigation">';
             foreach ($traces as $trace)
             {
-                $id_node = $trace['node_id'];
-                $nodes[$id_node] = $id_node;
+                $id_node            = $trace['node_id'];
+                $nodes[$id_node]    = $id_node;
                 $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($id_node);
 
                 if ($id_section AND $id_section != DB_ORM::model('Map_Node_Section_Node')->getIdSection($id_node)) continue;

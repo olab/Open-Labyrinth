@@ -778,7 +778,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->save();
         }
     }
-    
+
     private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
     {
         $result = $text;

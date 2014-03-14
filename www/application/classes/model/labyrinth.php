@@ -262,11 +262,15 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function generateLinks($node) {
-        if (count($node->links) > 0) {
+    private function generateLinks ($node)
+    {
+        if (count($node->links) > 0)
+        {
             $result = array();
-            foreach ($node->links as $link) {
-                switch ($node->link_type->name) {
+            foreach ($node->links as $link)
+            {
+                switch ($node->link_type->name)
+                {
                     case 'ordered':
                         $order = $link->order * 10000;
                         if (isset($result[$order])) {
@@ -300,7 +304,8 @@ class Model_Labyrinth extends Model {
                 }
             }
 
-            if ($node->link_type_id == 3){
+            if ($node->link_type_id == 3)
+            {
                 if (count($result) > 0){
                     $resultRandomOne = array();
                     $keys = array_keys($result);
