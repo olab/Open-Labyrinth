@@ -144,29 +144,36 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return $result;
     }
 
-    public function getUniqueTraceBySessions($sessions) {
+    public function getUniqueTraceBySessions($sessions, $idNode, $undo = false)
+    {
         $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('session_id', 'IN', $sessions)
-                           ->group_by('node_id')
-                           ->group_by('session_id')
-                           ->order_by('id')
-                           ->column('id')
-                           ->column('session_id')
-                           ->column('user_id')
-                           ->column('node_id')
-                           ->query();
+            ->from($this->table())
+            ->where('session_id', 'IN', $sessions)
+            ->group_by('node_id')
+            ->group_by('session_id')
+            ->order_by('id')
+            ->column('id')
+            ->column('session_id')
+            ->column('user_id')
+            ->column('node_id')
+            ->query();
 
         $result = array();
-        if($records->is_loaded()) {
-            foreach($records as $record) {
-                $result[] = array('id'         => $record['id'],
-                                  'session_id' => $record['session_id'],
-                                  'user_id'    => $record['user_id'],
-                                  'node_id'    => $record['node_id']);
+
+        foreach ($records as $record)
+        {
+            $undoNode = $undo ? DB_ORM::model('Map_Node', array($record['node_id']))->undo : true;
+
+            if ($undoNode AND $idNode != $record['node_id'])
+            {
+                $result[] = array(
+                    'id'         => $record['id'],
+                    'session_id' => $record['session_id'],
+                    'user_id'    => $record['user_id'],
+                    'node_id'    => $record['node_id']
+                );
             }
         }
-
         return $result;
     }
 
