@@ -318,7 +318,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return NULL;
     }
     
-    public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null) {
+    public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null)
+    {
         $builder = DB_ORM::update('user_sessionTrace')
                 ->set('counters', $newCounters)
                 ->where('session_id', '=', $sessionId, 'AND')
@@ -331,10 +332,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             $builder = $builder->where('node_id', '=', $nodeId);
         }
 
-        $builder->order_by('id', 'ASC');
-        $builder->limit(1);
-
-        $builder->execute();
+        $builder
+            ->order_by('id', 'ASC')
+            ->limit(1)
+            ->execute();
     }
     
     public function getTraceBySessionID($sessionId , $getType = 'obj') {
