@@ -722,20 +722,21 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('assign_forum_id', $this->assign_forum_id)
             ->execute();
 
-        $nodeMap =      DB_ORM::model('map_node')         ->duplicateNodes        ($mapId, $newMapId);
-                        DB_ORM::model('map_node_section') ->duplicateSections     ($mapId, $newMapId, $nodeMap);
-        $elementMap =   DB_ORM::model('map_element')      ->duplicateElements     ($mapId, $newMapId);
-                        DB_ORM::model('map_node_link')    ->duplicateLinks        ($mapId, $newMapId, $nodeMap);
-        $counterMap =   DB_ORM::model('map_counter')      ->duplicateCounters     ($mapId, $newMapId, $nodeMap, $elementMap);
-        $chatMap =      DB_ORM::model('map_chat')         ->duplicateChats        ($mapId, $newMapId, $counterMap);
-        $questionMap =  DB_ORM::model('map_question')     ->duplicateQuestions    ($mapId, $newMapId, $counterMap);
-        $avatarMap =    DB_ORM::model('map_avatar')       ->duplicateAvatars      ($mapId, $newMapId);
-        $vpdMap =       DB_ORM::model('map_vpd')          ->duplicateElements     ($mapId, $newMapId);
-        $damsMap =      DB_ORM::model('map_dam')          ->duplicateDam          ($mapId, $newMapId, $vpdMap, $elementMap);
-                        DB_ORM::model('map_feedback_rule')->duplicateRules        ($mapId, $newMapId);
-                        DB_ORM::model('map_user')         ->duplicateUsers        ($mapId, $newMapId);
-                        DB_ORM::model('map_key')          ->duplicateKeys         ($mapId, $newMapId);
-                        DB_ORM::model('map_node')         ->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damsMap);
+        $nodeMap =      DB_ORM::model('map_node')               ->duplicateNodes        ($mapId, $newMapId);
+                        DB_ORM::model('map_node_section')       ->duplicateSections     ($mapId, $newMapId, $nodeMap);
+        $elementMap =   DB_ORM::model('map_element')            ->duplicateElements     ($mapId, $newMapId);
+                        DB_ORM::model('map_node_link')          ->duplicateLinks        ($mapId, $newMapId, $nodeMap);
+        $counterMap =   DB_ORM::model('map_counter')            ->duplicateCounters     ($mapId, $newMapId, $nodeMap, $elementMap);
+        $chatMap =      DB_ORM::model('map_chat')               ->duplicateChats        ($mapId, $newMapId, $counterMap);
+        $questionMap =  DB_ORM::model('map_question')           ->duplicateQuestions    ($mapId, $newMapId, $counterMap);
+        $avatarMap =    DB_ORM::model('map_avatar')             ->duplicateAvatars      ($mapId, $newMapId);
+        $vpdMap =       DB_ORM::model('map_vpd')                ->duplicateElements     ($mapId, $newMapId);
+        $damsMap =      DB_ORM::model('map_dam')                ->duplicateDam          ($mapId, $newMapId, $vpdMap, $elementMap);
+                        DB_ORM::model('Map_Counter_Commonrules')->duplicateRule         ($mapId, $newMapId, $counterMap, $nodeMap, $questionMap);
+                        DB_ORM::model('map_feedback_rule')      ->duplicateRules        ($mapId, $newMapId);
+                        DB_ORM::model('map_user')               ->duplicateUsers        ($mapId, $newMapId);
+                        DB_ORM::model('map_key')                ->duplicateKeys         ($mapId, $newMapId);
+                        DB_ORM::model('map_node')               ->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damsMap, $mapId, $newMapId);
     }
 
     public function getMapName($mapName, $mapId = 0)

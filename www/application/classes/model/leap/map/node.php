@@ -767,7 +767,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $mapNodes;
     }
     
-    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
+    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap, $mapId, $newMapId)
     {
         foreach ($nodeMap as $v)
         {
@@ -775,8 +775,24 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->load();
             $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
             $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            $this->text = $this->relativeLink($this->text, $mapId, $newMapId, $nodeMap);
+            $this->info = $this->relativeLink($this->info, $mapId, $newMapId, $nodeMap);
             $this->save();
         }
+    }
+
+    private function relativeLink ($text, $oldMapId, $newMapId, $nodeMap)
+    {
+        foreach ($nodeMap as $oldNodeId => $newNodeId)
+        {
+            $searchIndex    = 'renderLabyrinth/index/'.$oldMapId.'/'.$oldNodeId;
+            $replaceIndex   = 'renderLabyrinth/index/'.$newMapId.'/'.$newNodeId;
+            $searchGo       = 'renderLabyrinth/go/'.$oldMapId.'/'.$oldNodeId;
+            $replaceGo      = 'renderLabyrinth/go/'.$newMapId.'/'.$newNodeId;
+            $text           = str_replace($searchIndex, $replaceIndex, $text);
+            $text           = str_replace($searchGo, $replaceGo, $text);
+        }
+        return $text;
     }
 
     private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
