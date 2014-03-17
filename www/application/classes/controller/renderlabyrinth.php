@@ -355,9 +355,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $data['timeForNode']    = $timeForNode;
                         $data['session']        = $sessionId;
 
-                        list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId,$mapId, $nodeId);
                         if ($data['node']->undo)
                         {
+                            list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
                     }
