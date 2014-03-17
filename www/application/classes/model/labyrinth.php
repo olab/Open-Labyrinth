@@ -161,8 +161,8 @@ class Model_Labyrinth extends Model {
                     {
                         // popup  value apply to counter in previous view, '-' display counter state in previous view
                         $cmr -= $v_popup;
-                        $v_previous = 'Previous_value: '.$cmr.'<br>';
-                        $v_previous .= 'Popup #'.$id_p.': '.$cmr.$this->check_sign($v_popup).'<br>';
+                        $v_previous = 'Previous value: '.$cmr.'<br>';
+                        $v_previous .= '<span class="colored-bl popup-color"></span>Popup #'.$id_p.': '.$cmr.$this->check_sign($v_popup, 'popup-color').'<br>';
                         $cmr += $v_popup;
                     }
                 }
@@ -173,28 +173,21 @@ class Model_Labyrinth extends Model {
             // -- question value -- //
             if ($v_question)
             {
-                $result[$id_c]['info'] .= 'Question #'.$counter['question_id'].': '.$cmr.$this->check_sign($v_question).'<br>';
+                $result[$id_c]['info'] .= '<span class="colored-bl question-color"></span>Question #'.$counter['question_id'].': '.$cmr.$this->check_sign($v_question, 'question-color').'<br>';
                 $cmr += $v_question;
             }
             // -- counter value -- //
             if ($v_counter)
             {
-                $result[$id_c]['info'] .= 'Counter: '.$cmr.$this->check_sign($v_counter).'<br>';
+                $result[$id_c]['info'] .= '<span class="colored-bl counter-color"></span>Counter: '.$cmr.$this->check_sign($v_counter, 'counter-color').'<br>';
                 $cmr += $v_counter;
             }
             // -- rule value -- //
             if ($v_counter_rule)
             {
-                if (trim($v_counter_rule[0]) == '=')
-                {
-                    $result[$id_c]['info'] .= 'Counter rule: '.$v_counter_rule.'<br>';
-                    $cmr = $v_counter_rule;
-                }
-                else
-                {
-                    $result[$id_c]['info'] .= 'Counter rule: '.$cmr.$this->check_sign($v_counter_rule).'<br>';
-                    $cmr += $v_counter_rule;
-                }
+                $display = (trim($v_counter_rule[0]) == '=') ? $v_counter_rule : $cmr.$this->check_sign($v_counter_rule, 'counter-rule-color');
+                $result[$id_c]['info'] .= '<span class="colored-bl counter-rule-color"></span>Counter rule: '.$display.'<br>';
+                $cmr = $v_counter_rule;
             }
             // -- global rule value -- //
             foreach ($global_rules as $id_g_r => $g_rule)
@@ -205,7 +198,7 @@ class Model_Labyrinth extends Model {
                     $v_global_rule = ($id_c_g_r == $id_c) ? $outcome - $counter['counter_value'] : FALSE;
                     if ($v_global_rule)
                     {
-                        $result[$id_c]['info'] .= 'Global rule #'.$id_g_r.': '.$cmr.$this->check_sign($v_global_rule).'<br>';
+                        $result[$id_c]['info'] .= '<span class="colored-bl global-rule-color"></span>Global rule #'.$id_g_r.': '.$cmr.$this->check_sign($v_global_rule, 'global-rule-color').'<br>';
                         $cmr += $v_global_rule;
                     }
                 }
@@ -217,15 +210,16 @@ class Model_Labyrinth extends Model {
         return $result;
     }
 
-    private function check_sign ($str)
+    private function check_sign ($str, $type)
     {
         $str = trim($str);
+
         if      (strlen($str) == 0) $str = ' + 0';
         elseif  ($str[0] == '-')    $str = str_replace('-', ' - ',$str);
         elseif  ($str[0] == '+')    $str = str_replace('+', ' + ',$str);
         else                        $str = ' + '.$str;
 
-        return $str;
+        return '<span class="'.$type.'">'.$str.'</span>';
     }
 
     private function checkUser($mapId, $allowReviewers = false) {

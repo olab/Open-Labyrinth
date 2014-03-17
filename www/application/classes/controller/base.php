@@ -327,26 +327,39 @@ class Controller_Base extends Controller_Template {
         $this->template->set('templateData', $this->templateData);
     }
     
-    private function checkUserRoleRules() {
-        if(!Auth::instance()->logged_in()) return false;
+    private function checkUserRoleRules()
+    {
+        if ( ! Auth::instance()->logged_in()) return false;
         
         $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
-        
-        $rules = array();
-        if(Auth::instance()->get_user()->type->name == 'learner') {
-            $rules = $this->learnerRules;
-        } else if(Auth::instance()->get_user()->type->name == 'author') {
-            $rules = $this->authorRules;
-        }
-        else if(Auth::instance()->get_user()->type->name == 'reviewer') {
-            $rules = $this->reviewerRules;
+        $action     = strtolower($this->request->action());
+        $userType   = Auth::instance()->get_user()->type->name;
+
+        switch ($userType)
+        {
+            case 'learner':
+                $rules = $this->learnerRules;
+                break;
+            case 'author':
+            case 'superuser':
+            case 'Director':
+                $rules = $this->authorRules;
+                break;
+            case 'reviewer':
+                $rules = $this->reviewerRules;
+                break;
+            default:
+                return false;
         }
 
-        foreach($rules as $rule) {
-            if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller) {
+        foreach ($rules as $rule)
+        {
+            if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller)
+            {
                 return true;
-            } else if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action) {
+            }
+            else if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action)
+            {
                 return true;
             }
         }
