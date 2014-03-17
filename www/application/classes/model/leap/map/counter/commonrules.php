@@ -73,28 +73,28 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
     }
     
     
-    public function getRulesByMapId($mapId, $type = '') {
+    public function getRulesByMapId($mapId, $type = '')
+    {
+        $rules = array();
 
-        if ($type == 'all'){
-            $builder = DB_SQL::select('default')->from($this->table())
-                ->where('map_id', '=', $mapId);
-        } else {
+        if ($type == 'all')
+        {
+            $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+        }
+        else
+        {
             $builder = DB_SQL::select('default')->from($this->table())
                 ->where('map_id', '=', $mapId)
                 ->where('isCorrect' , '=', 1);
         }
+
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $rules = array();
-            foreach($result as $record) {
-                $rules[] = DB_ORM::model('map_counter_commonrules', array((int)$record['id']));
-            }
-            
-            return $rules;
+
+        foreach ($result as $record) {
+            $rules[] = DB_ORM::model('map_counter_commonrules', array((int)$record['id']));
         }
-        
-        return NULL;
+            
+        return $rules;
     }
     
     public function addRule($mapId, $rule, $isCorrect) {
@@ -134,6 +134,57 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
 
         return NULL;
     }
-}
 
-?>
+    public function duplicateRule($oldMapId, $newMapId, $counterMap, $nodeMap, $questionMap)
+    {
+        foreach (DB_ORM::select('Map_Counter_Commonrules')->where('map_id', '=', $oldMapId)->query()->as_array() as $rule)
+        {
+            $newRule = new $this;
+            $newRule->map_id = $newMapId;
+            $newRule->isCorrect = $rule->isCorrect;
+
+            $result = $rule->rule;
+            $codes = array('CR', 'NODE', 'QU_ANSWER');
+
+            foreach ($codes as $code)
+            {
+                $regExp = '/[\['.$code.':\d\]]+/';
+                if (preg_match_all($regExp, $result, $matches))
+                {
+                    foreach ($matches as $match)
+                    {
+                        foreach ($match as $value)
+                        {
+                            if (stristr($value, '[['.$code.':'))
+                            {
+                                $m = explode(':', $value);
+                                $id = substr($m[1], 0, strlen($m[1]) - 2);
+                                if (is_numeric($id))
+                                {
+                                    $replaceString = '';
+                                    switch ($code) {
+                                        case 'CR':
+                                            if(isset($counterMap[(int)$id]))
+                                                $replaceString = '[['.$code.':'.$counterMap[(int)$id].']]';
+                                            break;
+                                        case 'NODE':
+                                            if(isset($nodeMap[(int)$id]))
+                                                $replaceString = '[['.$code.':'.$nodeMap[(int)$id].']]';
+                                            break;
+                                        case 'QU_ANSWER':
+                                            if(isset($questionMap[(int)$id]))
+                                                $replaceString = '[['.$code.':'.$questionMap[(int)$id].']]';
+                                            break;
+                                    }
+                                    $result = str_replace('[['.$code.':'.$id.']]', $replaceString, $result);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $newRule->rule = $result;
+            $newRule->save();
+        }
+    }
+}
