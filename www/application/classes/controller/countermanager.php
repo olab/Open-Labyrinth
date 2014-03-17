@@ -132,29 +132,28 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 
-    public function action_deleteRule() {
-        $mapId = $this->request->param('id', NULL);
-        $counterId = $this->request->param('id2', NULL);
-        $ruleId = $this->request->param('id3', NULL);
-        $nodeId = $this->request->param('id4', NULL);
-        if ($mapId != NULL and $counterId != NULL and $ruleId != NULL and $nodeId != NULL) {
-            DB_ORM::model('map_counter_rule', array((int) $ruleId))->delete();
-            DB_ORM::model('map_node_counter')->deleteNodeCounter($nodeId, $counterId);
-            Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+    public function action_deleteRule()
+    {
+        $mapId      = $this->request->param('id', NULL);
+        $counterId  = $this->request->param('id2', NULL);
+        $ruleId     = $this->request->param('id3', NULL);
+        $nodeId     = $this->request->param('id4', NULL);
+
+        if ($mapId == NULL OR $counterId == NULL OR $ruleId == NULL OR $nodeId == NULL) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('map_counter_rule', array((int) $ruleId))->delete();
+        Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
     }
 
-    public function action_addRule() {
-        $mapId = $this->request->param('id', NULL);
-        $counterId = $this->request->param('id2', NULL);
-        if ($_POST and $mapId != NULL and $counterId != NULL) {
-            DB_ORM::model('map_counter_rule')->addRule($counterId, $_POST);
-            Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+    public function action_addRule()
+    {
+        $mapId      = $this->request->param('id', NULL);
+        $counterId  = $this->request->param('id2', NULL);
+
+        if ($mapId == NULL OR $counterId == NULL) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('map_counter_rule')->addRule($counterId, $this->request->post());
+        Request::initial()->redirect(URL::base().'counterManager/editCounter/'.$mapId.'/'.$counterId);
     }
 
     public function action_deleteCounter()

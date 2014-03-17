@@ -105,7 +105,7 @@ class Model_Labyrinth extends Model {
                     }
                 }
             } else {
-                $result['node_text'] = '<p>' . $conditional['message'] . '</p>';
+                $result['node_text'] = '<p>'.$conditional['message'].'</p>';
                 $result['node_links']['linker'] = $conditional['linker'];
             }
 
@@ -120,7 +120,7 @@ class Model_Labyrinth extends Model {
             $result['sessionId'] = $sessionId;
         }
 
-        $result['c_debug']=$this->render_c_debug($result['c_debug']);
+        $result['c_debug'] = $this->render_c_debug($result['c_debug']);
 
         return $result;
     }
@@ -135,6 +135,7 @@ class Model_Labyrinth extends Model {
 
         foreach($data as $id_c=>$counter)
         {
+            //print_r ($data); die;
             /*-------------------------------- render data for view --------------------------------------------------*/
             $result[$id_c]['title'] = Arr::get($counter,'name').' = '.Arr::get($counter, 'current_value');
             $result[$id_c]['description'] = DB_ORM::model('map_counter', array($id_c))->description;
@@ -185,8 +186,7 @@ class Model_Labyrinth extends Model {
             // -- rule value -- //
             if ($v_counter_rule)
             {
-                $display = (trim($v_counter_rule[0]) == '=') ? $v_counter_rule : $cmr.$this->check_sign($v_counter_rule, 'counter-rule-color');
-                $result[$id_c]['info'] .= '<span class="colored-bl counter-rule-color"></span>Counter rule: '.$display.'<br>';
+                $result[$id_c]['info'] .= '<span class="colored-bl counter-rule-color"></span>Counter rule change: '.$cmr.' <span class="counter-rule-color">'.$v_counter_rule.'</span><br>';
                 $cmr = $v_counter_rule;
             }
             // -- global rule value -- //
@@ -195,7 +195,7 @@ class Model_Labyrinth extends Model {
                 $g_r_result = Arr::get($g_rule, 'result', array());
                 foreach (Arr::get($g_r_result, 'counters', array()) as $id_c_g_r=>$outcome)
                 {
-                    $v_global_rule = ($id_c_g_r == $id_c) ? $outcome - $counter['counter_value'] : FALSE;
+                    $v_global_rule = ($id_c_g_r == $id_c) ? $outcome - $cmr : FALSE;
                     if ($v_global_rule)
                     {
                         $result[$id_c]['info'] .= '<span class="colored-bl global-rule-color"></span>Global rule #'.$id_g_r.': '.$cmr.$this->check_sign($v_global_rule, 'global-rule-color').'<br>';
@@ -536,11 +536,11 @@ class Model_Labyrinth extends Model {
                             if (count($resultLogic['counters']) > 0){
                                 $counterString = $this->getCounterString($mapID);
                                 if ($counterString != ''){
-                                    foreach($resultLogic['counters'] as $key => $value){
+                                    foreach($resultLogic['counters'] as $key => $v){
                                         $previousValue = $this->getCounterValueFromString($key, $counterString);
-                                        $counterString = $this->setCounterValueToString($key, $counterString, $value);
+                                        $counterString = $this->setCounterValueToString($key, $counterString, $v);
 
-                                        $diff = $value - $previousValue;
+                                        $diff = $v - $previousValue;
                                         if ($diff > 0){
                                             $diff = '+'.$diff;
                                         }
@@ -583,9 +583,11 @@ class Model_Labyrinth extends Model {
         Session::instance()->delete('sliderQuestionResponses');
     }
 
-    private function counters ($traceId, $sessionId, $node, $isRoot = false) {
+    private function counters ($traceId, $sessionId, $node, $isRoot = false)
+    {
         if ($traceId != null && $node != NULL) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
+
             if (count($counters) > 0) {
                 $countersArray          = array();
                 $updateCounter          = '';
@@ -597,6 +599,7 @@ class Model_Labyrinth extends Model {
                 $main_counter['id']     = '';
                 $main_counter['value']  = '';
                 $c_debug                = array();
+                $counterValue           = 0;
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
@@ -666,7 +669,7 @@ class Model_Labyrinth extends Model {
                         } else if ($counterFunction[0] == '-') {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
                         } else {
-                            $thisCounter += $counterFunction;
+                            $thisCounter = $thisCounter + $counterFunction;
                             // we need only positive values
                             if ($if_main) $main_counter['value'] += $counterFunction;
                         }
@@ -729,6 +732,7 @@ class Model_Labyrinth extends Model {
                             {
 
                                 $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
+                                $counterValue = $thisCounter;
                                 // if main counter and firs spot not sign, add rule value
                                 if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+') ) $main_counter['value'] += $rule->counter_value;
                                 $c_debug[$counter->id]['counter_rule_value'] = $rule->counter_value;
@@ -801,21 +805,24 @@ class Model_Labyrinth extends Model {
                 $counterString .="<ul class=\"navigation\">";
                 foreach($countersArray as $counter)
                 {
+                    $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
                     if (Arr::get($counter,'visible', FALSE))
                     {
                         $c_debug[$counter['counter']->id]['name'] = $counter['label'];
                         $c_debug[$counter['counter']->id]['current_value'] = $counter['value'];
-                        $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$counter['value'].')</li>';
+                        $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$displayValue.')</li>';
                         $remoteCounterString .= '<counter id="'.$counter['counter']->id.'" name="'.$counter['counter']->name.'" value="'.$counter['value'].'"></counter>';
                     }
                     if (isset($counter['redirect']) AND $redirect == NULL) $redirect = $counter['redirect'];
 
-                    $updateCounter .= '[CID='.$counter['counter']->id.',V='.$counter['value'].']';
+                    $updateCounter .= '[CID='.$counter['counter']->id.',V='.$displayValue.']';
                 }
                 $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
                 $counterString .="</ul>";
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+
+                if ($rootNode->id == $node->id) DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+                else                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
+
 
                 if ($redirect != NULL && $redirect != $node->id){
                     Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
@@ -942,15 +949,13 @@ class Model_Labyrinth extends Model {
         return $result;
     }
 
-    private function calculateCounterFunction($counter, $function){
-        if (strlen($function) > 0) {
-            if ($function[0] == '=') {
-                $counter = substr($function, 1, strlen($function));
-            } else if ($function[0] == '-') {
-                $counter -= substr($function, 1, strlen($function));
-            } else {
-                $counter += $function;
-            }
+    private function calculateCounterFunction ($counter, $function)
+    {
+        if (strlen($function) > 0)
+        {
+            if      ($function[0] == '=') $counter = substr($function, 1, strlen($function));
+            else if ($function[0] == '-') $counter -= substr($function, 1, strlen($function));
+            else    $counter += $function;
         }
         return $counter;
     }
