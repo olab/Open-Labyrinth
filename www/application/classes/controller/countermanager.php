@@ -295,7 +295,7 @@ class Controller_CounterManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId != NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
         DB_ORM::model('Map')->editRight($mapId);
 
