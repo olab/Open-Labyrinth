@@ -162,23 +162,28 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'mapUserManager', 'action' => 'index'),
     );
 
-    public function before() {
+
+    public function before()
+    {
         parent::before();
 
         if (Auth::instance()->logged_in())
         {
-            if ($this->checkUserRoleRules() OR $this->checkAllowedMaps() OR $this->checkAllowedForums() OR $this->checkAllowedWebinars() OR $this->checkAllowedTopics()) Request::initial()->redirect(URL::base());
+            if ($this->checkUserRoleRules() OR
+                $this->checkAllowedMaps() OR
+                $this->checkAllowedForums() OR
+                $this->checkAllowedWebinars() OR
+                $this->checkAllowedTopics()) Request::initial()->redirect(URL::base());
 
-            $user_type_name = Auth::instance()->get_user()->type->name;
-            $user_id        = Auth::instance()->get_user()->id;
+            $user_type_name             = Auth::instance()->get_user()->type->name;
+            $user_id                    = Auth::instance()->get_user()->id;
+            $usersHistory               = DB_ORM::model('user')->getUsersHistory($user_id);
+            $uri                        = $this->request->detect_uri();
+            $historyShowWarningPopup    = 0;
+            $readonly                   = NULL;
 
-
-            $usersHistory = DB_ORM::model('user')->getUsersHistory($user_id);
-            $uri = $this->request->detect_uri();
-            $historyShowWarningPopup = 0;
-            $readonly = NULL;
-
-            foreach($usersHistory as $value) {
+            foreach ($usersHistory as $value)
+            {
                 if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
@@ -193,15 +198,15 @@ class Controller_Base extends Controller_Template {
             }
 
             $userHasBlockedAccess = 0;
-            if (!$this->request->is_ajax()) {
+            if ( ! $this->request->is_ajax()) {
                 $userHasBlockedAccess = $this->addUserHistory($user_id, $readonly);
             }
 
-            $this->templateData['user_id'] = $user_id;
-            $this->templateData['userHasBlockedAccess'] = $userHasBlockedAccess;
-            $this->templateData['historyShowWarningPopup'] = $historyShowWarningPopup;
-            $this->templateData['currentUserReadOnly'] = $readonly;
-            $this->templateData['historyOfAllUsers'] = json_encode($usersHistory);
+            $this->templateData['user_id']                  = $user_id;
+            $this->templateData['userHasBlockedAccess']     = $userHasBlockedAccess;
+            $this->templateData['historyShowWarningPopup']  = $historyShowWarningPopup;
+            $this->templateData['currentUserReadOnly']      = $readonly;
+            $this->templateData['historyOfAllUsers']        = json_encode($usersHistory);
 
             I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username'] = Auth::instance()->get_user()->nickname;
@@ -322,7 +327,6 @@ class Controller_Base extends Controller_Template {
                 }
             }
         }
-
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
     }
@@ -341,7 +345,6 @@ class Controller_Base extends Controller_Template {
                 $rules = $this->learnerRules;
                 break;
             case 'author':
-            case 'superuser':
             case 'Director':
                 $rules = $this->authorRules;
                 break;
