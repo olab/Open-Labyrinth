@@ -36,16 +36,14 @@ class Controller_UserManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_index() {
-        $this->templateData['users'] = DB_ORM::model('user')->getAllUsersAndAuth();
-        $this->templateData['userCount'] = count($this->templateData['users']);
-        $this->templateData['currentUserId'] = Auth::instance()->get_user()->id;
-        $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups();
+    public function action_index()
+    {
+        $this->templateData['users']            = DB_ORM::model('user')->getAllUsersAndAuth();
+        $this->templateData['userCount']        = count($this->templateData['users']);
+        $this->templateData['currentUserId']    = Auth::instance()->get_user()->id;
+        $this->templateData['groups']           = DB_ORM::model('group')->getAllGroups();
+        $this->templateData['center']           = View::factory('usermanager/view')->set('templateData', $this->templateData);
 
-        $view = View::factory('usermanager/view');
-        $view->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
 
