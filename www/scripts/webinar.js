@@ -4,9 +4,14 @@ $(function() {
 
     if('maps' in mapsJSON && mapsJSON.maps.length > 0) {
         var tmpName = '';
-        for(var i = mapsJSON.maps.length; i--;) {
+
+        for (var i = 0; i<mapsJSON.maps.length; i++) {
             tmpName      = mapsJSON.maps[i].name.replace(/\0/g,"");
-            mapsOptions += '<option value="' + mapsJSON.maps[i].id + '">' + B64.decode($.trim(tmpName)) + '</option>';
+            tmpName      = B64.decode($.trim(tmpName));
+            var search  = /Section:/,
+                section = (tmpName.match(search)) ? 'section' : '';
+
+            mapsOptions += '<option value="' + section + mapsJSON.maps[i].id + '">' + tmpName + '</option>';
         }
     }
 
@@ -63,7 +68,7 @@ $(function() {
                    .last()
                    .children()
                    .first()
-                   .attr('name', 's' + containerId + '-labyrinth-' + (index + 1));
+                   .attr('name', 's' + containerId + '_labyrinth[]');
         });
     });
 

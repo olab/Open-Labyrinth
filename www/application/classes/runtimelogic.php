@@ -329,7 +329,7 @@ class RunTimeLogic {
             $return = $this->questionResponse;
         } else {
             $sessionId = Session::instance()->get('session_id', $id);
-            $responses = DB_ORM::model('user_response')->getResponce($sessionId, $id);
+            $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id);
             $numberOfResponses = count($responses);
             if ($responses != null && $numberOfResponses > 1) {
                 foreach ($responses as $key => $value) {

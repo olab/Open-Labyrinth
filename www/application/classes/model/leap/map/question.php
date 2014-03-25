@@ -170,7 +170,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 ->where('map_id', '=', $mapId);
 
         $result = $builder->query();
-        
+
         if ($result->is_loaded())
         {
             $questions = array();
