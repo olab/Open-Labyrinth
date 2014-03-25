@@ -72,7 +72,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return array('id');
     }
     
-    public function createResponse($sessionId, $questionId, $response, $nodeId) {
+    public function createResponse($sessionId, $questionId, $response, $nodeId = null) {
         $this->question_id = $questionId;
         $this->session_id = $sessionId;
         $this->response = $response;
@@ -99,23 +99,13 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         }
     }
     
-    public function getResponce($sessionId, $questionId) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('question_id', '=', $questionId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $responces = array();
-            foreach($result as $record){
-                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
-            }
-
-            return $responces;
-        }
-
-        return NULL;
+    public function getResponse ($sessionId, $questionId)
+    {
+        return DB_ORM::select('user_response')
+            ->where('session_id', '=', $sessionId)
+            ->where('question_id', '=', $questionId)
+            ->query()
+            ->as_array();
     }
 
     public function getResponsesByQuestion($questionId) {

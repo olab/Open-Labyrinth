@@ -585,20 +585,21 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    public function getAllNodesNotInSection($mapId = null) {
+    public function getAllNodesNotInSection ($mapId = null)
+    {
         $tableName = DB_ORM::model('map_node_section_node');
         $builder = DB_SQL::select('default')
                 ->from($tableName::table())
                 ->column('node_id');
 
         $allNodeInSectionresult = $builder->query();
-        
+
         $ids = array();
-        if($allNodeInSectionresult->is_loaded()) {
-            foreach($allNodeInSectionresult as $record) {
-                $ids[] = (int)$record['node_id'];
-            }
+
+        foreach($allNodeInSectionresult as $record) {
+            $ids[] = (int)$record['node_id'];
         }
+
         $builder = NULL;
         if(count($ids) > 0) {
             $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids);
@@ -607,17 +608,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
         if(isset($mapId))$builder->where("map_id","=",$mapId);
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $nodes = array();
-            foreach($result as $record) {
-                $nodes[] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-            
-            return $nodes;
+
+        $nodes = array();
+        foreach($result as $record) {
+            $nodes[] = DB_ORM::model('map_node', array((int)$record['id']));
         }
-        
-        return NULL;
+        return $nodes;
     }
 
     public function setLinkStyle($mapId, $linkStyleId)

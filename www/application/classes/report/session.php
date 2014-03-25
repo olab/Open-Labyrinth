@@ -69,7 +69,7 @@ class Report_Session extends Report {
 
         if ($this->questions != NULL) {
             foreach ($this->questions as $question) {
-                $response = DB_ORM::model('user_response')->getResponce($this->session->id, $question->id);
+                $response = DB_ORM::model('user_response')->getResponse($this->session->id, $question->id);
                 if ($response != NULL) {
                     $this->responses[$question->id] = $response;
                 }

@@ -166,7 +166,8 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null) {
+    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null)
+    {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('user_id', '=', $userId, 'AND')
@@ -207,18 +208,25 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      * @param integer $webinarId - Webinar Id
      * @returns integer - 0 - not play, 1 - now playing, 2 - finish
      */
-    public function isUserFinishMap($mapId, $userId, $webinarId = null, $currentStep = null) {
-        $result = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
-        $sessions = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
-        if($sessions == null || count($sessions) <= 0) return $result;
-        $result = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
+    public function isUserFinishMap($id, $userId, $type, $webinarId = null, $currentStep = null)
+    {
+        $result     = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
+        $mapId      = ($type == 'section') ? DB_ORM::model('Map_Node_Section', array($id))->map_id : $id;
+        $sessions   = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
 
-        $endNodes = DB_ORM::model('map_node')->getEndNodesForMap($mapId);
-        if($endNodes != null) {
+        if ($sessions == null || count($sessions) <= 0) return $result;
+        $result     = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
+
+        $endNodes = ($type == 'labyrinth')
+            ? DB_ORM::model('map_node')->getEndNodesForMap($mapId)
+            : DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $id)->where('node_type', '=', 'out')->query()->as_array();
+
+        if ($endNodes != null)
+        {
             $endNodeIDs = array();
             if(count($endNodes) > 0) {
                 foreach($endNodes as $endNode) {
-                    $endNodeIDs[] = $endNode->id;
+                    $endNodeIDs[] = ($type == 'labyrinth') ? $endNode->id : $endNode->node_id;
                 }
             } else {
                 $endNodeIDs[] = $endNodes->id;

@@ -249,11 +249,13 @@ private static function initialize_metadata($object)
         return $result;
     }
 
-    public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array()) {
+    public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array())
+    {
         $result = array();
         $ids = $this->getAllUsersId($order);
 
-        foreach($ids as $id) {
+        foreach($ids as $id)
+        {
             if (count($notInUsers) > 0) {
                 if (in_array($id, $notInUsers)){
                     continue;
@@ -270,13 +272,8 @@ private static function initialize_metadata($object)
 
             $res = $user->query();
 
-            foreach ($res as $record)
-            {
-                $result[] = $record;
-            }
-
+            foreach ($res as $record) $result[] = $record;
         }
-
         return $result;
     }
 

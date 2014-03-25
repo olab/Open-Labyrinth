@@ -111,7 +111,6 @@
         <?php } ?>
     </fieldset>
 
-
     <div id="steps-container">
         <?php if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) { ?>
             <?php foreach($templateData['webinar']->steps as $step) { ?>
@@ -122,26 +121,27 @@
                     </legend>
                     <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>">
                         <?php if(count($step->maps) > 0) { ?>
-                            <?php $index = 1; foreach($step->maps as $stepMap) { ?>
+                        <?php $index = 1; foreach($step->maps as $stepMap) { ?>
                         <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
                                     <label for="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
                             <div class="controls">
-                                        <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6">
-                                    <?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) { ?>
-                                        <?php foreach($templateData['maps'] as $m) { ?>
-                                                    <option value="<?php echo $m->id; ?>" <?php if($m->id == $stepMap->map_id) echo 'selected="selected"'; ?>><?php echo $m->name; ?></option>
-                                        <?php } ?>
-                                    <?php } ?>
+                                <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6"><?php
+                                foreach(Arr::get($templateData, 'maps', array()) as $m) {
+                                    $section = (get_class($m) == 'Model_Leap_Map_Node_Section') ? 'section' : ''; ?>
+                                    <option value="<?php echo $section.$m->id; ?>" <?php if($m->id == $stepMap->reference_id) echo 'selected="selected"'; ?>><?php
+                                        echo $m->name; ?>
+                                    </option><?php
+                                } ?>
                                 </select>
                                 <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
                             </div>
                         </div>
-                    <?php $index++; } ?>
-                <?php } ?>
+                        <?php $index++; } ?>
+                        <?php } ?>
                     </div>
 
                     <div>
-                        <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add Labyrinth</button>
+                        <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add map or section</button>
                     </div>
 
                     <script>
@@ -152,9 +152,7 @@
             <?php } ?>
         </div>
 
-        <div>
-        <button class="btn btn-info add-step-btn" type="button"><i class="icon-plus-sign"></i>Add Step</button>
-        </div>
+    <div><button class="btn btn-info add-step-btn" type="button"><i class="icon-plus-sign"></i>Add Step</button></div>
 
     <h3>Assign the users</h3>
     <table id="assign-users" class="table table-bordered table-striped">
@@ -203,8 +201,7 @@
             </tr><?php
             }
         }
-        foreach(Arr::get($templateData, 'users', array()) as $user) {
-            if($user['id'] == $loggedUserId) continue; ?>
+        foreach(Arr::get($templateData, 'users', array()) as $user) { ?>
             <tr>
                 <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $user['id']; ?>"></td>
                 <?php $icon = ($user['icon'] != NULL) ? 'oauth/'.$user['icon'] : 'openlabyrinth-header.png' ; ?>
@@ -265,16 +262,14 @@
 <script>
     var mapsJSON = {<?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) {
         echo 'maps: [';
-
         $mapsJSON = '';
         foreach($templateData['maps'] as $map) {
-            $mapsJSON .= '{id: ' . $map->id . ', name: "' . base64_encode($map->name) . '"}, ';
+            $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'"}, ';
         }
 
         if(strlen($mapsJSON) > 2) {
             echo substr($mapsJSON, 0, strlen($mapsJSON) - 2);
         }
-
         echo ']';
     } ?>};
 </script>

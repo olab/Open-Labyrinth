@@ -41,10 +41,15 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'unsigned' => TRUE,
             )),
 
-            'map_id' => new DB_ORM_Field_Integer($this, array(
+            'which' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => array('labyrinth','section'),
+                'nullable' => FALSE,
+            )),
+
+            'reference_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
-                'unsigned' => TRUE,
             )),
 
             'step' => new DB_ORM_Field_Integer($this, array(
@@ -56,9 +61,15 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
 
         $this->relations = array(
             'map' => new DB_ORM_Relation_BelongsTo($this, array(
-                'child_key' => array('map_id'),
+                'child_key' => array('reference_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map'
+            )),
+
+            'map_node_section' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('reference_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_node_section'
             ))
         );
     }
@@ -111,23 +122,18 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
         DB_SQL::delete('default')
             ->from($this->table())
             ->where('webinar_id', '=', $webinarId, 'AND')
-            ->where('map_id', '=', $mapId)
+            ->where('which', '=', 'labyrinth')
+            ->where('reference_id', '=', $mapId)
             ->execute();
     }
 
-    /**
-     * Add map to webinar
-     *
-     * @param integer $webinarId - webinar ID
-     * @param integer $mapId - map ID
-     * @param integer $step - map step
-     * @return integer - webinar map ID
-     */
-    public function addMap($webinarId, $mapId, $step) {
+    public function addMap($webinarId, $referencId, $step, $which)
+    {
         return DB_ORM::insert('webinar_map')
-                       ->column('webinar_id', $webinarId)
-                       ->column('map_id', $mapId)
-                       ->column('step', $step)
-                       ->execute();
+            ->column('webinar_id', $webinarId)
+            ->column('reference_id', $referencId)
+            ->column('which', $which)
+            ->column('step', $step)
+            ->execute();
     }
 }

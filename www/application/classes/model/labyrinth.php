@@ -27,6 +27,9 @@ class Model_Labyrinth extends Model {
         $result             = array();
         $result['userId']   = (Auth::instance()->logged_in()) ? Auth::instance()->get_user()->id : 0;
         $node               = DB_ORM::model('map_node', array((int) $nodeId));
+        $webinarSection     = Session::instance()->get('webinarSection', false);
+        $webinarSectionId   = Session::instance()->get('webinarSectionId', false);
+        $nodeOut            = 0;
 
         if ($node)
         {
@@ -43,35 +46,54 @@ class Model_Labyrinth extends Model {
             if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0))  $result['node_annotation'] = $node->annotation;
 
             $sessionId = NULL;
-            if($bookmark != NULL) {
+            if ($bookmark != NULL)
+            {
                 $b = DB_ORM::model('user_bookmark', array((int)$bookmark));
                 $sessionId = $b->session_id;
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-            } else if ($isRoot) {
-                $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'), Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
+            }
+            else if ($isRoot OR $webinarSection == 'section')
+            {
+                $sessionId = DB_ORM::model('user_session')
+                    ->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'), Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
 
                 $result['webinarId']   = Session::instance()->get('webinarId', null);
                 $result['webinarStep'] = Session::instance()->get('step', null);
 
-                Session::instance()->delete('webinarId')->delete('step');
-
+                Session::instance()
+                    ->delete('webinarId')
+                    ->delete('step')
+                    ->delete('webinarSection');
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-            } else {
+            }
+            else
+            {
                 $sessionId = Session::instance()->get('session_id', NULL);
                 if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
             }
 
             $webinarSession = DB_ORM::model('user_session', array((int)$sessionId));
-            if($webinarSession != null && $webinarSession->webinar_id != null && $webinarSession->webinar_step != null) {
+            if($webinarSession != null && $webinarSession->webinar_id != null && $webinarSession->webinar_step != null)
+            {
                 $result['webinarId']   = $webinarSession->webinar_id;
                 $result['webinarStep'] = $webinarSession->webinar_step;
             }
 
+            $section = false;
+            if($webinarSectionId)
+            {
+                foreach (DB_ORM::select('Map_Node_Section_node')->where('section_id', '=', $webinarSectionId)->query()->as_array() as $sectionObj)
+                {
+                    $section[] = $sectionObj->node_id;
+                    if ($sectionObj->node_type == 'out') $nodeOut = $sectionObj->node_id;
+                }
+            }
+
             $conditional                = $this->conditional($sessionId, $node);
             $result['previewNodeId']    = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
-            $result['node_links']       = $this->generateLinks($result['node']);
+            $result['node_links']       = $this->generateLinks($result['node'], $section);
             $result['sections']         = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
 
             $previewSessionTrace        = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
@@ -135,7 +157,6 @@ class Model_Labyrinth extends Model {
 
         foreach($data as $id_c=>$counter)
         {
-            //print_r ($data); die;
             /*-------------------------------- render data for view --------------------------------------------------*/
             $result[$id_c]['title'] = Arr::get($counter,'name').' = '.Arr::get($counter, 'current_value');
             $result[$id_c]['description'] = DB_ORM::model('map_counter', array($id_c))->description;
@@ -256,13 +277,18 @@ class Model_Labyrinth extends Model {
         return NULL;
     }
 
-    private function generateLinks ($node)
+    private function generateLinks ($node, $section)
     {
         if (count($node->links) > 0)
         {
             $result = array();
             foreach ($node->links as $link)
             {
+                if ($section)
+                {
+                    if ( ! in_array($link->node_id_2, $section)) continue;
+                }
+
                 switch ($node->link_type->name)
                 {
                     case 'ordered':
@@ -642,7 +668,7 @@ class Model_Labyrinth extends Model {
                         if ($if_main)
                         {
                             preg_match('/(MCID=)(?<id>\d+),V=(?<value>\d+)/', $currentCountersState, $matches);
-                            $main_counter['value'] = $matches['value'];
+                            $main_counter['value'] = Arr::get($matches, 'value', 0);
                         }
                     }
 

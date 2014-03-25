@@ -18,7 +18,10 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['section']) and isset($templateData['map'])) {?>
+if (isset($templateData['section']) and isset($templateData['map'])) {
+$nodes      = $templateData['section']->nodes;
+$node_type  = $templateData['node_type'];
+?>
 <div class="page-header">
     <h1><?php echo __('Edit node sections "').$templateData['section']->name.'"'; ?></h1>
 </div>
@@ -41,30 +44,34 @@ if (isset($templateData['section']) and isset($templateData['map'])) {?>
 <form class="form-horizontal" action="<?php echo URL::base().'nodeManager/updateSectionNodes/'.$templateData['map']->id.'/'.$templateData['section']->id; ?>" method="post">
     <fieldset>
         <legend><?php echo __('Section Nodes'); ?></legend><?php
-        if (count($templateData['section']->nodes) > 0) {
-            foreach ($templateData['section']->nodes as $node) { ?>
-                <div class="control-group">
-                    <label for="node_<?php echo $node->id; ?>" class="control-label">
-                        <?php echo $node->node->title.' - '.__('node conditional').': '.$node->order.' - '.__('ordered'); ?>
-                    </label>
-                    <div class="controls">
-                        <div class="btn-group">
-                            <select  id="node_<?php echo $node->id; ?>" name="node_<?php echo $node->id; ?>"><?php
-                                for ($i = 0; $i < count($templateData['section']->nodes); $i++) { ?>
-                                <option value="<?php echo $i; ?>" <?php if ($i == $node->order) echo 'selected=""'; ?>><?php echo $i; ?></option><?php
-                                } ?>
-                            </select>
-                            <a class="btn btn-danger" href="<?php echo URL::base().'nodeManager/deleteNodeBySection/'.$templateData['map']->id.'/'.$templateData['section']->id.'/'.$node->node->id; ?>">
-                                <i class="icon-trash"></i>
-                                <?php echo __('Remove'); ?>
-                            </a>
-                        </div>
+        if (count($nodes) > 0) {
+            foreach ($nodes as $node) { ?>
+            <div class="control-group">
+                <label for="node_<?php echo $node->id; ?>" class="control-label">
+                    <?php echo $node->node->title.' - '.__('node conditional').': '.$node->order.' - '.__('ordered'); ?>
+                </label>
+                <div class="controls">
+                    <div class="btn-group">
+                        <select  id="node_<?php echo $node->id; ?>" name="node_<?php echo $node->id; ?>[order]"><?php
+                            for ($i = 0; $i < count($nodes); $i++) { ?>
+                            <option value="<?php echo $i; ?>" <?php if ($i == $node->order) echo 'selected=""'; ?>><?php echo $i; ?></option><?php
+                            } ?>
+                        </select>
+                        <a class="btn btn-danger" href="<?php echo URL::base().'nodeManager/deleteNodeBySection/'.$templateData['map']->id.'/'.$templateData['section']->id.'/'.$node->node->id; ?>">
+                            <i class="icon-trash"></i><?php echo __('Remove'); ?>
+                        </a>
+                        <select name="node_<?php echo $node->id; ?>[node_type]"><?php
+                            for ($i = 0; $i < count($node_type); $i++) { ?>
+                            <option value="<?php echo $node_type[$i]; ?>" <?php if ($node_type[$i] == $node->node_type) echo 'selected'; ?>><?php echo $node_type[$i] ; ?></option><?php
+                            } ?>
+                        </select>
                     </div>
-                </div><?php
+                </div>
+            </div><?php
             }
         } ?>
     </fieldset>
-    <div class="form-actions"><input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Save order'); ?>"></div>
+    <div class="form-actions"><input class="btn btn-primary" type="submit" name="Submit" value="<?php echo __('Save'); ?>"></div>
 </form>
 
 <form class="form-horizontal" action="<?php echo URL::base().'nodeManager/addNodeInSection/'.$templateData['map']->id.'/'.$templateData['section']->id; ?>" method="post">
