@@ -99,7 +99,7 @@ $(function() {
                        '<div id="labyrinth-container-' + stepContainerId + '" containerId="' + stepContainerId + '"></div>' +
 
                        '<div>' +
-                           '<button class="btn btn-info add-labyrinth-btn" type="button" containerId="' + stepContainerId + '"><i class="icon-plus-sign"></i>Add Labyrinth</button>' +
+                           '<button class="btn btn-info add-labyrinth-btn" type="button" containerId="' + stepContainerId + '"><i class="icon-plus-sign"></i>Add Map or section</button>' +
                        '</div>' +
                    '</fieldset>';
 

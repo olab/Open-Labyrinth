@@ -818,14 +818,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $result['links']    = '';
         $endNodeTemplate    = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
         $sectionId          = Session::instance()->get('webinarSectionId', 0);
-        $endNode            = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $sectionId)->where('node_type', '=', 'out')->query()->fetch(0);
-        $endNode            = $endNode ? $endNode->node_id : 0;
+        $endNodes            = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $sectionId)->where('node_type', '=', 'out')->query()->as_array();
 
-        if($endNode == $node->id)
+        foreach ($endNodes as $endNode)
         {
-            Session::instance()->delete('webinarSectionId');
-            $result['links'] = $endNodeTemplate;
-            return $result;
+            $endNode = $endNode->node_id;
+            if($endNode == $node->id)
+            {
+                Session::instance()->delete('webinarSectionId');
+                $result['links'] = $endNodeTemplate;
+                return $result;
+            }
         }
 
         if (is_array($links) and count($links) > 0)

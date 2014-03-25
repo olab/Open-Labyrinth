@@ -26,9 +26,8 @@ function getRandomColor(){
         $c .= sprintf("%02X", mt_rand(0, 255));
     }
     return $c;
-} 
-?>
-<?php if (isset($templateData['session'])) { ?>
+}
+if (isset($templateData['session'])) { ?>
 
     <?php if (isset($templateData['nextCase']) || isset($templateData['webinarForum']) || isset($templateData['webinarID'])) { ?>
     <h3>Scenario actions</h3>
@@ -183,17 +182,14 @@ function getRandomColor(){
                                             <td><?php echo $question->type->title; ?></td>
                                             <td><?php echo $question->stem; ?></td>
                                             <td><?php
-                                                if(isset($templateData['responses']) and isset($templateData['responses'][$question->id])) {
-                                                    if(count($templateData['responses'][$question->id]) > 0){
-                                                        foreach($templateData['responses'][$question->id] as $response){
+                                                if(isset($templateData['responses'][$question->id])) {
+                                                    if(count($templateData['responses'][$question->id]) > 0) {
+                                                        foreach($templateData['responses'][$question->id] as $response) {
                                                             if($question->type->value == 'dd') {
                                                                 $jsonObj = json_decode($response->response, true);
                                                                 if($jsonObj != null && count($jsonObj) > 0) {
                                                                     foreach($jsonObj as $o) {
-                                                                        if(isset($responseMap[$o])) {
-                                                                            echo '<p>' . $responseMap[$o]->response . '</p>';
-                                                                        }
-
+                                                                        if(isset($responseMap[$o]))  echo '<p>'.$responseMap[$o]->response.'</p>';
                                                                     }
                                                                 }
                                                             } else {
@@ -201,10 +197,8 @@ function getRandomColor(){
                                                                 echo '<p>'.$response->response.'</p>';
                                                             }
                                                         }
-                                                    } else {
-                                                        echo 'no response';
-                                                    }
-                                                } else { echo 'no response'; } ?>
+                                                    } else echo 'no response';
+                                                } else echo 'no response'; ?>
                                             </td>
                                             <td><?php
                                                 if ($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' ) {

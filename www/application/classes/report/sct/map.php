@@ -134,8 +134,8 @@ class Report_SCT_Map extends Report_SCT_Element {
                     $response = $session->response;
                     $id_response = ((int)$response)
                         ? $response
-                        : DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->where('response', '=', $response)->query()->get('id');
-                    $user_response[$id_user][$id_question] = $this->scoreForResponse[$id_question][$id_response];
+                        : DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->where('response', '=', $response)->query()->fetch(0);
+                    if ($id_response) $user_response[$id_user][$id_question] = $this->scoreForResponse[$id_question][$id_response->get('id')];
                 }
                 // -------- end question user value -------- //
 
