@@ -117,7 +117,7 @@ $userType   = Auth::instance()->get_user()->type->name;
             foreach($m as $mapId => $v) { ?>
             <td style="text-align: center; font-weight: bold;"><?php
                 $map = Arr::get($v, 'map');
-                echo (get_class($map) == 'Model_Leap_Map_Section') ? $map->name : $map->name;
+                echo $map->name;
 
                 if (isset($v['showReport']) AND $v['showReport'] AND $userType != 'learner' AND $userType != 'reviewer') { ?>
                     <a class="reportMapType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base().'webinarManager/mapReport4R/'.$webinarId.'/'.$v['map']->id.'/'.$webinarId; ?>" style="text-decoration: none;">

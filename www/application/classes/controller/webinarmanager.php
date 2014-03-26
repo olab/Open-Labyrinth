@@ -244,20 +244,22 @@ class Controller_WebinarManager extends Controller_Base {
                     $wStep          = $wMapObj->step;
                     $id             = $wMapObj->reference_id;
                     $wCurrentStep   = $webinar->current_step;
+                    $prefix         = '';
 
-                    if($wMapObj == 'labyrinth') $wData[$wUserId][$wStep][$id]['map'] = DB_ORM::model('map', array((int)$id));
+                    if ($wMapObj->which == 'labyrinth') $wData[$wUserId][$wStep][$id]['map'] = DB_ORM::model('map', array((int)$id));
                     else
                     {
+                        $prefix = 's';
                         $sectionObj = DB_ORM::model('Map_Node_Section', array($id));
                         $sectionObj->id     = $sectionObj->map_id;
                         $sectionObj->name   = 'Section: '.$sectionObj->name;
-                        $wData[$wUserId][$wStep]['s'.$id]['map'] = $sectionObj;
+                        $wData[$wUserId][$wStep][$prefix.$id]['map'] = $sectionObj;
                     }
 
-                    $wData[$wUserId][$wStep]['s'.$id]['status'] = ($wStep <= $wCurrentStep)
+                    $wData[$wUserId][$wStep][$prefix.$id]['status'] = ($wStep <= $wCurrentStep)
                         ? DB_ORM::model('user_session')->isUserFinishMap($id, $wUserId, $wMapObj->which, $webinar->id, $wCurrentStep)
                         : 0;
-                    $wData[$wUserId][$wStep]['s'.$id]['user']   = $wUser->user;
+                    $wData[$wUserId][$wStep][$prefix.$id]['user']   = $wUser->user;
                 }
             }
             if(count($webinar->steps) > 0)

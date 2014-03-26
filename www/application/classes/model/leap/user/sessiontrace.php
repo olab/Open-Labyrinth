@@ -144,7 +144,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return $result;
     }
 
-    public function getUniqueTraceBySessions($sessions, $idNode, $undo = false)
+    public function getUniqueTraceBySessions($sessions, $idNode = false, $undo = false)
     {
         $records = DB_SQL::select('default')
             ->from($this->table())
