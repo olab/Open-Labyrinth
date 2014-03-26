@@ -43,7 +43,9 @@
                             }
                             else echo $webinarMap->map->name; ?>
                         </span><?php
-                        if($templateData['webinar']->current_step == $webinarStep->id && isset($templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id]) && ($templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id] == 0 || $templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id] == 1)) { ?>
+                        if ($templateData['webinar']->current_step == $webinarStep->id AND
+                            isset($templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id]) AND
+                            ($templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id] == 0 OR $templateData['mapsMap'][$webinarStep->id][$webinarMap->reference_id] == 1)) { ?>
                             <a href="<?php echo URL::base().'webinarManager/play/'.$templateData['webinar']->id.'/'.$templateData['webinar']->current_step.'/'.$webinarMap->reference_id.'/'.$type; ?>" class="btn btn-success btn-small">
                                 <i class="icon-play"></i>Play
                             </a><?php

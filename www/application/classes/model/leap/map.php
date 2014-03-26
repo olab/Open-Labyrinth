@@ -244,22 +244,11 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getAllEnabledAndOpenMap()
     {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('enabled', '=', 1, 'AND')
-            ->where('security_id', '=', 1);
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-
-            return $maps;
-        }
-
-        return NULL;
+        return DB_ORM::select('Map')
+            ->where('enabled', '=', 1)
+            ->where('security_id', '=', 1)
+            ->query()
+            ->as_array();
     }
 
     public static function table()
@@ -296,8 +285,10 @@ class Model_Leap_Map extends DB_ORM_Model
         return $maps;
     }
 
-    public function getAllEnabledOpenVisibleMap($type = false)
+    public function getAllEnabledOpenVisibleMap ($type = false)
     {
+        $maps = array();
+
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1, 'AND')
@@ -305,17 +296,11 @@ class Model_Leap_Map extends DB_ORM_Model
 
         if ($type == 'reviewer') $builder->where('security_id', '=', 2, 'OR');
 
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-            return $maps;
+        foreach ($builder->query()->as_array() as $record)
+        {
+            $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
-
-        return NULL;
+        return $maps;
     }
 
     /**
@@ -355,7 +340,8 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
-    public function getAllMapsForLearner($learnerId) {
+    public function getAllMapsForLearner($learnerId)
+    {
         $builder = DB_SQL::select('default')
             ->distinct()
             ->all('m.*')
@@ -371,19 +357,21 @@ class Model_Leap_Map extends DB_ORM_Model
 
         if ($result->is_loaded()) {
             $maps = array();
-            foreach ($result as $record) {
+            foreach ($result as $record)
+            {
                 $maps[] = DB_ORM::model('map', array((int) $record['id']));
             }
-
             return $maps;
         }
 
         return NULL;
     }
 
-    public function getAllEnabledAndAuthoredMap($authorId, $limit = 0)
+    public function getAllMapsForAuthorAndReviewer($authorId, $limit = 0)
     {
         $limit = (int)$limit;
+        $alreadyAttendMap = array();
+
         $builder = DB_SQL::select('default')
             ->all('m.*')
             ->from('maps', 'm')
@@ -394,22 +382,83 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('mu.user_id', '=', $authorId, 'OR')
             ->group_by('m.id')
             ->order_by('m.id', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
+
+        if ($limit) $builder->limit($limit);
 
         $result = $builder->query();
-
 
         $maps = array();
         foreach ($result as $record)
         {
             $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            $alreadyAttendMap[] = $record['id'];
+        }
+
+        // add labyrinth with open security
+        foreach (DB_ORM::select('Map')->where('security_id', '=', 1)->where('enabled', '=', 1)->query()->as_array() as $openMap)
+        {
+            if ( ! in_array($openMap->id, $alreadyAttendMap))
+            {
+                $maps[] = $openMap;
+                $alreadyAttendMap[] = $openMap->id;
+            }
+        }
+
+        // add labyrinth with close security
+        foreach (DB_ORM::select('Map')->where('security_id', '=', 2)->where('enabled', '=', 1)->query()->as_array() as $closeMap)
+        {
+            if ( ! in_array($closeMap->id, $alreadyAttendMap))
+            {
+                $maps[] = $closeMap;
+                $alreadyAttendMap [] = $closeMap->id;
+            }
         }
 
         foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
         {
-            $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
+            $mapId = $authorRightObj->map_id;
+            if ( ! in_array($mapId, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($mapId));
+        }
+
+        return $maps;
+    }
+
+    public function getAllEnabledAndAuthoredMap($authorId, $limit = 0, $webinar = false)
+    {
+        $limit = (int)$limit;
+        $builder = DB_SQL::select('default')
+            ->all('m.*')
+            ->from('maps', 'm')
+            ->join('LEFT', 'map_users', 'mu')
+            ->on('mu.map_id', '=', 'm.id')
+            ->where('enabled', '=', 1)
+            ->where('author_id', '=', $authorId, 'AND');
+
+        if ( ! $webinar) $builder->where('mu.user_id', '=', $authorId, 'OR');
+
+        $builder
+            ->group_by('m.id')
+            ->order_by('m.id', 'DESC');
+
+        if ($limit) $builder->limit($limit);
+
+        $result = $builder->query();
+
+        $maps = array();
+        $alreadyAttendMap = array();
+
+        foreach ($result as $record)
+        {
+            $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            $alreadyAttendMap[] = $record['id'];
+        }
+
+        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        {
+            if ( ! in_array($authorRightObj->map_id, $alreadyAttendMap))
+            {
+                $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
+            }
         }
 
         return $maps;

@@ -40,7 +40,7 @@ if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinth
     foreach ($openLabyrinths as $labyrinth) { ?>
         <li>
             <i class="icon-arrow-right"></i><?php
-            if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$labyrinth->id]) && $templateData['rootNodeMap'][$labyrinth->id] != null) { ?>
+            if (true) { ?>
             <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a><?php
             } else {?>
             <a class="show-root-error" href="javascript:void(0)"><?php echo $labyrinth->name; ?></a><?php

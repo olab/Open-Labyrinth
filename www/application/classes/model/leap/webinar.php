@@ -189,12 +189,8 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                     {
                         foreach($maps as $webinarStepMap)
                         {
-                            $which = 'labyrinth';
-                            if (substr_count($webinarStepMap, 'section'))
-                            {
-                                $webinarStepMap = str_replace('section', '', $webinarStepMap);
-                                $which = 'section';
-                            }
+                            $which = substr_count($webinarStepMap, 'section') ? 'section': 'labyrinth';
+                            if ($which == 'section') $webinarStepMap = str_replace('section', '', $webinarStepMap);
                             DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarStepMap, $webinarStep->id, $which);
                         }
                     }

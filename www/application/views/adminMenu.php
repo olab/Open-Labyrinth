@@ -64,7 +64,7 @@
                                     <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
                                 <div class="pull-right">
-                                    <?php if(isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null) { ?>
+                                    <?php if(true) { ?>
                                         <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
                                             <i class="icon-play icon-white"></i>
                                             Play

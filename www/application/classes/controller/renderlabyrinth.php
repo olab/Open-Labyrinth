@@ -1776,13 +1776,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $map            = DB_ORM::model('Map', array($idMap));
         $labyrinthType  = $map->security_id;
         $idScenario     = false;
+        $assignUser     = false;
         if ($logged)
         {
             $user       = Auth::instance()->get_user();
             $userType   = $user->type_id;
             $idUser     = $user->id;
             $idScenario = Session::instance()->get('webinarId');
+            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
         }
+
         // first check by author_id, second check for author right
         $owner          = $map->author_id == $idUser;
         $owner          = $owner ? $owner : (bool) DB_ORM::select('AuthorRight')->where('user_id', '=', $idUser)->query()->as_array();
@@ -1790,13 +1793,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
         switch ($userType)
         {
             case '1':
-                if (($labyrinthType == 1) OR
+                if ($assignUser OR
+                    ($labyrinthType == 1) OR
                     ($labyrinthType == 2 AND $idScenario) OR
                     ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '2':
             case '6':
-                if (($labyrinthType == 1) OR ($labyrinthType == 2) OR ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                if ($assignUser OR
+                    ($labyrinthType == 1) OR
+                    ($labyrinthType == 2) OR
+                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '3':
             case '4':
