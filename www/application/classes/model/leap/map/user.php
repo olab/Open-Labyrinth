@@ -307,4 +307,10 @@ class Model_Leap_Map_User extends DB_ORM_Model {
 
         return NULL;
     }
+
+    public function assignOrNot ($mapId, $userId)
+    {
+        $assignUser = DB_ORM::select('Map_User')->where('user_id', '=', $userId)->where('map_id', '=', $mapId)->query()->fetch(0);
+        return (bool) $assignUser;
+    }
 }

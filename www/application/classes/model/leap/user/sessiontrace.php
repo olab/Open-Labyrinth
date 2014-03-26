@@ -402,13 +402,13 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
     public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs) {
         $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->column('id')
-                           ->where('user_id', '=', $userId, 'AND')
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->where('session_id', 'IN', $sessionIDs, 'AND')
-                           ->where('node_id', 'IN', $nodeIDs)
-                           ->query();
+           ->from($this->table())
+           ->column('id')
+           ->where('user_id', '=', $userId)
+           ->where('map_id', '=', $mapId)
+           ->where('session_id', 'IN', $sessionIDs)
+           ->where('node_id', 'IN', $nodeIDs)
+           ->query();
 
         return $records->is_loaded();
     }

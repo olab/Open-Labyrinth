@@ -60,7 +60,7 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['groups']   = DB_ORM::model('group')->getAllGroups();
         $this->templateData['maps']     = (Auth::instance()->get_user()->type->name == 'superuser')
             ? DB_ORM::model('map')->getAllEnabledMap()
-            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id, 0, true);
         // ------ Add sections ------- //
         foreach ($this->templateData['maps'] as $map)
         {
@@ -84,7 +84,7 @@ class Controller_WebinarManager extends Controller_Base {
 
         $MapsObj = (Auth::instance()->get_user()->type->name == 'superuser')
             ? DB_ORM::model('map')->getAllEnabledMap()
-            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id, 0, true);
 
         $this->templateData['maps'] = $MapsObj;
 

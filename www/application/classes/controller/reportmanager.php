@@ -101,15 +101,20 @@ class Controller_ReportManager extends Controller_Base
             $this->templateData['webinarID']        = $webinar->id;
             $this->templateData['webinarForum']     = $webinar->forum_id;
 
-            if ($webinar->steps != null && count($webinar->steps) > 0)
+            if (count($webinar->steps) > 0)
             {
-                foreach ($webinar->steps as $webinarStep)
+                foreach ($webinar->steps as $step_order=>$webinarStep)
                 {
                     if ($webinarStep->id != $session->webinar_step) continue;
                     if (count($webinarStep->maps) > 0)
                     {
-                        foreach($webinarStep->maps as $webinarStepMap)
+                        foreach($webinarStep->maps as $map_order=>$webinarStepMap)
                         {
+                            if ($map_order+1 == count($webinarStep->maps) AND isset($webinar->steps[$step_order+1]))
+                            {
+                                DB_ORM::model('Webinar')->changeWebinarStep($webinar->id, $webinar->steps[$step_order+1]->id);
+                            }
+
                             $isFinished = DB_ORM::model('user_session')->isUserFinishMap($webinarStepMap->reference_id, $session->user_id, $webinarStepMap->which, $webinar->id, $session->webinar_step);
                             if ($isFinished == Model_Leap_User_Session::USER_NOT_PLAY_MAP)
                             {

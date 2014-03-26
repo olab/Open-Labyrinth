@@ -83,7 +83,7 @@ if ($user)
                 </td>
                 <td class="center">
                     <div class="btn-group"><?php
-                        if (isset($templateData['rootNodeMap']) && isset($templateData['rootNodeMap'][$map->id]) && $templateData['rootNodeMap'][$map->id] != null OR Arr::get($authorRight, $map->id, false)) { ?>
+                        if (true) { ?>
                         <a class="btn btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>">
                             <i class="icon-play icon-white"></i>
                             <span class="visible-desktop">Play</span>

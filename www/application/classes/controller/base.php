@@ -184,32 +184,29 @@ class Controller_Base extends Controller_Template {
 
             foreach ($usersHistory as $value)
             {
-                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
+                {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;
                 }
 
-                if (((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                if (((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
+                {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;
                 }
-            }
-
-            $userHasBlockedAccess = 0;
-            if ( ! $this->request->is_ajax()) {
-                $userHasBlockedAccess = $this->addUserHistory($user_id, $readonly);
             }
 
             $this->templateData['user_id']                  = $user_id;
-            $this->templateData['userHasBlockedAccess']     = $userHasBlockedAccess;
+            $this->templateData['userHasBlockedAccess']     = ( ! $this->request->is_ajax()) ? $this->addUserHistory($user_id, $readonly) : 0;
             $this->templateData['historyShowWarningPopup']  = $historyShowWarningPopup;
             $this->templateData['currentUserReadOnly']      = $readonly;
             $this->templateData['historyOfAllUsers']        = json_encode($usersHistory);
 
             I18n::lang(Auth::instance()->get_user()->language->key);
-            $this->templateData['username'] = Auth::instance()->get_user()->nickname;
+            $this->templateData['username']                 = Auth::instance()->get_user()->nickname;
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
 
@@ -220,7 +217,7 @@ class Controller_Base extends Controller_Template {
                 /* Fetch the latest authored labyrinths. */
                 $maps = ($user_type_name == 'superuser')
                         ? $maps = DB_ORM::model('map')->getAllEnabledMap(7)
-                        : $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user_id, 7);
+                        : $maps = DB_ORM::model('map')->getAllMapsForAuthorAndReviewer($user_id, 7);
 
                 $this->templateData['latestAuthoredLabyrinths'] = $maps;
 
@@ -259,11 +256,12 @@ class Controller_Base extends Controller_Template {
             {
                 $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap($user_type_name);
                 $rooNodesMap = array();
-                if($maps != null && count($maps) > 0) {
-                    foreach($maps as $map) {
-                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
-                    }
+
+                foreach($maps as $map)
+                {
+                    $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
+
                 $this->templateData['rootNodeMap'] = $rooNodesMap;
 
                 $centerView = View::factory('userMenu');
