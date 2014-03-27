@@ -112,7 +112,7 @@ class Controller_ReportManager extends Controller_Base
                         {
                             if ($map_order+1 == count($webinarStep->maps) AND isset($webinar->steps[$step_order+1]))
                             {
-                                DB_ORM::model('Webinar')->changeWebinarStep($webinar->id, $webinar->steps[$step_order+1]->id);
+                                //DB_ORM::model('Webinar')->changeWebinarStep($webinar->id, $webinar->steps[$step_order+1]->id);
                             }
 
                             $isFinished = DB_ORM::model('user_session')->isUserFinishMap($webinarStepMap->reference_id, $session->user_id, $webinarStepMap->which, $webinar->id, $session->webinar_step);
