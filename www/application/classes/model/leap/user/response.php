@@ -72,7 +72,10 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return array('id');
     }
     
-    public function createResponse($sessionId, $questionId, $response, $nodeId = null) {
+    public function createResponse($sessionId, $questionId, $response, $nodeId = null)
+    {
+        if ( ! $sessionId) return;
+
         $this->question_id = $questionId;
         $this->session_id = $sessionId;
         $this->response = $response;
