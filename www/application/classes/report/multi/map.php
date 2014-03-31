@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_Multi_Map extends Report_Multi_Element {
+class Report_Multi_Map extends Report_Element {
 
     private $map;
     private $sections;
@@ -142,16 +142,6 @@ class Report_Multi_Map extends Report_Multi_Element {
         return $row;
     }
 
-    public function fillCell ($column, $row, $value, $fontSize = 12)
-    {
-        $column = $this->getNameFromNumber($column);
-
-        $this->implementation->setAutoWidth($column);
-        $this->implementation->setCursor($column.$row);
-        $this->implementation->setValue($value);
-        $this->implementation->setFontSize($column.$row, $fontSize);
-    }
-
     /**
      * Get key for searching or sorting
      *
@@ -183,28 +173,5 @@ class Report_Multi_Map extends Report_Multi_Element {
                 );
             }
         }
-    }
-
-    /**
-     * Sorting elements function
-     *
-     * @param Report_4R_Element $elementA - element A
-     * @param Report_4R_Element $elementB - element B
-     * @return integer - comparison flag
-     */
-    public static function sortElements(Report_SCT_Element $elementA, Report_SCT_Element $elementB) {
-        $result = 0;
-
-        if($elementA == null) $result = -1;
-        else if($elementB == null) $result = 1;
-        else {
-            $keyA = $elementA->getKey();
-            $keyB = $elementB->getKey();
-
-            if($keyA > $keyB) $result = 1;
-            else if($keyA < $keyB) $result = -1;
-        }
-
-        return $result;
     }
 }

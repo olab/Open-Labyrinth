@@ -24,12 +24,10 @@ defined('SYSPATH') or die('No direct script access.');
  * Class 4R Report
  */
 class Report_SCT extends Report {
+
     private $maps;
     private $name;
-    private $countOfChoices;
     private $mapElements;
-    public  $users;
-    public  $expertWebinarId;
 
     /**
      * Default constructor
@@ -41,7 +39,6 @@ class Report_SCT extends Report {
         parent::__construct($impl);
 
         $this->maps           = array();
-        $this->countOfChoices = 4;
         $this->name           = $name;
         $this->mapElements    = array();
     }
@@ -53,16 +50,15 @@ class Report_SCT extends Report {
      * @param integer $webinarId - webinar ID
      * @param integer $webinarStep - webinar step
      */
-    public function add($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null)
+    public function add($mapId, $webinarId, $expertWebinarId, $sectionId)
     {
         if($mapId == null || $mapId <= 0) return;
 
         $this->maps[] = array(
             'mapId'             => $mapId,
             'webinarId'         => $webinarId,
-            'webinarStep'       => $webinarStep,
-            'notInUsers'        => $notInUsers,
-            'dateStatistics'    => $dateStatistics
+            'expertWebinarId'   => $expertWebinarId,
+            'sectionId'         => $sectionId
         );
     }
 
@@ -82,20 +78,16 @@ class Report_SCT extends Report {
         $this->implementation->setDescription('SCT Statistic');
         $this->implementation->setKeywords('SCT, SCT Report, Report');
         $this->implementation->setCategory('Report');
-
         $this->implementation->setActiveSheet(0);
+
         foreach($this->maps as $mapData)
         {
             $this->mapElements[] = new Report_SCT_Map(
                 $this->implementation,
                 $mapData['mapId'],
-                $this->countOfChoices,
                 $mapData['webinarId'],
-                $mapData['webinarStep'],
-                $mapData['notInUsers'],
-                $mapData['dateStatistics'],
-                $this->expertWebinarId,
-                $this->users
+                $mapData['expertWebinarId'],
+                $mapData['sectionId']
             );
         }
     }
@@ -109,7 +101,7 @@ class Report_SCT extends Report {
     {
         if($this->implementation == null) return;
 
-        if($this->mapElements != null && count($this->mapElements) > 0)
+        if(count($this->mapElements) > 0)
         {
             $currentOffset = 1;
             foreach($this->mapElements as $mapElement)

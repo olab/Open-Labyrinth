@@ -26,7 +26,7 @@ $userType   = Auth::instance()->get_user()->type->name;
 </div>
 
 <div class="report-type">
-    <span class="report-type-title"><?php echo __('Repoet type') ?></span>
+    <span class="report-type-title"><?php echo __('Report type') ?></span>
     <div class="radio_extended btn-group">
         <input type="radio" name="typeReport" id="4R" checked/>
         <label class="btn" for="4R" data-class="btn-info"><?php echo __('4R Report'); ?></label>
@@ -116,11 +116,19 @@ $userType   = Auth::instance()->get_user()->type->name;
         foreach ($maps as $stepKey => $m) {
             foreach($m as $mapId => $v) { ?>
             <td style="text-align: center; font-weight: bold;"><?php
-                $map = Arr::get($v, 'map');
+                $sectionId  = substr_count($mapId, 's') ? substr($mapId, 1) : 0;
+                $map        = Arr::get($v, 'map');
+
                 echo $map->name;
 
                 if (isset($v['showReport']) AND $v['showReport'] AND $userType != 'learner' AND $userType != 'reviewer') { ?>
-                    <a class="reportMapType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this labyrinth" href="<?php echo URL::base().'webinarManager/mapReport4R/'.$webinarId.'/'.$v['map']->id.'/'.$webinarId; ?>" style="text-decoration: none;">
+                    <a
+                        class="reportMapType"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title=""
+                        data-original-title="Get report for this labyrinth"
+                        href="<?php echo URL::base().'webinarManager/mapReport4R/'.$webinarId.'/'.$map->id.'/'.$sectionId.'/'.$webinarId; ?>" style="text-decoration: none;">
                         <i class="icon-eye-open"></i>
                     </a><?php
                 } ?>
