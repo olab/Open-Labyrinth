@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_4R_Map extends Report_4R_Element {
+class Report_4R_Map extends Report_Element {
     private $map;
     private $sections;
     private $elements;
@@ -233,7 +233,7 @@ class Report_4R_Map extends Report_4R_Element {
      * @param Report_4R_Element $elementB - element B
      * @return integer - comparison flag
      */
-    public static function sortElements(Report_4R_Element $elementA, Report_4R_Element $elementB) {
+    public static function sortElements(Report_Element $elementA, Report_Element $elementB) {
         $result = 0;
         if($elementA == null) {
             $result = -1;

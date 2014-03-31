@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_4R_Question extends Report_4R_Element {
+class Report_4R_Question extends Report_Element {
     private $question;
     private $webinarId;
     private $webinarStep;

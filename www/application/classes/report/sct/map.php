@@ -20,45 +20,28 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_SCT_Map extends Report_SCT_Element {
+class Report_SCT_Map extends Report_Element {
+
     private $map;
-    private $sections;
-    private $elements;
-    private $questions;
     private $webinarId;
-    private $webinarStep;
-    private $notInUsers;
-    private $dateStatistics;
-    private $countOfChoices;
+    private $expertWebinarId;
+    private $questions;
     private $experts;
-    public $scoreForResponse;
-    public $users;
+    private $includeUsers;
 
-    private $choicesMap = array(
-        1 => 'C',
-        2 => 'D',
-        3 => 'E',
-        4 => 'F'
-    );
-
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $expertWebinarId, $users) {
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertWebinarId, $sectionId)
+    {
         parent::__construct($impl);
 
-        if($mapId == null || $mapId <= 0) return;
+        if($mapId <= 0) return;
 
         $this->map            = DB_ORM::model('map', array((int)$mapId));
-        $this->countOfChoices = $countOfChoices;
         $this->webinarId      = $webinarId;
-        $this->webinarStep    = $webinarStep;
-        $this->notInUsers     = $notInUsers;
-        $this->dateStatistics = $dateStatistics;
         $this->expertWebinarId= $expertWebinarId;
-        $this->users          = $users;
-        $this->experts        = $this->getExperts();
-
-        $this->elements       = array();
-        $this->sections       = array();
         $this->questions      = array();
+        $this->experts        = array();
+        $this->includeUsers   = array();
+        $this->sectionId      = $sectionId;
 
         $this->loadElements();
     }
@@ -70,168 +53,125 @@ class Report_SCT_Map extends Report_SCT_Element {
      */
     public function insert($offset)
     {
-        $localOffset = 0;
-        $user_response = array();
-        $amount_of_user = 0;
+        $localRow           = $offset;
+        $column             = 0;
+        $firstColumnCounter = 0;
 
-        if($this->map == null) return $localOffset;
+        if($this->map == null) return $localRow;
 
-        $this->implementation->setCursor('A'.$offset);
-        $this->implementation->setFontSize('A'.$offset, 16);
-        $this->implementation->setValue($this->map->name);
+        // scenario title
+        $this->fillCell($column, $localRow, $this->map->name, 16);
+        $localRow++;
 
-        // ------ displayed list of experts, on A2 ------ //
-        $offset += 1;
-        $expertsList = 'Experts:';
-        foreach ($this->experts as $userId) $expertsList .= '
-'.DB_ORM::model('User', array($userId))->nickname;
-        $this->implementation->setCursor('A'.$offset);
-        $this->implementation->setValue($expertsList);
-        // ------ end displayed list of experts ------ //
+        // displayed scenario from where taken  experts
+        $this->fillCell($column, $localRow, 'Experts from \''.DB_ORM::model('Webinar', array($this->expertWebinarId))->title.'\' scenario.');
+        $localRow+=2;
 
-        $localOffset    = 2;
-        $columnOffset   = 0; // start from letter B
+        // get all nodes
+        $nodesObj = $this->sectionId
+            ? DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $this->sectionId)->query()->as_array()
+            : DB_ORM::select('Map_Node')->where('map_id', '=', $this->map->id)->query()->as_array();
 
-        if($this->questions != null && count($this->questions) > 0)
+        // get all SCT question by map id
+        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, array(7));
+
+        foreach ($nodesObj as $nodeObj)
         {
-            // -------- insert response value table --------//
-            for ($i=0; $i<5; $i++)
-            {
-                $this->implementation->setCursor('A'.($offset + $localOffset + $i + 1));
-                $this->implementation->setValue('Response '.$this->getNameFromNumber($i));
-                $this->implementation->setAutoWidth('A');
-            }
-            $eva_start_row  = $offset + $localOffset;
-            $eva_end_column = 0;
-            foreach ($this->questions as $question)
-            {
-                $response_indent = $columnOffset+2;
-                $id_question = $question->question->id;
-                $this->implementation->setCursor($this->getNameFromNumber($response_indent).($offset + $localOffset));
-                $this->implementation->setFontSize($this->getNameFromNumber($response_indent).($offset + $localOffset), 12);
-                $this->implementation->setValue($question->question->stem.' (ID - '.$id_question.')');
-                $this->implementation->setAutoWidth($this->getNameFromNumber($response_indent));
+            $nodeName = $this->sectionId
+                ? DB_ORM::model('Map_Node', array($nodeObj->node_id))->title
+                : $nodeObj->title;
+            $nodeId   = $this->sectionId
+                ? $nodeObj->node_id
+                : $nodeObj->id;
 
-                for ($i=0; $i<count($question->questionResponses); $i++)
+            foreach ($questions as $question)
+            {
+                $firstColumnCounter++;
+                $localTablesRow = $localRow + 8;
+
+                $responseScore = $this->getScoreForEachResponse($question->id, $nodeId);
+
+                // ----- create second table ----- //
+                $this->fillCell(0, $localTablesRow, 'Reference panel score weights');
+                $headerRow = $localTablesRow;
+
+                if ($firstColumnCounter == 1) $column++;
+                $column++;
+                $localTablesRow++;
+
+                foreach ($this->includeUsers as $userId)
                 {
-                    $id_response = $question->questionResponses[$i]->id;
-                    $this->scoreForResponse();
-                    $this->scoreForResponse[$id_question][$id_response];
-                    $this->implementation->setCursor($this->getNameFromNumber($response_indent).($offset + $localOffset + $i + 1));
-                    $this->implementation->setValue($this->scoreForResponse[$id_question][$id_response]);
-                    $eva_end_row = $offset + $localOffset + $i + 1;
+                    $sessionObj = DB_ORM::select('User_Session')
+                        ->where('user_id', '=', $userId)
+                        ->where('map_id', '=', $this->map->id)
+                        ->where('webinar_id', '=', $this->webinarId)
+                        ->query()
+                        ->as_array();
+                    $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+                    $userResponse = 0;
+                    if ($sessionObj)
+                    {
+                        $userResponseObj = DB_ORM::select('User_Response')
+                            ->where('question_id', '=', $question->id)
+                            ->where('node_id', '=', $nodeId)
+                            ->where('session_id', '=', $sessionObj->id)
+                            ->query()
+                            ->fetch(0);
+                        if ($userResponseObj) $userResponse = $userResponseObj->response;
+                        else
+                        {
+                            $column--;
+                            continue 2;
+                        }
+                    }
+
+
+                    $this->fillCell(0, $localTablesRow, DB_ORM::model('User', array($userId))->nickname);
+                    $this->fillCell($column, $localTablesRow, Arr::get($responseScore, $userResponse, 0));
+                    $localTablesRow++;
                 }
 
-                $columnOffset++;
-                $eva_end_column = $columnOffset;
+                $calculateColumn = $this->getNameFromNumber($column);
 
-                // -------- question user value -------- //
-                $all_sessions = DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query();
-                foreach ($all_sessions as $session)
+                $this->fillCell(1, $localTablesRow, 'STDEVA');
+                $this->fillCell($column, $localTablesRow, '=STDEVA('.$calculateColumn.($headerRow+1).':'.$calculateColumn.($localTablesRow-1).')');
+                $localTablesRow++;
+                $this->fillCell(1, $localTablesRow, 'Average');
+                $this->fillCell($column, $localTablesRow, '=AVERAGE('.$calculateColumn.($headerRow+1).':'.$calculateColumn.($localTablesRow-2).')');
+                // ----- end create second table ----- //
+
+                // ----- create first table ----- //
+                $headerRow = $localRow;
+                $localTablesRow = $localRow;
+                $this->fillCell(0, $localRow, 'Reference panel score weights');
+                $localTablesRow++;
+
+                for ($i = 0; $i < 5; $i++)
                 {
-                    $id_session = $session->session_id;
-                    $id_user = DB_ORM::model('User_Session', array($id_session))->user_id;
-                    $response = $session->response;
-                    $id_response = ((int)$response)
-                        ? $response
-                        : DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->where('response', '=', $response)->query()->fetch(0);
-                    if ($id_response) $user_response[$id_user][$id_question] = $this->scoreForResponse[$id_question][$id_response->get('id')];
-                }
-                // -------- end question user value -------- //
-
-            }
-
-            // ----- create total ------//
-            $this->implementation->setCursor($this->getNameFromNumber($columnOffset+2).($offset + $localOffset + 7));
-            $this->implementation->setFontSize($this->getNameFromNumber($columnOffset+2).($offset + $localOffset + 7), 12);
-            $this->implementation->setValue('Total');
-            // ----- end create total ------//
-
-            $columnOffset = 0;
-            $average      = array();
-
-            // ----- create STDEVA -------//
-            $localOffset += 6;
-            $eva_end_row = $eva_start_row + 5;
-
-            $this->implementation->setCursor($this->getNameFromNumber($columnOffset + 1).($offset + $localOffset));
-            $this->implementation->setValue('STDEVA');
-
-            for ($i=2; $i<$eva_end_column+2; $i++)
-            {
-                $letter = $this->getNameFromNumber($i);
-                $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i).($offset + $localOffset));
-                $this->implementation->setValue('=STDEVA('.$letter.$eva_start_row.':'.$letter.$eva_end_row.')');
-            }
-            // ----- end create STDEVA -------//
-
-            $localOffset += 2;
-            $stdeva_start_row  = $offset + $localOffset;
-            $stdeva_end_row    = 0;
-            $stdeva_end_column = 0;
-
-            // --- delete users who not displayed, and get right order of users --- //
-            $getOrder = array_intersect_key($this->users, $user_response);
-            foreach ($user_response as $k=>$v) $getOrder[$k] = $user_response[$k];
-            $user_response = $getOrder;
-
-            foreach ($user_response as $id_user=>$value)
-            {
-                $amount_of_user = count($user_response);
-                $i_for_user     = 0;
-                $total          = 0;
-
-                $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i_for_user).($offset + $localOffset));
-                $this->implementation->setValue(DB_ORM::model('User', array($id_user))->nickname);
-                $i_for_user+=2;
-                foreach ($value as $k=>$v)
-                {
-                    $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i_for_user).($offset + $localOffset));
-                    $this->implementation->setValue($v);
-                    $total += $v;
-                    $average[$k] = (isset($average[$k])) ? $average[$k]+$v : $v;
-                    $i_for_user++;
-                    $stdeva_end_column = $i_for_user;
+                    $this->fillCell(0, $localTablesRow + $i, 'Response'.$this->getNameFromNumber($i));
                 }
 
-                $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i_for_user).($offset + $localOffset));
-                $this->implementation->setValue($total);
-                $stdeva_end_row = $offset+$localOffset;
-                $localOffset++;
+                foreach ($responseScore as $score)
+                {
+                    $this->fillCell($column, $headerRow - 1, $nodeName.': (ID -'.$nodeId.')');
+                    $this->fillCell($column, $headerRow, $question->stem.': (ID -'.$question->id.')');
+                    $this->fillCell($column, $localTablesRow, $score);
+                    $localTablesRow++;
+                }
+
+                $calculateColumn = $this->getNameFromNumber($column);
+
+                $this->fillCell(1, $localTablesRow, 'STDEVA');
+                $this->fillCell($column, $localTablesRow, '=STDEVA('.$calculateColumn.($localRow+1).':'.$calculateColumn.($localTablesRow-1).')');
+                $localTablesRow++;
+                $this->fillCell(1, $localTablesRow, 'Average');
+                $this->fillCell($column, $localTablesRow, '=AVERAGE('.$calculateColumn.($localRow+1).':'.$calculateColumn.($localTablesRow-2).')');
+                $offset = $localTablesRow + 1;
+                // ----- end create first table ----- //
             }
-            $columnOffset++;
-
-            // ------ STDEVA ------//
-            $this->implementation->setCursor($this->getNameFromNumber($columnOffset).($offset + $localOffset));
-            $this->implementation->setValue('STDEVA');
-
-            for ($i=2; $i<$stdeva_end_column; $i++)
-            {
-                $letter = $this->getNameFromNumber($i);
-                $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i - 1).($offset + $localOffset));
-                $this->implementation->setValue('=STDEVA('.$letter.$stdeva_start_row.':'.$letter.$stdeva_end_row.')');
-            }
-            // ------ END STDEVA ------//
-
-            // --------- average ---------//
-            $localOffset ++;
-            $i_for_average = 0;
-
-            $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i_for_average).($offset + $localOffset));
-            $this->implementation->setValue('Average');
-
-            foreach ($average as $v)
-            {
-                $this->implementation->setCursor($this->getNameFromNumber($columnOffset + $i_for_average + 1).($offset + $localOffset));
-                $this->implementation->setValue($v/$amount_of_user);
-                $i_for_average++;
-            }
-
-            // --------- end average ---------//
-            $localOffset +=3;
-            // -------- end insert response value table --------//
         }
-        return $localOffset;
+        return $offset + 5;
     }
 
     /**
@@ -246,85 +186,66 @@ class Report_SCT_Map extends Report_SCT_Element {
     /**
      * Load map elements
      */
-    private function loadElements()
+    private function loadElements ()
     {
-        if($this->map == null || $this->map->nodes == null || count($this->map->nodes) <= 0) return;
+        if($this->map == null OR count($this->map->nodes) <= 0) return;
 
-        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, array(7));
-
-        if($questions != null && count($questions) > 0)
-        {
-            foreach($questions as $question)
-            {
-                $this->questions[] = new Report_SCT_Question(
-                    $this->implementation,
-                    $question->id,
-                    $this->webinarId,
-                    $this->webinarStep,
-                    $this->notInUsers,
-                    $this->dateStatistics
-                );
-            }
-        }
-    }
-
-    /**
-     * Sorting elements function
-     *
-     * @param Report_4R_Element $elementA - element A
-     * @param Report_4R_Element $elementB - element B
-     * @return integer - comparison flag
-     */
-    public static function sortElements(Report_SCT_Element $elementA, Report_SCT_Element $elementB) {
-        $result = 0;
-
-        if($elementA == null) $result = -1;
-        else if($elementB == null) $result = 1;
-        else {
-            $keyA = $elementA->getKey();
-            $keyB = $elementB->getKey();
-
-            if($keyA > $keyB) $result = 1;
-            else if($keyA < $keyB) $result = -1;
-        }
-
-        return $result;
-    }
-
-    public function scoreForResponse ()
-    {
-        $score      = array();
-
-        foreach ($this->questions as $questions)
-        {
-            $id_question = $questions->question->id;
-
-            foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $id_question)->order_by('order')->query() as $response)
-            {
-                $score[$id_question][$response->id] = 0;
-            }
-
-            foreach (DB_ORM::select('User_Response')->where('question_id', '=', $id_question)->query() as $response)
-            {
-                $user_id = DB_ORM::model('User_Session', array($response->session_id))->user_id;
-                if (in_array($user_id, $this->experts) AND isset($score[$id_question][$response->response])) $score[$id_question][$response->response] += 1;
-            }
-
-            $max_score = max($score[$id_question]);
-            foreach ($score[$id_question] as $k=>$v)
-            {
-                $this->scoreForResponse[$id_question][$k] = ($max_score == 0 ) ? 0 : round($v / $max_score, 2);
-            }
-        }
-    }
-
-    public function getExperts()
-    {
-        $experts = array();
         foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertWebinarId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
         {
-            $experts[] = $wUserObj->user_id;
+            $this->experts[] = $wUserObj->user_id;
         }
-        return $experts;
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj)
+        {
+            $this->includeUsers[] = $wUserObj->user_id;
+        }
+    }
+
+    public function getScoreForEachResponse ($questionId, $nodeId)
+    {
+        $score = array();
+
+        // get all response in correct order by question id
+        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $response)
+        {
+            $score[$response->id] = 0;
+        }
+
+        // if response < 5, add
+        for ($i=count($score); $i<5; $i++)
+        {
+            $score[] = 0;
+        }
+
+        // get experts response
+        foreach ($this->experts as $expertId)
+        {
+            $sessionObj = DB_ORM::select('User_Session')
+                ->where('user_id', '=', $expertId)
+                ->where('map_id', '=', $this->map->id)
+                ->where('webinar_id', '=', $this->webinarId)
+                ->query()
+                ->as_array();
+            $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+            if ($sessionObj)
+            {
+                $userResponse = DB_ORM::select('User_Response')
+                    ->where('question_id', '=', $questionId)
+                    ->where('node_id', '=', $nodeId)
+                    ->where('session_id', '=', $sessionObj->id)
+                    ->query()
+                    ->fetch(0);
+
+                if ($userResponse AND isset($score[$userResponse->response])) $score[$userResponse->response] += 1;
+            }
+        }
+
+        // calculate each score for response
+        $max_score = max($score);
+        foreach ($score as $response=>$voters)
+        {
+            $score[$response] = ($max_score == 0 ) ? 0 : round($voters / $max_score, 2);
+        }
+        return $score;
     }
 }

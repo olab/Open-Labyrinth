@@ -220,7 +220,7 @@ class Controller_WebinarManager extends Controller_Base {
 
         if ($webinarId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Statistic of Scenario'))->set_url(URL::base().'webinarManager/progress'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Scenario Progress'))->set_url(URL::base().'webinarManager/progress'));
 
         $wData          = array();
         $usersMap       = array();
@@ -455,18 +455,25 @@ class Controller_WebinarManager extends Controller_Base {
 
         if($isExistAccess)
         {
-            $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
-
             $report  = new Report_SCT(new Report_Impl_PHPExcel(), $webinar->title);
-            $report->experts = DB_ORM::model('Webinar_User')->getExperts($expertWebinarId);
-            $report->users = DB_ORM::model('Webinar_User')->getUsers($webinarId);
-            if($webinar != null && count($webinar->maps) > 0) {
-                foreach($webinar->maps as $webinarMap) {
-                    if($webinarMap->step == $stepKey) {
-                        $mapId = ($webinarMap->which == 'labyrinth')
-                            ? $webinarMap->reference_id
-                            : DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
-                        $report->add($mapId, $webinar->id, $stepKey, $notIncludUsers);
+            if($webinar != null && count($webinar->maps) > 0)
+            {
+                foreach($webinar->maps as $webinarMap)
+                {
+                    if($webinarMap->step == $stepKey)
+                    {
+                        // if labyrinth, else section
+                        if ($webinarMap->which == 'labyrinth')
+                        {
+                            $mapId = $webinarMap->reference_id;
+                            $sectionId = false;
+                        }
+                        else
+                        {
+                            $mapId = DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
+                            $sectionId = $webinarMap->reference_id;
+                        }
+                        $report->add($mapId, $webinarId, $expertWebinarId, $sectionId);
                     }
                 }
             }
@@ -516,61 +523,54 @@ class Controller_WebinarManager extends Controller_Base {
         else Request::initial()->redirect(URL::base().'home/index');
     }
 
-    public function action_mapReport4R() {
-        $webinarId = $this->request->param('id', null);
-        $mapKey    = $this->request->param('id2', null);
-        $dateId    = $this->request->param('id3', null);
-
-        if($webinarId != null && $webinarId > 0 && $mapKey != null && $mapKey > 0) {
-            $webinar = DB_ORM::model('webinar', array((int)$webinarId));
-            $map = DB_ORM::model('map', array((int)$mapKey));
-
-            $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
-
-            $report  = new Report_4R(new Report_Impl_PHPExcel(), $map->name);
-            $report->add($mapKey, $webinar->id, '' , $notIncludUsers, $dateId);
-            $report->generate();
-
-            $report->get();
-        } else {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
-        }
+    public function action_mapReport4R()
+    {
+        $this->createReport('4R');
     }
 
     public function action_mapReportSCT()
     {
-        $webinarId          = $this->request->param('id', null);
-        $mapId              = $this->request->param('id2', null);
-        $expertWebinarId    = $this->request->param('id3', null);
-
-        if ($webinarId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
-
-        $mapName = DB_ORM::model('map', array((int)$mapId))->name;
-
-        $notIncludeUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinarId);
-
-        $report                     = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT Report '.$mapName);
-        $report->expertWebinarId    = $expertWebinarId;
-        $report->users              = DB_ORM::model('Webinar_User')->getUsers($webinarId);
-        $report->add($mapId, $webinarId, '' , $notIncludeUsers);
-        $report->generate();
-        $report->get();
+        $this->createReport('SCT');
     }
 
     public function action_mapReportMulti()
     {
-        $wId    = $this->request->param('id', null);
-        $mapId  = $this->request->param('id2', null);
-        $dateId = $this->request->param('id3', null);
+        $this->createReport('Poll');
+    }
 
-        if ($wId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
+    private function createReport($type)
+    {
+        $webinarId          = $this->request->param('id', null);
+        $mapId              = $this->request->param('id2', null);
+        $sectionId          = $this->request->param('id3', null);
+        $expertWebinarId    = $this->request->param('id4', null);
 
-        $mapName = DB_ORM::model('map', array((int)$mapId))->name;
+        if ($webinarId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
-        $report = new Report_Multi(new Report_Impl_PHPExcel(), 'Multi-player '.$mapName);
-        $report->add($mapId, $wId, '', $dateId);
-        $report->generate();
-        $report->get();
+        switch ($type)
+        {
+            case 'SCT':
+                $report = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT Report '.DB_ORM::model('map', array((int)$mapId))->name);
+                $report->add($mapId, $webinarId, $expertWebinarId, $sectionId);
+                $report->generate();
+                $report->get();
+            break;
+            case 'Poll':
+                $report = new Report_Multi(new Report_Impl_PHPExcel(), 'Multi-player '.DB_ORM::model('map', array((int)$mapId))->name);
+                $report->add($mapId, $webinarId, '');
+                $report->generate();
+                $report->get();
+            break;
+            case '4R':
+                $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinarId);
+
+                $report  = new Report_4R(new Report_Impl_PHPExcel(), DB_ORM::model('map', array((int)$mapId))->name);
+                $report->add($mapId, $webinarId, '' , $notIncludUsers);
+                $report->generate();
+                $report->get();
+            break;
+            default: Request::initial()->redirect(URL::base().'webinarmanager/index');
+        }
     }
 
     public function action_play()

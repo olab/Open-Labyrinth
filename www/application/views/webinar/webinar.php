@@ -111,19 +111,21 @@
         <?php } ?>
     </fieldset>
 
-    <div id="steps-container">
-        <?php if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) { ?>
-            <?php foreach($templateData['webinar']->steps as $step) { ?>
-                <fieldset class="fieldset step-container-<?php echo $step->id; ?>" stepId="<?php echo $step->id; ?>">
-                    <legend>
-                        Step - <input type="text" name="s<?php echo $step->id; ?>_name" value="<?php echo $step->name; ?>"/> <button class="btn btn-danger btn-remove-step"><i class="icon-trash"></i></button>
-                        <input type="hidden" name="stepIDs[]" value="<?php echo $step->id; ?>"/>
-                    </legend>
-                    <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>">
-                        <?php if(count($step->maps) > 0) { ?>
-                        <?php $index = 1; foreach($step->maps as $stepMap) { ?>
+    <div id="steps-container"><?php
+        if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) {
+            foreach($templateData['webinar']->steps as $step) { ?>
+            <fieldset class="fieldset step-container-<?php echo $step->id; ?>" stepId="<?php echo $step->id; ?>">
+                <legend>
+                    Step - <input type="text" name="s<?php echo $step->id; ?>_name" value="<?php echo $step->name; ?>"/>
+                    <button class="btn btn-danger btn-remove-step"><i class="icon-trash"></i></button>
+                    <input type="hidden" name="stepIDs[]" value="<?php echo $step->id; ?>"/>
+                </legend>
+                <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>"><?php
+                    if(count($step->maps) > 0) {
+                        $index = 1;
+                        foreach($step->maps as $stepMap) { ?>
                         <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
-                                    <label for="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
+                            <label for="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
                             <div class="controls">
                                 <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6"><?php
                                 foreach(Arr::get($templateData, 'maps', array()) as $m) {
@@ -135,23 +137,23 @@
                                 </select>
                                 <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
                             </div>
-                        </div>
-                        <?php $index++; } ?>
-                        <?php } ?>
-                    </div>
+                        </div><?php
+                        $index++;
+                        }
+                    } ?>
+                </div>
 
-                    <div>
-                        <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add map or section</button>
-                    </div>
+                <div>
+                    <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add map or section</button>
+                </div>
 
-                    <script>
-                        $labyrinthContainers.push($('#labyrinth-container-<?php echo $step->id; ?>'));
-                    </script>
-                </fieldset>
-                <?php } ?>
-            <?php } ?>
-        </div>
-
+                <script>
+                    $labyrinthContainers.push($('#labyrinth-container-<?php echo $step->id; ?>'));
+                </script>
+            </fieldset><?php
+            }
+        } ?>
+    </div>
     <div><button class="btn btn-info add-step-btn" type="button"><i class="icon-plus-sign"></i>Add Step</button></div>
 
     <h3>Assign the users</h3>
