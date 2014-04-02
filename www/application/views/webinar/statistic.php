@@ -95,7 +95,7 @@ $userType   = Auth::instance()->get_user()->type->name;
                                 ? '<span style="color:#0088cc;font-weight:bold">'.$templateData['webinarStepMap'][$stepKey]->name.'</span>'
                                 : $templateData['webinarStepMap'][$stepKey]->name.$changeStepLink : '-').(
                                     ($isShowReport && $userType != 'learner' && $userType != 'reviewer')
-                                    ? ' <a class="reportStepType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get 4R report for this step" href="'.URL::base().'webinarManager/stepReport4R/'.$webinarId.'/'.$stepKey.'/'.$webinarId.'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
+                                    ? ' <a class="reportStepType" data-toggle="tooltip" data-placement="top" title="" data-original-title="Get report for this step" href="'.URL::base().'webinarManager/stepReport4R/'.$webinarId.'/'.$stepKey.'/'.$webinarId.'" style="text-decoration: none;font-size: 130%;"><i class="icon-eye-open"></i></a>
                                         <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Publish 4R report for this step" href="'.URL::base().'webinarManager/publishStep/'.$webinarId.'/'.$stepKey.'" style="text-decoration: none;font-size: 130%;"><i class="icon-upload"></i></a>'
                                     : '') . '</td>';
                     }
