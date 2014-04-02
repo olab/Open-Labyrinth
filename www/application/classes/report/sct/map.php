@@ -88,6 +88,8 @@ class Report_SCT_Map extends Report_Element {
             {
                 $firstColumnCounter++;
                 $localTablesRow = $localRow + 8;
+                $lastUserResponse = 0;
+                $atLeastOneResponse = 0;
 
                 $responseScore = $this->getScoreForEachResponse($question->id, $nodeId);
 
@@ -101,6 +103,8 @@ class Report_SCT_Map extends Report_Element {
 
                 foreach ($this->includeUsers as $userId)
                 {
+                    $lastUserResponse++;
+
                     $sessionObj = DB_ORM::select('User_Session')
                         ->where('user_id', '=', $userId)
                         ->where('map_id', '=', $this->map->id)
@@ -109,7 +113,7 @@ class Report_SCT_Map extends Report_Element {
                         ->as_array();
                     $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
 
-                    $userResponse = 0;
+                    $userResponse = 'no response';
                     if ($sessionObj)
                     {
                         $userResponseObj = DB_ORM::select('User_Response')
@@ -118,17 +122,23 @@ class Report_SCT_Map extends Report_Element {
                             ->where('session_id', '=', $sessionObj->id)
                             ->query()
                             ->fetch(0);
-                        if ($userResponseObj) $userResponse = $userResponseObj->response;
-                        else
+                        if ($userResponseObj)
                         {
-                            $column--;
-                            continue 2;
+                            $atLeastOneResponse++;
+                            $userResponse = $userResponseObj->response;
                         }
                     }
 
+                    if ($atLeastOneResponse == 0 AND $lastUserResponse == count($this->includeUsers))
+                    {
+                        $column--;
+                        continue 2;
+                    }
+
+                    if ($userResponse != 'no response') $userResponse = Arr::get($responseScore, $userResponse, 0);
 
                     $this->fillCell(0, $localTablesRow, DB_ORM::model('User', array($userId))->nickname);
-                    $this->fillCell($column, $localTablesRow, Arr::get($responseScore, $userResponse, 0));
+                    $this->fillCell($column, $localTablesRow, $userResponse);
                     $localTablesRow++;
                 }
 
@@ -167,11 +177,18 @@ class Report_SCT_Map extends Report_Element {
                 $localTablesRow++;
                 $this->fillCell(1, $localTablesRow, 'Average');
                 $this->fillCell($column, $localTablesRow, '=AVERAGE('.$calculateColumn.($localRow+1).':'.$calculateColumn.($localTablesRow-2).')');
-                $offset = $localTablesRow + 1;
+                $offset = $localTablesRow + 2;
                 // ----- end create first table ----- //
             }
         }
-        return $offset + 5;
+
+        // clear last column
+        for ($i = $offset; $i<$offset+count($this->includeUsers); $i++)
+        {
+            $this->fillCell($column+1, $i, '');
+        }
+
+        return $offset + 4;
     }
 
     /**
@@ -222,7 +239,7 @@ class Report_SCT_Map extends Report_Element {
             $sessionObj = DB_ORM::select('User_Session')
                 ->where('user_id', '=', $expertId)
                 ->where('map_id', '=', $this->map->id)
-                ->where('webinar_id', '=', $this->webinarId)
+                ->where('webinar_id', '=', $this->expertWebinarId)
                 ->query()
                 ->as_array();
             $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
