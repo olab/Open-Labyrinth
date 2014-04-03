@@ -5,13 +5,19 @@ jQuery(document).ready(function() {
 });
 
 function checkRule(submit){
+
     if (submit != 1) {
         jQuery('#check_rule_button').button('loading');
     }
+
     var ruleText = jQuery('#code').val(),
         mapId = jQuery('#mapId').val(),
         URL = jQuery('#url').val();
-    jQuery.post(URL, { mapId: mapId, ruleText: ruleText }, function(data) {
+
+    jQuery.post(URL, {
+        mapId: mapId,
+        ruleText: ruleText
+    }, function(data) {
         if(data != '') {
             if (data == 1){
                 checkSuccess();
@@ -26,11 +32,11 @@ function checkRule(submit){
             $('#submit_button').click();
         }
     }).fail(function() {
-            checkFailed();
-            if (submit == 1) {
-                $('#submit_button').click();
-            }
-        });
+        checkFailed();
+        if (submit == 1) {
+            $('#submit_button').click();
+        }
+    });
 
     return false;
 }

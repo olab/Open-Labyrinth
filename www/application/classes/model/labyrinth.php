@@ -61,10 +61,7 @@ class Model_Labyrinth extends Model {
                 $result['webinarId']   = Session::instance()->get('webinarId', null);
                 $result['webinarStep'] = Session::instance()->get('step', null);
 
-                Session::instance()
-                    ->delete('webinarId')
-                    ->delete('step')
-                    ->delete('webinarSection');
+                Session::instance()->delete('webinarId')->delete('step')->delete('webinarSection');
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
             }
@@ -495,16 +492,18 @@ class Model_Labyrinth extends Model {
         }
 
         $draggingQuestionResponses = Session::instance()->get('dragQuestionResponses');
-        if($draggingQuestionResponses != null && count($draggingQuestionResponses) > 0) {
-            foreach($draggingQuestionResponses as $responseJSON) {
+        if(count($draggingQuestionResponses) > 0)
+        {
+            foreach($draggingQuestionResponses as $responseJSON)
+            {
                 $responseObject = json_decode($responseJSON, true);
                 if($responseObject == null) continue;
 
-                if(isset($responseObject['id']) && isset($responseObject['responses'])) {
+                if(isset($responseObject['id']) && isset($responseObject['responses']))
+                {
                     DB_ORM::model('user_response')->createResponse($sessionId, $responseObject['id'], json_encode($responseObject['responses']), $nodeId);
                 }
             }
-
             Session::instance()->delete('dragQuestionResponses');
         }
 
@@ -690,17 +689,20 @@ class Model_Labyrinth extends Model {
                     $c_debug[$counter->id]['counter_value'] = $counterFunction;
 
                     if ($counterFunction != '') {
-                        if ($counterFunction[0] == '=') {
+                        if ($counterFunction[0] == '=')
+                        {
                             $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
-                        } else if ($counterFunction[0] == '-') {
+                        }
+                        else if ($counterFunction[0] == '-')
+                        {
                             $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
-                        } else {
-                            $thisCounter = $thisCounter + $counterFunction;
+                        } else
+                        {
+                            $thisCounter += (int)$counterFunction;
                             // we need only positive values
-                            if ($if_main) $main_counter['value'] += $counterFunction;
+                            if ($if_main) $main_counter['value'] += (int)$counterFunction;
                         }
                     }
-
                     $countersArray[$counter->id]['value'] = $thisCounter;
                     if ($counterFunction != ''){
                         $countersArray[$counter->id]['func'][] = $counterFunction;
@@ -785,7 +787,7 @@ class Model_Labyrinth extends Model {
                     $stopRules = Session::instance()->get('stopCommonRules', array());
                     foreach($commonRules as $rule){
                         if (!in_array('RULE_'.$rule->id, $stopRules)){
-                            $array = $runtimelogic->parsingString($rule->rule);
+                            $array = $runtimelogic->parsingString($rule->rule, $sessionId);
                             $c_debug['global_rules'][$rule->id] = $array;
                             $resultLogic = $array['result'];
 
@@ -832,6 +834,7 @@ class Model_Labyrinth extends Model {
                 foreach($countersArray as $counter)
                 {
                     $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
+
                     if (Arr::get($counter,'visible', FALSE))
                     {
                         $c_debug[$counter['counter']->id]['name'] = $counter['label'];
@@ -846,9 +849,8 @@ class Model_Labyrinth extends Model {
                 $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
                 $counterString .="</ul>";
 
-                if ($rootNode->id == $node->id) DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
-                else                            DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
-
+                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
+                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
                 if ($redirect != NULL && $redirect != $node->id){
                     Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);

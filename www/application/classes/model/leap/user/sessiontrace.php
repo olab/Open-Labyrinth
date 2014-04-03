@@ -344,7 +344,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 ->where('session_id', '=', $sessionId)
                 ->order_by('id', 'ASC');
         $result = $builder->query();
-        
+
         if($result->is_loaded()) {
 
             $traces = array();
@@ -359,7 +359,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
             return $traces;
         }
-        
+
         return NULL;
     }
     
@@ -440,6 +440,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             ->where('date_stamp', '>=', $dateStamp);
         $builder->execute();
     }
-}
 
-?>
+    public function getPreviousTrace ($sessionId)
+    {
+        $sessionTraces = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->query()->as_array();
+        return (count($sessionTraces) == 1) ? $sessionTraces[0] : $sessionTraces[count($sessionTraces)-2];
+    }
+}
