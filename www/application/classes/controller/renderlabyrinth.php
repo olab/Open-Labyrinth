@@ -307,6 +307,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if ($mapId != NULL)
         {
             if( ! $this->checkTypeCompatibility($mapId)) Request::initial()->redirect(URL::base());
+
             if ($nodeId == NULL) {
                 $nodeId = Arr::get($_GET, 'id', NULL);
                 if ($nodeId == NULL) {

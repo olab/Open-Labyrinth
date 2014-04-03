@@ -26,9 +26,12 @@ class RunTimeLogic {
     var $questionId         = null;
     var $questionResponse   = null;
     var $errors             = array();
+    var $sessionId          = 0;
 
-    public function parsingString($string)
+    public function parsingString($string, $sessionId = 0)
     {
+        $this->sessionId = $sessionId;
+
         if ( ! empty($string))
         {
             $parseFullString = false;
@@ -103,7 +106,6 @@ class RunTimeLogic {
             $array['errors'] = $this->errors;
             return $array;
         }
-
         return null;
     }
 
@@ -178,11 +180,14 @@ class RunTimeLogic {
         return null;
     }
 
-    public function replaceFunctions($string){
-        $error = false;
-        $search = array();
-        $replace = array();
-        $i = 0;
+    public function replaceFunctions($string)
+    {
+        $error          = false;
+        $search         = array();
+        $replace        = array();
+        $onNode         = 1;
+        $i              = 0;
+        $previousNodeId = 0;
 
         $pattern = 'MATCH\s*\\(\\[\\[CR:(\d+)\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
         if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
@@ -226,6 +231,34 @@ class RunTimeLogic {
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
+                    if (gettype($questionAnswersMatch) == 'array') {
+                        $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
+                        $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
+
+                        $replace[$i] = " ( $answerStrPosMatch != false) ";
+                    } else {
+                        $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
+                        $replace[$i] = '('.$register.'(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false OR \''.$questionAnswersMatch.'\'=='.$matches[2][$key].')';
+                    }
+                    $i++;
+                }
+            }
+        }
+
+        $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)\s*ON_NODE\s*\((.*?[^)]*)';
+        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0]) > 0){
+                foreach($matches[0] as $key => $match){
+                    $search[$i] = $match;
+                    $onNode = json_decode($matches[4][0], true);
+                    $questionAnswersMatch = $this->getQUAnswer($matches[1][$key], $onNode);
+                    if ($this->sessionId != 0)
+                    {
+                        $previousNodeId = DB_ORM::model('User_SessionTrace')->getPreviousTrace($this->sessionId);
+                        $previousNodeId = $previousNodeId->node_id;
+                    }
+                    $onNode = (int) in_array($previousNodeId, $onNode);
+
                     if (gettype($questionAnswersMatch) == 'array') {
                         $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
                         $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
@@ -301,6 +334,9 @@ class RunTimeLogic {
         $pattern = '\s====\s';
         $string = preg_replace("/".$pattern."/is", ' = ', $string);
 
+        $pattern = '\s*ON_NODE\s*\([^\)]*\)';
+        $string = preg_replace("/".$pattern."/is", ' AND '.$onNode , $string);
+
         return array('str' => $string, 'error' => $error);
     }
 
@@ -320,17 +356,18 @@ class RunTimeLogic {
         return $value;
     }
 
-    public function getQUAnswer($id = null){
+    public function getQUAnswer($id = null, $nodesId = array())
+    {
         $return = '';
-        if ($id == null){
-            $id = $this->questionId;
-        }
-        if ($this->questionResponse != null){
-            $return = $this->questionResponse;
-        } else {
+        if ($id == null) $id = $this->questionId;
+
+        if ($this->questionResponse != null) $return = $this->questionResponse;
+        else
+        {
             $sessionId = Session::instance()->get('session_id', $id);
-            $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id);
+            $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id, $nodesId);
             $numberOfResponses = count($responses);
+
             if ($responses != null && $numberOfResponses > 1) {
                 foreach ($responses as $key => $value) {
                     $return[] = $value->response;
@@ -341,11 +378,11 @@ class RunTimeLogic {
                 }
             }
         }
-
         return $return;
     }
 
-    public function replaceConditions($string){
+    public function replaceConditions($string)
+    {
         $pattern = '\s(THEN)\s(?=\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
 

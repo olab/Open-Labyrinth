@@ -432,20 +432,26 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 
-    public function action_checkCommonRule($isAjax = true, $mapId = '', $ruleText = ''){
+    public function action_checkCommonRule($isAjax = true, $mapId = '', $ruleText = '')
+    {
         $status = 1;
         $this->auto_render = false;
 
-        if ($isAjax) {
-            $mapId = Arr::get($this->request->post(), 'mapId', NULL);
-            $ruleText = Arr::get($this->request->post(),'ruleText',NULL);
+        if ($isAjax)
+        {
+            $mapId      = Arr::get($this->request->post(), 'mapId', NULL);
+            $ruleText   = Arr::get($this->request->post(),'ruleText',NULL);
         }
 
-        if ($mapId != NULL){
+        if ($mapId != NULL)
+        {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
             $values = array();
-			if (count($counters) > 0){
-				foreach($counters as $counter){
+
+			if (count($counters) > 0)
+            {
+				foreach($counters as $counter)
+                {
 					$values[$counter->id] = $counter->start_value;
 				}
 			}
@@ -457,12 +463,10 @@ class Controller_CounterManager extends Controller_Base {
             if (count($array['errors']) > 0){
                 $status = 0;
             }
-        } else {
-            $status = 0;
         }
-        if ($isAjax) {
-            echo json_encode($status);
-        }
+        else $status = 0;
+
+        if ($isAjax) echo json_encode($status);
 
         return $status;
     }

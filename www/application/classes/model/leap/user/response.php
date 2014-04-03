@@ -102,13 +102,32 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         }
     }
     
-    public function getResponse ($sessionId, $questionId)
+    public function getResponse ($sessionId, $questionId, $nodesId = array())
     {
-        return DB_ORM::select('user_response')
-            ->where('session_id', '=', $sessionId)
-            ->where('question_id', '=', $questionId)
-            ->query()
-            ->as_array();
+        if($nodesId)
+        {
+            $result = array();
+            foreach ($nodesId as $nodeId)
+            {
+                $response = DB_ORM::select('user_response')
+                    ->where('session_id', '=', $sessionId)
+                    ->where('question_id', '=', $questionId)
+                    ->where('node_id', '=', $nodeId)
+                    ->query()
+                    ->fetch(0);
+
+                if ($response) $result[] = $response;
+            }
+            return $result;
+        }
+        else
+        {
+            return DB_ORM::select('user_response')
+                ->where('session_id', '=', $sessionId)
+                ->where('question_id', '=', $questionId)
+                ->query()
+                ->as_array();
+        }
     }
 
     public function getResponsesByQuestion($questionId) {

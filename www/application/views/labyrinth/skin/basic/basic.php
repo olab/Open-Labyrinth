@@ -307,19 +307,26 @@
         $('.drag-question-container').sortable({
             axis: "y",
             cursor: "move",
+            create: function(event, ui) {
+                dragAndDropPost($(this));
+            },
             stop: function(event, ui) {
-                var questionId      = ui.item.parent().attr('questionId'),
-                    responsesObject = [];
-                ui.item.parent().children().each(function(index, value) {
-                    responsesObject.push($(value).attr('responseId'));
-                });
-
-                $.post('<?php echo URL::base(); ?>renderLabyrinth/ajaxDraggingQuestionResponse', {
-                    questionId: questionId,
-                    responsesJSON: JSON.stringify(responsesObject)
-                }, function(data) {});
+                dragAndDropPost($(this));
             }
         });
+
+        function dragAndDropPost(obj) {
+            var questionId      = obj.attr('questionId'),
+                responsesObject = [];
+
+            obj.children().each(function(index, value) {
+                responsesObject.push($(value).attr('responseId'));
+            });
+            $.post('<?php echo URL::base(); ?>renderLabyrinth/ajaxDraggingQuestionResponse', {
+                questionId: questionId,
+                responsesJSON: JSON.stringify(responsesObject)
+            }, function(data) {});
+        }
 
         $('.sct-question').on('change', function(){
             var idQuestion = $(this).data('question');
