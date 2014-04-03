@@ -22,7 +22,7 @@ if (isset($templateData['map'])) {
 ?>
 <h1><?php echo __('Edit skin of Labyrinth "').$templateData['map']->name.'"'; ?></h1>
 <div class="member-box round-all">
-    <?php echo $templateData['navigation']; ?>
+    <?php echo Arr::get($templateData, 'navigation'); ?>
     <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'skinManager/saveSkin/'.$templateData['map']->id; ?>">
         <fieldset class="fieldset">
             <legend><?php echo __('Create a new skin'); ?></legend>
