@@ -29,7 +29,6 @@ class Model_Labyrinth extends Model {
         $node               = DB_ORM::model('map_node', array((int) $nodeId));
         $webinarSection     = Session::instance()->get('webinarSection', false);
         $webinarSectionId   = Session::instance()->get('webinarSectionId', false);
-        $nodeOut            = 0;
 
         if ($node)
         {
@@ -84,7 +83,6 @@ class Model_Labyrinth extends Model {
                 foreach (DB_ORM::select('Map_Node_Section_node')->where('section_id', '=', $webinarSectionId)->query()->as_array() as $sectionObj)
                 {
                     $section[] = $sectionObj->node_id;
-                    if ($sectionObj->node_type == 'out') $nodeOut = $sectionObj->node_id;
                 }
             }
 
@@ -833,18 +831,22 @@ class Model_Labyrinth extends Model {
                 $counterString .="<ul class=\"navigation\">";
                 foreach($countersArray as $counter)
                 {
-                    $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
-
-                    if (Arr::get($counter,'visible', FALSE))
+                    $counterObj = Arr::get($counter, 'counter', false);
+                    if ($counterObj)
                     {
-                        $c_debug[$counter['counter']->id]['name'] = $counter['label'];
-                        $c_debug[$counter['counter']->id]['current_value'] = $counter['value'];
-                        $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$displayValue.')</li>';
-                        $remoteCounterString .= '<counter id="'.$counter['counter']->id.'" name="'.$counter['counter']->name.'" value="'.$counter['value'].'"></counter>';
-                    }
-                    if (isset($counter['redirect']) AND $redirect == NULL) $redirect = $counter['redirect'];
+                        $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
 
-                    $updateCounter .= '[CID='.$counter['counter']->id.',V='.$displayValue.']';
+                        if (Arr::get($counter,'visible', false))
+                        {
+                            $c_debug[$counterObj->id]['name'] = $counter['label'];
+                            $c_debug[$counterObj->id]['current_value'] = $counter['value'];
+                            $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$displayValue.')</li>';
+                            $remoteCounterString .= '<counter id="'.$counterObj->id.'" name="'.$counterObj->name.'" value="'.$counter['value'].'"></counter>';
+                        }
+                        if (isset($counter['redirect']) AND $redirect == NULL) $redirect = $counter['redirect'];
+
+                        $updateCounter .= '[CID='.$counterObj->id.',V='.$displayValue.']';
+                    }
                 }
                 $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
                 $counterString .="</ul>";
