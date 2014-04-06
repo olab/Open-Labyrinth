@@ -8,10 +8,11 @@ $(function() {
         for (var i = 0; i<mapsJSON.maps.length; i++) {
             tmpName      = mapsJSON.maps[i].name.replace(/\0/g,"");
             tmpName      = B64.decode($.trim(tmpName));
-            var search  = /Section:/,
-                section = (tmpName.match(search)) ? 'section' : '';
 
-            mapsOptions += '<option value="' + section + mapsJSON.maps[i].id + '">' + tmpName + '</option>';
+            var section = mapsJSON.maps[i].section,
+                display = section ? ' style="display:none;"' : '';
+
+            mapsOptions += '<option value="' + section + mapsJSON.maps[i].id + '"' + display + '>' + tmpName + '</option>';
         }
     }
 
@@ -22,7 +23,7 @@ $(function() {
             html          = '<div class="control-group labyrinth-item-%itemId%" itemNumber="%itemNumber%">' +
                                 '<label for="s%containerForId%-labyrinth-%labelId%" class="control-label">Labyrinth #%number%</label>' +
                                 '<div class="controls">' +
-                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6">' + mapsOptions + '</select> ' +
+                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6" data-section="1">' + mapsOptions + '</select> ' +
                                     '<button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>' +
                                 '</div>' +
                             '</div>';
@@ -123,14 +124,57 @@ $(function() {
             $redirectContainer.addClass('hide');
     });
 
-    $('#forum').click(function() {
-        var $s = $forumSelect.val();
-        if($("#topics-" + $s).length) {
+    $forumSelect.click(function() {
+        var $s = $forumSelect.val(),
+            forumTopics = $("#topics-" + $s);
+
+        if (forumTopics.length) {
             $(".topics").addClass('hide');
-            $("#topics-" + $s).removeClass('hide');
+            forumTopics.removeClass('hide');
         }
         else {
             $(".topics").addClass('hide');
         }
+    });
+
+    var selectLabyrinths = $('select[name$="labyrinths[]"]');
+
+    selectLabyrinths.each(function(){
+        var mapSelect   = $(this),
+            sectionId   = mapSelect.data('id');
+            section     = mapSelect.data('section');
+
+        if (section) createSectionSelect(mapSelect, sectionId);
+    });
+
+    $(document).on('change' , 'select[name$="labyrinths[]"]', function(){
+        createSectionSelect($(this), false);
+    });
+
+    function createSectionSelect (mapSelect, sectionId) {
+        var mapId       = mapSelect.val(),
+            URL         = window.location.origin + '/webinarManager/getSectionAJAX/' + mapId;
+
+        $.get(
+            URL,
+            function(data){
+                mapSelect.next('.section-js').remove();
+                var section = '<select class="section-js"><option>Select section</option>'
+                $.each($.parseJSON(data), function(name,id){
+                    var selected = (sectionId == id) ? ' selected' : '';
+                    section +='<option value="' + id + '"' + selected + '>' + name + '</option>'
+                });
+                section += '</select>';
+
+                if (data.length > 2) mapSelect.after(section);
+            }
+        );
+    }
+
+    $(document).on('change', '.section-js', function(){
+        var section     = $(this),
+            sectionId   = 'section' + section.val();
+
+        section.prev().val(sectionId);
     });
 });

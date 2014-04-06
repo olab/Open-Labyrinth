@@ -168,32 +168,16 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
     public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null)
     {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId, 'AND')
+        $builder = DB_ORM::select('User_Session')
+                ->where('user_id', '=', $userId)
                 ->where('map_id', '=', $mapId)
                 ->order_by('start_time', 'DESC');
 
-        if($webinarId != null) {
-            $builder = $builder->where('webinar_id', '=', $webinarId);
-        }
+        if($webinarId != null) $builder = $builder->where('webinar_id', '=', $webinarId);
 
-        if($currentStep != null) {
-            $builder = $builder->where('webinar_step', '<=', $currentStep);
-        }
+        if($currentStep != null) $builder = $builder->where('webinar_step', '<=', $currentStep);
 
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
+        return $builder->query()->as_array();
     }
 
     const USER_NOT_PLAY_MAP   = 0;
@@ -219,21 +203,19 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
         $endNodes = ($type == 'labyrinth')
             ? DB_ORM::model('map_node')->getEndNodesForMap($mapId)
-            : DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $id)->where('node_type', '=', 'out')->query()->as_array();
+            : DB_ORM::model('Map_Node_Section_Node')->getEndNode($id);
 
-        if ($endNodes != null)
+        if ($endNodes)
         {
             $endNodeIDs = array();
-            if(count($endNodes) > 0) {
-                foreach($endNodes as $endNode) {
-                    $endNodeIDs[] = ($type == 'labyrinth') ? $endNode->id : $endNode->node_id;
-                }
-            } else {
-                $endNodeIDs[] = $endNodes->id;
+            foreach($endNodes as $endNode)
+            {
+                $endNodeIDs[] = ($type == 'labyrinth') ? $endNode->id : $endNode->node_id;
             }
 
             $sessionIDs = array();
-            foreach($sessions as $session) {
+            foreach($sessions as $session)
+            {
                 $sessionIDs[] = $session->id;
             }
 

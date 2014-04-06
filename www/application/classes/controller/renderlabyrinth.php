@@ -546,7 +546,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId         = $this->request->param('id3', null);
         $questionStatus = $this->request->param('id4', NULL);
 
-        if ($optionNumber != NULL and $questionId != NULL) {
+        if ($optionNumber != NULL and $questionId != NULL)
+        {
             $this->auto_render = false;
 
             echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
@@ -817,18 +818,60 @@ class Controller_RenderLabyrinth extends Controller_Template {
     {
         $result             = NULL;
         $result['links']    = '';
+        $nextNodeTemplate   = 'This is the end of step.';
         $endNodeTemplate    = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
-        $sectionId          = Session::instance()->get('webinarSectionId', 0);
-        $endNodes            = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $sectionId)->where('node_type', '=', 'out')->query()->as_array();
+        $wSectionId         = Session::instance()->get('webinarSectionId', 0);
 
-        foreach ($endNodes as $endNode)
+        if ($wSectionId)
         {
-            $endNode = $endNode->node_id;
-            if($endNode == $node->id)
+            $endNodes       = DB_ORM::model('Map_Node_Section_Node')->getEndNode($wSectionId);
+            foreach ($endNodes as $endNode)
             {
+                if ($endNode->node_id != $node->id) continue;
+
+                $userSession    = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')));
+                $wId            = $userSession->webinar_id;
+                $wStep          = $userSession->webinar_step;
+                $wMapObj        = DB_ORM::select('Webinar_Map')
+                    ->where('webinar_id', '=', $wId)
+                    ->where('which', '=', 'section')
+                    ->where('reference_id', '=', $wSectionId)
+                    ->query()
+                    ->fetch(0);
+
+                // get next obj, if its in current webinar step, try to create link
+                if ($wMapObj)
+                {
+                    $wMapObj = DB_ORM::model('Webinar_Map', array($wMapObj->id + 1));
+                    if ($wMapObj->step = $wStep)
+                    {
+                        $href = URL::base().'webinarManager/play/'.$wId.'/'.$wStep.'/'.$wMapObj->reference_id.'/'.$wMapObj->which;
+                        switch($wMapObj->which)
+                        {
+                            case 'labyrinth':
+                                $mapRootNode = DB_ORM::model('Map_Node')->getRootNodeByMap($wMapObj->reference_id);
+                                if ($mapRootNode) $nextNodeTemplate = '<a href='.$href.'>'.$mapRootNode->title.'</a>';
+                                break;
+                            case 'section':
+                                $inNode = DB_ORM::model('Map_Node_Section_Node')->getInNode($wMapObj->reference_id);
+                                if ($inNode) $nextNodeTemplate = '<a href='.$href.'>'.DB_ORM::model('Map_Node', array($inNode->node_id))->title.'</a>';
+                                break;
+                        }
+                    }
+                }
+
+                switch($endNode->node_type)
+                {
+                    case 'out':
+                        $result['links'] = $endNodeTemplate;
+                        break;
+                    case 'crucial':
+                        $result['links'] = $nextNodeTemplate;
+                        break;
+                }
                 Session::instance()->delete('webinarSectionId');
-                $result['links'] = $endNodeTemplate;
                 return $result;
+
             }
         }
 

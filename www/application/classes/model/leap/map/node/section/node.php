@@ -25,7 +25,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
 
-    public $nodeType = array('regular', 'in', 'out');
+    public $nodeType = array('regular', 'in', 'out', 'crucial');
 
     public function __construct() {
         parent::__construct();
@@ -183,5 +183,24 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         if ($id_section) $id_section = $id_section->section_id;
 
         return $id_section;
+    }
+
+    public function getEndNode ($sectionId)
+    {
+        return DB_ORM::select('Map_Node_Section_Node')
+            ->where('section_id', '=', $sectionId)
+            ->where('node_type', '=', 'out')
+            ->where('node_type', '=', 'crucial', 'OR')
+            ->query()
+            ->as_array();
+    }
+
+    public function getInNode ($sectionId)
+    {
+        return DB_ORM::select('Map_Node_Section_Node')
+            ->where('section_id', '=', $sectionId)
+            ->where('node_type', '=', 'in')
+            ->query()
+            ->fetch(0);
     }
 }

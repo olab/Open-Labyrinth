@@ -8,8 +8,7 @@ jQuery(document).ready(function()
         reportMapType   = $('.reportMapType'),
         reportStepType  = $('.reportStepType'),
         selectedWeb     = webinar.val(),
-        href            = null,
-        title           = null;
+        href            = null;
 
     $('#4R').change(function() {
         clickOnButton($(this));
@@ -17,14 +16,14 @@ jQuery(document).ready(function()
     $('#SCT').change(function() {
         clickOnButton($(this));
     });
-    $('#Multi').change(function() {
+    $('#Poll').change(function() {
         clickOnButton($(this));
     });
 
     function clickOnButton (button){
         var typeId = button.attr('id');
 
-        if (typeId == '4R' || typeId == 'Multi') {
+        if (typeId == '4R' || typeId == 'Poll') {
             th.hide();
             td.hide();
             webinar.hide();

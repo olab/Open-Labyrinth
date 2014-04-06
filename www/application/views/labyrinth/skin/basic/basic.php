@@ -135,11 +135,14 @@
             var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + <?php echo $templateData['node']->id; ?>;
 
             var $response = $('#AJAXresponse' + qid);
-            $.get(URL, function(data) {
-                if(data != '') {
-                    $response.html(data);
+            $.get(
+                URL,
+                function(data) {
+                    if(data != '') {
+                        $response.html(data);
+                    }
                 }
-            });
+            );
         }
     }
 
