@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Class 4R Report
  */
-class Report_Multi extends Report {
+class Report_Poll extends Report {
     private $maps;
     private $name;
     private $countOfChoices;
@@ -83,7 +83,7 @@ class Report_Multi extends Report {
 
         foreach($this->maps as $mapData)
         {
-            $this->mapElements[] = new Report_Multi_Map(
+            $this->mapElements[] = new Report_Poll_Map(
                 $this->implementation,
                 $mapData['mapId'],
                 $this->countOfChoices,

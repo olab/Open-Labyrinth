@@ -93,7 +93,8 @@ class Controller_WebinarManager extends Controller_Base {
         {
             foreach (DB_ORM::select('Map_Node_Section')->where('map_id', '=', $map->id)->query()->as_array() as $section)
             {
-                $section->name = $map->name.'. Section: '.$section->name;
+                $this->templateData['sections'][$section->id] = $section->map_id;
+                $section->name = $map->name;
                 $this->templateData['maps'][] = $section;
             }
         }
@@ -483,7 +484,7 @@ class Controller_WebinarManager extends Controller_Base {
         else Request::initial()->redirect(URL::base().'home/index');
     }
 
-    public function action_stepReportMulti()
+    public function action_stepReportPoll()
     {
         $webinarId          = $this->request->param('id', null);
         $stepKey            = $this->request->param('id2', null);
@@ -503,7 +504,7 @@ class Controller_WebinarManager extends Controller_Base {
 
         if($isExistAccess)
         {
-            $report         = new Report_Multi(new Report_Impl_PHPExcel(), $webinar->title);
+            $report         = new Report_Poll(new Report_Impl_PHPExcel(), $webinar->title);
             if(count($webinar->maps) > 0)
             {
                 foreach($webinar->maps as $webinarMap)
@@ -533,7 +534,7 @@ class Controller_WebinarManager extends Controller_Base {
         $this->createReport('SCT');
     }
 
-    public function action_mapReportMulti()
+    public function action_mapReportPoll()
     {
         $this->createReport('Poll');
     }
@@ -556,7 +557,7 @@ class Controller_WebinarManager extends Controller_Base {
                 $report->get();
             break;
             case 'Poll':
-                $report = new Report_Multi(new Report_Impl_PHPExcel(), 'Multi-player '.DB_ORM::model('map', array((int)$mapId))->name);
+                $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Poll '.DB_ORM::model('map', array((int)$mapId))->name);
                 $report->add($mapId, $webinarId, '');
                 $report->generate();
                 $report->get();
@@ -649,6 +650,20 @@ class Controller_WebinarManager extends Controller_Base {
             $mapsId[] = $wObj->reference_id;
         }
         echo(json_encode($mapsId));
+        exit;
+    }
+
+    public function action_getSectionAJAX ()
+    {
+        $response       = array();
+        $mapId          = $this->request->param('id');
+        $sectionObjs    = DB_ORM::model('Map_Node_Section')->getSectionsByMapId($mapId);
+
+        foreach ($sectionObjs as $sectionObj)
+        {
+            $response[$sectionObj->name] = $sectionObj->id;
+        }
+        echo json_encode($response);
         exit;
     }
 }

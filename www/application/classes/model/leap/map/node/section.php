@@ -131,19 +131,7 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
     
     public function getSectionsByMapId ($mapId)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id');
-        $result = $builder->query();
-        
-        if ($result->is_loaded())
-        {
-            $sections = array();
-
-            foreach($result as $record) $sections[] = DB_ORM::model('map_node_section', array((int)$record['id']));
-            
-            return $sections;
-        }
-        
-        return array();
+        return DB_ORM::select('Map_Node_Section')->where('map_id', '=', $mapId)->query()->as_array();
     }
     
     public function duplicateSections ($fromMapId, $toMapId, $nodeMap)

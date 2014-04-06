@@ -18,9 +18,11 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+
+$sectionIds = Arr::get($templateData, 'sections', array());
 ?>
 
-<h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __("Scenario"); ?></h1>
+<h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?></h1>
 
 <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script language="javascript" type="text/javascript">
@@ -123,14 +125,16 @@
                 <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>"><?php
                     if(count($step->maps) > 0) {
                         $index = 1;
-                        foreach($step->maps as $stepMap) { ?>
+                        foreach($step->maps as $stepMap) {
+                        $section = ($stepMap->which == 'section'); ?>
                         <div class="control-group labyrinth-item-<?php echo $index; ?>" itemNumber="<?php echo $index ?>">
                             <label for="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" class="control-label">Labyrinth #<?php echo $index ?></label>
                             <div class="controls">
-                                <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6"><?php
+                                <select id="s<?php echo $step->id; ?>-labyrinth-<?php echo $index; ?>" name="s<?php echo $step->id; ?>_labyrinths[]" class="span6" <?php if ($section) echo 'data-id="'.$stepMap->reference_id.'" data-section="1"'; ?>><?php
                                 foreach(Arr::get($templateData, 'maps', array()) as $m) {
-                                    $section = (get_class($m) == 'Model_Leap_Map_Node_Section') ? 'section' : ''; ?>
-                                    <option value="<?php echo $section.$m->id; ?>" <?php if($m->id == $stepMap->reference_id) echo 'selected="selected"'; ?>><?php
+                                    $mapId = $section ? Arr::get($sectionIds, $stepMap->reference_id, 0) : $stepMap->reference_id;
+                                    $ifSectionClass = get_class($m) == 'Model_Leap_Map_Node_Section'; ?>
+                                    <option value="<?php echo $ifSectionClass ? 'section'.$m->id : $m->id; ?>" <?php if($m->id == $mapId) echo 'selected'; if ($ifSectionClass) echo 'style="display:none";' ?>><?php
                                         echo $m->name; ?>
                                     </option><?php
                                 } ?>
@@ -266,7 +270,9 @@
         echo 'maps: [';
         $mapsJSON = '';
         foreach($templateData['maps'] as $map) {
-            $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'"}, ';
+            $ifSectionClass = get_class($map) == 'Model_Leap_Map_Node_Section';
+            $section = $ifSectionClass ? 'section' : '';
+            $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'", section: "'.$section.'"}, ';
         }
 
         if(strlen($mapsJSON) > 2) {

@@ -680,7 +680,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getRootNodeByMap($mapId) {
+    public function getRootNodeByMap($mapId)
+    {
         $typeId = DB_ORM::model('map_node_type')->getTypeByName('root')->id;
         if($typeId != NULL) {
             $builder = DB_SQL::select('default')
@@ -863,23 +864,9 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getEndNodesForMap($mapId) {
-        $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->where('end', '=', 1)
-                           ->column('id')
-                           ->query();
-
-        $result = null;
-        if($records->is_loaded()) {
-            $result = array();
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-        }
-
-        return $result;
+    public function getEndNodesForMap ($mapId)
+    {
+        return DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->where('end', '=', 1)->query()->as_array();
     }
 
     public function getNodeName($nodeId) {

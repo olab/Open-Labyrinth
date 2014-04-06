@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_Multi_Map extends Report_Element {
+class Report_Poll_Map extends Report_Element {
 
     private $map;
     private $sections;
@@ -61,7 +61,8 @@ class Report_Multi_Map extends Report_Element {
         $row++;
 
         $include_users = DB_ORM::select('webinar_user')->where('webinar_id', '=', $this->webinarId)->where('include_4R', '=', 1)->query()->as_array();
-        $questionIdForTable = array();
+        $rowQuestionName = $row;
+        $row++;
 
         // --- table user answers --- //
         foreach ($include_users as $wUser)
@@ -93,8 +94,7 @@ class Report_Multi_Map extends Report_Element {
 
                 if (! $userResponseObj) continue;
 
-                $questionIdForTable[] = $userResponseObj->question_id;
-
+                $this->fillCell($column, $rowQuestionName, 'Stem: '.$multiQuestion->question->stem);
                 $this->fillCell($column, $headerRow, 'Node ('.$userResponseObj->node_id.'). Question ('.$userResponseObj->question_id.')');
                 $this->fillCell($column, $row, $userResponseObj->response);
                 $column++;
@@ -103,41 +103,6 @@ class Report_Multi_Map extends Report_Element {
         }
         $row++;
         // --- end table user answers --- //
-
-        // --- table question score --- //
-        $this->fillCell(0, $row, 'Answers', 16);
-        $row++;
-
-        $headerRow = $row;
-        $row++;
-
-        $questionIdForTable = array_unique($questionIdForTable);
-        asort($questionIdForTable);
-
-        foreach ($questionIdForTable as $questionId)
-        {
-            $column         = 0;
-            $questionObj    = DB_ORM::model('Map_Question', array($questionId));
-
-            $this->fillCell($column, $row, $questionObj->id.') '.$questionObj->stem);
-            $column++;
-
-            foreach (DB_ORM::select(('Map_Question_Response'))->where('question_id', '=', $questionId)->query()->as_array() as $responseObj)
-            {
-                $innerColumn = $column;
-                $this->fillCell($innerColumn, $headerRow, 'Responses');
-                $this->fillCell($innerColumn, $row, $responseObj->response);
-                $innerColumn++;
-                $this->fillCell($innerColumn, $headerRow, 'Correct');
-                $this->fillCell($innerColumn, $row, $responseObj->is_correct);
-                $innerColumn++;
-                $this->fillCell($innerColumn, $headerRow, 'Score');
-                $this->fillCell($innerColumn, $row, $responseObj->score);
-                $row++;
-            }
-            $row++;
-        }
-        // --- end table question score --- //
 
         return $row;
     }
@@ -164,7 +129,7 @@ class Report_Multi_Map extends Report_Element {
         {
             foreach($questions as $question)
             {
-                $this->questions[] = new Report_Multi_Question(
+                $this->questions[] = new Report_Poll_Question(
                     $this->implementation,
                     $question->id,
                     $this->webinarId,
