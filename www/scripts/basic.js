@@ -4,17 +4,19 @@ $(document).ready(function(){
     var questions = $('textarea[name^="qresponse_"]'),
         toNodeHref = '';
 
-    $('a[href^="/renderLabyrinth/go"]').click(function(e){
-        e.preventDefault();
-        toNodeHref = e.currentTarget.href;
+    if(questions.length > 1){
+        $('a[href^="/renderLabyrinth/go"]').click(function(e){
+            e.preventDefault();
+            toNodeHref = e.currentTarget.href;
 
-        questions.each(function(){
-            var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
-            if ($.inArray(idTextQ, submitTextQ) === -1){
-                ajaxFunction(idTextQ);
-            }
+            questions.each(function(){
+                var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
+                if ($.inArray(idTextQ, submitTextQ) === -1){
+                    ajaxFunction(idTextQ);
+                }
+            });
         });
-    });
+    }
 
     var submitTextQ = [],
         savedTextQ = 0;
