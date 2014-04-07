@@ -7,7 +7,7 @@ var submitTextQ = [],
 $(document).ready(function(){
     questions = $('textarea[name^="qresponse_"]');
 
-    if(questions.length > 1){
+    if(questions.length > 0){
         $('a[href^="/renderLabyrinth/go"]').click(function(e){
             e.preventDefault();
             toNodeHref = e.currentTarget.href;
