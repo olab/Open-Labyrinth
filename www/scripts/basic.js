@@ -1,8 +1,11 @@
-var urlBase = window.location.origin + '/';
+var submitTextQ = [],
+    questions = null,
+    toNodeHref = '',
+    savedTextQ = 0,
+    urlBase = window.location.origin + '/';
 
 $(document).ready(function(){
-    var questions = $('textarea[name^="qresponse_"]'),
-        toNodeHref = '';
+    questions = $('textarea[name^="qresponse_"]');
 
     if(questions.length > 1){
         $('a[href^="/renderLabyrinth/go"]').click(function(e){
@@ -15,32 +18,31 @@ $(document).ready(function(){
                     ajaxFunction(idTextQ);
                 }
             });
+
+            return false;
         });
     }
-
-    var submitTextQ = [],
-        savedTextQ = 0;
-
-    function ajaxFunction(qid) {
-        submitTextQ.push(qid);
-        var qresp = $("#qresponse_" + qid).val();
-
-        if (qresp != ''){
-            qresp = B64.encode(qresp);
-            var URL = urlBase + "renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + idNode;
-
-            var $response = $('#AJAXresponse' + qid);
-            $.get(
-                URL,
-                function(data) {
-                    if(data != '') $response.html(data);
-                    savedTextQ += 1;
-                    if (savedTextQ == questions.length) window.location.href = toNodeHref;
-                }
-            )
-        }
-    }
 });
+
+function ajaxFunction(qid) {
+    submitTextQ.push(qid);
+    var qresp = $("#qresponse_" + qid).val();
+
+    if (qresp != ''){
+        qresp = B64.encode(qresp);
+        var URL = urlBase + "renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + idNode;
+
+        var $response = $('#AJAXresponse' + qid);
+        $.get(
+            URL,
+            function(data) {
+                if(data != '') $response.html(data);
+                savedTextQ += 1;
+                if (savedTextQ == questions.length) window.location.href = toNodeHref;
+            }
+        )
+    }
+}
 
 window.dhx_globalImgPath = urlBase + "scripts/dhtmlxSlider/codebase/imgs/";
 
