@@ -41,17 +41,7 @@
 
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
 
-<script language="JavaScript">
-    window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
-
-    function toggle_visibility(id) {
-        var e = document.getElementById(id);
-        if (e.style.display == 'none')
-            e.style.display = 'block';
-        else
-            e.style.display = 'none';
-    }
-</script>
+<script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
 
 <script language="javascript">
     $(document).ready(function(){
@@ -89,6 +79,17 @@
                 $(this).text('');
                 $(this).addClass('cleared');
             }
+        });
+
+        $('a[href^="/renderLabyrinth/go"]').click(function(e){
+            e.preventDefault();
+            $('textarea[name^="qresponse_"]').each(function(){
+                var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
+                if ($.inArray(idTextQ, submitTextQ) === -1){
+                    ajaxFunction(idTextQ);
+                }
+            });
+            window.location.href = e.currentTarget.href;
         });
     });
 
@@ -128,8 +129,11 @@
         if (restore) selObj.selectedIndex = 0;
     }
 
+    var submitTextQ = [];
     function ajaxFunction(qid) {
+        submitTextQ.push(qid);
         var qresp = $("#qresponse_" + qid).val();
+
         if (qresp != ''){
             qresp = B64.encode(qresp);
             var URL = "<?php echo URL::base(); ?>renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + <?php echo $templateData['node']->id; ?>;

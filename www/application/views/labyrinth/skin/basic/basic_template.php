@@ -40,21 +40,9 @@
     <!--<script  src="--><?php //echo URL::base(); ?><!--scripts/bootstrap/js/bootstrap.js"></script>-->
     <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 
+    <script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
 
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
-
-
-    <SCRIPT LANGUAGE="JavaScript">
-        window.dhx_globalImgPath = "<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/imgs/";
-
-        function toggle_visibility(id) {
-            var e = document.getElementById(id);
-            if (e.style.display == 'none')
-                e.style.display = 'block';
-            else
-                e.style.display = 'none';
-        }
-    </SCRIPT>
 
     <script language="javascript">
         $(document).ready(function()
@@ -94,6 +82,17 @@
                     $(this).addClass('cleared');
                 }
             });
+
+            $('a[href^="/renderLabyrinth/go"]').click(function(e){
+                e.preventDefault();
+                $('textarea[name^="qresponse_"]').each(function(){
+                    var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
+                    if ($.inArray(idTextQ, submitTextQ) === -1){
+                        ajaxFunction(idTextQ);
+                    }
+                });
+                window.location.href = e.currentTarget.href;
+            });
         });
 
         function Populate(form) {
@@ -132,7 +131,9 @@
             if (restore) selObj.selectedIndex = 0;
         }
 
+        var submitTextQ = [];
         function ajaxFunction(qid) {
+            submitTextQ.push(qid);
             var qresp = $("#qresponse_" + qid).val();
             if (qresp != ''){
                 qresp = B64.encode(qresp);

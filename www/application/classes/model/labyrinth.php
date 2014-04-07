@@ -513,9 +513,6 @@ class Model_Labyrinth extends Model {
         if (count($arrayAddedQuestions) > 0) {
             foreach($arrayAddedQuestions as $questionId => $value)
             {
-                $checkForResponseTextQuestion = DB_ORM::select('User_Response')->where('session_id', '=',$sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
-                if ( ! $checkForResponseTextQuestion) $this->question($questionId, '', NULL, $nodeId);
-
                 $question = DB_ORM::model('map_question', array((int) $questionId));
 
                 if ($question->settings != '')  list($rule, $isCorrect) = json_decode($question->settings);
