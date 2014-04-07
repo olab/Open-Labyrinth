@@ -35,6 +35,8 @@ jQuery(document).ready(function()
 
         changeLinkType(reportMapType, typeId, 'mapReport');
         changeLinkType(reportStepType, typeId, 'stepReport');
+
+        window.location.hash = typeId;
     }
 
     function changeLinkType (objs, typeId, stepOrMap) {
@@ -100,6 +102,12 @@ jQuery(document).ready(function()
         if(Message != null) Message.addClass('hide');
     });
     // ----------- end discrepancyMap error massage ---------- //
+
+    var hash = window.location.hash;
+    if (hash != '') {
+        $(hash).click();
+    }
+
 });
 
 function ajaxCheck(id, idUser) {
