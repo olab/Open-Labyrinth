@@ -91,7 +91,9 @@
                         ajaxFunction(idTextQ);
                     }
                 });
-                window.location.href = e.currentTarget.href;
+                setTimeout(function() {
+                    window.location.href = e.currentTarget.href;
+                }, 100);
             });
         });
 
