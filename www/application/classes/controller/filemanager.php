@@ -296,7 +296,9 @@ class Controller_FileManager extends Controller_Base {
         $pHeight        = Arr::get($post, 'imageH');
         $imageRotate    = Arr::get($post, 'imageRotate');
         $ext            = strtolower($this->endc(explode(".", $imageSource)));
-        $function       = $this->returnCorrectFunction($ext);
+        $getImg         = getimagesize(substr($file_src, 1));
+        $mime           = Arr::get($getImg, 'mime', false);
+        $function       = $this->returnFunctionByMime($mime);
         $image          = $function($imageSource);
         $imageX         = Arr::get($post, '$imageX');
         $imageY         = Arr::get($post, '$imageY');
@@ -372,6 +374,22 @@ class Controller_FileManager extends Controller_Base {
                 $function = "imagecreatefromjpeg";
                 break;
             case "gif":
+                $function = "imagecreatefromgif";
+                break;
+        }
+        return $function;
+    }
+
+    private function returnFunctionByMime($mime) {
+        $function = "";
+        switch ($mime) {
+            case "image/png":
+                $function = "imagecreatefrompng";
+                break;
+            case "image/jpeg":
+                $function = "imagecreatefromjpeg";
+                break;
+            case "image/gif":
                 $function = "imagecreatefromgif";
                 break;
         }
