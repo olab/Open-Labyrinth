@@ -295,7 +295,7 @@ class Controller_FileManager extends Controller_Base {
         $pWidth         = Arr::get($post, 'imageW');
         $pHeight        = Arr::get($post, 'imageH');
         $imageRotate    = Arr::get($post, 'imageRotate');
-        $ext            = $this->endc(explode(".", $imageSource));
+        $ext            = strtolower($this->endc(explode(".", $imageSource)));
         $function       = $this->returnCorrectFunction($ext);
         $image          = $function($imageSource);
         $imageX         = Arr::get($post, '$imageX');
