@@ -722,7 +722,4 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             }
         }
     }
-
 }
-
-?>
