@@ -694,7 +694,6 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 return DB_ORM::model('map_node', array((int)$result[0]['id']));
             }
         }
-        
         return NULL;
     }
     

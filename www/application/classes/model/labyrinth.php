@@ -1088,7 +1088,7 @@ class Model_Labyrinth extends Model {
             if (($question->type->value == 'text') || ($question->type->value == 'area')) {
                 $response = htmlspecialchars(base64_decode($response));
                 $sessionId = $this->getSessionID();
-                DB_ORM::model('user_response')->createResponse($sessionId, $question->id, $response, $nodeId);
+                DB_ORM::model('user_response')->updateResponse($sessionId, $question->id, $response, $nodeId);
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;

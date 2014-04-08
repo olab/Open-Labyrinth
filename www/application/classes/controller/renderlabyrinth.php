@@ -550,7 +550,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if ($optionNumber != NULL and $questionId != NULL)
         {
             $this->auto_render = false;
-
+            if( ! $nodeId)
+            {
+                $mapId = DB_ORM::model('Map_Question', array($questionId))->map_id;
+                $nodeId = DB_ORM::model('Map_Node')->getRootNodeByMap($mapId);
+            }
             echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
         }
     }

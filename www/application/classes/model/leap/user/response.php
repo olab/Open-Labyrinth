@@ -76,30 +76,25 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         if ( ! $sessionId) return;
 
-        $this->question_id = $questionId;
-        $this->session_id = $sessionId;
-        $this->response = $response;
-        $this->node_id = $nodeId;
+        DB_ORM::insert('User_Response')
+        ->column('question_id', $questionId)
+        ->column('session_id', $sessionId)
+        ->column('response', $response)
+        ->column('node_id', $nodeId)
+        ->execute();
 
-        $this->save();
+        if (Request::initial()->is_ajax()) exit();
     }
     
-    public function updateResponse($sessionId, $questionId, $response) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('question_id', '=', $questionId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $resp = DB_ORM::model('user_response', array((int)$result[0]['id']));
-            if($resp) {
-                $resp->response = $response;
-                $resp->save();
-            }
-        } else {
-            $this->createResponse($sessionId, $questionId, $response);
-        }
+    public function updateResponse($sessionId, $questionId, $response, $nodeId)
+    {
+        $result = DB_ORM::select('User_Response')->where('session_id', '=', $sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
+
+        if( ! $result) $this->createResponse($sessionId, $questionId, $response, $nodeId);
+
+        $result->response = $response;
+        $result->node_id = $nodeId;
+        $result->save();
     }
     
     public function getResponse ($sessionId, $questionId, $nodesId = array())
