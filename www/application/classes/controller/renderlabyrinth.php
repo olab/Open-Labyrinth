@@ -361,6 +361,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
+                        else list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
                     }
 
                     $data['navigation'] = $this->generateNavigation($data['sections']);
