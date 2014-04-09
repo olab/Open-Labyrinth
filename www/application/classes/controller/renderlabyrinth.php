@@ -361,7 +361,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                             list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
                             $data['undoLinks'] = $undoLinks;
                         }
-                        else list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
+                        else $undoNodes = Arr::get($this->prepareUndoLinks($sessionId, $mapId, $nodeId), 1 ,null);
                     }
 
                     $data['navigation'] = $this->generateNavigation($data['sections']);
@@ -1799,10 +1799,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
             foreach ($traces as $trace)
             {
                 $id_node            = $trace['node_id'];
+
+                if (($id_section AND $id_section != DB_ORM::model('Map_Node_Section_Node')->getIdSection($id_node)) OR
+                    DB_ORM::model('Map_Node', array($id_node))->undo == 0) continue;
+
+
                 $nodes[$id_node]    = $id_node;
                 $trace['node_name'] = DB_ORM::model('map_node')->getNodeName($id_node);
 
-                if ($id_section AND $id_section != DB_ORM::model('Map_Node_Section_Node')->getIdSection($id_node)) continue;
                 $html .= '<li class="undo">';
                 $html .= $trace['node_name'];
                 $html .= '<a href='.URL::base().'renderLabyrinth/undo/'.$mapId.'/'.$id_node.'> [undo]</a>';
