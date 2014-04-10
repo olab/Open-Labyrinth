@@ -32,6 +32,7 @@ $(document).ready(function(){
 });
 
 function ajaxFunction(qid) {
+    submitTextQ.push(qid);
     var qresp = $("#qresponse_" + qid).val();
 
     if (qresp == '') qresp = 'no response';

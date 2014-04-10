@@ -100,12 +100,12 @@ class Controller_QuestionManager extends Controller_Base {
                 $usedElements = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
                 $this->templateData['used'] = count($usedElements);
 
-                if($this->templateData['question']->settings != null) {
+                if($this->templateData['question']->settings != null)
+                {
                     $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
-
                     if ($this->templateData['question']->type->value == 'area' || $this->templateData['question']->type->value == 'text') {
                         $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
-                        if ($this->templateData['questionSettings'][0]) $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
+                        if (isset($this->templateData['questionSettings'][0])) $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
                     }
                 }
             }
