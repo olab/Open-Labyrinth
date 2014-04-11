@@ -76,14 +76,12 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         if ( ! $sessionId) return;
 
-        DB_ORM::insert('User_Response')
-        ->column('question_id', $questionId)
-        ->column('session_id', $sessionId)
-        ->column('response', $response)
-        ->column('node_id', $nodeId)
-        ->execute();
+        $this->question_id = $questionId;
+        $this->session_id = $sessionId;
+        $this->response = $response;
+        $this->node_id = $nodeId;
 
-        if (Request::initial()->is_ajax()) exit();
+        $this->save();
     }
     
     public function updateResponse($sessionId, $questionId, $response, $nodeId)
