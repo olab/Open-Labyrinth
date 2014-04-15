@@ -186,6 +186,8 @@ $(function() {
     $stepsContainer.on('click', '.poll-node-js', function(){
         var button = $(this),
             mapId = $(this).data('id');
+
+        button.button('loading');
         $.get(
             urlBase + '/webinarManager/getNodesAjax/' + mapId,
             function(data){
@@ -201,6 +203,7 @@ $(function() {
                     '<button class="btn btn-danger poll-node-indent delete-node-js"><i class="icon-trash"></i></button>';
 
                 button.before(nodeSelect);
+                button.button('reset');
             }
         );
     });
