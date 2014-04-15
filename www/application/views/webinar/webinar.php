@@ -148,7 +148,7 @@ $sectionIds = Arr::get($templateData, 'sections', array());
                                         <option value="0">Select poll node</option><?
                                         $mapNodes = Arr::get($mapData, 'mapNodes', array());
                                         foreach ($mapNodes as $id=>$title) { ?>
-                                        <option value="<?php echo $id; ?>" <?php if ($selectedNodeId == $id) { echo 'selected'; } ?>><?php echo $title.' (id: '.$id.')'; ?></option>
+
                                         <?php } ?>
                                     </select>
                                     <input type="text" value="<?php echo $time; ?> sec" class="poll-node-indent" name="poll_nodes[]" required>
