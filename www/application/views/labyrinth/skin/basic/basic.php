@@ -42,7 +42,8 @@
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
 
 <script>
-    var idNode = <?php echo $templateData['node']->id; ?>;
+    var idNode = <?php echo $templateData['node']->id; ?>,
+        pollTime = <?php echo Arr::get($templateData, 'time', 0); ?>;
 </script>
 <script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
 

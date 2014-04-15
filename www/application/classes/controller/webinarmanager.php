@@ -100,6 +100,23 @@ class Controller_WebinarManager extends Controller_Base {
         }
         // ------ End add sections ------- //
 
+        // ------ Add poll node, end nodes of map ------- //
+        foreach (DB_ORM::select('Webinar_PollNode')->where('webinar_id', '=', $webinarId)->query()->as_array() as $obj)
+        {
+            $nodeObj = DB_ORM::model('Map_Node', array($obj->node_id));
+            $mapId   = $nodeObj->map->id;
+            $this->templateData[$mapId]['pollNodes'][$obj->node_id] = $obj->time;
+
+            if (empty($this->templateData[$mapId]['mapNodes']))
+            {
+                foreach (DB_ORM::model('Map_Node')->getAllNode($mapId) as $nodeObj)
+                {
+                    $this->templateData[$mapId]['mapNodes'][$nodeObj->id] = $nodeObj->title;
+                }
+            }
+        }
+        // ------ End add poll node ------- //
+
         $this->templateData['webinar'] = DB_ORM::model('webinar', array($webinarId));
 
         $this->templateData['experts']  = array();
@@ -665,5 +682,23 @@ class Controller_WebinarManager extends Controller_Base {
         }
         echo json_encode($response);
         exit;
+    }
+
+    public function action_getNodesAjax ()
+    {
+        $mapId  = $this->request->param('id');
+        $result = array();
+
+        foreach(DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj)
+        {
+            $result[$nodeObj->title] = $nodeObj->id;
+        }
+        ksort($result);
+        exit(json_encode($result));
+    }
+
+    public function action_deleteNodeAjax ()
+    {
+        DB_ORM::model('Webinar_PollNode')->deleteNode($this->request->param('id'));
     }
 }

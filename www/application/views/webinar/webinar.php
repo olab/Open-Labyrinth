@@ -140,6 +140,21 @@ $sectionIds = Arr::get($templateData, 'sections', array());
                                 } ?>
                                 </select>
                                 <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
+
+                                <div class="poll-node-section"><?php
+                                    $mapData = Arr::get($templateData, $mapId, array());
+                                    foreach (Arr::get($mapData, 'pollNodes', array()) as $selectedNodeId=>$time){ ?>
+                                    <select class="node-select-js" name="poll_nodes[]">
+                                        <option value="0">Select poll node</option><?
+                                        foreach (Arr::get($mapData, 'mapNodes', array()) as $id=>$title) { ?>
+                                        <option value="<?php echo $id; ?>" <?php if ($selectedNodeId == $id) echo 'selected'; ?>><?php echo $title.' (id: '.$id.')'; ?></option><?php
+                                        } ?>
+                                    </select>
+                                    <input type="text" value="<?php echo $time; ?> sec" class="poll-node-indent" name="poll_nodes[]" required>
+                                    <button class="btn btn-danger poll-node-indent delete-node-js" data-id="<?php echo $selectedNodeId; ?>"><i class="icon-trash"></i></button><?php
+                                    }?>
+                                    <button type="button" class="btn btn-info poll-node-js" data-id="<? echo $mapId; ?>">Add poll node</button>
+                                </div>
                             </div>
                         </div><?php
                         $index++;

@@ -31,6 +31,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId      = $this->request->param('id', null);
         $editOn     = $this->request->param('id2', null);
         $access     = $this->checkTypeCompatibility($mapId);
+        $webinarId  = Session::instance()->get('webinarId');
 
         if ($mapId == null OR ! $access) Request::initial()->redirect(URL::base());
 
@@ -69,6 +70,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
 
             if ( ! $data) Request::initial()->redirect(URL::base());
+
+            /* if exist poll node save its time */
+            $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($idRootNode, $webinarId);
 
             /* update virtual patient, third parameter check for redirect */
             $this->patient_sessions_update($mapId, $idRootNode, $mapId);
@@ -141,6 +145,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $this->template = View::factory($skin);
+
             $this->template->set('templateData', $data);
         }
     }
@@ -1865,6 +1870,23 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if ($labyrinthType == 1) return true;
                 return false;
         }
+    }
+
+    public function action_savePoll()
+    {
+        $onNode = $this->request->param('id');
+        $toNode = $this->request->param('id2');
+
+        DB_ORM::model('Webinar_Poll')->savePoll($onNode, $toNode);
+        exit;
+    }
+
+    public function action_getNodeIdByPoll()
+    {
+        $onNode = $this->request->param('id');
+        $range  = $this->request->param('id2');
+        $nodeId = DB_ORM::model('Webinar_Poll')->getNodeIdByPoll($onNode, $range);
+        exit ($nodeId);
     }
 }
 

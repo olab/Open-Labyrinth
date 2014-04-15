@@ -2,33 +2,59 @@ var submitTextQ = [],
     questions = null,
     toNodeHref = '',
     savedTextQ = 0,
-    getQuestionResponse = 0;
+    getQuestionResponse = 0,
+    alreadyPolled   = 0,
     urlBase = window.location.origin + '/';
 
 $(document).ready(function(){
     questions = $('textarea[name^="qresponse_"]');
 
-        $('a[href^="/renderLabyrinth/go"]').click(function(e){
-            if(questions.length > 0){
-                var notSubmitTextQuestion = [];
+    $('a[href^="/renderLabyrinth/go"]').click(function(e){
 
-                questions.each(function(){
-                    var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
-                    if ($.inArray(idTextQ, submitTextQ) === -1) notSubmitTextQuestion.push(idTextQ);
-                });
+        toNodeHref = e.currentTarget.href;
 
-                if (notSubmitTextQuestion.length)
-                {
-                    e.preventDefault();
-                    toNodeHref = e.currentTarget.href;
-                    getQuestionResponse = 1;
+        if(questions.length > 0){
+            var notSubmitTextQuestion = [];
 
-                    for (var i=0; i<notSubmitTextQuestion.length; i++){
-                        ajaxFunction(notSubmitTextQuestion[i]);
-                    }
+            questions.each(function(){
+                var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
+                if ($.inArray(idTextQ, submitTextQ) === -1) notSubmitTextQuestion.push(idTextQ);
+            });
+
+            if (notSubmitTextQuestion.length)
+            {
+                e.preventDefault();
+                getQuestionResponse = 1;
+
+                for (var i=0; i<notSubmitTextQuestion.length; i++){
+                    ajaxFunction(notSubmitTextQuestion[i]);
                 }
             }
-        });
+        }
+
+        // ----- poll ----- //
+        if (pollTime){
+            e.preventDefault();
+            savedTextQ += 100; // cancel ajaxFunction()
+
+            var split           = toNodeHref.split('/'),
+                keys            = split.length,
+                selectedNodeId  = split[keys-1];
+
+            if ( ! alreadyPolled){
+                alreadyPolled++;
+                $.get(urlBase + 'renderLabyrinth/savePoll/' + idNode + '/' + selectedNodeId, function(data){});
+            }
+
+            setTimeout(function() {
+                $.get(urlBase + 'renderLabyrinth/getNodeIdByPoll/' + idNode + '/' + pollTime, function(data){
+                    window.location.href = urlBase + 'renderLabyrinth/go/' + split[keys-2] + '/' + data;
+                });
+
+            }, pollTime * 1000);
+        }
+        // ----- end poll ----- //
+    });
 });
 
 function ajaxFunction(qid) {
