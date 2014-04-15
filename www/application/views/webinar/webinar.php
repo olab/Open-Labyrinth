@@ -154,7 +154,7 @@ $sectionIds = Arr::get($templateData, 'sections', array());
                                     <input type="text" value="<?php echo $time; ?> sec" class="poll-node-indent" name="poll_nodes[]" required>
                                     <button class="btn btn-danger poll-node-indent delete-node-js" data-id="<?php echo $selectedNodeId; ?>"><i class="icon-trash"></i></button>
                                     <?php } ?>
-                                    <button type="button" class="btn btn-info poll-node-js" data-id="<? echo $mapId; ?>" data-loading-text="Loading...">Add poll node</button>
+                                    <button type="button" class="btn btn-info poll-node-js" data-id="<?php echo $mapId; ?>" data-loading-text="Loading...">Add poll node</button>
                                 </div>
                             </div>
                         </div><?php
