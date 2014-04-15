@@ -294,23 +294,9 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return array();
     }
     
-    public function getAllNode($mapId = null) {
-        $builder = DB_SQL::select('default')->from($this->table());
-        if($mapId != null)
-            $builder = $builder->where ('map_id', '=', $mapId);
-        
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $nodes = array();
-            foreach($result as $record) {
-                $nodes [] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-            
-            return $nodes;
-        }
-        
-        return NULL;
+    public function getAllNode ($mapId)
+    {
+        return DB_ORM::select('Map_Node')->where ('map_id', '=', $mapId)->query()->as_array();
     }
     
     public function createNode($values) {

@@ -41,7 +41,8 @@
     <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 
     <script>
-        var idNode = <?php echo $templateData['node']->id; ?>;
+        var idNode = <?php echo $templateData['node']->id; ?>,
+            pollTime = <?php echo Arr::get($templateData, 'time', 0); ?>;
     </script>
     <script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
 

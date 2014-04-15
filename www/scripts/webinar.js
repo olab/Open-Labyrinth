@@ -1,6 +1,7 @@
 $(function() {
     var $addLabyrinthButtons = $('.add-labyrinth-btn'),
-        mapsOptions          = '<option value="">Select Labyrinth...</option>';
+        mapsOptions          = '<option value="">Select Labyrinth...</option>',
+        urlBase              = window.location.origin;
 
     if('maps' in mapsJSON && mapsJSON.maps.length > 0) {
         var tmpName = '';
@@ -25,6 +26,9 @@ $(function() {
                                 '<div class="controls">' +
                                     '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6" data-section="1">' + mapsOptions + '</select> ' +
                                     '<button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>' +
+                                    '<div class="poll-node-section">' +
+                                    '<button type="button" class="btn btn-info poll-node-js">Add poll node</button>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>';
 
@@ -149,11 +153,12 @@ $(function() {
 
     $(document).on('change' , 'select[name$="labyrinths[]"]', function(){
         createSectionSelect($(this), false);
+        addIdForNode($(this));
     });
 
     function createSectionSelect (mapSelect, sectionId) {
         var mapId       = mapSelect.val(),
-            URL         = window.location.origin + '/webinarManager/getSectionAJAX/' + mapId;
+            URL         = urlBase + '/webinarManager/getSectionAJAX/' + mapId;
 
         $.get(
             URL,
@@ -177,4 +182,47 @@ $(function() {
 
         section.prev().val(sectionId);
     });
+
+    $stepsContainer.on('click', '.poll-node-js', function(){
+        var button = $(this),
+            mapId = $(this).data('id');
+        $.get(
+            urlBase + '/webinarManager/getNodesAjax/' + mapId,
+            function(data){
+                if (data.length < 3) return;
+
+                var nodeSelect = '<select class="node-select-js" name="poll_nodes[]"><option value="0">Select poll node</option>';
+                $.each($.parseJSON(data), function(title, id){
+                    nodeSelect += '<option value="' + id + '">' + title + ' (id: ' + id + ')' + '</option>';
+                });
+                nodeSelect +=
+                    '</select>' +
+                    '<input type="text" value="60 sec" class="poll-node-indent" name="poll_nodes[]" required>' +
+                    '<button class="btn btn-danger poll-node-indent delete-node-js"><i class="icon-trash"></i></button>';
+
+                button.before(nodeSelect);
+            }
+        );
+    });
+
+    $('.poll-node-section').on('click', '.delete-node-js', function (e){
+        e.preventDefault();
+        var nodeId = $(this).data('id');
+        if(nodeId) {
+            $.get(
+                urlBase + '/webinarManager/deleteNodeAjax/' + nodeId,
+                function(data){}
+            );
+        }
+        $(this).prev().prev().remove();
+        $(this).prev().remove();
+        $(this).remove();
+    });
+
+    function addIdForNode (obj){
+        var mapId = obj.val(),
+            button = obj.parent().find('.poll-node-js');
+
+        button.data('id', mapId);
+    }
 });

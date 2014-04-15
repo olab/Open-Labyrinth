@@ -6199,3 +6199,21 @@ input.assign-type {
     margin-top: -38px;
     z-index: 2;
 }
+
+.controls .node-select-js {
+    margin: 5px 10px 5px 0;
+}
+
+.poll-node-js {
+    display: block;
+    margin-top: 10px;
+}
+
+.poll-node-section {
+    margin-top: 10px;
+    width: 600px;
+}
+
+.poll-node-indent {
+    margin-right: 10px;
+}

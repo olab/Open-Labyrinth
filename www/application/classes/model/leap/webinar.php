@@ -157,6 +157,7 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $useForumId     = Arr::get($values, 'forum', null);
         $useTopicId     = Arr::get($values, 'topic', null);
         $experts        = Arr::get($values, 'experts', array());
+        $poll_nodes     = Arr::get($values, 'poll_nodes', array());
 
         if($webinarId == null || $webinarId < 0)
         {
@@ -312,6 +313,16 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         DB_ORM::model('dforum_users')->updateUsers($forumId, $formUsers);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
 
+        // create poll node
+        $updatePoLLNode = function ($poll_nodes, $webinarId)
+        {
+            // create poll node
+            for ($i=0; $i<count($poll_nodes); $i+=2)
+            {
+                if ($poll_nodes[$i]) DB_ORM::model('Webinar_PollNode')->update($poll_nodes[$i], $webinarId, $poll_nodes[$i+1]);
+            }
+        };
+
         if($isNew) {
             $updatedWebinar = DB_ORM::model('webinar', array((int)$webinar->id));
             if($updatedWebinar->steps != null && count($updatedWebinar->steps) > 0) {
@@ -324,7 +335,28 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
                 DB_ORM::model('webinar')->changeWebinarStep($updatedWebinar->id, $min);
             }
+
+            $updatePoLLNode($poll_nodes, $webinarId);
         }
+
+        // ----- update poll node ----- //
+        $exist_poll_nodes = DB_ORM::model('Webinar_PollNode')->getWebinarNodes($webinarId);
+        foreach ($exist_poll_nodes as $pollNodeObj)
+        {
+            $nodeId = $pollNodeObj->node_id;
+            $key    = array_search($nodeId, $poll_nodes);
+
+            if($key !== false)
+            {
+                if ((int)$poll_nodes[$key+1] != $pollNodeObj->time) DB_ORM::model('Webinar_PollNode')->update($poll_nodes[$key], $webinarId, $poll_nodes[$key+1], $pollNodeObj->id);
+                unset($poll_nodes[$key]);
+                unset($poll_nodes[$key+1]);
+            }
+            else DB_ORM::model('Webinar_PollNode')->deleteNode($nodeId);
+        }
+        print_r($poll_nodes);
+        $updatePoLLNode(array_values($poll_nodes), $webinarId);
+        // ----- end update poll node ----- //
     }
 
     /**
