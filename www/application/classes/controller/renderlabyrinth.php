@@ -334,6 +334,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     ? Model::factory('labyrinth')->execute($node->id, (int) $bookMark)
                     : Model::factory('labyrinth')->execute($node->id);
 
+                /* if exist poll node save its time */
+                $webinarId  = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+                $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $webinarId);
+
                 /* patient block */
                 if ( ! Session::instance()->get('patient_redirect'))
                 {
