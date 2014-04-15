@@ -355,16 +355,12 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
 
-        if ($result->is_loaded()) {
-            $maps = array();
-            foreach ($result as $record)
-            {
-                $maps[] = DB_ORM::model('map', array((int) $record['id']));
-            }
-            return $maps;
+        $maps = array();
+        foreach ($result as $record)
+        {
+            $maps[] = DB_ORM::model('map', array((int) $record['id']));
         }
-
-        return NULL;
+        return $maps;
     }
 
     public function getAllMapsForAuthorAndReviewer($authorId, $limit = 0)

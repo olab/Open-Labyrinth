@@ -19,33 +19,23 @@
  *
  */
 
-if (isset($presentations) && is_array($presentations) && !empty($presentations)) {
-    ?>
+if (isset($presentations) && is_array($presentations) && !empty($presentations)) { ?>
     <h3><?php echo __('Open Presentations'); ?></h3>
-    <ul class="unstyled">
-    <?php
-    foreach ($presentations as $presentation) {
-        ?>
-        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"> <?php echo $presentation->title; ?></a></li>
-        <?php
-    }
-    ?>
-    </ul>
-    <?php
+    <ul class="unstyled"><?php
+    foreach ($presentations as $presentation) { ?>
+        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"> <?php echo $presentation->title; ?></a></li><?php
+    } ?>
+    </ul><?php
 }
 
 if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinths)) { ?>
     <h3><?php echo __('Open Labyrinths'); ?></h3>
     <ul class="unstyled"><?php
-    foreach ($openLabyrinths as $labyrinth) { ?>
+        foreach ($openLabyrinths as $labyrinth) { ?>
         <li>
-            <i class="icon-arrow-right"></i><?php
-            if (true) { ?>
-            <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a><?php
-            } else {?>
-            <a class="show-root-error" href="javascript:void(0)"><?php echo $labyrinth->name; ?></a><?php
-            } ?>
+            <i class="icon-arrow-right"></i>
+            <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a>
         </li><?php
-    } ?>
+        } ?>
     </ul><?php
 } ?>

@@ -266,7 +266,7 @@ class Controller_Base extends Controller_Template {
 
                 $centerView = View::factory('userMenu');
 
-                if ( Auth::instance()->get_user()->type->name == 'learner' )
+                if ($user_type_name == 'learner')
                 {
                     $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner($user_id));
                 }
@@ -280,7 +280,9 @@ class Controller_Base extends Controller_Template {
                 $centerView->set('templateData', $this->templateData);
                 $this->templateData['center'] = $centerView;
             }
-        } else {
+        }
+        else
+        {
             if ($this->request->controller() == 'home' && $this->request->action() == 'index') {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
                 $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
@@ -298,15 +300,12 @@ class Controller_Base extends Controller_Template {
 
                 $this->templateData['rootNodeMap'] = $rooNodesMap;
 
-                $centerView = View::factory('userMenu');
-                $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap());
-                $centerView->set('templateData', $this->templateData);
-
-                $centerView->set('openLabyrinths', $maps);
-                $centerView->set('rootNodesMap', $rooNodesMap);
-
-                $centerView->set('templateData', $this->templateData);
-                $this->templateData['center'] = $centerView;
+                $this->templateData['center'] = View::factory('userMenu')
+                    ->set('openLabyrinths', DB_ORM::model('map')->getAllEnabledOpenVisibleMap())
+                    ->set('templateData', $this->templateData)
+                    ->set('openLabyrinths', $maps)
+                    ->set('rootNodesMap', $rooNodesMap)
+                    ->set('templateData', $this->templateData);
             } else {
                 $controller = $this->request->controller();
                 $action = $this->request->action();
