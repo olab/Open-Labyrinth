@@ -18,46 +18,39 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
-<?php if(isset($templateData['map']) && isset($templateData['type'])) { ?>
+if(isset($templateData['map']) AND isset($templateData['type'])) {
+$q          = isset($templateData['question']);
+$mapId      = $templateData['map']->id;
+$type       = $templateData['type']->id;
+$questionId = $q ? $templateData['question']->id : '';
+$stem       = $q ? $templateData['question']->stem : ''?>
+
 <div class="page-header">
-    <h1><?php
-        echo ( ! isset($templateData['question'])
-            ? (__('New question for "').$templateData['map']->name.'"')
-            : (__('Edit question "').$templateData['question']->stem.'"')); ?>
-    </h1>
+    <h1><?php echo $q ? (__('Edit question "').$stem.'"') : (__('New question for "').$templateData['map']->name.'"'); ?></h1>
 </div>
 
-<form class="form-horizontal" method="POST" action="<?php echo URL::base(); ?>questionManager/questionPOST/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['type']->id; ?><?php echo (isset($templateData['question']) ? ('/' . $templateData['question']->id) : ''); ?>">
+<form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/questionPOST/'.$mapId.'/'.$type.'/'.$questionId; ?>">
     <fieldset class="fieldset">
         <div class="control-group">
             <label class="control-label"><?php echo __('Question type'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">
-                    <input autocomplete="off" id="question_type_mcq" type="radio" value="3" name="question_type"<?php
-                    if (isset($templateData['type'])){
-                        echo ($templateData['type']->id == 3) ? 'checked="checked"' : '';
-                    } else {
-                        echo 'checked="checked"';
-                    }
-                    ?> />
+                    <input autocomplete="off" id="question_type_mcq" type="radio" value="3" name="question_type"<?php echo ($type == 3) ? 'checked="checked"' : ''; ?> />
                     <label data-class="btn-info" class="btn" for="question_type_mcq">Multiple choice</label>
 
-                    <input autocomplete="off" id="question_type_pcq" type="radio" value="4" name="question_type" <?php
-                        echo ((isset($templateData['type']) && $templateData['type']->id == 4) ? 'checked="checked"' : '') ?> />
+                    <input autocomplete="off" id="question_type_pcq" type="radio" value="4" name="question_type" <?php echo ($type == 4) ? 'checked="checked"' : ''; ?> />
                     <label data-class="btn-info" class="btn" for="question_type_pcq">Pick choice</label>
 
-                    <input autocomplete="off" id="question_type_sct" type="radio" value="7" name="question_type" <?php
-                        echo ((isset($templateData['type']) && $templateData['type']->id == 7) ? 'checked="checked"' : '') ?> />
+                    <input autocomplete="off" id="question_type_sct" type="radio" value="7" name="question_type" <?php echo ($type == 7) ? 'checked="checked"' : ''; ?> />
                     <label data-class="btn-info" class="btn" for="question_type_sct">SCT</label>
                 </div>
             </div>
         </div>
         <div class="control-group">
             <label for="stem" class="control-label"><?php echo __('Stem'); ?></label>
-            <div class="controls"><textarea id="stem" name="stem"><?php echo (isset($templateData['question']) ? $templateData['question']->stem : ''); ?></textarea></div>
+            <div class="controls"><textarea id="stem" name="stem"><?php echo $stem; ?></textarea></div>
         </div>
-        
+
         <div class="control-group">
             <label class="control-label"><?php echo __('Show answer to user') ?></label>
             <div class="controls">
@@ -122,7 +115,7 @@
                 <input autocomplete="off" type="text" name="submitButtonText" value="<?php echo ((isset($templateData['question']) && $templateData['question']->submit_text != null) ? $templateData['question']->submit_text : 'Submit'); ?>"/>
             </div>
         </div>
-        
+
         <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
         <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Redirect Node') ?></label>
@@ -136,7 +129,7 @@
             </div>
         </div>
         <?php } ?>
-        
+
         <div class="control-group">
             <label for="counter" class="control-label"><?php echo __('Track score with existing counter'); ?></label>
             <div class="controls">
@@ -152,7 +145,7 @@
                 </select>
             </div>
         </div>
-        
+
         <div class="control-group">
             <label class="control-label"><?php echo __('Number of tries allowed'); ?></label>
             <div class="controls">
@@ -174,7 +167,7 @@
 
         <div class="control-group">
             <label for="feedback" class="control-label"><?php echo __('Feedback'); ?></label>
-            <div class="controls"><textarea id="feedback" name="feedback"><?php echo (isset($templateData['question']) ? $templateData['question']->feedback : ''); ?></textarea></div>
+            <div class="controls"><textarea id="feedback" name="feedback"><?php echo $q ? $templateData['question']->feedback : ''; ?></textarea></div>
         </div>
         <div class="control-group">
             <label class="control-label" for="v"><?php echo __('Private'); ?>

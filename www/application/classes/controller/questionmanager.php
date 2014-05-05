@@ -89,13 +89,13 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['type']     = DB_ORM::model('map_question_type', array((int) $typeId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
-            
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
             
             if($questionId != null)
             {
-                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
                 $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
                 $usedElements = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
                 $this->templateData['used'] = count($usedElements);
@@ -175,16 +175,17 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
     
-    public function action_duplicateQuestion() {
-        $mapId = $this->request->param('id', null);
+    public function action_duplicateQuestion()
+    {
+        $mapId      = $this->request->param('id', null);
         $questionId = $this->request->param('id2', null);
         
-        if($mapId != null && $questionId != null) {
+        if ($mapId AND $questionId)
+        {
             DB_ORM::model('map_question')->duplicateQuestion($questionId);
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
+            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
         }
+        else Request::initial()->redirect(URL::base());
     }
     
     public function action_copyQuestion() {

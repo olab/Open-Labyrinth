@@ -22,7 +22,7 @@ if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 <div class="page-header">
 <h1><?php if(!isset($templateData['question'])){
-        echo __('New question for"') . $templateData['map']->name . '"';
+        echo __('New question for "') . $templateData['map']->name . '"';
     } else {
         echo __('Edit question "') . $templateData['question']->stem . '"'; }?>
 </h1></div>
@@ -65,7 +65,7 @@ if (isset($templateData['map'])) { ?>
                 <p class="question-info-box"><?php echo __('Text will automatically appear in response area. Use to give learner a hint or further instruction.'); ?></p>
             </label>
             <div class="controls">
-                <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
+                <textarea id="fback" name="prompt"><?php if(isset($templateData['question'])) echo $templateData['question']->prompt; ?></textarea>
             </div>
         </div>
         <div class="control-group">

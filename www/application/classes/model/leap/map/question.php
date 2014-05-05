@@ -66,6 +66,11 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'prompt' => new DB_ORM_Field_Text($this, array(
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
             
             'show_answer' => new DB_ORM_Field_Boolean($this, array(
                 'default' => FALSE,
@@ -230,7 +235,6 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
     {
         $this->id = $questionId;
         $this->load();
-
         switch($type->value)
         {
             case "text":
@@ -313,25 +317,28 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         }
     }
 
-    private function updateTextQuestion($values) {
-        $this->stem = Arr::get($values, 'qstem', $this->stem);
-        $this->width = Arr::get($values, 'qwidth', $this->width);
-        $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        $this->settings = Arr::get($values, 'settings', $this->feedback);
-        $this->show_submit = Arr::get($values, 'showSubmit', $this->show_submit);
-        $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
-        $this->is_private = Arr::get($values, 'is_private', false);
+    private function updateTextQuestion($values)
+    {
+        $this->stem         = Arr::get($values, 'qstem', $this->stem);
+        $this->width        = Arr::get($values, 'qwidth', $this->width);
+        $this->feedback     = Arr::get($values, 'fback', $this->feedback);
+        $this->prompt       = Arr::get($values, 'prompt', $this->prompt);
+        $this->settings     = Arr::get($values, 'settings', $this->feedback);
+        $this->show_submit  = Arr::get($values, 'showSubmit', $this->show_submit);
+        $this->submit_text  = Arr::get($values, 'submitButtonText', $this->submit_text);
+        $this->is_private   = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
     
     private function updateAreaQuestion($values) {
-        $this->stem = Arr::get($values, 'qstem', $this->stem);
-        $this->width = Arr::get($values, 'qwidth', $this->width);
-        $this->height = Arr::get($values, 'qheight', $this->height);
-        $this->feedback = Arr::get($values, 'fback', $this->feedback);
-        $this->settings = Arr::get($values, 'settings', $this->feedback);
-        $this->is_private = Arr::get($values, 'is_private', false);
+        $this->stem         = Arr::get($values, 'qstem', $this->stem);
+        $this->width        = Arr::get($values, 'qwidth', $this->width);
+        $this->height       = Arr::get($values, 'qheight', $this->height);
+        $this->feedback     = Arr::get($values, 'fback', $this->feedback);
+        $this->prompt       = Arr::get($values, 'prompt', $this->prompt);
+        $this->settings     = Arr::get($values, 'settings', $this->feedback);
+        $this->is_private   = Arr::get($values, 'is_private', false);
         $this->save();
     }
     
@@ -355,27 +362,31 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         DB_ORM::model('map_question_response')->updateResponses($this->id, $values);
     }
     
-    private function saveTextQuestion($mapId, $type, $values) {
-        $this->map_id = $mapId;
-        $this->entry_type_id = $type->id;
-        $this->stem = Arr::get($values, 'qstem', '');
-        $this->width = Arr::get($values, 'qwidth', 0);
-        $this->feedback = Arr::get($values, 'fback', '');
-        $this->settings = Arr::get($values, 'settings', '');
-        $this->is_private = Arr::get($values, 'is_private', false);
+    private function saveTextQuestion($mapId, $type, $values)
+    {
+        $this->map_id           = $mapId;
+        $this->entry_type_id    = $type->id;
+        $this->stem             = Arr::get($values, 'qstem', '');
+        $this->width            = Arr::get($values, 'qwidth', 0);
+        $this->feedback         = Arr::get($values, 'fback', '');
+        $this->prompt           = Arr::get($values, 'prompt', '');
+        $this->settings         = Arr::get($values, 'settings', '');
+        $this->is_private       = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
     
-    private function saveAreaQuestion($mapId, $type, $values) {
-        $this->map_id = $mapId;
-        $this->entry_type_id = $type->id;
-        $this->stem = Arr::get($values, 'qstem', '');
-        $this->width = Arr::get($values, 'qwidth', 0);
-        $this->height = Arr::get($values, 'qheight', 0);
-        $this->feedback = Arr::get($values, 'fback', '');
-        $this->settings = Arr::get($values, 'settings', '');
-        $this->is_private = Arr::get($values, 'is_private', false);
+    private function saveAreaQuestion($mapId, $type, $values)
+    {
+        $this->map_id           = $mapId;
+        $this->entry_type_id    = $type->id;
+        $this->stem             = Arr::get($values, 'qstem', '');
+        $this->width            = Arr::get($values, 'qwidth', 0);
+        $this->height           = Arr::get($values, 'qheight', 0);
+        $this->feedback         = Arr::get($values, 'fback', '');
+        $this->prompt           = Arr::get($values, 'prompt', '');
+        $this->settings         = Arr::get($values, 'settings', '');
+        $this->is_private       = Arr::get($values, 'is_private', false);
 
         $this->save();
     }
@@ -442,34 +453,35 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         if($question == null) return;
 
         $builder = DB_ORM::insert('map_question')
-                ->column('map_id', $question->map_id)
-                ->column('stem', $question->stem)
-                ->column('entry_type_id', $question->entry_type_id)
-                ->column('width', $question->width)
-                ->column('height', $question->height)
-                ->column('feedback', $question->feedback)
-                ->column('show_answer', $question->show_answer)
-                ->column('num_tries', $question->num_tries)
-                ->column ('counter_id', $question->counter_id)
-                ->column('show_submit', $question->show_submit)
-                ->column('redirect_node_id', $question->redirect_node_id)
-                ->column('submit_text', $question->submit_text)
-                ->column('type_display', $question->type_display)
-                ->column('settings', $question->settings);
+            ->column('map_id', $question->map_id)
+            ->column('stem', $question->stem)
+            ->column('entry_type_id', $question->entry_type_id)
+            ->column('width', $question->width)
+            ->column('height', $question->height)
+            ->column('feedback', $question->feedback)
+            ->column('prompt', $question->prompt)
+            ->column('show_answer', $question->show_answer)
+            ->column('num_tries', $question->num_tries)
+            ->column ('counter_id', $question->counter_id)
+            ->column('show_submit', $question->show_submit)
+            ->column('redirect_node_id', $question->redirect_node_id)
+            ->column('submit_text', $question->submit_text)
+            ->column('type_display', $question->type_display)
+            ->column('settings', $question->settings);
 
         $newId = $builder->execute();
         
         if(count($question->responses) > 0) {
             foreach($question->responses as $response) {
                 DB_ORM::insert('map_question_response')
-                        ->column('question_id', $newId)
-                        ->column('response', $response->response)
-                        ->column('feedback', $response->feedback)
-                        ->column('is_correct', $response->is_correct)
-                        ->column('score', $response->score)
-                        ->column('to', $response->to)
-                        ->column('from', $response->from)
-                        ->execute();
+                    ->column('question_id', $newId)
+                    ->column('response', $response->response)
+                    ->column('feedback', $response->feedback)
+                    ->column('is_correct', $response->is_correct)
+                    ->column('score', $response->score)
+                    ->column('to', $response->to)
+                    ->column('from', $response->from)
+                    ->execute();
             }
         }
     }

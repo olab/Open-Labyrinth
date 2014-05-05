@@ -18,29 +18,29 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) { ?>
+if (isset($templateData['map'])) {
+    $q          = isset($templateData['question']);
+    $mapId      = $templateData['map']->id;
+    $h1         = $q ? __('Edit question "') . $templateData['question']->stem . '"' : __('New question for "') . $templateData['map']->name . '"';
+    $questionId = $q ? $templateData['question']->id : '';
+    $stem       = $q ? $templateData['question']->stem : '';
+    $feedback   = $q ? $templateData['question']->feedback : '';
+    $prompt     = $q ? $templateData['question']->prompt : '';
+?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 <div class="page-header">
-<h1><?php if(!isset($templateData['question'])){
-        echo __('New question for"') . $templateData['map']->name . '"';
-    } else {
-        echo __('Edit question "') . $templateData['question']->stem . '"'; }?>
-</h1></div>
-<form class="form-horizontal" 
-      method="POST" 
-      action="<?php echo URL::base(); ?>questionManager/questionPOST/<?php echo $templateData['map']->id; ?>/<?php echo $templateData['type']->id; ?><?php echo (isset($templateData['question']) ? ('/' . $templateData['question']->id) : ''); ?>">
-
+    <h1><?php echo $h1; ?></h1>
+</div>
+<form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/questionPOST/'.$mapId.'/'.$templateData['type']->id.'/'.$questionId ?>">
     <fieldset>
         <div class="control-group">
-            <label for="qstem" class="control-label"><?php echo __('Stem'); ?>
-            </label>
+            <label for="qstem" class="control-label"><?php echo __('Stem'); ?></label>
             <div class="controls">
-                <textarea id="qstem" name="qstem"><?php if(isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
+                <textarea id="qstem" name="qstem"><?php echo $stem; ?></textarea>
             </div>
         </div>
         <div class="control-group">
-            <label for="qwidth" class="control-label"><?php echo __('Width'); ?>
-            </label>
+            <label for="qwidth" class="control-label"><?php echo __('Width'); ?></label>
             <div class="controls">
                 <select  id="qwidth" name="qwidth">
                     <?php for($i = 10; $i <= 60; $i += 10) { ?>
@@ -55,7 +55,7 @@ if (isset($templateData['map'])) { ?>
                 <p class="question-info-box"><?php echo __('Text will automatically appear in response area. Use to give learner a hint or further instruction.'); ?></p>
             </label>
             <div class="controls">
-                <textarea id="fback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
+                <textarea id="fback" name="prompt"><?php echo $prompt; ?></textarea>
             </div>
         </div>
         <div class="control-group">
@@ -126,7 +126,7 @@ if (isset($templateData['map'])) { ?>
 
     </div>
     <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
-    <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
+    <input type="hidden" name="mapId" id="mapId" value="<?php echo $mapId; ?>" />
     <input type="hidden" name="isCorrect" id="isCorrect" value="<?php if(isset($templateData['isCorrect'])) echo $templateData['isCorrect']; ?>" />
 </form>
 <?php } ?>

@@ -1,0 +1,1 @@
+ALTER TABLE  `map_questions` ADD  `prompt` TEXT NOT NULL AFTER  `feedback` ;
