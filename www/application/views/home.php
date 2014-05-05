@@ -123,17 +123,14 @@
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li>
                                         </ul>
-                                    </li><?php
-                                    if(false) { ?>
+                                    </li>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Virtual patient'); ?> <b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="<?php echo URL::base().'patient/index'; ?>"><?php echo __('Patients managment'); ?></a></li>
-                                            <li><a href="<?php echo URL::base().'patient/assign_grid'; ?>"><?php echo __('Assign managment'); ?></a></li>
-                                            <li><a href="<?php echo URL::base().'patient/rule'; ?>"><?php echo __('Rule'); ?></a></li>
+                                            <li><a href="<?php echo URL::base().'patient/index'; ?>"><?php echo __('Managment'); ?></a></li>
+                                            <li><a href="<?php echo URL::base().'patient/connection'; ?>"><?php echo __('Connection'); ?></a></li>
                                         </ul>
                                     </li><?php
-                                    }
                                 } else {
                                     if ($type_name != 'reviewer') {?>
                                     <li><a href="<?php echo URL::base().'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li><?php
@@ -153,7 +150,8 @@
                 <button type="button" class="root-error-close close">×</button>
                 <?php echo __('You do not have access to this case.'); ?>
             </div>
-        </div>
+        </div><?php
+        if (isset($templateData)){ ?>
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
@@ -224,9 +222,7 @@
         <script type="text/javascript">
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>';
             var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
-            var currentUserReadOnly = '<?php
-                $currentUserReadOnly = ! empty($templateData['currentUserReadOnly']) ? $templateData['currentUserReadOnly'] : NULL;
-                echo $currentUserReadOnly;?>';
+            var currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>';
             <?php if (isset($templateData['historyOfAllUsers'])) { ?>
                 var historyOfAllUsers = eval('(<?php echo $templateData['historyOfAllUsers']; ?>)');
             <?php }
@@ -236,7 +232,9 @@
             <?php if (isset($templateData['username'])) { ?>
                 var currentUser = '<?php echo $templateData['username']; ?>';
             <?php } ?>
-        </script>
-
+        </script><?php
+        } else { ?>
+        <div style="margin: 10px 100px;">You must choose chat</div><?php
+        }; ?>
     </body>
 </html>

@@ -597,18 +597,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
         else Request::initial()->redirect(URL::base());
     }
 
-    public function action_chatAnswer() {
-        $chatId = $this->request->param('id', NULL);
-        $elemId = $this->request->param('id2', NULL);
-        $sessionId = $this->request->param('id3', NULL);
-        $mapId = $this->request->param('id4', NULL);
+    public function action_chatAnswer()
+    {
+        $chatId     = $this->request->param('id', NULL);
+        $elemId     = $this->request->param('id2', NULL);
+        $sessionId  = $this->request->param('id3', NULL);
+        $mapId      = $this->request->param('id4', NULL);
 
-        if ($chatId != NULL and $elemId != NULL and $sessionId != NULL and $mapId != NULL) {
+        if ($chatId AND $elemId AND $sessionId AND $mapId)
+        {
             $this->auto_render = false;
             echo Model::factory('labyrinth')->getChatResponce($sessionId, $mapId, $chatId, $elemId);
-        } else {
-            Response::factory()->body('');
-        }
+        } else Response::factory()->body('');
     }
 
     public function action_questionResponse() {
