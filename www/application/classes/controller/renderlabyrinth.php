@@ -24,6 +24,7 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_RenderLabyrinth extends Controller_Template {
 
     public $template = 'home'; // Default
+    public $mapId = 0;
 
     public function action_index()
     {
@@ -31,7 +32,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId      = $this->request->param('id', null);
         $editOn     = $this->request->param('id2', null);
         $access     = $this->checkTypeCompatibility($mapId);
-        $webinarId  = Session::instance()->get('webinarId');
+        $scenarioId  = Session::instance()->get('webinarId');
+        $this->mapId = $mapId;
 
         if ($mapId == null OR ! $access) Request::initial()->redirect(URL::base());
 
@@ -72,11 +74,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ( ! $data) Request::initial()->redirect(URL::base());
 
             /* if exist poll node save its time */
-            $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($idRootNode, $webinarId);
+            $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($idRootNode, $scenarioId);
 
-            /* update virtual patient, third parameter check for redirect */
-            $this->patient_sessions_update($mapId, $idRootNode, $mapId);
-            $data['patients'] = $this->render_patient($idRootNode, $mapId);
+            /* ----- patient ----- */
+            //$data['patients'] = $this->checkPatient($idRootNode, $scenarioId, 'index');
 
             $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -150,89 +151,171 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function patient_path_update($id_node, array $sessions, $check_for_redirect)
+    public function checkPatient($nodeId, $scenarioId, $from)
     {
-        foreach ($sessions as $session)
+        $result = array();
+        $patients = DB_ORM::model('Patient_Scenario')->getPatientsByScenario($scenarioId);
+
+        if ($patients and $scenarioId)
         {
-            $path   = json_decode($session->path);
-            if ($check_for_redirect AND $path != null)
+            $type = 'check';
+            if ($from == 'go')
             {
-                Session::instance()->set('patient_redirect', true);
-                Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$check_for_redirect.'/'.array_pop($path));
+                $type =  Session::instance()->get('patient_redirect');
+                Session::instance()->set('patient_redirect', false);
+            }
+            $patientSessions = $this->patient_sessions_update($nodeId, $scenarioId, $patients, $type);
+            //$this->executePatientRule($patientSessions, $mapId);
+            $result = $this->render_patient($patientSessions);
+        }
+        return $result;
+    }
+
+    public function executePatientRule($patientSessions, $mapId)
+    {
+        foreach (DB_ORM::select('Patient_Rule')->query()->as_array() as $ruleObj)
+        {
+            $rule = $ruleObj->rule;
+            $labyrinth = new Model_Labyrinth;
+            $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+            $values = array();
+
+            foreach($counters as $counter)
+            {
+                $values[$counter->id] = $labyrinth->getCounterValueByID($mapId, $counter->id);
             }
 
-            $path[] = (int)$id_node;
-            $path   = json_encode($path);
+            $runtimeLogic = new RunTimeLogic();
+            $runtimeLogic->values = $values;
+            $runtimeLogic->questionResponse = NULL;
+            $array = $runtimeLogic->parsingString($rule);
+            $resultLogic = $array['result'];
+            if (isset($resultLogic['goto']))
+            {
+                if ($resultLogic['goto'] != NULL)
+                {
+                    $nodes = DB_ORM::model('map_node')->getAllNode($mapId);
+                    $inMap = false;
+                    foreach ($nodes as $node)
+                    {
+                        if ( $node->id == $resultLogic['goto']) $inMap = true;
+                    }
 
-            $session->path = $path;
-            $session->save();
+                    if ($inMap)
+                    {
+                        $goto = Session::instance()->get('goto', NULL);
+                        if ($goto == NULL) Session::instance()->set('goto', $resultLogic['goto']);
+                    }
+                }
+            }
+
+            if (isset($resultLogic['counters']))
+            {
+                if (count($resultLogic['counters']) > 0)
+                {
+                    $counterString = $labyrinth->getCounterString($mapId);
+                    if ($counterString != ''){
+                        foreach($resultLogic['counters'] as $key => $v){
+                            $previousValue = $labyrinth->getCounterValueFromString($key, $counterString);
+                            $counterString = $labyrinth->setCounterValueToString($key, $counterString, $v);
+
+                            $diff = $v - $previousValue;
+                            if ($diff > 0) $diff = '+'.$diff;
+                            $countersFunc[$key][] = $diff;
+                        }
+                        $labyrinth->updateCounterString($mapId, $counterString);
+                    }
+                }
+            }
         }
     }
 
-    public function patient_condition_update($id_node, array $sessions)
+    public function patient_path_update($id_node, $session, $redirect)
     {
-        foreach ($sessions as $session)
+        $path           = json_decode($session->path);
+        $lastNode       = array_pop($path);
+        $lastNodeMapId  = DB_ORM::model('Map_Node', array($lastNode))->map_id;
+        $nextMap        = $this->mapId != $lastNodeMapId;
+
+        if ($redirect == 'check' AND $lastNode AND $nextMap)
         {
-            $pc  = json_decode($session->patient_condition, TRUE);
-            foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($session->id_patient) as $condition)
-            {
-                $id_condition = (int) $condition->id;
-                $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
-                $pc[$id_condition]['name'] = (string) $condition->name;
-                $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
-                if ($change) $pc[$id_condition]['value'] += (int) $change->value;
-            }
-            $pc = json_encode($pc);
-            $session->patient_condition = $pc;
-            $session->save();
+            Session::instance()->set('patient_redirect', 'redirect');
+            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$redirect.'/'.$lastNode);
         }
+
+        $path[] = (int)$id_node;
+        $path   = json_encode($path);
+
+        $session->path = $path;
+        $session->save();
     }
 
-    public function patient_sessions_update ($mapId, $id_node, $check_for_redirect = false)
+    public function patient_condition_update($id_node, $patientSession)
     {
-        if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
-        else return FALSE;
+        $pc  = json_decode($patientSession->patient_condition, true);
+        foreach (DB_ORM::model('Patient_ConditionRelation')->get_conditions($patientSession->id_patient) as $condition)
+        {
+            $id_condition = (int)$condition->id;
+            $change = DB_ORM::select('Patient_ConditionChange')->where('id_condition', '=', $id_condition)->where('id_node', '=', $id_node)->query()->fetch(0);
+            $pc[$id_condition]['name'] = (string) $condition->name;
+            $pc[$id_condition]['value'] = isset($pc[$id_condition]['value']) ? $pc[$id_condition]['value'] : (int) $condition->value;
+            $pc[$id_condition]['appear'] = 0;
+            if ($change)
+            {
+                $pc[$id_condition]['value'] += (int)$change->value;
+                $pc[$id_condition]['appear'] = $change->appear;
+            }
+        }
+        $pc = json_encode($pc);
+        $patientSession->patient_condition = $pc;
+        $patientSession->save();
+        return $patientSession;
+    }
 
-        $patients   = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
+    public function patient_sessions_update ($nodeId, $scenarioId, $patients, $redirect = false)
+    {
+        if (Auth::instance()->logged_in() AND $scenarioId) $userId = Auth::instance()->get_user()->id;
+        else return false;
+
+        $patientSessions = array();
+        $whose          = '';
+        $whoseId        = 0;
 
         foreach ($patients as $patient)
         {
-            $id_patient = $patient->id_patient;
-            $id_assigns = $this->get_patient_assign($id_user);
-
-            $sessions = array();
-            foreach ($id_assigns as $id_assign)
+            if ($patient->type == 'Longitudinal same set' OR $patient->type == 'Parallel same set' AND ! $whoseId)
             {
-                $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->where('id_patient', '=', $id_patient)->query()->fetch(0);
-                if($session) $sessions[] = $session;
+                $groupId        = $this->whosePatient($scenarioId, $userId);
+                $whose          = $groupId ? 'group' : 'user';
+                $whoseId        = $groupId ? $groupId : $userId;
             }
+            $patientId      = $patient->id;
+            $patientSession = DB_ORM::model('Patient_Sessions')->getSession($patientId, $whose, $whoseId, $scenarioId);
 
-            $this->patient_path_update($id_node, $sessions, $check_for_redirect);
-            $this->patient_condition_update($id_node, $sessions);
+            if ( ! $patientSession) $patientSession = DB_ORM::model('Patient_Sessions')->create($patientId, $whose, $whoseId, $scenarioId);
+
+            $this->patient_path_update($nodeId, $patientSession, $redirect);
+            if ($redirect != 'redirect') $patientSessions[] = $this->patient_condition_update($nodeId, $patientSession);
         }
+
+        return $patientSessions;
     }
 
-    public function get_patient_assign($id_user)
+    public function whosePatient($scenarioId, $userId)
     {
-        $id_assign = array();
-        $assign_records = DB_ORM::select('Patient_Assign')->where('id_user', '=', $id_user)->query()->as_array();
+        $groupId = 0;
+        $userGroups = DB_ORM::select('User_Group')->where('user_id', '=', $userId)->query()->as_array();
 
-        if ($assign_records)
+        foreach ($userGroups as $userGroup)
         {
-            foreach ($assign_records as $record) $id_assign[] = $record->id_assign;
-        }
-        else
-        {
-            $groups = DB_ORM::select('User_Group')->where('user_id', '=', $id_user)->query()->as_array();
-
-            if ( ! $groups) return false;
-            foreach ($groups as $group)
+            $scenarioGroup = DB_ORM::select('Webinar_Group')->where('webinar_id', '=', $scenarioId)->where('group_id', '=', $userGroup->group_id)->query()->fetch(0);
+            if ($scenarioGroup)
             {
-                $assign_records = DB_ORM::select('Patient_Assign')->where('id_group', '=', $group->group_id)->query()->fetch(0);
-                if ($assign_records) $id_assign[] = $assign_records->id_assign;
+                $groupId = $scenarioGroup->group_id;
+                break;
             }
         }
-        return $id_assign;
+        return $groupId;
     }
 
     public function action_checkKey() {
@@ -252,43 +335,25 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function render_patient ($id_node, $mapId)
+    public function render_patient ($patientSessions)
     {
-        if (Auth::instance()->logged_in()) $id_user = Auth::instance()->get_user()->id;
-        else return array();
+        if ( ! Auth::instance()->logged_in()) return array();
 
-        $data           = array();
-        $condition_li   = '';
-        $patients       = DB_ORM::select('Patient_Map')->where('id_map', '=', $mapId)->query()->as_array();
+        $data         = array();
+        $condition_li = '';
 
-        foreach ($patients as $patient)
+        foreach ($patientSessions as $patientSession)
         {
-            $id_patient = $patient->id_patient;
-            $id_assigns = $this->get_patient_assign($id_user);
+            $conditions = json_decode($patientSession->patient_condition, true);
 
-            foreach ($id_assigns as $id_assign)
+            if($conditions)
             {
-                $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->where('id_patient', '=', $id_patient)->query()->fetch(0);
-                if( ! $session) continue;
-
-                $conditions = json_decode($session->patient_condition, true);
-
-                if($conditions)
+                foreach($conditions as $condition)
                 {
-                    foreach($conditions as $id_condition=>$condition)
-                    {
-                        $appear_condition = DB_ORM::select('Patient_ConditionChange')
-                            ->where('id_condition', '=', $id_condition)
-                            ->where('id_node', '=', $id_node)
-                            ->where('appear', '=', 1)
-                            ->query()
-                            ->fetch(0);
-
-                        if( ! $appear_condition) continue;
-                        $condition_li .= '<li>'.$condition['name'].': '.$condition['value'].'</li>';
-                    }
-                    if($condition_li) $data[] = '<li>'.DB_ORM::model('Patient', array($id_patient))->name.'</li>'.$condition_li;
+                    if( ! $condition['appear']) continue;
+                    $condition_li .= '<li>'.$condition['name'].': '.$condition['value'].'</li>';
                 }
+                if($condition_li) $data[] = '<li>'.DB_ORM::model('Patient', array($patientSession->id_patient))->name.'</li>'.$condition_li;
             }
         }
         return $data;
@@ -308,6 +373,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId     = $this->request->param('id2', NULL);
         $editOn     = $this->request->param('id3', NULL);
         $bookMark   = $this->request->param('id4', NULL);
+        $this->mapId = $mapId;
 
         if ($mapId != NULL)
         {
@@ -335,16 +401,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     : Model::factory('labyrinth')->execute($node->id);
 
                 /* if exist poll node save its time */
-                $webinarId  = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-                $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $webinarId);
+                $scenarioId  = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+                $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $scenarioId);
 
-                /* patient block */
-                if ( ! Session::instance()->get('patient_redirect'))
-                {
-                    $this->patient_sessions_update($mapId, $nodeId); // if patient redirect, not update patient session
-                }
-                Session::instance()->set('patient_redirect', false);
-                $data['patients'] = $this->render_patient($nodeId, $mapId);
+                /* ----- patient ----- */
+                //$data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
 
                 $gotoNode = Session::instance()->get('goto', NULL);
                 if ($gotoNode != NULL)
@@ -1164,7 +1225,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         {
             if ($q_type == 'text')
             {
-                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" value="'.$question->feedback.'" id="qresponse_'.$question->id.'" ';
+                $result = '<input autocomplete="off" class="clearQuestionPrompt" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" value="'.$question->prompt.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
                 if ($question->show_submit == 1)
                 {
@@ -1176,15 +1237,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 else {
                     $result .= 'onKeyUp="if (event.keyCode == 13) {ajaxFunction(' . $question->id . ');$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');}"/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span>';
                 }
-                $result .= '<div id="AJAXresponse' . $question->id . '"></div>';
-
+                $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
             else if ($q_type == 'area')
             {
                 $result =
                     '<textarea autocomplete="off" class="clearQuestionPrompt" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'">'.
-                        $question->feedback.
+                        $question->prompt.
                     '</textarea>
                     <p>
                         <span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
