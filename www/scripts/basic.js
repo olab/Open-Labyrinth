@@ -8,8 +8,9 @@ var submitTextQ = [],
 
 $(document).ready(function(){
     questions = $('textarea[name^="qresponse_"]');
+    var goLink = $('a[href^="/renderLabyrinth/go"]');
 
-    $('a[href^="/renderLabyrinth/go"]').click(function(e){
+    goLink.click(function(e){
 
         toNodeHref = e.currentTarget.href;
 
@@ -55,6 +56,42 @@ $(document).ready(function(){
         }
         // ----- end poll ----- //
     });
+
+    // ----- patient ----- //
+    if (idPatients.length > 2) setInterval(ajaxPatient, (1500));
+
+    function ajaxPatient(){
+        $.get(
+            urlBase + 'renderLabyrinth/dataPatientAjax/' + idPatients,
+            function(data){
+                data = $.parseJSON(data)
+                // change condition block
+                var ulPatient       = $('.patient-js'),
+                    patientArray    = data.conditions,
+                    deactivate      = data.deactivateNode;
+
+                for (var i = 0; i < ulPatient.length; i++) ulPatient.eq(i).html(patientArray[i]);
+
+                // deactivate go link
+                if(deactivate){
+                    goLink.each(function(){
+                        var href    = $(this).prop('href'),
+                            split   = href.split('/'),
+                            idNode  = split[split.length -1];
+
+                        if ($.inArray(idNode, deactivate) != -1){
+                            $(this).css('opacity','0.5');
+                            $(this).click(function(e){
+                                e.preventDefault();
+                            });
+                        }
+                    });
+                }
+            }
+        );
+    }
+    // ----- end patient ----- //
+
 });
 
 function ajaxFunction(qid) {

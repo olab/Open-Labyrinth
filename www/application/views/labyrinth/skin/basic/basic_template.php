@@ -41,8 +41,15 @@
     <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 
     <script>
-        var idNode = <?php echo $templateData['node']->id; ?>,
-            pollTime = <?php echo Arr::get($templateData, 'time', 0); ?>;
+        var idNode      = <?php echo $templateData['node']->id; ?>,
+            idPatients  = '<?php
+            $ids = array();
+            foreach (Arr::get($templateData, 'patients', array()) as $id=>$patient)
+            {
+                $ids[] = $id;
+            }
+            echo json_encode($ids); ?>',
+            pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>;
     </script>
     <script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
 

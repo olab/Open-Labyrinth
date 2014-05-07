@@ -1338,9 +1338,11 @@ class Model_Labyrinth extends Model {
         }
     }
 
-    public function getCounterValueByID($mapId, $id){
+    public function getCounterValueByID ($mapId, $id)
+    {
         $result = NULL;
-        if ($mapId != NULL){
+        if ($mapId)
+        {
             $sessionId = $this->getSessionID();
 
             $counter = DB_ORM::model('map_counter', array($id));
@@ -1366,7 +1368,6 @@ class Model_Labyrinth extends Model {
                 $result = $counter->start_value;
             }
         }
-
         return $result;
     }
 

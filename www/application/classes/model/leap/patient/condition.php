@@ -61,7 +61,7 @@ class Model_Leap_Patient_Condition extends DB_ORM_Model {
         $condition = ($id) ? DB_ORM::model('Patient_Condition', array($id)) : DB_ORM::model('Patient_Condition');
         $condition->name = $name;
         $condition->value = $value;
-        $condition->save(); //bulder->execute();
+        $condition->save();
 
         // $condition->id didn't work, so....
         $all_record = DB_ORM::select('Patient_Condition')->query()->as_array();

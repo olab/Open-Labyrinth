@@ -122,25 +122,13 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      *
      * @return array|null
      */
-    public function getAllWebinars($userId = null) {
-        $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->column('id');
-        if (!is_null($userId)) {
-            $records = $records->where('author_id', '=', $userId);
-        }
-        $records = $records->query();
+    public function getAllWebinars($userId = null)
+    {
+        $query = DB_ORM::select('Webinar');
 
-        $result  = null;
-        if($records->is_loaded()) {
-            $result = array();
+        if ($userId) $query->where('author_id', '=', $userId);
 
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('webinar', array((int)$record['id']));
-            }
-        }
-
-        return $result;
+        return $query->query()->as_array();
     }
 
     /**

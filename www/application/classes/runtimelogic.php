@@ -23,6 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 class RunTimeLogic {
 
     var $values             = array();
+    var $conditionValue     = array();
     var $questionId         = null;
     var $questionResponse   = null;
     var $errors             = array();
@@ -109,78 +110,7 @@ class RunTimeLogic {
         return null;
     }
 
-    public function parsingPatientRule($string)
-    {
-        if ( ! empty($string))
-        {
-            $parseFullString = false;
-            $finalResult     = array();
-            $changedCounters = array();
-            $errors          = array();
-            $r               = array();
-            $pattern         = '(.*?);\s*(?=IF|\s*$)';
-
-            if ($c = preg_match_all("/".$pattern."/is", $string, $matches))
-            {
-                if (count($matches[0]) > 0)
-                {
-                    foreach($matches[0] as $newIF){
-                        $resultCon = $this->replaceConditions($newIF);
-                        $resultStr = $this->replaceFunctions($resultCon);
-                        ob_start();
-                        $result = eval($resultStr['str']);
-                        $checkErrors = ob_get_contents();
-                        ob_end_clean();
-                        if ($checkErrors != ''){
-                            $this->errors[] = $newIF;
-                        } else {
-                            if (isset($result['counters'])){
-                                if (count($result['counters']) > 0){
-                                    foreach($result['counters'] as $key => $value){
-                                        $this->values[$key] = $value;
-                                        $changedCounters[$key] = $value;
-                                    }
-                                }
-                            }
-
-                            $finalResult = array_merge($result, $finalResult);
-                            if (isset($finalResult['stop'])){
-                                if ($finalResult['stop'] == 1){
-                                    break;
-                                }
-                            }
-
-                            if (isset($finalResult['break'])){
-                                if ($finalResult['break'] == 1){
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    $finalResult['counters'] = $changedCounters;
-                }
-            }
-            else
-            {
-                $resultCon = $this->replaceConditions($string);
-                $resultStr = $this->replaceFunctions($resultCon);
-                ob_start();
-                $finalResult = @eval($resultStr['str']);
-                $checkErrors = ob_get_contents();
-                ob_end_clean();
-                if ($checkErrors != '') $this->errors[] = $string;
-            }
-
-            if (empty($finalResult)) $finalResult = null;
-
-            $array['result'] = $finalResult;
-            $array['errors'] = $this->errors;
-            return $array;
-        }
-        return null;
-    }
-
-    public function replaceFunctions($string)
+    public function replaceFunctions ($string)
     {
         $error          = false;
         $search         = array();
@@ -325,6 +255,9 @@ class RunTimeLogic {
         $pattern = '\\[\\[CR:(\d+)\\]\\]';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCounter'), $string);
 
+        $pattern = '\\[\\[COND:(\d+)\\]\\]';
+        $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCondition'), $string);
+
         $pattern = '\\[\\[QU_ANSWER\\]\\]';
         $string = preg_replace_callback("/".$pattern."/", array($this, 'replaceQuestionAnswer'), $string);
 
@@ -344,6 +277,10 @@ class RunTimeLogic {
         return '"'.$this->getValue($matches[1]).'"';
     }
 
+    private function replaceCondition($matches){
+        return '"'.$this->getConditionValue($matches[1]).'"';
+    }
+
     private function replaceQuestionAnswer($matches){
         return '\''.$this->getQUAnswer().'\'';
     }
@@ -352,6 +289,14 @@ class RunTimeLogic {
         $value = 0;
         if (isset($this->values[$id])){
             $value = $this->values[$id];
+        }
+        return $value;
+    }
+
+    public function getConditionValue($id){
+        $value = 0;
+        if (isset($this->conditionValue[$id])){
+            $value = $this->conditionValue[$id];
         }
         return $value;
     }
@@ -383,10 +328,10 @@ class RunTimeLogic {
 
     public function replaceConditions($string)
     {
-        $pattern = '\s(THEN)\s(?=\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
+        $pattern = '\s(THEN)\s(?=\\[\\[COND|\\[\\[CR|DEACTIVATE|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
 
-        $pattern = '\s(ELSE)\s(?=\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ENDIF|;\s*IF|$)';
+        $pattern = '\s(ELSE)\s(?=\\[\\[COND|\\[\\[CR|DEACTIVATE|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ENDIF|;\s*IF|$)';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
 
         $pattern = '\sENDIF\s';
@@ -410,7 +355,8 @@ class RunTimeLogic {
         return $string. ' } return $r; ';
     }
 
-    private function replaceThen($matches){
+    private function replaceThen ($matches)
+    {
         $resultStr = null;
         $actionArray = explode(',', $matches[2]);
 
@@ -427,16 +373,20 @@ class RunTimeLogic {
         return $resultStr;
     }
 
-    public function parseAction($str){
-        $startStr = $str;
-        $returnString = '';
-        $posCR = strpos($str, '[[CR:');
-        $posGOTO = strpos($str, 'GOTO');
-        $posNOENTRY = strpos($str, 'NO-ENTRY');
-        $posBREAK = strpos($str, 'BREAK');
-        $posSTOP = strpos($str, 'STOP');
-        $posCorrect = strpos($str, 'CORRECT');
-        $posIncorrect = strpos($str, 'INCORRECT');
+    public function parseAction($str)
+    {
+        $startStr       = $str;
+        $returnString   = '';
+        $posCR          = strpos($str, '[[CR:');
+        $posCOND        = strpos($str, '[[COND:');
+        $posDEACTIVATE  = strpos($str, 'DEACTIVATE');
+        $posGOTO        = strpos($str, 'GOTO');
+        $posNOENTRY     = strpos($str, 'NO-ENTRY');
+        $posBREAK       = strpos($str, 'BREAK');
+        $posSTOP        = strpos($str, 'STOP');
+        $posCorrect     = strpos($str, 'CORRECT');
+        $posIncorrect   = strpos($str, 'INCORRECT');
+
         if ($posCR !== false){
             $result = null;
             $id = null;
@@ -461,9 +411,37 @@ class RunTimeLogic {
 
                 }
             }
-
             $returnString = ' $r["counters"]["'.$id.'"] ==== "'.$result.'"; ';
-        } elseif ($posGOTO !== false){
+        }
+        elseif ($posCOND !== false)
+        {
+            $result = null;
+            $id = null;
+            $pattern = '\\[\\[COND:(\d+)\\]\\]\s*=';
+            if (preg_match_all ("/".$pattern."/is", $str, $matches)){
+                if (count($matches[0]) > 0){
+                    $id = $matches[1][0];
+                }
+            }
+            $posEqual = strpos($str, '=');
+            if ($posEqual !== false){
+                $str = substr($str, $posEqual + 1, strlen($str));
+                $resultArray = $this->replaceFunctions($str);
+                if ($resultArray['error'] == false){
+                    ob_start();
+                    $result = eval('return '.$resultArray['str'].';');
+                    $checkErrors = ob_get_contents();
+                    ob_end_clean();
+                    if ($checkErrors != ''){
+                        $this->errors[] = $startStr;
+                    }
+
+                }
+            }
+            $returnString = ' $r["conditions"]["'.$id.'"] ==== "'.$result.'"; ';
+        }
+        elseif ($posGOTO !== false)
+        {
             $id = null;
 
             $pattern = 'GOTO\s*\\[\\[NODE:(\d+)\\]\\]';
@@ -473,7 +451,21 @@ class RunTimeLogic {
                 }
             }
             $returnString = ' $r["goto"] ==== "'.$id.'"; ';
-        } elseif ($posNOENTRY !== false) {
+        }
+        elseif ($posDEACTIVATE !== false)
+        {
+            $id = null;
+
+            $pattern = 'DEACTIVATE\s*\\[\\[NODE:(\d+)\\]\\]';
+            if (preg_match_all ("/".$pattern."/is", $str, $matches))
+            {
+                if (count($matches[0]) > 0){
+                    $id = $matches[1][0];
+                }
+            }
+            $returnString = ' $r["deactivate"] ==== "'.$id.'"; ';
+        }
+        elseif ($posNOENTRY !== false) {
             $returnString = ' $r["no-entry"] ==== "1"; ';
         } elseif ($posBREAK !== false){
             $returnString = ' $r["break"] ==== "1"; return $r; ';

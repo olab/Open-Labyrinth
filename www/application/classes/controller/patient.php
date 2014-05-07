@@ -29,18 +29,18 @@ class Controller_Patient extends Controller_Base {
 
     public function action_index()
     {
-        $this->templateData['patients']  = DB_SQL::select('default')->from('patient')->query()->as_array();
-        $this->templateData['r_patient'] =array();
-
-        foreach (DB_ORM::select('Patient_Relation')->query()->as_array() as $record)
+        $patients = DB_SQL::select('default')->from('patient')->query()->as_array();
+        $this->templateData['patients']  = $patients;
+        $this->templateData['scenarios'] = array();
+        foreach ($patients as $patient)
         {
-            $id_first_patient  = $record->id_first_patient;
-            $id_second_patient = $record->id_second_patient;
-            $this->templateData['r_patient'][$id_first_patient][$id_second_patient] = DB_ORM::model('Patient', array($id_second_patient))->name;
-            $this->templateData['r_patient'][$id_second_patient][$id_first_patient] = DB_ORM::model('Patient', array($id_first_patient))->name;
+            $idPatient = $patient['id'];
+            foreach (DB_ORM::model('Patient_Scenario')->getScenarioByPatient($idPatient) as $obj)
+            {
+                $this->templateData['scenarios'][$patient['id']][] = $obj->id_scenario.': '.DB_ORM::model('Webinar', $obj->id_scenario)->title;
+            }
         }
-
-        $this->templateData['center'] = View::factory('patient/grid')->set('templateData', $this->templateData);
+        $this->templateData['center']    = View::factory('patient/grid')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'patient/index/'));
     }
@@ -48,13 +48,14 @@ class Controller_Patient extends Controller_Base {
     public function action_management ()
     {
         $id_patient = $this->request->param('id');
+        $patient    = DB_ORM::model('Patient', array($id_patient));
 
-        $this->templateData['patient']              = DB_ORM::model('Patient', array($id_patient));
+        $this->templateData['patient']              = $patient;
         $this->templateData['all_patients']         = DB_ORM::select('Patient')->query()->as_array();
         $this->templateData['patient_conditions']   = DB_ORM::model('Patient_ConditionRelation')->get_conditions($id_patient);
-        $this->templateData['r_patient']            = DB_ORM::select('Patient_Relation')->where('id_first_patient', '=', $id_patient)->query()->fetch(0);
-        $this->templateData['maps']                 = DB_ORM::model('Map')->getAllEnabledMap();
-        $this->templateData['patient_id_maps']      = DB_ORM::model('Patient_Map')->get_maps_id($id_patient);
+        $this->templateData['scenario']             = DB_ORM::model('Webinar')->getAllWebinars();
+        $this->templateData['patient_scenarios']    = DB_ORM::model('Patient_Scenario')->getPatientScenario($id_patient);
+        $this->templateData['patient_type']         = DB_ORM::model('Patient')->allType;
         $this->templateData['center']               = View::factory('patient/management')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
@@ -65,12 +66,13 @@ class Controller_Patient extends Controller_Base {
         $post               = $this->request->post();
         $conditions         = Arr::get($post, 'conditions', array());
         $patient_name       = Arr::get($post, 'name');
-        $patient_maps       = Arr::get($post, 'maps');
-        $related_patient    = Arr::get($post, 'r_patient');
+        $patient_scenarios  = Arr::get($post, 'scenarios', array());
+        $scenario_delete    = Arr::get($post, 'scenario_delete', array());
+        $patientType        = Arr::get($post, 'patientType', array());
         $conditions_names   = Arr::get($conditions, 'name', array());
         $conditions_value   = Arr::get($conditions, 'value', array());
         $conditions_ids     = Arr::get($conditions, 'id', array());
-        $id_patient = DB_ORM::model('Patient')->update($patient_name, $id_patient);
+        $id_patient = DB_ORM::model('Patient')->update($patient_name, $patientType, $id_patient);
 
         // Condition, and condition relation save
         foreach ($conditions_names as $id=>$name)
@@ -80,67 +82,33 @@ class Controller_Patient extends Controller_Base {
             DB_ORM::model('Patient_ConditionRelation')->check_and_create($id_patient, $id_condition);
         }
 
-        // Patient map save
-        $queue = 0;
-        foreach ($patient_maps as $k=>$id_map)
+        // Patient scenario save
+        foreach ($patient_scenarios as $k=>$idScenario)
         {
-            if (substr_count($k, 'id'))
-            {
-                $id_record = substr($k, 2);
-                DB_ORM::update('Patient_Map')
-                    ->set('id_map', $id_map)
-                    ->where('id', '=', $id_record)
-                    ->execute();
-                // count position in queue for new record
-                $queue = DB_ORM::model('Patient_Map', array($id_record))->queue+1;
-            }
-            else
-            {
-                DB_ORM::insert('Patient_Map')
-                    ->column('id_patient', $id_patient)
-                    ->column('id_map', $id_map)
-                    ->column('queue', $queue)
-                    ->execute();
-            }
+            if (substr_count($k, 'id')) DB_ORM::model('Patient_Scenario')->update(substr($k, 2), $id_patient, $idScenario);
+            else DB_ORM::model('Patient_Scenario')->create($id_patient, $idScenario);
         }
-        // Related patient save
-        if ($related_patient) DB_ORM::model('Patient_Relation')->update($id_patient, $related_patient);
+
+        // Patient scenario delete
+        foreach ($scenario_delete as $id)
+        {
+            DB_ORM::model('Patient_Scenario')->deleteRecord($id);
+        }
 
         Request::initial()->redirect(URL::base().'patient/index');
-    }
-
-    /**
-     * @param array $maps of map id
-     * @param $id_patient
-     */
-    public function update_patient_map(array $maps, $id_patient)
-    {
-        $maps_from_db = array();
-        foreach (DB_ORM::select('Patient_Map')->where('id_patient', '=', $id_patient)->query()->as_array() as $map)
-        {
-            $maps_from_db[] = $map->id_map;
-        }
-        foreach (array_diff($maps_from_db, $maps) as $id_map_for_delete)
-        {
-            DB_ORM::delete('Patient_Map')->where('id_map', '=', $id_map_for_delete)->execute();
-        }
-        foreach (array_diff($maps, $maps_from_db) as $new_map_id)
-        {
-            DB_ORM::insert('Patient_Map')->column('id_map', $new_map_id)->column('id_patient', $id_patient)->execute();
-        }
     }
 
     public function action_labyrinth()
     {
         $id_map                 = $this->request->param('id');
         $id_patient_selected    = $this->request->param('id2');
-        $id_patients_by_map     = DB_ORM::model('Patient_Map')->get_patients_id($id_map);
+
         $nodes                  = DB_ORM::model('map_node')->getNodesByMap((int) $id_map);
 
         $this->templateData['map']      = DB_ORM::model('map', array($id_map));
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->templateData['nodes']    = $nodes;
-        $this->templateData['patients'] = array();
+        $this->templateData['patients'] = DB_ORM::model('Patient_Scenario')->getPatientsByMap($id_map);
 
         foreach ($nodes as $node)
         {
@@ -151,11 +119,6 @@ class Controller_Patient extends Controller_Base {
                 $this->templateData['existing_data'][$node->id][$record->id_condition]['value'] = $record->value;
                 $this->templateData['existing_data'][$node->id][$record->id_condition]['appear'] = $record->appear;
             }
-        }
-
-        foreach ($id_patients_by_map as $id_patient)
-        {
-            $this->templateData['patients'][] = DB_ORM::model('Patient', array($id_patient));
         }
 
         if ($id_patient_selected)
@@ -180,27 +143,6 @@ class Controller_Patient extends Controller_Base {
         Request::$initial->redirect(URL::base().'patient/index');
     }
 
-    public function action_delete_from_edit()
-    {
-        $id_patient = $this->request->param('id');
-        $id         = $this->request->param('id2');
-        $type       = $this->request->param('id3');
-
-        switch ($type)
-        {
-            case 'condition':
-                DB_ORM::delete('Patient_Condition')->where('id', '=', $id)->execute();
-            break;
-            case 'labyrinth':
-                DB_ORM::delete('Patient_Map')->where('id_patient', '=', $id_patient)->where('id_map', '=', $id)->execute();;
-            break;
-            case 'relation':
-                DB_ORM::delete('Patient_Relation')->where('id', '=', $id)->execute();;
-            break;
-        }
-        Request::$initial->redirect(URL::base().'patient/management/'.$id_patient);
-    }
-
     public function action_condition()
     {
         $id_patient = $this->request->param('id');
@@ -215,159 +157,52 @@ class Controller_Patient extends Controller_Base {
         Request::$initial->redirect($this->request->referrer());
     }
 
-    public function action_assign_grid()
+    public function action_connection ()
     {
-        $this->templateData['assign']   = array();
-        $sessions                       = DB_ORM::select('Patient_Sessions')->query()->as_array();
-        $this->templateData['session']  = $sessions;
+        $this->templateData['connection']    = DB_ORM::select('Patient_Rule')->query()->as_array();
+        $this->templateData['center']   = View::factory('patient/connection/grid')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
 
-        if ($sessions)
+    public function action_connectionDelete ()
+    {
+        $connectionId = $this->request->param('id');
+        $result = DB_ORM::model('Patient_Rule', array($connectionId));
+        $result->delete();
+        Request::$initial->redirect($this->request->referrer());
+    }
+
+    public function action_connectionManage ()
+    {
+        $connectionId = $this->request->param('id');
+        $this->templateData['patientSame']      = DB_ORM::select('Patient')->where('type', '=', 'Parallel same set')->query()->as_array();
+        $this->templateData['patientDifferent'] = DB_ORM::select('Patient')->where('type', '=', 'Parallel different set')->query()->as_array();
+        $this->templateData['connection']       = DB_ORM::model('Patient_Rule', array($connectionId));
+        $this->templateData['center']           = View::factory('patient/connection/management')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_ajaxGetCondition ()
+    {
+        $patientId          = $this->request->param('id');
+        $result             = array();
+        $conditionsRelation = DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $patientId)->query()->as_array();
+
+        foreach ($conditionsRelation as $conditionRelation)
         {
-            foreach ($sessions as $session)
-            {
-                $id_assign = $session->id_assign;
-                $assign = DB_ORM::select('Patient_Assign')->where('id_assign', '=', $id_assign)->query()->as_array();
-                foreach($assign as $record)
-                {
-                    $u_or_g = $record->user_or_group;
-                    $name = $u_or_g == 'user'
-                            ? DB_ORM::model('User', array($record->id_user))->username
-                            : DB_ORM::model('Group', array($record->id_group))->name;
-
-                    $this->templateData['assign'][$id_assign]['who'][] = $record->user_or_group.': '.$name;
-                }
-                $this->templateData['assign'][$id_assign]['patient'] = DB_ORM::model('Patient', array($session->id_patient))->name;
-                $this->templateData['assign'][$id_assign]['type']    = DB_ORM::model('Patient_Type', array($session->id_type))->type;
-            }
-        }
-        $this->templateData['center'] = View::factory('patient/assign/grid')->set('templateData', $this->templateData);
-        $this->template->set('templateData', $this->templateData);
-    }
-
-    public function action_assign_management()
-    {
-        $id_assign  = $this->request->param('id');
-
-        if ($id_assign)
-        {
-            $session = DB_ORM::select('Patient_Sessions')->where('id_assign', '=', $id_assign)->query()->fetch(0);
-
-            if ($session)
-            {
-                $id_patient = $session->id_patient;
-                $this->templateData['s_patient'] = $id_patient;
-                $this->templateData['s_type']    = $session->id_type;
-            }
-            $this->templateData['s_assign']  = DB_ORM::select('Patient_Assign')->where('id_assign', '=', $id_assign)->query()->as_array();
-            $this->templateData['id_assign'] = $id_assign;
+            $condition = DB_ORM::model('Patient_Condition', array($conditionRelation->id_condition));
+            $result[$condition->id] = $condition->name;
         }
 
-        $this->templateData['patients']         = DB_ORM::select('Patient')->query()->as_array();
-        $this->templateData['patient_type']     = DB_ORM::select('Patient_Type')->query()->as_array();
-        $this->templateData['users']            = DB_ORM::model('User')->getAllUsers();
-        $this->templateData['groups']           = DB_ORM::model('Group')->getAllGroups();
-        $this->templateData['center']           = View::factory('patient/assign/management')->set('templateData', $this->templateData);
-        $this->template->set('templateData', $this->templateData);
+        exit(json_encode($result));
     }
 
-    public function action_assign_save()
+    public function action_updateRule()
     {
-        $id_assign   = $this->request->param('id', false);
-        $post        = $this->request->post();
-        $assign_type = Arr::get($post, 'type', 0);
-        $assign      = Arr::get($post, 'assign', array());
-        $id_patient  = Arr::get($post, 'patient', 0);
-        $maps        = Arr::get($post, 'maps', array());
-
-        $maps = array_unique($maps);
-        $this->update_patient_map($maps, $id_patient);
-
-        $id_assign = DB_ORM::model('Patient_Assign')->update($id_assign, $assign);
-        DB_ORM::model('Patient_Sessions')->create($id_assign, $id_patient, $assign_type);
-
-        Request::$initial->redirect(URL::base().'patient/assign_grid');
-    }
-
-    public function action_assign_delete()
-    {
-        $id_assign = $this->request->param('id');
-        DB_ORM::delete('Patient_Assign')->where('id_assign', '=', $id_assign)->execute();
-        Request::$initial->redirect(URL::base().'patient/assign_grid');
-    }
-
-    public function action_delete_assign_record()
-    {
-        $id_assign      = $this->request->param('id');
-        $id             = $this->request->param('id2');
-        $user_or_group  = $this->request->param('id3') ? 'user' : 'group';
-
-        DB_ORM::delete('Patient_assign')->where('id_assign', '=', $id_assign)->where('id_'.$user_or_group, '=', $id)->execute();
-
-        Request::$initial->redirect(URL::base().'patient/assign_management/'.$id_assign);
-    }
-
-    public function action_rule ()
-    {
-        $this->templateData['rules']    = DB_ORM::select('Patient_Rule')->query()->as_array();
-        $this->templateData['center']   = View::factory('patient/rule/grid')->set('templateData', $this->templateData);
-        $this->template->set('templateData', $this->templateData);
-    }
-
-    public function action_rule_add ()
-    {
-        $nodesArray = DB_ORM::select('Map_Node')->query()->as_array();
-        $nodes = array();
-        $ids = array();
-
-        foreach($nodesArray as $node){
-            $word = html_entity_decode($node->title, ENT_QUOTES);
-            $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-            $nodes[] = $word;
-            $ids[] = '[[NODE:'.$node->id.']]';
-        }
-
-        $this->templateData['nodes']['text'] = json_encode($nodes);
-        $this->templateData['nodes']['id'] = json_encode($ids);
-
-        $conditionArray = DB_ORM::select('Patient_Condition')->query()->as_array();
-        $conditions = array();
-        $ids = array();
-
-        foreach($conditionArray as $condition){
-            $word = html_entity_decode($condition->name, ENT_QUOTES);
-            $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
-            $conditions[] = $word;
-            $ids[] = '[[C:'.$condition->id.']]';
-        }
-
-        $this->templateData['condition']['text'] = json_encode($conditions);
-        $this->templateData['condition']['id'] = json_encode($ids);
-
-        $this->templateData['center'] = View::factory('patient/rule/management')->set('templateData', $this->templateData);
-        $this->template->set('templateData', $this->templateData);
-    }
-
-    public function action_check_rule ($mapId = '', $ruleText = '', $isAjax = true)
-    {
-        $status = 1;
-        $this->auto_render = false;
-
-        if ($isAjax) $ruleText = Arr::get($this->request->post(),'ruleText',NULL);
-
-        $conditions = DB_ORM::select('Patient_Condition')->query()->as_array();
-        $values = array();
-
-        foreach($conditions as $condition) $values[$condition->id] = $condition->value;
-
-        $runtimelogic = new RunTimeLogic();
-        $runtimelogic->values = $values;
-
-        $array = $runtimelogic->parsingPatientRule($ruleText);
-
-        if (count($array['errors']) > 0)$status = 0;
-
-        if ($isAjax) echo $status;
-
-        return $status;
+        $connectionId = $this->request->param('id');
+        $rule = $this->request->post('rule');
+        $correct = 1;
+        DB_ORM::model('Patient_Rule')->update($rule, $correct, $connectionId);
+        Request::$initial->redirect(URL::base().'patient/connection');
     }
 }

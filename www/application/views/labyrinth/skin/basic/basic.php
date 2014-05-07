@@ -42,10 +42,17 @@
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
 
 <script>
-    var idNode = <?php echo $templateData['node']->id; ?>,
-        pollTime = <?php echo Arr::get($templateData, 'time', 0); ?>;
+    var idNode      = <?php echo $templateData['node']->id; ?>,
+        idPatients  = '<?php
+            $ids = array();
+            foreach (Arr::get($templateData, 'patients', array()) as $id=>$patient)
+            {
+                $ids[] = $id;
+            }
+            echo json_encode($ids); ?>',
+        pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>;
 </script>
-<script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
+<script  src="<?php echo URL::base().'scripts/basic.js'; ?>"></script>
 
 <script language="javascript">
     $(document).ready(function(){

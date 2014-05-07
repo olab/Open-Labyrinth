@@ -22,8 +22,8 @@
 
 <div class="page-header">
     <h1>
-        Patients rules grid
-        <a class="btn btn-primary pull-right" href="<?php echo URL::base().'patient/rule_add'; ?>"><i class="icon-plus-sign"></i> Add rule</a>
+        Patients connection grid
+        <a class="btn btn-primary pull-right" href="<?php echo URL::base().'patient/connectionManage'; ?>"><i class="icon-plus-sign"></i> Add connection</a>
     </h1>
 </div>
 
@@ -31,27 +31,25 @@
     <thead>
     <tr>
         <th>#</th>
+        <th>Rules</th>
         <th>Correct</th>
-        <th>Related patient</th>
         <th>Operations</th>
     </tr>
     </thead>
     <tbody><?php
-    if ($templateData['rules']) {
-        foreach ($templateData['rules'] as $rule) { $id_rule = $rule->id; ?>
-            <tr>
-            <td><?php echo $id_rule; ?></td>
-            <td><?php echo $rule->isCorrect; ?></td>
-            <td><?php echo 1;?>
-            </td>
+    if ($templateData['connection']) {
+        foreach ($templateData['connection'] as $connection) { ?>
+        <tr>
+            <td><?php echo $connection->id; ?></td>
+            <td><?php echo $connection->rule; ?></td>
+            <td><?php echo $connection->isCorrect; ?></td>
             <td>
-                <a class="btn btn-info" href="<?php echo URL::base().'patient/rule_management/'.$id_rule; ?>"><i class="icon-edit"></i>Edit</a>
-                <a class="btn btn-danger" href="<?php echo URL::base().'patient/delete_related_rule/'.$id_rule; ?>"><i class="icon-trash"></i>Delete</a>
+                <a class="btn btn-info" href="<?php echo URL::base().'patient/connectionManage/'.$connection->id; ?>"><i class="icon-edit"></i>Edit</a>
+                <a class="btn btn-danger" href="<?php echo URL::base().'patient/connectionDelete/'.$connection->id; ?>"><i class="icon-trash"></i>Delete</a>
             </td>
-            </tr><?php
+        </tr><?php
         }
-    }
-    else {?>
+    } else { ?>
         <tr class="info"><td colspan="4">There are no available displays right now. You may add a displays using the menu above.</td></tr><?php
     } ?>
     </tbody>

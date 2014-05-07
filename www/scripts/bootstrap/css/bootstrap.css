@@ -6110,11 +6110,12 @@ h1 > .pull-right {
     width: 10%;
     min-width: 66px;
 }
-.patient-t td:nth-child(2){ width: 35%;}
-.patient-t td:nth-child(3){ width: 30%;}
-.patient-t td:nth-child(4){
-    width: 25%;
-    min-width: 150px;
+.patient-t td:nth-child(2){ width: 25%;}
+.patient-t td:nth-child(3){ width: 25%;}
+.patient-t td:nth-child(4){ width: 25%;}
+.patient-t td:nth-child(5){
+    width: 15%;
+    min-width: 155px;
 }
 
 .no-maps {
@@ -6152,10 +6153,6 @@ input.assign-type {
 .assign-t td:nth-child(4){
     width: 15%;
     min-width: 150px;
-}
-
-.condition-control-group:nth-child(2) .dra{
-    display: none;
 }
 
 .wizard_button img {
@@ -6216,4 +6213,21 @@ input.assign-type {
 
 .poll-node-indent {
     margin-right: 10px;
+}
+
+.patient-condition {
+    display: inline-block;
+}
+
+.patient-same,
+.patient-different {
+    display: inline-block;
+    width: 49%;
+}
+.patient-different {
+    display: none;
+}
+
+input.patient-type-js {
+    margin: -1px 5px 0 0;
 }

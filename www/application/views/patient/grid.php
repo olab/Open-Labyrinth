@@ -18,8 +18,9 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$patients   = Arr::get($templateData,'patients', array());
+$scenarios  = Arr::get($templateData,'scenarios', array());
 ?>
-
 <div class="page-header">
     <h1>
         Virtual patients manager
@@ -31,24 +32,31 @@
     <thead>
         <tr>
             <th>Patient id</th>
+            <th>Scenario assign</th>
             <th>Patient name</th>
-            <th>Related</th>
+            <th>Patient type</th>
             <th>Operations</th>
         </tr>
     </thead>
     <tbody><?php
-    if ($templateData['patients']) {
-        foreach ($templateData['patients'] as $patient) { $id_patient = $patient['id']; ?>
+    if ($patients) {
+        foreach ($patients as $patient) {
+            $idPatient = $patient['id']; ?>
         <tr>
-            <td><?php echo $patient['id'] ?></td>
-            <td><?php echo $patient['name'] ?></td>
+            <td><?php echo $idPatient; ?></td>
             <td><?php
-                $r_patient = Arr::get($templateData['r_patient'], $id_patient, false);
-                if ($r_patient) echo $r_patient[key($r_patient)].' ( # '.key($r_patient).')'; ?>
+            $assigns = Arr::get($scenarios, $idPatient, array());
+            if($assigns)
+            {
+                foreach ($assigns as $string) echo $string.'<br>';
+            }
+            else echo 'Not assigned yet.'; ?>
             </td>
+            <td><?php echo $patient['name']; ?></td>
+            <td><?php echo $patient['type']; ?></td>
             <td>
-                <a class="btn btn-info" href="<?php echo URL::base().'patient/management/'.$id_patient; ?>"><i class="icon-edit"></i>Edit</a>
-                <a class="btn btn-danger" href="<?php echo URL::base().'patient/delete_patient/'.$id_patient; ?>"><i class="icon-trash"></i>Delete</a>
+                <a class="btn btn-info" href="<?php echo URL::base().'patient/management/'.$idPatient; ?>"><i class="icon-edit"></i>Edit</a>
+                <a class="btn btn-danger" href="<?php echo URL::base().'patient/delete_patient/'.$idPatient; ?>"><i class="icon-trash"></i>Delete</a>
             </td>
         </tr><?php
         }

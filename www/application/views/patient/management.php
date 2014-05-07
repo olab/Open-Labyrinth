@@ -19,9 +19,9 @@
  *
  */
 if(isset($templateData['patient'])) {
-$id_patient = $templateData['patient']->id;
-$name       = $templateData['patient']->name;
-$r_patient  = Arr::get($templateData, 'r_patient', false);
+$id_patient     = $templateData['patient']->id;
+$name           = $templateData['patient']->name;
+$selectedType   = $templateData['patient']->type;
 ?>
 <div class="page-header"><?php
     if ($id_patient) { ?>
@@ -37,6 +37,14 @@ $r_patient  = Arr::get($templateData, 'r_patient', false);
         <label>
             <span class="f-col">Name</span>
             <input type="text" class="no-margin" placeholder="Name" name="name" value="<?php echo $name; ?>" required>
+        </label>
+        <label>
+            <span class="f-col">Type</span>
+            <select name="patientType" required><?php
+                foreach (Arr::get($templateData, 'patient_type', array()) as $type) { ?>
+                    <option value='<?php echo $type; ?>' <?php if($type == $selectedType) echo 'selected'; ?>><?php echo $type; ?></option><?php
+                } ?>
+            </select>
         </label>
     </div>
 
@@ -63,7 +71,7 @@ $r_patient  = Arr::get($templateData, 'r_patient', false);
                 <span class="f-col">Condition name</span>
                 <input name="conditions[name][]" type="text" value="<?php echo $condition->name ?>">
             </label>
-            <a href="<?php echo URL::base().'patient/delete_condition/'.$id_patient.'/'.$condition->id.'/condition'; ?>" class="btn btn-danger pull-right dra"><i class="icon-trash"></i>Delete</a>
+            <a href="<?php echo URL::base().'patient/delete_condition/'.$id_patient.'/'.$condition->id.'/condition'; ?>" class="btn btn-danger pull-right"><i class="icon-trash"></i>Delete</a>
             <label>
                 <span class="f-col">Condition start value</span>
                 <input name="conditions[value][]" type="text" value="<?php echo $condition->value ?>">
@@ -75,56 +83,21 @@ $r_patient  = Arr::get($templateData, 'r_patient', false);
     </fieldset>
 
     <fieldset class="fieldset">
-        <legend>Labyrinth</legend><?php
-        if ( ! $id_patient OR ! $templateData['patient_id_maps']) { ?>
-        <div class="condition-control-group">
-            <label><?php
-                if (isset($templateData['maps'])) { ?>
-                    <span class="f-col">Select Labyrinth</span>
-                    <select name="maps"><?php
-                    foreach ($templateData['maps'] as $map) { ?>
-                        <option value="<?php echo $map->id; ?>"><?php echo $map->name; ?></option><?php
-                    } ?>
-                    </select><?php
-                } else { ?>
-                    <span class="no-maps">To add labyrinth, you must create it.</span><?php
-                } ?>
-            </label>
-        </div><?php
-        }
-
-        foreach (Arr::get($templateData, 'patient_id_maps') as $id=>$id_map) {?>
+        <legend>Scenario assign</legend><?php
+        foreach (Arr::get($templateData, 'patient_scenarios') as $id=>$id_scenario) { ?>
             <div class="condition-control-group">
-            <a href="<?php echo URL::base().'patient/delete_from_edit/'.$id_patient.'/'.$id_map.'/labyrinth'; ?>" class="btn btn-danger pull-right"><i class="icon-trash"></i>Delete</a>
+            <button type="button" class="btn btn-danger pull-right remove-scenario-js" data-id="<?php echo $id; ?>"><i class="icon-trash"></i>Delete</button>
                 <label>
-                    <span class="f-col">Select Labyrinth</span>
-                    <select name="maps[id<?php echo $id; ?>]"><?php
-                        foreach ($templateData['maps'] as $map) { ?>
-                            <option value="<?php echo $map->id; ?>" <?php if ($id_map == $map->id) echo 'selected' ?>><?php echo $map->name; ?></option><?php
+                    <span class="f-col">Select Scenario</span>
+                    <select name="scenarios[id<?php echo $id; ?>]"><?php
+                        foreach ($templateData['scenario'] as $scenario) { ?>
+                            <option value="<?php echo $scenario->id; ?>" <?php if ($id_scenario == $scenario->id) echo 'selected' ?>><?php echo $scenario->title; ?></option><?php
                         } ?>
                     </select>
                 </label>
             </div><?php
         } ?>
         <button type="button" class="btn btn-info add-labyrinth-js"><i class="icon-plus"></i>Add</button>
-    </fieldset>
-
-    <fieldset class="fieldset">
-        <legend>Relation</legend><?php
-        if ($r_patient) {?>
-        <div class="condition-control-group">
-            <a href="<?php echo URL::base().'patient/delete_from_edit/'.$id_patient.'/'.$r_patient->id.'/relation'; ?>" class="btn btn-danger pull-right"><i class="icon-trash"></i>Delete</a>
-            <label>
-                <span class="f-col">Assign relation</span>
-                <select name="r_patient[<?php echo $r_patient->id; ?>]"><?php
-                    foreach (Arr::get($templateData, 'all_patients', array()) as $patient) { ?>
-                        <option value='<?php echo $patient->id; ?>' <?php if( $r_patient->id_second_patient == $patient->id) echo 'selected'; ?>><?php echo $patient->name; ?></option><?php
-                    } ?>
-                </select>
-            </label>
-        </div><?php
-        } ?>
-        <button type="button" class="btn btn-info add-r-patient-js" <?php if($r_patient) echo 'style="display: none;"'; ?>><i class="icon-plus"></i>Add</button>
     </fieldset>
 
     <button type="submit" class="btn btn-primary btn-large pull-right"><?php echo ($id_patient) ? 'Save' : 'Create'; ?></button>
@@ -147,33 +120,19 @@ $r_patient  = Arr::get($templateData, 'r_patient', false);
 
 <!-- Add labyrinth block -->
 <div class="condition-control-group add-labyrinth-bl" style="display: none;">
-    <button type="button" class="btn btn-danger pull-right remove-condition-js"><i class="icon-trash"></i>Delete</button>
+    <button type="button" class="btn btn-danger pull-right remove-scenario-js"><i class="icon-trash"></i>Delete</button>
     <label><?php
-        if (isset($templateData['maps'])) { ?>
-            <span class="f-col">Select Labyrinth</span>
-            <select name="maps[]"><?php
-            foreach ($templateData['maps'] as $map) { ?>
-                <option value="<?php echo $map->id; ?>"><?php echo $map->name; ?></option><?php
+        if (isset($templateData['scenario'])) { ?>
+            <span class="f-col">Select Scenario</span>
+            <select name="scenarios[]"><?php
+            foreach ($templateData['scenario'] as $scenario) { ?>
+                <option value="<?php echo $scenario->id; ?>"><?php echo $scenario->title; ?></option><?php
             } ?>
             </select><?php
         } else { ?>
-            <span class="no-maps">To add labyrinth, you must create it.</span><?php
+            <span class="no-maps">To add scenario, you must create it.</span><?php
         } ?>
     </label>
 </div>
 <!-- End add labyrinth block -->
-
-<!-- Add relation block -->
-<div class="condition-control-group r-patient-js" style="display: none;">
-    <button type="button" class="btn btn-danger pull-right remove-relation-js"><i class="icon-trash"></i>Delete</button>
-    <label>
-        <span class="f-col">Assign relation</span>
-        <select name="r_patient[]"><?php
-            foreach (Arr::get($templateData, 'all_patients', array()) as $patient) { ?>
-                <option value='<?php echo $patient->id; ?>'><?php echo $patient->name; ?></option><?php
-            } ?>
-        </select>
-    </label>
-</div>
-<!-- End add relation block -->
 <?php } ?>

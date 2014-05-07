@@ -1,4 +1,5 @@
 jQuery(document).ready(function(){
+    var urlBase = window.location.origin + '/';
     var browserUpdateWarning = new BrowserUpdateWarning();
     var body = $('body');
     browserUpdateWarning.Check();
@@ -493,6 +494,21 @@ jQuery(document).ready(function(){
     });
 
     $('.remove-condition-js').live('click', function(){
+        if ($(this).data('delete')) {
+            var deleteRecord = $(this).next().find('select'),
+                input        = '<input type="hidden" name="' + deleteRecord.data('id') + '">';
+
+            $(this).parent().before(input);
+        }
+        $(this).parent().remove();
+    });
+
+    $('.remove-scenario-js').live('click', function(){
+        var id = $(this).data('id');
+        if(id){
+            var input = '<input type="hidden" name="scenario_delete[]" value="'+ id + '">';
+            $(this).parent().before(input);
+        }
         $(this).parent().remove();
     });
 
@@ -514,24 +530,6 @@ jQuery(document).ready(function(){
         {
             mainBlock.children('.assign-user').remove();
             mainBlock.append(selectGroup);
-        }
-    });
-
-    $('#assign-type').change(function(){
-        var type        = $(this).find('option:selected').val(),
-            assignField = $('.assign-bl-js'),
-            assignBlocks = assignField.children('.condition-control-group');
-
-        if (type == 2 || type == 4) assignField.removeClass('assign-same');
-        if ((type == 1 || type == 3) && assignField.not('assign-same'))
-        {
-            assignIterator = 0;
-            assignField.addClass('assign-same');
-            for (var i=0; i<assignBlocks.length; i++)
-            {
-                var assignBlock = assignBlocks.eq(i);
-                if (assignBlock.hasClass('add-assign-bl')) assignBlock.remove();
-            }
         }
     });
 
@@ -571,4 +569,40 @@ jQuery(document).ready(function(){
         $.get(url, function() {});
         $(this).parent().remove();
     });
+
+    $('.patient-type-js').change(function(){
+        if ($(this).data('type') == 'different') {
+            $('.patient-different').show();
+            $('.patient-same').hide();
+        } else {
+            $('.patient-different').hide();
+            $('.patient-same').show();
+        }
+    });
+
+    var patientCondition = $('.patient-condition-js');
+
+    patientCondition.each(function(){
+        getPatientCondition($(this));
+    });
+
+    patientCondition.change(function(){
+        getPatientCondition($(this));
+    });
+
+    function getPatientCondition(obj)
+    {
+        $.get(
+            urlBase + 'patient/ajaxGetCondition/' + obj.val(),
+            function(data){
+                var ul = '<ul style="list-style-type: none; margin: 0;">';
+                obj.next().remove();
+                $.each($.parseJSON(data), function(id, name){
+                    ul += '<li>[[COND:' + id + ']] - ' + name + '</li>';
+                });
+                ul += '</ul>';
+                obj.after(ul);
+            }
+        );
+    }
 });
