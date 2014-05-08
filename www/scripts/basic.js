@@ -58,7 +58,11 @@ $(document).ready(function(){
     });
 
     // ----- patient ----- //
-    if (idPatients.length > 2) setInterval(ajaxPatient, (1500));
+    if (idPatients.length > 2)
+    {
+        ajaxPatient();
+        setInterval(ajaxPatient, (1500));
+    }
 
     function ajaxPatient(){
         $.get(

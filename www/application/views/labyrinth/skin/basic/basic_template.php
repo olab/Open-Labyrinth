@@ -51,7 +51,7 @@
             echo json_encode($ids); ?>',
             pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>;
     </script>
-    <script  src="<?php echo URL::base(); ?>scripts/basic.js"></script>
+    <script  src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
 
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
 

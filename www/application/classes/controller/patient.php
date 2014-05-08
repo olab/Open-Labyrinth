@@ -175,8 +175,14 @@ class Controller_Patient extends Controller_Base {
     public function action_connectionManage ()
     {
         $connectionId = $this->request->param('id');
-        $this->templateData['patientSame']      = DB_ORM::select('Patient')->where('type', '=', 'Parallel same set')->query()->as_array();
-        $this->templateData['patientDifferent'] = DB_ORM::select('Patient')->where('type', '=', 'Parallel different set')->query()->as_array();
+
+        $sameA      = DB_ORM::select('Patient')->where('type', '=', 'Parallel same set')->query()->as_array();
+        $sameB      = DB_ORM::select('Patient')->where('type', '=', 'Longitudinal same set')->query()->as_array();
+        $differentA = DB_ORM::select('Patient')->where('type', '=', 'Parallel different set')->query()->as_array();
+        $differentB = DB_ORM::select('Patient')->where('type', '=', 'Longitudinal different set')->query()->as_array();
+
+        $this->templateData['patientSame']      = array_merge($sameA, $sameB);
+        $this->templateData['patientDifferent'] = array_merge($differentA, $differentB);
         $this->templateData['connection']       = DB_ORM::model('Patient_Rule', array($connectionId));
         $this->templateData['center']           = View::factory('patient/connection/management')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);

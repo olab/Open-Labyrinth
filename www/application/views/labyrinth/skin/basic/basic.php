@@ -52,7 +52,7 @@
             echo json_encode($ids); ?>',
         pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>;
 </script>
-<script  src="<?php echo URL::base().'scripts/basic.js'; ?>"></script>
+<script  src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
 
 <script language="javascript">
     $(document).ready(function(){
@@ -408,12 +408,7 @@ $id_node = $templateData['node']->id;
                                 <td><?php
                                     echo Arr::get($templateData, 'links');
                                     echo Arr::get($templateData, 'undoLinks'); ?>
-                                </td><?php
-                                foreach (Arr::get($templateData, 'patients', array()) as $patient){ ?>
-                                <td align="right" valign="bottom">
-                                    <ul class="navigation patient-js"><?php echo $patient; ?></ul>
-                                </td><?php
-                                }; ?>
+                                </td>
                                 <td align="right" valign="bottom">
                                     <?php echo Arr::get($templateData, 'counters'); ?>
                                 </td>

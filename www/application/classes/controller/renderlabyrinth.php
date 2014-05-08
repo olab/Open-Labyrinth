@@ -78,6 +78,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             /* ----- patient ----- */
             $data['patients'] = $this->checkPatient($idRootNode, $scenarioId, 'index');
+            foreach ($data['patients'] as $patient)
+            {
+                $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
+            }
+            /* ----- end patient ----- */
 
             $data['navigation'] = $this->generateNavigation($data['sections']);
 
@@ -468,6 +473,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 /* ----- patient ----- */
                 $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
+                foreach ($data['patients'] as $patient)
+                {
+                    $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
+                }
+                /* ----- end patient ----- */
 
                 $gotoNode = Session::instance()->get('goto', NULL);
                 if ($gotoNode != NULL)
@@ -549,25 +559,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
 
                     $skin = 'labyrinth/skin/basic/basic';
-                    if ($data['map']->skin->enabled) {
+                    if ($data['map']->skin->enabled)
+                    {
                         $data['skin_path'] = $data['map']->skin->path;
-                        if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+                        if (file_exists($_SERVER['DOCUMENT_ROOT'].'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php'))
+                        {
                             $skin = 'labyrinth/skin/basic/basic_template';
 
-                            $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
-                            $skinContent->set('templateData', $data);
-
-                            $data['skin'] = $skinContent;
+                            $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
                             $skinData = json_decode($data['map']->skin->data, true);
                             if($skinData != null && isset($skinData['body'])) {
                                 $data['bodyStyle'] = base64_decode($skinData['body']);
                             }
-                        } else {
-                            $skin = 'labyrinth/skin/basic/basic';
-                        }
-                    } else {
-                        $data['skin_path'] = NULL;
-                    }
+                        } else $skin = 'labyrinth/skin/basic/basic';
+                    } else $data['skin_path'] = NULL;
+
                     $this->template = View::factory($skin)->set('templateData', $data);
                 } else {
                     Request::initial()->redirect(URL::base());

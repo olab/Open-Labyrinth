@@ -62,7 +62,7 @@ $scenarios  = Arr::get($templateData,'scenarios', array());
         }
     }
     else {?>
-        <tr class="info"><td colspan="4">There are no available displays right now. You may add a displays using the menu above.</td></tr><?php
+        <tr class="info"><td colspan="5">There are no available displays right now. You may add a displays using the menu above.</td></tr><?php
     } ?>
     </tbody>
 </table>
