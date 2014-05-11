@@ -6,6 +6,9 @@
  * Time: 10:09 πμ
  * To change this template use File | Settings | File Templates.
  */
+
+require_once(Kohana::find_file('vendor', 'arc2/ARC2'));
+require_once(Kohana::find_file('vendor', 'Graphite'));
 class Model_Leap_Vocabulary extends DB_ORM_Model
 {
 
@@ -122,6 +125,46 @@ class Model_Leap_Vocabulary extends DB_ORM_Model
 
         return $this;
     }
+
+    public static function import($uri){
+        $uri_abs = $uri;
+
+        if (!parse_url($uri, PHP_URL_SCHEME) != '') $uri_abs  = self::getGraphUri().$uri;
+
+        $graph = new Graphite();
+        $graph->load( $uri_abs );
+
+        $terms =  $graph->allSubjects();
+
+        $termLabels = array();
+
+        $vocabularies = array();
+
+        foreach($terms as $term){
+            $termUri  =  $term->toString();
+            $vocab_term = DB_ORM_Model::factory("vocabulary_term");
+            $vocab_term->newTerm($termUri, $term->label(),$term->type());
+
+            $termLabels[] = $term->toString();
+            if($vocab_term->vocabulary->namespace!=="")
+                $vocabularies[$vocab_term->vocabulary->namespace]=$vocab_term->vocabulary;
+
+        }
+
+
+
+        foreach($vocabularies as $vocab){
+
+            $vocab->load();
+            $vocab->alternative_source_uri = $uri;
+            $vocab->save();
+
+        }
+
+        return $termLabels;
+
+    }
+
 
 
 }

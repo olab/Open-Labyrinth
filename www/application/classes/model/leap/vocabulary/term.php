@@ -178,6 +178,32 @@ class Model_Leap_Vocabulary_Term extends  DB_ORM_Model
     }
 
 
+    public static function getTerm($termName, $vocabUri){
+
+        $vocab = Model_Leap_Vocabulary::getVocabularyByNamespace($vocabUri);
+        if(empty($vocab))return null;
+       // var_dump($vocab);die;
+        $vocab_id = $vocab->id;
+
+        $builder = DB_SQL::select('default')->from(self::table())
+            ->where('vocab_id', '=', $vocab_id)
+            ->where('name', '=', $termName);
+
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $terms = array();
+
+            foreach ($result as $record) {
+                $terms[] = DB_ORM::model('vocabulary_term', array((int)$record['id']));
+            }
+
+            return $terms[0];
+        }
+        return NULL;
+
+    }
+
     /**
      * Position of the namespace end
      * Method looks for # : and /

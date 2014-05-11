@@ -77,6 +77,16 @@ class Model_Leap_Metadata extends DB_ORM_Model
                     'nullable' => FALSE,
                     'savable' => TRUE,
                 )),
+            'guid' => new DB_ORM_Field_String($this, array(
+                    'max_length' => 50,
+                    'nullable' => TRUE,
+                    'savable' => TRUE,
+                )),
+            'state' => new DB_ORM_Field_Boolean($this, array(
+                    'max_length' => 1,
+                    'nullable' => TRUE,
+                    'savable' => TRUE,
+                )),
         );
 
         $this->relations = array(
@@ -156,6 +166,24 @@ class Model_Leap_Metadata extends DB_ORM_Model
     public static function getMetadataByName($name)
     {
         $builder = DB_SQL::select('default')->from(self::table())->where('name', '=', $name);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $metadataFields = array();
+
+            foreach ($result as $record) {
+                $metadataFields[] = DB_ORM::model('metadata', array((int)$record['id']));
+            }
+
+            return $metadataFields[0];
+        }
+        return NULL;
+    }
+
+
+    public static function getMetadataByGuid($guid)
+    {
+        $builder = DB_SQL::select('default')->from(self::table())->where('guid', '=', $guid);
         $result = $builder->query();
 
         if ($result->is_loaded()) {
