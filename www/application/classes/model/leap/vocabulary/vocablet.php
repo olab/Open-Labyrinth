@@ -57,7 +57,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
     {
 
 
-        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "files/vocablets";
+        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
 
 
         $extensions = array();
@@ -78,7 +78,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
                     if(!empty($existing))
                         $state  = $existing->state;
 
-                    $extensions[] = array("settings" => $settings, "name" => $name, "state"=>$state);
+                    $extensions[$settings["info"]["guid"]] = array("settings" => $settings, "name" => $name, "state"=>$state);
 
                 }
 
@@ -91,10 +91,50 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
 
     }
 
+    public function getSettings()
+    {
+        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
+
+
+        $dir = $path . "/" . $this->name;
+
+
+        if (is_dir($dir)) {
+
+            $ini = $dir . "/vocablet.ini";
+
+            //echo $ini;
+            if (file_exists($ini)) {
+                $settings = parse_ini_file($ini, true);
+                return $settings;
+
+            }
+        }
+        return null;
+    }
+
+    public static function getAllPages(){
+        $installed = self::getEnabledObjects();
+
+        $pages = array();
+
+        foreach ($installed as $vocablet) {
+            $settings = $vocablet->getSettings();
+            if(!empty($settings)){
+                if(!empty($settings["pages"])){
+                    $pages[$vocablet->name] = $settings["pages"];
+                }
+            }
+        }
+
+        return $pages;
+
+    }
+
     public static function install($vocablet)
     {
 
-        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "files/vocablets";
+        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
 
 
         $dir = $path . "/" . $vocablet;
@@ -104,13 +144,26 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
 
             $ini = $dir . "/vocablet.ini";
 
-            echo $ini;
+
             if (file_exists($ini)) {
                 $settings = parse_ini_file($ini, true);
                 //var_dump($settings);
 
                 $existing = self::getVocabletByGuid($settings["info"]["guid"]);
-                if(!empty($existing))return;
+                if(!empty($existing))return true;
+
+
+                //dependencies
+                if (isset($settings["dependencies"])) {
+
+                    foreach($settings["dependencies"] as $dependency=>$info){
+                        if(!self::install($info["name"]))return false;
+
+                    }
+
+
+                }
+
 
                 //metadata
                 if (isset($settings["metadata"])) {
@@ -129,7 +182,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
                 if (isset($settings["vocabularies"])) {
                     foreach ($settings["vocabularies"] as $vocabulary => $vocabulary_settings) {
                         if(isset($vocabulary_settings["file"])){
-                            $vpath = "files/vocablets". "/" . $vocablet ."/vocabularies/".$vocabulary_settings["file"];
+                            $vpath = "extensions/vocablets". "/" . $vocablet ."/vocabularies/".$vocabulary_settings["file"];
 
                         }
                         else $vpath = $vocabulary_settings["url"];
@@ -137,7 +190,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
                         if(!empty($vpath)){
                             $terms = Model_Leap_Vocabulary::import($vpath);
                             //var_dump($vpath);
-                            var_dump($terms);
+                           // var_dump($terms);
                         }
 
                     }
@@ -178,7 +231,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
                                 $property = $mapping_settings["property"];
                                 $vocab_term = Model_Leap_Vocabulary_Term::getTerm($term, $vocabulary);
 
-                                if (!empty($vocab_term) && !empty($byGuid)) {
+                                if (!empty($vocab_term) && !empty($model)&& !empty($property)) {
 
                                     $values = array(
                                         "class" => $model,
@@ -199,7 +252,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
                                 $model = $mapping_settings["model"];
                                 $vocab_term = Model_Leap_Vocabulary_Term::getTerm($term, $vocabulary);
 
-                                if (!empty($vocab_term) && !empty($byGuid)) {
+                                if (!empty($vocab_term) && !empty($model) ) {
 
                                     $values = array(
                                         "class" => $model,
@@ -230,12 +283,57 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
 
              }
 
-
+            return true;
+        }
+        else {
+            return false;
         }
 
 
 
+
     }
+
+    public static function getEnabled(){
+        $builder = DB_SQL::select('default')->from(self::table())->where('state', '=', 1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $vocablets = array();
+
+            foreach ($result as $record) {
+                $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
+                $vocablets[$vocablet->name] =
+                    $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets/". $vocablet->name;
+            }
+
+            return $vocablets;
+        }
+        return array();
+    }
+
+    private static function getEnabledObjects(){
+        $builder = DB_SQL::select('default')->from(self::table())->where('state', '=', 1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $vocablets = array();
+
+            foreach ($result as $record) {
+                $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
+                $vocablets[$vocablet->name] =
+                    $vocablet;
+            }
+
+            return $vocablets;
+        }
+        return array();
+    }
+
+    public static function getRoutes(){
+
+    }
+
 
     public function uninstall(){
 

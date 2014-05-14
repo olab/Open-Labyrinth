@@ -112,6 +112,15 @@ Kohana::modules(array(
 ));
 
 
+$mods = Model_Leap_Vocabulary_Vocablet::getEnabled();
+
+$mods = array_merge(Kohana::modules(), $mods);
+//var_dump($mods);die;
+Kohana::modules($mods);
+
+
+
+
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
@@ -151,12 +160,22 @@ Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
         'controller' => 'manager',
         'action' => 'index',
     ));
+Route::set('vocabulary_vocablets', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/vocablets'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
 
 Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
     array(
         'directory' => 'vocabulary'
     ))
-    ->defaults(array(
+    ->defaults(
+        array(
     'controller' => 'manager',
     'action' => 'index',
 ));
