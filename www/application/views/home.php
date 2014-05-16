@@ -46,7 +46,8 @@
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/browser/css/BrowserUpdateWarning.css" type="text/css" />
         
         <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico" />
-        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery/jquery-migrate-1.2.1.min.js"></script>
     </head>
     <body>
         <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message" class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
@@ -222,6 +223,7 @@
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
 
         <script type="text/javascript">
+            var baseURL = "<?php echo URL::base(); ?>";
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>';
             var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
             var currentUserReadOnly = '<?php

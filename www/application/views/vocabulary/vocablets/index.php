@@ -69,7 +69,7 @@ if (isset($templateData)) {
                         <form method="post"
                               action="<?php echo URL::base() . 'vocabulary/vocablets/manager/uninstall'; ?>">
                             <input type="hidden" name="guid" value="<?php echo $vocab["settings"]["info"]["guid"]; ?>"/>
-                            <button class="btn btn-danger" type="submit"><i class="icon-trash"></i> Uninstall</button>
+                            <button class="btn btn-danger" type="submit"><i class="icon-trash"></i> Disable</button>
                         </form>
 
                         <?php if ($vocab["state"] == false) { ?>
@@ -97,13 +97,13 @@ if (isset($templateData)) {
                         if ($canInstall) {
                             ?>
                             <a href="<?php echo URL::base() . "vocabulary/vocablets/manager/install?vocablet=" . $vocab["name"]; ?>"
-                               class="btn btn-info">Install</a>
+                               class="btn btn-success"><i class="icon-check"></i> Enable</a>
 
                         <?php
                         }
                         else{
                             ?>
-                        Install the dependency extensions first, to be able to install this module.
+                        Enable the dependency extensions first, to be able to install this module.
 
                         <?php
                         }

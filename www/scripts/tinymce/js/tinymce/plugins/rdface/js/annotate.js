@@ -1,4 +1,4 @@
-﻿var parentWin = (!window.frameElement && window.dialogArguments) || opener
+var parentWin = (!window.frameElement && window.dialogArguments) || opener
 		|| parent || top;
 var plugin_url = parentWin.rdface_plugin_url;
 var annotationF = parentWin.rdface_annotationF;

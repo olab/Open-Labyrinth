@@ -1,7 +1,7 @@
 ﻿function connectEnricherAPI(url,request_data){
 	var dataReceived;
 	$.ajax({
-		type : "POST",
+		type : "GET",
 		async: false,
 		url : url,
 		data : request_data,
@@ -22,11 +22,11 @@ function suggestURI(proxy_url,request_data,top){
 	var dataReceived=connectEnricherAPI(proxy_url,request_data);
 	if(dataReceived){
 		//dataReceived = eval("(" + dataReceived + ")");
-		if(dataReceived['totalResults']){
+		if(dataReceived['results']){
 			if(top){
-				return dataReceived.entries[0].link;
+				return dataReceived['results'].entries[0].uri;
 			}else{
-				return dataReceived;
+				return dataReceived['results'];
 			}
 		}	
 	}

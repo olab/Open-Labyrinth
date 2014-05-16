@@ -1,4 +1,4 @@
-﻿jsTree pre1.0
+jsTree pre1.0
 http://jstree.com/
 
 Copyright (c) 2011 Ivan Bozhanov (vakata.com)

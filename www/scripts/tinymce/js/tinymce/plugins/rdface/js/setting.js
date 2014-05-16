@@ -1,4 +1,4 @@
-﻿var parentWin = (!window.frameElement && window.dialogArguments) || opener || parent || top;
+var parentWin = (!window.frameElement && window.dialogArguments) || opener || parent || top;
 var editor=parentWin.rdface_editor;
 var plugin_url=parentWin.rdface_plugin_url;
 var rdfaSetting = {

@@ -265,6 +265,10 @@ class Model_Leap_Metadata extends DB_ORM_Model
         return "metadata_" . $this->type;
     }
 
+    public static function  getSmallModelName($model){
+        return strtolower(str_replace("Model_Leap_","",$model));
+    }
+
 
     public function getMappingsString(){
         $predicates = array();
@@ -279,7 +283,7 @@ class Model_Leap_Metadata extends DB_ORM_Model
 
         $relations = Model_Leap_Metadata::getMetadataRelationsMetadata($model, $object);
         foreach($relations as $name=>$relation){
-            echo 'lol';
+           // echo 'lol';
             $object->relate($name,"has_many",$relation);
         }
     }

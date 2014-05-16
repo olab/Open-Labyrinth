@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Finnish translation for bootstrap-datetimepicker
  * Jaakko Salonen <https://github.com/jsalonen>
  */
@@ -7,9 +7,9 @@
 		days: ["sunnuntai", "maanantai", "tiistai", "keskiviikko", "torstai", "perjantai", "lauantai", "sunnuntai"],
 		daysShort: ["sun", "maa", "tii", "kes", "tor", "per", "lau", "sun"],
 		daysMin: ["su", "ma", "ti", "ke", "to", "pe", "la", "su"],
-		months: ["tammikuu", "helmikuu", "maaliskuu", "huhtikuu", "toukokuu", "kesΓ¤kuu", "heinΓ¤kuu", "elokuu", "syyskuu", "lokakuu", "marraskuu", "joulukuu"],
+		months: ["tammikuu", "helmikuu", "maaliskuu", "huhtikuu", "toukokuu", "kesäkuu", "heinäkuu", "elokuu", "syyskuu", "lokakuu", "marraskuu", "joulukuu"],
 		monthsShort: ["tam", "hel", "maa", "huh", "tou", "kes", "hei", "elo", "syy", "lok", "mar", "jou"],
-		today: "tΓ¤nΓ¤Γ¤n",
+		today: "tänään",
 		suffix: [],
 		meridiem: []
 	};

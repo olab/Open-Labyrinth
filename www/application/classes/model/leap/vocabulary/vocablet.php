@@ -131,6 +131,26 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
 
     }
 
+
+
+    public static function getAllEntities(){
+        $installed = self::getEnabledObjects();
+
+        $entities = array();
+
+        foreach ($installed as $vocablet) {
+            $settings = $vocablet->getSettings();
+            if(!empty($settings)){
+                if(!empty($settings["entities"])){
+                    $entities[$vocablet->name] = $settings["entities"];
+                }
+            }
+        }
+
+        return $entities;
+
+    }
+
     public static function install($vocablet)
     {
 

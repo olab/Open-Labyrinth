@@ -169,6 +169,24 @@ Route::set('vocabulary_vocablets', '<directory>(/<controller>(/<action>))',
             'controller' => 'manager',
             'action' => 'index',
         ));
+Route::set('vocabulary_inline', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/inline'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
+Route::set('vocabulary_inline_entities', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/inline/entities'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
 
 Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
     array(

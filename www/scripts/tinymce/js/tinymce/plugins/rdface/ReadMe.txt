@@ -1,4 +1,4 @@
-﻿RDFaCE : special edition for Schema.org
+RDFaCE : special edition for Schema.org
 
 written by Ali Khalili
 http://ali1k.com

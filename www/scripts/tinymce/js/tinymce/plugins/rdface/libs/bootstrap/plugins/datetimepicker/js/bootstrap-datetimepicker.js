@@ -3,7 +3,7 @@
  * =========================================================
  * Copyright 2012 Stefan Petre
  * Improvements by Andrew Rowls
- * Improvements by SΓ©bastien Malot
+ * Improvements by Sébastien Malot
  * Project URL : http://www.malot.fr/bootstrap-datetimepicker
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

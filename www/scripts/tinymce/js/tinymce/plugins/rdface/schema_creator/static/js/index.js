@@ -1,4 +1,4 @@
-﻿function handleSearch(term){
+function handleSearch(term){
     $('#schema_types li').each(function(i, element){
     	var str=$(element).attr('id');
     	str=str.toLowerCase();
@@ -91,7 +91,7 @@ function build_schemas(){
 		success : function(msg) {
 			if(!$('#selection_download').length)
 				$('#action_area').append('<br/><div id="selection_download"><center><a href="selection.json" target="_blank"> Download Selection as JSON </a></center></div>');
-			window.open('schemas.html');
+			window.open('schemas.htm');
 		}
 	});	
 }

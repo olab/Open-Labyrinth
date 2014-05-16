@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xml:base="http://www.purl.org/meducator/ns/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:cc='http://creativecommons.org/ns#' xmlns:status="http://www.w3.org/2003/06/sw-vocab-status/ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<rdf:Description rdf:about="http://purl.org/meducator/ns/">
+		<rdfs:label>mEducator Metadata Description Scheme</rdfs:label>
+		<dcterms:title>Namespace for mEducator's Metadata Description Scheme, Version 1.1 </dcterms:title>
+		<dc:contributor>Participants in mEducator's TRG Working Group </dc:contributor>
+		<dc:description>This schema is used to described medical educational resources that will be shared accross 
+	academic institutions in Europe</dc:description>
+		<dcterms:modified> 2011-05-05</dcterms:modified>
+	</rdf:Description>
+	<!--Definition of Classes-->
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/Resource">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Resource</rdfs:label>
+		<rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/> 
+		<rdfs:comment>This class is used to describe the educational medical resource that will be annotated </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/IPRType">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>IPR License </rdfs:label>
+		<rdfs:comment>Type of IPR License granted for legally using this medical learning resource. The adopted license can be either one of the Creative Commons Licenses, or a different one</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdfs:Class>
+	
+	
+<rdfs:Class rdf:about="http://purl.org/meducator/ns/RepurposingHistory">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposing History</rdfs:label>
+		<rdfs:comment>The history of the repurposing process that is related to the current resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note> The repurposing history describes all the repurposing procees are related to the current resources. i.e. its parent and its children. </skos:note>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/RepurposingChild">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposing Child</rdfs:label>
+		<rdfs:subClassOf rdf:resource="http://purl.org/meducator/ns/Resource"/> 
+		<rdfs:comment>The resource to which the described medical resource has been repurposed</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class describe information about the child of the repurposing process</skos:note>
+	</rdfs:Class>
+	
+		<rdfs:Class rdf:about="http://purl.org/meducator/ns/RepurposedTo">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposed To</rdfs:label>
+		<rdfs:comment>All the information that is needed to describe the repurposing process from the current resource to the child one. This information describes both the child  resource, as desribed in the Repurposing Child Class above, as well the type of repurposing that takes place and a bried descritpion of the whole process. </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class describe information about the child of the repurposing process</skos:note>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/RepurposingParent">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposing Parent</rdfs:label>
+		<rdfs:subClassOf rdf:resource="http://purl.org/meducator/ns/Resource"/> 
+		<rdfs:comment>The resource from which the described medical resource has been repurposed</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class describe information about the parent of the current resource</skos:note>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/RepurposedFrom">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposed From</rdfs:label>
+		<rdfs:comment>All the information that is needed to describe the repurposing process between the current resource and its parent. This information describes both the parent resource, as desribed in the Repurposing Parent Class above, as well the type of repurposing that takes place and a bried descritpion of the whole process. </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note></skos:note>
+	</rdfs:Class>	
+
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/Subject">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Subject</rdfs:label>
+		<rdfs:comment>This class is used for the description of keywords</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class will be used as objects of the property mdc:subject</skos:note>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/Discipline">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Discipline</rdfs:label>
+		<rdfs:comment>This class is used for the description of the Discipline(s) to which the medical resource applies to</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class will be used as objects of the property mdc:discipline</skos:note>
+	</rdfs:Class>
+
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/DisciplineSpeciality">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Discipline Speciality</rdfs:label>
+		<rdfs:comment>This class is used for the description of the Discipline Specialty (ies) to which the medical resource applies to</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>Instances of this class will be used as objects of the property mdc:disciplineSpeciality</skos:note>
+	</rdfs:Class>
+	
+	<rdfs:Class rdf:about="http://purl.org/meducator/ns/ExternalTerm">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>External Term</rdfs:label>
+		<rdfs:comment>A class that will be used to describe the reference to external vocabularies. </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note>This reference will contain information about the name of the taxonomy,conceptID of the term and the URI at which the term is described</skos:note>
+	</rdfs:Class>	
+
+<!--Definition of Properties-->
+
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/creator">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Creator </rdfs:label>
+		<rdfs:comment>The creator of the medical resource</rdfs:comment>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/creator"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/identifier">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Identifier</rdfs:label>
+		<rdfs:comment>An unambiguous reference to the resource within a given context</rdfs:comment>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/identifier"/>
+	</rdf:Property>
+		
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/description">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Description</rdfs:label>
+		<rdfs:comment>A comprehensive description of the educational resource in terms of its content, including, for example, resource synopsis, resource contents,         resource overview, etc</rdfs:comment>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://http://purl.org/dc/elements/1.1/description"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/subject">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Subject</rdfs:label>
+		<rdfs:comment>The topic of the resource</rdfs:comment>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/Subject"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/subject"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/language">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Language</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://downlode.org/rdf/iso-639/schema#Language"/>
+		<rdfs:comment>The language of the content of the medical resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/language"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/rights">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Rights</rdfs:label>
+		<rdfs:range rdf:resource="http://creativecommons.org/ns#License"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/rights"/>
+		<rdfs:comment>This field is used to describe the license type that has been granted so that this learning resource to be used legally within mEducator. 
+		The actual license will reside within the learning resource itself. The adopted license can be either one of the Creative Commons Licenses, or a different one</rdfs:comment>
+		<skos:note> Instances of this class are used to define types of Licenses that can be used for the clearance of the IPR issues of the medical resource. These instances can be found at "http://purl.org/meducator/licenses/"</skos:note>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/created">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Created</rdfs:label>
+		<rdfs:comment>The date of creation of the resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/date"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/date"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/created"/>	
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/metadataCreated">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Metadata Creation Date</rdfs:label>
+		<rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+		<rdfs:comment>Date of creation of metadata</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/memberOf">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Member Of</rdfs:label>
+		<rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+		<rdfs:range rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+		<rdfs:comment> A person is member of an Organisation </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/profileURI">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Profile URI</rdfs:label>
+		<rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+		<rdfs:comment> The Foaf Profile of a Person </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/assessmentMethods">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Assessment Methods</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>The assessment methods that can be applied when using the described resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/educationalOutcomes">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Educational Outcomes</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+		<rdfs:commment>Expected learning outcomes</rdfs:commment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note> See http://purl.org/meducator/educationaloutcomes/" to see instances of Educational Outcomes</skos:note>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/educationalObjectives">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Educational Objectives</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Intended educational objectives (as intended by the contributor under the stated instructions of use).</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/teachingLearningInstructions">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Teaching Learning Instructions </rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Instructions of how to use this resource for teaching and/or learning</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/citation">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Citation</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Citation of the resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/discipline">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Discipline</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/Discipline"/>
+		<rdfs:comment>Discipline describes the health profession for which this educational offering is intended. For example, physician, registered nurse, etc</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/disciplineSpeciality">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Discipline Speciality</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/DisciplineSpeciality"/>
+		<rdfs:comment>Specialty is the field that is used for the description of  healthcare specialties within a profession that compose part of the target audience 
+		for this educational offering. For example, cardiology. For example, if the stated discipline is medicine, then the specialty could be cardiology, surgery, radiology, etc. 
+		If the stated discipline is medical physics, then the specialty could be nuclear medicine, radiation therapy, diagnostic imaging, etc</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/externalTerm">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>External Term</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Subject"/>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Discipline"/>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/DisciplineSpeciality"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/ExternalTerm"/>
+		<rdfs:comment> This property is used to host information about the external vocabulary to which the interal term within the schema (subject, discipline, disciplineSpeciality) can be mapped to</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/externalSource">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>External Source</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/ExternalTerm"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>		
+		<rdfs:comment> This property is used to describe the name of the external vocabulary or taxonomy to which the internal term can mapped to.</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+		
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/conceptID">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Concept ID</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/ExternalTerm"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>		
+		<rdfs:comment> This property is used to describe the code which is used to define a term in a medical taxonomy </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/educationalPrerequisites">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Educational Prerequisites</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>The prior expected knowledge/capability etc of the person in order to engage efficiently with this resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/educationalContext">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Educational Context</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>A comprehensive description of the educational context for which this resource is meant for by its author. This may include all the 		           educational/pedagogical characteristics of the resource.</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/educationalLevel">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Educational Level</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Educational level for which the resource is intended.For example 1st year undergraduate, post graduate, continuing education, etc </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/title">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>A descriptive (short) title of the resource</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/title"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/hasRepurposingHistory">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>The history of the repurposing process </rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingHistory"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/dc/elements/1.1/title"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/isAccompaniedBy">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Is Accompanied By</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:comment>Companion Resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposingContext">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Repurposing Context</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposedFrom"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+		<rdfs:comment>The type of repurposing that took place</rdfs:comment>	
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note> As is defined right above, domain range of this property are instances of the class RepurposingContext. These instances can be found at "http://purl.org/meducator/repurposing"</skos:note>
+	</rdf:Property>
+	
+
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposedTo">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>repurposed To</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposingHistory"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingResource"/>
+		<rdfs:subPropertyOf rdf:resource="http://purl.org/meducator/ns/RepurposedTo"/>
+		<rdfs:comment>One type of repurposing relation between two medical resources</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposingChild">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Repurposing Child</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposedTo"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingChild"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:comment> It shows information about the repurposing child, i.e. its title and its identifier</rdfs:comment>
+	</rdf:Property>
+		
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposedFrom">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> repurposed From</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposingHistory"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingFrom"/>
+		<rdfs:subPropertyOf rdf:resource="#repurposingRelation"/>
+		<rdfs:comment>Inverse property of the IsRepurposedTo. A type of repurposing relation between two medical resources</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposingParent">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label> Repurposing Parent</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposedFrom"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingParent"/>
+		<rdfs:comment> It shows information about the repurposing parent, i.e. its title and its identifier</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	
+  <rdf:Property rdf:about="http://purl.org/meducator/ns/resourceType">
+   <status:term_status>unstable</status:term_status>
+   <rdfs:label>Resource Type</rdfs:label>
+   <rdfs:domain rdf:resource="#Resource"/>
+   <rdfs:range rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+   <rdfs:comment>The type of content the medical resource based on a categorisation that was made within projects ranges</rdfs:comment>
+   <rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+   <skos:note> Instances of this class are located in a separate location
+"http://www.purl.org/meducator/resourceType/"</skos:note>
+ </rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/mediaType">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Media Type</rdfs:label>
+		<rdfs:domain rdf:resource="#Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+		<rdfs:comment>The type of content the medical resource based on a categorisation that was made within projects ranges</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<skos:note> Instances of the MediaType can be found in a seperate location "http://purl.org/meducator/mediaType/"</skos:note>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/technicalDescription">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Technical Description</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Description of the technical issues pertaining to the resource. E.g. file size (if this applies), hardware and operating system requirements, 
+		or any other special technical requirements and characteristics of the resource </rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/metadataCreator">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Metadata Creator</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+		<rdfs:comment>The creator of the metadata of the resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/metadataLanguage">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Metadata Language</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://downlode.org/rdf/iso-639/schema#Language"/>
+		<rdfs:comment>The Language of the metadata of the resource</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/quality">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Quality</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/Resource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>Any quality stamp a resource may have from a relevant issuing body</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposingRelation">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Repurposing Relation</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposingResource"/>
+		<rdfs:range rdf:resource="http://purl.org/meducator/ns/RepurposingResource"/>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+		<rdfs:comment>It shows the repurposing relation between two medical educational resources</rdfs:comment>
+		<skos:note>There two subproperties defined earlier in the schema, that specify the different kinds of repurposing. 
+			They are: http://www.purl.org/meducaotr/rdfschema.rdf#isRepurposedTo and http://www.purl.org/meducaotr/rdfschema.rdf#isRepurposedFrom</skos:note>
+	</rdf:Property>
+	
+	<rdf:Property rdf:about="http://purl.org/meducator/ns/repurposingDescription">
+		<status:term_status>unstable</status:term_status>
+		<rdfs:label>Repurposing Description</rdfs:label>
+		<rdfs:domain rdf:resource="http://purl.org/meducator/ns/RepurposingResource"/>
+		<rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+		<rdfs:comment>A description of the reasons for repurposing, the differences between the initial and repurposed resources and an account of the repurposing context(s)</rdfs:comment>
+		<rdfs:isDefinedBy rdf:resource="http://purl.org/meducator/ns/"/>
+	</rdf:Property>
+	
+</rdf:RDF>

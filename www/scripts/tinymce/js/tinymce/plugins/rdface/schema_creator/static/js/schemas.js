@@ -35,7 +35,7 @@ function handleSearchMenuInline(term){
 }
 function load_schemas(){
 	var secondlevles=new Array();
-	$.getJSON('selection.json', function(data) {
+	$.getJSON(baseURL+"vocabulary/inline/api/?query=types", function(data) {
 		all_schemas=data;
 		$.each(data.types,function(i,v){
 			if(v.level==1)
@@ -77,6 +77,7 @@ function initiate_form(schema){
 	create_form(schema,'','properties');
 }
 function create_form(schema,property,container){
+    debugger;
 	var tmp='';
 	var selected=all_schemas.types[schema];
 	var id;
@@ -113,7 +114,7 @@ function create_form(schema,property,container){
 			}else{
 				build_form_element(property,v,'form_'+id,0);
 			}
-	})
+	});
 	// end form
 	$('#schema_form_'+id).linkify();
 }
@@ -216,7 +217,8 @@ function form_suggestURI(){
 	var n2=str.search('www.');
 	if (n1==-1 && term!=''){
 		if(n2==-1){
-			$('#entity_uri').val(suggestURI(proxy_url,"api=Sindice&query="+term,true));
+            debugger;
+			$('#entity_uri').val(suggestURI(baseURL+"/vocabulary/inline/api","query=name&term="+term+"&type="+entity_type,true));
 		}else{
 			alert('Please type a keyword to search');
 		}
@@ -576,7 +578,7 @@ function create_json_from_microdata_annotations(pointer){
 	var jsonObj = {};
 	var tmp=pointer.attr('itemtype');
 	if(tmp){
-		tmp=tmp.split('#\/');
+		tmp=tmp.split('\/');
 		output['type']=tmp[tmp.length-1];
 	}
 	var firstlevels1=filterFirstLevels(pointer,getFirstLevelNodes(pointer,0,'Microdata',1),'Microdata');

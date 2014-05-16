@@ -1,4 +1,4 @@
-﻿/*
+/*
  * jsTree 1.0-rc3
  * http://jstree.com/
  *
@@ -8,7 +8,7 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  *
- * $Date: 2011-02-09 01:17:14 +0200 (ΡΡ€, 09 Ρ„ΠµΠ²Ρ€ 2011) $
+ * $Date: 2011-02-09 01:17:14 +0200 (ср, 09 февр 2011) $
  * $Revision: 236 $
  */
 
@@ -755,7 +755,7 @@
 					tmp.prepend("<ins class='jstree-icon'>&#160;</ins>");
 					if(!m.icon && js.icon) { m.icon = js.icon; }
 					if(m.icon) { 
-						if(m.icon.indexOf("http://rdface.aksw.org/") === -1) { tmp.children("ins").addClass(m.icon); }
+						if(m.icon.indexOf("/") === -1) { tmp.children("ins").addClass(m.icon); }
 						else { tmp.children("ins").css("background","url('" + m.icon + "') center center no-repeat"); }
 					}
 					d.append(tmp);
@@ -1479,7 +1479,7 @@
 				}
 			});
 		}
-		if($.jstree._themes === false) { $.jstree._themes = "themes/index.html"; }
+		if($.jstree._themes === false) { $.jstree._themes = "themes/"; }
 	});
 	// include the themes plugin by default
 	$.jstree.defaults.plugins.push("themes");
@@ -1822,7 +1822,7 @@
 						tmp.prepend("<ins class='jstree-icon'>&#160;</ins>");
 						if(!m.icon && js.icon) { m.icon = js.icon; }
 						if(m.icon) { 
-							if(m.icon.indexOf("http://rdface.aksw.org/") === -1) { tmp.children("ins").addClass(m.icon); }
+							if(m.icon.indexOf("/") === -1) { tmp.children("ins").addClass(m.icon); }
 							else { tmp.children("ins").css("background","url('" + m.icon + "') center center no-repeat"); }
 						}
 						d.append(tmp);
@@ -3588,8 +3588,8 @@
 				}
 				was_sep = false;
 				str += "<li class='" + (val._class || "") + (val._disabled ? " jstree-contextmenu-disabled " : "") + "'><ins ";
-				if(val.icon && val.icon.indexOf("http://rdface.aksw.org/") === -1) { str += " class='" + val.icon + "' "; }
-				if(val.icon && val.icon.indexOf("http://rdface.aksw.org/") !== -1) { str += " style='background:url(" + val.icon + ") center center no-repeat;' "; }
+				if(val.icon && val.icon.indexOf("/") === -1) { str += " class='" + val.icon + "' "; }
+				if(val.icon && val.icon.indexOf("/") !== -1) { str += " style='background:url(" + val.icon + ") center center no-repeat;' "; }
 				str += ">&#160;</ins><a href='#' rel='" + i + "'>";
 				if(val.submenu) {
 					str += "<span style='float:" + ($.vakata.context.rtl ? "left" : "right") + ";'>&raquo;</span>";

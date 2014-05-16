@@ -1,16 +1,16 @@
-﻿/**
+/**
  * Latvian translation for bootstrap-datetimepicker
  * Artis Avotins <artis@apit.lv>
  */
 
 ;(function($){
     $.fn.datetimepicker.dates['lv'] = {
-        days: ["SvΔ“tdiena", "Pirmdiena", "Otrdiena", "TreΕ΅diena", "Ceturtdiena", "Piektdiena", "Sestdiena", "SvΔ“tdiena"],
+        days: ["Svētdiena", "Pirmdiena", "Otrdiena", "Trešdiena", "Ceturtdiena", "Piektdiena", "Sestdiena", "Svētdiena"],
         daysShort: ["Sv", "P", "O", "T", "C", "Pk", "S", "Sv"],
         daysMin: ["Sv", "Pr", "Ot", "Tr", "Ce", "Pk", "St", "Sv"],
-        months: ["JanvΔris", "FebruΔris", "Marts", "AprΔ«lis", "Maijs", "JΕ«nijs", "JΕ«lijs", "Augusts", "Septembris", "Oktobris", "Novembris", "Decembris"],
-        monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mai", "JΕ«n", "JΕ«l", "Aug", "Sep", "Okt", "Nov", "Dec."],
-        today: "Ε odien",
+        months: ["Janvāris", "Februāris", "Marts", "Aprīlis", "Maijs", "Jūnijs", "Jūlijs", "Augusts", "Septembris", "Oktobris", "Novembris", "Decembris"],
+        monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mai", "Jūn", "Jūl", "Aug", "Sep", "Okt", "Nov", "Dec."],
+        today: "Šodien",
 		suffix: [],
 		meridiem: [],
         weekStart: 1
