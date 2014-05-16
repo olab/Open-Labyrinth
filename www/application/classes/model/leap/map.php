@@ -268,21 +268,11 @@ class Model_Leap_Map extends DB_ORM_Model
         return NULL;
     }
 
-    public function getAllEnabledMap($limit = 0)
+    public function getAllEnabledMap($limit = 0, $sortColumn = 'id', $sortType = 'DESC')
     {
-        $maps = array();
-        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1)->order_by('id', 'DESC');
+        $builder    = DB_ORM::select('Map')->where('enabled', '=', 1)->order_by($sortColumn, $sortType);
         if ($limit) $builder->limit($limit);
-        $result = $builder->query();
-
-        if ($result->is_loaded())
-        {
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-        }
-
-        return $maps;
+        return $builder->query()->as_array();
     }
 
     public function getAllEnabledOpenVisibleMap ($type = false)

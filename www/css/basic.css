@@ -538,6 +538,49 @@ td[colspan*="11"] {
     z-index: 1000;
 }
 
+#ve_actionButton button:focus,
+#ve_additionalActionButton button:focus{
+    outline: none;
+}
+#deleteSelected {
+    background: #da4f49 none;
+}
+
+#addMap {
+    background: #4c8bff none;
+}
+
+#addSection {
+    background: #5ca028 none;
+}
+
+.visual-editor-select-right-panel.scenario {
+    top:226px;
+    right: 20px;
+    width: 340px;
+}
+
+.step-header {
+    font-size: 21px;
+    line-height: 40px;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.step-body {
+    text-align: center;
+}
+
+#sectionsNodesSelect {
+    margin-top: 20px;
+}
+
+.step-settings {
+    margin-bottom: 20px;
+}
+
 .visual-editor-select-right-panel.hide {
     display: none;
 }

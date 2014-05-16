@@ -670,13 +670,13 @@ class Controller_WebinarManager extends Controller_Base {
         exit;
     }
 
-    public function action_getSectionAJAX ()
+    public function action_getSectionAJAX()
     {
-        $response       = array();
-        $mapId          = $this->request->param('id');
-        $sectionObjs    = DB_ORM::model('Map_Node_Section')->getSectionsByMapId($mapId);
+        $response   = array();
+        $mapId      = $this->request->param('id');
+        $sections   = DB_ORM::model('Map_Node_Section')->getSectionsByMapId($mapId);
 
-        foreach ($sectionObjs as $sectionObj)
+        foreach ($sections as $sectionObj)
         {
             $response[$sectionObj->name] = $sectionObj->id;
         }
@@ -700,5 +700,74 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_deleteNodeAjax ()
     {
         DB_ORM::model('Webinar_PollNode')->deleteNode($this->request->param('id'));
+    }
+
+    public function action_visualEditor ()
+    {
+        $scenarioId = $this->request->param('id');
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor')));
+
+        $this->templateData['enabledMaps']  = DB_ORM::model('map')->getAllEnabledMap(0, 'name', 'ASC');
+        $this->templateData['steps']        = DB_ORM::model('Webinar_Step')->getScenarioSteps($scenarioId);
+        $this->templateData['scenario']     = DB_ORM::model('Webinar', array($scenarioId));
+        $this->templateData['scenarioJSON'] = DB_ORM::model('Webinar')->generateJSON($scenarioId);
+        $this->templateData['center']       = View::factory('webinar/canvas')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_ajaxStepUpdate()
+    {
+        $scenarioId     = $this->request->post('scenarioId');
+        $data           = $this->request->post('data');
+        $data           = json_decode($data, true);
+        $steps          = Arr::get($data, 'steps', array());
+        $elements       = Arr::get($data, 'elements', array());
+
+        $dbSteps = DB_ORM::model('Webinar_Step')->getOnlyId($scenarioId);
+
+        foreach ($elements as $idStep => $elementsData){
+            $labyrinths = Arr::get($elementsData, 'labyrinth', array());
+            $section    = Arr::get($elementsData, 'section', array());
+
+            if ( ! ($labyrinths OR $section)) continue;
+
+            // ----- steps ----- //
+            $newStepName = Arr::get($steps, $idStep, '');
+            if (is_int($idStep)) {
+                DB_ORM::model('Webinar_Step')->updateStep($idStep, $newStepName);
+                unset($dbSteps[$idStep]);
+            } else {
+                $idStep = DB_ORM::model('Webinar_Step')->addStep($scenarioId, $newStepName);
+            }
+            // ----- end steps ----- //
+
+            // ----- elements ----- //
+            $dbElements = DB_ORM::model('Webinar_Map')->elementsForAjax($idStep);
+
+            // update labyrinth
+            foreach ($labyrinths as $idElement){
+                if(isset($dbElements[$idElement])) unset($dbElements[$idElement]);
+                else DB_ORM::model('Webinar_Map')->addMap($scenarioId, $idElement, $idStep, 'labyrinth');
+            }
+
+            // update section
+            foreach ($section as $idElement){
+                if(isset($dbElements[$idElement])) unset($dbElements[$idElement]);
+                else DB_ORM::model('Webinar_Map')->addMap($scenarioId, $idElement, $idStep, 'section');
+            }
+
+            // delete remains
+            foreach ($dbElements as $recordId){
+                DB_ORM::delete('Webinar_Map')->where('id', '=', $recordId)->execute();
+            }
+            // ----- end elements ----- //
+        }
+
+        // ----- delete steps ----- //
+        foreach ($dbSteps as $id=>$trash){
+            DB_ORM::model('Webinar_Step')->removeStep($id);
+        }
+
+        exit(DB_ORM::model('Webinar')->generateJSON($scenarioId));
     }
 }

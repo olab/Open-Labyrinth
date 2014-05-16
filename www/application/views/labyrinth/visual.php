@@ -23,7 +23,6 @@ if (isset($templateData['map'])) { ?>
             src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
 
-
         $(document).ready(function() {
             $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
 
@@ -42,10 +41,8 @@ if (isset($templateData['map'])) { ?>
         var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
         var mapId = <?php echo $templateData['map']->id; ?>;
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = null;
         var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
-        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
         var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
         var mainLinkStyles = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
@@ -69,7 +66,7 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
                 <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="ve-icon-settings"></i></button></p>
             </div>
-            
+
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px; display: none;">
                 <p>
                     <button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right">

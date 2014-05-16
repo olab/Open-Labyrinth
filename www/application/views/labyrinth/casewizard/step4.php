@@ -28,9 +28,7 @@
         var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
         var mapId = <?php echo $templateData['action']; ?>;
         var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
         var mapType = <?php if(isset($templateData['mapModel'])) echo $templateData['mapModel']->type_id; ?>;
-        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
     </script>
 <h1><?php echo __('Step 4. Add your story'); ?></h1>
 <div>

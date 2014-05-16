@@ -41,7 +41,7 @@ var VisualEditor = function() {
     self.rightPanel = new RightPanel();
     self.unsavedData = false;
     self.save = null;
-    
+
     self.$aButtonsContianer = $('#ve_additionalActionButton');
     
     self.selectRightPanel = null;

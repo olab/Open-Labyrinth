@@ -22,7 +22,7 @@
 <div class="page-header">
     <div class="pull-right">
         <div class="btn-group">
-            <a class="btn btn-primary" href="<?php echo URL::base() . 'webinarManager/add'; ?>"><i class="icon-plus-sign icon-white"></i>Create Scenario</a>
+            <a class="btn btn-primary" href="<?php echo URL::base().'webinarManager/add'; ?>"><i class="icon-plus-sign icon-white"></i>Create Scenario</a>
         </div>
     </div>
     <h1><?php echo __('Scenarios'); ?></h1>
@@ -43,14 +43,14 @@
     </thead>
     <tbody><?php
     if(isset($templateData['webinars']) && count($templateData['webinars']) > 0) {
-        foreach($templateData['webinars'] as $webinar) { ?>
+        foreach($templateData['webinars'] as $scenario) { ?>
         <tr>
-            <td><a href="<?php echo URL::base(); ?>"><?php echo $webinar->title; ?></a></td>
+            <td><a href="<?php echo URL::base(); ?>"><?php echo $scenario->title; ?></a></td>
             <td><?php
-                if($webinar->current_step != null && $webinar->steps != null && count($webinar->steps) > 0) {
-                    foreach($webinar->steps as $webinarStep) {
-                        if($webinarStep->id == $webinar->current_step) {
-                            echo $webinarStep->name;
+                if($scenario->current_step != null AND count($scenario->steps) > 0) {
+                    foreach($scenario->steps as $scenarioStep) {
+                        if($scenarioStep->id == $scenario->current_step) {
+                            echo $scenarioStep->name;
                             break;
                         }
                     }
@@ -59,68 +59,63 @@
             </td>
             <td class="center">
                 <div class="btn-group">
-                    <a class="btn btn-success" href="<?php echo URL::base() . 'webinarManager/progress/' . $webinar->id; ?>">
+                    <a class="btn btn-success" href="<?php echo URL::base().'webinarManager/progress/'.$scenario->id; ?>">
                         <i class="icon-play icon-white"></i><span class="visible-desktop">View progress</span>
                     </a><?php
-                    if($webinar->forum_id > 0) { ?>
-                    <a class="btn btn-info" href="<?php echo URL::base(); ?><?php if ($webinar->isForum) {?>dforumManager/viewForum/<?php } else {?>dtopicManager/viewTopic/<?php } ?><?php echo $webinar->forum_id; ?>">
+                    if($scenario->forum_id > 0) { ?>
+                    <a class="btn btn-info" href="<?php echo URL::base(); ?><?php if ($scenario->isForum) {?>dforumManager/viewForum/<?php } else {?>dtopicManager/viewTopic/<?php } ?><?php echo $scenario->forum_id; ?>">
                         <i class="icon-list-alt"></i><span class="visible-desktop">Forum</span>
                     </a><?php
                     } ?>
-                    <a data-toggle="modal" href="javascript:void(0)" data-target="#change-step-<?php echo $webinar->id; ?>" class="btn btn-info">
-                        <i class="icon-edit icon-white"></i>Change step
-                    </a>
-                    <a class="btn btn-info" href="<?php echo URL::base(); ?>webinarManager/edit/<?php echo $webinar->id; ?>">
-                        <i class="icon-edit icon-white"></i>Edit
-                    </a>
-                    <a class="btn btn-info" href="<?php echo URL::base(); ?>webinarManager/statistics/<?php echo $webinar->id; ?>">
-                        <i class="icon-calendar icon-white"></i>Statistics
-                    </a>
-                    <a data-toggle="modal" href="javascript:void(0)" data-target="#reset-webinar-<?php echo $webinar->id; ?>" class="btn btn-warning">
+                    <a data-toggle="modal" href="javascript:void(0)" data-target="#change-step-<?php echo $scenario->id; ?>" class="btn btn-info"><i class="icon-edit icon-white"></i>Change step</a>
+                    <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/edit/'.$scenario->id; ?>"><i class="icon-edit icon-white"></i>Edit</a>
+                    <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/visualEditor/'.$scenario->id; ?>"><i class="icon-edit icon-white"></i>Visual editor</a>
+                    <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/statistics/'.$scenario->id; ?>"><i class="icon-calendar icon-white"></i>Statistics</a>
+                    <a data-toggle="modal" href="javascript:void(0)" data-target="#reset-webinar-<?php echo $scenario->id; ?>" class="btn btn-warning">
                         <i class="icon-refresh icon-white"></i><?php echo __('Reset'); ?>
                     </a><?php
                     if (Auth::instance()->get_user()->type->name != 'Director') { ?>
-                    <a data-toggle="modal" href="javascript:void(0)" data-target="#delete-node-<?php echo $webinar->id; ?>" class="btn btn-danger">
+                    <a data-toggle="modal" href="javascript:void(0)" data-target="#delete-node-<?php echo $scenario->id; ?>" class="btn btn-danger">
                         <i class="icon-trash icon-white"></i><?php echo __('Delete'); ?>
                     </a><?php
                     } ?>
                 </div>
-                <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $webinar->id; ?>">
+                <div class="modal hide alert alert-block alert-error fade in" id="delete-node-<?php echo $scenario->id; ?>">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
                     </div>
                     <div class="modal-body">
-                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $webinar->title . '"?'); ?></p>
+                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $scenario->title . '"?'); ?></p>
                         <p>
-                            <a class="btn btn-danger" href="<?php echo URL::base(); ?>webinarManager/delete/<?php echo $webinar->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <a class="btn btn-danger" href="<?php echo URL::base(); ?>webinarManager/delete/<?php echo $scenario->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                         </p>
                     </div>
                 </div>
-                <div class="modal hide fade in" id="change-step-<?php echo $webinar->id; ?>">
+                <div class="modal hide fade in" id="change-step-<?php echo $scenario->id; ?>">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="alert-heading"><?php echo __('Select step'); ?></h4>
                     </div>
                     <div class="modal-body">
                         <p>
-                        <?php if(count($webinar->steps) > 0) { ?>
-                            <?php foreach($webinar->steps as $webinarStep) { ?>
+                        <?php if(count($scenario->steps) > 0) { ?>
+                            <?php foreach($scenario->steps as $scenarioStep) { ?>
                                 <div>
-                                    <input class="current-step-<?php echo $webinar->id; ?>" type="radio" name="currentStep<?php echo $webinar->id; ?>" value="<?php echo $webinarStep->id; ?>" <?php if($webinar->current_step == $webinarStep->id) echo 'checked'; ?>>
-                                    <?php echo $webinarStep->name; ?>
+                                    <input class="current-step-<?php echo $scenario->id; ?>" type="radio" name="currentStep<?php echo $scenario->id; ?>" value="<?php echo $scenarioStep->id; ?>" <?php if($scenario->current_step == $scenarioStep->id) echo 'checked'; ?>>
+                                    <?php echo $scenarioStep->name; ?>
                                 </div>
                             <?php } ?>
                         <?php } ?>
                         </p>
                     </div>
                     <div class="modal-footer">
-                        <a class="btn change-step-btn" href="<?php echo URL::base(); ?>webinarManager/changeStep/<?php echo $webinar->id; ?>/" webinarId="<?php echo $webinar->id; ?>"><?php echo __('Change'); ?></a>
+                        <a class="btn change-step-btn" href="<?php echo URL::base(); ?>webinarManager/changeStep/<?php echo $scenario->id; ?>/" webinarId="<?php echo $scenario->id; ?>"><?php echo __('Change'); ?></a>
                         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                     </div>
                 </div>
 
-                <div class="modal hide fade in alert alert-block alert-danger" id="reset-webinar-<?php echo $webinar->id; ?>">
+                <div class="modal hide fade in alert alert-block alert-danger" id="reset-webinar-<?php echo $scenario->id; ?>">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="alert-heading"><?php echo __('Reset scenario'); ?></h4>
@@ -130,7 +125,7 @@
                             <?php echo __('Warning! Do you really want to reset scenario? If you reset webinar all user sessions which created on playing this scenarion will be delete.'); ?>
                         </p>
                         <div>
-                            <a class="btn btn-danger" href="<?php echo URL::base(); ?>webinarManager/reset/<?php echo $webinar->id; ?>"><?php echo __('Reset'); ?></a>
+                            <a class="btn btn-danger" href="<?php echo URL::base(); ?>webinarManager/reset/<?php echo $scenario->id; ?>"><?php echo __('Reset'); ?></a>
                             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                         </div>
                     </div>
@@ -140,7 +135,7 @@
         </tr><?php
         }
     } else { ?>
-        <tr class="info"><td colspan="4">There are no available webinars right now. You may add a webinar using the add button.</td></tr><?php
+        <tr class="info"><td colspan="4">There are no available scenarios right now. You may add a scenarios using the add button.</td></tr><?php
     } ?>
     </tbody>
 </table>

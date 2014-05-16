@@ -447,6 +447,32 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             }
         }
         return $res;
+    }
 
+    public function generateJSON($scenarioId)
+    {
+        $json   = array();
+        $steps  = DB_ORM::select('Webinar_Step')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+
+        foreach($steps as $stepObj)
+        {
+            $stepId                 = $stepObj->id;
+            $json['steps'][$stepId] = $stepObj->name;
+            $elements               = DB_ORM::select('Webinar_Map')->where('step', '=', $stepId)->query()->as_array();
+
+            foreach($elements as $elementObj)
+            {
+                $id     = $elementObj->reference_id;
+                $type   = $elementObj->which;
+
+                if ($type == 'labyrinth') $name = DB_ORM::model('Map', array($id))->name;
+                else $name = DB_ORM::model('Map_Node_Section', array($id))->name;
+
+                $json['elements'][$stepId][$elementObj->id]['id']   = $id;
+                $json['elements'][$stepId][$elementObj->id]['type'] = $type;
+                $json['elements'][$stepId][$elementObj->id]['name'] = $name;
+            }
+        }
+        return json_encode($json);
     }
 }

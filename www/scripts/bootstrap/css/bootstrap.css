@@ -5565,17 +5565,13 @@ a.thumbnail:hover {
 }
 
 .label {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+  border-radius: 3px;
 }
 
 .badge {
   padding-right: 9px;
   padding-left: 9px;
-  -webkit-border-radius: 9px;
-     -moz-border-radius: 9px;
-          border-radius: 9px;
+  border-radius: 9px;
 }
 
 .label:empty,
@@ -6230,4 +6226,19 @@ input.assign-type {
 
 input.patient-type-js {
     margin: -1px 5px 0 0;
+}
+
+.visual-map-js,
+.visual-section-js {
+    position: absolute;
+    bottom: -10px;
+}
+
+.visual-section-js {
+    left: 220px;
+}
+
+.visual-map-js:focus,
+.visual-section-js:focus {
+    outline-color: #808080;
 }

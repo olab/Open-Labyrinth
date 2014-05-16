@@ -1,0 +1,1 @@
+ALTER TABLE  `webinar_maps` ADD FOREIGN KEY (  `step` ) REFERENCES  `webinar_steps` ( `id` ) ON DELETE CASCADE ON UPDATE CASCADE ;
