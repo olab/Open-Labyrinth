@@ -140,14 +140,30 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $data['session'] = (int)$data['traces'][0]->session_id;
             foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
             {
+
                 $popup->text = $this->parseText($popup->text);
                 $data['map_popups'][] = $popup;
             }
 
+            $data['extensions'] = $this->renderExtensions($data["node"]);
             $this->template = View::factory($skin);
 
             $this->template->set('templateData', $data);
         }
+    }
+
+
+    private function renderExtensions($node){
+
+        $renders =  Model_Leap_Vocabulary_Vocablet::getAllRenders();
+
+        $readings = Model_Mesh_Render::render($node);
+        $data["extra"] = array("mesh"=>array("readings"=> $readings));
+        $mesh = View::factory('mesh/render');
+        $mesh->set('templateData', $data);
+
+        return $mesh;
+
     }
 
     public function patient_path_update($id_node, array $sessions, $check_for_redirect)
@@ -424,7 +440,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $popup->text = $this->parseText($popup->text);
                         $data['map_popups'][] = $popup;
                     }
-
+                    $data["extensions"] = $this->renderExtensions($node);
                     $skin = 'labyrinth/skin/basic/basic';
                     if ($data['map']->skin->enabled) {
                         $data['skin_path'] = $data['map']->skin->path;

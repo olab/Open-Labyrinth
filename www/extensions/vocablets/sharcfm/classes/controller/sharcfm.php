@@ -9,9 +9,13 @@
 require_once(Kohana::find_file('vendor', 'arc2/ARC2'));
 require_once(Kohana::find_file('vendor', 'Graphite'));
 
-class Controller_Mesh extends Controller_Hierarchicalpie
+class Controller_Sharcfm extends Controller_Hierarchicalpie
 {
-    public $title = "MeSH Classification Report";
-    public $view = "mesh/report";
+    public $title = "SHARC-FM Classification Report";
+    public $view = "sharcfm/report";
+    public function action_api(){
+
+        $this->response->body(json_encode(Model_SharcfmReport::buildObject()));
+    }
 }
 

@@ -23,45 +23,51 @@ if (isset($templateData)) {
                             (<?php echo $vocab["name"]; ?>)</a></h4>
 
                     <div><?php echo $vocab["settings"]["info"]["description"] ?> </div>
-                    <h6>Fields: </h6>
-                    <ul>
-                        <?php
-                        foreach ($vocab["settings"]["metadata"] as $metadata => $field_settings) {
-                            ?>
-                            <li>
+                    <?php if (isset($vocab["settings"]["metadata"]) && !empty($vocab["settings"]["metadata"])) { ?>
+                        <h6>Fields: </h6>
+                        <ul>
+                            <?php
+
+                            foreach ($vocab["settings"]["metadata"] as $metadata => $field_settings) {
+                                ?>
+                                <li>
 
 
-                                <?php
-                                echo $field_settings["label"];?>
-                            </li>
-
-                        <?php
-                        }
-
-                        ?>
-
-                    </ul>
-
-                    <h6>Dependencies: </h6>
-                    <ul>
-                        <?php
-                        foreach ($vocab["settings"]["dependencies"] as $dependency => $info) {
-                            ?>
-                            <li>
-
-                                <a href="#V<?php echo $info["guid"] ?>">
                                     <?php
-                                    echo $info ["title"];?>
-                                </a>
+                                    echo $field_settings["label"];?>
+                                </li>
 
-                            </li>
+                            <?php
+                            }
 
-                        <?php
-                        }
+                            ?>
 
-                        ?>
+                        </ul>
+                    <?php } ?>
+                    <?php if (isset($vocab["settings"]["dependencies"]) && !empty($vocab["settings"]["dependencies"])) { ?>
 
-                    </ul>
+                        <h6>Dependencies: </h6>
+                        <ul>
+                            <?php
+
+                            foreach ($vocab["settings"]["dependencies"] as $dependency => $info) {
+                                ?>
+                                <li>
+
+                                    <a href="#V<?php echo $info["guid"] ?>">
+                                        <?php
+                                        echo $info ["title"];?>
+                                    </a>
+
+                                </li>
+
+                            <?php
+                            }
+
+                            ?>
+
+                        </ul>
+                    <?php } ?>
 
                 </td>
                 <td>
@@ -84,14 +90,15 @@ if (isset($templateData)) {
                     <?php
                     } else {
                         $canInstall = true;
+                        if (isset($vocab["settings"]["dependencies"]))
 
-                        foreach ($vocab["settings"]["dependencies"] as $dependency => $info) {
-                            if (!array_key_exists($info["guid"], $templateData["vocablets"])) {
-                                $canInstall = false;
-                                break;
+                            foreach ($vocab["settings"]["dependencies"] as $dependency => $info) {
+                                if (!array_key_exists($info["guid"], $templateData["vocablets"])) {
+                                    $canInstall = false;
+                                    break;
+                                }
+
                             }
-
-                        }
 
 
                         if ($canInstall) {
@@ -100,10 +107,9 @@ if (isset($templateData)) {
                                class="btn btn-success"><i class="icon-check"></i> Enable</a>
 
                         <?php
-                        }
-                        else{
+                        } else {
                             ?>
-                        Enable the dependency extensions first, to be able to install this module.
+                            Enable the dependency extensions first, to be able to install this module.
 
                         <?php
                         }

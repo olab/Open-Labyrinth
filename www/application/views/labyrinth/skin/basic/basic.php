@@ -425,7 +425,8 @@ $id_node = $templateData['node']->id;
                         </h5>
 
                         <input type="button" onclick='ajaxBookmark();' name="bookmark" value="bookmark"/>
-                        <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
+
+                            <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                             <h5>
                                 <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $id_map; ?>/<?php echo $id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
                                     <?php echo !isset($templateData['node_edit']) ? __('turn editing on') : __('turn editing off'); ?>
@@ -436,7 +437,12 @@ $id_node = $templateData['node']->id;
                             <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $id_map; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
                         </p>
 
-                        <a href="<?php echo URL::base(); ?>">
+                            <div>
+                                <?php echo $templateData['extensions'];?>
+                            </div>
+
+
+                            <a href="<?php echo URL::base(); ?>">
                             <img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth" border="0"/>
                         </a>
                         <h5><?php echo __('OpenLabyrinth is an open source educational pathway system'); ?></h5>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A01">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Abdominal Pain</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.646.100"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.821.030"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D015746"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A02">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Anxiety</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D001007"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#F01.470.132"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A03">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Asthma</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C08.127.108"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C08.381.495.108"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C08.674.095"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C20.543.480.680.095"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D001249"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A04">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Chest Pain</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.646.215"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D002637"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A05">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Contraception</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D003267"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#E02.875.194"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A06">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Cough</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C08.618.248"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.852.293"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D003371"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A07">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Depression</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D003863"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#F01.145.126.350"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A08">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Dizziness </skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C10.597.751.237"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.592.763.237"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D004244"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A09">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Fatigue</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.369"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D005221"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A10">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Fever</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.119.344"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D005334"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A11">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Headache</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C10.597.617.470"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.592.612.441"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.646.487"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D006261"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A12">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Hypertension</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C14.907.489"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D006973"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A13">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Ischemic Heart Disease</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C14.280.647"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C14.907.585"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A14">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Low Back Pain</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C10.597.617.152.400"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.592.612.107.400"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.646.172.500"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D017116"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A15">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Palliative Care</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D010166"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#E02.760.666"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.585.666"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A16">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Prenatal Care</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D011295"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#E02.760.786"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.143.620.704"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.585.786"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A17">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Diabetes Type 2</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C18.452.394.750.149"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C19.246.300"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#D003924"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A18">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Baby / Child / Youth Preventative Care</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.143.827"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.726"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A19">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Well Adult Female</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#X999999"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A20">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Well Adult Male</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#X999998"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A21">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Elderly Health Care</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#N02.421.320"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A22">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Joint Pain</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C05.550.091"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C23.888.646.130"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#F02.830.816.444.350"/>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#G11.561.600.810.444.350"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.cpfc.ca/sharcfm#A23">
+	<rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+	<skos:prefLabel>Skin Conditions</skos:prefLabel>
+	<owl:sameAs rdf:resource="http://bioonto.de/mesh.owl#C17.800"/>
+</rdf:Description>
+
+</rdf:RDF>

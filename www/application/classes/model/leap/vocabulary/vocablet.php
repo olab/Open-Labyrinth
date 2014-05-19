@@ -150,6 +150,23 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
         return $entities;
 
     }
+    public static function getAllRenders(){
+        $installed = self::getEnabledObjects();
+
+        $renders = array();
+
+        foreach ($installed as $vocablet) {
+            $settings = $vocablet->getSettings();
+            if(!empty($settings)){
+                if(!empty($settings["renders"])){
+                    $renders[$vocablet->name] = $settings["renders"];
+                }
+            }
+        }
+
+        return $renders;
+
+    }
 
     public static function install($vocablet)
     {

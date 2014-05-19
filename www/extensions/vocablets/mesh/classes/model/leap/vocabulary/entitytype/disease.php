@@ -23,6 +23,7 @@ class Model_Leap_Vocabulary_EntityType_Disease extends Model_Leap_Vocabulary_Ent
 
         if(isset($mesh_config["mesh_graph"]))
             $graph = " FROM <".$mesh_config["mesh_graph"].">";
+        else $graph = "";
 
         $db = sparql_connect($mesh_config["mesh_endpoint"]);
 
