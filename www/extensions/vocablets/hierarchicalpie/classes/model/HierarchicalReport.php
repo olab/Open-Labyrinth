@@ -109,6 +109,7 @@ group by ?term ?termparent ?termgrandpa1 ?termgrandpa2
 
    ";
        }
+       // var_dump($sparql);
         $result = $db->query($sparql);
         if (!$result) {
             print $db->errno() . ": " . $db->error() . "\n";
@@ -125,7 +126,7 @@ group by ?term ?termparent ?termgrandpa1 ?termgrandpa2
         $total = 0;
 
         $central = array(
-            0=>"All Health Occupations Classifications",
+            0=>"All Terms",
             1=>array($total, $total),
             2=>array(),
         );

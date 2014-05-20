@@ -22,7 +22,7 @@ defined('SYSPATH') or die('No direct access allowed.');
 
 return array (
     "endpoint_max_limit" => 2500,
-   "endpoint"=>"http://127.0.0.1/sparql",
+   "endpoint"=>"http://127.0.0.1/olab/www/sparql",
     "driver"=>"Helper_RDF_Store_Arc",
    // "driver"=>"Helper_RDF_Store_Virtuoso",
   /*  "endpoint"=>"http://vp.med.auth.gr:8890/sparql",
