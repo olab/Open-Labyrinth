@@ -1,19 +1,21 @@
 var Element = function() {
     var self = this;
     
-    self.isDragging         = false;
-    self.type               = 'labyrinth';
-    self.width              = 230;
-    self.height             = 75;
-    self.headerHeight       = 30;
-    self.color              = '#f0f0f0';
-    self.headerColor        = '#b3b2b2';
-    self.borderSize         = 1;
-    self.borderColor        = '#b3b2b2';
-    self.titleFontSettings  = 'bold 15px Arial';
-    self.titleFontColor     = '#000000';
-    self.paddingSelect      = 16;
-    self.transform          = new Transform();
+    self.isDragging          = false;
+    self.type                = 'labyrinth';
+    self.width               = 230;
+    self.height              = 75;
+    self.headerHeight        = 30;
+    self.color               = '#f0f0f0';
+    self.headerColor         = '#b3b2b2';
+    self.borderSize          = 1;
+    self.borderColor         = '#b3b2b2';
+    self.titleFontSettings   = 'bold 15px Arial';
+    self.titleFontColor      = '#000000';
+    self.paddingSelect       = 16;
+    self.transform           = new Transform();
+    self.contentLineHeight   = 14;
+    self.contentMaxLineWidth = self.width - self.headerHeight - 24;
     
     // Data
     self.id         = 0;
@@ -159,17 +161,23 @@ var Element = function() {
         context.beginPath();
         context.font = self.titleFontSettings;
         context.fillStyle = self.titleFontColor;
-        var line = '';
-        for (var i = 0; i < title.length; i++)
-        {
-            var t = line + title[i];
-            var m = context.measureText(t);
 
-            if (m.width > self.contentMaxLineWidth) break;
-            else line = t;
+        var line = '',
+            y = 0;
+        for (var i = 0; i < title.length; i++) {
+            var t = line + title[i],
+                m = context.measureText(t).width;
+            if(m > self.contentMaxLineWidth) {
+                line = t;
+                context.fillText(line, self.headerHeight + 10, 20 + y);
+                y += self.contentLineHeight;
+                line = '';
+            } else {
+                line = t;
+            }
         }
-        
-        context.fillText(line, self.headerHeight + 13, 20);
+
+        context.fillText(line, self.headerHeight + 10, 20 + y);
     };
     
     var DrawSelectedArea = function(context) {

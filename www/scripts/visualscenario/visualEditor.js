@@ -207,6 +207,8 @@ var VisualEditor = function() {
 
     // Serialize nodes info
     self.serialize = function() {
+        stepPanel.hide();
+
         var result   = {},
             elements = {},
             steps    = {};
