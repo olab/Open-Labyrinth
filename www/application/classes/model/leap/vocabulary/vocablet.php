@@ -57,7 +57,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
     {
 
 
-        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
+        $path = DOCROOT .  "extensions/vocablets";
 
 
         $extensions = array();
@@ -93,7 +93,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
 
     public function getSettings()
     {
-        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
+        $path = DOCROOT . "extensions/vocablets";
 
 
         $dir = $path . "/" . $this->name;
@@ -171,7 +171,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
     public static function install($vocablet)
     {
 
-        $path = $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets";
+        $path = DOCROOT .  "extensions/vocablets";
 
 
         $dir = $path . "/" . $vocablet;
@@ -341,7 +341,7 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
             foreach ($result as $record) {
                 $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
                 $vocablets[$vocablet->name] =
-                    $_SERVER['DOCUMENT_ROOT'] . URL::base() . "extensions/vocablets/". $vocablet->name;
+                    DOCROOT . "extensions/vocablets/". $vocablet->name;
             }
 
             return $vocablets;
