@@ -438,7 +438,7 @@ $id_node = $templateData['node']->id;
                         </p>
 
                             <div>
-                                <?php echo $templateData['extensions'];?>
+                                <?php foreach($templateData['extensions'] as $extension) echo $extension ;?>
                             </div>
 
 

@@ -156,14 +156,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function renderExtensions($node){
 
         $renders =  Model_Leap_Vocabulary_Vocablet::getAllRenders();
+        $view  = array();
+        foreach($renders as $render=>$extension){
 
-        $readings = Model_Mesh_Render::render($node);
-        $data["extra"] = array("mesh"=>array("readings"=> $readings));
-        $mesh = View::factory('mesh/render');
-        $mesh->set('templateData', $data);
+            $className = "Model_".ucfirst($render)."_Render";
+            $readings = $className::render($node);
+            $data["extra"] = array($render=>array("readings"=> $readings));
+            $view = View::factory("$render/render");
 
-        return $mesh;
+            $view->set('templateData', $data);
+            $views [] = $view;
+        }
 
+        return $views;
     }
 
     public function patient_path_update($id_node, array $sessions, $check_for_redirect)
