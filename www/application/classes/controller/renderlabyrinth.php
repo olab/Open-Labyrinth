@@ -156,7 +156,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private function renderExtensions($node){
 
         $renders =  Model_Leap_Vocabulary_Vocablet::getAllRenders();
-        $view  = array();
+        $views  = array();
         foreach($renders as $render=>$extension){
 
             $className = "Model_".ucfirst($render)."_Render";
