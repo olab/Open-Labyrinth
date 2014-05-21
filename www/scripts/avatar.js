@@ -1,4 +1,4 @@
-var globalDir = "/images/avatar/";
+var globalDir = baseURL+"/images/avatar/";
 
 var outlineLayerData;
 var fillAreaBody = {data: {}};
@@ -9,7 +9,7 @@ var stream;
 AvatarSetup = function(setParams){
     params = setParams;
     AvatarRender();
-}
+};
 
 AvatarRender = function() {
     var canvasWidth = 300,
