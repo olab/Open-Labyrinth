@@ -148,6 +148,7 @@ class Model_Leap_Map extends DB_ORM_Model
             )),
             'verification' => new DB_ORM_Field_Text($this, array(
                 'savable' => TRUE,
+                'nullable' => TRUE,
             )),
             'assign_forum_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
