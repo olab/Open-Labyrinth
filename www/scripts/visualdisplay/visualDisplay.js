@@ -733,7 +733,7 @@ var VisualDisplay = function()
     function fontManage(action){
         var fontName = fontInput.val();
 
-        $.get(urlBase + '/visualdisplaymanager/ajax' + action + 'Font/' + fontName,
+        $.get(urlBase + 'visualdisplaymanager/ajax' + action + 'Font/' + fontName,
             function(){ location.reload(); }
         );
     }
