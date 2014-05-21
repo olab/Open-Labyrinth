@@ -97,6 +97,9 @@ class Controller_VisualDisplayManager extends Controller_Base {
         $this->templateData['center'] = View::factory('labyrinth/display/display')->set('templateData', $this->templateData);
         $this->templateData['left']   = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Display')));
     }
 
     private function getAllFonts ()

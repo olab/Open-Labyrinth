@@ -132,7 +132,6 @@ var Counter = function() {
         if ('valueFont' in jsonObject) valueFont = jsonObject.valueFont;
         if ('valueZIndex' in jsonObject) valueZIndex = jsonObject.valueZIndex;
         if ('labelTextOriginal' in jsonObject) label = utils.Decode64(jsonObject.labelTextOriginal);
-
         self.Create($container, elementId, counterId, label, cValue, vDisplay);
     };
 
@@ -151,7 +150,7 @@ var Counter = function() {
                               + '%#%' + this.$label.css('color')
                               + '%#%' + this.$label.css('font-style') 
                               + '%#%' + this.$label.css('text-decoration') + '",\
-              "labelText": "' + utils.Encode64(this.$label.text()) + '",\
+              "labelText": "' + utils.Encode64(label) + '",\
             "labelZIndex": "' + this.$label.css('z-index') + '",\
                  "valueX": "' + this.$value.css('left').replace('px', '') + '",\
                  "valueY": "' + this.$value.css('top').replace('px', '') + '",\
