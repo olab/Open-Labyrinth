@@ -1488,3 +1488,14 @@ table.dataTable tr.even td[class*='sorting'] {
 .report-title {
     font-size: 28px;
 }
+
+#fontManage {
+    margin: 0 0 0 5px;
+}
+.manageFonts {
+    margin-bottom: 10px;
+}
+.manageFonts label {
+    display: inline-block;
+    margin-left: 25px;
+}

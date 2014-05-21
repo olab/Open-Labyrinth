@@ -22,6 +22,27 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_VisualDisplayManager extends Controller_Base {
+
+    private $fonts = array(
+        'Open Sans',
+        'Andale Mono',
+        'Arial',
+        'Arial Black',
+        'Book Antiqua',
+        'Comic Sans MS',
+        'Courier New',
+        'Georgia',
+        'Helvetica',
+        'Impact',
+        'Symbol',
+        'Tahoma',
+        'Terminal',
+        'Times New Roman',
+        'Trebuchet MS',
+        'Verdana',
+        'Webdings'
+    );
+
     public function before() {
         $this->templateData['labyrinthSearch'] = 1;
 
@@ -53,33 +74,75 @@ class Controller_VisualDisplayManager extends Controller_Base {
         }
     }
     
-    public function action_display() {
-        $mapId = $this->request->param('id', null);
-        $displayId = $this->request->param('id2', null);
+    public function action_display()
+    {
+        $mapId      = $this->request->param('id', false);
+        $displayId  = $this->request->param('id2', null);
         
-        if($mapId != null) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-            $this->templateData['displayImages'] = $this->getVisualDisplayImages($mapId);
-            
-            if($displayId != null) {
-                $this->templateData['display'] = DB_ORM::model('map_visualdisplay', array((int) $displayId));
-                $this->templateData['displayJSON'] = DB_ORM::model('map_visualdisplay')->toJSON((int) $displayId);
-            }
-            
-            $view = View::factory('labyrinth/display/display');
-            $view->set('templateData', $this->templateData);
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        $this->getAllFonts();
 
-            $this->templateData['center'] = $view;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        $this->templateData['fonts']         = $this->fonts;
+        $this->templateData['map']           = DB_ORM::model('map', array($mapId));
+        $this->templateData['counters']      = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['displayImages'] = $this->getVisualDisplayImages($mapId);
+
+        if ($displayId)
+        {
+            $this->templateData['display']     = DB_ORM::model('map_visualdisplay', array($displayId));
+            $this->templateData['displayJSON'] = DB_ORM::model('map_visualdisplay')->toJSON($displayId);
         }
+
+        $this->templateData['center'] = View::factory('labyrinth/display/display')->set('templateData', $this->templateData);
+        $this->templateData['left']   = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    private function getAllFonts ()
+    {
+        $fileContent     = file('css/font.css');
+        $patterns[0]     = '/@import url\(http:\/\/fonts\.googleapis\.com\/css\?family=/';
+        $patterns[1]     = '/\+/';
+        $patterns[2]     = '/\);/';
+        $replacements[0] = '';
+        $replacements[1] = ' ';
+        $replacements[2] = '';
+
+        foreach ($fileContent as $font) $this->fonts[] = trim(preg_replace($patterns, $replacements, $font));
+
+        sort($this->fonts);
+    }
+
+    public function action_ajaxAddFont ()
+    {
+        $newFontName = $this->request->param('id');
+
+        $this->getAllFonts();
+
+        if (in_array($newFontName, $this->fonts)) exit;
+
+        $newFontName = str_replace(' ', '+', $newFontName);
+        $newFontName = '@import url(http://fonts.googleapis.com/css?family='.$newFontName.');';
+
+        $file = 'css/font.css';
+        $current = file_get_contents($file);
+        $current .= $newFontName."\n";
+        file_put_contents($file, $current);
+        exit;
+    }
+
+    public function action_ajaxDeleteFont ()
+    {
+        $fontName = $this->request->param('id');
+        $fontName = str_replace(' ', '+', $fontName);
+        $fontName = '@import url(http://fonts.googleapis.com/css?family='.$fontName.');'."\n";
+
+        $fileName    = 'css/font.css';
+        $fileContent = file_get_contents($fileName);
+        $fileContent = str_replace($fontName, '', $fileContent);
+        file_put_contents($fileName, $fileContent);
+        exit;
     }
     
     public function action_save()

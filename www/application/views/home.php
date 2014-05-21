@@ -34,6 +34,7 @@
 	    <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
         <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/basic.css'); ?>" />
+        <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>" />
         <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
         <!--[if IE 7]>
         <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" />

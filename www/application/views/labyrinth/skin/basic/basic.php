@@ -34,7 +34,7 @@
 <script  src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css"/>
-
+<link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>" />
 <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
 <!--<script  src="--><?php //echo URL::base(); ?><!--scripts/bootstrap/js/bootstrap.js"></script>-->
 <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>

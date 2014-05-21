@@ -93,7 +93,7 @@ $(function() {
             postURL = $(this).attr('postURL'),
             data    = visualDisplay.Serialize();
 
-        if(mapId == null || postURL == null) return;
+        if (mapId == null || postURL == null) return;
 
         $.post(postURL,
                {
@@ -103,9 +103,7 @@ $(function() {
                },
                function(responseData) {
                    var url = displayBaseURL + responseData;
-                   if (currentTab != null) {
-                       url += currentTab;
-                   }
+                   if (currentTab != null) url += currentTab;
                    $(location).attr('href', url);
                });
     });

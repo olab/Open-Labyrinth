@@ -1132,7 +1132,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public static function parseText($text, $mapId = NULL)
     {
         $result = $text;
-        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'VD', 'CR');
+        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR');
 
         foreach ($codes as $code)
         {
@@ -1181,7 +1181,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                     case 'INFO':
                                         $replaceString = Controller_RenderLabyrinth::getInfoHTML($id);
                                         break;
-                                    case 'VD':
+                                    case 'CD':
                                         $replaceString = Controller_RenderLabyrinth::getVisualDisplayHTML($id);
                                         break;
                                     case 'CR':
