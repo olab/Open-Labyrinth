@@ -14,11 +14,10 @@ class Model_Mesh_Render
     public static function render($params)
     {
 
-        $triples = self::discover_triples($params->text);
+
         $parser = new EasyRdf_Parser_Rdfa();
         $graph = new EasyRdf_Graph();
-        $triples = $parser->parse($graph, $params->text, "rdfa", URL::base());
-        //var_dump($graph);
+          //var_dump($graph);
         $resources = $graph->resources();
         $sparql_config = Kohana::$config->load('mesh');
 
@@ -63,7 +62,8 @@ $graph
 
 
         $entrez = new Entrez("pubmed");
-        $entrez->search($termsString);
+        $uris = $entrez->search($termsString);
+        if(empty($uris)) return array();
         $entrez->fetch(0, 5, 'xml', 'medline');
         $results = $entrez->getResults();
 
