@@ -16,7 +16,10 @@ class Model_Mesh_Render
 
 
         $parser = new EasyRdf_Parser_Rdfa();
+
+
         $graph = new EasyRdf_Graph();
+        $parser->parse($graph, $params->text, "rdfa", URL::base());
           //var_dump($graph);
         $resources = $graph->resources();
         $sparql_config = Kohana::$config->load('mesh');
