@@ -94,7 +94,7 @@ Kohana::$config->attach(new Config_File);
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
-Kohana::modules(array(
+$modules = array(
 
     'auth' => MODPATH . 'auth', // Basic authentication
     // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
@@ -108,15 +108,16 @@ Kohana::modules(array(
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface
     'oauth' => MODPATH . 'oauth', // OAuth module
-    'phpexcel' => MODPATH . 'phpexcel'
-));
+    'phpexcel' => MODPATH . 'phpexcel',
+    'kohana-media' => MODPATH . 'kohana-media',
 
+);
 
+Kohana::modules($modules);
 $mods = Model_Leap_Vocabulary_Vocablet::getEnabled();
 
-$mods = array_merge(Kohana::modules(), $mods);
+$mods = array_merge( $modules,$mods);
 //var_dump($mods);die;
-Kohana::modules($mods);
 
 
 
@@ -209,3 +210,5 @@ Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', '
     ->defaults(array(
         'controller' => 'error'
     ));
+
+Kohana::modules($mods);

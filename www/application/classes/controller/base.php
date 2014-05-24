@@ -24,7 +24,8 @@ class Controller_Base extends Controller_Template {
 
     public $template = 'home';
     protected $templateData = array();
-    private $unauthorizedRules = array(
+    protected  $unauthorizedRules = array(
+        array('controller' => 'home', 'action' => 'login'),
         array('controller' => 'home', 'action' => 'login'),
         array('controller' => 'home', 'action' => 'loginOAuth'),
         array('controller' => 'home', 'action' => 'loginOAuthCallback'),
