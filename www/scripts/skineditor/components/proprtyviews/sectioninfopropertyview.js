@@ -1,9 +1,8 @@
-//TODO: Need refactoring
-var ReviewPropertyView = (function(parent) {
-    inherit(parent, ReviewPropertyView);
+var SectionInfoPropertyView = (function(parent) {
+    inherit(parent, SectionInfoPropertyView);
 
-    function ReviewPropertyView(viewModel) {
-        ReviewPropertyView.super.constructor.apply(this);
+    function SectionInfoPropertyView(viewModel) {
+        SectionInfoPropertyView.super.constructor.apply(this);
 
         this._viewModel           = viewModel;
 
@@ -33,41 +32,41 @@ var ReviewPropertyView = (function(parent) {
         this._$top                = null;
         this._$right              = null;
         this._$bottom             = null;
-    };
+    }
 
-    ReviewPropertyView.prototype.AppendTo = function($container) {
+    SectionInfoPropertyView.prototype.AppendTo = function($container) {
         if($container === null) { return; }
 
-        this._AppendLabelInput($container, {                label: 'Border size',
-            viewModelProperyName: 'BorderSize',
-            modelPropertyName: 'BorderSize',
-            cssPropertyName: 'border-width',
-            viewComponent: '_$borderSize' });
-        this._AppendColorLabelInput($container, {           label: 'Border color',
-            viewModelProperyName: 'BorderColor',
-            modelPropertyName: 'BorderColor',
-            cssPropertyName: 'border-color',
-            viewComponent: '_$borderColor' });
-        this._AppendSelectLabelInput($container, {              label: 'Border type',
-            options: [{value: 'none',  text: 'none'},
-                {value: 'hidden', text: 'hidden'},
-                {value: 'dotted', text: 'dotted'},
-                {value: 'dashed', text: 'dashed'},
-                {value: 'solid',  text: 'solid'},
-                {value: 'double', text: 'double'},
-                {value: 'groove', text: 'groove'},
-                {value: 'ridge',  text: 'ridge'},
-                {value: 'inset',  text: 'inset'},
-                {value: 'outset', text: 'outset'}],
-            viewModelProperyName: 'BorderType',
-            modelPropertyName: 'BorderType',
-            cssPropertyName: 'border-style',
-            viewComponent: '_$borderType' });
-        this._AppendLabelInput($container, {                label: 'Border radius',
-            viewModelProperyName: 'BorderRadius',
-            modelPropertyName: 'BorderRadius',
-            cssPropertyName: 'borderRadius',
-            viewComponent: '_$borderRadius'});
+        this._AppendLabelInput($container, {               label: 'Border size',
+                                            viewModelProperyName: 'BorderSize',
+                                               modelPropertyName: 'BorderSize',
+                                                 cssPropertyName: 'border-width',
+                                                   viewComponent: '_$borderSize' });
+        this._AppendColorLabelInput($container, {               label: 'Border color',
+                                                 viewModelProperyName: 'BorderColor',
+                                                    modelPropertyName: 'BorderColor',
+                                                      cssPropertyName: 'border-color',
+                                                        viewComponent: '_$borderColor' });
+        this._AppendSelectLabelInput($container, {               label: 'Border type',
+                                                               options: [{value: 'none',  text: 'none'},
+                                                                         {value: 'hidden', text: 'hidden'},
+                                                                         {value: 'dotted', text: 'dotted'},
+                                                                         {value: 'dashed', text: 'dashed'},
+                                                                         {value: 'solid',  text: 'solid'},
+                                                                         {value: 'double', text: 'double'},
+                                                                         {value: 'groove', text: 'groove'},
+                                                                         {value: 'ridge',  text: 'ridge'},
+                                                                         {value: 'inset',  text: 'inset'},
+                                                                         {value: 'outset', text: 'outset'}],
+                                                  viewModelProperyName: 'BorderType',
+                                                     modelPropertyName: 'BorderType',
+                                                       cssPropertyName: 'border-style',
+                                                         viewComponent: '_$borderType' });
+        this._AppendLabelInput($container, {               label: 'Border radius',
+                                            viewModelProperyName: 'BorderRadius',
+                                               modelPropertyName: 'BorderRadius',
+                                                 cssPropertyName: 'borderRadius',
+                                                   viewComponent: '_$borderRadius'});
         this._AppendSelectLabelInput($container, {              label: 'Float',
             options: [{value: 'none',    text: 'none'},
                 {value: 'inherit', text: 'inherit'},
@@ -250,5 +249,5 @@ var ReviewPropertyView = (function(parent) {
 
     };
 
-    return ReviewPropertyView;
+    return SectionInfoPropertyView;
 })(BlockPropertyView);

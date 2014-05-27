@@ -474,7 +474,7 @@ var BlockPropertyView = (function(parent) {
         var instance    = this,
             $ui         = null,
             optionsHTML = '';
-        
+
         if('label'                            in parameters && 
            'options'                          in parameters &&
            'viewModelProperyName'             in parameters && 
@@ -486,10 +486,10 @@ var BlockPropertyView = (function(parent) {
                 optionsHTML += BlockPropertyView.LABEL_SELECT_OPTION_HTML.replace('@VALUE@', parameters['options'][i].value)
                                                                          .replace('@TEXT@', parameters['options'][i].text);
             }
-            
+
             $ui = $(BlockPropertyView.LABEL_SELECT_HTML.replace('@LABEL@', parameters['label'])
                                                        .replace('@OPTIONS@', optionsHTML)).appendTo($container);
-            
+
             this[parameters['viewComponent']] = $ui.find('select');
             this[parameters['viewComponent']].val(this._viewModel.GetProperty(parameters['viewModelProperyName']));
             this[parameters['viewComponent']].change(function(e) {
@@ -535,7 +535,7 @@ var BlockPropertyView = (function(parent) {
                     $.ajax({
                         url: getUploadURL(),
                         type: 'POST',
-                        data: { skinId: getSkinId(), data: e.target.result},
+                        data: { skinId: skinId, data: e.target.result},
                         success: function(data) {
                             var object = JSON.parse(data);
                             if(object === null || object.status === 'error') { alert("ERROR"); }

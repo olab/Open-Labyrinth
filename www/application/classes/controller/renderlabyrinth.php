@@ -1107,26 +1107,24 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     private function generateNavigation($sections) {
+        $result = '';
         if (count($sections) > 0) {
             $result = '<ul class="navigation">';
             foreach ($sections as $section) {
-                if ($section->map->section->name == 'visible') {
-                    $result .= "<li>" . $section->name . "</li>";
-                } else if ($section->map->section->name == 'navigable') {
+                if ($section->map->section->name == 'visible') $result .= "<li>".$section->name."</li>";
+                elseif ($section->map->section->name == 'navigable') {
                     $result .= '<li><a href="';
-                    if (count($section->nodes) > 0) {
-                        $result .= URL::base() . 'renderLabyrinth/go/' . $section->map_id . '/' . $section->nodes[0]->node->id;
-                    } else {
-                        $result .= URL::base() . 'renderLabyrinth/index/' . $section->map_id;
-                    }
+
+                    if (count($section->nodes) > 0) $result .= URL::base().'renderLabyrinth/go/'.$section->map_id.'/'.$section->nodes[0]->node->id;
+                    else $result .= URL::base().'renderLabyrinth/index/'.$section->map_id;
+
                     $result .= '">' . $section->name . '</a></li>';
                 }
             }
             $result .= '</ul>';
-            return $result;
-        }
 
-        return NULL;
+        }
+        return $result;
     }
 
     public static function parseText($text, $mapId = NULL)

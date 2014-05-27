@@ -63,7 +63,7 @@ var ComponentsTreeUIComponent = (function(parent) {
         this._$uiTreeContainer.jstree('create', $(['#', parentComponent.GetId()].join('')), 'last', {
             'data': component.GetName(),
             'attr': { 'id': component.GetId(),
-             'rel': component.GetRelType() }
+            'rel': component.GetRelType() }
         }, false, true);
     };
 
@@ -117,7 +117,6 @@ var ComponentsTreeUIComponent = (function(parent) {
             if('tree' in tmpObj) {
                 jsonData = tmpObj.tree;
                 this._AddRelTypeForOldVersion(jsonData);
-                console.log(jsonData);
             }
         }
         
@@ -157,6 +156,11 @@ var ComponentsTreeUIComponent = (function(parent) {
                         }
                     },
                     'info': {
+                        'icon': {
+                            'image': '../../../scripts/skineditor/css/map_info_icon.png'
+                        }
+                    },
+                    'section': {
                         'icon': {
                             'image': '../../../scripts/skineditor/css/map_info_icon.png'
                         }

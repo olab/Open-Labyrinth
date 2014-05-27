@@ -26,15 +26,6 @@ if (isset($templateData['map'])) { ?>
         <fieldset class="fieldset">
             <legend><?php echo __('Upload a new skin'); ?></legend>
             <div class="control-group">
-                <div>
-                    <p><?php echo __('Your zip file must contain:'); ?></p>
-                    <p><?php echo __('1) .css file'); ?></p>
-                    <p><?php echo __('2) image files called for in .css files'); ?></p>
-                    <p><?php echo __('To obtain a copy of the source files, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.css'; ?>"><?php echo __('.css file'); ?></a></p>
-                    <p><?php echo __('To obtain a copy of a full zip file, click here:'); ?> <a style="text-decoration: underline;" href="<?php echo URL::base().'documents/skin_example/default.zip'; ?>"><?php echo __('.zip'); ?></a></p>
-                </div>
-            </div>
-            <div class="control-group">
                 <label style="width:200px;" class="control-label"><?php echo __('Select skin file to upload (.zip):'); ?></label>
                 <div class="controls">
                     <input type="file" name="zipSkin" value="" />

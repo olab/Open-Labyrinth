@@ -36,7 +36,7 @@ var LinksPropertyView = (function(parent) {
         this._$buttonColor1       = null;
         this._$buttonColor2       = null;
         this._$buttonFontColor    = null;
-    };
+    }
 
     LinksPropertyView.prototype.AppendTo = function($container) {
         if($container === null) { return; }
@@ -166,7 +166,7 @@ var LinksPropertyView = (function(parent) {
                                                                 viewComponent: '_$paddingBottom'}]});
         this._AppendSelectLabelInput($container, {              label: 'Font family',
                                                               options: [{value: 'andale mono', text: 'Andale Mono'},
-                                                                        {value: 'arial', text: 'Arial'},
+                                                                        {value: 'Arial', text: 'Arial'},
                                                                         {value: 'arial black', text: 'Arial Black'},
                                                                         {value: 'book antiqua', text: 'Book Antiqua'},
                                                                         {value: 'comic sans ms', text: 'Comic Sans MS'},

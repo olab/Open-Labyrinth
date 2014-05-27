@@ -619,7 +619,6 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->load();
 
         $this->skin_id = $value;
-
         $this->save();
     }
 

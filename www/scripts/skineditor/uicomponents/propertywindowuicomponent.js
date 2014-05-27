@@ -24,7 +24,7 @@ var PropertyWindowUIComponent = (function(parent) {
         this._$ui              = null;
         this._$uiComponentName = null;
         this._$uiContent       = null;
-    };
+    }
     
     /**
      * Bind component with property window

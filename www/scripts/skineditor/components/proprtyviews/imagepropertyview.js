@@ -195,7 +195,7 @@ var ImagePropertyView = (function(parent) {
                     $.ajax({
                         url: getUploadURL(),
                         type: 'POST',
-                        data: { skinId: getSkinId(), data: e.target.result},
+                        data: { skinId: skinId, data: e.target.result},
                         success: function(data) {
                             var object = JSON.parse(data);
                             if(object === null || object.status === 'error') { alert("ERROR"); }

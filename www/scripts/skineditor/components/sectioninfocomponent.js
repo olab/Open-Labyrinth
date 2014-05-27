@@ -1,13 +1,12 @@
-//TODO: Need refactoring
-var LinksComponent = (function(parent) {
-    inherit(parent, LinksComponent);
+var SectionInfoComponent = (function(parent){
+    inherit(parent, SectionInfoComponent);
 
-    LinksComponent.UI_HTML = '<div id="@ID@">{LINKS}</div>';
+    SectionInfoComponent.UI_HTML = '<div id="@ID@">{SECTION}</div>';
 
-    function LinksComponent() {
-        LinksComponent.super.constructor.apply(this);
+    function SectionInfoComponent() {
+        SectionInfoComponent.super.constructor.apply(this);
 
-        this._model        = new LinksPropertyModel();
+        this._model        = new SectionInfoPropertyModel();
         this._$uiContainer = null;
 
         /**
@@ -42,56 +41,49 @@ var LinksComponent = (function(parent) {
         this.Top                = new ObservableProperty();
         this.Right              = new ObservableProperty();
         this.Bottom             = new ObservableProperty();
-        this.ButtonColor1       = new ObservableProperty();
-        this.ButtonColor2       = new ObservableProperty();
-        this.ButtonFontColor    = new ObservableProperty();
-    };
+    }
 
     /**
      * Get block component name
      *
      * @return {string} - block component name
      */
-    LinksComponent.prototype.GetName = function() { return this._model.Name; };
+    SectionInfoComponent.prototype.GetName = function() { return this._model.Name; };
 
-    LinksComponent.prototype.GetRelType = function() { return 'links'; };
+    SectionInfoComponent.prototype.GetRelType = function() { return 'section'; };
 
     /**
      * Composite component is composite object
      *
      * @return {Boolean} - true if component composite
      */
-    LinksComponent.prototype.IsComposite = function() { return false; };
+    SectionInfoComponent.prototype.IsComposite = function() { return false; };
 
     /**
      * Get block property view
      *
      * @return {PropertyView} - block property view with assign view model component
      */
-    LinksComponent.prototype.GetPropertyView = function() { return new LinksPropertyView(this); };
+    SectionInfoComponent.prototype.GetPropertyView = function() { return new SectionInfoPropertyView(this); };
 
     /**
      * Append block component to another component (component must be composite)
      *
      * @param {Component} component - composite component
      */
-    LinksComponent.prototype.AppendTo = function(component) {
-        var instance   = this,
-            $container = null,
-            $ui        = null;
-
+    SectionInfoComponent.prototype.AppendTo = function(component) {
         if(component === null || !(component instanceof Component)) {
-            throw new Error('LinksComponent.AppendTo: component must be instance of "Component" and not be null');
+            throw new Error('SectionInfoComponent.AppendTo: component must be instance of "Component" and not be null');
         }
 
-        LinksComponent.super.AppendTo.apply(this, [component]);
+        SectionInfoComponent.super.AppendTo.apply(this, [component]);
 
         if(!component.IsComposite()) { return; }
 
-        $container = component.GetContainer();
+        var $container = component.GetContainer();
         if($container === null) { return; }
 
-        $ui = $(LinksComponent.UI_HTML.replace('@ID@', this.GetId())).appendTo($container);
+        var $ui = $(SectionInfoComponent.UI_HTML.replace('@ID@', this.GetId())).appendTo($container);
         this.SetContainer($ui);
     };
 
@@ -100,14 +92,14 @@ var LinksComponent = (function(parent) {
      *
      * @return {*} - component container or null
      */
-    LinksComponent.prototype.GetContainer = function() { return this._$uiContainer; };
+    SectionInfoComponent.prototype.GetContainer = function() { return this._$uiContainer; };
 
     /**
      * Set component container
      *
      * @param {*} $container - container
      */
-    LinksComponent.prototype.SetContainer = function($container) {
+    SectionInfoComponent.prototype.SetContainer = function($container) {
         var instance = this;
 
         this._$uiContainer = $container;
@@ -124,21 +116,21 @@ var LinksComponent = (function(parent) {
     /**
      * Select block component
      */
-    LinksComponent.prototype.Select = function() {
+    SectionInfoComponent.prototype.Select = function() {
         if(this._$uiContainer !== null) { this._$uiContainer.addClass('component-selected'); }
     };
 
     /**
      * Deselect block component
      */
-    LinksComponent.prototype.Deselect = function() {
+    SectionInfoComponent.prototype.Deselect = function() {
         if(this._$uiContainer !== null) { this._$uiContainer.removeClass('component-selected'); }
     };
 
     /**
      * Get property by name
      */
-    LinksComponent.prototype.GetProperty = function(name) {
+    SectionInfoComponent.prototype.GetProperty = function(name) {
         return this._model.hasOwnProperty(name) ? this._model[name]
             : null;
     };
@@ -146,34 +138,15 @@ var LinksComponent = (function(parent) {
     /**
      * Set propery for view model
      */
-    LinksComponent.prototype.SetProperty = function(sender, args) {
+    SectionInfoComponent.prototype.SetProperty = function(sender, args) {
         if(args === null || !('modelPropertyName' in args)) { return; }
 
         if(this._model.hasOwnProperty(args['modelPropertyName']) && 'newValue' in args) {
             this._model[args['modelPropertyName']] = args['newValue'];
 
             if(this._$uiContainer !== null && 'cssPropertyName' in args) {
-                if(args['cssPropertyName'] == 'btn') {
-                    this._$uiContainer.find('style').remove();
-                    $('<style>' +
-                        '#' + this.GetId() + ' .btn { color: ' + this._model['ButtonFontColor'] + ';' +
-                        'background-image: -moz-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');' +
-                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] +'), to(' + this._model['ButtonColor1'] +'));' +
-                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor1'] +', ' + this._model['ButtonColor1'] +');' +
-                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');' +
-                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');} ' +
-
-                        '#' + this.GetId() + ' .btn:hover {color: ' + this._model['ButtonFontColor'] + ';' +
-                        'background-image: -moz-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
-                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] + '), to(#e6e6e6));' +
-                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
-                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
-                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
-                    '</style>').appendTo(this._$uiContainer);
-                } else {
-                    var object = JSON.parse(['{"', args['cssPropertyName'], '":"', this._model[args['modelPropertyName']], '"}'].join(''));
-                    this._$uiContainer.css(object);
-                }
+                var object = JSON.parse(['{"', args['cssPropertyName'], '":"', this._model[args['modelPropertyName']], '"}'].join(''));
+                this._$uiContainer.css(object);
             }
 
             if('properyName' in args && this.hasOwnProperty(args['propertyName'])) {
@@ -188,8 +161,8 @@ var LinksComponent = (function(parent) {
      *
      * @param {SerializationInfo} serializationInfo - The SerializationInfo with object data
      */
-    LinksComponent.prototype.SetObjectData = function(serializationInfo) {
-        LinksComponent.super.SetObjectData.apply(this, [serializationInfo]);
+    SectionInfoComponent.prototype.SetObjectData = function(serializationInfo) {
+        SectionInfoComponent.super.SetObjectData.apply(this, [serializationInfo]);
         this._model.SetObjectData(serializationInfo);
     };
 
@@ -199,11 +172,11 @@ var LinksComponent = (function(parent) {
      *
      * @param {SerializationInfo} serializationInfo - The SerializationInfo to populate with data
      */
-    LinksComponent.prototype.GetObjectData = function(serializationInfo) {
-        LinksComponent.super.GetObjectData.apply(this, [serializationInfo]);
-        serializationInfo.AddValue('type', 'links');
+    SectionInfoComponent.prototype.GetObjectData = function(serializationInfo) {
+        SectionInfoComponent.super.GetObjectData.apply(this, [serializationInfo]);
+        serializationInfo.AddValue('type', 'mapinfo');
         this._model.GetObjectData(serializationInfo);
     };
 
-    return LinksComponent;
+    return SectionInfoComponent;
 })(Component);

@@ -1,10 +1,10 @@
-var MapInfoPropertyModel = (function(parent) {
-    inherit(parent, MapInfoPropertyModel);
+var SectionInfoPropertyModel = (function(parent){
+    inherit(parent, SectionInfoPropertyModel);
 
-    function MapInfoPropertyModel() {
-        MapInfoPropertyModel.super.constructor.apply(this);
+    function SectionInfoPropertyModel() {
+        SectionInfoPropertyModel.super.constructor.apply(this);
 
-        this.Name               = 'Map Info component';
+        this.Name               = 'Section';
         this.BorderSize         = null;
         this.BorderColor        = null;
         this.BorderType         = null;
@@ -36,9 +36,9 @@ var MapInfoPropertyModel = (function(parent) {
         this.Bottom             = 'auto';
     }
 
-    MapInfoPropertyModel.prototype.GetObjectData = function(serializationInfo) {
+    SectionInfoPropertyModel.prototype.GetObjectData = function(serializationInfo) {
         if(serializationInfo == null || !(serializationInfo instanceof SerializationInfo)) {
-            throw new Error('MapInfoPropertyModel.GetObjectData: Serialization Info must be instance of object "SerializationInfo" and not be null');
+            throw new Error('SectionInfoPropertyModel.GetObjectData: Serialization Info must be instance of object "SerializationInfo" and not be null');
         }
 
         serializationInfo.AddValue("BorderSize", this.BorderSize);
@@ -71,7 +71,7 @@ var MapInfoPropertyModel = (function(parent) {
         serializationInfo.AddValue("Bottom", this.Bottom);
     };
 
-    MapInfoPropertyModel.prototype.SetObjectData = function(serializationInfo) {
+    SectionInfoPropertyModel.prototype.SetObjectData = function(serializationInfo) {
         if(serializationInfo == null || !(serializationInfo instanceof SerializationInfo)) {
             throw new Error('SerializableTestObject.SetObjectData: Serialization Info must be instance of object "SerializationInfo" and not be null');
         }
@@ -106,5 +106,5 @@ var MapInfoPropertyModel = (function(parent) {
         this.Bottom             = serializationInfo.GetValue("Bottom");
     };
 
-    return MapInfoPropertyModel;
+    return SectionInfoPropertyModel;
 })(Serializable);
