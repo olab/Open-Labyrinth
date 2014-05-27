@@ -878,7 +878,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         foreach (DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj)
         {
-            $linkStyle[$nodeObj->link_style_id] += 1;
+            if (isset($linkStyle[$nodeObj->link_style_id])) $linkStyle[$nodeObj->link_style_id] += 1;
         }
         // sort array, first key element contain main link style
         arsort($linkStyle);
