@@ -28,10 +28,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_index()
     {
-        $continue   = true;
-        $mapId      = $this->request->param('id', null);
-        $editOn     = $this->request->param('id2', null);
-        $access     = $this->checkTypeCompatibility($mapId);
+        $continue    = true;
+        $mapId       = $this->request->param('id', null);
+        $editOn      = $this->request->param('id2', null);
+        $access      = $this->checkTypeCompatibility($mapId);
         $scenarioId  = Session::instance()->get('webinarId');
         $this->mapId = $mapId;
 
@@ -62,7 +62,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
             Session::instance()->delete('dragQuestionResponses');
             Session::instance()->delete('counterFunc');
             Session::instance()->delete('stopCommonRules');
-            Session::instance()->delete('shownMapPopups');
             Session::instance()->delete('arrayAddedQuestions');
             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
 
@@ -911,14 +910,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $map_id = $this->request->param('id', NULL);
         $this->auto_render = false;
         $popupId = Arr::get($_POST, 'popupId', null);
-        $shownPopups = Session::instance()->get('shownMapPopups', array());
         Model::factory('labyrinth')->popup_counters($map_id, $popupId);
-
-        if($popupId != null && !in_array($popupId, $shownPopups)) {
-            $shownPopups[] = $popupId;
-        }
-
-        Session::instance()->set('shownMapPopups', $shownPopups);
     }
 
     private function checkRemoteUser($username, $password) {

@@ -477,7 +477,6 @@ $id_node = $templateData['node']->id;
         <?php
             $assign  = null;
             $section = false;
-            $shownMapPopups = Session::instance()->get('shownMapPopups');
             foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                 foreach ($mapPopup->assign as $a){
                     foreach (Arr::get($templateData,'sections', array()) as $s){
@@ -490,7 +489,7 @@ $id_node = $templateData['node']->id;
                         $a->assign_to_id == $id_map OR
                         $section) $assign = $a;
                 }
-                if (( ! isset($shownMapPopups) OR ( ! in_array($mapPopup->id, $shownMapPopups))) AND isset($assign)) { ?>
+                if (isset($assign)) { ?>
                 <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
                      popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
                      time-before="<?php echo $mapPopup->time_before; ?>"
