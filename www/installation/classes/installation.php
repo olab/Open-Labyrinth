@@ -736,30 +736,44 @@ class Installation {
             return 1;
         }
 
-        $regExp = '/(?<=v)(.*?)(?=\.sql)/is';
-        $regExpDot = '/(\.|_)/e';
-        $resultA = '';
-        $resultB = '';
 
-        if ($c=preg_match_all ($regExp, $a, $matches)) {
-            if (isset($matches[0][0])) {
-                $found = 0;
-                $resultA = preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]);
-            }
-        }
-
-        if ($c=preg_match_all ($regExp, $b, $matches)) {
-            if (isset($matches[0][0])) {
-                $found = 0;
-                $resultB = preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]);
-            }
-        }
+        $resultA = self::sortVersionInOrderPregReplace($a);
+        $resultB = self::sortVersionInOrderPregReplace($b);
 
         if ($resultA == $resultB) {
             return 0;
         }
 
         return ($resultA-$resultB > 0) ? 1 : -1;
+    }
+
+    public static function sortVersionInOrderPregReplace($str) {
+        $result = '';
+        $regExp = '/(?<=v)(.*?)(?=\.sql)/is';
+        $regExpDot = '/(\.)/e';
+
+        if ($c=preg_match_all ($regExp, $str, $matches)) {
+            if (isset($matches[0][0])) {
+                $found = 0;
+                $result = self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
+            }
+        }
+
+        return $result;
+    }
+
+    public static function replaceSpecialChar($str) {
+        $array = explode('_', $str);
+        $resultStr = $array[0];
+        if (isset($array[1])) {
+            $length = strlen($array[1]);
+            for($i = 0; $i < 3 - $length; $i++) {
+                $resultStr .= '0';
+            }
+
+            $resultStr .= $array[1];
+        }
+        return $resultStr;
     }
 
     public static function populateDatabase($schema)
