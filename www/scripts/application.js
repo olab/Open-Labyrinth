@@ -386,7 +386,10 @@ jQuery(document).ready(function(){
         $('form').attr('action', url).submit();
     });
 
+    var sameLabyrinthUser = null;
+
     $.each(historyOfAllUsers, function(key, value) {
+        sameLabyrinthUser = value;
         if (value['username'] != currentUser && value['readonly'] != 1) {
             var links = $('a[href="' + value['href'] + '"]');
             var re = /(grid|visualManager)/i;
@@ -395,29 +398,47 @@ jQuery(document).ready(function(){
 
             $.each(links, function() {
                 if (re.test(value['href'])) {
-                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/counterManager/grid/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
-                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/nodeManager/grid/' + labyrinthId[1] + '/1" />').parent().css('position', 'relative');
-                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/visualManager/index/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/counterManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/nodeManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/visualManager/index/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
                 } else {
-                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], value['href'], value.id)).parent().css('position', 'relative');
                 }
                 var deleteButton = $(this).nextAll('.btn.btn-danger');
-                if (deleteButton.length) {
-                    deleteButton.remove();
-                }
+                if (deleteButton.length) deleteButton.remove();
+
                 var imageEditButton = $(this).nextAll('.btn.btn-inverse');
-                if (imageEditButton.length) {
-                    imageEditButton.remove();
-                }
+                if (imageEditButton.length) imageEditButton.remove();
             });
         }
     });
 
+    $('#discard').click(function(){
+        var userId = $(this).data('user'),
+            href   = $(this).data('href').substring(1);
+        $.get(
+            urlBase + 'home/ajaxLogout/' + userId,
+            function(data){
+                console.log(data);
+                window.location.href = urlBase + href;
+            }
+        );
+    });
+
+    function createSpan(userName, id, idUser){
+        return '<span rel="tooltip" title="Checkin by ' + userName + '" class="lock" id="' + id + '" data-user="' + idUser + '" />';
+    }
+
+    var readonlyNotice = $('#readonly-notice');
     $(".showCustomModalWindow").click(function() {
-        var url = $(this).children('.lock').attr('id');
-        var obj = $('#readonly-notice');
-        obj.find('a.btn').attr('href', url);
-        obj.modal('show');
+        var url     = $(this).children('.lock').attr('id'),
+            userId  = $(this).children('.lock').data('user'),
+            discard = readonlyNotice.find('#discard');
+
+        discard.data('user', userId);
+        discard.data('href', url);
+        readonlyNotice.find('a.btn').attr('href', url);
+        readonlyNotice.modal('show');
 
     });
 
@@ -429,6 +450,7 @@ jQuery(document).ready(function(){
         $('.editable-text').attr('contenteditable', 'false');
         $('.row-fluid form').attr('action','');
         $('.row-fluid input').attr('onclick','javascript:void(0)');
+        readonlyNotice.find("button").prop('disabled', false);
     }
 
     var messageContainer = $('#collaboration_message'),
@@ -442,21 +464,27 @@ jQuery(document).ready(function(){
             $.get(historyAjaxCollaborationURL, function(data) {
                 usernames = [];
                 users = eval('(' + data + ')');
-                $.each(users, function(key, value){
-                    if (inArray(key, stopList)) {
-                        delete users[key];
-                    } else {
-                        stopList.push(key);
-                        usernames.push(value);
+                if (users['reloadPage'] == 1) $('#discardWarning').modal();
+                else {
+                    $.each(users, function(key, value){
+                        if (inArray(key, stopList)) delete users[key];
+                        else {
+                            stopList.push(key);
+                            usernames.push(value);
+                        }
+                    });
+                    if (usernames.length) {
+                        utils = new Utils();
+                        utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                     }
-                });
-                if (usernames.length) {
-                    utils = new Utils();
-                    utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                 }
             });
         }, 30000);
     }
+
+    $('#discardReload').click(function(){
+        window.location.reload();
+    });
 
     function inArray(needle, haystack) {
         var length = haystack.length;

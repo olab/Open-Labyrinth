@@ -100,8 +100,18 @@ if (isset($templateData['map'])) {
         <div class="modal-body">
             <p><?php echo __('You try go to the page on which already another author is working, you can go there with "Read-only" permission.'); ?></p>
             <p>
-                <a class="btn btn-primary" href="javascript:void(0);"><?php echo __('Enter with Read-only'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <a class="btn btn-primary" href="javascript:void(0);"><?php echo __('Enter with Read-only'); ?></a>
+                <button class="btn btn-primary" id="discard">Discard</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </p>
         </div>
     </div>
+
+    <div class="modal hide fade" id="discardWarning">
+        <div class="modal-header">
+            <h4 class="alert-heading">Superuser discard you.</h4>
+        </div>
+        <button class="btn btn-primary" id="discardReload">Reload</button>
+    </div>
+
 <?php }; ?>

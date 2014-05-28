@@ -6242,3 +6242,7 @@ input.patient-type-js {
 .visual-section-js:focus {
     outline-color: #808080;
 }
+
+#discardReload {
+    margin: 10px 15px;
+}

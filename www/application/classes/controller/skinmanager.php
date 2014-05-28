@@ -31,36 +31,26 @@ class Controller_SkinManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL)
-        {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            $map = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['map'] = $map;
-            $this->templateData['skin'] = DB_ORM::model('map_skin')->getSkinById($map->skin_id);
-            $this->templateData['action'] = 'index';
-            $navigation = View::factory('labyrinth/skin/navigation');
-            $navigation->set('templateData', $this->templateData);
-            $this->templateData['navigation'] = $navigation;
+        DB_ORM::model('Map')->editRight($mapId);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Skin'))->set_url(URL::base() . 'skinManager/index/' . $mapId));
+        $map = DB_ORM::model('map', array((int) $mapId));
 
-            $skinView = View::factory('labyrinth/skin/view');
-            $skinView->set('templateData', $this->templateData);
+        $this->templateData['map']          = $map;
+        $this->templateData['skin']         = DB_ORM::model('map_skin')->getSkinById($map->skin_id);
+        $this->templateData['action']       = 'index';
+        $this->templateData['navigation']   = View::factory('labyrinth/skin/navigation')->set('templateData', $this->templateData);
+        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']       = View::factory('labyrinth/skin/view')->set('templateData', $this->templateData);
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
 
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $skinView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Skin'))->set_url(URL::base().'skinManager/index/'.$mapId));
     }
 
     public function action_createSkin()

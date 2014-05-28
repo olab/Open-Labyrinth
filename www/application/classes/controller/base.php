@@ -477,5 +477,15 @@ class Controller_Base extends Controller_Template {
         DB_ORM::model('user')->updateUserHistory($user_id, $uri, $readonly, $timestamp);
         return ($uri != NULL) ? 1 : 0;
     }
+
+    public function action_ajaxLogout()
+    {
+        $userId = $this->request->param('id');
+        $userObj = DB_ORM::model('User')->getUserById($userId);
+        $userObj->history = NULL;
+        $userObj->history_timestamp = NULL;
+        $userObj->save();
+        exit;
+    }
 }
 

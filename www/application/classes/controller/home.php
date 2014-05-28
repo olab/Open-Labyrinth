@@ -343,12 +343,16 @@ class Controller_Home extends Controller_Base {
         $userArray = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
         $uri = Arr::get($userArray, 'href', NULL);
 
-        if ($uri != NULL) {
-            foreach ($usersInformation as $key => $value) {
-                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) {
-                    $result[$value['id']] = $value['username'];
+        if ($userArray != NULL) {
+            if ($uri != NULL) {
+                foreach ($usersInformation as $key => $value) {
+                    if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) {
+                        $result[$value['id']] = $value['username'];
+                    }
                 }
             }
+        } else {
+            $result['reloadPage'] = 1;
         }
 
         echo json_encode($result);
