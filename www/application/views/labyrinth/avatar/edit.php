@@ -23,6 +23,8 @@ if (isset($templateData['map']) and isset($templateData['avatar'])) {
     <script type="text/javascript" language="javascript" src="<?php echo URL::base() ?>scripts/avatar.js"></script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
     <script type="text/javascript" language="javascript">
+        var urlBasePhp = '<?php echo URL::base(); ?>';
+
         window.onload = function () {
             AvatarSetup({
                 <?php

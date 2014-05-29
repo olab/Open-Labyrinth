@@ -81,6 +81,8 @@ Kohana::init(array(
     'errors' => TRUE
 ));
 
+Cookie::$path = Kohana::$base_url;
+
 /**
  * Attach the file write to logging. Multiple writers are supported.
  */
