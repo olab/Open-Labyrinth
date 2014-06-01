@@ -36,6 +36,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'reportManager', 'action' => 'showReport'),
         array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
         array('controller' => 'updateDatabase', 'action' => 'index'),
+        array('controller' => 'resource', 'action' => 'index'),
     );
     private $authorizedRules = array(
         array('controller' => 'home', 'action' => 'login'),
