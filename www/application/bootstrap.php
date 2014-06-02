@@ -120,7 +120,6 @@ $mods = array_merge( $modules,$mods);
 //var_dump($mods);die;
 
 
-Kohana::modules($mods);
 
 
 /**
@@ -201,6 +200,7 @@ Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
 ));
 
 
+Kohana::modules($mods);
 Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<id5>)(/<id6>)))')
         ->defaults(array(
             'controller' => 'home',
