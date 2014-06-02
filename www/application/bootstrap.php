@@ -120,6 +120,7 @@ $mods = array_merge( $modules,$mods);
 //var_dump($mods);die;
 
 
+Kohana::modules($mods);
 
 
 /**
@@ -211,4 +212,5 @@ Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', '
         'controller' => 'error'
     ));
 
-Kohana::modules($mods);
+
+
