@@ -14,3 +14,5 @@ CREATE TABLE IF NOT EXISTS `vocablets` (
 ALTER TABLE `metadata` ADD `guid` varchar(50) NULL DEFAULT NULL , ADD `state` TINYINT(1) NULL DEFAULT '1' ;
 
 ALTER TABLE `metadata` ADD UNIQUE(`guid`);
+
+ALTER TABLE  `rdf_terms` CHANGE  `name`  `name` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ;
