@@ -23,14 +23,16 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_FileManager extends Controller_Base {
 
-    private $metadataJPEGFields = array(array('key' => 'Artist', 'title' => 'Artist'),
-                                        array('key' => 'Company', 'title' => 'Company'),
-                                        array('key' => 'Make', 'title' => 'Make'),
-                                        array('key' => 'Model', 'title' => 'Model'),
-                                        array('key' => 'DateTimeOriginal', 'title' => 'Original date time'),
-                                        array('key' => 'DateTimeDigitized', 'title' => 'Digitized date time'),
-                                        array('key' => 'Software', 'title' => 'Software'),
-                                        array('key' => 'DateTime', 'title' => 'Date time'));
+    private $metadataJPEGFields = array(
+        array('key' => 'Artist',            'title' => 'Artist'),
+        array('key' => 'Company',           'title' => 'Company'),
+        array('key' => 'Make',              'title' => 'Make'),
+        array('key' => 'Model',             'title' => 'Model'),
+        array('key' => 'DateTimeOriginal',  'title' => 'Original date time'),
+        array('key' => 'DateTimeDigitized', 'title' => 'Digitized date time'),
+        array('key' => 'Software',          'title' => 'Software'),
+        array('key' => 'DateTime',          'title' => 'Date time')
+    );
 
     public function before() {
         $this->templateData['labyrinthSearch'] = 1;
@@ -42,49 +44,42 @@ class Controller_FileManager extends Controller_Base {
 
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL)
+
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('Map')->editRight($mapId);
+
+        $files      = DB_ORM::model('map_element')->getAllFilesByMap((int) $mapId);
+        $fileInfo   = DB_ORM::model('map_element')->getFilesSize($files);
+
+        $this->templateData['map']              = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['files']            = $files;
+        $this->templateData['files_size']       = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
+        $this->templateData['files_count']      = $fileInfo['count'];
+        $this->templateData['media_copyright']  = Kohana::$config->load('media_upload_copyright');
+
+        $ses = Session::instance();
+        if($ses->get('warningMessage'))
         {
-            DB_ORM::model('Map')->editRight($mapId);
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-
-            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap((int) $mapId);
-            $fileInfo = DB_ORM::model('map_element')->getFilesSize($this->templateData['files']);
-
-            $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($fileInfo['size']);
-            $this->templateData['files_count'] = $fileInfo['count'];
-            $this->templateData['media_copyright'] = Kohana::$config->load('media_upload_copyright');
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
-
-            $ses = Session::instance();
-            if($ses->get('warningMessage')){
-                $this->templateData['warningMessage'] = $ses->get('warningMessage');
-                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
-                $ses->delete('listOfUsedReferences');
-                $ses->delete('warningMessage');
-            }
-
-            $fileView = View::factory('labyrinth/file/view');
-            $fileView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $fileView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+            $this->templateData['warningMessage']       = $ses->get('warningMessage');
+            $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+            $ses->delete('listOfUsedReferences');
+            $ses->delete('warningMessage');
         }
+
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']   = View::factory('labyrinth/file/view')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Files'))->set_url(URL::base().'fileManager/index/'.$mapId));
     }
 
     public function action_uploadFile() {
         $mapId = $this->request->param('id', NULL);
-        if ($_FILES and $mapId != NULL) {
+        if ($_FILES AND $mapId) {
             DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Request::initial()->redirect(URL::base().'fileManager/index/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
@@ -256,47 +251,36 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
-    public function action_imageEditor() {
-        $mapId = $this->request->param('id', NULL);
+    public function action_imageEditor()
+    {
+        $mapId  = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
-        if ($mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
-            $fileView = View::factory('labyrinth/file/imageEditor');
-            $fileView->set('templateData', $this->templateData);
+        if ( ! ($mapId AND $fileId)) Request::initial()->redirect(URL::base());
 
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
+        DB_ORM::model('Map')->editRight($mapId);
 
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $fileView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        $this->templateData['map']      = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['file']     = DB_ORM::model('map_element', array((int) $fileId));
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']   = View::factory('labyrinth/file/imageEditor')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_imageEditorPost()
     {
         $post           = $this->request->post();
         $file_src       = Arr::get($post, 'filesrc', FALSE);
-        if ( ! $file_src)
-        {
-            echo TRUE;
-            exit();
-        }
+        if ( ! $file_src) exit;
         $imageSource    = DOCROOT.$file_src;
-        if ( ! file_exists($imageSource)) return TRUE;
+        if ( ! file_exists($imageSource)) exit;
         $viewPortW      = Arr::get($post, 'viewPortW');
         $viewPortH      = Arr::get($post, 'viewPortH');
         $pWidth         = Arr::get($post, 'imageW');
         $pHeight        = Arr::get($post, 'imageH');
         $imageRotate    = Arr::get($post, 'imageRotate');
         $ext            = strtolower($this->endc(explode(".", $imageSource)));
-        $getImg         = getimagesize(substr($file_src, 1));
+        $getImg         = getimagesize($file_src);
         $mime           = Arr::get($getImg, 'mime', false);
         $function       = $this->returnFunctionByMime($mime);
         $image          = $function($imageSource);
