@@ -24,4 +24,3 @@
  * @version 2011-06-09
  */
 class DB_ORM_Model extends Base_DB_ORM_Model {}
-?>

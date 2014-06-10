@@ -146,20 +146,22 @@ $(document).ready(function(){
 
         submitTextQ.push($thisId);
 
-        parameter = parameter.split(',');
-        for (var i = 0; i < parameter.length; i++) {
-            if (i>0) parameters += ", '" + parameter[i] + "'";
-            else parameters += "'" + parameter[i] + "'";
+        if (validatorName) {
+            parameter = parameter.toString().split(',');
+
+            for (var i = 0; i < parameter.length; i++) {
+                if (i > 0) parameters += ", '" + parameter[i] + "'";
+                else parameters += "'" + parameter[i] + "'";
+            }
+
+            if (parameters) validation = eval("validator." + validatorName + "('" + value + "', " + parameters + ')');
+            else validation = eval("validator." + validatorName + "('" + value + "')");
+
+            $this.parent().find('.error-validation').remove();
+
+            if ( ! validation) $this.after('<span class="error-validation" style="color: red; margin-left: 5px;">' + errorMsg + '</span>');
+
         }
-
-        if (parameters) validation = eval("validator." + validatorName + "('" + value + "', " + parameters + ')');
-        else if (validatorName) validation = validator.isEmail(value);
-
-        $this.parent().find('.error-validation').each(function(){
-            $(this).remove();
-        });
-
-        if ( ! validation) $this.after('<span class="error-validation" style="color: red; margin-left: 5px;">' + errorMsg + '</span>');
 
         if (ruleExist) rightAnswer = checkAnswer($thisId, $this.val());
     }

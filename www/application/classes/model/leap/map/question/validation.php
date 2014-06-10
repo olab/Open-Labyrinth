@@ -132,9 +132,6 @@ class Model_Leap_Map_Question_Validation extends DB_ORM_Model {
 
     public function deleteByQuestionId($questionId)
     {
-        $questionObj = $this->getRecord($questionId);
-        $this->id = $questionObj->id;
-        $this->load();
-        $this->delete();
+        DB_ORM::delete('Map_Question_Validation')->where('question_id', '=', $questionId)->execute();
     }
 }
