@@ -7,14 +7,14 @@ var submitTextQ = [],
     urlBase = window.location.origin + '/';
 
 $(document).ready(function(){
-    questions = $('textarea[name^="qresponse_"]');
+    questions = $('[name^="qresponse_"]');
     var goLink = $('a[href^="/renderLabyrinth/go"]');
 
     goLink.click(function(e){
 
         toNodeHref = e.currentTarget.href;
 
-        if(questions.length > 0){
+        if (questions.length > 0){
             var notSubmitTextQuestion = [];
 
             questions.each(function(){
@@ -136,12 +136,15 @@ $(document).ready(function(){
     });
 
     function validationCreate($this){
-        var value = $this.val(),
-            validatorName = $this.data('validator'),
-            errorMsg = $this.data('errormsg'),
-            parameter = $this.data('parameter'),
-            parameters = '',
-            validation = false;
+        var value           = $this.val(),
+            validatorName   = $this.data('validator'),
+            errorMsg        = $this.data('errormsg'),
+            parameter       = $this.data('parameter'),
+            parameters      = '',
+            validation      = false,
+            $thisId         = parseInt($this.prop('id').replace('qresponse_', ''));
+
+        submitTextQ.push($thisId);
 
         parameter = parameter.split(',');
         for (var i = 0; i < parameter.length; i++) {
@@ -158,7 +161,7 @@ $(document).ready(function(){
 
         if ( ! validation) $this.after('<span class="error-validation" style="color: red; margin-left: 5px;">' + errorMsg + '</span>');
 
-        if (ruleExist) rightAnswer = checkAnswer($this.prop('id').replace('qresponse_', ''), $this.val());
+        if (ruleExist) rightAnswer = checkAnswer($thisId, $this.val());
     }
 
     $('.drag-question-container').sortable({
