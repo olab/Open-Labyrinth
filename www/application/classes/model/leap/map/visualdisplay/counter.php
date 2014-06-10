@@ -142,5 +142,9 @@ class Model_Leap_Map_VisualDisplay_Counter extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
+
+    public function exportMVP($visualId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('visual_id', '=', $visualId)->query()->as_array();
+    }
 };
-?>

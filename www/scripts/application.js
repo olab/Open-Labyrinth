@@ -418,8 +418,7 @@ jQuery(document).ready(function(){
             href   = $(this).data('href').substring(1);
         $.get(
             urlBase + 'home/ajaxLogout/' + userId,
-            function(data){
-                console.log(data);
+            function(){
                 window.location.href = urlBase + href;
             }
         );
@@ -632,5 +631,27 @@ jQuery(document).ready(function(){
                 obj.after(ul);
             }
         );
+    }
+
+    var validatorSelect = $('.validator');
+    if (validatorSelect) {
+        validatorSelect.change(function(){
+            var $this        = $(this),
+                value        = $(this).val(),
+                errorMessage = $(this).parent().parent().next(),
+                parameter    = $this.find(":selected").data('parameter'),
+                nextElement  = $this.next(),
+                newInput     = '<input class="second_parameter" type="text" name="second_parameter" placeholder="@placeholder@">';
+
+            if (nextElement.hasClass('second_parameter')) nextElement.remove();
+
+            if (value == 'no validator') errorMessage.hide();
+
+            if (parameter) {
+                errorMessage.show();
+                if (parameter == 'range') $this.after(newInput.replace('@placeholder@', 'Enter min, max'));
+                else if (parameter != 'str') $this.after(newInput.replace('@placeholder@', 'Enter ' + parameter));
+            }
+        });
     }
 });

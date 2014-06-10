@@ -20,28 +20,40 @@
  */
 if (isset($templateData['map']) and isset($templateData['avatar'])) {
     ?>
-    <script type="text/javascript" language="javascript" src="<?php echo URL::base() ?>scripts/avatar.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.js"></script>
+    <script type="text/javascript" src="<?php echo URL::base().'scripts/farbtastic/farbtastic.js'; ?>"></script>
     <script type="text/javascript" language="javascript">
-        var urlBasePhp = '<?php echo URL::base(); ?>';
+        var urlBasePhp = '<?php echo substr(URL::base(), 1); ?>';
 
         window.onload = function () {
-            AvatarSetup({
-                <?php
-                $keys = array('skintone'=>'skin_1', 'clothcolor'=>'cloth', 'nose'=>'nose', 'hairtype'=>'hair', 'environment'=>'environment', 'accessory1'=>'accessory_1', 'accessory2'=>'accessory_2', 'accessory3'=>'accessory_3', 'sex'=>'sex', 'mouth'=>'mouth', 'outfit'=>'outfit', 'bubble'=>'bubble', 'bubbletext'=>'bubble_text', 'age'=>'age', 'eyes'=>'eyes', 'haircolor'=>'hair_color');
+            AvatarSetup({<?php
+                $keys = array(
+                    'skintone'      =>'skin_1',
+                    'clothcolor'    =>'cloth',
+                    'nose'          =>'nose',
+                    'hairtype'      =>'hair',
+                    'environment'   =>'environment',
+                    'accessory1'    =>'accessory_1',
+                    'accessory2'    =>'accessory_2',
+                    'accessory3'    =>'accessory_3',
+                    'sex'           =>'sex',
+                    'mouth'         =>'mouth',
+                    'outfit'        =>'outfit',
+                    'bubble'        =>'bubble',
+                    'bubbletext'    =>'bubble_text',
+                    'age'           =>'age',
+                    'eyes'          =>'eyes',
+                    'haircolor'     =>'hair_color'
+                );
                 $setupArray = null;
-                foreach($keys as $k => $v){
-                    if ($templateData['avatar']->$v != null){
-                        $setupArray[] = $k.': "'.$templateData['avatar']->$v.'"';
-                    }
+                foreach($keys as $k => $v)
+                {
+                    if ($templateData['avatar']->$v != null) $setupArray[] = $k.': "'.$templateData['avatar']->$v.'"';
                 }
-                if (count($setupArray) > 0){
-                    echo implode(',', $setupArray);
-                }
-                ?>
+                if (count($setupArray) > 0) echo implode(',', $setupArray); ?>
             });
         }
     </script>
+    <script type="text/javascript" language="javascript" src="<?php echo URL::base().'scripts/avatar.js'; ?>"></script>
     <div class="page-header">
         <h1>Avatar Editor: "<?php echo $templateData['avatar']->id; ?>"</h1></div>
     <?php if(isset($templateData['warningMessage'])){

@@ -25,7 +25,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Element extends DB_ORM_Model {
     private $mimes = array();
-    
+
     public function __construct() {
         parent::__construct();
 
@@ -422,25 +422,4 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
 
         return (copy($srcPath, $newPath)) ? $fileName : null;
     }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('map_id', '=', $mapId);
-
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $elements = array();
-            foreach($result as $record) {
-                $elements[] = $record;
-            }
-
-            return $elements;
-        }
-
-        return NULL;
-    }
 }
-
-?>

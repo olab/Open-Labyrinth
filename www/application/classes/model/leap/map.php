@@ -881,20 +881,6 @@ class Model_Leap_Map extends DB_ORM_Model
         }
     }
 
-    public function exportMVP($mapId){
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('id', '=', $mapId);
-
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return $result[0];
-        }
-
-        return NULL;
-    }
-
     public function getAllowedMap($userId)
     {
         $result = DB_SQL::select('default', array(DB_SQL::expr('m.id')))

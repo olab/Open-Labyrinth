@@ -49,29 +49,20 @@ class Controller_VisualDisplayManager extends Controller_Base {
         parent::before();
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', null);
         
-        if($mapId != null) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['displays'] = DB_ORM::model('map_visualdisplay')->getMapDisplays($mapId);
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Display')));
+        $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
+        $this->templateData['displays'] = DB_ORM::model('map_visualdisplay')->getMapDisplays($mapId);
+        $this->templateData['center']   = View::factory('labyrinth/display/view')->set('templateData', $this->templateData);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
 
-            $view = View::factory('labyrinth/display/view');
-            $view->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $view;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Display')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
     }
     
     public function action_display()

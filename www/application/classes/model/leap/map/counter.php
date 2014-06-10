@@ -221,22 +221,6 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return $counterMap;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $counters = array();
-            foreach($result as $record) {
-                $counters[] = $record;
-            }
-
-            return $counters;
-        }
-
-        return NULL;
-    }
-
     /**
      * @param $points string with value of all counters and main counter max_value
      * @param $map_id
@@ -278,5 +262,3 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return $status;
     }
 }
-
-?>

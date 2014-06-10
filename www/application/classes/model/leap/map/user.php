@@ -292,22 +292,6 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         foreach($this->getAllUsers($fromMapId) as $user) $this->addUser($toMapId, $user->id);
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $users = array();
-            foreach($result as $record) {
-                $users[] = $record;
-            }
-
-            return $users;
-        }
-
-        return NULL;
-    }
-
     public function assignOrNot ($mapId, $userId)
     {
         $assignUser = DB_ORM::select('Map_User')->where('user_id', '=', $userId)->where('map_id', '=', $mapId)->query()->fetch(0);

@@ -27,7 +27,7 @@ class ImportExport_Manager {
      * @param string $format
      * @return ImportExport_FormatSystem 
      */
-    public static function  getFormatSystem($format) {
+    public static function getFormatSystem($format) {
         $result = null;
         
         switch($format) {
@@ -41,5 +41,3 @@ class ImportExport_Manager {
         return $result;
     }
 }
-
-?>

@@ -162,21 +162,8 @@ class Model_Leap_Map_Counter_Rule extends DB_ORM_Model {
         }
     }
 
-    public function exportMVP($counterId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('counter_id', '=', $counterId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $rules = array();
-            foreach($result as $record) {
-                $rules[] = $record;
-            }
-
-            return $rules;
-        }
-
-        return NULL;
+    public function exportMVP($counterId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('counter_id', '=', $counterId)->query()->as_array();
     }
 }
-
-?>

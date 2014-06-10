@@ -81,74 +81,89 @@ class Controller_QuestionManager extends Controller_Base {
         $map        = DB_ORM::model('map', array((int)$mapId));
         $type       = DB_ORM::model('map_question_type', array((int) $typeId));
 
-        if($map != null && $type != null)
+        if ( ! ($map AND $type)) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('Map')->editRight($mapId);
+
+        $this->templateData['map']          = DB_ORM::model('map', array((int)$mapId));
+        $this->templateData['type']         = DB_ORM::model('map_question_type', array((int) $typeId));
+        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+        $this->templateData['validation']   = DB_ORM::model('Map_Question_Validation')->getRecord($questionId);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
+
+        if ($questionId != null)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
+            $questionObj = DB_ORM::model('map_question', array((int)$questionId));
 
-            $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['type']     = DB_ORM::model('map_question_type', array((int) $typeId));
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-            $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+            $this->templateData['question'] = $questionObj;
+            $this->templateData['used']     = count(DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU'));
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
-            
-            if($questionId != null)
+            if ($questionObj->settings)
             {
-                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
-                $this->templateData['question'] = DB_ORM::model('map_question', array((int)$questionId));
-                $usedElements = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
-                $this->templateData['used'] = count($usedElements);
+                $jsonSettings = json_decode($questionObj->settings);
+                $this->templateData['questionSettings'] = $jsonSettings;
 
-                if($this->templateData['question']->settings != null)
+                if ($questionObj->type->value == 'area' OR $questionObj->type->value == 'text')
                 {
-                    $this->templateData['questionSettings'] = json_decode($this->templateData['question']->settings);
-                    if ($this->templateData['question']->type->value == 'area' || $this->templateData['question']->type->value == 'text') {
-                        $this->templateData['isCorrect'] = $this->templateData['questionSettings'][1];
-                        if (isset($this->templateData['questionSettings'][0])) $this->templateData['question']->settings = $this->templateData['questionSettings'][0];
-                    }
+                    $this->templateData['isCorrect'] = Arr::get($jsonSettings, 1, 0);
+                    $this->templateData['question']->settings = Arr::get($jsonSettings, 0, '');
                 }
             }
-            else Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
-
-            $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
-            $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
         }
-        else Request::initial()->redirect(URL::base());
+        else Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
+
+        if ($type->value == 'area' OR $type->value == 'text')
+        {
+            $validation = DB_ORM::model('Map_Question_Validation');
+            $validators = array_merge($validation->one_parameter, $validation->two_parameter, $validation->three_parameter);
+            ksort($validators);
+            $this->templateData['validators'] = $validators;
+        }
+
+        $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
+        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
     
     public function action_questionPOST()
     {
-        $post       = $this->request->post();
-        $mapId      = $this->request->param('id', 0);
-        $postType   = Arr::get($post, 'question_type', null);
-        $typeId     = ($postType != null) ? $postType : $this->request->param('id2', 0);
-        $questionId = $this->request->param('id3', 0);
-        $map        = DB_ORM::model('map', array((int)$mapId));
-        $type       = DB_ORM::model('map_question_type', array((int)$typeId));
+        $post             = $this->request->post();
+        $mapId            = $this->request->param('id', 0);
+        $postType         = Arr::get($post, 'question_type', null);
+        $validator        = Arr::get($post, 'validator');
+        $secondParameter  = Arr::get($post, 'second_parameter');
+        $errorMessage     = Arr::get($post, 'error_message');
+        $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
+        $questionId       = $this->request->param('id3', 0);
+        $map              = DB_ORM::model('map', array((int)$mapId));
+        $type             = DB_ORM::model('map_question_type', array((int)$typeId));
 
-        if ($post != null && $map != null && $type != null)
-        {
-            if (isset($_POST['isCorrect'])) $post['settings'] = json_encode(array($post['settings'], $post['isCorrect']));
+        if ( ! ($post AND $map AND $type)) Request::initial()->redirect(URL::base());
 
-            if ($questionId == null || $questionId <= 0) DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
-            else
-                {
-                    $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
-                    $privete = Arr::get($post, 'is_private');
-                    if($references != NULL && $privete){
-                        $ses = Session::instance();
-                        $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
-                        $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
-                        $post['is_private'] = FALSE;
-                    }
-                    DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
-                }
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+        $post['settings'] = json_encode(array($post['settings'], $post['isCorrect']));
+
+        if ($questionId) {
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
+            $private = Arr::get($post, 'is_private');
+
+            if($references != NULL && $private){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
+                $post['is_private'] = FALSE;
+            }
+
+            DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
         }
-        else Request::initial()->redirect(URL::base());
+        else $questionId = DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
+
+        if ($validator == 'no validator') DB_ORM::model('Map_Question_Validation')->deleteByQuestionId($questionId);
+        else DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter, $errorMessage);
+        Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
     }
 
     public function action_deleteQuestion()

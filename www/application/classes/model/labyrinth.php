@@ -32,7 +32,7 @@ class Model_Labyrinth extends Model {
 
         if ($node)
         {
-            if ($node->kfp) $matches = $this->getMatch($nodeId);
+            if ($node->kfp) $matches = NULL; // if delete matches, program throw exception 6.6.2014
 
             $result['node']         = $node;
             $result['map']          = DB_ORM::model('map', array((int) $node->map_id));
@@ -42,7 +42,7 @@ class Model_Labyrinth extends Model {
 
             $clearAnnotation = strip_tags($node->annotation, '<img>');
 
-            if ($this->checkUser($node->map_id, true) & (strlen($clearAnnotation) > 0))  $result['node_annotation'] = $node->annotation;
+            if ($this->checkUser($node->map_id, true) AND (strlen($clearAnnotation) > 0)) $result['node_annotation'] = $node->annotation;
 
             $sessionId = NULL;
             if ($bookmark != NULL)
@@ -115,6 +115,7 @@ class Model_Labyrinth extends Model {
                     }
                     else
                     {
+                        $result['jsonRule'] = $c['jsonRule'];
                         $result['counters'] = $c['counterString'];
                         $result['c_debug'] = array_replace_recursive($c['c_debug'], $result['c_debug']);
                         $result['redirect'] = $c['redirect'];
@@ -268,10 +269,6 @@ class Model_Labyrinth extends Model {
         return FALSE;
     }
 
-    private function getMatch($nodeId) {
-        return NULL;
-    }
-
     private function generateLinks ($node, $section)
     {
         if (count($node->links) > 0)
@@ -421,6 +418,18 @@ class Model_Labyrinth extends Model {
             $counterIDs = $questionChoices['counter_ids'];
             unset($questionChoices['counter_ids']);
         }
+
+        $sctResponses = Session::instance()->get('sctResponses', array());
+        foreach ($sctResponses as $idQuestion=>$idResponse)
+        {
+            DB_ORM::insert('User_Response')
+                ->column('question_id', $idQuestion)
+                ->column('response', $idResponse)
+                ->column('session_id', $sessionId)
+                ->column('node_id', $nodeId)
+                ->execute();
+        }
+        Session::instance()->delete('sctResponses');
 
         $counterString = $this->getCounterString($mapID);
         if (count($questionChoices) > 0){
@@ -581,19 +590,8 @@ class Model_Labyrinth extends Model {
             }
         }
 
-        $sctResponses = Session::instance()->get('sctResponses', array());
-        foreach ($sctResponses as $idQuestion=>$idResponse)
-        {
-            DB_ORM::insert('User_Response')
-                ->column('question_id', $idQuestion)
-                ->column('response', $idResponse)
-                ->column('session_id', $sessionId)
-                ->column('node_id', $nodeId)
-                ->execute();
-        }
-        Session::instance()->delete('sctResponses');
-
         Session::instance()->delete('arrayAddedQuestions');
+
         return $c_debug;
     }
 
@@ -770,6 +768,8 @@ class Model_Labyrinth extends Model {
 
                 $redirect = NULL;
                 $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
+                $jsonRule = array();
+
                 if (count($commonRules) > 0){
                     $values = array();
                     if (count($countersArray) > 0){
@@ -782,6 +782,21 @@ class Model_Labyrinth extends Model {
                     $stopRules = Session::instance()->get('stopCommonRules', array());
                     foreach($commonRules as $rule){
                         if (!in_array('RULE_'.$rule->id, $stopRules)){
+
+                            preg_match_all('/QU_ANSWER:(?<id>[^\]]*)\]\]\s*,\s*\'(?<response>[^\']*)/', $rule->rule, $matches);
+
+                            // prepare response for $jsonRule
+                            foreach(Arr::get($matches, 'response', array()) as $index=>$response)
+                            {
+                                if ($rule->lightning)
+                                {
+                                    $response = str_replace('[', '', $response);
+                                    $response = str_replace(']', '', $response);
+                                    $response = str_replace('"', '', $response);
+                                    $jsonRule[$response] = $matches['id'][$index];
+                                }
+                            }
+
                             $array = $runtimelogic->parsingString($rule->rule, $sessionId);
                             $c_debug['global_rules'][$rule->id] = $array;
                             $resultLogic = $array['result'];
@@ -851,6 +866,7 @@ class Model_Labyrinth extends Model {
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                 DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
+                Session::instance()->delete('questionChoices');
                 if ($redirect != NULL && $redirect != $node->id){
                     Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
                 }
@@ -860,6 +876,7 @@ class Model_Labyrinth extends Model {
                     'counterString' => $counterString,
                     'redirect' => $redirect,
                     'remote' => $remoteCounterString,
+                    'jsonRule' => json_encode($jsonRule)
                 );
             }
             return '';
@@ -1189,9 +1206,7 @@ class Model_Labyrinth extends Model {
                     $qChoices[$questionId][$response]['score'] = $responseObj->score;
                     $qChoices[$questionId][$response]['response'] = $responseObj->response;
                 } else {
-                    if (isset($qChoices[$questionId][$response])){
-                        unset($qChoices[$questionId][$response]);
-                    }
+                    if (isset($qChoices[$questionId][$response])) unset($qChoices[$questionId][$response]);
                 }
 
                 $qChoices['counter_ids'][$questionId] = $question->counter_id;
@@ -1202,17 +1217,18 @@ class Model_Labyrinth extends Model {
                     Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
                 }
             }
-
             Session::instance()->set('questionChoices', json_encode($qChoices));
 
-            if ($question->show_answer) {
-                if ($question->type->value != 'text' and $question->type->value != 'area') {
+            if ($question->show_answer)
+            {
+                if ($question->type->value != 'text' and $question->type->value != 'area')
+                {
                     switch ($responseObj->is_correct){
                         case 0:
-                            $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
+                            $returnStr .= '<img src="'.URL::base().'images/cross.jpg"> ';
                             break;
                         case 1:
-                            $returnStr .= '<img src="' . URL::base() . 'images/tick.jpg"> ';
+                            $returnStr .= '<img src="'.URL::base().'images/tick.jpg"> ';
                             break;
                     }
                     $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('(' . $responseObj->feedback . ')') : '');

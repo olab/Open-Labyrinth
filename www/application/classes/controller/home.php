@@ -335,28 +335,24 @@ class Controller_Home extends Controller_Base {
         }
     }
 
-    public function action_historyAjaxCollaboration() {
-        $this->auto_render = false;
-        $usersInformation = json_decode($this->templateData['historyOfAllUsers'], true);
-        $result = array();
-        $user = $this->templateData['username'];
-        $userArray = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
-        $uri = Arr::get($userArray, 'href', NULL);
+    public function action_historyAjaxCollaboration()
+    {
+        $this->auto_render  = false;
+        $usersInformation   = json_decode($this->templateData['historyOfAllUsers'], true);
+        $result             = array();
+        $user               = $this->templateData['username'];
+        $userArray          = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
+        $uri                = Arr::get($userArray, 'href', NULL);
 
-        if ($userArray != NULL) {
+        if ($userArray) {
             if ($uri != NULL) {
-                foreach ($usersInformation as $key => $value) {
-                    if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) {
-                        $result[$value['id']] = $value['username'];
-                    }
+                foreach ($usersInformation as $value) {
+                    if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) $result[$value['id']] = $value['username'];
                 }
             }
-        } else {
-            $result['reloadPage'] = 1;
         }
-
-        echo json_encode($result);
-        exit;
+        if ($uri == 'kick') $result['reloadPage'] = 1;
+        exit(json_encode($result));
     }
 
 }

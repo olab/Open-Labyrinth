@@ -1,0 +1,1 @@
+ALTER TABLE  `map_counter_common_rules` ADD  `lightning` INT NOT NULL AFTER  `rule` ;

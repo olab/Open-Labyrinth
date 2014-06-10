@@ -74,14 +74,20 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     
     public function createResponse($sessionId, $questionId, $response, $nodeId = null)
     {
-        if ( ! $sessionId) return;
+        return DB_ORM::insert('User_Response')
+            ->column('question_id', $questionId)
+            ->column('session_id', $sessionId)
+            ->column('response', $response)
+            ->column('node_id', $nodeId)
+            ->execute();
+    }
 
-        $this->question_id = $questionId;
-        $this->session_id = $sessionId;
-        $this->response = $response;
-        $this->node_id = $nodeId;
-
-        $this->save();
+    public function updateById($id, $response)
+    {
+        DB_ORM::update('User_Response')
+            ->set('response', $response)
+            ->where('id', '=', $id)
+            ->execute();
     }
     
     public function updateResponse($sessionId, $questionId, $response, $nodeId)
@@ -181,5 +187,3 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return $responses;
     }
 }
-
-?>

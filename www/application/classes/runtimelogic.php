@@ -42,67 +42,48 @@ class RunTimeLogic {
             $r               = array();
             $pattern         = '(.*?);\s*(?=IF|\s*$)';
 
-            if ($c = preg_match_all("/".$pattern."/is", $string, $matches))
+            preg_match_all("/".$pattern."/is", $string, $matches);
+
+            if (count($matches[0]) > 0)
             {
-                if (count($matches[0]) > 0)
-                {
-                    foreach($matches[0] as $newIF){
-                        $resultCon = $this->replaceConditions($newIF);
-                        $resultStr = $this->replaceFunctions($resultCon);
-                        ob_start();
-                        $result = eval($resultStr['str']);
-                        $checkErrors = ob_get_contents();
-                        ob_end_clean();
+                foreach($matches[0] as $newIF){
+                    $resultCon = $this->replaceConditions($newIF);
+                    $resultStr = $this->replaceFunctions($resultCon);
+                    ob_start();
+                    $finalResult = eval($resultStr['str']);
+                    $checkErrors = ob_get_contents();
+                    ob_end_clean();
 
-                        if ($checkErrors != '') $this->errors[] = $newIF;
-                        else
+                    if ($checkErrors != '') $this->errors[] = $newIF;
+                    else
+                    {
+                        if (isset($finalResult['counters']) AND (count($finalResult['counters']) > 0))
                         {
-                            if (isset($result['counters'])){
-                                if (count($result['counters']) > 0){
-                                    foreach($result['counters'] as $key => $value){
-                                        $this->values[$key] = $value;
-                                        $changedCounters[$key] = $value;
-                                    }
-                                }
-                            }
-
-                            $finalResult = array_merge($result, $finalResult);
-                            if (isset($finalResult['stop'])){
-                                if ($finalResult['stop'] == 1){
-                                    break;
-                                }
-                            }
-
-                            if (isset($finalResult['break'])){
-                                if ($finalResult['break'] == 1){
-                                    break;
-                                }
+                            foreach($finalResult['counters'] as $key => $value)
+                            {
+                                $this->values[$key] = $value;
+                                $changedCounters[$key] = $value;
                             }
                         }
-                    }
-                    $finalResult['counters'] = $changedCounters;
-                } else {
-                    $parseFullString = true;
-                }
-            } else {
-                $parseFullString = true;
-            }
 
-            if ($parseFullString){
+                        if (isset($finalResult['stop']) AND ($finalResult['stop'] == 1)) break;
+                        if (isset($finalResult['break']) AND ($finalResult['break'] == 1)) break;
+                    }
+                }
+                $finalResult['counters'] = $changedCounters;
+            } else $parseFullString = true;
+
+            if ($parseFullString)
+            {
                 $resultCon = $this->replaceConditions($string);
                 $resultStr = $this->replaceFunctions($resultCon);
                 ob_start();
                 $finalResult = @eval($resultStr['str']);
                 $checkErrors = ob_get_contents();
                 ob_end_clean();
-                if ($checkErrors != ''){
-                    $this->errors[] = $string;
-                }
+                if ($checkErrors != '') $this->errors[] = $string;
             }
 
-            if (empty($finalResult)){
-                $finalResult = null;
-            }
             $array['result'] = $finalResult;
             $array['errors'] = $this->errors;
             return $array;
@@ -310,17 +291,15 @@ class RunTimeLogic {
         else
         {
             $sessionId = Session::instance()->get('session_id', $id);
+            $questionType = DB_ORM::model('Map_Question', array($id))->entry_type_id;
             $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id, $nodesId);
             $numberOfResponses = count($responses);
 
-            if ($responses != null && $numberOfResponses > 1) {
-                foreach ($responses as $key => $value) {
-                    $return[] = $value->response;
-                }
-            } elseif ($numberOfResponses == 1) {
-                foreach ($responses as $key => $value) {
-                    $return = $value->response;
-                }
+            foreach ($responses as $value) {
+                $response = $value->response;
+                if ($questionType == 7) $response = DB_ORM::model('Map_Question_Response', array($response))->response;
+                if ($numberOfResponses > 1) $return[] = $response;
+                else $return = $response;
             }
         }
         return $return;
@@ -360,16 +339,12 @@ class RunTimeLogic {
         $resultStr = null;
         $actionArray = explode(',', $matches[2]);
 
-        if (count($actionArray) > 0){
-            foreach($actionArray as $action){
-                $resultStr .= $this->parseAction($action);
-            }
+        foreach($actionArray as $action)
+        {
+            $resultStr .= $this->parseAction($action);
         }
-        if ($matches[1] == 'THEN'){
-            $resultStr = ' ) { '.$resultStr;
-        } else{
-            $resultStr = ' } else { '.$resultStr;
-        }
+
+        $resultStr = (($matches[1] == 'THEN') ? ' ) { ' : ' } else { ').$resultStr;
         return $resultStr;
     }
 
@@ -379,6 +354,7 @@ class RunTimeLogic {
         $returnString   = '';
         $posCR          = strpos($str, '[[CR:');
         $posCOND        = strpos($str, '[[COND:');
+        $posAnswer      = strpos($str, '[[QU_ANSWER:');
         $posDEACTIVATE  = strpos($str, 'DEACTIVATE');
         $posGOTO        = strpos($str, 'GOTO');
         $posNOENTRY     = strpos($str, 'NO-ENTRY');
@@ -387,55 +363,68 @@ class RunTimeLogic {
         $posCorrect     = strpos($str, 'CORRECT');
         $posIncorrect   = strpos($str, 'INCORRECT');
 
-        if ($posCR !== false){
-            $result = null;
-            $id = null;
-            $pattern = '\\[\\[CR:(\d+)\\]\\]\s*=';
-            if ($c=preg_match_all ("/".$pattern."/is", $str, $matches)){
-                if (count($matches[0]) > 0){
-                    $id = $matches[1][0];
-                }
+        // replace answer must be first
+        if ($posAnswer !== false)
+        {
+            $mark       = substr($str, $posAnswer);
+            $sessionId  = Arr::get($_SESSION, 'session_id', 0);
+            $questionId = preg_replace('/[^0-9]/', '', $mark);
+            $responses  = DB_ORM::model('User_Response')->getResponse($sessionId, $questionId);
+            $response   = array_pop($responses);
+            if ($response)
+            {
+                $response = '\''.$response->response.'\'';
+                $response = str_replace('"', '', $response);
             }
+            $str        = str_replace($mark, $response, $str);
+        }
+
+        if ($posCR !== false)
+        {
+            $result  = null;
+            $id      = null;
+            $pattern = '\\[\\[CR:(\d+)\\]\\]\s*=';
+            preg_match_all ("/".$pattern."/is", $str, $matches);
+
+            if (count($matches[0]) > 0) $id = $matches[1][0];
+
             $posEqual = strpos($str, '=');
-            if ($posEqual !== false){
+            if ($posEqual !== false)
+            {
                 $str = substr($str, $posEqual + 1, strlen($str));
                 $resultArray = $this->replaceFunctions($str);
-                if ($resultArray['error'] == false){
+                if ($resultArray['error'] == false)
+                {
                     ob_start();
                     $result = eval('return '.$resultArray['str'].';');
                     $checkErrors = ob_get_contents();
                     ob_end_clean();
-                    if ($checkErrors != ''){
-                        $this->errors[] = $startStr;
-                    }
-
+                    if ($checkErrors != '') $this->errors[] = $startStr;
                 }
             }
             $returnString = ' $r["counters"]["'.$id.'"] ==== "'.$result.'"; ';
         }
         elseif ($posCOND !== false)
         {
-            $result = null;
-            $id = null;
+            $result  = null;
+            $id      = null;
             $pattern = '\\[\\[COND:(\d+)\\]\\]\s*=';
-            if (preg_match_all ("/".$pattern."/is", $str, $matches)){
-                if (count($matches[0]) > 0){
-                    $id = $matches[1][0];
-                }
-            }
+            preg_match_all ("/".$pattern."/is", $str, $matches);
+
+            if (count($matches[0]) > 0) $id = $matches[1][0];
+
             $posEqual = strpos($str, '=');
-            if ($posEqual !== false){
+            if ($posEqual !== false)
+            {
                 $str = substr($str, $posEqual + 1, strlen($str));
                 $resultArray = $this->replaceFunctions($str);
-                if ($resultArray['error'] == false){
+                if ($resultArray['error'] == false)
+                {
                     ob_start();
                     $result = eval('return '.$resultArray['str'].';');
                     $checkErrors = ob_get_contents();
                     ob_end_clean();
-                    if ($checkErrors != ''){
-                        $this->errors[] = $startStr;
-                    }
-
+                    if ($checkErrors != '') $this->errors[] = $startStr;
                 }
             }
             $returnString = ' $r["conditions"]["'.$id.'"] ==== "'.$result.'"; ';
@@ -445,11 +434,10 @@ class RunTimeLogic {
             $id = null;
 
             $pattern = 'GOTO\s*\\[\\[NODE:(\d+)\\]\\]';
-            if ($c=preg_match_all ("/".$pattern."/is", $str, $matches)){
-                if (count($matches[0]) > 0){
-                    $id = $matches[1][0];
-                }
-            }
+            preg_match_all ("/".$pattern."/is", $str, $matches);
+
+            if (count($matches[0]) > 0) $id = $matches[1][0];
+
             $returnString = ' $r["goto"] ==== "'.$id.'"; ';
         }
         elseif ($posDEACTIVATE !== false)
@@ -457,39 +445,34 @@ class RunTimeLogic {
             $id = null;
 
             $pattern = 'DEACTIVATE\s*\\[\\[NODE:(\d+)\\]\\]';
-            if (preg_match_all ("/".$pattern."/is", $str, $matches))
-            {
-                if (count($matches[0]) > 0){
-                    $id = $matches[1][0];
-                }
-            }
+            preg_match_all ("/".$pattern."/is", $str, $matches);
+
+            if (count($matches[0]) > 0) $id = $matches[1][0];
+
             $returnString = ' $r["deactivate"] ==== "'.$id.'"; ';
         }
-        elseif ($posNOENTRY !== false) {
-            $returnString = ' $r["no-entry"] ==== "1"; ';
-        } elseif ($posBREAK !== false){
-            $returnString = ' $r["break"] ==== "1"; return $r; ';
-        } elseif ($posSTOP !== false){
-            $returnString = ' $r["stop"] ==== "1"; return $r; ';
-        } elseif ($posIncorrect !== false){
-            $returnString = ' $r["incorrect"] ==== "1"; ';
-        } elseif ($posCorrect !== false){
-            $returnString = ' $r["correct"] ==== "1"; ';
-        }
+        elseif ($posNOENTRY !== false)      $returnString = ' $r["no-entry"] ==== "1"; ';
+        elseif ($posBREAK !== false)        $returnString = ' $r["break"] ==== "1"; return $r; ';
+        elseif ($posSTOP !== false)         $returnString = ' $r["stop"] ==== "1"; return $r; ';
+        elseif ($posIncorrect !== false)    $returnString = ' $r["incorrect"] ==== "1"; ';
+        elseif ($posCorrect !== false)      $returnString = ' $r["correct"] ==== "1"; ';
+
         return $returnString;
     }
 
-    public function strposa($haystack, $needle, $offset=0) {
-        if (is_array($needle)) {
-            foreach ($needle as $key => $value) {
-                if (strpos($haystack, $value) !== false) {
-                    return true;
-                }
-            }
-        }else {
-            if (strpos($haystack, $needle) !== false) {
-                return true;
+    public function strposa($haystack, $needle)
+    {
+        if (is_array($needle))
+        {
+            foreach ($needle as $value)
+            {
+                if (strpos($haystack, $value) !== false) return true;
             }
         }
+        else
+        {
+            if (strpos($haystack, $needle) !== false) return true;
+        }
+        return false;
     }
 }

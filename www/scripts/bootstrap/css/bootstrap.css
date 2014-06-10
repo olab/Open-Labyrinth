@@ -6246,3 +6246,13 @@ input.patient-type-js {
 #discardReload {
     margin: 10px 15px;
 }
+
+input.lightning-chb {
+    position: relative;
+    margin-right: 5px;
+    top: -3px;
+}
+
+.second_parameter {
+    margin-left: 10px;
+}

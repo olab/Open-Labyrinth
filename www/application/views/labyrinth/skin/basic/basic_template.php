@@ -22,40 +22,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php if (isset($templateData['node_title'])) echo $templateData['node_title']; ?></title>
+    <title><?php echo Arr::get($templateData, 'node_title'); ?></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-ui-1.9.1.custom.min.js"></script>
-    <script type="text/javascript" src="<?php echo URL::base().'scripts/jquery-ui-touch-punch.min.js'; ?>"></script>
 
-    <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxcommon.js"></script>
-    <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.js"></script>
-    <script  src="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js"></script>
-    <script  src="<?php echo URL::base(); ?>scripts/visualeditor/base64v1_0.js"></script>
+    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/skin/basic/layout.css'); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/css/bootstrap-modal.css'); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>"/>
+    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.css'); ?>">
 
-    <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css"/>
-    <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>" />
-    <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
-    <!--<script  src="--><?php //echo URL::base(); ?><!--scripts/bootstrap/js/bootstrap.js"></script>-->
-    <script  src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
-
-    <script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-1.7.2.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-touch-punch.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modal.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modalmanager.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/validator.min.js'); ?>"></script>
+    <script language="javascript">
         var idNode      = <?php echo $templateData['node']->id; ?>,
             idPatients  = '<?php
-            $ids = array();
-            foreach (Arr::get($templateData, 'patients', array()) as $id=>$patient)
-            {
-                $ids[] = $id;
-            }
-            echo json_encode($ids); ?>',
-            pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>;
-    </script>
-    <script  src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
+                    $ids = array();
+                    foreach (Arr::get($templateData, 'patients', array()) as $id=>$patient)
+                    {
+                        $ids[] = $id;
+                    }
+                    echo json_encode($ids); ?>',
+            pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>,
+            jsonRule    = '<?php echo Arr::get($templateData, 'jsonRule'); ?>';
 
-    <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/dhtmlxSlider/codebase/dhtmlxslider.css">
-
-    <script language="javascript">
         $(document).ready(function()
         {
             var rem = '';
@@ -86,13 +83,6 @@
 
         <?php }?>
 
-            $(".clearQuestionPrompt").focus(function(){
-                if (!$(this).hasClass('cleared')){
-                    $(this).val('');
-                    $(this).text('');
-                    $(this).addClass('cleared');
-                }
-            });
         });
 
         function Populate(form) {
@@ -288,50 +278,6 @@
                 $(object).css('width', maxWidth);
                 $(object).parent().css('width', maxWidth);
                 $(object).css('height', maxHeight);
-            });
-
-            $('.drag-question-container').sortable({
-                axis: "y",
-                cursor: "move",
-                create: function(event, ui) {
-                    dragAndDropPost($(this));
-                },
-                stop: function(event, ui) {
-                    dragAndDropPost($(this));
-                }
-            });
-
-            function dragAndDropPost(obj) {
-                var questionId      = obj.attr('questionId'),
-                    responsesObject = [];
-
-                obj.children().each(function(index, value) {
-                    responsesObject.push($(value).attr('responseId'));
-                });
-                $.post('<?php echo URL::base(); ?>renderLabyrinth/ajaxDraggingQuestionResponse', {
-                    questionId: questionId,
-                    responsesJSON: JSON.stringify(responsesObject)
-                }, function(data) {});
-            }
-
-            $('.sct-question').on('change', function(){
-                var idQuestion = $(this).data('question');
-
-                if($(this).hasClass('disposable')){
-                    $('.sct-question').each(function(i, v){
-                        var current = $('.sct-question').eq(i);
-                        if(current.data('question') == idQuestion) current.prop('disabled', true);
-                    });
-                }
-
-                $.post(
-                    '<?php echo URL::base(); ?>renderLabyrinth/ajaxScriptConcordanceTesting',
-                    {
-                        idResponse: $(this).data('response'),
-                        idQuestion: idQuestion
-                    },
-                    function(data){}
-                );
             });
         });
     </script>

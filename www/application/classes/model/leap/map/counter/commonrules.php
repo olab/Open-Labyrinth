@@ -45,6 +45,11 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
                 'savable' => TRUE,
             )),
 
+            'lightning' => new DB_ORM_Field_Integer($this, array(
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+
             'isCorrect' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 1,
                 'savable' => TRUE,
@@ -75,64 +80,37 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
     
     public function getRulesByMapId($mapId, $type = '')
     {
-        $rules = array();
+        $result = DB_ORM::select('map_counter_commonrules')->where('map_id', '=', $mapId);
 
-        if ($type == 'all')
-        {
-            $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        }
-        else
-        {
-            $builder = DB_SQL::select('default')->from($this->table())
-                ->where('map_id', '=', $mapId)
-                ->where('isCorrect' , '=', 1);
-        }
+        if ($type != 'all') $result->where('isCorrect' , '=', 1);
 
-        $result = $builder->query();
-
-        foreach ($result as $record) {
-            $rules[] = DB_ORM::model('map_counter_commonrules', array((int)$record['id']));
-        }
-            
-        return $rules;
+        return $result->query()->as_array();
     }
     
-    public function addRule($mapId, $rule, $isCorrect) {
+    public function addRule($mapId, $rule, $isCorrect, $lightning)
+    {
         $this->map_id = $mapId;
         $this->rule = $rule;
+        $this->lightning = $lightning;
         $this->isCorrect = $isCorrect;
 
         $this->save();
     }
 
-    public function editRule($ruleId, $rule, $isCorrect) {
+    public function editRule($ruleId, $rule, $isCorrect, $lightning)
+    {
         $this->id = $ruleId;
         $this->load();
 
         if ($this->is_loaded()){
             $this->rule = $rule;
+            $this->lightning = $lightning;
             $this->isCorrect = $isCorrect;
 
             $this->save();
             return true;
         }
         return false;
-    }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $rules = array();
-            foreach($result as $record) {
-                $rules[] = $record;
-            }
-
-            return $rules;
-        }
-
-        return NULL;
     }
 
     public function duplicateRule($oldMapId, $newMapId, $counterMap, $nodeMap, $questionMap)

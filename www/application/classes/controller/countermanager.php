@@ -343,16 +343,6 @@ class Controller_CounterManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_createCommonRule(){
-        $mapId = $this->request->param('id', NULL);
-        if ($_POST & $mapId != NULL) {
-            DB_ORM::model('map_counter_commonrules')->addRule($mapId, $_POST['commonRule'], $_POST['isCorrect']);
-            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
     public function action_editCommonRule(){
         $mapId = $this->request->param('id', NULL);
         $ruleId = $this->request->param('id2', NULL);
@@ -406,15 +396,22 @@ class Controller_CounterManager extends Controller_Base {
         }
     }
 
-    public function action_saveCommonRule(){
-        $mapId = $this->request->param('id', NULL);
-        $ruleId = $this->request->param('id2', NULL);
-        if ($_POST & $mapId != NULL & $ruleId != NULL) {
-            DB_ORM::model('map_counter_commonrules')->editRule($ruleId, $_POST['commonRule'], $_POST['isCorrect']);
-            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+    public function action_updateCommonRule()
+    {
+        $mapId       = $this->request->param('id', false);
+        $ruleId      = $this->request->param('id2', false);
+        $post        = $this->request->post();
+        $ruleText    = Arr::get($post, 'commonRule', '');
+        $ruleCorrect = Arr::get($post, 'isCorrect', 0);
+        $lightning   = Arr::get($post, 'lightning');
+        $lightning   = $lightning == 'on' ? 1 : 0;
+
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
+
+        $ruleId ? DB_ORM::model('map_counter_commonrules')->editRule($ruleId, $ruleText, $ruleCorrect, $lightning)
+                : DB_ORM::model('map_counter_commonrules')->addRule($mapId, $ruleText, $ruleCorrect, $lightning);
+
+        Request::initial()->redirect(URL::base().'counterManager/rules/'.$mapId);
     }
 
     public function action_deleteCommonRule()

@@ -73,10 +73,7 @@ class Controller_ExportImportManager extends Controller_Base {
 
     public function action_importMVP() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Import MedBiquitous VP'))->set_url(URL::base() . 'exportimportmanager/importMVP'));
-
         $this->templateData['center'] = View::factory('labyrinth/import/mvp');
-        unset($this->templateData['left']);
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -95,45 +92,35 @@ class Controller_ExportImportManager extends Controller_Base {
         Request::initial()->redirect(URL::base());
     }
 
-    public function action_exportMVP() {
+    public function action_exportMVP()
+    {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Export Medbiquitous ANSI'))->set_url(URL::base() . 'exportimportmanager/exportMVP'));
-        if (Auth::instance()->get_user()->type->name == 'superuser') {
-            $maps = DB_ORM::model('map')->getAllEnabledMap();
-        } else {
-            $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
-        }
-        $this->templateData['maps'] = $maps;
 
-        $this->templateData['center'] = View::factory('labyrinth/export/mvp');
-        $this->templateData['center']->set('templateData', $this->templateData);
+        $this->templateData['maps'] = (Auth::instance()->get_user()->type->name == 'superuser')
+            ? DB_ORM::model('map')->getAllEnabledMap()
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
 
-        unset($this->templateData['left']);
-        unset($this->templateData['right']);
-
+        $this->templateData['center'] = View::factory('labyrinth/export/mvp')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_exportMVPMap() {
+    public function action_exportMVPMap()
+    {
         $mapId = $this->request->param('id', 0);
-        if($mapId > 0) {
-            $params = array();
-            $map = DB_ORM::model('map', array((int) $mapId));
-            $params['mapId'] = $mapId;
-            $params['mapName'] = $map->name;
-            $path = ImportExport_Manager::getFormatSystem('MVP')->export($params);
-            $pathInfo = pathinfo($path);
 
-            header("Cache-Control: public");
-            header("Content-Description: File Transfer");
-            header("Content-Disposition: attachment; filename=".$pathInfo['basename']);
-            header("Content-Type: application/zip");
-            header("Content-Transfer-Encoding: binary");
+        if ( ! $mapId) Request::initial()->redirect(URL::base().'exportimportmanager/exportMVP');
 
-            readfile($path);
-        } else {
-            Request::initial()->redirect(URL::base() . 'exportimportmanager/exportMVP');
-        }
+        $map                = DB_ORM::model('map', array((int) $mapId));
+        $params['mapId']    = $mapId;
+        $params['mapName']  = $map->name;
+        $path               = ImportExport_Manager::getFormatSystem('MVP')->export($params);
+        $pathInfo           = pathinfo($path);
 
+        header("Content-type: application/zip");
+        header("Content-Disposition: attachment; filename=".$pathInfo['basename']);
+        header("Content-length: ".filesize($path));
+
+        readfile($path);
     }
 
     public function exportVUE($mapId) {
@@ -420,26 +407,30 @@ class Controller_ExportImportManager extends Controller_Base {
         unlink($tmpFileName);
     }
 
-    public function action_uploadMVP() {
-        try {
-            $lastMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
-
-            if (isset($_FILES) && !empty($_FILES)) {
+    public function action_uploadMVP()
+    {
+        $lastMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
+        try
+        {
+            if (isset($_FILES) AND ! empty($_FILES)) {
                 set_time_limit(0);
-                if (is_uploaded_file($_FILES['filename']['tmp_name'])) {
-                    move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT . '/files/' . $_FILES['filename']['name']);
-                    $fileName = 'files/' . $_FILES['filename']['name'];
-                    $data = $this->importMVP(DOCROOT . $fileName);
-
+                if (is_uploaded_file($_FILES['filename']['tmp_name']))
+                {
+                    move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT.'/files/'.$_FILES['filename']['name']);
+                    $fileName = 'files/'.$_FILES['filename']['name'];
+                    $data = $this->importMVP(DOCROOT.$fileName);
                 }
             }
             Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.', 'success');
             Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
-        } catch (Exception $e) {
+        }
+        catch (Exception $e)
+        {
             $message = $e->getMessage();
-            Notice::add("Error, labyrinth was not imported correctly." . PHP_EOL . $message, 'error');
+            Notice::add("Error, labyrinth was not imported correctly.".PHP_EOL.$message, 'error');
             $lastAddedMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
-            if ($lastMapOfCurrentUser != $lastAddedMapOfCurrentUser) {
+            if ($lastMapOfCurrentUser != $lastAddedMapOfCurrentUser)
+            {
                 DB_ORM::model('map')->deleteMap($lastAddedMapOfCurrentUser);
             }
             Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
@@ -461,18 +452,21 @@ class Controller_ExportImportManager extends Controller_Base {
         }
     }
 
-    public function importMVP($file) {
+    public function importMVP($file)
+    {
         $zip = new ZipArchive;
         $res = $zip->open($file);
-        $folderName = 'mvp' . rand() . '/';
-        if ($res === true) {
-            $folderPath = DOCROOT . 'files/' . $folderName;
+        $folderName = 'mvp'.rand().'/';
+        if ($res === true)
+        {
+            $folderPath = DOCROOT.'files/'.$folderName;
             $zip->extractTo($folderPath);
             $zip->close();
             $data = $this->parseMVPFile($folderName);
             $this->deleteDir($folderPath);
-
-        } else {
+        }
+        else
+        {
             echo 'failed'; //TODO: redirect to error
             Request::initial()->redirect(URL::base());
             return false;
@@ -482,53 +476,48 @@ class Controller_ExportImportManager extends Controller_Base {
         return $data;
     }
 
-    public function parseMVPFile($mvpFolder) {
-        $version = null;
-        $tmpFolder = DOCROOT . 'files/' . $mvpFolder;
-        $tmpFileName = $tmpFolder . '/metadata.xml';
-        $xml = $this->parseXML($tmpFileName);
+    public function parseMVPFile($mvpFolder)
+    {
+        $version     = null;
+        $tmpFolder   = DOCROOT.'files/'.$mvpFolder;
+        $tmpFileName = $tmpFolder.'/metadata.xml';
+        $xml         = $this->parseXML($tmpFileName);
 
-        if (isset($xml->metadata->version)){
+        if (isset($xml->metadata->version))
+        {
             ImportExport_Manager::getFormatSystem('MVP')->import($tmpFolder);
             return true;
         }
 
-        if(isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim') {
-            ImportExport_Manager::getFormatSystem('MVPvpSim')->import(array('tmpFolder'        => $tmpFolder,
-                                                                            'filesFolder'      => DOCROOT . 'files',
-                                                                            'filesShortFolder' => 'files'));
+        if (isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim')
+        {
+            ImportExport_Manager::getFormatSystem('MVPvpSim')->import(array(
+                'tmpFolder'        => $tmpFolder,
+                'filesFolder'      => DOCROOT.'files',
+                'filesShortFolder' => 'files'
+            ));
             return true;
         }
 
-        if(isset($xml->general->version))
-            $version = (string)$xml->general->version;
+        if (isset($xml->general->version)) $version = (string)$xml->general->version;
 
-        $findElement = array();
-        $replaceElement = array();
-        $map = array();
-        $map['title'] =(string) $xml->general->title->string;
-
-
-        $map['title'] = preg_replace_callback('~&#([0-9a-fA-F]+)~i', array($this,"qm_fix_callback"), $map['title']);
-
-      $map['title'] = $this->html_entity_decode_numeric($map['title']);
-
-        $map['author'] = Auth::instance()->get_user()->id;
-        $map['language'] = (string) $xml->general->language;
-        if ($map['language'] == 'en') {
-            $map['language'] = 1;
-        } else {
-            $map['language'] = 2;
-        }
+        $findElement        = array();
+        $replaceElement     = array();
+        $map                = array();
+        $map['title']       =(string) $xml->general->title->string;
+        $map['title']       = preg_replace_callback('~&#([0-9a-fA-F]+)~i', array($this,"qm_fix_callback"), $map['title']);
+        $map['title']       = $this->html_entity_decode_numeric($map['title']);
+        $map['author']      = Auth::instance()->get_user()->id;
+        $map['language']    = (string) $xml->general->language;
+        $map['language']    = ($map['language'] == 'en') ? 1 : 2;
         $map['description'] = (string) $xml->general->description->string;
-        $map['keywords'] = (string) $xml->general->keyword->string;
-        $map['section'] = 2;
+        $map['keywords']    = (string) $xml->general->keyword->string;
+        $map['section']     = 2;
+        $map                = DB_ORM::model('map')->createMap($map, false);
+        $tmpFileName        = $tmpFolder.'/imsmanifest.xml';
+        $xml                = $this->parseXML($tmpFileName);
+        $elements           = array();
 
-        $map = DB_ORM::model('map')->createMap($map, false);
-
-        $tmpFileName = $tmpFolder . '/imsmanifest.xml';
-        $xml = $this->parseXML($tmpFileName);
-        $elements = array();
         if (isset($xml->resources->resource)) {
             if (!file_exists(DOCROOT.'/files/'.$map->id)) {
                 mkdir(DOCROOT.'/files/'.$map->id, 0777, true);
@@ -1101,14 +1090,13 @@ class Controller_ExportImportManager extends Controller_Base {
         return array("title"=>$map->name, "id"=>$map->id);
     }
 
-    public function parseXML($tmpFileName) {
-        $content = file_get_contents($tmpFileName);
-        $searchArray = array('<ol:', '</ol:', '&#034;');
-        $replaceArray = array('<', '</', "'");
-        $xmlString = str_replace($searchArray, $replaceArray, $content);
-        $xmlString = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
-
-        //libxml_use_internal_errors(true);
+    public function parseXML($tmpFileName)
+    {
+        $content        = file_get_contents($tmpFileName);
+        $searchArray    = array('<ol:', '</ol:', '&#034;');
+        $replaceArray   = array('<', '</', "'");
+        $xmlString      = str_replace($searchArray, $replaceArray, $content);
+        $xmlString      = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
         return simplexml_load_string($xmlString);
     }

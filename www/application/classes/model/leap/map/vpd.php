@@ -163,21 +163,6 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         return $vpdMap;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('vpd_type_id', 'ASC');
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $vpds = array();
-            foreach($result as $record) {
-                $vpds[] = $record;
-            }
-
-            return $vpds;
-        }
-
-        return NULL;
-    }
     public function getMapId($vpdId){
         $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $vpdId);
         $results = $builder->query();
@@ -189,5 +174,3 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         }
     }
 }
-
-?>

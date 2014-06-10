@@ -482,7 +482,7 @@ class Controller_Base extends Controller_Template {
     {
         $userId = $this->request->param('id');
         $userObj = DB_ORM::model('User')->getUserById($userId);
-        $userObj->history = NULL;
+        $userObj->history = 'kick';
         $userObj->history_timestamp = NULL;
         $userObj->save();
         exit;

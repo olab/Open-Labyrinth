@@ -149,20 +149,4 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
             DB_ORM::model('map_node_section_node')->duplicateSectionNodes($section->id, $newId, $nodeMap);
         }
     }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', (int)$mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sections = array();
-            foreach($result as $record) {
-                $sections[] = $record;
-            }
-
-            return $sections;
-        }
-
-        return NULL;
-    }
 }
