@@ -40,7 +40,7 @@
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modal.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modalmanager.js'); ?>"></script>
-    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'validator.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/validator.min.js'); ?>"></script>
     <script language="javascript">
         var idNode      = <?php echo $templateData['node']->id; ?>,
             idPatients  = '<?php
