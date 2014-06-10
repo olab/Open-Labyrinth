@@ -1,10 +1,11 @@
-var submitTextQ = [],
-    questions = null,
-    toNodeHref = '',
-    savedTextQ = 0,
+var submitTextQ         = [],
+    questions           = null,
+    toNodeHref          = '',
+    savedTextQ          = 0,
     getQuestionResponse = 0,
-    alreadyPolled   = 0,
-    urlBase = window.location.origin + '/';
+    alreadyPolled       = 0,
+    urlBase             = window.location.origin + '/',
+    lightningSaved      = true;
 
 $(document).ready(function(){
     questions = $('[name^="qresponse_"]');
@@ -13,6 +14,11 @@ $(document).ready(function(){
     goLink.click(function(e){
 
         toNodeHref = e.currentTarget.href;
+
+        if ( ! lightningSaved) {
+            e.preventDefault();
+            return;
+        }
 
         if (questions.length > 0){
             var notSubmitTextQuestion = [];
@@ -96,47 +102,36 @@ $(document).ready(function(){
     }
     // ----- end patient ----- //
 
-    // ----- single line text question ----- //
-    $(".lightning-single").focusout(function(){
-        questionAjaxSave($(this));
-    });
-
-    $(".lightning-multi").focusout(function(){
-        questionAjaxSave($(this));
-    });
-
-    function questionAjaxSave($this){
-        var dbId       = $this.data('dbid'),
-            questionId = $this.prop('id').replace('qresponse_', ''),
-            response   = $this.val();
-
-        if (response.length == 0) response = 'no response';
-
-        $.post(
-            urlBase + 'renderLabyrinth/ajaxTextQuestionSave',
-            {response: response, questionId: questionId, nodeId: idNode, dbId:dbId },
-            function(data){
-                $this.data('dbid', data);
-                if (rightAnswer) imitateGo();
-            }
-        );
-    }
-    // ----- end single line text question ----- //
-
     // ----- lightning rule ----- //
     var rightAnswer = false,
         ruleExist = jsonRule.length > 2;
 
     $('.lightning-single').focusout(function(){
-        validationCreate($(this));
+        validationAndLightningText($(this));
     });
 
     $('.lightning-multi').focusout(function(){
-        validationCreate($(this));
+        validationAndLightningText($(this));
     });
 
-    function validationCreate($this){
-        var value           = $this.val(),
+    $('.lightning-choice').change(function(){
+        lightningChoice($(this));
+    });
+
+    $('.drag-question-container').sortable({
+        axis: "y",
+        cursor: "move",
+        create: function(event, ui) { dragAndDropPost($(this)); },
+        stop: function(event, ui) { dragAndDropPost($(this)); }
+    });
+
+    $('.sct-question').change(function(){
+        lightningSct($(this));
+    });
+
+    function validationAndLightningText($this){
+        var response        = $this.val(),
+            dbId            = $this.data('dbid'),
             validatorName   = $this.data('validator'),
             errorMsg        = $this.data('errormsg'),
             parameter       = $this.data('parameter'),
@@ -146,6 +141,8 @@ $(document).ready(function(){
 
         submitTextQ.push($thisId);
 
+        if (response.length == 0) response = 'no response';
+
         if (validatorName) {
             parameter = parameter.toString().split(',');
 
@@ -154,8 +151,8 @@ $(document).ready(function(){
                 else parameters += "'" + parameter[i] + "'";
             }
 
-            if (parameters) validation = eval("validator." + validatorName + "('" + value + "', " + parameters + ')');
-            else validation = eval("validator." + validatorName + "('" + value + "')");
+            if (parameters) validation = eval("validator." + validatorName + "('" + response + "', " + parameters + ')');
+            else validation = eval("validator." + validatorName + "('" + response + "')");
 
             $this.parent().find('.error-validation').remove();
 
@@ -164,18 +161,17 @@ $(document).ready(function(){
         }
 
         if (ruleExist) rightAnswer = checkAnswer($thisId, $this.val());
-    }
 
-    $('.drag-question-container').sortable({
-        axis: "y",
-        cursor: "move",
-        create: function(event, ui) {
-            dragAndDropPost($(this));
-        },
-        stop: function(event, ui) {
-            dragAndDropPost($(this));
-        }
-    });
+        $.post(
+            urlBase + 'renderLabyrinth/ajaxTextQuestionSave',
+            {response: response, questionId: $thisId, nodeId: idNode, dbId:dbId },
+            function(data){
+                $this.data('dbid', data);
+                if (rightAnswer) imitateGo();
+                window.location.href = toNodeHref;
+            }
+        );
+    }
 
     function dragAndDropPost(obj) {
         var questionId      = obj.attr('questionId'),
@@ -193,17 +189,18 @@ $(document).ready(function(){
             { questionId: questionId, responsesJSON: responsesJSON },
             function(){
                 if (rightAnswer) imitateGo();
+                window.location.href = toNodeHref;
             }
         );
     }
 
-    $('.lightning-choice').change(function(){
-        var dbId       = $(this).data('dbId'),
-            questionId = $(this).data('question'),
-            responseId = $(this).data('response'),
-            tries      = $(this).data('tries'),
-            response   = $(this).data('val'),
-            check      = $(this).is(':checked'),
+    function lightningChoice($this){
+        var dbId       = $this.data('dbId'),
+            questionId = $this.data('question'),
+            responseId = $this.data('response'),
+            tries      = $this.data('tries'),
+            response   = $this.data('val'),
+            check      = $this.is(':checked'),
             URL        = urlBase + 'renderLabyrinth/questionResponse/' + responseId + '/' + questionId + '/' + idNode,
             $response  = $('#AJAXresponse' + responseId);
 
@@ -218,30 +215,32 @@ $(document).ready(function(){
             function(data){
                 if (data != '') $response.html(data);
                 if (rightAnswer) imitateGo();
+                window.location.href = toNodeHref;
             }
         );
-    });
+    }
 
-    $('.sct-question').change(function(){
-        var questionId = $(this).data('question');
+    function lightningSct($this){
+        var questionId = $this.data('question');
 
-        if($(this).hasClass('disposable')){
+        if($this.hasClass('disposable')){
             $('.sct-question').each(function(i, v){
                 var current = $('.sct-question').eq(i);
                 if (current.data('question') == questionId) current.prop('disabled', true);
             });
         }
 
-        rightAnswer = checkAnswer(questionId, $(this).data('val'));
+        rightAnswer = checkAnswer(questionId, $this.data('val'));
 
         $.post(
             urlBase + 'renderLabyrinth/ajaxScriptConcordanceTesting',
-            { idResponse: $(this).data('response'), idQuestion: questionId },
+            { idResponse: $this.data('response'), idQuestion: questionId },
             function(){
                 if (rightAnswer) imitateGo();
+                window.location.href = toNodeHref;
             }
         );
-    });
+    }
 
     function checkAnswer(questionId, answer){
         var result = false;
