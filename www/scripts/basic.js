@@ -5,7 +5,8 @@ var submitTextQ         = [],
     getQuestionResponse = 0,
     alreadyPolled       = 0,
     urlBase             = window.location.origin + '/',
-    lightningSaved      = true;
+    lightningNotSaved   = false,
+    actionGoClicked     = false;
 
 $(document).ready(function(){
     questions = $('[name^="qresponse_"]');
@@ -15,10 +16,8 @@ $(document).ready(function(){
 
         toNodeHref = e.currentTarget.href;
 
-        if ( ! lightningSaved) {
-            e.preventDefault();
-            return;
-        }
+        actionGoClicked = true;
+        if (lightningNotSaved) e.preventDefault();
 
         if (questions.length > 0){
             var notSubmitTextQuestion = [];
@@ -74,7 +73,7 @@ $(document).ready(function(){
         $.get(
             urlBase + 'renderLabyrinth/dataPatientAjax/' + idPatients,
             function(data){
-                data = $.parseJSON(data)
+                data = $.parseJSON(data);
                 // change condition block
                 var ulPatient       = $('.patient-js'),
                     patientArray    = data.conditions,
@@ -121,8 +120,8 @@ $(document).ready(function(){
     $('.drag-question-container').sortable({
         axis: "y",
         cursor: "move",
-        create: function(event, ui) { dragAndDropPost($(this)); },
-        stop: function(event, ui) { dragAndDropPost($(this)); }
+        create: function (event, ui) { dragAndDropPost($(this)); },
+        stop: function (event, ui) { dragAndDropPost($(this)); }
     });
 
     $('.sct-question').change(function(){
@@ -130,7 +129,7 @@ $(document).ready(function(){
     });
 
     function validationAndLightningText($this){
-        lightningSaved = false;
+        lightningNotSaved = true;
 
         var response        = $this.val(),
             dbId            = $this.data('dbid'),
@@ -163,20 +162,20 @@ $(document).ready(function(){
         }
 
         if (ruleExist) rightAnswer = checkAnswer($thisId, $this.val());
-
         $.post(
             urlBase + 'renderLabyrinth/ajaxTextQuestionSave',
             {response: response, questionId: $thisId, nodeId: idNode, dbId:dbId },
             function(data){
                 $this.data('dbid', data);
                 if (rightAnswer) imitateGo();
-                window.location.href = toNodeHref;
+                if (actionGoClicked) window.location.href = toNodeHref;
+                lightningNotSaved = false;
             }
         );
     }
 
     function dragAndDropPost(obj) {
-        lightningSaved = false;
+        lightningNotSaved = true;
 
         var questionId      = obj.attr('questionId'),
             responsesObject = [];
@@ -193,13 +192,14 @@ $(document).ready(function(){
             { questionId: questionId, responsesJSON: responsesJSON },
             function(){
                 if (rightAnswer) imitateGo();
-                window.location.href = toNodeHref;
+                if (actionGoClicked) window.location.href = toNodeHref;
+                lightningNotSaved = false;
             }
         );
     }
 
     function lightningChoice($this){
-        lightningSaved = false;
+        lightningNotSaved = true;
 
         var dbId       = $this.data('dbId'),
             questionId = $this.data('question'),
@@ -221,13 +221,14 @@ $(document).ready(function(){
             function(data){
                 if (data != '') $response.html(data);
                 if (rightAnswer) imitateGo();
-                window.location.href = toNodeHref;
+                if (actionGoClicked) window.location.href = toNodeHref;
+                lightningNotSaved = false;
             }
         );
     }
 
     function lightningSct($this){
-        lightningSaved = false;
+        lightningNotSaved = true;
 
         var questionId = $this.data('question');
 
@@ -245,7 +246,8 @@ $(document).ready(function(){
             { idResponse: $this.data('response'), idQuestion: questionId },
             function(){
                 if (rightAnswer) imitateGo();
-                window.location.href = toNodeHref;
+                if (actionGoClicked) window.location.href = toNodeHref;
+                lightningNotSaved = false;
             }
         );
     }
