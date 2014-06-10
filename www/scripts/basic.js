@@ -130,6 +130,8 @@ $(document).ready(function(){
     });
 
     function validationAndLightningText($this){
+        lightningSaved = false;
+
         var response        = $this.val(),
             dbId            = $this.data('dbid'),
             validatorName   = $this.data('validator'),
@@ -174,6 +176,8 @@ $(document).ready(function(){
     }
 
     function dragAndDropPost(obj) {
+        lightningSaved = false;
+
         var questionId      = obj.attr('questionId'),
             responsesObject = [];
 
@@ -195,6 +199,8 @@ $(document).ready(function(){
     }
 
     function lightningChoice($this){
+        lightningSaved = false;
+
         var dbId       = $this.data('dbId'),
             questionId = $this.data('question'),
             responseId = $this.data('response'),
@@ -221,6 +227,8 @@ $(document).ready(function(){
     }
 
     function lightningSct($this){
+        lightningSaved = false;
+
         var questionId = $this.data('question');
 
         if($this.hasClass('disposable')){
