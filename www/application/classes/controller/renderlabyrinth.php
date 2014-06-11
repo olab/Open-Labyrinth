@@ -1984,8 +1984,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         // first check by author_id, second check for author right
-        $owner          = $map->author_id == $idUser;
-        $owner          = $owner ? $owner : (bool) DB_ORM::select('AuthorRight')->where('user_id', '=', $idUser)->query()->as_array();
+        $owner = $map->author_id == $idUser;
+        if ( ! $owner AND $userType == 2) $owner = (bool) DB_ORM::select('Map_User')->where('user_id', '=', $idUser)->where('map_id', '=', $idMap)->query()->as_array();
 
         switch ($userType)
         {

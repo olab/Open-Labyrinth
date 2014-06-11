@@ -77,6 +77,11 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         
         return FALSE;
     }
+
+    public function getUserMaps($userId)
+    {
+        return DB_ORM::select('Map_User')->where('user_id', '=', $userId)->query()->as_array();
+    }
     
     public function getAllUsers ($mapId, $order = "DESC")
     {
@@ -99,11 +104,13 @@ class Model_Leap_Map_User extends DB_ORM_Model {
     public function getAllAuthors($mapId, $order = 'DESC')
     {
         $users = array();
-        $result = DB_SQL::select('default')->
-            from($this->table())
-            ->join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->join('LEFT', 'users')
+            ->on('map_users.user_id', '=', 'users.id')
             ->where('map_users.map_id', '=', $mapId, 'AND')
-            ->where_block('(')->where('users.type_id', '=', '2')
+            ->where_block('(')
+            ->where('users.type_id', '=', '2')
             ->where('users.type_id', '=', '4', 'OR')
             ->where_block(')')
             ->order_by('users.nickname', $order)

@@ -714,7 +714,6 @@ class Controller_LabyrinthManager extends Controller_Base {
 
         $this->templateData['map']                  = $map;
         $this->templateData['authorsList']          = DB_ORM::select('User')->where('type_id', '=', 2)->where('type_id', '=', 6, 'OR')->order_by('nickname')->query()->as_array();
-        $this->templateData['authorRight']          = DB_ORM::select('AuthorRight')->where('map_id', '=', $mapId)->query()->as_array();
         $this->templateData['verification']         = ($map->verification != null) ? json_decode($map->verification, true) : array();
         $this->templateData['types']                = DB_ORM::model('map_type')->getAllTypes();
         $this->templateData['skins']                = DB_ORM::model('map_skin')->getAllSkins();
@@ -848,23 +847,6 @@ class Controller_LabyrinthManager extends Controller_Base {
             }
         }
         // ---- end add new contributor and update old ---- //
-
-        // ---- add new users with authors right ----- //
-        foreach (Arr::get($post, 'authors_new', array()) as $newAuthorId)
-        {
-            DB_ORM::insert('AuthorRight')
-                ->column('map_id', $mapId)
-                ->column('user_id', $newAuthorId)
-                ->execute();
-        }
-        foreach (Arr::get($post, 'authors', array()) as $id=>$authorId)
-        {
-            DB_ORM::update('AuthorRight')
-                ->set('user_id', $authorId)
-                ->where('id', '=', $id)
-                ->execute();
-        }
-        // ---- end add new users with authors right ----- //
 
         $linkStyleId = Arr::get($post, 'linkStyle', null);
         if ($linkStyleId != null) DB_ORM::model('map_node')->setLinkStyle($mapId, $linkStyleId);
@@ -1012,10 +994,5 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->templateData['left'] = $leftView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
-    }
-
-    public function action_deleteAuthor ()
-    {
-        DB_ORM::delete('AuthorRight')->where('id', '=', $this->request->param('id'))->execute();
     }
 }

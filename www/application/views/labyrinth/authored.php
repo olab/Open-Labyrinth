@@ -70,7 +70,7 @@ if ($user)
         foreach ($templateData['maps'] as $map) { ?>
             <tr>
                 <td><?php echo $map->id; ?></td>
-                <td><a <?php if ($map->author_id == $userId OR $userType == 4)  echo 'href='.URL::base().'labyrinthManager/info/'.$map->id; ?>><?php echo $map->name; ?></a>
+                <td><a <?php if ($map->author_id == $userId OR $userType == 4) echo 'href='.URL::base().'labyrinthManager/info/'.$map->id; ?>><?php echo $map->name; ?></a>
                 </td>
                 <td><?php
                     if (count($map->contributors) > 0) {

@@ -183,25 +183,6 @@ if (isset($templateData['map'])) {
             </div>
         </div>
 
-        <div class="control-group author-bl">
-            <label class="control-label">
-                <span><?php echo __('Author right'); ?></span>
-                <div class="pull-right">
-                    <a class="btn btn-info add-author"><i class="icon-plus"></i><?php echo __('Add'); ?></a>
-                </div>
-            </label><?php
-            foreach (Arr::get($templateData, 'authorRight', array()) as $existAuthor) { ?>
-            <div class="controls" style="margin-bottom: 10px;">
-                <select name="authors[<?php echo $existAuthor->id; ?>]"><?php
-                    foreach (Arr::get($templateData, 'authorsList', array()) as $author) { ?>
-                    <option value="<?php echo $author->id; ?>" <?php if($existAuthor->user_id == $author->id) echo 'selected'; ?>><?php echo $author->nickname; ?></option><?php
-                    } ?>
-                </select>
-                <button type="button" class="btn btn-danger delete-author" data-id="<?php echo $existAuthor->id; ?>"><i class="icon-trash icon-white"></i>Delete</button>
-            </div><?php
-            } ?>
-        </div>
-
         <div class="control-group">
             <label class="control-label"><?php echo __('Registered Labyrinth Authors'); ?>:</label>
             <div class="controls"><?php
@@ -449,15 +430,6 @@ if (isset($templateData['map'])) {
     </p>
     <p><a class="btn btn-small btn-danger del-contributor-js"><i class="icon-trash"></i></a></p>
 </li>
-
-<div class="controls add-author-bl" style="margin-bottom: 10px; display: none;">
-    <select name="authors_new[]"><?php
-        foreach (Arr::get($templateData, 'authorsList', array()) as $author) { ?>
-            <option value="<?php echo $author->id; ?>"><?php echo $author->nickname; ?></option><?php
-        } ?>
-    </select>
-    <button type="button" class="btn btn-danger delete-author-bl"><i class="icon-trash icon-white"></i>Delete</button>
-</div>
 
 <script>
     createEditableSelect(document.getElementById('delta_time_seconds'));

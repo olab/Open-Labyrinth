@@ -55,7 +55,7 @@ class Controller_MapUserManager extends Controller_Base {
         $authorOrder = $authorOrder == 0 ? 'ASC' : 'DESC';
         $learnerOrder = $learnerOrder == 0 ? 'ASC' : 'DESC';
 
-        $this->templateData['existAuthors']  = DB_ORM::model('map_user')->getAllAuthors((int) $mapId, $authorOrder);
+        $this->templateData['existAuthors']  = DB_ORM::model('map_user')->getAllAuthors($mapId, $authorOrder);
         $this->templateData['existLearners'] = DB_ORM::model('map_user')->getAllLearners((int) $mapId, $learnerOrder);
         $this->templateData['tiedUsers']     = $tiedUsers;
 
@@ -69,19 +69,12 @@ class Controller_MapUserManager extends Controller_Base {
         $this->templateData['learnerOrder']  = $learnerOrder == 'ASC' ? 0 : 1;
         $this->templateData['reviewerOrder'] = ($reviewerOrder == 'DESC') ? 'ASC' : 'DESC';
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Users'))->set_url(URL::base() . 'mapUserManager/index/' . $mapId));
-
-        $mapUserView = View::factory('labyrinth/user/view');
-        $mapUserView->set('templateData', $this->templateData);
-
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-        $leftView->set('templateData', $this->templateData);
-
-        $this->templateData['left'] = $leftView;
-        $this->templateData['center'] = $mapUserView;
-        unset($this->templateData['right']);
+        $this->templateData['left']          = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']        = View::factory('labyrinth/user/view')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Users'))->set_url(URL::base().'mapUserManager/index/'.$mapId));
     }
 
     public function action_addUser()
@@ -89,69 +82,61 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId          = $this->request->param('id', NULL);
         $authorOrder    = $this->request->param('id2', 0);
         $learnerOrder   = $this->request->param('id3', 0);
+        $post           = $this->request->post();
 
-        if ($_POST and $mapId != NULL)
+        if (! ($post AND $mapId)) Request::initial()->redirect(URL::base());
+
+        DB_ORM::model('Map')->editRight($mapId);
+
+        // ---- reviewer ---- //
+        $allReviewers   = array();
+        $map_reviewers  = array();
+        $reviewers_post = Arr::get($post, 'reviewer', array());
+
+        foreach (DB_ORM::model('user')->getAllReviewers() as $reviewer) $allReviewers[] = $reviewer->id;
+
+        $map_users = DB_ORM::model('map_user')->getAllUsersIds($mapId);
+        if ($map_users != null) $map_reviewers = array_intersect($allReviewers, $map_users);
+
+        foreach (array_diff($reviewers_post, $map_reviewers) as $id_reviewer)
         {
-            DB_ORM::model('Map')->editRight($mapId);
-
-            // ---- reviewer ---- //
-            $allReviewers   = array();
-            $map_reviewers  = array();
-            $reviewers_post = Arr::get($_POST, 'reviewer', array());
-
-            foreach (DB_ORM::model('user')->getAllReviewers() as $reviewer) $allReviewers[] = $reviewer->id;
-
-            $map_users = DB_ORM::model('map_user')->getAllUsersIds($mapId);
-            if ($map_users != null) $map_reviewers = array_intersect($allReviewers, $map_users);
-
-            foreach (array_diff($reviewers_post, $map_reviewers) as $id_reviewer)
-            {
-                DB_ORM::insert('Map_User')->column('map_id', $mapId)->column('user_id', $id_reviewer)->execute();
-            }
-
-            foreach (array_diff($map_reviewers, $reviewers_post) as $id_reviewer)
-            {
-                DB_ORM::delete('Map_User')->where('map_id', '=', $mapId)->where('user_id', '=', $id_reviewer)->execute();
-            }
-            // ---- end reviewer ---- //
-
-            $existAuthors   = DB_ORM::model('map_user')->getAllAuthors((int) $mapId);
-            $existLearners  = DB_ORM::model('map_user')->getAllLearners((int) $mapId);
-
-            $existUserMap = array();
-            if($existAuthors != null && count($existAuthors) > 0) {
-                foreach($existAuthors as $author) {
-                    $existUserMap[$author->id] = $author;
-                }
-            }
-
-            if($existLearners != null && count($existLearners) > 0) {
-                foreach($existLearners as $learner) {
-                    $existUserMap[$learner->id] = $learner;
-                }
-            }
-
-            $admins        = DB_ORM::model('user')->getUsersByTypeName('superuser');
-            $authors       = DB_ORM::model('user')->getUsersByTypeName('author');
-            $learners      = DB_ORM::model('user')->getUsersByTypeName('learner');
-            $allUsers      = array_merge($admins, $authors, $learners);
-
-            if(count($allUsers) > 0) {
-                foreach($allUsers as $user) {
-                    $isExist = Arr::get($_POST, 'user'.$user->id, null);
-                    if($isExist != null) {
-                        if(!isset($existUserMap[$user->id])) {
-                            DB_ORM::model('map_user')->addUser($mapId, $user->id);
-                        }
-                    } else {
-                        DB_ORM::model('map_user')->deleteByUserId($mapId, $user->id);
-                    }
-                }
-            }
-
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+            DB_ORM::insert('Map_User')->column('map_id', $mapId)->column('user_id', $id_reviewer)->execute();
         }
-        else Request::initial()->redirect(URL::base());
+
+        foreach (array_diff($map_reviewers, $reviewers_post) as $id_reviewer)
+        {
+            DB_ORM::delete('Map_User')->where('map_id', '=', $mapId)->where('user_id', '=', $id_reviewer)->execute();
+        }
+        // ---- end reviewer ---- //
+
+        $existAuthors   = DB_ORM::model('map_user')->getAllAuthors((int) $mapId);
+        $existLearners  = DB_ORM::model('map_user')->getAllLearners((int) $mapId);
+        $existUserMap   = array();
+
+        foreach($existAuthors as $author) {
+            $existUserMap[$author->id] = $author;
+        }
+
+        foreach($existLearners as $learner) {
+            $existUserMap[$learner->id] = $learner;
+        }
+
+        $admins        = DB_ORM::model('user')->getUsersByTypeName('superuser');
+        $authors       = DB_ORM::model('user')->getUsersByTypeName('author');
+        $learners      = DB_ORM::model('user')->getUsersByTypeName('learner');
+        $allUsers      = array_merge($admins, $authors, $learners);
+
+        foreach ($allUsers as $user)
+        {
+            $isExist = Arr::get($_POST, 'user'.$user->id, null);
+            if($isExist != null)
+            {
+                if ( ! isset($existUserMap[$user->id])) DB_ORM::model('map_user')->addUser($mapId, $user->id);
+            }
+            else DB_ORM::model('map_user')->deleteByUserId($mapId, $user->id);
+        }
+
+        Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId.'/'.$authorOrder.'/'.$learnerOrder);
     }
 
     public function action_deleteUser() {

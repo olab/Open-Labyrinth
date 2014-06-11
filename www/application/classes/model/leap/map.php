@@ -400,7 +400,7 @@ class Model_Leap_Map extends DB_ORM_Model
             }
         }
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
         {
             $mapId = $authorRightObj->map_id;
             if ( ! in_array($mapId, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($mapId));
@@ -439,12 +439,9 @@ class Model_Leap_Map extends DB_ORM_Model
             $alreadyAttendMap[] = $record['id'];
         }
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
         {
-            if ( ! in_array($authorRightObj->map_id, $alreadyAttendMap))
-            {
-                $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
-            }
+            if ( ! in_array($authorRightObj->map_id, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
         }
 
         return $maps;
@@ -900,11 +897,6 @@ class Model_Leap_Map extends DB_ORM_Model
             $res[] =  $val['id'];
         }
 
-        foreach (DB_ORM::select('AuthorRight')->query()->as_array() as $authorRightObj)
-        {
-            $res[] = $authorRightObj->map_id;
-        }
-
         return $res;
     }
 
@@ -912,7 +904,7 @@ class Model_Leap_Map extends DB_ORM_Model
     {
         $map                = DB_ORM::model('map', array($mapId));
         $user               = Auth::instance()->get_user();
-        $authorRight        = DB_ORM::select('authorRight')->where('user_id', '=', $user->id)->query()->as_array();
+        $authorRight        = $user->type_id == 2 ? (bool) DB_ORM::select('Map_User')->where('user_id', '=', $user->id)->where('map_id', '=', $mapId)->query()->as_array() : false;
         $editRight          = $user ? ($user->type_id == 4 OR $user->id == $map->author_id OR $authorRight) : false;
         if ( ! $editRight) Request::initial()->redirect(URL::base());
         return true;

@@ -224,29 +224,17 @@ private static function initialize_metadata($object)
 
     public function getAllUsersId ($order = 'DESC')
     {
-        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
-        
         $ids = array();
-        if ($result->is_loaded())
-        {
-            foreach ($result as $record)
-            {
-                $ids[] = (int)$record['id'];
-            }
-        }
+        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
+
+        foreach ($result as $record) $ids[] = $record['id'];
+
         return $ids;
     }
     
     public function getAllUsers($order = 'DESC')
     {
-        $result = array();
-        $ids = $this->getAllUsersId($order);
-        
-        foreach($ids as $id) {
-            $result[] = DB_ORM::model('user', array($id));
-        }
-
-        return $result;
+        return DB_ORM::select('User')->order_by('nickname', $order)->query()->as_array();
     }
 
     public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array())
@@ -375,39 +363,23 @@ private static function initialize_metadata($object)
             ->as_array();
     }
 
-    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC') {
-        $users = array();
-        if($ids != NULL) {
-            $builder = DB_SQL::select('default')
-                    ->from($this->table())
-                    ->where('id', 'NOT IN', $ids)
-                    ->order_by('nickname', $order);
+    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC')
+    {
+        $result = array();
 
-            $result = $builder->query();
-            if($result->is_loaded()) {
-                foreach($result as $record) {
-                    $users[] = DB_ORM::model('user', array((int)$record['id']));
-                }
-            }
-        } else {
-            $users = $this->getAllUsers($order);
+        if ($ids != NULL) $users = DB_ORM::select('Model_Leap_User')->where('id', 'NOT IN', $ids)->order_by('nickname', $order)->query()->as_array();
+        else $users = $this->getAllUsers($order);
+
+        foreach ($users as $user)
+        {
+            if ($user->type->name == $typeName) $result[] = $user;
         }
-        
-        if($users != NULL and count($users) > 0) {
-            $result = array();
-            foreach($users as $user) {
-                if($user->type->name == $typeName) {
-                    $result[] = $user;
-                }
-            }
-            
-            return $result;
-        }
-        
-        return NULL;
+
+        return $result;
     }
 
-    public function updateSettings($userId, $settings) {
+    public function updateSettings($userId, $settings)
+    {
         DB_ORM::update('user')->set('visualEditorAutosaveTime', Arr::get($settings, 'time', 50000))->where('id', '=', $userId)->execute();
     }
 

@@ -36,9 +36,9 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
             ? DB_ORM::model('map')->getAllEnabledMap()
             : DB_ORM::model('map')->getAllMapsForAuthorAndReviewer($user->id);
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $user->id)->query()->as_array() as $authorRightObj)
+        foreach (DB_ORM::model('Map_User')->getUserMaps($user->id) as $mapUserObj)
         {
-            $this->templateData['authorRight'][$authorRightObj->map_id] = true;
+            $this->templateData['authorRight'][$mapUserObj->map_id] = true;
         }
 
         $this->templateData['center'] = View::factory('labyrinth/authored')->set('templateData', $this->templateData);
