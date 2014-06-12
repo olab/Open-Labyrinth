@@ -1996,13 +1996,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
             case '2':
+            case '3':
             case '6':
                 if ($assignUser OR
                     ($labyrinthType == 1) OR
                     ($labyrinthType == 2) OR
                     ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
                 return false;
-            case '3':
             case '4':
                 return true;
             default:

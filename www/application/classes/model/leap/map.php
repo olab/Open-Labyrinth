@@ -309,9 +309,8 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where_block('(')
             ->where('m.security_id', '=', 1)
             ->where('m.security_id', '=', 2, 'OR')
-            ->where('m.security_id', '=', 4, 'OR')
+            ->where('m.author_id', '=', $user_id, 'OR')
             ->where_block('(', 'OR')
-            ->where('m.security_id', '=', 3)
             ->where('mu.user_id', '=', $user_id, 'AND')
             ->where_block(')')
             ->where_block(')');
