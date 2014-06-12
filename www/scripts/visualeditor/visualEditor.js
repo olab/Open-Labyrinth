@@ -114,7 +114,6 @@ var VisualEditor = function() {
             closeBtn: '.veRightPanelCloseBtn',
             colorInputId: '#colorpickerInput',
             colorPickerId: '#colopickerContainer',
-            onlySaveBtn: '#veRightPanelOnlySaveBtn',
             saveBtn: '#veRightPanelSaveBtn',
             accordion: '#veAccordionRightPanel',
             nodeRootBtn: '#veNodeRootBtn',
@@ -1298,35 +1297,46 @@ var VisualEditor = function() {
         self.canvas.addEventListener("touchend", MouseUp, false);
         document.addEventListener("keydown", KeyDown, false);
         document.addEventListener("keyup", KeyUp, false);
-    }
+    };
     
     var MouseOut = function(event) {
         $('body').css('cursor', 'default');
         $('body').removeClass('clearCursor');
-    }
-    
+    };
+
     var KeyDown = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
 
-        if(ctrlKeyPressed && event.keyCode == 67) {
-            if(self.copyFunction != null)
-                self.copyFunction();
+        var activeAndSelectedNodes = $.merge(self.GetActiveNode(), self.GetSelectedNodes());
+
+        if (ctrlKeyPressed && event.keyCode == 67) {
+            if (self.copyFunction != null) self.copyFunction();
         } else if(ctrlKeyPressed && event.keyCode == 86) {
-            if(self.pasteFunction != null)
-                self.pasteFunction();
+            if (self.pasteFunction != null) self.pasteFunction();
+        } else if (ctrlKeyPressed && event.keyCode == 32) {
+            if (self.isSelectActive){
+                self.turnOnPanMode();
+            } else {
+                self.turnOnSelectMode();
+            }
         } else if((event.keyCode == 107) || (altKeyPressed && event.keyCode == 187) || (altKeyPressed && event.keyCode == 61)) {
-            if(self.zoomIn != null)
-                self.zoomIn();
+            if (self.zoomIn != null) self.zoomIn();
         } else if((event.keyCode == 109) || (altKeyPressed && event.keyCode == 189) || (altKeyPressed && event.keyCode == 173)) {
-            if(self.zoomOut != null)
-                self.zoomOut();
+            if(self.zoomOut != null) self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
-            if(self.save!= null)
-                self.save();
+            if(self.save!= null) self.save();
+        } else if(altKeyPressed && event.keyCode == 65) {
+            $('#veRightPanelSaveBtn').click();
+        } else if((altKeyPressed && event.keyCode == 76)) {
+            var firstRecord = activeAndSelectedNodes[0];
+            if (firstRecord) ShowLinkConnector(firstRecord.id);
+        } else if((altKeyPressed && event.keyCode == 78)) {
+            $.each(activeAndSelectedNodes, function(key, node){
+                AddNodeWithLink(node.id);
+            });
         } else if((altKeyPressed && event.keyCode == 85)) {
-            if(self.update!= null)
-                self.update();
+            if(self.update!= null) self.update();
         } else if(event.keyCode == 46) {
             if(self.nodes != null && self.nodes.length > 0) {
                 var nodeId = 0;
@@ -1345,19 +1355,13 @@ var VisualEditor = function() {
                     }
                 }
             }
-        } else if (ctrlKeyPressed && event.keyCode == 32){
-            if (self.isSelectActive){
-                self.turnOnPanMode();
-            } else {
-                self.turnOnSelectMode();
-            }
         }
-    } 
+    };
     
     var KeyUp = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
-    }
+    };
     
     var UpdateMousePosition = function(event) {
         self.mouse.oldX = self.mouse.x;
@@ -1412,6 +1416,7 @@ var VisualEditor = function() {
                         ShowDeleteDialog(result[0]);
                         self.mouse.isDown = false;
                     } else if(result[1] == 'main') {
+                        $('#update').prop('disabled', true).css('background-color', '#cc0000');
                         ShowRightPanel(result[0], 'node');
                         self.mouse.isDown = false;
                     } else if(result[1] == 'deleteC') {
@@ -1464,11 +1469,10 @@ var VisualEditor = function() {
             isRedraw = true;
         }
 
-        if(isRedraw)
-            self.Render();
+        if (isRedraw) self.Render();
         
         return false;
-    }
+    };
     
     var MouseUp = function(event) {
         //event.preventDefault();
@@ -1905,7 +1909,7 @@ var VisualEditor = function() {
         }
     
         return null;
-    }
+    };
     
     self.GetLinkById = function(id) {
         if(self.links.length <= 0) return null;
@@ -1949,19 +1953,33 @@ var VisualEditor = function() {
         return result;
     }
 
-    self.GetSelectedNodes = function() {
-        var result = new Array();
+    self.GetActiveNode = function() {
+        var result = [];
 
-        if(self.nodes.length <= 0) return result;
+        if (self.nodes.length <= 0) return result;
 
-        for(var i = self.nodes.length; i--;) {
-            if(self.nodes[i].isSelected) {
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isActive) {
                 result.push(self.nodes[i]);
             }
         }
 
         return result;
-    }
+    };
+
+    self.GetSelectedNodes = function() {
+        var result = [];
+
+        if (self.nodes.length <= 0) return result;
+
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isSelected) {
+                result.push(self.nodes[i]);
+            }
+        }
+
+        return result;
+    };
     
     var GetRootNode = function() {
         if(self.nodes.length <= 0) return null;

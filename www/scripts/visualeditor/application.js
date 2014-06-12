@@ -429,7 +429,6 @@ $(function () {
     });
 
     $('#fullScreen').tooltip();
-    $('#update').tooltip();
     $('#addNode').tooltip({html:true});
     $('#vePan').tooltip({html:true});
     $('#veSelect').tooltip({html:true});

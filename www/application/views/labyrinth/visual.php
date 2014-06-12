@@ -266,7 +266,6 @@ if (isset($templateData['map'])) { ?>
                 </div>
                 <div class="footer block">
                     <div class="btn-group">
-                        <a href="javascript:void(0)" class="btn btn-success" id="veRightPanelOnlySaveBtn">Save changes</a>
                         <a href="javascript:void(0)" class="btn btn-info" id="veRightPanelSaveBtn">Save changes and close</a>
                         <a href="javascript:void(0)" class="btn veRightPanelCloseBtn">Close panel</a>
                     </div>
