@@ -74,6 +74,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     
     public function createResponse($sessionId, $questionId, $response, $nodeId = null)
     {
+        if ( ! $sessionId) return false;
         return DB_ORM::insert('User_Response')
             ->column('question_id', $questionId)
             ->column('session_id', $sessionId)
