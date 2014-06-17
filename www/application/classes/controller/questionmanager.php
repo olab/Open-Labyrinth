@@ -28,7 +28,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'authoredLabyrinth'));
     }
 
     public function action_index() {
@@ -134,7 +134,7 @@ class Controller_QuestionManager extends Controller_Base {
         $post             = $this->request->post();
         $mapId            = $this->request->param('id', 0);
         $postType         = Arr::get($post, 'question_type', null);
-        $validator        = Arr::get($post, 'validator');
+        $validator        = Arr::get($post, 'validator', 'no validator');
         $secondParameter  = Arr::get($post, 'second_parameter');
         $errorMessage     = Arr::get($post, 'error_message');
         $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
@@ -144,13 +144,13 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ( ! ($post AND $map AND $type)) Request::initial()->redirect(URL::base());
 
-        $post['settings'] = json_encode(array($post['settings'], $post['isCorrect']));
+        $post['settings'] = json_encode(array(Arr::get($post, 'settings', ''), Arr::get($post, 'isCorrect', 0)));
 
         if ($questionId) {
             $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
-            $private = Arr::get($post, 'is_private');
+            $private    = Arr::get($post, 'is_private');
 
-            if($references != NULL && $private){
+            if ($references AND $private) {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
                 $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
@@ -158,11 +158,11 @@ class Controller_QuestionManager extends Controller_Base {
             }
 
             DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
-        }
-        else $questionId = DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
+        } else $questionId = DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
 
         if ($validator == 'no validator') DB_ORM::model('Map_Question_Validation')->deleteByQuestionId($questionId);
         else DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter, $errorMessage);
+
         Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
     }
 

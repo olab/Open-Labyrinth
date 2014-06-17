@@ -27,8 +27,76 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public $mapId = 0;
     public $questionsId = array();
 
+    // TODO: check this method fot different security type
+    private function renderLabyrinth ($action)
+    {
+        $mapId       = $this->request->param('id', null);
+        $this->mapId = $mapId;
+
+        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
+
+        if ($action == 'index') {
+            $mapDB = DB_ORM::model('map', array($mapId));
+            if ($mapDB->security_id == 4) {
+                $sessionId      = Session::instance()->id();
+                $checkValue     = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+                $checkSession   = Session::instance()->get($checkValue);
+
+                if ($checkSession != '1') {
+                    $this->template             = View::factory('labyrinth/security');
+                    $templateData['mapDB']      = $mapDB;
+                    $templateData['title']      = 'OpenLabyrinth';
+                    $templateData['keyError']   = Session::instance()->get('keyError');
+
+                    Session::instance()->delete('keyError');
+
+                    $this->template->set('templateData', $templateData);
+                }
+            } else {
+                Session::instance()->delete('questionChoices');
+                Session::instance()->delete('dragQuestionResponses');
+                Session::instance()->delete('counterFunc');
+                Session::instance()->delete('stopCommonRules');
+                Session::instance()->delete('arrayAddedQuestions');
+
+                $node = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+                $this->renderNode($node);
+            }
+        } else {
+            $nodeId   = $this->request->param('id2', null);
+
+            if ($nodeId == null) {
+                $nodeId = Arr::get($_GET, 'id', null);
+                if ($nodeId == null AND $_POST) {
+                    $nodeId = Arr::get($_POST, 'id', null);
+                    if ($nodeId == null) {
+                        Request::initial()->redirect(URL::base());
+                        return;
+                    }
+                }
+            }
+
+            $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
+            $this->renderNode($node);
+        }
+    }
+
+    private function renderNode ($nodeObj)
+    {
+        if ($nodeObj == NULL) Request::initial()->redirect(URL::base());
+
+        $bookMark = $this->request->param('id4', null);
+        $nodeId   = $nodeObj->id;
+        $isRoot   = ($nodeObj->type == 1) ? true : false;
+        $data     = ($bookMark != NULL)
+            ? Model::factory('labyrinth')->execute($nodeId, (int) $bookMark)
+            : Model::factory('labyrinth')->execute($nodeId, null, $isRoot);
+    }
+
+    // TODO: try to merge index and go
     public function action_index()
     {
+        //$this->renderLabyrinth('index');
         $mapId       = $this->request->param('id', null);
         $editOn      = $this->request->param('id2', null);
         $scenarioId  = Session::instance()->get('webinarId');
@@ -102,13 +170,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $data['links'] = $data['node_links']['linker'];
             }
 
-            if ($editOn != null AND $editOn == 1)
-            {
-                $data['node_edit'] = TRUE;
-            }
+            if ($editOn != null AND $editOn == 1) $data['node_edit'] = TRUE;
             else
             {
-                if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
+                if (( $data['node']->info != '' ) AND (strpos($data['node_text'],'[[INFO:') === false) AND $data['node']->show_info)
                 {
                     $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
                 }
@@ -153,8 +218,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    // TODO: try to merge index and go
     public function action_go()
     {
+        //$this->renderLabyrinth('go');
         $mapId       = $this->request->param('id', NULL);
         $nodeId      = $this->request->param('id2', NULL);
         $editOn      = $this->request->param('id3', NULL);

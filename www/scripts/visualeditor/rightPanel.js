@@ -417,7 +417,7 @@ var RightPanel = function() {
         
         mode = typeof mode !== 'undefined' ? mode : 'normal';
         
-        var selectedNodes = new Array();
+        var selectedNodes = [];
         
         var selectedRoot = false;
         if(self.visualEditor != null && self.visualEditor.nodes != null && self.visualEditor.nodes.length > 0 && mode == 'normal') {
@@ -441,7 +441,7 @@ var RightPanel = function() {
                 self.deleteModal.Show('single');
             }
         }
-    }
+    };
 
     var GetRootNode = function() {
         if(self.visualEditor == null || self.visualEditor.nodes.length <= 0) return null;

@@ -113,18 +113,12 @@ class Model_Leap_Map_Node_Reference extends DB_ORM_Model {
     }
 
     public function getNotParent($mapId, $elementId, $type) {
-        $builder = DB_SQL::select('default')->from($this->table())
-            ->where('map_id', '!=', $mapId, 'AND')
-            ->where('element_id', '=', $elementId, 'AND')
-            ->where('type', '=', $type);
-        $result = $builder->query();
-        if ($result->is_loaded())
-        {
-            $elements = array();
-            foreach ($result as $record) $elements[] = DB_ORM::model('map_node_reference', array((int)$record['id']));
-            return $elements;
-        }
-        return NULL;
+        return DB_ORM::select('Map_Node_Reference')
+            ->where('map_id', '!=', $mapId)
+            ->where('element_id', '=', $elementId)
+            ->where('type', '=', $type)
+            ->query()
+            ->as_array();
     }
     
     public function getAllRecords() { 
