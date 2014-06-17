@@ -51,7 +51,7 @@
                     }
                     echo json_encode($ids); ?>',
             pollTime    = <?php echo Arr::get($templateData, 'time', 0); ?>,
-            jsonRule    = '<?php echo Arr::get($templateData, 'jsonRule', array()); ?>';
+            jsonRule    = '<?php echo Arr::get($templateData, 'jsonRule', '[]'); ?>';
 
         $(document).ready(function()
         {
