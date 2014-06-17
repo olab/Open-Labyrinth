@@ -135,7 +135,7 @@ class Controller_ReportManager extends Controller_Base
         foreach ($questions as $question)
         {
             $response = DB_ORM::model('user_response')->getResponse($session->id, $question->id);
-            if ($response != NULL) $this->templateData['responses'][$question->id] = $response;
+            if (count($response)) $this->templateData['responses'][$question->id][] = array_pop($response);
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
