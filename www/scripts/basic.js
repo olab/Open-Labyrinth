@@ -4,7 +4,7 @@ var submitTextQ         = [],
     savedTextQ          = 0,
     getQuestionResponse = 0,
     alreadyPolled       = 0,
-    urlBase             = window.location.origin + '/',
+    urlBase             = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: ''),
     lightningNotSaved   = false,
     actionGoClicked     = false;
 
