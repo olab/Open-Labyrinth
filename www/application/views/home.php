@@ -27,26 +27,20 @@
         <title><?php Breadcrumbs::render('breadcrumbs/title'); ?></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery-ui-1.9.1.custom.css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap-responsive.css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome.min.css" />
-	    <link rel="stylesheet" href="<?php echo URL::base(); ?>css/jquery.cropzoom.css" type="text/css" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css" />
-        <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/basic.css'); ?>" />
-        <link rel="stylesheet" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>" />
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css" type="text/css" />
-        <!--[if IE 7]>
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" />
-        <![endif]-->
-        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-        <!--[if lt IE 9]>
-            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        
-        <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/browser/css/BrowserUpdateWarning.css" type="text/css" />
-        
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/jquery-ui-1.9.1.custom.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/css/bootstrap.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/css/bootstrap-responsive.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font-awesome.min.css'); ?>">
+	    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/jquery.cropzoom.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/css/datepicker.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/basic.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.css'); ?>">
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/browser/css/BrowserUpdateWarning.css'); ?>">
+        <!--[if IE 7]><link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" /><![endif]-->
+        <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
         <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico" />
+
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     </head>
     <body>
@@ -139,12 +133,18 @@
                                     <li><a href="<?php echo URL::base().'webinarManager/my'; ?>"><?php echo __('My Scenarios'); ?></a></li><?php
                                 } ?>
                                 <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
-                                <li><a href="#"><?php echo __('Help'); ?></a></li>
+                                <li><a data-toggle="modal" data-target="#helpPopup" href=""><?php echo __('Help'); ?></a></li>
                             </ul>
                         </div><?php
                     } ?>
                 </div>
             </div>
+        </div>
+        <div id="helpPopup" class="modal hide fade in">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            Version: <?php echo Arr::get($templateData, 'version'); ?><br>
+            Main website: <a href="http://openlabyrinth.ca/">openlabyrinth.ca</a><br>
+            Download: <a href="<?php echo URL::base().'systemManager/downloadReadMe'; ?>">README</a>
         </div>
         <div class="root-error-container">
             <div id="rootNodeMessage" class="alert alert-error root-alert hide">
@@ -219,18 +219,16 @@
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
-
         <script type="text/javascript">
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>';
             var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
             var currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>';
-            <?php if (isset($templateData['historyOfAllUsers'])) { ?>
-                var historyOfAllUsers = eval('(<?php echo $templateData['historyOfAllUsers']; ?>)');
-            <?php }
+            var historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', ''); ?>)');
+            <?php
             if (isset($templateData['historyShowWarningPopup'])) { ?>
                 var historyShowWarningPopup = <?php echo $templateData['historyShowWarningPopup']; ?>;
-            <?php } ?>
-            <?php if (isset($templateData['username'])) { ?>
+            <?php }
+            if (isset($templateData['username'])) { ?>
                 var currentUser = '<?php echo $templateData['username']; ?>';
             <?php } ?>
         </script><?php

@@ -11,7 +11,6 @@ var submitTextQ         = [],
 $(document).ready(function(){
     questions = $('[name^="qresponse_"]');
     var goLink = $('a[href^="/renderLabyrinth/go"]');
-
     goLink.click(function(e){
 
         toNodeHref = e.currentTarget.href;

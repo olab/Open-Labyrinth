@@ -143,5 +143,3 @@ class Model_Leap_Map_Node_Reference extends DB_ORM_Model {
         return NULL; 
     }
 }
-
-?>

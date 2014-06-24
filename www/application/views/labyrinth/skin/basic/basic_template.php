@@ -55,34 +55,28 @@
 
         $(document).ready(function()
         {
-            var rem = '';
-            var remMessage = '';
-            var session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
+            var rem = '',
+                remMessage = '',
+                session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
 
             // Timer
-            <?php if (($templateData['map']->timing) && isset($templateData['session'])) {
-                    if (isset($templateData['timer_start']) && $templateData['timer_start'] != 0)
-                    {?>
+            <?php
+            if (($templateData['map']->timing) && isset($templateData['session'])) {
+                if (isset($templateData['timer_start']) && $templateData['timer_start'] != 0) { ?>
                         var sec = <?php echo $templateData['map']->delta_time - $templateData['timeForNode']; ?> ;
-
                         <?php if ($templateData['map']->reminder_time > 0 && ($templateData['map']->reminder_time < ($templateData['map']->delta_time - $templateData['timeForNode']))) { ?>
                             rem = <?php echo $templateData['map']->reminder_time; ?> ;
                             remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;
                         <?php } ?>
-
             <?php } else {?>
-
-                var sec = <?php echo $templateData['map']->delta_time; ?> ;
-
-                <?php if ( $templateData['map']->reminder_time > 0 )  {  ?>
+                var sec = <?php echo $templateData['map']->delta_time; ?> ;<?php
+                if ( $templateData['map']->reminder_time > 0 )  {  ?>
                     rem = <?php echo $templateData['map']->reminder_time; ?> ;
-                    remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;
-              <?php } }?>
-
+                    remMessage = '<?php echo $templateData['map']->reminder_msg; ?>' ;<?php
+                }
+              }?>
             start_countdown(sec,rem,remMessage,session);
-
         <?php }?>
-
         });
 
         function Populate(form) {

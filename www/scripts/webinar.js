@@ -1,7 +1,7 @@
 $(function() {
     var $addLabyrinthButtons = $('.add-labyrinth-btn'),
         mapsOptions          = '<option value="">Select Labyrinth...</option>',
-        urlBase              = window.location.origin;
+        urlBase              = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
 
     if('maps' in mapsJSON && mapsJSON.maps.length > 0) {
         var tmpName = '';

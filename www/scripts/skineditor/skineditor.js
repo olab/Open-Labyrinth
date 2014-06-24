@@ -2,7 +2,7 @@
  * Main application class
  */
 var SkinEditor = (function() {
-    var urlBase = window.location.origin + '/';
+    var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
     
     SkinEditor.UI_LEFT_PANEL_HTML        = '<div class="skin-editor-panel left">' +
                                                '<div class="panel-content"></div>' +

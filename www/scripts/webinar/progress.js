@@ -1,4 +1,4 @@
-var urlBase = window.location.origin + '/';
+var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
 
 jQuery(document).ready(function()
 {

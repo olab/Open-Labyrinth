@@ -54,9 +54,9 @@
             jsonRule    = '<?php echo Arr::get($templateData, 'jsonRule', '[]'); ?>';
 
         $(document).ready(function(){
-            var rem = '';
-            var remMessage = '';
-            var session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
+            var rem = '',
+                remMessage = '',
+                session = '<?php if (isset($templateData['session'])) echo $templateData['session']; else echo ''; ?>';
 
             // Timer
             <?php

@@ -1,7 +1,8 @@
 jQuery(document).ready(function(){
-    var urlBase = window.location.origin + '/';
-    var browserUpdateWarning = new BrowserUpdateWarning();
-    var body = $('body');
+    var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/',
+        browserUpdateWarning = new BrowserUpdateWarning(),
+        body = $('body');
+
     browserUpdateWarning.Check();
     
     //------------------Case Wizard--------------------//
@@ -387,6 +388,7 @@ jQuery(document).ready(function(){
     });
 
     var sameLabyrinthUser = null;
+
 
     $.each(historyOfAllUsers, function(key, value) {
         sameLabyrinthUser = value;

@@ -2,7 +2,7 @@ var VisualDisplay = function()
 {
     var self = this,
         $container = $('#visualDisplay'),
-        urlBase = window.location.origin + '/';
+        urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
     
     var id = null,
         
