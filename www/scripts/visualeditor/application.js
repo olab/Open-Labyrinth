@@ -288,7 +288,7 @@ $(function () {
 
     function update()
     {
-        if (!currentUserReadOnly) {
+        if ( ! currentUserReadOnly) {
             visualEditor.isChanged = false;
     
             if (autoSaveTimer != null)
@@ -302,10 +302,10 @@ $(function () {
             autoSaveData = null;
             $('#leaveBox').modal('hide');
     
-            $.post(sendURL, {
-                data:data.substring(0, data.length - 1),
-                id:mapId
-            }, function (data) {
+            $.post(
+                sendURL,
+                { data:data.substring(0, data.length - 1), id:mapId },
+                function (data) {
                 if (data && data.length > 0) {
                     data = data.substring(1, data.length - 1);
                     data = data.substring(0, data.length - 1);

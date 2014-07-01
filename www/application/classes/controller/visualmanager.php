@@ -106,12 +106,13 @@ class Controller_VisualManager extends Controller_Base {
 
     public function action_updateJSON() {
         $mapId = Arr::get($_POST, 'id', null);
-        $json = Arr::get($_POST, 'data', null);
+        $json  = Arr::get($_POST, 'data', null);
 
         $this->auto_render = false;
         Model::factory('visualEditor')->updateFromJSON($mapId, $json);
 
-        echo Model::factory('visualEditor')->generateJSON($mapId);
+        print_r(Model::factory('visualEditor')->generateJSON($mapId));
+        exit;
     }
 
 

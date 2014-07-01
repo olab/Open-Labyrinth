@@ -19,32 +19,25 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
 
         $(document).ready(function() {
             $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
-
-            $('#sidebar').animate({
-                width: 'toggle'
-            }, 0);
-
+            $('#sidebar').animate({ width: 'toggle' }, 0);
             $('.to-hide').toggleClass('hide');
             $('#content').toggleClass('span12 span10');
         });
 
-
-        var sendURL = '<?php echo URL::base(); ?>visualManager/updateJSON';
-        var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
-        var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
-        var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
-        var mapId = <?php echo $templateData['map']->id; ?>;
-        var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var mapType = null;
-        var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
-        var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
-        var mainLinkStyles = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
+        var sendURL         = '<?php echo URL::base(); ?>visualManager/updateJSON',
+            bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
+            bufferPaste     = '<?php echo URL::base(); ?>visualManager/bufferPaste',
+            settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
+            logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
+            mapId           = <?php echo $templateData['map']->id; ?>,
+            mapJSON         = <?php echo (isset($templateData['mapJSON']) AND strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>,
+            mapType         = null,
+            mainLinkStyles  = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -175,13 +168,11 @@ if (isset($templateData['map'])) { ?>
                             <div>
                                 <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                                     <div>
-                                        <div class="control-group">
-                                            <?php
+                                        <div class="control-group"><?php
                                             $countersData = '';
                                             foreach ($templateData['counters'] as $counter) {
-                                                $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
-                                                ?>
-                                                <?php echo $counter->name; ?>
+                                                $countersData .= "{id: '".$counter->id."', func: '#nodecounter_function_".$counter->id."', show: '#nodecounter_show_".$counter->id."'}, ";
+                                                echo $counter->name; ?>
                                                 <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
                                                 <div class="controls">
                                                     <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
@@ -193,11 +184,7 @@ if (isset($templateData['map'])) { ?>
                                                 </div>
                                             <?php } ?>
                                         </div>
-                                        <div id="counters" data="[<?php
-                                    if (strlen($countersData) > 2) {
-                                        echo substr($countersData, 0, strlen($countersData) - 2);
-                                    }
-                                    ?>]"></div>
+                                        <div id="counters" data="[<?php if (strlen($countersData) > 2) echo substr($countersData, 0, strlen($countersData) - 2); ?>]"></div>
                                     </div>
                                 <?php } ?>
                             </div>
@@ -611,5 +598,4 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
-
 <?php } ?>

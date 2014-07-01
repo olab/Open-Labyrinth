@@ -45,13 +45,8 @@ var RightPanel = function() {
     self.changeNode = null;
     
     self.Init = function(parameters) {
-        if('visualEditor' in parameters)
-            self.visualEditor = parameters.visualEditor;
-        
-        if('panelId' in parameters) {
-            self.$panel = $(parameters.panelId);
-        }
-        
+        if('visualEditor' in parameters) self.visualEditor = parameters.visualEditor;
+        if('panelId' in parameters) self.$panel = $(parameters.panelId);
         if('closeBtn' in parameters) {
             self.$closeBtn = $(parameters.closeBtn);
             if(self.$closeBtn != null)
@@ -66,9 +61,7 @@ var RightPanel = function() {
             self.$colorInput = $(parameters.colorInputId);
         }
         
-        if('colorPickerId' in parameters) {
-            self.colorPickerId = parameters.colorPickerId;
-        }
+        if('colorPickerId' in parameters) self.colorPickerId = parameters.colorPickerId;
 
         if('saveBtn' in parameters) {
             self.$saveBtn = $(parameters.saveBtn);
@@ -80,26 +73,19 @@ var RightPanel = function() {
                 });
         }
         
-        if('accordion' in parameters) {
-            self.$accordion = $(parameters.accordion);
-        }
+        if('accordion' in parameters) self.$accordion = $(parameters.accordion);
         
         if('nodeRootBtn' in parameters) {
             self.$nodeRootBtn = $(parameters.nodeRootBtn);
-            if(self.$nodeRootBtn != null)
-                self.$nodeRootBtn.click(self.SetRooNode);
+            if(self.$nodeRootBtn != null) self.$nodeRootBtn.click(self.SetRooNode);
         }
         
         if('nodeDeleteBtn' in parameters) {
             self.$nodeDeleteBtn = $(parameters.nodeDeleteBtn);
-            if(self.$nodeDeleteBtn != null)
-                self.$nodeDeleteBtn.click(function() { self.DeleteNode('only'); });
+            if(self.$nodeDeleteBtn != null) self.$nodeDeleteBtn.click(function() { self.DeleteNode('only'); });
         }
 
-        if('unsavedDataForm' in parameters) {
-            self.$unsavedDataForm = $(parameters.unsavedDataForm);
-        }
-
+        if('unsavedDataForm' in parameters) self.$unsavedDataForm = $(parameters.unsavedDataForm);
         if('unsavedDataBtnClose' in parameters) {
             self.$unsavedDataBtnClose = $(parameters.unsavedDataBtnClose);
             if(self.$unsavedDataBtnClose != null)
@@ -109,10 +95,7 @@ var RightPanel = function() {
                 });
         }
         
-        if('unsavedDataChange' in parameters) {
-            self.$unsavedDataChange = $(parameters.unsavedDataChange);
-        }
-
+        if('unsavedDataChange' in parameters) self.$unsavedDataChange = $(parameters.unsavedDataChange);
         if('unsavedDataBtnChangeClose' in parameters) {
             self.$unsavedDataBtnChangeClose = $(parameters.unsavedDataBtnChangeClose);
             if(self.$unsavedDataBtnChangeClose != null)
@@ -136,66 +119,38 @@ var RightPanel = function() {
             rightPanel: self
         });
 
-        if('nodeIDLabel' in parameters)
-            self.$nodeIDLabel = $(parameters.nodeIDLabel);
-        
-        if('nodeIDContainer' in parameters)
-            self.$nodeIDContainer = $(parameters.nodeIDContainer);
-
-        if('nodeTitle' in parameters)
-            self.$nodeTitle = $(parameters.nodeTitle);
+        if('nodeIDLabel' in parameters) self.$nodeIDLabel = $(parameters.nodeIDLabel);
+        if('nodeIDContainer' in parameters) self.$nodeIDContainer = $(parameters.nodeIDContainer);
+        if('nodeTitle' in parameters) self.$nodeTitle = $(parameters.nodeTitle);
         
         if('nodeContent' in parameters) {
             self.$nodeContent = $(parameters.nodeContent);
             self.nodeContentId = parameters.nodeContent;
-            if(self.nodeContentId.length > 2) {
-                self.nodeContentId = self.nodeContentId.substr(1, self.nodeContentId.length - 1);
-            }
+            if(self.nodeContentId.length > 2) self.nodeContentId = self.nodeContentId.substr(1, self.nodeContentId.length - 1);
         }
 
         if('annotation' in parameters) {
             self.$annotation = $(parameters.annotation);
             self.annotationId = parameters.annotation;
-            if(self.annotationId.length > 2) {
-                self.annotationId = self.annotationId.substr(1, self.annotationId.length - 1);
-            }
+            if(self.annotationId.length > 2) self.annotationId = self.annotationId.substr(1, self.annotationId.length - 1);
         }
 
         if('nodeSupport' in parameters) {
             self.$nodeSupport = $(parameters.nodeSupport);
             self.nodeSupportId = parameters.nodeSupport;
-            if(self.nodeSupportId.length > 2) {
-                self.nodeSupportId = self.nodeSupportId.substr(1, self.nodeSupportId.length - 1);
-            }
+            if(self.nodeSupportId.length > 2) self.nodeSupportId = self.nodeSupportId.substr(1, self.nodeSupportId.length - 1);
         }
         
-        if('nodeSupportKeywords' in parameters)
-            self.$nodeSupportKeywords = $(parameters.nodeSupportKeywords);
-        
-        if('nodeIsExitNodePorb' in parameters)
-            self.$nodeIsExitNodePorb = $(parameters.nodeIsExitNodePorb);
-        
-        if('nodeLinkStyle' in parameters)
-            self.$nodeLinkStyle = $(parameters.nodeLinkStyle);
-        
-        if('nodePriority' in parameters)
-            self.$nodePriority = $(parameters.nodePriority);
-        
-        if('nodeUndoLinks' in parameters)
-            self.$nodeUndoLinks = $(parameters.nodeUndoLinks);
-        
-        if('endNode' in parameters)
-            self.$endNode = $(parameters.endNode);
-        
-        if('nodeCounters' in parameters)
-            self.$nodeCounters = $(parameters.nodeCounters);
-
-        if('showInfo' in parameters)
-            self.$showInfo = $(parameters.showInfo);
-
-        if('isPrivate' in parameters)
-            self.$isPrivate = $(parameters.isPrivate);
-    }
+        if('nodeSupportKeywords' in parameters) self.$nodeSupportKeywords = $(parameters.nodeSupportKeywords);
+        if('nodeIsExitNodePorb' in parameters) self.$nodeIsExitNodePorb = $(parameters.nodeIsExitNodePorb);
+        if('nodeLinkStyle' in parameters) self.$nodeLinkStyle = $(parameters.nodeLinkStyle);
+        if('nodePriority' in parameters) self.$nodePriority = $(parameters.nodePriority);
+        if('nodeUndoLinks' in parameters) self.$nodeUndoLinks = $(parameters.nodeUndoLinks);
+        if('endNode' in parameters) self.$endNode = $(parameters.endNode);
+        if('nodeCounters' in parameters) self.$nodeCounters = $(parameters.nodeCounters);
+        if('showInfo' in parameters) self.$showInfo = $(parameters.showInfo);
+        if('isPrivate' in parameters) self.$isPrivate = $(parameters.isPrivate);
+    };
     
     self.Close = function() {
         if (self.visualEditor.unsavedData){
@@ -204,25 +159,18 @@ var RightPanel = function() {
             self.$unsavedDataForm.modal('hide');
             self.Hide();
         }
-    }
+    };
     
     self.TryChangeNode = function(node) {
-        if(node == null) return;
+        if (node == null) return;
         
         self.changeNode = node;
-        
-        if(self.$unsavedDataChange != null && self.visualEditor.unsavedData) {
-            self.$unsavedDataChange.modal();
-        } else {
-            self.visualEditor.unsavedData = false;
-            if(self.node != null)
-                self.node.isActive = false;
-            
-            self.node = self.changeNode;
-            self.mode = 'node';
-            self.Show();
-        }
-    }
+        self.visualEditor.unsavedData = false;
+        if (self.node != null) self.node.isActive = false;
+        self.node = self.changeNode;
+        self.mode = 'node';
+        self.Show();
+    };
 
     self.Save = function() {
         if(self.visualEditor == null) return;
@@ -284,7 +232,7 @@ var RightPanel = function() {
         self.visualEditor.unsavedData = false;
 
         self.visualEditor.Render();
-    }
+    };
     
     self.Show = function() {
         if(self.$panel != null) {

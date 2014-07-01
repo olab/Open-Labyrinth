@@ -1326,8 +1326,6 @@ var VisualEditor = function() {
             if(self.zoomOut != null) self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
             if(self.save!= null) self.save();
-        } else if(altKeyPressed && event.keyCode == 65) {
-            $('#veRightPanelSaveBtn').click();
         } else if((altKeyPressed && event.keyCode == 76)) {
             var firstRecord = activeAndSelectedNodes[0];
             if (firstRecord) ShowLinkConnector(firstRecord.id);
@@ -1378,21 +1376,19 @@ var VisualEditor = function() {
             self.mouse.y = event.pageY - canvasOffsetTop;
         }
         
-        if(isNaN(self.mouse.x))
-            self.mouse.x = 0;
+        if(isNaN(self.mouse.x)) self.mouse.x = 0;
         
-        if(isNaN(self.mouse.y))
-            self.mouse.y = 0;
-    }
+        if(isNaN(self.mouse.y)) self.mouse.y = 0;
+    };
     
     // Events
     var MouseDown = function(event) {
-        //event.preventDefault();
         self.mouse.isDown = true;
         UpdateMousePosition(event);
 
-        var isRedraw = false;
-        var positions = [];
+        var isRedraw = false,
+            positions = [];
+
         if(self.nodes.length > 0) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
                 if(self.nodes[i].isSelected) {
@@ -1782,7 +1778,7 @@ var VisualEditor = function() {
             self.Render();
         
         return false;
-    }
+    };
     
     var AddNodeWithLink = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1812,7 +1808,7 @@ var VisualEditor = function() {
         
         self.nodes.push(newNode);
         self.links.push(newLink);
-    }
+    };
     
     var SetRootNode = function(nodeId) {
         if(self.nodes.length <= 0) return;
@@ -1820,12 +1816,12 @@ var VisualEditor = function() {
         for(var i = 0; i < self.nodes.length; i++) {
             self.nodes[i].isRoot = (self.nodes[i].id == nodeId) ? true: false;
         }
-    }
+    };
     
     self.TranslateViewport = function(x, y) {
         viewport.TranslateWithoutScale(x, y);
         self.Render();
-    }
+    };
 
     var ShowLinkConnector = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1840,7 +1836,7 @@ var VisualEditor = function() {
         self.linkConnector.transform.SetIdentity();
         self.linkConnector.transform.Multiply(node.transform);
         self.linkConnector.transform.Translate(node.width * 0.5, -60);
-    }
+    };
     
     var ShowColorpickerDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1848,7 +1844,7 @@ var VisualEditor = function() {
             self.colorModal.SetNode(node);
             self.colorModal.Show();
         }
-    }
+    };
     
     var ShowLinkManagetDialog = function(linkId) {
         var link = self.GetLinkById(linkId);
@@ -1857,18 +1853,15 @@ var VisualEditor = function() {
             self.linkModal.SetLink(link);
             self.linkModal.Show();
         }
-    }
+    };
     
     var ShowRightPanel = function(elementId, mode) {
-        if(self.rightPanel != null) {
-            if(mode == 'node') {
-                var node = GetNodeById(elementId);
-                if(node != null) {
-                    self.rightPanel.TryChangeNode(node);
-                }
-            }
+        if(self.rightPanel != null && mode == 'node') {
+            var node = GetNodeById(elementId);
+            self.rightPanel.Save();
+            if (node != null) self.rightPanel.TryChangeNode(node);
         }
-    }
+    };
     
     var ShowNodeDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1877,11 +1870,11 @@ var VisualEditor = function() {
             self.nodeModal.SetNode(node);
             self.nodeModal.Show();
         }
-    }
+    };
     
     var ShowDeleteDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
-        var selectedNodes = new Array();
+        var selectedNodes = [];
         
         if(self.nodes != null && self.nodes.length > 0) {
             for(var i = 0; i < self.nodes.length; i++) {

@@ -23,7 +23,6 @@
         src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
         var sendURL = '<?php echo URL::base(); ?>labyrinthManager/caseWizard/3/updateVisualEditor/<?php echo $templateData['action']; ?>';
-        var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
         var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
         var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
         var mapId = <?php echo $templateData['action']; ?>;
