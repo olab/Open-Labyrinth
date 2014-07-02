@@ -57,7 +57,6 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'feedbackManager/index/'.$id_map; ?>"><i class="icon-comment"></i> <?php echo __('Feedback'); ?></a></li>
             <li><a href="<?php echo URL::base().'skinManager/index/'.$id_map; ?>"><i class="icon-book"></i> <?php echo __('Skin'); ?></a></li>
             <li><a href="<?php echo URL::base().'fileManager/index/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Files'); ?></a></li>
-
             <li class="nav-header">Control</li>
             <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users'); ?></a></li>
             <li><a href="<?php echo URL::base().'reportManager/index/'.$id_map; ?>"><i class="icon-calendar"></i> <?php echo __('Sessions'); ?></a></li>
@@ -88,7 +87,8 @@ if (isset($templateData['map'])) {
         <div class="modal-body">
             <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting this labyrinth from OpenLabyrinth?'); ?></p>
             <p>
-                <a class="btn btn-danger" href="<?php echo URL::base().'labyrinthManager/disableMap/'.$id_map; ?>"><?php echo __('Delete Labyrinth'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <a class="btn btn-danger" href="<?php echo URL::base().'labyrinthManager/disableMap/'.$id_map; ?>"><?php echo __('Delete Labyrinth'); ?></a>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </p>
         </div>
     </div>
@@ -112,6 +112,5 @@ if (isset($templateData['map'])) {
             <h4 class="alert-heading">Superuser discard you.</h4>
         </div>
         <button class="btn btn-primary" id="discardReload">Reload</button>
-    </div>
-
-<?php }; ?>
+    </div><?php
+}; ?>

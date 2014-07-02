@@ -37,55 +37,44 @@
                     <h4 class="box-header round-top">OpenLabyrinth Tips-of-the-Day</h4>
                     <div class="box-container-toggle">
                         <div class="box-content">
-                            <div>
-                                <b><?php echo $templateData['todayTip']->title; ?></b>
-                            </div>
-                            <div>
-                                <?php echo $templateData['todayTip']->text; ?>
-                            </div>
+                            <div><b><?php echo $templateData['todayTip']->title; ?></b></div>
+                            <div><?php echo $templateData['todayTip']->text; ?></div>
                         </div>
                     </div>
                 </div>
         <?php } ?>
     </div>
-    <div class="span4">
-        <?php if (isset($templateData['latestAuthoredLabyrinths'])) : ?>
+    <div class="span4"><?php
+        if (isset($templateData['latestAuthoredLabyrinths'])) { ?>
         <div class="box">
             <h4 class="box-header round-top"><?php echo __('Latest Authored Labyrinths'); ?></h4>
             <div class="box-container-toggle">
                 <div class="box-content">
-                    <ul class="unstyled">
-                    <?php
-                    foreach ($templateData['latestAuthoredLabyrinths'] as $map) {
-                        ?>
+                    <ul class="unstyled"><?php
+                    foreach ($templateData['latestAuthoredLabyrinths'] as $map) {?>
                         <li style="margin-bottom: 10px">
                             <div class="row-fluid">
                                 <div class="pull-left">
-                                    <a href="<?php echo URL::base() . 'labyrinthManager/global/' . $map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
+                                    <a href="<?php echo URL::base().'labyrinthManager/global/'.$map->id; ?>"><?php echo substr($map->name, 0, 40); ?></a>
                                 </div>
-                                <div class="pull-right">
-                                    <?php if(true) { ?>
-                                        <a class="btn btn-mini btn-success" href="<?php echo URL::base(); ?>renderLabyrinth/index/<?php echo $map->id; ?>" target="_blank">
-                                            <i class="icon-play icon-white"></i>
-                                            Play
-                                        </a>
-                                    <?php } else { ?>
-                                        <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)">
-                                            <i class="icon-play icon-white"></i>
-                                            Play
-                                        </a>
-                                    <?php } ?>
+                                <div class="pull-right"><?php
+                                    if(true) { ?>
+                                    <a class="btn btn-mini btn-success" href="<?php echo URL::base().'renderLabyrinth/index/'.$map->id; ?>" target="_blank"><?php
+                                    } else { ?>
+                                    <a class="btn btn-mini btn-success show-root-error" href="javascript:void(0)"><?php
+                                    } ?>
+                                        <i class="icon-play icon-white"></i>
+                                        Play
+                                    </a>
                                 </div>
                             </div>
-                        </li>
-                        <?php
-                    }
-                    ?>
+                        </li><?php
+                    } ?>
                     </ul>
                 </div>
             </div>
-        </div>
-        <?php endif;
+        </div><?php
+        }
         if (isset($templateData['latestPlayedLabyrinths'])) { ?>
         <div class="box">
             <h4 class="box-header round-top"><?php echo __('Latest Played Labyrinths'); ?></h4>

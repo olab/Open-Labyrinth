@@ -120,7 +120,7 @@ class RunTimeLogic {
                     $questionAnswers = $this->getQUAnswer($matches[1][$key]);
                     if ($questionAnswers != '') {
                         if (gettype($questionAnswers) == 'array') {
-                            $answerStrPos = $this->strposa($matches[2][$key], $questionAnswers);
+                            $answerStrPos = $this->strposa($matches[2][$key], array_pop($questionAnswers));
                             $answerStrPos = !empty($answerStrPos) ? $answerStrPos : 0;
 
                             $replace[$i] = " ( $answerStrPos == false) ";
@@ -254,31 +254,31 @@ class RunTimeLogic {
         return array('str' => $string, 'error' => $error);
     }
 
-    private function replaceCounter($matches){
+    private function replaceCounter($matches)
+    {
         return '"'.$this->getValue($matches[1]).'"';
     }
 
-    private function replaceCondition($matches){
+    private function replaceCondition($matches)
+    {
         return '"'.$this->getConditionValue($matches[1]).'"';
     }
 
-    private function replaceQuestionAnswer($matches){
+    private function replaceQuestionAnswer($matches)
+    {
         return '\''.$this->getQUAnswer().'\'';
     }
 
-    public function getValue($id){
+    public function getValue($id)
+    {
         $value = 0;
-        if (isset($this->values[$id])){
-            $value = $this->values[$id];
-        }
+        if (isset($this->values[$id])) $value = $this->values[$id];
         return $value;
     }
 
     public function getConditionValue($id){
         $value = 0;
-        if (isset($this->conditionValue[$id])){
-            $value = $this->conditionValue[$id];
-        }
+        if (isset($this->conditionValue[$id])) $value = $this->conditionValue[$id];
         return $value;
     }
 
@@ -295,7 +295,8 @@ class RunTimeLogic {
             $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id, $nodesId);
             $numberOfResponses = count($responses);
 
-            foreach ($responses as $value) {
+            foreach ($responses as $value)
+            {
                 $response = $value->response;
                 if ($questionType == 7) $response = DB_ORM::model('Map_Question_Response', array($response))->response;
                 if ($numberOfResponses > 1) $return[] = $response;
@@ -469,10 +470,8 @@ class RunTimeLogic {
                 if (strpos($haystack, $value) !== false) return true;
             }
         }
-        else
-        {
-            if (strpos($haystack, $needle) !== false) return true;
-        }
+        else if (strpos($haystack, $needle) !== false) return true;
+
         return false;
     }
 }

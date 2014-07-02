@@ -27,7 +27,6 @@ if (isset($templateData['map'])) {
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
 
-
 <div class="page-header"><h1><?php echo $ruleId ? __('Edit Rule') : __('Add Rule'); ?></h1></div>
 <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCommonRule/'.$templateData['map']->id.'/'.$ruleId; ?>">
     <label><input class="lightning-chb" type="checkbox" name="lightning" <?php if ($lightning) echo 'checked'; ?>>Lightning rule</label>
@@ -36,12 +35,8 @@ if (isset($templateData['map'])) {
             <li><a href="#tabs-text"><?php echo __('Text of rule'); ?></a></li>
             <li><a href="#tabs-code"><?php echo __('Code of rule'); ?></a></li>
         </ul>
-        <div id="tabs-text">
-            <textarea class="not-autocomplete" id="text" style="width:100%; height:200px;"></textarea>
-        </div>
-        <div id="tabs-code">
-            <textarea name="commonRule" class="not-autocomplete" id="code" style="width:100%; height:200px;"><?php echo $ruleText; ?></textarea>
-        </div>
+        <div id="tabs-text"><textarea class="not-autocomplete" id="text" style="width:100%; height:200px;"></textarea></div>
+        <div id="tabs-code"><textarea name="commonRule" class="not-autocomplete" id="code" style="width:100%; height:200px;"><?php echo $ruleText; ?></textarea></div>
         <div id="processed-rule"></div>
     </div>
 
@@ -51,14 +46,17 @@ if (isset($templateData['map'])) {
     <a id="availableCountersId" style="display:none;"><?php echo $templateData['counters']['id']; ?></a>
 
     <div class="pull-right" style="margin-top:10px;">
-        <input style="float:right;" id="submit_button" type="submit" class="btn btn-primary btn-large hide " name="check_save" value="<?php echo __('Save rule'); ?>"  >
-        <input style="float:right;" id="check_button" type="button" class="btn btn-primary btn-large " name="check" value="<?php echo __('Save rule'); ?>" onclick="return checkRule(1);"  >
+        <input style="float:right;" id="submit_button" type="submit" class="btn btn-primary btn-large hide " name="check_save" value="<?php echo __('Save rule'); ?>">
+        <input style="float:right;" id="check_button" type="button" class="btn btn-primary btn-large " name="check" value="<?php echo __('Save rule'); ?>">
     </div>
 
     <div class="pull-left">
         <dl class="status-label dl-horizontal">
             <dt style="text-align: left">Status</dt>
-            <dd><span class="label label-warning">The rule hasn't been checked.</span><span class="hide label label-success">The rule is correct.</span><span class="hide label label-important">The rule has error(s).</span></dd>
+            <dd>
+                <span class="label label-warning">The rule hasn't been checked.</span>
+                <span class="hide label label-success">The rule is correct.</span>
+                <span class="hide label label-important">The rule has error(s).</span></dd>
         </dl>
         <input style="float:left;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
     </div>
@@ -66,5 +64,5 @@ if (isset($templateData['map'])) {
     <input type="hidden" name="url" id="url" value="<?php echo URL::base().'counterManager/checkCommonRule'; ?>" />
     <input type="hidden" name="mapId" id="mapId" value="<?php echo $templateData['map']->id; ?>" />
     <input type="hidden" name="isCorrect" id="isCorrect" value="<?php echo $ruleCorrect; ?>" />
-</form>
-<?php } ?>
+</form><?php
+} ?>

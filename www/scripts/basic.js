@@ -265,8 +265,6 @@ $(document).ready(function(){
         });
     }
     // ----- end lightning rule ----- //
-
-
 });
 
 function ajaxFunction(qid) {

@@ -21,16 +21,12 @@
 ?>
 <h1><?php echo __('System Settings'); ?></h1>
 <div id="tabs">
-    <ul>
-        <?php
+    <ul><?php
         foreach ($templateData['tabsName'] as $key => $tabsName) {
-            echo '<li><a href="#tabs-' . $key . '">' . $tabsName . '</a></li>';
-        }
-        ?>
-    </ul>
-    <?php
+            echo '<li><a href="#tabs-'.$key.'">'.$tabsName.'</a></li>';
+        } ?>
+    </ul><?php
     foreach ($templateData['tabs'] as $key => $tabs) {
-        echo '<div id="tabs-' . $key . '">' . $tabs . '</div>';
-    }
-    ?>
+        echo '<div id="tabs-'.$key.'">'.$tabs.'</div>';
+    } ?>
 </div>

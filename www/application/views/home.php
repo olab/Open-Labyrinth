@@ -18,7 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
+$user = Auth::instance()->get_user(); ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -58,46 +58,46 @@
                         <div class="pull-right">
                             <div class="btn-group">
                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                    <i class="icon-user"></i> <?php echo Auth::instance()->get_user()->nickname; ?>
+                                    <i class="icon-user"></i> <?php echo $user->nickname; ?>
                                     <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="<?php echo URL::base(); ?>usermanager/viewUser/<?php echo Auth::instance()->get_user()->id; ?>"><?php echo __('View Profile'); ?></a></li>
-                                    <li><a href="<?php echo URL::base(); ?>usermanager/editUser/<?php echo Auth::instance()->get_user()->id; ?>"><?php echo __('Edit Profile'); ?></a></li>
+                                    <li><a href="<?php echo URL::base().'usermanager/viewUser/'.$user->id; ?>"><?php echo __('View Profile'); ?></a></li>
+                                    <li><a href="<?php echo URL::base().'usermanager/editUser/'.$user->id; ?>"><?php echo __('Edit Profile'); ?></a></li>
                                     <li class="divider"></li>
                                     <li><a href="<?php echo URL::base(); ?>home/logout"><?php echo __('Logout'); ?></a></li>
                                 </ul>
                             </div>
                         </div>
                         <div class="nav-collapse"><?php
-                            $type_name = Auth::instance()->get_user()->type->name; ?>
+                            $type_name = $user->type->name; ?>
                             <ul class="nav">
                                 <li><a href="<?php echo URL::base(); ?>"><?php echo __('Home'); ?></a></li><?php
                                 if($type_name != 'learner') { ?>
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Labyrinths'); ?> <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="<?php echo URL::base() . 'authoredLabyrinth'; ?>"><?php echo __('My Labyrinths'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . 'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'authoredLabyrinth'; ?>"><?php echo __('My Labyrinths'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'collectionManager'; ?>"><?php echo __('My Collections'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Create Labyrinth'); ?></li>
-                                        <li><a href="<?php echo URL::base() . 'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
-                                        <li><a href="<?php echo URL::base() . 'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'labyrinthManager/caseWizard'; ?>"><?php echo __('Create Step-by-Step'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Import Labyrinths'); ?></li>
-                                        <li><a href="<?php echo URL::base() . 'exportImportManager/importMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'exportImportManager/importMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Export Labyrinths'); ?></li>
-                                        <li><a href="<?php echo URL::base() . 'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                     </ul>
                                 </li><?php
-                                    if($type_name != 'author') { ?>
+                                    if ($type_name != 'author') { ?>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?> <b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Presentations'); ?></a></li>
                                             <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
-                                            <li><a href="<?php echo URL::base() . 'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li><?php
+                                            <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li><?php
                                             if ($type_name == 'superuser') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li>
@@ -110,9 +110,9 @@
                                     </li><?php
                                     }
                                 }
-                                if($type_name == 'author' || $type_name == 'superuser' || $type_name == 'Director') { ?>
+                                if($type_name == 'author' OR $type_name == 'superuser' OR $type_name == 'Director') { ?>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?> <b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li>
                                             <li class="divider"></li>
@@ -120,7 +120,7 @@
                                         </ul>
                                     </li>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Virtual patient'); ?> <b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Virtual patient'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base().'patient/index'; ?>"><?php echo __('Managment'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'patient/connection'; ?>"><?php echo __('Connection'); ?></a></li>
@@ -152,7 +152,7 @@
                 <?php echo __('You do not have access to this case.'); ?>
             </div>
         </div><?php
-        if (isset($templateData)){ ?>
+    if (isset($templateData)){ ?>
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
@@ -188,27 +188,14 @@
                     <?php if(isset($templateData['left'])) ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
-                    </div>
-                    <?php ?>
-                    <?php
-                    if (isset($templateData['right'])) {
-                        ?>
-                        <div class="span2">
-                            <?php echo $templateData['right']; ?>
-                        </div>
-                        <?php
+                    </div><?php
+                    if (isset($templateData['right'])) { ?>
+                        <div class="span2"><?php echo $templateData['right']; ?></div><?php
                     }
-                } else {
-                    ?>
-                    <div class="span3">
-                        <?php if (isset($templateData['left'])) echo $templateData['left']; ?>
-                    </div>
-                    <div class="span9">
-                        <?php if (isset($templateData['center'])) echo $templateData['center']; ?>
-                    </div>
-                    <?php
-                }
-                ?>
+                } else { ?>
+                    <div class="span3"><?php echo Arr::get($templateData, 'left'); ?></div>
+                    <div class="span9"><?php echo Arr::get($templateData, 'center'); ?></div><?php
+                } ?>
             </div>
         </div>
         <input type="hidden" id="browserWarningImages" value="<?php echo URL::base(); ?>scripts/browser/images/"/>
@@ -220,10 +207,10 @@
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
         <script type="text/javascript">
-            var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>';
-            var userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>;
-            var currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>';
-            var historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', ''); ?>)');
+            var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
+                userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
+                currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>',
+                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', ''); ?>)');
             <?php
             if (isset($templateData['historyShowWarningPopup'])) { ?>
                 var historyShowWarningPopup = <?php echo $templateData['historyShowWarningPopup']; ?>;
@@ -232,8 +219,8 @@
                 var currentUser = '<?php echo $templateData['username']; ?>';
             <?php } ?>
         </script><?php
-        } else { ?>
+    } else { ?>
         <div style="margin: 10px 100px;">You must choose chat</div><?php
-        }; ?>
+    }; ?>
     </body>
 </html>

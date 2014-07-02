@@ -631,7 +631,7 @@ class Controller_WebinarManager extends Controller_Base {
             // Save Statistics
             DB_ORM::model('statistics_user_session')->saveWebInarSession( $data );
             DB_ORM::model('statistics_user_sessiontrace')->saveWebInarSessionTraces( $ids );
-            DB_ORM::model('statistics_user_response')->saveWebInarResponse( $ids );
+            DB_ORM::model('statistics_user_response')->saveScenarioResponse( $ids );
         }
 
         DB_ORM::model('webinar')->resetWebinar($webId);

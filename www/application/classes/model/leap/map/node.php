@@ -377,43 +377,34 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $builder->execute();
     }
 
-    public function updateNodeFromJSON($mapId, $nodeId, $values) {
+    public function updateNodeFromJSON($mapId, $nodeId, $values)
+    {
         $this->id = $nodeId;
         $this->load();
-        if($this) {
-            $this->title = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
-            $text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
-            $info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
-            $crossreferences = new CrossReferences();
-            $nodetext = $crossreferences->checkReference($mapId, $nodeId, $text, $info);
-            if(isset($nodetext['text'])){
-                $this->text = $nodetext['text'];
-            }else{
-                $this->text = $text;
-            }
-            if(isset($nodetext['info'])){
-                $this->info = $nodetext['info'];
-            }else {
-                $this->info = $info;
-            }
-            $reference = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
-            $privete = (int) Arr::get($values, 'isPrivate', 0);
-            if($reference != NULL && $privete){
-                $this->is_private = FALSE;
-            } else {
-                $this->is_private = $privete;
-            }
-            $this->probability = Arr::get($values, 'isExit', 'false') == 'true';
-            $this->type_id = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
-            $this->link_style_id = Arr::get($values, 'linkStyle', 1);
-            $this->priority_id = Arr::get($values, 'nodePriority', 1);
-            $this->undo = Arr::get($values, 'undo', 'false') == 'true';
-            $this->end = Arr::get($values, 'isEnd', 'false') == 'true';
-            $this->x = Arr::get($values, 'x', 0);
-            $this->y = Arr::get($values, 'y', 0);
-            $this->rgb = Arr::get($values, 'color', '#FFFFFF');
-            $this->show_info = (int) Arr::get($values, 'showInfo', 0);
-            $this->annotation = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
+
+        if($this)
+        {
+            $this->title            = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
+            $text                   = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
+            $info                   = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $crossReferences        = new CrossReferences();
+            $nodeText               = $crossReferences->checkReference($mapId, $nodeId, $text, $info);
+            $this->text             = isset($nodeText['text']) ? $nodeText['text'] : $text;
+            $this->info             = isset($nodeText['info']) ? $nodeText['info'] : $this->info = $info;
+            $reference              = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
+            $private                = (int) Arr::get($values, 'isPrivate', 0);
+            $this->is_private       = ($reference != NULL && $private) ? FALSE : $private;
+            $this->probability      = Arr::get($values, 'isExit', 'false') == 'true';
+            $this->type_id          = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
+            $this->link_style_id    = Arr::get($values, 'linkStyle', 1);
+            $this->priority_id      = Arr::get($values, 'nodePriority', 1);
+            $this->undo             = Arr::get($values, 'undo', 'false') == 'true';
+            $this->end              = Arr::get($values, 'isEnd', 'false') == 'true';
+            $this->x                = Arr::get($values, 'x', 0);
+            $this->y                = Arr::get($values, 'y', 0);
+            $this->rgb              = Arr::get($values, 'color', '#FFFFFF');
+            $this->show_info        = (int) Arr::get($values, 'showInfo', 0);
+            $this->annotation       = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
 
             $this->save();
         }

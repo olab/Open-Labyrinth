@@ -745,6 +745,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $nodeId = DB_ORM::model('Map_Node')->getRootNodeByMap($mapId);
             }
             echo Model::factory('labyrinth')->question($questionId, $optionNumber, $questionStatus, $nodeId);
+            exit;
         }
     }
 
