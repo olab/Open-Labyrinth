@@ -67,7 +67,7 @@ class Model_Leap_Patient_ConditionRelation extends DB_ORM_Model {
         return $conditions;
     }
 
-    public function delete_condition ($id_patient)
+    public function deletePatientConditions ($id_patient)
     {
         $conditions = $this->get_conditions($id_patient);
         foreach ($conditions as $condition)

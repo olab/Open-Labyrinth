@@ -23,49 +23,44 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_SystemManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         parent::before();
 
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
-        }
+        if (Auth::instance()->get_user()->type->name != 'superuser') Request::initial()->redirect(URL::base());
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('System Settings'))->set_url(URL::base() . 'systemmanager'));
 
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $this->templateData['token'] = Security::token();
         $this->templateData['email_config'] = Kohana::$config->load('email');
-        $viewPasswordReset = View::factory('systemmanager/passwordReset');
-        $viewPasswordReset->set('templateData', $this->templateData);
+
         $this->templateData['tabsName'][0] = __('Password Recovery Settings');
-        $this->templateData['tabs'][0] = $viewPasswordReset;
+        $this->templateData['tabs'][0] = View::factory('systemmanager/passwordReset')->set('templateData', $this->templateData);
 
         $this->templateData['media_copyright'] = Kohana::$config->load('media_upload_copyright');
-        $viewCopyright = View::factory('systemmanager/mediaUploadCopyright');
-        $viewCopyright->set('templateData', $this->templateData);
+
         $this->templateData['tabsName'][1] = __('Media Upload - Copyright Notice');
-        $this->templateData['tabs'][1] = $viewCopyright;
+        $this->templateData['tabs'][1] = View::factory('systemmanager/mediaUploadCopyright')->set('templateData', $this->templateData);
 
         $this->templateData['support'] = Kohana::$config->load('support');
-        $viewSupport = View::factory('systemmanager/support');
-        $viewSupport->set('templateData', $this->templateData);
+
         $this->templateData['tabsName'][2] = __("Support");
-        $this->templateData['tabs'][2] = $viewSupport;
+        $this->templateData['tabs'][2] = View::factory('systemmanager/support')->set('templateData', $this->templateData);
 
         $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
-        $viewSupport = View::factory('systemmanager/oauth');
-        $viewSupport->set('templateData', $this->templateData);
+
         $this->templateData['tabsName'][3] = __("OAuth");
-        $this->templateData['tabs'][3] = $viewSupport;
+        $this->templateData['tabs'][3] = View::factory('systemmanager/oauth')->set('templateData', $this->templateData);
 
-        $view = View::factory('systemmanager/view');
-        $view->set('templateData', $this->templateData);
+        $this->templateData['tabsName'][4] = __("Upload README");
+        $this->templateData['tabs'][4] = View::factory('systemmanager/uploadReadMe')->set('templateData', $this->templateData);
 
-        $this->templateData['center'] = $view;
+        $this->templateData['center'] = View::factory('systemmanager/view')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -203,6 +198,48 @@ class Controller_SystemManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-}
 
-?>
+    public function action_uploadReadMe ()
+    {
+        $file       = Arr::get($_FILES, 'file');
+        $pathInfo   = pathinfo($file['name']);
+        $extension  = $pathInfo['extension'];
+
+        if ($file["error"] > 0) echo 'Error: '.$file['error'].'<br>';
+        else
+        {
+            $existingFile = $this->getExistingReadMe();
+            if ($existingFile) unlink(DOCROOT.'/tmp/'.$existingFile);
+            move_uploaded_file($file['tmp_name'] , DOCROOT.'/tmp/ReadMe.'.$extension);
+        }
+
+        Request::initial()->redirect(URL::base().'systemManager/#tabs-4');
+    }
+
+    public function getExistingReadMe ()
+    {
+        $fileName = false;
+        foreach(scandir(DOCROOT.'/tmp/') as $existingFileName){
+            if (strpos($existingFileName, 'ReadMe') !== false) $fileName = $existingFileName;
+        }
+        return $fileName;
+    }
+
+    public function action_downloadReadMe()
+    {
+        $fileName = $this->getExistingReadMe();
+
+        if ($fileName) {
+            $path = DOCROOT.'/tmp/'.$fileName;
+
+            // Give file to user
+            header("Content-Disposition: attachment; filename=$fileName");
+            header("Content-length: ".filesize($path));
+
+            // send archive
+            readfile($path);
+            exit;
+        }
+        Request::initial()->redirect(URL::base());
+    }
+}

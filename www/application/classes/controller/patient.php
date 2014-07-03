@@ -138,7 +138,7 @@ class Controller_Patient extends Controller_Base {
     public function action_delete_patient()
     {
         $id_patient = $this->request->param('id');
-        DB_ORM::model('Patient_ConditionRelation')->delete_condition($id_patient);
+        DB_ORM::model('Patient_ConditionRelation')->deletePatientConditions($id_patient);
         DB_ORM::delete('Patient')->where('id', '=', $id_patient)->execute();
         Request::$initial->redirect(URL::base().'patient/index');
     }
@@ -150,8 +150,7 @@ class Controller_Patient extends Controller_Base {
         {
             foreach ($condition_data as $id_condition=>$data)
             {
-                DB_ORM::model('Patient_ConditionChange')
-                    ->create_or_update($id_node, $id_condition, Arr::get($data, 'value', 0), Arr::get($data, 'appear', 0), $id_patient);
+                DB_ORM::model('Patient_ConditionChange')->create_or_update($id_node, $id_condition, Arr::get($data, 'value', 0), Arr::get($data, 'appear', 0), $id_patient);
             }
         }
         Request::$initial->redirect($this->request->referrer());
@@ -210,5 +209,11 @@ class Controller_Patient extends Controller_Base {
         $correct = 1;
         DB_ORM::model('Patient_Rule')->update($rule, $correct, $connectionId);
         Request::$initial->redirect(URL::base().'patient/connection');
+    }
+
+    public function action_deleteCondition()
+    {
+        DB_ORM::delete('Patient_Condition')->where('id', '=', $this->request->param('id'))->execute();
+        Request::initial()->redirect($this->request->referrer());
     }
 }

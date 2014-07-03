@@ -21,14 +21,9 @@
 if(isset($templateData['patient'])) {
 $id_patient     = $templateData['patient']->id;
 $name           = $templateData['patient']->name;
-$selectedType   = $templateData['patient']->type;
-?>
-<div class="page-header"><?php
-    if ($id_patient) { ?>
-    <h1>Edit patient '<?php echo $name; ?>'</h1><?php
-    } else { ?>
-    <h1>Create patient</h1><?php
-    } ?>
+$selectedType   = $templateData['patient']->type; ?>
+<div class="page-header">
+    <h1><?php echo $id_patient ? 'Edit patient"'.$name.'"' : 'Create patient'; ?></h1>
 </div>
 
 <form class="form-horizontal" action="<?php echo URL::base().'patient/update/'.$id_patient ?>" method="post">
@@ -71,7 +66,7 @@ $selectedType   = $templateData['patient']->type;
                 <span class="f-col">Condition name</span>
                 <input name="conditions[name][]" type="text" value="<?php echo $condition->name ?>">
             </label>
-            <a href="<?php echo URL::base().'patient/delete_condition/'.$id_patient.'/'.$condition->id.'/condition'; ?>" class="btn btn-danger pull-right"><i class="icon-trash"></i>Delete</a>
+            <a href="<?php echo URL::base().'patient/deleteCondition/'.$condition->id; ?>" class="btn btn-danger pull-right"><i class="icon-trash"></i>Delete</a>
             <label>
                 <span class="f-col">Condition start value</span>
                 <input name="conditions[value][]" type="text" value="<?php echo $condition->value ?>">
