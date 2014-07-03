@@ -730,7 +730,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
         } else Response::factory()->body('');
     }
 
-    public function action_questionResponse() {
+    public function action_questionResponse()
+    {
         $optionNumber   = $this->request->param('id', NULL);
         $questionId     = $this->request->param('id2', NULL);
         $nodeId         = $this->request->param('id3', NULL);
@@ -1365,7 +1366,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         <button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'disabled\', \'disabled\');">'.$submitText.'</button>';
                 }
                 else {
-                    $result .= 'onKeyUp="if (event.keyCode == 13) {ajaxFunction(' . $question->id . ');$(\'#questionSubmit' . $question->id . '\').show();$(\'#qresponse_' . $question->id . '\').attr(\'disabled\', \'disabled\');}"/><span id="questionSubmit' . $question->id . '" style="display:none;font-size:12px">Answer has been sent.</span>';
+                    $result .= 'onKeyUp="if (event.keyCode == 13) {$(\'#questionSubmit'.$question->id.'\').show(); $(\'#qresponse_'.$question->id.'\').attr(\'disabled\', \'disabled\'); }"/><span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>';
                 }
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);

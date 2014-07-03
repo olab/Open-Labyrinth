@@ -1048,9 +1048,10 @@ class Model_Labyrinth extends Model {
         $returnStr = '';
         $question = DB_ORM::model('map_question', array((int) $questionId));
 
-        if ($question) {
+        if ($question)
+        {
             $responseObj = null;
-            if (($question->type->value != 'text') && ($question->type->value != 'area')) {
+            if (($question->type->value != 'text') AND ($question->type->value != 'area')) {
                 foreach ($question->responses as $resp) {
                     if ($resp->id == $response) {
                         $responseObj = $resp;
@@ -1061,18 +1062,16 @@ class Model_Labyrinth extends Model {
 
             $qChoices = json_decode(Session::instance()->get('questionChoices'), true);
 
-            if (($question->type->value == 'text') || ($question->type->value == 'area')) {
+            if (($question->type->value == 'text') OR ($question->type->value == 'area'))
+            {
                 $response = htmlspecialchars(base64_decode($response));
-                $sessionId = $this->getSessionID();
-                DB_ORM::model('user_response')->createResponse($sessionId, $question->id, $response, $nodeId);
+                DB_ORM::model('user_response')->createResponse($this->getSessionID(), $question->id, $response, $nodeId);
 
                 $countersFunc = Session::instance()->get('countersFunc');
                 $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
-                if ($question->settings != '') {
-                    list($rule, $isCorrect) = json_decode($question->settings);
-                }
+                if ($question->settings != '') list($rule, $isCorrect) = json_decode($question->settings);
 
-                if ($question->settings != '' && $isCorrect == 1)
+                if ($question->settings != '' AND $isCorrect == 1)
                 {
                     $mapID = $question->map_id;
                     $counters = DB_ORM::model('map_counter')->getCountersByMap($mapID);
@@ -1088,110 +1087,99 @@ class Model_Labyrinth extends Model {
 
                     $array = $runtimelogic->parsingString($rule);
                     $resultLogic = $array['result'];
-                    if (isset($resultLogic['goto'])){
-                        if ($resultLogic['goto'] != NULL){
-                            $nodes = DB_ORM::model('map_node')->getAllNode($mapID);
-                            $inMap = false;
+                    if (isset($resultLogic['goto']) AND $resultLogic['goto'] != NULL)
+                    {
+                        $nodes = DB_ORM::model('map_node')->getAllNode($mapID);
+                        $inMap = false;
 
-                            foreach ($nodes as $node) {
-                                if ( $node->id == $resultLogic['goto']) {
-                                    $inMap = true;
-                                }
-                            }
+                        foreach ($nodes as $node)
+                        {
+                            if ( $node->id == $resultLogic['goto']) $inMap = true;
+                        }
 
-                            if ($inMap) {
-                                $goto = Session::instance()->get('goto', NULL);
-
-                                if ($goto == NULL) {
-                                    Session::instance()->set('goto', $resultLogic['goto']);
-                                }
-                            }
+                        if ($inMap)
+                        {
+                            $goto = Session::instance()->get('goto', NULL);
+                            if ($goto == NULL) Session::instance()->set('goto', $resultLogic['goto']);
                         }
                     }
 
-                    if (isset($resultLogic['counters'])){
-                        if (count($resultLogic['counters']) > 0){
-                            $counterString = $this->getCounterString($mapID);
-                            if ($counterString != ''){
-                                foreach($resultLogic['counters'] as $key => $value){
-                                    $previousValue = $this->getCounterValueFromString($key, $counterString);
-                                    $counterString = $this->setCounterValueToString($key, $counterString, $value);
+                    if (isset($resultLogic['counters']) AND count($resultLogic['counters']) > 0)
+                    {
+                        $counterString = $this->getCounterString($mapID);
+                        if ($counterString != '')
+                        {
+                            foreach($resultLogic['counters'] as $key => $value)
+                            {
+                                $previousValue = $this->getCounterValueFromString($key, $counterString);
+                                $counterString = $this->setCounterValueToString($key, $counterString, $value);
 
-                                    $diff = $value - $previousValue;
-                                    if ($diff > 0){
-                                        $diff = '+'.$diff;
-                                    }
-                                    $countersFunc[$key][] = $diff;
-                                }
-                                $this->updateCounterString($mapID, $counterString);
+                                $diff = $value - $previousValue;
+                                $countersFunc[$key][] = ($diff > 0) ? '+'.$diff : $diff;
                             }
+                            $this->updateCounterString($mapID, $counterString);
                         }
                     }
 
                     Session::instance()->set('countersFunc', json_encode($countersFunc));
 
-                    if (isset($resultLogic['correct'])){
-                        $returnStr .= '<img src="' . URL::base() . 'images/tick.jpg"> ';
-                    }
-
-                    if (isset($resultLogic['incorrect'])){
-                        $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
-                    }
+                    if (isset($resultLogic['correct'])) $returnStr .= '<img src="'.URL::base().'images/tick.jpg"> ';
+                    if (isset($resultLogic['incorrect'])) $returnStr .= '<img src="'.URL::base().'images/cross.jpg"> ';
                 }
 
                 $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
-                if (isset($arrayAddedQuestions[$questionId])) {
+                if (isset($arrayAddedQuestions[$questionId]))
+                {
                     unset($arrayAddedQuestions[$questionId]);
                     Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
                 }
             }
 
-            if ($question->type->value == 'pcq'){
+            if ($question->type->value == 'pcq')
+            {
                 $qChoices[$questionId] = array();
                 $qChoices[$questionId][$response]['score'] = $responseObj->score;
                 $qChoices[$questionId][$response]['response'] = $responseObj->response;
-
                 $qChoices['counter_ids'][$questionId] = $question->counter_id;
 
                 $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
-                if (isset($arrayAddedQuestions[$questionId])) {
+                if (isset($arrayAddedQuestions[$questionId]))
+                {
                     unset($arrayAddedQuestions[$questionId]);
                     Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
                 }
             }
 
-            if ($question->type->value == 'mcq') {
+            if ($question->type->value == 'mcq')
+            {
                 if ($questionStatus == 1){
                     $qChoices[$questionId][$response]['score'] = $responseObj->score;
                     $qChoices[$questionId][$response]['response'] = $responseObj->response;
-                } else {
-                    if (isset($qChoices[$questionId][$response])) unset($qChoices[$questionId][$response]);
                 }
+                else if (isset($qChoices[$questionId][$response])) unset($qChoices[$questionId][$response]);
 
                 $qChoices['counter_ids'][$questionId] = $question->counter_id;
 
                 $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
-                if (isset($arrayAddedQuestions[$questionId])) {
+                if (isset($arrayAddedQuestions[$questionId]))
+                {
                     unset($arrayAddedQuestions[$questionId]);
                     Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
                 }
             }
             Session::instance()->set('questionChoices', json_encode($qChoices));
 
-            if ($question->show_answer)
+            if ($question->show_answer AND $question->type->value != 'text' AND $question->type->value != 'area')
             {
-                if ($question->type->value != 'text' and $question->type->value != 'area')
-                {
-                    switch ($responseObj->is_correct){
-                        case 0:
-                            $returnStr .= '<img src="'.URL::base().'images/cross.jpg"> ';
-                            break;
-                        case 1:
-                            $returnStr .= '<img src="'.URL::base().'images/tick.jpg"> ';
-                            break;
-                    }
-                    $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('('.$responseObj->feedback.')') : '');
+                switch ($responseObj->is_correct){
+                    case 0:
+                        $returnStr .= '<img src="'.URL::base().'images/cross.jpg"> ';
+                        break;
+                    case 1:
+                        $returnStr .= '<img src="'.URL::base().'images/tick.jpg"> ';
+                        break;
                 }
+                $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('('.$responseObj->feedback.')') : '');
             }
         }
 
@@ -1322,7 +1310,7 @@ class Model_Labyrinth extends Model {
 
             $counter = DB_ORM::model('map_counter', array($id));
 
-            if (($sessionId != NULL) && ($sessionId != 'notExist')){
+            if ($sessionId != NULL){
                 $currentCountersState = '';
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
                 if ($rootNode != NULL){
@@ -1339,36 +1327,29 @@ class Model_Labyrinth extends Model {
                 } else {
                     $result = $counter->start_value;
                 }
-            } else {
-                $result = $counter->start_value;
             }
+            else $result = $counter->start_value;
         }
         return $result;
     }
 
-    public function getCounterString($mapId){
+    public function getCounterString($mapId)
+    {
         $currentCountersState = '';
-        if ($mapId != NULL){
-            $sessionId = $this->getSessionID();
-
+        if ($mapId != NULL)
+        {
             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
-            if ($rootNode != NULL){
-                $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
-            }
-
+            if ($rootNode != NULL) $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($this->getSessionID(), $rootNode->map_id, $rootNode->id);
         }
-
         return $currentCountersState;
     }
 
-    public function updateCounterString($mapId, $string){
-        if ($mapId != NULL){
-            $sessionId = $this->getSessionID();
-
+    public function updateCounterString($mapId, $string)
+    {
+        if ($mapId != NULL)
+        {
             $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
-            if ($rootNode != NULL){
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $string);
-            }
+            if ($rootNode != NULL) DB_ORM::model('user_sessionTrace')->updateCounter($this->getSessionID(), $rootNode->map_id, $rootNode->id, $string);
         }
         return true;
     }
@@ -1390,15 +1371,10 @@ class Model_Labyrinth extends Model {
         return $string;
     }
 
-    public function getSessionID(){
+    public function getSessionID()
+    {
         $sessionId = Session::instance()->get('session_id', NULL);
-        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
-            $sessionId = $_COOKIE['OL'];
-        } else {
-            if ($sessionId == NULL){
-                $sessionId = 'notExist';
-            }
-        }
+        if ($sessionId == NULL AND isset($_COOKIE['OL'])) $sessionId = $_COOKIE['OL'];
         return $sessionId;
     }
 

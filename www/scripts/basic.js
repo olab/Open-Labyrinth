@@ -200,26 +200,20 @@ $(document).ready(function(){
     function lightningChoice($this){
         lightningNotSaved = true;
 
-        var dbId       = $this.data('dbId'),
-            questionId = $this.data('question'),
+        var questionId = $this.data('question'),
             responseId = $this.data('response'),
             tries      = $this.data('tries'),
             response   = $this.data('val'),
             check      = $this.is(':checked'),
-            URL        = urlBase + 'renderLabyrinth/questionResponse/' + responseId + '/' + questionId + '/' + idNode,
-            $response  = $('#AJAXresponse' + responseId);
-
-        rightAnswer = checkAnswer(questionId, response);
-
-        URL += check ? '/1' : '/0';
+            URL        = urlBase + 'renderLabyrinth/questionResponse/' + responseId + '/' + questionId + '/' + idNode + (check ? '/1' : '/0');
 
         if (tries == 1) $('.questionForm_' + questionId + ' .click').remove();
 
         $.get(
             URL,
             function(data){
-                if (data != '') $response.html(data);
-                if (rightAnswer) imitateGo();
+                if (data != '') $('#AJAXresponse' + responseId).html(data);
+                if (checkAnswer(questionId, response)) imitateGo();
                 if (actionGoClicked) window.location.href = toNodeHref;
                 lightningNotSaved = false;
             }
@@ -269,19 +263,14 @@ $(document).ready(function(){
 
 function ajaxFunction(qid) {
     submitTextQ.push(qid);
-    var qresp = $("#qresponse_" + qid).val();
+    var response = $("#qresponse_" + qid).val();
 
-    if (qresp == '') qresp = 'no response';
-
-    qresp = B64.encode(qresp);
-
-    var URL = urlBase + "renderLabyrinth/questionResponse/" + qresp + "/" + qid + "/" + idNode,
-        $response = $('#AJAXresponse' + qid);
+    if (response == '') response = 'no response';
 
     $.get(
-        URL,
+        urlBase + "renderLabyrinth/questionResponse/" + B64.encode(response) + "/" + qid + "/" + idNode,
         function(data) {
-            if(data != '') $response.html(data);
+            if(data != '') $('#AJAXresponse' + qid).html(data);
             savedTextQ += 1;
             if (savedTextQ == questions.length && getQuestionResponse) window.location.href = toNodeHref;
         }
