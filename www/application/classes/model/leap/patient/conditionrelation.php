@@ -78,7 +78,7 @@ class Model_Leap_Patient_ConditionRelation extends DB_ORM_Model {
 
     public function check_and_create ($id_patient, $id_condition)
     {
-        $result = DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->where('id_condition', '=', $id_condition)->query()->as_array();
+        $result = DB_ORM::select('Patient_ConditionRelation')->where('id_patient', '=', $id_patient)->where('id_condition', '=', $id_condition)->query()->fetch(0);
         if( ! $result)
         {
             $this->id_patient = $id_patient;

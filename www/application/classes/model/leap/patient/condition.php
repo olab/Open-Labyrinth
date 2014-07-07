@@ -58,16 +58,22 @@ class Model_Leap_Patient_Condition extends DB_ORM_Model {
 
     public function update ($name, $value, $id = FALSE)
     {
-        $condition = ($id) ? DB_ORM::model('Patient_Condition', array($id)) : DB_ORM::model('Patient_Condition');
-        $condition->name = $name;
-        $condition->value = $value;
-        $condition->save();
-
-        // $condition->id didn't work, so....
-        $all_record = DB_ORM::select('Patient_Condition')->query()->as_array();
-        $last_record = array_pop($all_record);
-
-        return $last_record->id;
+        if ($id)
+        {
+            DB_ORM::update('Patient_Condition')
+                ->set('name', $name)
+                ->set('value', $value)
+                ->where('id', '=', $id)
+                ->execute();
+        }
+        else
+        {
+            $id = DB_ORM::insert('Patient_Condition')
+                ->column('name', $name)
+                ->column('value', $value)
+                ->execute();
+        }
+        return $id;
     }
 }
 

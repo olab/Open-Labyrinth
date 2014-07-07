@@ -84,7 +84,7 @@ class Model_Leap_Patient_Sessions extends DB_ORM_Model {
             ->column('patient_condition', '')
             ->execute();
 
-        return DB_ORM::model('Patient_Sessions', array($sessionId));;
+        return DB_ORM::model('Patient_Sessions', array($sessionId));
     }
 
     public function getSession($patientId, $whose, $whoseId, $scenarioId)

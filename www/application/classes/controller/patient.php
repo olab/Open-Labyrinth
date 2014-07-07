@@ -62,17 +62,16 @@ class Controller_Patient extends Controller_Base {
 
     public function action_update()
     {
-        $id_patient         = $this->request->param('id');
         $post               = $this->request->post();
-        $conditions         = Arr::get($post, 'conditions', array());
         $patient_name       = Arr::get($post, 'name');
         $patient_scenarios  = Arr::get($post, 'scenarios', array());
         $scenario_delete    = Arr::get($post, 'scenario_delete', array());
         $patientType        = Arr::get($post, 'patientType', array());
+        $conditions         = Arr::get($post, 'conditions', array());
         $conditions_names   = Arr::get($conditions, 'name', array());
         $conditions_value   = Arr::get($conditions, 'value', array());
         $conditions_ids     = Arr::get($conditions, 'id', array());
-        $id_patient = DB_ORM::model('Patient')->update($patient_name, $patientType, $id_patient);
+        $id_patient         = DB_ORM::model('Patient')->update($patient_name, $patientType, $this->request->param('id'));
 
         // Condition, and condition relation save
         foreach ($conditions_names as $id=>$name)

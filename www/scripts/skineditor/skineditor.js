@@ -166,7 +166,7 @@ var SkinEditor = (function() {
                 type: 'POST',
                 data: { skinId: skinId, data: data, html: html },
                 success: function(data) {
-                    if(data === null || data.status === 'error') { alert("ERROR"); }
+                    if (data === null || data.status === 'error') alert("ERROR");
 
                     instance._$uiSaving.hide();
                     instance._$uiSaved.show();
@@ -174,8 +174,6 @@ var SkinEditor = (function() {
                 }
             });
         });
-
-
 
         $ui.find('.btn-delete-component').click(function() {
             instance._componentsTree.RemoveSelectedComponent();

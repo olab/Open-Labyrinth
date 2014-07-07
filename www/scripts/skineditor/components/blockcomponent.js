@@ -45,7 +45,7 @@ var BlockComponent = (function(parent) {
         this.Right              = new ObservableProperty();
         this.Bottom             = new ObservableProperty();
         this.IsPopupInside      = new ObservableProperty();
-    };
+    }
     
     /**
      * Get block component name

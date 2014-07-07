@@ -6256,3 +6256,7 @@ input.lightning-chb {
 .second_parameter {
     margin-left: 10px;
 }
+
+#helpPopup {
+    padding: 15px;
+}
