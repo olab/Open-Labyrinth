@@ -130,38 +130,20 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         return array();
     }
 
-    public function getAllSessionByUser($userId, $limit = 0) {
-        $limit = (int) $limit;
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId)
-                ->order_by('start_time', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
+    public function getAllSessionByUser($userId, $limit = 0)
+    {
+        $result = DB_ORM::select('User_Session')->where('user_id', '=', $userId)->order_by('start_time', 'DESC');
+        if ($limit) $result->limit($limit);
+        return $result->query()->as_array();
     }
 
     public function getStartTimeSessionById($sessionId) {
-        $builder = DB_SQL::select('default')
+        $result = DB_SQL::select('default')
             ->from($this->table())
-            ->where('id', '=', $sessionId);
-        $result = $builder->query();
+            ->where('id', '=', $sessionId)
+            ->query();
 
-        if($result->is_loaded()) {
-            return $result[0]['start_time'];
-        }
+        if($result->is_loaded()) return $result[0]['start_time'];
 
         return NULL;
     }
@@ -236,27 +218,25 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      * @param integer|null $notInUsers - not include sessions of susers
      * @return array|null - session ids or null
      */
-    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null)
+    {
         $builder = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->column('id');
-        if($webinarId != null && $webinarId > 0) {
-            $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
-        }
+           ->from($this->table())
+           ->where('map_id', '=', $mapId, 'AND')
+           ->column('id');
 
-        if($webinarStep != null && $webinarStep > 0) {
-            $builder = $builder->where('webinar_step', '=', $webinarStep, 'AND');
-        }
+        if ($webinarId != null && $webinarId > 0) $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
 
-        if($notInUsers != null && count($notInUsers) > 0) {
-            $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
-        }
+        if ($webinarStep != null && $webinarStep > 0) $builder = $builder->where('webinar_step', '=', $webinarStep, 'AND');
+
+        if ($notInUsers != null && count($notInUsers) > 0) $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
 
         $records = $builder->query();
-        if($records->is_loaded()) {
+        if($records->is_loaded())
+        {
             $sessions = array();
-            foreach($records as $record) {
+            foreach($records as $record)
+            {
                 $sessions[] = $record['id'];
             }
 
@@ -271,22 +251,23 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      *
      * @param integer $webinarId - webinar ID
      */
-    public function deleteWebinarSessions($webinarId) {
+    public function deleteWebinarSessions($webinarId)
+    {
         if($webinarId == null || $webinarId <= 0) return;
 
         DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('webinar_id', '=', $webinarId)
-                ->execute();
+            ->from($this->table())
+            ->where('webinar_id', '=', $webinarId)
+            ->execute();
     }
 
-    public function getSessionByWebinarId($webinarId , $checkIds) {
+    public function getSessionByWebinarId($webinarId , $checkIds)
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('webinar_id', '=', $webinarId,'AND');
 
-        if (count($checkIds) > 0)
-            $builder->where('id', 'NOT IN', $checkIds);
+        if (count($checkIds) > 0) $builder->where('id', 'NOT IN', $checkIds);
 
         $result = $builder->query();
 
@@ -295,19 +276,21 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             ->where('id', '=', $webinarId)
             ->column('current_step');
         $step = $builder->query();
-        foreach($step as $current) {
+        foreach($step as $current)
+        {
             $current_step = $current['current_step'];
         }
 
         $res = array();
         $ids = array();
-        if($result->is_loaded()) {
-            foreach ($result as $record) {
+        if($result->is_loaded())
+        {
+            foreach ($result as $record)
+            {
                 $record['webinar_step'] = $current_step;
                 $res[] = $record;
                 $ids[] = $record['id'];
             }
-
         }
         return array($res, $ids);
     }
@@ -351,7 +334,6 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 }
             }
         }
-
         return $result;
     }
 
@@ -375,25 +357,28 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             $des = $this->getNumberOfDecisionsPerSession((int) $mapId);
             $result['avgDes'] = 0;
 
-            if ($des != null && count($des) > 0) {
-                foreach ($des as $n => $f) {
+            if ($des != null && count($des) > 0)
+            {
+                foreach ($des as $n => $f)
+                {
                     $result['avgDes'] = $result['avgDes'] + $f;
                 }
                 $result['avgDes'] = round($result['avgDes'] / count($des), 1);
             }
 
             $results = $connection->query('SELECT session_id, date_stamp FROM (SELECT * FROM `user_sessiontraces` WHERE map_id = ' . $mapId . ' ORDER BY id DESC) AS T GROUP BY session_id HAVING COUNT(*) > 1');
-            if ($results->is_loaded()) {
+            if ($results->is_loaded())
+            {
                 $result['uniqueUsers'] = count($results);
                 $avgTime = 0;
                 $count = 0;
                 foreach ($results as $s) {
-                    if (isset($sessionMap[(int) $s['session_id']])) {
+                    if (isset($sessionMap[(int) $s['session_id']]))
+                    {
                         $avgTime = $avgTime + ((int) $s['date_stamp'] - $sessionMap[(int) $s['session_id']]);
                         $count++;
                     }
                 }
-
                 if ($count > 0) $result['avgTime'] = gmdate("i:s", round($avgTime / $count, 0));
             }
             $results->free();
@@ -404,11 +389,14 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
     public function getNumberOfDecisionsPerSession($mapId) {
         $result = array();
-        if (is_numeric($mapId)) {
+        if (is_numeric($mapId))
+        {
             $connection = DB_Connection_Pool::instance()->get_connection('default');
             $results = $connection->query('SELECT node_id, COUNT(*) as count FROM `user_sessiontraces` WHERE map_id = ' . $mapId . ' GROUP BY node_id;');
-            if ($results->is_loaded()) {
-                foreach ($results as $record) {
+            if ($results->is_loaded())
+            {
+                foreach ($results as $record)
+                {
                     $result[DB_ORM::model('map_node', array((int) $record['node_id']))->title] = (int) $record['count'];
                 }
             }
@@ -426,22 +414,27 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         $counters   = DB_ORM::model('map_counter')->getCountersByMap($mapId);
         $result     = array();
 
-        foreach ($nodes as $node) {
-            foreach ($sessions as $session) {
-                if (count($session->traces) > 0) {
-                    foreach ($session->traces as $trace) {
-                        if ($trace->node_id != $node->id) continue;
-                        if (count($counters) <= 0) continue;
+        foreach ($nodes as $node)
+        {
+            foreach ($sessions as $session)
+            {
+                if (count($session->traces) > 0)
+                {
+                    foreach ($session->traces as $trace)
+                    {
+                        if ($trace->node_id != $node->id AND count($counters) <= 0) continue;
                         $j = 0;
 
-                        foreach ($counters as $counter) {
+                        foreach ($counters as $counter)
+                        {
                             $s = strpos($trace->counters, '[CID=' . $counter->id . ',') + 1;
                             $tmp = substr($trace->counters, $s, strlen($trace->counters));
                             $e = strpos($tmp, ']') + 1;
                             $tmp = substr($tmp, 0, $e - 1);
                             $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
 
-                            if (is_numeric($tmp)) {
+                            if (is_numeric($tmp))
+                            {
                                 $thisCounter = floatval($tmp);
                                 $result[$node->id][$counter->id]['value'] = isset($result[$node->id][$counter->id]['value']) ? ($result[$node->id][$counter->id]['value'] + $thisCounter) : $thisCounter;
                                 $result[$node->id][$counter->id]['count'] = isset($result[$node->id][$counter->id]['count']) ? ($result[$node->id][$counter->id]['count'] + 1) : 1;
@@ -454,8 +447,10 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 }
             }
         }
-        foreach ($result as $nodeId => $counters) {
-            foreach ($counters as $counterId => $v) {
+        foreach ($result as $nodeId => $counters)
+        {
+            foreach ($counters as $counterId => $v)
+            {
                 if (isset($v['value'])) $result[$nodeId][$counterId]['value'] = round($result[$nodeId][$counterId]['value'] / $result[$nodeId][$counterId]['count'], 1);
             }
         }
@@ -492,7 +487,6 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             }
             $results->free();
         }
-
         return $result;
     }
 
@@ -564,9 +558,9 @@ class Model_Leap_User_Session extends DB_ORM_Model {
     private function getCounterById($couters, $id) {
         if (count($couters) <= 0) return null;
 
-        foreach($couters as $counter) {
-            if($counter->id == $id)
-                return $counter;
+        foreach($couters as $counter)
+        {
+            if($counter->id == $id) return $counter;
         }
     }
 

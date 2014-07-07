@@ -32,6 +32,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     {
         $mapId       = $this->request->param('id', null);
         $this->mapId = $mapId;
+        $node        = null;
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
 
@@ -60,7 +61,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Session::instance()->delete('arrayAddedQuestions');
 
                 $node = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-                $this->renderNode($node);
             }
         } else {
             $nodeId   = $this->request->param('id2', null);
@@ -77,26 +77,130 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
-            $this->renderNode($node);
         }
+        $this->renderNode($node, $action);
     }
 
-    private function renderNode ($nodeObj)
+    private function renderNode ($nodeObj, $action)
     {
         if ($nodeObj == NULL) Request::initial()->redirect(URL::base());
 
-        $bookMark = $this->request->param('id4', null);
-        $nodeId   = $nodeObj->id;
-        $isRoot   = ($nodeObj->type == 1) ? true : false;
-        $data     = ($bookMark != NULL)
+        $editOnId   = $action ? 'id3' : 'id2';
+        $editOn     = $this->request->param($editOnId, null);
+        $bookMark   = $this->request->param('id4', null);
+        $nodeId     = $nodeObj->id;
+        $mapId      = $nodeObj->map_id;
+        $isRoot     = ($nodeObj->type == 1) ? true : false;
+        $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+        $data       = ($bookMark != NULL)
             ? Model::factory('labyrinth')->execute($nodeId, (int) $bookMark)
             : Model::factory('labyrinth')->execute($nodeId, null, $isRoot);
+
+        if ( ! $data) Request::initial()->redirect(URL::base());
+
+        /* if exist poll node save its time */
+        $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $scenarioId);
+
+        /* ----- patient ----- */
+        $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
+        foreach ($data['patients'] as $patient)
+        {
+            $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
+        }
+        /* ----- end patient ----- */
+
+        $gotoNode = Session::instance()->get('goto', NULL);
+        if ($gotoNode != NULL)
+        {
+            Session::instance()->set('goto', NULL);
+            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
+        }
+
+        $undoNodes = array();
+        if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
+        {
+            $sessionId              = (int)$data['traces'][0]->session_id;
+            $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+            $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+            $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+            $data['timeForNode']    = $timeForNode;
+            $data['session']        = $sessionId;
+
+            if ($data['node']->undo)
+            {
+                list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
+                $data['undoLinks'] = $undoLinks;
+            }
+            else $undoNodes = Arr::get($this->prepareUndoLinks($sessionId, $mapId, $nodeId), 1 ,null);
+        }
+
+        $data['navigation'] = $this->generateNavigation($data['sections']);
+
+        if ( ! isset($data['node_links']['linker']))
+        {
+            if ($data['node']->link_style->name == 'type in text')
+            {
+                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
+                $data['links'] = $result['links']['display'];
+                if(isset($data['alinkfil']) AND isset($data['alinknod']))
+                {
+                    $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+                    $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+                }
+            }
+            else
+            {
+                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
+                $data['links'] = $result['links'] ? ( ! empty($result['links'])) : '';
+            }
+        }
+        else $data['links'] = $data['node_links']['linker'];
+
+        if ($editOn != null AND $editOn == 1) $data['node_edit'] = TRUE;
+        else
+        {
+            if (($data['node']->info != '') AND (strpos($data['node_text'],'[[INFO:') === false) AND $data['node']->show_info) $data['node_text'].= '[[INFO:'.$data['node']->id.']]';
+            if (($data['node']->info == '') AND (strpos($data['node_text'],'[[INFO:')))
+            {
+                $search = '[[INFO:'.$data['node']->id.']]';
+                $data['node_text'] = str_replace($search, '',$data['node_text']);
+            }
+            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+        }
+
+        $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+        $data['skin_path'] = $data['map']->skin->path;
+
+        //Calculate time for Timer and Pop-up messages
+        $data['timer_start'] = 1;
+        $data['popup_start'] = 1;
+
+        // Parse text key for each nodes
+        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+        {
+            $popup->text = $this->parseText($popup->text);
+            $data['map_popups'][] = $popup;
+        }
+
+        $skin = 'labyrinth/skin/basic/basic';
+        if ($data['map']->skin->enabled AND file_exists($_SERVER['DOCUMENT_ROOT'].'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php'))
+        {
+            $skin = 'labyrinth/skin/basic/basic_template';
+
+            $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
+            $skinData = json_decode($data['map']->skin->data, true);
+            if ($skinData != null AND isset($skinData['body'])) $data['bodyStyle'] = base64_decode($skinData['body']);
+        }
+
+        if ($action = 'index') $data['session'] = (int) $data['traces'][0]->session_id;
+
+        $this->template = View::factory($skin)->set('templateData', $data);
     }
 
-    // TODO: try to merge index and go
     public function action_index()
     {
-        //$this->renderLabyrinth('index');
+        $this->renderLabyrinth('index');
+        exit;
         $mapId       = $this->request->param('id', null);
         $editOn      = $this->request->param('id2', null);
         $scenarioId  = Session::instance()->get('webinarId');
@@ -184,6 +288,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 $data['node_text'] = $this->parseText($data['node_text'], $mapId);
             }
+
             $data['trace_links'] = $this->generateReviewLinks($data['traces']);
             $skin = 'labyrinth/skin/basic/basic';
             if ($data['map']->skin->enabled){
@@ -205,6 +310,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }else{
                 $data['skin_path'] = NULL;
             }
+
             $data['session'] = (int)$data['traces'][0]->session_id;
             foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
             {
@@ -212,16 +318,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $data['map_popups'][] = $popup;
             }
 
-            $this->template = View::factory($skin);
-
-            $this->template->set('templateData', $data);
+            $this->template = View::factory($skin)->set('templateData', $data);
         }
     }
 
-    // TODO: try to merge index and go
     public function action_go()
     {
-        //$this->renderLabyrinth('go');
+        $this->renderLabyrinth('go');
+        exit;
         $mapId       = $this->request->param('id', NULL);
         $nodeId      = $this->request->param('id2', NULL);
         $editOn      = $this->request->param('id3', NULL);
@@ -1013,20 +1117,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         if ($wSectionId)
         {
-            $endNodes       = DB_ORM::model('Map_Node_Section_Node')->getEndNode($wSectionId);
+            $endNodes = DB_ORM::model('Map_Node_Section_Node')->getEndNode($wSectionId);
             foreach ($endNodes as $endNode)
             {
                 if ($endNode->node_id != $node->id) continue;
 
-                $userSession    = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')));
-                $wId            = $userSession->webinar_id;
-                $wStep          = $userSession->webinar_step;
-                $wMapObj        = DB_ORM::select('Webinar_Map')
-                    ->where('webinar_id', '=', $wId)
-                    ->where('which', '=', 'section')
-                    ->where('reference_id', '=', $wSectionId)
-                    ->query()
-                    ->fetch(0);
+                $userSession = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')));
+                $wId         = $userSession->webinar_id;
+                $wStep       = $userSession->webinar_step;
+                $wMapObj     = DB_ORM::select('Webinar_Map')->where('webinar_id', '=', $wId)->where('which', '=', 'section')->where('reference_id', '=', $wSectionId)->query()->fetch(0);
 
                 // get next obj, if its in current webinar step, try to create link
                 if ($wMapObj)
@@ -1060,7 +1159,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 Session::instance()->delete('webinarSectionId');
                 return $result;
-
             }
         }
 
@@ -1070,33 +1168,23 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['links']        = '';
             foreach ($links as $link)
             {
-                if($undoNodes != null && isset($undoNodes[$link->node_2->id])) continue;
+                if (isset($undoNodes[$link->node_2->id])) continue;
 
                 $title = ($link->text != '' and $link->text != ' ') ? $link->text : $link->node_2->title;
 
                 switch ($node->link_style->name)
                 {
                     case 'hyperlinks':
-                        if ($link->image_id != 0) {
-                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '"><img src="' . URL::base() . $link->image->path . '"></a></li>';
-                        } else {
-                            $result['links'] .= '<li><a href="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $link->node_id_2 . '">' . $title . '</a></li>';
-                        }
+                        $content = ($link->image_id != 0) ? '<img src="'.URL::base().$link->image->path.'">' : $title;
+                        $result['links'] .= '<li><a href="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$link->node_id_2.'">'.$content.'</a></li>';
                         break;
                     case 'dropdown':
-                        $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
-                        break;
                     case 'dropdown + confidence':
-                        $result['links'] .= '<option value="' . $link->node_id_2 . '">' . $title . '</option>';
+                        $result['links'] .= '<option value="'.$link->node_id_2.'">'.$title.'</option>';
                         break;
                     case 'type in text':
-                        if (isset($result['links']['alinkfil'])) {
-                            $result['links']['alinkfil'] .= '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] .= '"' . $link->node_id_2 . '", ';
-                        } else {
-                            $result['links']['alinkfil'] = '"' . strtolower($title) . '", ';
-                            $result['links']['alinknod'] = '"' . $link->node_id_2 . '", ';
-                        }
+                        $result['links']['alinkfil'] .= '"'.strtolower($title).'", ';
+                        $result['links']['alinknod'] .= '"'.$link->node_id_2.'", ';
                         break;
                     case 'buttons':
                         $result['links'] .= '<div><a href="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$link->node_id_2.'" class="btn">'.$title.'</a></div>';
@@ -1110,10 +1198,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
                 case 'dropdown':
-                    $result['links'] = '<select name="links" onchange=' . chr(34) . "jumpMenu('parent',this,0)" . chr(34) . ' name="linkjump"><option value="">select ...</option>' . $result['links'] . '</select>';
+                    $result['links'] = '<select name="links" onchange='.chr(34)."jumpMenu('parent',this,0)".chr(34).' name="linkjump"><option value="">select ...</option>'.$result['links'].'</select>';
                     break;
                 case 'dropdown + confidence':
-                    $result['links'] = '<form method="post" action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '"><select name="id">' . $result['links'] . '</select>';
+                    $result['links'] = '<form method="post" action="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'"><select name="id">'.$result['links'].'</select>';
                     $result['links'] .= '<select name="conf">';
                     $result['links'] .= '<option value="">select how confident you are ...</option>';
                     $result['links'] .= '<option value="4">I am very confident</option>';
@@ -1123,31 +1211,30 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result['links'] .= '</select><input type="submit" name="submit" value="go" /></form>';
                     break;
                 case 'type in text':
-                    $result['links']['display'] = '<form action="' . URL::base() . 'renderLabyrinth/go/' . $node->map_id . '" name="form2"><input name="filler" type="text" size="25" value="" onKeyUp="javascript:Populate(this.form);"><input type="hidden" name="id" value="' . $node->id . '" /><input type="submit" name="submit" value="go" /></form>';
+                    $result['links']['display'] = '<form action="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'" name="form2"><input name="filler" type="text" size="25" value="" onKeyUp="javascript:Populate(this.form);"><input type="hidden" name="id" value="'.$node->id.'" /><input type="submit" name="submit" value="go" /></form>';
                     break;
             }
 
-            if ($node->end and $node->link_style->name == 'type in text') {
-                $result['links']['display'] .= $endNodeTemplate;
-            } else if ($node->end) {
-                $result['links'] .= $endNodeTemplate;
-            }
+            if ($node->end and $node->link_style->name == 'type in text') $result['links']['display'] .= $endNodeTemplate;
+            else if ($node->end) $result['links'] .= $endNodeTemplate;
 
             return $result;
-        } else {
-            if ($node->end and $node->link_style->name == 'type in text') {
-                if(!isset($result['links']['display']))
-                    $result['links']['display'] = '';
+        }
+        else
+        {
+            if ($node->end and $node->link_style->name == 'type in text')
+            {
+                if( ! isset($result['links']['display'])) $result['links']['display'] = '';
                 $result['links']['display'] .= $endNodeTemplate;
                 return $result;
-            } else if ($node->end) {
+            }
+            else if ($node->end)
+            {
                 $result['links'] .= $endNodeTemplate;
                 return $result;
             }
 
-            if ($links != '') {
-                return $links;
-            }
+            if ($links != '') return $links;
         }
         return NULL;
     }
