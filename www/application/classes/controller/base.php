@@ -23,7 +23,9 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_Base extends Controller_Template {
 
     public $template = 'home';
+
     protected $templateData = array();
+
     private $unauthorizedRules = array(
         array('controller' => 'home', 'action' => 'login'),
         array('controller' => 'home', 'action' => 'loginOAuth'),
@@ -36,10 +38,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
         array('controller' => 'updateDatabase', 'action' => 'index'),
     );
-    private $authorizedRules = array(
-        array('controller' => 'home', 'action' => 'login'),
-        array('controller' => 'home', 'action' => 'logout'),
-    );
+
     private $learnerRules = array(
         array('controller' => 'authoredLabyrinth', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'collectionManager', 'action' => 'editCollection'),
@@ -77,7 +76,6 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'userManager', 'action' => 'index'),
         array('controller' => 'userManager', 'action' => 'addUser'),
         array('controller' => 'userManager', 'action' => 'saveNewUser'),
-
         array('controller' => 'userManager', 'action' => 'deleteUser'),
         array('controller' => 'userManager', 'action' => 'addGroup'),
         array('controller' => 'userManager', 'action' => 'saveNewGroup'),
@@ -97,12 +95,10 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'labyrinthManager', 'action' => 'global'),
         array('controller' => 'labyrinthManager', 'action' => 'info'),
         array('controller' => 'labyrinthManager', 'action' => 'showDevNotes'),
-
         array('controller' => 'visualManager', 'action' => 'index'),
         array('controller' => 'nodeManager', 'action' => 'index'),
         array('controller' => 'nodeManager', 'action' => 'grid'),
         array('controller' => 'linkManager', 'action' => 'index'),
-
         array('controller' => 'nodeManager', 'action' => 'sections'),
         array('controller' => 'chatManager', 'action' => 'index'),
         array('controller' => 'questionManager', 'action' => 'index'),
@@ -113,11 +109,9 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'counterManager', 'action' => 'rules'),
         array('controller' => 'elementManager', 'action' => 'index'),
         array('controller' => 'clusterManager', 'action' => 'index'),
-
         array('controller' => 'feedbackManager', 'action' => 'index'),
         array('controller' => 'skinManager', 'action' => 'index'),
         array('controller' => 'fileManager', 'action' => 'index'),
-
         array('controller' => 'mapUserManager', 'action' => 'index'),
         array('controller' => 'reportManager', 'action' => 'index')
     );
@@ -161,7 +155,6 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'fileManager', 'action' => 'imageEditor'),
         array('controller' => 'mapUserManager', 'action' => 'index'),
     );
-
 
     public function before()
     {
@@ -240,17 +233,17 @@ class Controller_Base extends Controller_Template {
                 /* Fetch the latest played labyrinths. */
                 $mapIDs = array();
                 $sessions = DB_ORM::model('user_session')->getAllSessionByUser($user_id, 7);
-                if (count($sessions) > 0) {
-                    foreach ($sessions as $s) {
+                if (count($sessions) > 0)
+                {
+                    foreach ($sessions as $s)
+                    {
                         $mapIDs[] = $s->map_id;
                     }
                 }
 
                 if (count($mapIDs) > 0)  $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
 
-                $centerView = View::factory('adminMenu');
-                $this->templateData['center'] = $centerView;
-                $centerView->set('templateData', $this->templateData);
+                $this->templateData['center'] = View::factory('adminMenu')->set('templateData', $this->templateData);
             }
             else
             {
@@ -266,34 +259,29 @@ class Controller_Base extends Controller_Template {
 
                 $centerView = View::factory('userMenu');
 
-                if ($user_type_name == 'learner')
-                {
-                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner($user_id));
-                }
-                else
-                {
-                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
-                }
+                if ($user_type_name == 'learner') $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner($user_id));
+                else $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
 
-                $centerView->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId($user_id));
-
-                $centerView->set('templateData', $this->templateData);
-                $this->templateData['center'] = $centerView;
+                $this->templateData['center'] = $centerView
+                    ->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId($user_id))
+                    ->set('templateData', $this->templateData);;
             }
         }
         else
         {
-            if ($this->request->controller() == 'home' && $this->request->action() == 'index') {
+            if ($this->request->controller() == 'home' && $this->request->action() == 'index')
+            {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
                 $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
                 Session::instance()->delete('redirectURL');
-                $this->templateData['left'] = View::factory('login');
-                $this->templateData['left']->set('templateData', $this->templateData);
+                $this->templateData['left'] = View::factory('login')->set('templateData', $this->templateData);
 
                 $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap();
                 $rooNodesMap = array();
-                if($maps != null && count($maps) > 0) {
-                    foreach($maps as $map) {
+                if($maps != null AND count($maps) > 0)
+                {
+                    foreach($maps as $map)
+                    {
                         $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                     }
                 }
@@ -306,18 +294,20 @@ class Controller_Base extends Controller_Template {
                     ->set('openLabyrinths', $maps)
                     ->set('rootNodesMap', $rooNodesMap)
                     ->set('templateData', $this->templateData);
-            } else {
+            }
+            else
+            {
                 $controller = $this->request->controller();
                 $action = $this->request->action();
 
                 $isRedirect = true;
-                foreach ($this->unauthorizedRules as $rule) {
-                    if ($controller == $rule['controller'] && $action == $rule['action']) {
-                        $isRedirect = false;
-                    }
+                foreach ($this->unauthorizedRules as $rule)
+                {
+                    if ($controller == $rule['controller'] && $action == $rule['action']) $isRedirect = false;
                 }
                 
-                if ($isRedirect) {
+                if ($isRedirect)
+                {
                     Session::instance()->set('redirectURL', $this->request->uri());
                     Notice::add('Please login first.');
                     Request::initial()->redirect(URL::base());
@@ -330,6 +320,7 @@ class Controller_Base extends Controller_Template {
     
     private function checkUserRoleRules()
     {
+        $this->check($method);
         if ( ! Auth::instance()->logged_in()) return false;
         
         $controller = strtolower($this->request->controller());
@@ -354,31 +345,25 @@ class Controller_Base extends Controller_Template {
 
         foreach ($rules as $rule)
         {
-            if(isset($rule['isFullController']) && $rule['isFullController'] && strtolower($rule['controller']) == $controller)
-            {
-                return true;
-            }
-            else if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action)
-            {
-                return true;
-            }
-        }
+            if((isset($rule['isFullController']) AND $rule['isFullController'] AND strtolower($rule['controller']) == $controller) OR
+                (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action)) return true;
 
+        }
         return false;
     }
-    private function checkAllowedWebinars() {
 
+    private function checkAllowedWebinars()
+    {
         $rules = $this->webinarsActions;
         $controller = strtolower($this->request->controller());
         $action = strtolower($this->request->action());
         $webinarId = (int) $this->request->param('id', 0);
         $allowedWebinars = DB_ORM::model('webinar')->getAllowedWebinars(Auth::instance()->get_user()->id);
 
-        foreach($rules as $rule) {
-            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($webinarId,$allowedWebinars) &&
-                Auth::instance()->get_user()->type->name != 'superuser' ) {
-                return true;
-            }
+        foreach($rules as $rule)
+        {
+            if(strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($webinarId,$allowedWebinars) AND
+                Auth::instance()->get_user()->type->name != 'superuser') return true;
         }
 
         return false;
@@ -393,24 +378,25 @@ class Controller_Base extends Controller_Template {
         $mapId      = (int) $this->request->param('id', 0);
         $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
 
-        if ( Auth::instance()->get_user()->type->name == 'author') {
+        if (Auth::instance()->get_user()->type->name == 'author')
+        {
             $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
             $allowedMap = array_merge($allowedMap,$collectionsMaps);
             $allowedMap = array_unique($allowedMap);
         }
 
 
-        foreach($rules as $rule) {
-            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($mapId,$allowedMap) &&
-                Auth::instance()->get_user()->type->name != 'superuser') {
-                return true;
-            }
+        foreach ($rules as $rule)
+        {
+            if (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($mapId,$allowedMap) AND
+                Auth::instance()->get_user()->type->name != 'superuser') return true;
         }
 
         return false;
     }
 
-    private function checkAllowedTopics() {
+    private function checkAllowedTopics()
+    {
         $rules = $this->topicActions;
         $controller = strtolower($this->request->controller());
         $action = strtolower($this->request->action());
@@ -418,7 +404,8 @@ class Controller_Base extends Controller_Template {
 
         $allowedTopics = DB_ORM::model('dtopic')->getAllowedTopics(Auth::instance()->get_user()->id);
 
-        foreach($rules as $rule) {
+        foreach($rules as $rule)
+        {
             if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($topicId,$allowedTopics) &&
                 Auth::instance()->get_user()->type->name != 'superuser') {
                 return true;
@@ -428,8 +415,8 @@ class Controller_Base extends Controller_Template {
         return false;
     }
 
-    private function checkAllowedForums() {
-
+    private function checkAllowedForums()
+    {
         $openForums = DB_ORM::model('dforum')->getAllOpenForums();
         $privateForums = DB_ORM::model('dforum')->getAllPrivateForums();
         $controller = strtolower($this->request->controller());
@@ -444,19 +431,16 @@ class Controller_Base extends Controller_Template {
 
         $allowedForums = array();
 
-        if (count($forums) > 0) {
-            foreach ($forums as $forum) {
-                $allowedForums[] = $forum['id'];
-            }
+        foreach ($forums as $forum) {
+            $allowedForums[] = $forum['id'];
         }
 
         $rules = $this->forumActions;
 
-        foreach ($rules as $rule) {
+        foreach ($rules as $rule)
+        {
             if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($forumId,$allowedForums) &&
-                Auth::instance()->get_user()->type->name != 'superuser' ) {
-                return true;
-            }
+                Auth::instance()->get_user()->type->name != 'superuser' ) return true;
         }
         return false;
     }
