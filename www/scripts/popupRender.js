@@ -28,7 +28,7 @@ $(function() {
             $popup.css('background', 'rgba('+color.r+','+color.g+','+color.b+','+(1-(background_transparent/100))+')');
         }
 
-        if (is_border_transparent == 0) $popup.css('border', '1px solid '+border_color);
+        if (is_border_transparent == 0) $popup.css('border', '1px solid ' + border_color);
         else {
             color = hexToRgb(border_color);
             $popup.css('border', '1px solid rgba('+color.r+','+color.g+','+color.b+','+(1-(border_transparent/100))+')');

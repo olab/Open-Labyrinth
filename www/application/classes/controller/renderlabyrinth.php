@@ -199,8 +199,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_index()
     {
-        $this->renderLabyrinth('index');
-        exit;
+//        $this->renderLabyrinth('index');
+//        exit;
         $mapId       = $this->request->param('id', null);
         $editOn      = $this->request->param('id2', null);
         $scenarioId  = Session::instance()->get('webinarId');
@@ -324,8 +324,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_go()
     {
-        $this->renderLabyrinth('go');
-        exit;
+//        $this->renderLabyrinth('go');
+//        exit;
         $mapId       = $this->request->param('id', NULL);
         $nodeId      = $this->request->param('id2', NULL);
         $editOn      = $this->request->param('id3', NULL);
@@ -1065,46 +1065,32 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_popupAction()
     {
-        $map_id = $this->request->param('id', NULL);
         $this->auto_render = false;
-        $popupId = Arr::get($_POST, 'popupId', null);
-        Model::factory('labyrinth')->popup_counters($map_id, $popupId);
+        Model::factory('labyrinth')->popup_counters($this->request->param('id', NULL), Arr::get($_POST, 'popupId', null));
     }
 
-    private function checkRemoteUser($username, $password) {
+    private function checkRemoteUser($username, $password)
+    {
         $username = Model::factory('utilites')->deHash($username);
         $password = Model::factory('utilites')->deHash($password);
+        $user     = DB_ORM::model('user')->getUserByName($username);
 
-        $user = DB_ORM::model('user')->getUserByName($username);
-        if ($user) {
-            if ($user->password == $password and $user->type->name == 'remote service') {
-                return TRUE;
-            }
-        }
-
-        return FALSE;
+        return ($user AND $user->password == $password AND $user->type->name == 'remote service') ? TRUE : FALSE;
     }
 
-    private function checkRemoteIP($mapId) {
-        if (($id = DB_ORM::model('remoteService')->checkService(getenv('REMOTE_ADDR'))) != FALSE) {
-            if (DB_ORM::model('remoteMap')->checkMap($id, $mapId)) {
-                return TRUE;
-            }
-        }
-        return FALSE;
+    private function checkRemoteIP($mapId)
+    {
+        return (($id = DB_ORM::model('remoteService')->checkService(getenv('REMOTE_ADDR'))) != FALSE AND DB_ORM::model('remoteMap')->checkMap($id, $mapId)) ? TRUE : FALSE;
     }
 
     private function generateRemoteLinks($links) {
+        $result = '';
         if (count($links) > 0) {
-            $result = '';
             foreach ($links as $link) {
                 $result .= $link->node_id_2 . ',' . $link->text . ';';
             }
-
-            return $result;
         }
-
-        return '';
+        return $result;
     }
 
     private function generateLinks($node, $links, $undoNodes = null)
@@ -1335,83 +1321,74 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $info;
     }
 
-    private static function getImageHTML($id) {
+    private static function getImageHTML($id)
+    {
         $image = DB_ORM::model('map_element', array((int) $id));
-        if ($image) {
-            return '<img src="' . URL::base() . $image->path . '">';
-        }
-
-        return '';
+        return $image ? '<img src="'.URL::base().$image->path.'">' : '';
     }
 
-    private static function getFileLink($id) {
+    private static function getFileLink($id)
+    {
         $file = DB_ORM::model('map_element', array((int) $id));
-        if ($file) {
-            return '<a class="file-link" href="' . URL::base() . 'renderlabyrinth/downloadFile/' . $file->id . '">' . $file->name . '</a>';
-        }
-
-        return '';
+        return $file ? '<a class="file-link" href="'.URL::base().'renderlabyrinth/downloadFile/'.$file->id.'">'.$file->name.'</a>' : '';
     }
 
     private static function getAudioHTML($id) {
         $audio = DB_ORM::model('map_element', array((int) $id));
-        if ($audio) {
-            return '<audio src="' . URL::base() . $audio->path . '" controls preload="auto" autoplay="autoplay" autobuffer></audio>';
-        }
-
-        return '';
+        return $audio ? '<audio src="'.URL::base().$audio->path.'" controls preload="auto" autoplay="autoplay" autobuffer></audio>' : '';
     }
 
-    private static function getSwfHTML($id) {
+    private static function getSwfHTML($id)
+    {
         $swf = DB_ORM::model('map_element', array((int) $id));
         if ($swf) {
             $userBrowser = Controller_RenderLabyrinth::getUserBroswer();
-            if (substr($userBrowser, 0, 2) == "ie") {
+            if (substr($userBrowser, 0, 2) == "ie")
+            {
                 return "<object classid='clsid:D27CDB6E-AE6D-11cf-96B8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0'>
-                <param name='movie' value='" . URL::base() . $swf->path . "' />
-                <param name='allowScriptAccess' value='sameDomain' />
-                <param name='quality' value='high' />
-                </object>";
-            } else {
-                return "<object type='application/x-shockwave-flash' data='" . URL::base() . $swf->path . "'>
+                <param name='movie' value='".URL::base().$swf->path."' />
                 <param name='allowScriptAccess' value='sameDomain' />
                 <param name='quality' value='high' />
                 </object>";
             }
-
-            return '';
+            else
+            {
+                return "<object type='application/x-shockwave-flash' data='".URL::base().$swf->path."'>
+                <param name='allowScriptAccess' value='sameDomain' />
+                <param name='quality' value='high' />
+                </object>";
+            }
         }
-
         return '';
     }
 
-    private static function getAvatarHTML($id) {
+    private static function getAvatarHTML($id)
+    {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
-        if ($avatar->image != null AND file_exists(DOCROOT . URL::base() . '/avatars/' . $avatar->image)) {
-            $image = '<img src="' . URL::base() . 'avatars/' . $avatar->image . '" />';
-        } else {
-            $image = '<img src="' . URL::base() . 'avatars/default.png" />';
-        }
-        return $image;
+        return ($avatar->image != null AND file_exists(DOCROOT.URL::base().'/avatars/'.$avatar->image))
+            ? '<img src="'.URL::base().'avatars/'.$avatar->image.'" />'
+            : '<img src="'.URL::base().'avatars/default.png" />';
     }
 
-    private static function getChatHTML($id) {
+    private static function getChatHTML($id)
+    {
         $chat = DB_ORM::model('map_chat', array((int) $id));
-
-        if ($chat) {
+        $result = '';
+        if ($chat)
+        {
             $result = '<table bgcolor="#eeeeee" width="100%">';
-            if (count($chat->elements) > 0) {
-                foreach ($chat->elements as $element) {
+            if (count($chat->elements) > 0)
+            {
+                foreach ($chat->elements as $element)
+                {
                     $result .= "<tr><td><p><a onclick='ajaxChatShowAnswer(" . $chat->id . ", " . $element->id . ");return false;' href='#' id='ChatQuestion" . $element->id . "'>" . $element->question . "</a></p></td></tr>";
                     $result .= "<tr><td><div id='ChatAnswer" . $element->id . "'></div></td></tr>";
                 }
             }
             $result .= '</table>';
-
-            return $result;
         }
 
-        return '';
+        return $result;
     }
 
     private static function getQuestionHTML ($id)
@@ -1644,37 +1621,34 @@ class Controller_RenderLabyrinth extends Controller_Template {
         exit;
     }
 
-    private static function addQuestionIdToSession($id) {
+    private static function addQuestionIdToSession($id)
+    {
         $arrayAddedQuestions = Session::instance()->get('arrayAddedQuestions', array());
         $arrayAddedQuestions[$id] = true;
         Session::instance()->set('arrayAddedQuestions', $arrayAddedQuestions);
     }
 
-    private static function getCurrentCounterValue($mapId, $counterId) {
-        $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
-        $counter  = DB_ORM::model('map_counter', array((int)$counterId));
-
+    private static function getCurrentCounterValue($mapId, $counterId)
+    {
+        $rootNode  = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+        $counter   = DB_ORM::model('map_counter', array((int)$counterId));
         $sessionId = Session::instance()->get('session_id', NULL);
-        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
-            $sessionId = $_COOKIE['OL'];
-        } else {
-            if ($sessionId == NULL){
-                $sessionId = 'notExist';
-            }
-        }
+
+        if ($sessionId == NULL AND isset($_COOKIE['OL'])) $sessionId = $_COOKIE['OL'];
+        else if ($sessionId == NULL) $sessionId = 'notExist';
+
 
         $currentCountersState = '';
-        if ($rootNode != NULL) {
-            $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
-        }
+        if ($rootNode != NULL) $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
 
         $thisCounter = null;
-        if ($currentCountersState != '') {
-            $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
-            $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
-            $e = strpos($tmp, ']') + 1;
-            $tmp = substr($tmp, 0, $e - 1);
-            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+        if ($currentCountersState != '')
+        {
+            $s           = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+            $tmp         = substr($currentCountersState, $s, strlen($currentCountersState));
+            $e           = strpos($tmp, ']') + 1;
+            $tmp         = substr($tmp, 0, $e - 1);
+            $tmp         = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
             $thisCounter = $tmp;
         }
 
@@ -1867,30 +1841,30 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
-    public static function getDamHTML($id) {
+    public static function getDamHTML($id)
+    {
         $dam = DB_ORM::model('map_dam', array((int) $id));
         $result = '';
 
-        if ($dam != NULL) {
-            if (count($dam->elements) > 0) {
-                foreach ($dam->elements as $damElement) {
-                    switch ($damElement->element_type) {
-                        case 'vpd':
-                            $result .= '[[VPD:' . $damElement->element_id . ']]';
-                            break;
-                        case 'dam':
-                            $result .= '[[DAM:' . $damElement->element_id . ']]';
-                            break;
-                        case 'mr':
-                            $result .= '[[MR:' . $damElement->element_id . ']]';
-                            break;
-                    }
-
-                    $result = Controller_RenderLabyrinth::parseText($result);
+        if ($dam != NULL  AND count($dam->elements) > 0)
+        {
+            foreach ($dam->elements as $damElement)
+            {
+                switch ($damElement->element_type)
+                {
+                    case 'vpd':
+                        $result .= '[[VPD:'.$damElement->element_id.']]';
+                        break;
+                    case 'dam':
+                        $result .= '[[DAM:'.$damElement->element_id.']]';
+                        break;
+                    case 'mr':
+                        $result .= '[[MR:'.$damElement->element_id.']]';
+                        break;
                 }
+                $result = Controller_RenderLabyrinth::parseText($result);
             }
         }
-
         return $result;
     }
 
@@ -2038,21 +2012,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
             return 'ie8';
     }
 
-    private function generateReviewLinks($traces) {
-        /*
-         *                             {
-                                "startDate":"2011,12,10",
-                                "endDate":"2011,12,11",
-                                "headline":"Headline Goes Here",
-                            }
-         *
-         */
+    private function generateReviewLinks($traces)
+    {
         if ($traces != NULL and count($traces) > 0) {
-            //$result = array();
             $result = '<ul class="links navigation">';
             $i = 0;
             foreach ($traces as $trace) {
-                //$result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
+//                $result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
 //                if($i>0)
 //                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
 //                $i++;

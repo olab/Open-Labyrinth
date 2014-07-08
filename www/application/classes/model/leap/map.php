@@ -685,6 +685,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getSearchMap($key, $onlyTitle = TRUE)
     {
+        $maps           = array();
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1)
@@ -694,26 +695,21 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
 
-        if ($result->is_loaded())
+        $userMaps       = array();
+        $user           = Auth::instance()->get_user();
+        $userId         = $user->id;
+        $userType       = $user->type_id;
+        $userMapsObj    = ($userType == 4)
+            ? DB_ORM::model('map')->getAllEnabledMap()
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($userId);
+
+        foreach ($userMapsObj as $map) $userMaps[] = $map->id;
+
+        foreach ($result as $record)
         {
-            $maps           = array();
-            $userMaps       = array();
-            $user           = Auth::instance()->get_user();
-            $userId         = $user->id;
-            $userType       = $user->type_id;
-            $userMapsObj    = ($userType == 4)
-                ? DB_ORM::model('map')->getAllEnabledMap()
-                : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($userId);
-
-            foreach ($userMapsObj as $map) $userMaps[] = $map->id;
-
-            foreach ($result as $record)
-            {
-                if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-            return $maps;
+            if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
-        return NULL;
+        return $maps;
     }
 
     public function duplicateMap ($mapId)

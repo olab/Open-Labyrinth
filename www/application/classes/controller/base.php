@@ -70,6 +70,7 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'dForumManager', 'action' => 'deleteForum'),
         array('controller' => 'dForumManager', 'action' => 'saveNewForum')
     );
+
     private $authorRules = array(
         array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
@@ -160,12 +161,17 @@ class Controller_Base extends Controller_Template {
     {
         parent::before();
 
+//        $historyDir = DOCROOT.'updates/history.json';
+//        $version = 3.1;
+//        if (file_exists($historyDir)) $version = readfile($historyDir);
+//        $this->templateData['version'] = $version;
+
         if (Auth::instance()->logged_in())
         {
             if ($this->checkUserRoleRules() OR
                 $this->checkAllowedMaps() OR
                 $this->checkAllowedForums() OR
-                $this->checkAllowedWebinars() OR
+                $this->checkAllowedScenarios() OR
                 $this->checkAllowedTopics()) Request::initial()->redirect(URL::base());
 
             $user_type_name             = Auth::instance()->get_user()->type->name;
@@ -177,14 +183,8 @@ class Controller_Base extends Controller_Template {
 
             foreach ($usersHistory as $value)
             {
-                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
-                {
-                    $readonly = 1;
-                    $historyShowWarningPopup = 1;
-                    break;
-                }
-
-                if (((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
+                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
+                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
                 {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
@@ -197,35 +197,24 @@ class Controller_Base extends Controller_Template {
             $this->templateData['historyShowWarningPopup']  = $historyShowWarningPopup;
             $this->templateData['currentUserReadOnly']      = $readonly;
             $this->templateData['historyOfAllUsers']        = json_encode($usersHistory);
-
-            I18n::lang(Auth::instance()->get_user()->language->key);
             $this->templateData['username']                 = Auth::instance()->get_user()->nickname;
 
+            I18n::lang(Auth::instance()->get_user()->language->key);
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
 
             if ($user_type_name == 'superuser' OR $user_type_name == 'author' OR $user_type_name == 'Director')
             {
                 $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();
 
-                /* Fetch the latest authored labyrinths. */
-                $maps = ($user_type_name == 'superuser')
-                        ? $maps = DB_ORM::model('map')->getAllEnabledMap(7)
-                        : $maps = DB_ORM::model('map')->getAllMapsForAuthorAndReviewer($user_id, 7);
-
-                $this->templateData['latestAuthoredLabyrinths'] = $maps;
-
-                $rooNodesMap = array();
-
                 $rootNodeMaps = ($user_type_name == 'superuser')
                                 ? DB_ORM::model('map')->getAllEnabledMap()
                                 : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user_id);
+                $this->templateData['latestAuthoredLabyrinths'] = array_slice($rootNodeMaps, 0 ,7);
 
-                if($rootNodeMaps != NULL AND count($rootNodeMaps) > 0)
+                $rooNodesMap = array();
+                foreach($rootNodeMaps as $map)
                 {
-                    foreach($rootNodeMaps as $map)
-                    {
-                        $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
-                    }
+                    $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
                 $this->templateData['rootNodeMap'] = $rooNodesMap;
@@ -241,7 +230,7 @@ class Controller_Base extends Controller_Template {
                     }
                 }
 
-                if (count($mapIDs) > 0)  $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
+                if (count($mapIDs) > 0) $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
 
                 $this->templateData['center'] = View::factory('adminMenu')->set('templateData', $this->templateData);
             }
@@ -317,135 +306,135 @@ class Controller_Base extends Controller_Template {
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
     }
-    
-    private function checkUserRoleRules()
+
+    private function check ($method)
     {
-        $this->check($method);
-        if ( ! Auth::instance()->logged_in()) return false;
-        
+
         $controller = strtolower($this->request->controller());
         $action     = strtolower($this->request->action());
         $userType   = Auth::instance()->get_user()->type->name;
+        $userId     = Auth::instance()->get_user()->id;
 
-        switch ($userType)
+        if ($method == 'userRole')
         {
-            case 'learner':
-                $rules = $this->learnerRules;
-                break;
-            case 'author':
-            case 'Director':
-                $rules = $this->authorRules;
-                break;
-            case 'reviewer':
-                $rules = $this->reviewerRules;
-                break;
-            default:
-                return false;
+            switch ($userType)
+            {
+                case 'learner':
+                    $rules = $this->learnerRules;
+                    break;
+                case 'author':
+                case 'Director':
+                    $rules = $this->authorRules;
+                    break;
+                case 'reviewer':
+                    $rules = $this->reviewerRules;
+                    break;
+                default:
+                    return false;
+            }
+
+            foreach ($rules as $rule)
+            {
+                if((isset($rule['isFullController']) AND $rule['isFullController'] AND strtolower($rule['controller']) == $controller) OR
+                    (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action)) return true;
+
+            }
         }
-
-        foreach ($rules as $rule)
+        elseif ($method == 'userRole')
         {
-            if((isset($rule['isFullController']) AND $rule['isFullController'] AND strtolower($rule['controller']) == $controller) OR
-                (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action)) return true;
+            $rules = $this->webinarsActions;
+            $scenarioId = (int) $this->request->param('id', 0);
+            $allowedScenarios = DB_ORM::model('webinar')->getAllowedWebinars($userId);
 
+            foreach($rules as $rule)
+            {
+                if(strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($scenarioId, $allowedScenarios) AND
+                    $userType != 'superuser') return true;
+            }
+        }
+        elseif ($method == 'allowedMaps')
+        {
+
+            $rules      = $this->mapActions;
+            $mapId      = (int) $this->request->param('id', 0);
+            $allowedMap = DB_ORM::model('map')->getAllowedMap($userId);
+
+            if ($userType == 'author')
+            {
+                $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
+                $allowedMap = array_merge($allowedMap,$collectionsMaps);
+                $allowedMap = array_unique($allowedMap);
+            }
+
+            foreach ($rules as $rule)
+            {
+                if (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($mapId,$allowedMap) AND
+                    $userType != 'superuser') return true;
+            }
+        }
+        elseif ($method = 'allowedTopics')
+        {
+            $rules = $this->topicActions;
+            $topicId = (int) $this->request->param('id2', 0);
+
+            $allowedTopics = DB_ORM::model('dtopic')->getAllowedTopics($userId);
+
+            foreach($rules as $rule)
+            {
+                if (strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($topicId,$allowedTopics) &&
+                    $userType != 'superuser') return true;
+            }
+        }
+        elseif ($method = 'allowedForums')
+        {
+            $openForums     = DB_ORM::model('dforum')->getAllOpenForums();
+            $privateForums  = DB_ORM::model('dforum')->getAllPrivateForums();
+            $forumId        = (int) $this->request->param('id', 0);
+            $forums         = array_merge($openForums, $privateForums);
+            $allowedForums  = array();
+            $rules          = $this->forumActions;
+
+            foreach ($forums as $forum)
+            {
+                $allowedForums[] = $forum['id'];
+            }
+
+            foreach ($rules as $rule)
+            {
+                if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($forumId,$allowedForums) &&
+                    $userType != 'superuser' ) return true;
+            }
         }
         return false;
     }
-
-    private function checkAllowedWebinars()
+    
+    private function checkUserRoleRules()
     {
-        $rules = $this->webinarsActions;
-        $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
-        $webinarId = (int) $this->request->param('id', 0);
-        $allowedWebinars = DB_ORM::model('webinar')->getAllowedWebinars(Auth::instance()->get_user()->id);
+        return $this->check('userRole');
+    }
 
-        foreach($rules as $rule)
-        {
-            if(strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($webinarId,$allowedWebinars) AND
-                Auth::instance()->get_user()->type->name != 'superuser') return true;
-        }
-
-        return false;
+    private function checkAllowedScenarios()
+    {
+        return $this->check('allowedScenarios');
     }
 
     private function checkAllowedMaps()
     {
-
-        $rules      = $this->mapActions;
-        $controller = strtolower($this->request->controller());
-        $action     = strtolower($this->request->action());
-        $mapId      = (int) $this->request->param('id', 0);
-        $allowedMap = DB_ORM::model('map')->getAllowedMap(Auth::instance()->get_user()->id);
-
-        if (Auth::instance()->get_user()->type->name == 'author')
-        {
-            $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
-            $allowedMap = array_merge($allowedMap,$collectionsMaps);
-            $allowedMap = array_unique($allowedMap);
-        }
-
-
-        foreach ($rules as $rule)
-        {
-            if (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($mapId,$allowedMap) AND
-                Auth::instance()->get_user()->type->name != 'superuser') return true;
-        }
-
-        return false;
+        return $this->check('allowedMaps');
     }
 
     private function checkAllowedTopics()
     {
-        $rules = $this->topicActions;
-        $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
-        $topicId = (int) $this->request->param('id2', 0);
-
-        $allowedTopics = DB_ORM::model('dtopic')->getAllowedTopics(Auth::instance()->get_user()->id);
-
-        foreach($rules as $rule)
-        {
-            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($topicId,$allowedTopics) &&
-                Auth::instance()->get_user()->type->name != 'superuser') {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->check('allowedTopics');
     }
 
     private function checkAllowedForums()
     {
-        $openForums = DB_ORM::model('dforum')->getAllOpenForums();
-        $privateForums = DB_ORM::model('dforum')->getAllPrivateForums();
-        $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
-
-        if (count($openForums) <= 0) $openForums = array();
-        if (count($privateForums) <= 0) $privateForums = array();
-
-        $forumId = (int) $this->request->param('id', 0);
-
-        $forums = array_merge($openForums, $privateForums);
-
-        $allowedForums = array();
-
-        foreach ($forums as $forum) {
-            $allowedForums[] = $forum['id'];
-        }
-
-        $rules = $this->forumActions;
-
-        foreach ($rules as $rule)
-        {
-            if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($forumId,$allowedForums) &&
-                Auth::instance()->get_user()->type->name != 'superuser' ) return true;
-        }
-        return false;
+        return $this->check('allowedForums');
     }
 
-    private function addUserHistory($user_id, $readonly) {
+    private function addUserHistory ($user_id, $readonly)
+    {
         $rules = $this->blockedAccess;
         $controller = strtolower($this->request->controller());
         $action = strtolower($this->request->action());
@@ -464,8 +453,7 @@ class Controller_Base extends Controller_Template {
 
     public function action_ajaxLogout()
     {
-        $userId = $this->request->param('id');
-        $userObj = DB_ORM::model('User')->getUserById($userId);
+        $userObj = DB_ORM::model('User')->getUserById($this->request->param('id'));
         $userObj->history = 'kick';
         $userObj->history_timestamp = NULL;
         $userObj->save();

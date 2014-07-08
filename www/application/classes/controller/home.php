@@ -43,9 +43,11 @@ class Controller_Home extends Controller_Base {
 
     public function action_loginOAuth() {
         $providerId = $this->request->param('id', 0);
-        if($providerId > 0) {
+        if($providerId > 0)
+        {
             $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
-            if($provider != null) {
+            if($provider != null)
+            {
                 Session::instance()->set('OAuthProviderId', $providerId);
                 Request::initial()->redirect($provider->getAuthorizeURL(URL::base(true, false, true) . 'home/loginOAuthCallback'));
             }
@@ -74,9 +76,7 @@ class Controller_Home extends Controller_Base {
     }
 
     public function action_logout() {
-        if (Auth::instance()->logged_in()) {
-            Auth::instance()->logout();
-        }
+        if (Auth::instance()->logged_in()) Auth::instance()->logout();
 
         $uri = ($this->request->referrer())
             ? str_replace(URL::base(true),'',$this->request->referrer())
@@ -131,7 +131,7 @@ class Controller_Home extends Controller_Base {
     {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Search')));
 
-        if (isset($_POST) && !empty($_POST))
+        if ($_POST)
         {
             $scope  = Arr::get($_POST, 'scope', NULL);
             $key    = Arr::get($_POST, 'searchterm', NULL);
@@ -144,11 +144,8 @@ class Controller_Home extends Controller_Base {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
 
                 $rootNodes = array();
-                if (count($maps) > 0)
-                {
-                    foreach($maps as $map){
-                        $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
-                    }
+                foreach($maps as $map){
+                    $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
                 $this->templateData['center'] = View::factory('search')
