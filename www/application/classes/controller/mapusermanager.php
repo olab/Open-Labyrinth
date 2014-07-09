@@ -41,8 +41,7 @@ class Controller_MapUserManager extends Controller_Base {
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
         $userIds = DB_ORM::model('map_user')->getAllUsersIds((int) $mapId);
@@ -86,8 +85,7 @@ class Controller_MapUserManager extends Controller_Base {
 
         if (! ($post AND $mapId)) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         // ---- reviewer ---- //
         $allReviewers   = array();
         $map_reviewers  = array();
@@ -142,61 +140,63 @@ class Controller_MapUserManager extends Controller_Base {
     public function action_deleteUser() {
         $mapId = $this->request->param('id', NULL);
         $userId = $this->request->param('id2', NULL);
-        if ($mapId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_addAllLearners() {
         $mapId = $this->request->param('id', NULL);
         $authorOrder = $this->request->param('id2', 0);
         $learnerOrder = $this->request->param('id3', 0);
-        if ($mapId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllLearners($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_removeAllLearners() {
+    public function action_removeAllLearners()
+    {
         $mapId = $this->request->param('id', NULL);
         $authorOrder = $this->request->param('id2', 0);
         $learnerOrder = $this->request->param('id3', 0);
-        if ($mapId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllLearners($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_addAllAuthors() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllAuthors($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_removeAllAuthors() {
+    public function action_removeAllAuthors()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllAuthors($mapId);
             Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_addAllReviewers()
@@ -204,7 +204,7 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id');
         if ($mapId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllReviewers($mapId);
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
@@ -216,12 +216,11 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId = $this->request->param('id');
         if ($mapId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllReviewers($mapId);
             Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
         else Request::initial()->redirect(URL::base());
     }
-
 }
 

@@ -37,13 +37,11 @@ class Controller_LinkManager extends Controller_Base {
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map']      = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap($mapId);
         $this->templateData['center']   = View::factory('labyrinth/link/view')->set('templateData', $this->templateData);
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -54,33 +52,23 @@ class Controller_LinkManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
-        if ($mapId != NULL and $nodeId != NULL) {
-
-            DB_ORM::model('Map')->editRight($mapId);
-
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['node'] = DB_ORM::model('map_node', array($nodeId));
-            $this->templateData['link_nodes'] = DB_ORM::model('map_node')->getNodesWithoutLink($nodeId);
-            $this->templateData['linkStylies'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-            $this->templateData['linkTypes'] = DB_ORM::model('map_node_link_type')->getAllLinkTypes();
-            $this->templateData['images'] = DB_ORM::model('map_element')->getImagesByMap((int) $mapId);
+        if ($mapId != NULL and $nodeId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+            $this->templateData['map']          = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['node']         = DB_ORM::model('map_node', array($nodeId));
+            $this->templateData['link_nodes']   = DB_ORM::model('map_node')->getNodesWithoutLink($nodeId);
+            $this->templateData['linkStylies']  = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+            $this->templateData['linkTypes']    = DB_ORM::model('map_node_link_type')->getAllLinkTypes();
+            $this->templateData['images']       = DB_ORM::model('map_element')->getImagesByMap((int) $mapId);
+            $this->templateData['center']       = View::factory('labyrinth/link/edit')->set('templateData', $this->templateData);
+            $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->template->set('templateData', $this->templateData);
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['node']->title)->set_url(URL::base() . 'nodeManager/index/'. $mapId. '/' . $nodeId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Links'))->set_url(URL::base() . 'linkManager/index/' . $mapId));
-
-            $editLinkView = View::factory('labyrinth/link/edit');
-            $editLinkView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $editLinkView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_addLink() {

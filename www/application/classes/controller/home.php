@@ -56,22 +56,23 @@ class Controller_Home extends Controller_Base {
         Request::initial()->redirect(URL::base());
     }
 
-    public function action_loginOAuthCallback() {
+    public function action_loginOAuthCallback()
+    {
         $providerId = Session::instance()->get('OAuthProviderId', 0);
-        if($providerId > 0) {
+        if($providerId > 0)
+        {
             $provider = OAuth::factory(DB_ORM::model('oauthprovider', array((int)$providerId)));
-            if($provider != null) {
-                $token     = $provider->getAccessToken($_REQUEST, URL::base(true, false, true) . 'home/loginOAuthCallback');
-                if($token != null) {
+            if($provider != null)
+            {
+                $token = $provider->getAccessToken($_REQUEST, URL::base(true, false, true).'home/loginOAuthCallback');
+                if($token != null)
+                {
                     $userInfo  = $provider->get($token, 'user-info');
                     $authorize = OAuth_Authorize::factory($provider->getName());
-                    if($authorize != null) {
-                        $authorize->login($providerId, $userInfo);
-                    }
+                    if($authorize != null) $authorize->login($providerId, $userInfo);
                 }
             }
         }
-
         Request::initial()->redirect(URL::base());
     }
 
@@ -245,11 +246,14 @@ class Controller_Home extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Confirm Request')));
 
         $hashKey = $this->request->param('id', NULL);
-        if ($hashKey != NULL) {
+        if ($hashKey != NULL)
+        {
             $user = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
-            if ($user) {
+            if ($user)
+            {
                 $timeDiff = floor((time() - strtotime($user->resetHashKeyTime)) / 60);
-                if ($timeDiff <= 30) {
+                if ($timeDiff <= 30)
+                {
                     $this->templateData['passError'] = Session::instance()->get('passError');
                     Session::instance()->delete('passError');
                     $this->templateData['hashKey'] = $hashKey;
@@ -260,76 +264,69 @@ class Controller_Home extends Controller_Base {
                     unset($this->templateData['left']);
                     unset($this->templateData['right']);
                     $this->template->set('templateData', $this->templateData);
-                } else {
+                }
+                else
+                {
                     Session::instance()->set('passMessage', 'Working time of the link has expired. Please repeat the password recovery procedure.');
                     Request::initial()->redirect(URL::base() . 'home/passwordMessage');
                 }
-            } else {
-                Request::initial()->redirect(URL::base());
             }
-        } else {
-            Request::initial()->redirect(URL::base());
+            else Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_updateResetPassword() {
+    public function action_updateResetPassword()
+    {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Update Password')));
 
-        if (isset($_POST) && !empty($_POST)) {
-            if (Security::check($_POST['token'])) {
-                $newPassword = $_POST['newpswd'];
-                $confirmPassword = $_POST['pswd_confirm'];
-                $hashKey = $_POST['hashKey'];
-                if (!empty($newPassword)) {
-                    if ($newPassword == $confirmPassword) {
-                        $user = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
+        if (isset($_POST) AND !empty($_POST) AND Security::check($_POST['token']))
+        {
+            $newPassword     = $_POST['newpswd'];
+            $confirmPassword = $_POST['pswd_confirm'];
+            $hashKey         = $_POST['hashKey'];
+            if ( ! empty($newPassword))
+            {
+                if ($newPassword == $confirmPassword)
+                {
+                    $user           = DB_ORM::model('user')->getUserByHaskKey(htmlspecialchars($hashKey));
+                    $emailConfig    = Kohana::$config->load('email');
+                    $arraySearch    = array('<%name%>', '<%username%>');
+                    $arrayReplace   = array($user->nickname, $user->username);
+                    $message        = str_replace($arraySearch, $arrayReplace, $emailConfig['email_password_complete_body']);
+                    $from           = $emailConfig['fromname'].' <'.$emailConfig['mailfrom'].'>';
+                    $headers        = "From: ".$from;
 
-                        //send mail start
-                        $emailConfig = Kohana::$config->load('email');
-                        $arraySearch = array('<%name%>', '<%username%>');
-                        $arrayReplace = array($user->nickname, $user->username);
+                    DB_ORM::model('user')->saveResetPassword($hashKey, Auth::instance()->hash($newPassword));
+                    mail($user->email, $emailConfig['email_password_complete_subject'], $message, $headers);
 
-                        $to = $user->email;
-                        $subject = $emailConfig['email_password_complete_subject'];
-                        $message = str_replace($arraySearch, $arrayReplace, $emailConfig['email_password_complete_body']);
-                        $from = $emailConfig['fromname'] . ' <' . $emailConfig['mailfrom'] . '>';
-                        $headers = "From: " . $from;
-
-                        DB_ORM::model('user')->saveResetPassword($hashKey, Auth::instance()->hash($newPassword));
-                        mail($to, $subject, $message, $headers);
-
-                        Session::instance()->set('passMessage', 'Your new password has been saved. Please return to the login page, and login using your new password.');
-                        Request::initial()->redirect(URL::base() . 'home/passwordMessage');
-                    } else {
-                        Session::instance()->set('passError', __('The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field.'));
-                        Request::initial()->redirect(URL::base() . 'home/confirmLink/' . $hashKey);
-                    }
-                } else {
-                    Session::instance()->set('passError', __('Empty password is not allowed.'));
-                    Request::initial()->redirect(URL::base() . 'home/confirmLink/' . $hashKey);
+                    Session::instance()->set('passMessage', 'Your new password has been saved. Please return to the login page, and login using your new password.');
+                    Request::initial()->redirect(URL::base().'home/passwordMessage');
+                }
+                else
+                {
+                    Session::instance()->set('passError', __('The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field.'));
+                    Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
                 }
             } else {
-                Request::initial()->redirect(URL::base());
+                Session::instance()->set('passError', __('Empty password is not allowed.'));
+                Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
             }
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        } else Request::initial()->redirect(URL::base());
     }
 
     public function action_passwordMessage() {
         $this->templateData['passMessage'] = Session::instance()->get('passMessage');
-        if ($this->templateData['passMessage'] != NULL) {
+        if ($this->templateData['passMessage'] != NULL)
+        {
             Session::instance()->delete('passMessage');
-            $view = View::factory('resetPassword/notification');
-            $view->set('templateData', $this->templateData);
 
-            $this->templateData['center'] = $view;
+            $this->templateData['center'] = View::factory('resetPassword/notification')->set('templateData', $this->templateData);
             unset($this->templateData['left']);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_historyAjaxCollaboration()
@@ -341,11 +338,9 @@ class Controller_Home extends Controller_Base {
         $userArray          = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
         $uri                = Arr::get($userArray, 'href', NULL);
 
-        if ($userArray) {
-            if ($uri != NULL) {
-                foreach ($usersInformation as $value) {
-                    if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) $result[$value['id']] = $value['username'];
-                }
+        if ($userArray AND $uri != NULL) {
+            foreach ($usersInformation as $value) {
+                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) $result[$value['id']] = $value['username'];
             }
         }
         if ($uri == 'kick') $result['reloadPage'] = 1;

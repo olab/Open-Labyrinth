@@ -125,8 +125,6 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
 
         if ($result->is_loaded())
         {
-            $counters = array();
-
             foreach($result as $record) $counters[] = DB_ORM::model('map_counter', array((int)$record['id']));
 
             if ($lengthSort) usort($counters, function ($a, $b) { return strlen($b->name) - strlen($a->name); });

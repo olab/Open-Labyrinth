@@ -23,48 +23,39 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_ChatManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'authoredLabyrinth'));
         parent::before();
-
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-        if ($mapId != NULL) {
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            DB_ORM::model('Map')->editRight($mapId);
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
 
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
-
-            $ses = Session::instance();
-            if($ses->get('warningMessage')){
-                $this->templateData['warningMessage'] = $ses->get('warningMessage');
-                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
-                $ses->delete('listOfUsedReferences');
-                $ses->delete('warningMessage');
-            }
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
-
-            $chatView = View::factory('labyrinth/chat/view');
-            $chatView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $chatView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        $ses = Session::instance();
+        if($ses->get('warningMessage'))
+        {
+            $this->templateData['warningMessage'] = $ses->get('warningMessage');
+            $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+            $ses->delete('listOfUsedReferences');
+            $ses->delete('warningMessage');
         }
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Chats'))->set_url(URL::base() . 'chatManager/index/' . $mapId));
+
+        $this->templateData['center'] = View::factory('labyrinth/chat/view')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);;
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_addChat()
@@ -73,7 +64,7 @@ class Controller_ChatManager extends Controller_Base {
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map']              = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
@@ -100,16 +91,17 @@ class Controller_ChatManager extends Controller_Base {
         }
     }
 
-    public function action_deleteChat() {
+    public function action_deleteChat()
+    {
         $mapId = $this->request->param('id', NULL);
         $chatId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $chatId != NULL) {
-
-            DB_ORM::model('Map')->editRight($mapId);
-
+        if ($mapId AND $chatId)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $references = DB_ORM::model('map_node_reference')->getByElementType($chatId, 'CHAT');
-            if($references != NULL){
+            if ($references != NULL)
+            {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
                 $ses->set('warningMessage', 'The chat wasn\'t deleted. The selected chat is used in the following labyrinths:');
@@ -118,9 +110,8 @@ class Controller_ChatManager extends Controller_Base {
                 DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
             }
             Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_editChat() {
@@ -129,8 +120,7 @@ class Controller_ChatManager extends Controller_Base {
 
         if ($mapId != NULL and $chatId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
-
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
             $this->templateData['chat'] = DB_ORM::model('map_chat', array((int) $chatId));

@@ -39,101 +39,6 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'updateDatabase', 'action' => 'index'),
     );
 
-    private $learnerRules = array(
-        array('controller' => 'authoredLabyrinth', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'collectionManager', 'action' => 'editCollection'),
-        array('controller' => 'collectionManager', 'action' => 'addCollection'),
-        array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'exportImportManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'userManager', 'action' => 'index'),
-        array('controller' => 'userManager', 'action' => 'addUser'),
-        array('controller' => 'userManager', 'action' => 'saveNewUser'),
-        array('controller' => 'userManager', 'action' => 'deleteUser'),
-        array('controller' => 'userManager', 'action' => 'addGroup'),
-        array('controller' => 'userManager', 'action' => 'saveNewGroup'),
-        array('controller' => 'userManager', 'action' => 'editGroup'),
-        array('controller' => 'userManager', 'action' => 'deleteGroup'),
-        array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
-        array('controller' => 'userManager', 'action' => 'updateGroup'),
-        array('controller' => 'userManager', 'action' => 'removeMember'),
-        array('controller' => 'webinarManager', 'action' => 'add'),
-        array('controller' => 'webinarManager', 'action' => 'edit'),
-        array('controller' => 'webinarManager', 'action' => 'statistic'),
-        array('controller' => 'webinarManager', 'action' => 'delete'),
-        array('controller' => 'webinarManager', 'action' => 'save'),
-        array('controller' => 'webinarManager', 'action' => 'changeStep'),
-        array('controller' => 'dForumManager', 'action' => 'addForum'),
-        array('controller' => 'dForumManager', 'action' => 'editForum'),
-        array('controller' => 'dForumManager', 'action' => 'updateForum'),
-        array('controller' => 'dForumManager', 'action' => 'deleteForum'),
-        array('controller' => 'dForumManager', 'action' => 'saveNewForum')
-    );
-
-    private $authorRules = array(
-        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'userManager', 'action' => 'index'),
-        array('controller' => 'userManager', 'action' => 'addUser'),
-        array('controller' => 'userManager', 'action' => 'saveNewUser'),
-        array('controller' => 'userManager', 'action' => 'deleteUser'),
-        array('controller' => 'userManager', 'action' => 'addGroup'),
-        array('controller' => 'userManager', 'action' => 'saveNewGroup'),
-        array('controller' => 'userManager', 'action' => 'editGroup'),
-        array('controller' => 'userManager', 'action' => 'deleteGroup'),
-        array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
-        array('controller' => 'userManager', 'action' => 'updateGroup'),
-        array('controller' => 'userManager', 'action' => 'removeMember')
-    );
-
-    private $reviewerRules = array(
-        array('controller' => 'collectionManager', 'action' => 'editCollection'),
-        array('controller' => 'collectionManager', 'action' => 'addCollection')
-    );
-
-    private $mapActions = array(
-        array('controller' => 'labyrinthManager', 'action' => 'global'),
-        array('controller' => 'labyrinthManager', 'action' => 'info'),
-        array('controller' => 'labyrinthManager', 'action' => 'showDevNotes'),
-        array('controller' => 'visualManager', 'action' => 'index'),
-        array('controller' => 'nodeManager', 'action' => 'index'),
-        array('controller' => 'nodeManager', 'action' => 'grid'),
-        array('controller' => 'linkManager', 'action' => 'index'),
-        array('controller' => 'nodeManager', 'action' => 'sections'),
-        array('controller' => 'chatManager', 'action' => 'index'),
-        array('controller' => 'questionManager', 'action' => 'index'),
-        array('controller' => 'avatarManager', 'action' => 'index'),
-        array('controller' => 'counterManager', 'action' => 'index'),
-        array('controller' => 'counterManager', 'action' => 'grid'),
-        array('controller' => 'visualdisplaymanager', 'action' => 'index'),
-        array('controller' => 'counterManager', 'action' => 'rules'),
-        array('controller' => 'elementManager', 'action' => 'index'),
-        array('controller' => 'clusterManager', 'action' => 'index'),
-        array('controller' => 'feedbackManager', 'action' => 'index'),
-        array('controller' => 'skinManager', 'action' => 'index'),
-        array('controller' => 'fileManager', 'action' => 'index'),
-        array('controller' => 'mapUserManager', 'action' => 'index'),
-        array('controller' => 'reportManager', 'action' => 'index')
-    );
-
-    private $forumActions = array(
-        array('controller' => 'dforumManager', 'action' => 'viewForum'),
-        array('controller' => 'dforumManager', 'action' => 'editForum'),
-        array('controller' => 'dforumManager', 'action' => 'deleteForum')
-    );
-
-    private $topicActions = array(
-        array('controller' => 'dtopicManager', 'action' => 'editTopic'),
-        array('controller' => 'dtopicManager', 'action' => 'deleteTopic')
-    );
-
-    private $webinarsActions = array(
-        array('controller' => 'webinarManager', 'action' => 'edit'),
-        array('controller' => 'webinarManager', 'action' => 'delete'),
-        array('controller' => 'webinarManager', 'action' => 'statistics')
-    );
-
     private $blockedAccess = array(
         array('controller' => 'labyrinthManager', 'action' => 'global'),
         array('controller' => 'visualManager', 'action' => 'index'),
@@ -168,18 +73,23 @@ class Controller_Base extends Controller_Template {
 
         if (Auth::instance()->logged_in())
         {
-            if ($this->checkUserRoleRules() OR
-                $this->checkAllowedMaps() OR
-                $this->checkAllowedForums() OR
-                $this->checkAllowedScenarios() OR
-                $this->checkAllowedTopics()) Request::initial()->redirect(URL::base());
-
-            $user_type_name             = Auth::instance()->get_user()->type->name;
-            $user_id                    = Auth::instance()->get_user()->id;
+            $user                       = Auth::instance()->get_user();
+            $user_type_name             = $user->type->name;
+            $user_id                    = $user->id;
             $usersHistory               = DB_ORM::model('user')->getUsersHistory($user_id);
             $uri                        = $this->request->detect_uri();
             $historyShowWarningPopup    = 0;
             $readonly                   = NULL;
+
+            // ----- check access ----- //
+            $argsForAccess              = array(
+                'action'     => strtolower($this->request->action()),
+                'controller' => strtolower($this->request->controller()),
+                'id'         => (int) $this->request->param('id', 0),
+                'id2'        => (int) $this->request->param('id2', 0),
+            );
+            if ($user->can('access', $argsForAccess)) Request::initial()->redirect(URL::base());
+            // ----- end check access ----- //
 
             foreach ($usersHistory as $value)
             {
@@ -307,132 +217,6 @@ class Controller_Base extends Controller_Template {
         $this->template->set('templateData', $this->templateData);
     }
 
-    private function check ($method)
-    {
-
-        $controller = strtolower($this->request->controller());
-        $action     = strtolower($this->request->action());
-        $userType   = Auth::instance()->get_user()->type->name;
-        $userId     = Auth::instance()->get_user()->id;
-
-        if ($method == 'userRole')
-        {
-            switch ($userType)
-            {
-                case 'learner':
-                    $rules = $this->learnerRules;
-                    break;
-                case 'author':
-                case 'Director':
-                    $rules = $this->authorRules;
-                    break;
-                case 'reviewer':
-                    $rules = $this->reviewerRules;
-                    break;
-                default:
-                    return false;
-            }
-
-            foreach ($rules as $rule)
-            {
-                if((isset($rule['isFullController']) AND $rule['isFullController'] AND strtolower($rule['controller']) == $controller) OR
-                    (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action)) return true;
-
-            }
-        }
-        elseif ($method == 'userRole')
-        {
-            $rules = $this->webinarsActions;
-            $scenarioId = (int) $this->request->param('id', 0);
-            $allowedScenarios = DB_ORM::model('webinar')->getAllowedWebinars($userId);
-
-            foreach($rules as $rule)
-            {
-                if(strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($scenarioId, $allowedScenarios) AND
-                    $userType != 'superuser') return true;
-            }
-        }
-        elseif ($method == 'allowedMaps')
-        {
-
-            $rules      = $this->mapActions;
-            $mapId      = (int) $this->request->param('id', 0);
-            $allowedMap = DB_ORM::model('map')->getAllowedMap($userId);
-
-            if ($userType == 'author')
-            {
-                $collectionsMaps = DB_ORM::model('map_collectionmap')->getAllColMapsIds();
-                $allowedMap = array_merge($allowedMap,$collectionsMaps);
-                $allowedMap = array_unique($allowedMap);
-            }
-
-            foreach ($rules as $rule)
-            {
-                if (strtolower($rule['controller']) == $controller AND strtolower($rule['action']) == $action AND ! in_array($mapId,$allowedMap) AND
-                    $userType != 'superuser') return true;
-            }
-        }
-        elseif ($method = 'allowedTopics')
-        {
-            $rules = $this->topicActions;
-            $topicId = (int) $this->request->param('id2', 0);
-
-            $allowedTopics = DB_ORM::model('dtopic')->getAllowedTopics($userId);
-
-            foreach($rules as $rule)
-            {
-                if (strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($topicId,$allowedTopics) &&
-                    $userType != 'superuser') return true;
-            }
-        }
-        elseif ($method = 'allowedForums')
-        {
-            $openForums     = DB_ORM::model('dforum')->getAllOpenForums();
-            $privateForums  = DB_ORM::model('dforum')->getAllPrivateForums();
-            $forumId        = (int) $this->request->param('id', 0);
-            $forums         = array_merge($openForums, $privateForums);
-            $allowedForums  = array();
-            $rules          = $this->forumActions;
-
-            foreach ($forums as $forum)
-            {
-                $allowedForums[] = $forum['id'];
-            }
-
-            foreach ($rules as $rule)
-            {
-                if(strtolower($rule['controller']) == $controller && strtolower($rule['action']) == $action && !in_array($forumId,$allowedForums) &&
-                    $userType != 'superuser' ) return true;
-            }
-        }
-        return false;
-    }
-    
-    private function checkUserRoleRules()
-    {
-        return $this->check('userRole');
-    }
-
-    private function checkAllowedScenarios()
-    {
-        return $this->check('allowedScenarios');
-    }
-
-    private function checkAllowedMaps()
-    {
-        return $this->check('allowedMaps');
-    }
-
-    private function checkAllowedTopics()
-    {
-        return $this->check('allowedTopics');
-    }
-
-    private function checkAllowedForums()
-    {
-        return $this->check('allowedForums');
-    }
-
     private function addUserHistory ($user_id, $readonly)
     {
         $rules = $this->blockedAccess;
@@ -460,4 +244,3 @@ class Controller_Base extends Controller_Template {
         exit;
     }
 }
-

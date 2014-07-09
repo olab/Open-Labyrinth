@@ -265,10 +265,10 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 $builder = $builder->order_by('id', 'ASC');
         }
         $result = $builder->query();
-        
+
+        $nodes = array();
         if ($result->is_loaded())
         {
-            $nodes = array();
             $rootNodes = array();
             $endNodes = array();
 
@@ -288,10 +288,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $nodes = array_merge($nodes, $endNodes);
 
             if ($lengthSort) usort($nodes, function($a, $b) { return strlen($b->title) - strlen($a->title); });
-
-            return $nodes;
         }
-        return array();
+        return $nodes;
     }
     
     public function getAllNode ($mapId)

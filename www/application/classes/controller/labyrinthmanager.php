@@ -23,7 +23,8 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_LabyrinthManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
         parent::before();
@@ -698,7 +699,6 @@ class Controller_LabyrinthManager extends Controller_Base {
     public function action_disableMap()
     {
         $mapId = (int) $this->request->param('id', 0);
-        DB_ORM::model('Map')->editRight($mapId);;
         if ($mapId) DB_ORM::model('map')->disableMap($mapId);
         Request::initial()->redirect(URL::base().'authoredLabyrinth');
     }
@@ -710,8 +710,8 @@ class Controller_LabyrinthManager extends Controller_Base {
 
         $selectedLinkStyle  = DB_ORM::model('Map_Node')->getMainLinkStyles($mapId);
         $map                = DB_ORM::model('map', array($mapId));
-        $editRight          = DB_ORM::model('Map')->editRight($mapId);
 
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map']                  = $map;
         $this->templateData['authorsList']          = DB_ORM::select('User')->where('type_id', '=', 2)->where('type_id', '=', 6, 'OR')->order_by('nickname')->query()->as_array();
         $this->templateData['verification']         = ($map->verification != null) ? json_decode($map->verification, true) : array();
@@ -725,10 +725,10 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->templateData['selectedLinkStyles']   = $selectedLinkStyle ? $selectedLinkStyle : 5;
         $this->templateData['files']                = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
         $this->templateData['creators']             = DB_ORM::select('user')->where('type_id', '=', 2)->where('type_id', '=', 4, 'OR')->order_by('nickname')->query()->as_array();
-        $this->templateData['editCreator']          = $editRight;
+        $this->templateData['editCreator']          = TRUE;
         $this->templateData['regAuthors']           = DB_ORM::model('map_user')->getAllAuthors($mapId);
         $this->templateData['groupsOfLearner']      = DB_ORM::model('User_Group')->getGroupOfLearners($mapId);
-        $this->templateData['rootNodeMap'][$mapId]  = $editRight;
+        $this->templateData['rootNodeMap'][$mapId]  = TRUE;
         $this->templateData['left']                 = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->templateData['center']               = View::factory('labyrinth/global')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
@@ -933,23 +933,17 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_info() {
+    public function action_info()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
 
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
+        if ( ! $mapId) Request::initial()->redirect(URL::base().'openLabyrinth');
 
-            $this->templateData['center'] = $infoView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
-        }
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['center'] = View::factory('labyrinth/labyrinthInfo')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_search() {

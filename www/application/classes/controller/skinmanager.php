@@ -36,7 +36,7 @@ class Controller_SkinManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $map = DB_ORM::model('map', array((int) $mapId));
 
@@ -58,7 +58,7 @@ class Controller_SkinManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $skinId = $this->request->param('id2', NULL);
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['action_url'] = URL::base() . 'skinManager/skinEditorUpload/' . $mapId;
@@ -94,7 +94,7 @@ class Controller_SkinManager extends Controller_Base {
 
     private function saveSkin($mapId, $skin_name)
     {
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         if ($skin_name == '') $skin_name = rand(0, 100000);
 
@@ -228,7 +228,7 @@ class Controller_SkinManager extends Controller_Base {
         $mapId  = $this->request->param('id', NULL);
         $skinId = $this->request->param('id2', NULL);
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map']        = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['action']     = 'editSkins';
@@ -286,7 +286,7 @@ class Controller_SkinManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', NULL);
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['skinList'] = DB_ORM::model('map_skin')->getAllSkins();

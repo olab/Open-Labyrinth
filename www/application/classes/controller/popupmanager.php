@@ -42,7 +42,7 @@ class Controller_PopupManager extends Controller_Base {
 
         if ($mapId == null) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map']    = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['popups'] = DB_ORM::model('map_popup')->getAllMapPopups($mapId);
@@ -59,7 +59,7 @@ class Controller_PopupManager extends Controller_Base {
 
         if ($mapId == null) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->preparePopupData($mapId);
 
@@ -79,7 +79,7 @@ class Controller_PopupManager extends Controller_Base {
         $popup = DB_ORM::model('map_popup', array((int)$popupId));
         $mapId = $popup->map_id;
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         // get redirect_type_id
         foreach (DB_ORM::model('map_popup', array((int)$popupId))->assign as $obj) $redirect_type_id = $obj->redirect_type_id;
@@ -115,7 +115,7 @@ class Controller_PopupManager extends Controller_Base {
 
         if ($mapId != NULL & $popupId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
             DB_ORM::model('map_popup_assign', array((int) $popupId))->delete();
             DB_ORM::model('map_popup_style', array((int) $popupId))->delete();

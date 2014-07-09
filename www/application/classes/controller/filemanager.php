@@ -42,13 +42,13 @@ class Controller_FileManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
 
         if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $files      = DB_ORM::model('map_element')->getAllFilesByMap((int) $mapId);
         $fileInfo   = DB_ORM::model('map_element')->getFilesSize($files);
 
@@ -125,23 +125,24 @@ class Controller_FileManager extends Controller_Base {
         echo $result;
     }
 
-    public function action_deleteFile() {
+    public function action_deleteFile()
+    {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
-        if ($mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+        if ($mapId != NULL and $fileId != NULL)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $references = DB_ORM::model('map_node_reference')->getByElementType($fileId, 'MR');
-            if($references != NULL){
+            if($references != NULL)
+            {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
                 $ses->set('warningMessage', 'The file wasn\'t deleted. The selected file is used in the following labyrinths:');
-            } else {
-                DB_ORM::model('map_element')->deleteFile($fileId);
             }
+            else DB_ORM::model('map_element')->deleteFile($fileId);
             Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_saveByUrl(){
@@ -192,7 +193,8 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $fileId = $this->request->param('id2', NULL);
         if ($mapId != NULL and $fileId != NULL) {
-            DB_ORM::model('Map')->editRight($mapId);
+
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['file'] = DB_ORM::model('map_element', array((int) $fileId));
 
@@ -258,8 +260,7 @@ class Controller_FileManager extends Controller_Base {
 
         if ( ! ($mapId AND $fileId)) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map']      = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['file']     = DB_ORM::model('map_element', array((int) $fileId));
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
@@ -559,7 +560,7 @@ class Controller_FileManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $path = 'global/files/';
             $filesArray = $this->getListFiles($path);

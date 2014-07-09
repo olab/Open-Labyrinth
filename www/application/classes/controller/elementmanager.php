@@ -36,15 +36,13 @@ class Controller_ElementManager extends Controller_Base {
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
-        $map = DB_ORM::model('map', array((int) $mapId));
-
-        $this->templateData['map'] = $map;
-        $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($map->id);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($mapId);
 
         $ses = Session::instance();
-        if($ses->get('warningMessage')){
+        if($ses->get('warningMessage'))
+        {
             $this->templateData['warningMessage'] = $ses->get('warningMessage');
             $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
             $ses->delete('listOfUsedReferences');
@@ -62,7 +60,6 @@ class Controller_ElementManager extends Controller_Base {
 
         $this->templateData['left'] = $leftView;
         $this->templateData['center'] = $view;
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -73,12 +70,11 @@ class Controller_ElementManager extends Controller_Base {
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
-        $map = DB_ORM::model('map', array((int) $mapId));
-        $this->templateData['map'] = $map;
-
-        if ($type != NULL) {
+        if ($type != NULL)
+        {
             $this->templateData['add_type'] = $type;
             $this->templateData['files'] = DB_ORM::model('map_element')->getAllMediaFiles((int) $mapId);
         }
@@ -88,15 +84,9 @@ class Controller_ElementManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'elementManager/addNewElement/' . $mapId));
-        $view = View::factory('labyrinth/element/add');
-        $view->set('templateData', $this->templateData);
 
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-        $leftView->set('templateData', $this->templateData);
-
-        $this->templateData['left'] = $leftView;
-        $this->templateData['center'] = $view;
-        unset($this->templateData['right']);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/element/add')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 

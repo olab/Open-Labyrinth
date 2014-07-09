@@ -36,7 +36,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ($mapId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
@@ -83,7 +83,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ( ! ($map AND $type)) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['map']          = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['type']         = DB_ORM::model('map_question_type', array((int) $typeId));
@@ -173,7 +173,7 @@ class Controller_QuestionManager extends Controller_Base {
 
         if ($mapId != NULL and $questionId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
             $references = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
             if($references != NULL){
@@ -225,7 +225,7 @@ class Controller_QuestionManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ($mapId != NULL)
         {
-            DB_ORM::model('Map')->editRight($mapId);
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
             $allTypes = DB_ORM::model('map_question_type')->getAllTypes();

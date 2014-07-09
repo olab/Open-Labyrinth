@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Model for users table in database
  */
-class Model_Leap_User extends DB_ORM_Model {
+class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
 
     public function __construct() {
         parent::__construct();
@@ -430,6 +430,47 @@ private static function initialize_metadata($object)
             }
         }
         return $return;
+    }
+
+    public function can($policy_name, $args = array())
+    {
+        $status = FALSE;
+        try
+        {
+            $this->id = Auth::instance()->get_user()->id;
+            $this->load();
+
+            $reflection = new ReflectionClass('Policy_'.$policy_name);
+            $class      = $reflection->newInstanceArgs();
+            $status     = $class->execute($this, $args);
+            if (TRUE === $status) return TRUE;
+        }
+        catch (ReflectionException $ex) // try and find a message based policy
+        {
+            // Try each of this user's roles to match a policy
+            foreach ($this->roles->find_all() as $role)
+            {
+                $status = Kohana::message('policy', $policy_name.'.'.$role->id);
+                if ($status) return TRUE;
+            }
+        }
+        // We don't know what kind of specific error this was
+        if (FALSE === $status) $status = Policy::GENERAL_FAILURE;
+        Policy::$last_code = $status;
+        return TRUE === $status;
+    }
+
+    public function assert($policy_name, $args = array())
+    {
+        $status = $this->can($policy_name, $args);
+        if (TRUE !== $status)
+        {
+            throw new Policy_Exception(
+                'Could not authorize policy :policy',
+                array(':policy' => $policy_name),
+                Policy::$last_code
+            );
+        }
     }
 }
 

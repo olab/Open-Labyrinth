@@ -42,7 +42,7 @@ class Controller_VisualManager extends Controller_Base {
     {
         $mapId = $this->mapId;
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base().'visualManager/index/'.$mapId));
 

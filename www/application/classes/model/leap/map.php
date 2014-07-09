@@ -894,16 +894,6 @@ class Model_Leap_Map extends DB_ORM_Model
 
         return $res;
     }
-
-    public function editRight ($mapId)
-    {
-        $map                = DB_ORM::model('map', array($mapId));
-        $user               = Auth::instance()->get_user();
-        $authorRight        = $user->type_id == 2 ? (bool) DB_ORM::select('Map_User')->where('user_id', '=', $user->id)->where('map_id', '=', $mapId)->query()->as_array() : false;
-        $editRight          = $user ? ($user->type_id == 4 OR $user->id == $map->author_id OR $authorRight) : false;
-        if ( ! $editRight) Request::initial()->redirect(URL::base());
-        return true;
-    }
 }
 
 
