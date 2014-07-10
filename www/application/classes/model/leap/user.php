@@ -240,25 +240,20 @@ private static function initialize_metadata($object)
     public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array())
     {
         $result = array();
-        $ids = $this->getAllUsersId($order);
 
-        foreach($ids as $id)
+        foreach($this->getAllUsersId($order) as $id)
         {
-            if (count($notInUsers) > 0) {
-                if (in_array($id, $notInUsers)){
-                    continue;
-                }
-            }
+            if (count($notInUsers) > 0 AND in_array($id, $notInUsers)) continue;
 
-            $user= DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from($this->table(), 'u')
+            $res = DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name')))
+                ->from($this->table(), 'u')
                 ->join('LEFT','oauth_providers','op')
                 ->on('u.oauth_provider_id','=','op.id')
                 ->join('LEFT','user_types','ut')
                 ->on('u.type_id','=','ut.id')
                 ->where('u.id', '=', $id)
-                ->order_by('nickname', $order);
-
-            $res = $user->query();
+                ->order_by('nickname', $order)
+                ->query();
 
             foreach ($res as $record) $result[] = $record;
         }

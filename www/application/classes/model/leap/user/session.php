@@ -180,7 +180,7 @@ class Model_Leap_User_Session extends DB_ORM_Model {
         $mapId      = ($type == 'section') ? DB_ORM::model('Map_Node_Section', array($id))->map_id : $id;
         $sessions   = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
 
-        if ($sessions == null || count($sessions) <= 0) return $result;
+        if (count($sessions)) return $result;
         $result     = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
 
         $endNodes = ($type == 'labyrinth')
@@ -201,9 +201,7 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 $sessionIDs[] = $session->id;
             }
 
-            if(DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) {
-                $result = Model_Leap_User_Session::USER_FINISH_MAP;
-            }
+            if(DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) $result = Model_Leap_User_Session::USER_FINISH_MAP;
         }
 
         return $result;
