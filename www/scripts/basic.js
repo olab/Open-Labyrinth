@@ -65,13 +65,14 @@ $(document).ready(function(){
     if (idPatients.length > 2)
     {
         ajaxPatient();
-        setInterval(ajaxPatient, (1500));
+        setInterval(ajaxPatient, (5000));
     }
 
     function ajaxPatient(){
-        $.get(
-            urlBase + 'renderLabyrinth/dataPatientAjax/' + idPatients,
+        $.post(
+            urlBase + 'renderLabyrinth/dataPatientAjax?patients=' + idPatients,
             function(data){
+                console.log(data);
                 data = $.parseJSON(data);
                 // change condition block
                 var ulPatient       = $('.patient-js'),

@@ -728,7 +728,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_dataPatientAjax()
     {
-        $idPatients             = json_decode($this->request->param('id'));
+        $idPatients             = json_decode(Arr::get($_GET, 'patients', array()));
         $sessions               = array();
         $data['deactivateNode'] = array();
 
