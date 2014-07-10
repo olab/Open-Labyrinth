@@ -120,7 +120,7 @@ $user = Auth::instance()->get_user(); ?>
                                         </ul>
                                     </li>
                                     <li class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Virtual patient'); ?><b class="caret"></b></a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Sets'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base().'patient/index'; ?>"><?php echo __('Managment'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'patient/connection'; ?>"><?php echo __('Connection'); ?></a></li>

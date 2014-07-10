@@ -25,17 +25,16 @@ $id_selected_patient    = 0;
 $exist_data             = Arr::get($templateData, 'existing_data', FALSE);
 $node_data              = FALSE;
 $condition_data         = FALSE;
-if ($selected_patient)
-{
+if ($selected_patient) {
     $id_selected_patient = $selected_patient->id;
 }
 ?>
 <div class="page-header">
-    <h1>Virtual patient</h1>
+    <h1>Sets</h1>
 </div><?php
 if ($patients) { ?>
 <select id="choose-patient">
-    <option data-href="<?php echo URL::base().'patient/labyrinth/'.$id_map; ?>">Select patient</option><?php
+    <option data-href="<?php echo URL::base().'patient/labyrinth/'.$id_map; ?>">Select set</option><?php
     foreach ($patients as $patient) {?>
     <option value="<?php echo $patient->id ?>" data-href="<?php echo URL::base().'patient/labyrinth/'.$id_map.'/'.$patient->id; ?>" <?php if($patient->id == $id_selected_patient) echo 'selected' ?>><?php echo $patient->name ?></option><?php
     } ?>

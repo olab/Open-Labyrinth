@@ -771,12 +771,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId = $this->request->param('id', NULL);
         if ($mapId) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $infoView;
-            unset($this->templateData['right']);
+            $this->templateData['center'] = View::factory('labyrinth/labyrinthInfo')->set('templateData', $this->templateData);
             $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base() . 'openLabyrinth');

@@ -22,7 +22,7 @@
 
 <div class="page-header">
     <h1>
-        Patients connection grid
+        Sets connection grid
         <a class="btn btn-primary pull-right" href="<?php echo URL::base().'patient/connectionManage'; ?>"><i class="icon-plus-sign"></i> Add connection</a>
     </h1>
 </div>

@@ -74,7 +74,7 @@ class Controller_Patient extends Controller_Base {
         $id_patient         = DB_ORM::model('Patient')->update($patient_name, $patientType, $this->request->param('id'));
 
         // Condition, and condition relation save
-        foreach ($conditions_names as $id=>$name)
+        foreach (array_unique($conditions_names) as $id=>$name)
         {
             $id_condition = ($conditions_ids[$id] == 'new') ? FALSE : $conditions_ids[$id];
             $id_condition = DB_ORM::model('Patient_Condition')->update($name, $conditions_value[$id], $id_condition);
@@ -82,7 +82,7 @@ class Controller_Patient extends Controller_Base {
         }
 
         // Patient scenario save
-        foreach ($patient_scenarios as $k=>$idScenario)
+        foreach (array_unique($patient_scenarios) as $k=>$idScenario)
         {
             if (substr_count($k, 'id')) DB_ORM::model('Patient_Scenario')->update(substr($k, 2), $id_patient, $idScenario);
             else DB_ORM::model('Patient_Scenario')->create($id_patient, $idScenario);
@@ -139,6 +139,13 @@ class Controller_Patient extends Controller_Base {
         $id_patient = $this->request->param('id');
         DB_ORM::model('Patient_ConditionRelation')->deletePatientConditions($id_patient);
         DB_ORM::delete('Patient')->where('id', '=', $id_patient)->execute();
+        Request::$initial->redirect(URL::base().'patient/index');
+    }
+
+    public function action_resetPatient()
+    {
+        $id_patient = $this->request->param('id');
+        DB_ORM::delete('Patient_Sessions')->where('id_patient', '=', $id_patient)->execute();
         Request::$initial->redirect(URL::base().'patient/index');
     }
 

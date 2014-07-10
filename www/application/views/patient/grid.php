@@ -19,8 +19,7 @@
  *
  */
 $patients   = Arr::get($templateData,'patients', array());
-$scenarios  = Arr::get($templateData,'scenarios', array());
-?>
+$scenarios  = Arr::get($templateData,'scenarios', array()); ?>
 <div class="page-header">
     <h1>
         Virtual patients manager
@@ -31,10 +30,10 @@ $scenarios  = Arr::get($templateData,'scenarios', array());
 <table class="table table-striped table-bordered patient-t">
     <thead>
         <tr>
-            <th>Patient id</th>
-            <th>Scenario assign</th>
-            <th>Patient name</th>
-            <th>Patient type</th>
+            <th>Id</th>
+            <th>Set assign</th>
+            <th>Name</th>
+            <th>Set type</th>
             <th>Operations</th>
         </tr>
     </thead>
@@ -57,6 +56,7 @@ $scenarios  = Arr::get($templateData,'scenarios', array());
             <td>
                 <a class="btn btn-info" href="<?php echo URL::base().'patient/management/'.$idPatient; ?>"><i class="icon-edit"></i>Edit</a>
                 <a class="btn btn-danger" href="<?php echo URL::base().'patient/delete_patient/'.$idPatient; ?>"><i class="icon-trash"></i>Delete</a>
+                <a class="btn btn-warning" href="<?php echo URL::base().'patient/resetPatient/'.$idPatient; ?>"><i class="icon-refresh icon-white"></i><?php echo __('Reset'); ?></a>
             </td>
         </tr><?php
         }

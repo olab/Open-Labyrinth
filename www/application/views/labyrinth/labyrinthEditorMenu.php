@@ -52,7 +52,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'popupManager/index/'.$id_map; ?>"><i class="icon-envelope"></i> <?php echo __('Pop-up messages'); ?></a></li>
             <li><a href="<?php echo URL::base().'elementManager/index/'.$id_map; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>
             <li><a href="<?php echo URL::base().'clusterManager/index/'.$id_map; ?>"><i class="icon-tags"></i> <?php echo __('Clusters'); ?></a></li>
-            <li><a href="<?php echo URL::base().'patient/labyrinth/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Virtual patient'); ?></a></li>
+            <li><a href="<?php echo URL::base().'patient/labyrinth/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Sets'); ?></a></li>
             <li class="nav-header">Case Design</li>
             <li><a href="<?php echo URL::base().'feedbackManager/index/'.$id_map; ?>"><i class="icon-comment"></i> <?php echo __('Feedback'); ?></a></li>
             <li><a href="<?php echo URL::base().'skinManager/index/'.$id_map; ?>"><i class="icon-book"></i> <?php echo __('Skin'); ?></a></li>

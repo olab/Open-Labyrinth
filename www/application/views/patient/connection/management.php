@@ -26,7 +26,7 @@ $connectionRule     = $connection ? $connection->rule : '';
 ?>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/rules-checker.js'); ?>"></script>
 <div>
-    <h3>Select patient to see his conditions</h3>
+    <h3>Select type</h3>
     <label><input type="radio" class="patient-type-js" name="ptj" data-type="same" checked>Same user</label>
     <label><input type="radio" class="patient-type-js" name="ptj" data-type="different">Different  users</label>
     <div class="patient-same">

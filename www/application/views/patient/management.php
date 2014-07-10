@@ -23,7 +23,7 @@ $id_patient     = $templateData['patient']->id;
 $name           = $templateData['patient']->name;
 $selectedType   = $templateData['patient']->type; ?>
 <div class="page-header">
-    <h1><?php echo $id_patient ? 'Edit patient"'.$name.'"' : 'Create patient'; ?></h1>
+    <h1><?php echo $id_patient ? 'Edit "'.$name.'"' : 'Create patient'; ?></h1>
 </div>
 
 <form class="form-horizontal" action="<?php echo URL::base().'patient/update/'.$id_patient ?>" method="post">
