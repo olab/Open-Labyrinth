@@ -124,7 +124,7 @@ class Controller_NodeManager extends Controller_Base {
         $node   = DB_ORM::model('map_node', array($nodeId));
         $mapId  = $node->map_id;
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['tinyMCEv3']    = $tinyMCEv3;
         $this->templateData['node']         = $node;
