@@ -796,14 +796,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     public function action_review() {
-        $mapId = $this->request->param('id', NULL);
+        $mapId  = $this->request->param('id', NULL);
         $nodeId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $nodeId != NULL) {
+        if ($mapId AND $nodeId) {
             Model::factory('labyrinth')->review($nodeId);
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
+            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$nodeId);
         }
-        else Request::initial()->redirect(URL::base());
+        else {
+            Request::initial()->redirect(URL::base());
+        }
     }
 
     public function action_undo()

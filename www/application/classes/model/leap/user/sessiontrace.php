@@ -321,18 +321,16 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null)
     {
         $builder = DB_ORM::update('user_sessionTrace')
-                ->set('counters', $newCounters)
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('map_id', '=', $mapId, 'AND');
+            ->set('counters', $newCounters)
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('map_id', '=', $mapId, 'AND');
 
-        if($traceId != null) {
+        if ($traceId != null) {
             $builder = $builder->where('id', '=', $traceId, 'AND');
-            $builder = $builder->where('node_id', '=', $nodeId);
-        } else {
-            $builder = $builder->where('node_id', '=', $nodeId);
         }
 
         $builder
+            ->where('node_id', '=', $nodeId)
             ->order_by('id', 'ASC')
             ->limit(1)
             ->execute();

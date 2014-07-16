@@ -973,16 +973,17 @@ class Model_Labyrinth extends Model {
 
     public function review($nodeId) {
         $sessionId = Session::instance()->get('session_id', NULL);
-        if ($sessionId == NULL && isset($_COOKIE['OL'])) {
+
+        if ($sessionId == NULL AND isset($_COOKIE['OL'])) {
             $sessionId = $_COOKIE['OL'];
         }
 
-        if ($sessionId != NULL and $nodeId != NULL) {
+        if ($sessionId AND $nodeId) {
             $node = DB_ORM::model('map_node', array((int) $nodeId));
             if ($node) {
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $node->map_id);
-                $counter = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, (int) $node->map_id, $node->id);
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $counter);
+                $counter  = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, (int) $node->map_id, $node->id);
+                if (isset($rootNode->id)) DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $counter);
             }
         }
     }
