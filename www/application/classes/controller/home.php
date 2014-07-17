@@ -132,13 +132,10 @@ class Controller_Home extends Controller_Base {
     {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Search')));
 
-        if ($_POST)
-        {
+        if ($_POST) {
             $scope  = Arr::get($_POST, 'scope', NULL);
             $key    = Arr::get($_POST, 'searchterm', NULL);
-            $title  = TRUE;
-
-            if ($scope == 'a') $title = FALSE;
+            $title  = ($scope == 'a');
 
             if ($key != NULL)
             {
@@ -154,11 +151,12 @@ class Controller_Home extends Controller_Base {
                     ->set('term', $key)
                     ->set('rootNodes', $rootNodes);
 
-                unset($this->templateData['right']);
                 $this->template->set('templateData', $this->templateData);
             }
         }
-        else Request::initial()->redirect(URL::base());
+        else {
+            Request::initial()->redirect(URL::base());
+        }
     }
 
     public function action_resetPassword() {

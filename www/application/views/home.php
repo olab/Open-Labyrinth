@@ -140,12 +140,6 @@ $user = Auth::instance()->get_user(); ?>
                 </div>
             </div>
         </div>
-        <div id="helpPopup" class="modal hide fade in">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            Version: <?php echo Arr::get($templateData, 'version'); ?><br>
-            Main website: <a href="http://openlabyrinth.ca/">openlabyrinth.ca</a><br>
-            Download: <a href="<?php echo URL::base().'systemManager/downloadReadMe'; ?>">README</a>
-        </div>
         <div class="root-error-container">
             <div id="rootNodeMessage" class="alert alert-error root-alert hide">
                 <button type="button" class="root-error-close close">×</button>
@@ -153,39 +147,45 @@ $user = Auth::instance()->get_user(); ?>
             </div>
         </div><?php
     if (isset($templateData)){ ?>
+        <div id="helpPopup" class="modal hide fade in">
+            <button type="button" class="close" data-dismiss="modal">×</button>
+            Version: <?php echo Arr::get($templateData, 'version'); ?><br>
+            Main website: <a href="http://openlabyrinth.ca/">openlabyrinth.ca</a><br>
+            Download: <a href="<?php echo URL::base().'systemManager/downloadReadMe'; ?>">README</a>
+        </div>
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
-                    <div id="sidebar" class="span2">
-                        <?php if(isset($templateData['labyrinthSearch']) AND isset($templateData['map'])) { ?>
+                    <div id="sidebar" class="span2"><?php
+                        if (isset($templateData['labyrinthSearch']) AND isset($templateData['map'])) { ?>
                             <form action="<?php echo URL::base().'labyrinthManager/search/'.(isset($templateData['map']) AND ! is_numeric($templateData['map']) ? $templateData['map']->id : $templateData['map']); ?>" method="get">
                                 <div class="input-prepend">
                                     <span class="add-on"><i class="icon-search"></i></span>
                                     <input class="span10" id="searchText" name="s" type="text" value="<?php if(isset($templateData['searchText'])) echo $templateData['searchText']; ?>" placeholder="Labyrinth Search">
                                 </div>
-                            </form>
-                        <?php } else { ?>
+                            </form><?php
+                        } else { ?>
                             <form action="<?php echo URL::base(); ?>home/search" method="post">
                                 <input type="hidden" name="scope" value="t" />
                                 <div class="input-prepend">
                                     <span class="add-on"><i class="icon-search"></i></span>
                                     <input class="span10" id="searchterm" name="searchterm" type="text" placeholder="Labyrinth Search">
                                 </div>
-                            </form>
-                        <?php } ?>
+                            </form><?php
+                        } ?>
 
                         <div class="sidebar-nav">
-                            <?php if (isset($templateData['left'])) echo $templateData['left']; ?>
+                            <?php echo Arr::get($templateData, 'left', ''); ?>
                         </div>
                     </div>
                     <div id="content" class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
                         <div><?php Breadcrumbs::render(); ?></div>
-                        <div class="row-fluid">
-                            <?php echo Arr::get($templateData, 'error'); ?>
-                            <?php echo Arr::get($templateData, 'center'); ?>
+                        <div class="row-fluid"><?php
+                            echo Arr::get($templateData, 'error');
+                            echo Arr::get($templateData, 'center'); ?>
                         </div>
-                    </div>
-                    <?php if(isset($templateData['left'])) ?>
+                    </div><?php
+                    if(isset($templateData['left'])) ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
                     </div><?php

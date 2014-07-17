@@ -538,10 +538,10 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function updateMapForumAssign($mapId, $newForumId) {
         DB_SQL::update('default')
-                ->table($this->table())
-                ->set('assign_forum_id', $newForumId)
-                ->where('id', '=', $mapId)
-                ->execute();
+            ->table($this->table())
+            ->set('assign_forum_id', $newForumId)
+            ->where('id', '=', $mapId)
+            ->execute();
     }
 
     public function createVUEMap($title, $authorId)
@@ -660,10 +660,8 @@ class Model_Leap_Map extends DB_ORM_Model
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
             return $maps;
         }
-
         return NULL;
     }
 
@@ -685,7 +683,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getSearchMap($key, $onlyTitle = TRUE)
     {
-        $maps           = array();
+        $maps = array();
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1)
@@ -697,16 +695,15 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $userMaps       = array();
         $user           = Auth::instance()->get_user();
-        $userId         = $user->id;
-        $userType       = $user->type_id;
-        $userMapsObj    = ($userType == 4)
+        $userMapsObj    = ($user->type_id == 4)
             ? DB_ORM::model('map')->getAllEnabledMap()
-            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($userId);
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
 
-        foreach ($userMapsObj as $map) $userMaps[] = $map->id;
+        foreach ($userMapsObj as $map) {
+            $userMaps[] = $map->id;
+        }
 
-        foreach ($result as $record)
-        {
+        foreach ($result as $record) {
             if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
         return $maps;
@@ -768,47 +765,44 @@ class Model_Leap_Map extends DB_ORM_Model
     public function getMapName($mapName, $mapId = 0)
     {
         $result = $mapName;
-        $builder = DB_SQL::select('default')
+        $query = DB_SQL::select('default')
             ->from($this->table())
             ->where('name', '=', $mapName)
-                ->column('name')
-                ->column('id');
-        $query = $builder->query();
+            ->column('name')
+            ->column('id')
+            ->query();
 
-        if ($query->is_loaded() && $query->count() > 0) {
-            if($query->count() == 1 && $mapId > 0 && $query[0]['id'] == $mapId) {
+        if ($query->is_loaded() && $query->count()) {
+            if($query->count() == 1 AND $mapId AND $query[0]['id'] == $mapId) {
                 return $result;
             }
 
             $addNumber = 1;
-            $tmpName = $mapName . '_%';
-            $builder = DB_SQL::select('default')
+            $tmpName = $mapName.'_%';
+            $query = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('name', 'like', $tmpName)
-                ->column('name');
-            $query = $builder->query();
-            if ($query->is_loaded() && $query->count() > 0) {
+                ->column('name')
+                ->query();
+
+            if ($query->is_loaded() && $query->count()) {
                 foreach ($query as $record) {
-                    $expl = explode($mapName . '_', $record['name']);
-                    if (count($expl) == 2) {
-                        if (is_int((int)$expl[1])) {
-                            $n = (int)$expl[1];
-                            if ($addNumber <= $n)
-                                $addNumber = $n + 1;
+                    $expl = explode($mapName.'_', $record['name']);
+                    if (count($expl) == 2 AND is_int((int)$expl[1])) {
+                        $n = (int)$expl[1];
+                        if ($addNumber <= $n) {
+                            $addNumber = $n + 1;
                         }
                     }
                 }
             }
-
-            $result .= '_' . $addNumber;
+            $result .= '_'.$addNumber;
         }
-
         return $result;
     }
 
     public function countLinks(){
-        $result = count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
-        return $result;
+        return count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
     }
 
     public function createLinearMap($mapId, $values) {
