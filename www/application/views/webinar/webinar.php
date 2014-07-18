@@ -18,11 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
-$sectionIds = Arr::get($templateData, 'sections', array());
-?>
-
-<h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?></h1>
+$sectionIds = Arr::get($templateData, 'sections', array()); ?>
 
 <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script language="javascript" type="text/javascript">
@@ -52,6 +48,9 @@ $sectionIds = Arr::get($templateData, 'sections', array());
 </script>
 
 <form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base() ?>webinarmanager/save">
+    <h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?> <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>" /></h1>
+
+
     <input type="hidden" name="webinarId" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->id; ?>"/>
     <fieldset class="fieldset">
         <legend><?php echo __('Scenario Details'); ?></legend>
@@ -83,34 +82,34 @@ $sectionIds = Arr::get($templateData, 'sections', array());
             <div class="control-group submitSettingsContainer hide">
                 <label class="control-label"><?php echo __('Forums') ?></label>
                 <div class="controls">
-                    <select id="forum" name="forum">
-                        <?php if(isset($templateData['forums']) && count($templateData['forums']) > 0) { ?>
-                            <?php foreach($templateData['forums'] as $forum) { ?>
-                                <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option>
-                            <?php } ?>
-                        <?php } ?>
+                    <select id="forum" name="forum"><?php
+                        if(isset($templateData['forums']) && count($templateData['forums']) > 0) {
+                            foreach($templateData['forums'] as $forum) { ?>
+                                <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option><?php
+                            }
+                        } ?>
                     </select>
                 </div>
-                <br />
-                <?php if(isset($templateData['forums']) && count($templateData['forums']) > 0) { ?>
-                    <?php foreach($templateData['forums'] as $forum) {
+                <br /><?php
+                if(isset($templateData['forums']) && count($templateData['forums']) > 0) {
+                    foreach($templateData['forums'] as $forum) {
                         if (count($forum['topics']) > 0) { ?>
                         <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
                             <label class="control-label"><?php echo __('Topics') ?></label>
                             <div class="controls">
                                 <select id="topic" name="topic">
-                                        <option value="0">Please select</option>
-                                        <?php foreach($forum['topics'] as $topic) { ?>
-                                            <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option>
-                                    <?php } ?>
+                                    <option value="0">Please select</option><?php
+                                    foreach($forum['topics'] as $topic) { ?>
+                                    <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option><?php
+                                    } ?>
                                 </select>
                             </div>
-                        </div>
-                        <?php } ?>
-                    <?php } ?>
-                <?php } ?>
-            </div>
-        <?php } ?>
+                        </div><?php
+                        }
+                    }
+                } ?>
+            </div><?php
+        } ?>
     </fieldset>
 
     <div id="steps-container"><?php
@@ -146,8 +145,7 @@ $sectionIds = Arr::get($templateData, 'sections', array());
                                     foreach (Arr::get($mapData, 'pollNodes', array()) as $selectedNodeId=>$time) { ?>
                                     <select class="node-select-js" name="poll_nodes[]">
                                         <option value="0">Select poll node</option><?php
-                                        $mapNodes = Arr::get($mapData, 'mapNodes', array());
-                                        foreach ($mapNodes as $id=>$title) { ?>
+                                        foreach (Arr::get($mapData, 'mapNodes', array()) as $id=>$title) { ?>
                                         <option value="<?php echo $id; ?>" <?php if ($selectedNodeId == $id) { echo 'selected'; } ?>><?php echo $title.' (id: '.$id.')'; ?></option>
                                         <?php } ?>
                                     </select>
@@ -185,12 +183,12 @@ $sectionIds = Arr::get($templateData, 'sections', array());
             <col style="width: 85%" />
         </colgroup>
         <thead>
-        <tr>
-            <th style="text-align: center">Actions</th>
-            <th style="text-align: center">Expert</th>
-            <th style="text-align: center">Auth type</th>
-            <th><a href="javascript:void(0);">User</a></th>
-        </tr>
+            <tr>
+                <th style="text-align: center">Actions</th>
+                <th style="text-align: center">Expert</th>
+                <th style="text-align: center">Auth type</th>
+                <th><a href="javascript:void(0);">User</a></th>
+            </tr>
         </thead>
         <tbody><?php
         $loggedUserId = Auth::instance()->get_user()->id;
@@ -204,18 +202,18 @@ $sectionIds = Arr::get($templateData, 'sections', array());
                 <td style="text-align: center"><input type="checkbox" name="users[]" value="<?php echo $existUser->user_id; ?>" checked="checked"></td><?php
                 } ?>
                 <td style="text-align: center"><?php
-                    if ($userArray) {
-                        if($userArray['type_id'] != 1) { ?>
+                    if ($userArray AND $userArray['type_id'] != 1) { ?>
                         <input
                             id="expert<?php echo $userArray['id']; ?>"
                             type="checkbox"
                             name="experts[]"
                             value="<?php echo $userArray['id']; ?>"
                             <?php if (in_array($userArray['id'], $templateData['experts'])) echo 'checked'; ?>><?php
-                        }
                     } ?>
-                </td>
-                <?php $icon = (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'oauth/'.$templateData['usersMap'][$existUser->user_id]['icon'] : 'openlabyrinth-header.png' ; ?>
+                </td><?php
+                $icon = (isset($templateData['usersMap'][$existUser->user_id]) AND $templateData['usersMap'][$existUser->user_id]['icon'] != NULL)
+                    ? 'oauth/'.$templateData['usersMap'][$existUser->user_id]['icon']
+                    : 'openlabyrinth-header.png' ; ?>
                 <td style="text-align: center;">
                     <img <?php echo (isset($templateData['usersMap'][$existUser->user_id]) && $templateData['usersMap'][$existUser->user_id]['icon'] != NULL) ? 'width="32"' : ''; ?> src=" <?php echo URL::base() . 'images/' . $icon ; ?>" border="0"/>
                 </td>
@@ -252,23 +250,23 @@ $sectionIds = Arr::get($templateData, 'sections', array());
             <th><a href="javascript:void(0);">Group</a></th>
         </tr>
         </thead>
-        <tbody>
-        <?php if(isset($templateData['webinar']) and count($templateData['webinar']->groups) > 0) { ?>
-            <?php foreach($templateData['webinar']->groups as $existGroup) { ?>
+        <tbody><?php
+        if(isset($templateData['webinar']) and count($templateData['webinar']->groups) > 0) {
+            foreach($templateData['webinar']->groups as $existGroup) { ?>
                 <tr>
                     <td style="text-align: center"><input type="checkbox" name="groups[]" value="<?php echo $existGroup->group_id; ?>" checked="checked"></td>
                     <td><?php echo $existGroup->group->name; ?></td>
                 </tr>
-            <?php } ?>
-        <?php } ?>
-        <?php if(isset($templateData['groups']) and count($templateData['groups']) > 0) { ?>
-            <?php foreach($templateData['groups'] as $group) { ?>
+            <?php }
+        }
+        if(isset($templateData['groups']) and count($templateData['groups']) > 0) {
+            foreach($templateData['groups'] as $group) { ?>
                 <tr>
                     <td style="text-align: center"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>"></td>
                     <td><?php echo $group->name; ?></td>
-                </tr>
-            <?php } ?>
-        <?php } ?>
+                </tr><?php
+            }
+        } ?>
         </tbody>
     </table>
     <?php } ?>

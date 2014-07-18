@@ -6260,3 +6260,11 @@ input.lightning-chb {
 #helpPopup {
     padding: 15px;
 }
+
+#assign-users th{
+    vertical-align: middle;
+}
+
+#webinarForm .submit-webinar-btn:first-child {
+    margin-top: -2px;
+}
