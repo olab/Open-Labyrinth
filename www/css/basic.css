@@ -1499,3 +1499,13 @@ table.dataTable tr.even td[class*='sorting'] {
     display: inline-block;
     margin-left: 25px;
 }
+.score-for-response {
+    width: 50px;
+}
+.score-for-response-l {
+    position: relative;
+    top: 3px;
+    color: #333333;
+    font-size: 21px;
+    margin: 0 5px -5px 25px;
+}

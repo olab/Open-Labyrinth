@@ -135,14 +135,18 @@ class Controller_ReportManager extends Controller_Base
         foreach ($questions as $question)
         {
             $response = DB_ORM::model('user_response')->getResponse($session->id, $question->id);
-            if (count($response)) $this->templateData['responses'][$question->id][] = array_pop($response);
+            $responseObj = end($response);
+            if ($question->entry_type_id == 8) {
+                $model = DB_ORM::model('SJTResponse');
+                $convertedResponse = $model->convertResponse($responseObj->response);
+                $responseObj->response = $convertedResponse.'<br>Points: '.$model->countPoints($responseObj->response);
+            }
+            if ($responseObj) $this->templateData['responses'][$question->id][] = $responseObj;
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
-        if ($allCounters != NULL and count($allCounters) > 0) {
-            foreach ($allCounters as $counter) {
-                $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
-            }
+        foreach ($allCounters as $counter) {
+            $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
         }
 
         $this->templateData['feedbacks']    = Model::factory('labyrinth')->getMainFeedback($session, $this->templateData['counters'], $session->map_id);

@@ -284,21 +284,22 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
 
     public function duplicateAvatars($fromMapId, $toMapId)
     {
-        if ( ! $toMapId) return array();
-
         $avatarMap = array();
+
+        if ( ! $toMapId) return $avatarMap;
 
         foreach ($this->getAvatarsByMap($fromMapId) as $avatar)
         {
             $avatarImage = $this->getAvatarImage($avatar->id);
+            $file = NULL;
 
-            if ( ! empty($avatarImage))
-            {
+            if ( ! empty($avatarImage)) {
                 $upload_dir = DOCROOT.'avatars\\';
-                $file = uniqid().'.png';
-				if (is_dir($upload_dir)) copy($upload_dir . $avatarImage, $upload_dir . $file);
+                $avatarPath = $upload_dir.$avatarImage;
+				if (is_dir($upload_dir) AND file_exists($avatarPath)) {
+                    copy($avatarPath, $upload_dir.uniqid().'.png');
+                }
             }
-            else $file = NULL;
 
             $avatarMap[$avatar->id] = DB_ORM::insert('map_avatar')
                     ->column('map_id', $toMapId)

@@ -34,43 +34,33 @@ class Controller_QuestionManager extends Controller_Base {
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId != NULL)
-        {
-            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        if ( ! $mapId ) Request::initial()->redirect(URL::base());
 
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-            $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
-            $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-            if (Auth::instance()->get_user()->type->name == 'superuser') {
-                $this->templateData['isSuperuser'] = true;
-            }
+        $this->templateData['map']              = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['questions']        = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
+        $this->templateData['question_types']   = DB_ORM::model('map_question_type')->getAllTypes();
 
-            $ses = Session::instance();
-            if($ses->get('warningMessage')){
-                $this->templateData['warningMessage'] = $ses->get('warningMessage');
-                $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
-                $ses->delete('listOfUsedReferences');
-                $ses->delete('warningMessage');
-            }
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
-
-            $questionView = View::factory('labyrinth/question/view');
-            $questionView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $questionView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        if (Auth::instance()->get_user()->type->name == 'superuser') {
+            $this->templateData['isSuperuser'] = true;
         }
+
+        $ses = Session::instance();
+        if ($ses->get('warningMessage')) {
+            $this->templateData['warningMessage'] = $ses->get('warningMessage');
+            $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+            $ses->delete('listOfUsedReferences');
+            $ses->delete('warningMessage');
+        }
+
+        $this->templateData['center'] = View::factory('labyrinth/question/view')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
     }
     
     public function action_question()
@@ -94,13 +84,21 @@ class Controller_QuestionManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
 
-        if ($questionId != null)
-        {
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
+        if ($questionId) {
             $questionObj = DB_ORM::model('map_question', array((int)$questionId));
 
             $this->templateData['question'] = $questionObj;
             $this->templateData['used']     = count(DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU'));
+
+            // type Situational Judgement Testing
+            if ($questionObj->entry_type_id == 8)
+            {
+                $responses = DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->query()->as_array();
+                $this->templateData['responses'] = $responses;
+                foreach ($responses as $response) {
+                    $this->templateData['score'][$response->id] = DB_ORM::select('SJTResponse')->where('response_id', '=', $response->id)->order_by('position')->query()->as_array();
+                }
+            }
 
             if ($questionObj->settings)
             {
@@ -113,8 +111,10 @@ class Controller_QuestionManager extends Controller_Base {
                     $this->templateData['question']->settings = Arr::get($jsonSettings, 0, '');
                 }
             }
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
+        } else {
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
         }
-        else Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
 
         if ($type->value == 'area' OR $type->value == 'text')
         {
@@ -128,7 +128,41 @@ class Controller_QuestionManager extends Controller_Base {
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
-    
+
+    public function action_questionSJT()
+    {
+        $post       = $this->request->post();
+        $stem       = Arr::get($post, 'stem', '');
+        $feedback   = Arr::get($post, 'feedback', '');
+        $score      = Arr::get($post, 'score', '');
+        $responses  = Arr::get($post, 'responses', '');
+        $mapId      = $this->request->param('id', 0);
+        $questionId = $this->request->param('id2', 0);
+
+        if ($questionId) {
+            DB_ORM::update('Map_Question')->set('stem', $stem)->set('feedback', $feedback)->where('id', '=', $questionId)->execute();
+            foreach ($responses as $index => $response) {
+                $isIndex = strpos($index, 'i');
+                if ($isIndex !== false) {
+                    $responseId = str_replace('i', '', $index);
+                    DB_ORM::update('Map_Question_Response')->set('response', $response)->where('id', '=', $responseId)->execute();
+                    foreach (Arr::get($score, $index, array()) as $position => $points) {
+                        DB_ORM::update('SJTResponse')->set('points', $points)->where('position', '=', $position)->where('response_id', '=', $responseId)->execute();
+                    }
+                }
+            }
+        } else {
+            $questionId = DB_ORM::insert('Map_Question')->column('map_id', $mapId)->column('stem', $stem)->column('entry_type_id', 8)->column('feedback', $feedback)->execute();
+            foreach ($responses as $index => $response) {
+                $responseId = DB_ORM::insert('Map_Question_Response')->column('question_id', $questionId)->column('response', $response)->execute();
+                foreach (Arr::get($score, $index, array()) as $position => $points) {
+                    DB_ORM::insert('SJTResponse')->column('response_id', $responseId)->column('position', $position)->column('points', $points)->execute();
+                }
+            }
+        }
+        Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+    }
+
     public function action_questionPOST()
     {
         $post             = $this->request->post();
@@ -158,10 +192,13 @@ class Controller_QuestionManager extends Controller_Base {
             }
 
             DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
-        } else $questionId = DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
+        } else {
+            $questionId = DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
+        }
 
-        if ($validator == 'no validator') DB_ORM::model('Map_Question_Validation')->deleteByQuestionId($questionId);
-        else DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter, $errorMessage);
+        $validator == 'no validator'
+            ? DB_ORM::model('Map_Question_Validation')->deleteByQuestionId($questionId)
+            : DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter, $errorMessage);
 
         Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
     }

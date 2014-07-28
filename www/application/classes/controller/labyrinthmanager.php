@@ -690,7 +690,7 @@ class Controller_LabyrinthManager extends Controller_Base {
     public function action_editMap() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }

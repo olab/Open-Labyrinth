@@ -1585,9 +1585,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                     </div>';
                     }
                 }
-            }
-            else if ($q_type == 'dd')
-            {
+            } else if ($q_type == 'dd') {
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
                 foreach ($question->responses as $response)
                 {
@@ -1600,6 +1598,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result .= '<span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
                         <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
                 }
+            } else if ($q_type == 'sjt') {
+                $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
+                foreach ($question->responses as $response)
+                {
+                    $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
+                }
+                $result .= '</ul>';
             }
             $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>'.$question->stem.'</p>'.$result.'</td></tr></table>';
         }

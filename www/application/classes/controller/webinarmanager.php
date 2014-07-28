@@ -545,34 +545,45 @@ class Controller_WebinarManager extends Controller_Base {
         $this->createReport('Poll');
     }
 
+    public function action_mapReportSJT()
+    {
+        $this->createReport('SJT');
+    }
+
     private function createReport($type)
     {
-        $webinarId          = $this->request->param('id', null);
+        $scenarioId         = $this->request->param('id', null);
         $mapId              = $this->request->param('id2', null);
         $sectionId          = $this->request->param('id3', null);
         $expertWebinarId    = $this->request->param('id4', null);
 
-        if ($webinarId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
+        if ($scenarioId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
         switch ($type)
         {
             case 'SCT':
                 $report = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT Report '.DB_ORM::model('map', array((int)$mapId))->name);
-                $report->add($mapId, $webinarId, $expertWebinarId, $sectionId);
+                $report->add($mapId, $scenarioId, $expertWebinarId, $sectionId);
                 $report->generate();
                 $report->get();
             break;
             case 'Poll':
                 $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Poll '.DB_ORM::model('map', array((int)$mapId))->name);
-                $report->add($mapId, $webinarId, '');
+                $report->add($mapId, $scenarioId, '');
                 $report->generate();
                 $report->get();
             break;
+            case 'SJT':
+                $report = new Report_SJT(new Report_Impl_PHPExcel(), 'SJT '.DB_ORM::model('map', array((int)$mapId))->name);
+                $report->add($mapId, $scenarioId, '');
+                $report->generate();
+                $report->get();
+                break;
             case '4R':
-                $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinarId);
+                $notIncludeUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($scenarioId);
 
                 $report  = new Report_4R(new Report_Impl_PHPExcel(), DB_ORM::model('map', array((int)$mapId))->name);
-                $report->add($mapId, $webinarId, '' , $notIncludUsers);
+                $report->add($mapId, $scenarioId, '' , $notIncludeUsers);
                 $report->generate();
                 $report->get();
             break;

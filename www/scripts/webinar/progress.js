@@ -19,11 +19,14 @@ jQuery(document).ready(function()
     $('#Poll').change(function() {
         clickOnButton($(this));
     });
+    $('#SJT').change(function() {
+        clickOnButton($(this));
+    });
 
     function clickOnButton (button){
         var typeId = button.attr('id');
 
-        if (typeId == '4R' || typeId == 'Poll') {
+        if (typeId == '4R' || typeId == 'Poll' || typeId == 'SJT') {
             th.hide();
             td.hide();
             webinar.hide();
