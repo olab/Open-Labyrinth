@@ -187,6 +187,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
 
     public function getQuestionsByMapAndTypes($mapId, $types)
     {
+        $questions = array();
         $result = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
@@ -194,15 +195,10 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             ->column('id')
             ->query();
 
-        if($result->is_loaded())
-        {
-            $questions = array();
-            foreach ($result as $record) {
-                $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
-            }
-            return $questions;
+        foreach ($result as $record) {
+            $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
         }
-        return NULL;
+        return $questions;
     }
 
     public function addQuestion ($mapId, $type, $values)
