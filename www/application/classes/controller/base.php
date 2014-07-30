@@ -158,7 +158,14 @@ class Controller_Base extends Controller_Template {
 
                 $centerView = View::factory('userMenu');
 
-                if ($user_type_name == 'learner') $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForLearner($user_id));
+                if ($user_type_name == 'learner') {
+                    $maps = DB_ORM::model('map')->getAllMapsForLearner($user_id);
+                    foreach ($maps as $map) {
+                        $bookmark = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($map->id, Auth::instance()->get_user()->id);
+                        if ($bookmark) $this->templateData['bookmarks'][$map->id] = 1;
+                    }
+                    $centerView->set('openLabyrinths', $maps);
+                }
                 else $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
 
                 $this->templateData['center'] = $centerView

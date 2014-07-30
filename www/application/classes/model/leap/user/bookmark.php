@@ -34,32 +34,22 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-			
 			'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-			
 			'node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-			
-			'time_stamp' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 20,
+            'user_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
                 'nullable' => FALSE,
+                'unsigned' => TRUE,
             )),
         );
-		
-		$this->relations = array(
-            'node' => new DB_ORM_Relation_BelongsTo($this, array(
-                'child_key' => array('node_id'),
-                'parent_key' => array('id'),
-                'parent_model' => 'map_node',
-            )),
-		);
     }
     
     public static function data_source() {
@@ -74,23 +64,43 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
         return array('id');
     }
 	
-	public function addBookmark($nodeId, $sessionId) {
+	public function addBookmark($nodeId, $sessionId, $userId)
+    {
+        // check for existing bookmark
+        $nodeObj = DB_ORM::model('Map_Node', array($nodeId));
+        if ($nodeObj) {
+            $result = $this->getBookmarkByMapAndUser($nodeObj->map_id, $userId);
+            if ($result) {
+                DB_ORM::delete('User_Bookmark')->where('id', '=', $result['id'])->execute();
+            }
+        }
+
+        $this->user_id = $userId;
 		$this->node_id = $nodeId;
 		$this->session_id = $sessionId;
-		$this->time_stamp = time();
-
 		$this->save();
 	}
 	
-	public function getBookmark($sessionId) {
-		$builder = DB_SQL::select('default')->from($this->table())->where('session_id', '=', $sessionId)->order_by('time_stamp', 'DESC')->limit(1);
-		$result = $builder->query();
-		
+	public function getBookmark($sessionId)
+    {
+        $result = DB_SQL::select('default')->from($this->table())->where('session_id', '=', $sessionId)->order_by('time_stamp', 'DESC')->limit(1)->query();
+
 		if($result->is_loaded()) {
 			return DB_ORM::model('user_bookmark', array((int)$result[0]['id']));
 		}
-		
+
 		return NULL;
 	}
-}
 
+    public function  getBookmarkByMapAndUser($mapId, $userId)
+    {
+        return DB_SQL::select('default')
+            ->from('map_nodes', 'n')
+            ->join('LEFT', 'user_bookmarks','b')
+            ->on('n.id','=','b.node_id')
+            ->where('b.user_id', '=', $userId)
+            ->where('n.map_id', '=', $mapId)
+            ->query()
+            ->fetch(0);
+    }
+}

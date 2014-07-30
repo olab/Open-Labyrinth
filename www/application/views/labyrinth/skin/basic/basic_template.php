@@ -149,21 +149,6 @@
             }, function(data) {});
         }
 
-        function ajaxBookmark() {
-            var xmlHttp,
-                sessionId = <?php echo Arr::get($templateData, 'sessionId', ''); ?>;
-
-            // code for IE7+, Firefox, Chrome, Opera, Safari
-            if (window.XMLHttpRequest) xmlHttp = new XMLHttpRequest();
-            // code for IE6, IE5
-            else if (window.ActiveXObject) xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-            else alert("Your browser does not support XMLHTTP for AJAX!");
-
-            xmlHttp.onreadystatechange = function () {};
-            xmlHttp.open("POST", '<?php echo URL::base().'renderLabyrinth/addBookmark/'; ?>' + sessionId + '/' + idNode, true);
-            xmlHttp.send(null);
-        }
-
         function timer(sec, block,reminder, check, remMsg, session) {
             var time            = sec,
                 remTime         = reminder,
@@ -281,9 +266,7 @@
                         break;
                     }
                 }
-                if ($a->assign_to_id == $templateData['node']->id OR
-                    $a->assign_to_id == $templateData['map']->id OR
-                    $section) $assign = $a;
+                if ($a->assign_to_id == $templateData['node']->id OR $a->assign_to_id == $templateData['map']->id OR $section) $assign = $a;
             }
             if (isset($assign)) { ?>
             <div

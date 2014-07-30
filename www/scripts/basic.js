@@ -314,6 +314,12 @@ window.dhx_globalImgPath = urlBase + "scripts/dhtmlxSlider/codebase/imgs/";
 
 function toggle_visibility(id){
     var e = document.getElementById(id);
-    if (e.style.display == 'none') e.style.display = 'block';
-    else e.style.display = 'none';
+    e.style.display = (e.style.display == 'none') ? 'block' : 'none';
+}
+
+function ajaxBookmark() {
+    $.get(
+        urlBase + 'renderLabyrinth/addBookmark/' + idNode,
+        function(){}
+    )
 }

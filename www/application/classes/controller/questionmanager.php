@@ -325,15 +325,16 @@ class Controller_QuestionManager extends Controller_Base {
         } else Request::initial()->redirect(URL::base());
     }
 
-    private function createZipArchive($folderPath, $name) {
-        $dest = 'tmp/' . $name . '.zip';
+    private function createZipArchive($folderPath, $name)
+    {
+        $dest = 'tmp/'.$name.'.zip';
         $zip = new ZipArchive();
 
-        if($h = opendir($folderPath)) {
-            if($zip->open($dest, ZIPARCHIVE::CREATE)) {
-                while(false !== ($f = readdir($h))) {
-                    if(strstr($f, '.') && file_exists($folderPath . '/' . $f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
-                        $zip->addFile($folderPath . '/' . $f, $f);
+        if ($h = opendir($folderPath)) {
+            if ($zip->open($dest, ZIPARCHIVE::CREATE)) {
+                while (false !== ($f = readdir($h))) {
+                    if (strstr($f, '.') AND file_exists($folderPath . '/' . $f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0) {
+                        $zip->addFile($folderPath.'/'.$f, $f);
                     }
                 }
             }

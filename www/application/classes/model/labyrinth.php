@@ -22,8 +22,11 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Model_Labyrinth extends Model {
 
+    private $bookmark;
+
     public function execute ($nodeId, $bookmark = NULL, $isRoot = false)
     {
+        $this->bookmark     = $bookmark;
         $result             = array();
         $result['userId']   = (Auth::instance()->logged_in()) ? Auth::instance()->get_user()->id : 0;
         $node               = DB_ORM::model('map_node', array((int) $nodeId));
@@ -45,15 +48,11 @@ class Model_Labyrinth extends Model {
             if ($this->checkUser($node->map_id, true) AND (strlen($clearAnnotation) > 0)) $result['node_annotation'] = $node->annotation;
 
             $sessionId = NULL;
-            if ($bookmark != NULL)
-            {
-                $b = DB_ORM::model('user_bookmark', array((int)$bookmark));
-                $sessionId = $b->session_id;
+            if ($bookmark) {
+                $sessionId = DB_ORM::model('user_bookmark', array((int)$bookmark))->session_id;
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-            }
-            else if ($isRoot OR $webinarSection == 'section')
-            {
+            } else if ($isRoot OR $webinarSection == 'section') {
                 $sessionId = DB_ORM::model('user_session')
                     ->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'), Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
 
@@ -63,9 +62,7 @@ class Model_Labyrinth extends Model {
                 Session::instance()->delete('webinarId')->delete('step')->delete('webinarSection');
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-            }
-            else
-            {
+            } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
                 if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
             }
@@ -80,7 +77,7 @@ class Model_Labyrinth extends Model {
             $section = false;
             if($webinarSectionId)
             {
-                foreach (DB_ORM::select('Map_Node_Section_node')->where('section_id', '=', $webinarSectionId)->query()->as_array() as $sectionObj)
+                foreach (DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $webinarSectionId)->query()->as_array() as $sectionObj)
                 {
                     $section[] = $sectionObj->node_id;
                 }
@@ -90,19 +87,22 @@ class Model_Labyrinth extends Model {
             $result['previewNodeId']    = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
             $result['node_links']       = $this->generateLinks($result['node'], $section);
             $result['sections']         = DB_ORM::model('map_node_section')->getSectionsByMapId($node->map_id);
-
-            $previewSessionTrace        = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
-            $result['c_debug']          = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
-
             $result['counters']         = '';
             $result['redirect']         = NULL;
             $result['remoteCounters']   = '';
+            $previewSessionTrace        = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
+            $result['c_debug']          = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
 
             if ($conditional == NULL)
             {
-                $traceId = ($sessionId != 'notExist')
-                    ? DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id)
-                    : 'notExist';
+                if ($sessionId AND $bookmark) {
+                    $traceObj = DB_ORM::select('user_sessionTrace')->where('session_id', '=', $sessionId)->query()->fetch(0);
+                    $traceId = $traceObj ? $traceObj->id : 'notExist';
+                } elseif ($sessionId) {
+                    $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'], $node->map_id, $node->id);
+                } else {
+                    $traceId = 'notExist';
+                }
 
                 if (substr($result['node_text'], 0, 3) != '<p>') $result['node_text'] = '<p>'.$result['node_text'].'</p>';
 
@@ -579,10 +579,9 @@ class Model_Labyrinth extends Model {
 
     private function counters ($traceId, $sessionId, $node, $isRoot = false)
     {
-        if ($traceId != null && $node != NULL) {
+        if ($traceId AND $node) {
             $counters = DB_ORM::model('map_counter')->getCountersByMap($node->map_id);
-
-            if (count($counters) > 0) {
+            if (count($counters)) {
                 $countersArray          = array();
                 $updateCounter          = '';
                 $oldCounter             = '';
@@ -594,253 +593,275 @@ class Model_Labyrinth extends Model {
                 $main_counter['value']  = '';
                 $c_debug                = array();
                 $counterValue           = 0;
+                $countersFunc           = Session::instance()->get('countersFunc');
+                $countersFunc           = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
+                $jsonRule               = array();
 
-                $countersFunc = Session::instance()->get('countersFunc');
-                $countersFunc = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
-
-                //$sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
-
-                foreach ($counters as $counter) {
-                    // if exist main counter get ID of it
-                    $if_main = $counter->status == 1;
-                    if ($if_main) $main_counter['id'] = $counter->id;
-
-                    $countersArray[$counter->id]['counter'] = $counter;
-                    $currentCountersState = '';
-                    if ($rootNode != NULL)
-                    {
-                        $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
-                        $oldCounter = $currentCountersState;
+                if ($this->bookmark) {
+                    $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
+                    foreach($visualDisplay as $display) {
+                        $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
+                        $counterString .= $this->getVisualDisplayHTML($display->id);
+                        $counterString .= '</div>';
                     }
-					
-                    $label = $counter->name;
-                    if ($counter->icon_id != 0) $label = '<img src="'.URL::base().$counter->icon->path.'">';
-                    $countersArray[$counter->id]['label'] = $label;
 
-                    $thisCounter = null;
-                    if ($isRoot)
+                    $counterString .='<ul class="navigation">';
+                    foreach($counters as $counter)
                     {
-                        $thisCounter = $counter->start_value;
-                        if ($if_main) $main_counter['value'] = $thisCounter;
-                    }
-                    elseif ($currentCountersState != '')
-                    {
-                        $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
-                        $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
-                        $e = strpos($tmp, ']') + 1;
-                        $tmp = substr($tmp, 0, $e - 1);
-                        $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
-                        $thisCounter = $tmp;
-
-                        // get current max counter value
-                        if ($if_main)
+                        $traceObj = DB_ORM::model('user_sessiontrace', array($traceId));
+                        if ($counter->visible AND $traceObj)
                         {
-                            preg_match('/(MCID=)(?<id>\d+),V=(?<value>\d+)/', $currentCountersState, $matches);
-                            $main_counter['value'] = Arr::get($matches, 'value', 0);
+                            $label = ($counter->icon_id != 0) ? '<img src="'.URL::base().$counter->icon->path.'">' : $counter->name;
+                            $valueConvert = strpos($traceObj->counters, 'CID='.$counter->id.',V=');
+                            $valueConvert = substr($traceObj->counters, $valueConvert + strlen('CID='.$counter->id.',V='));
+                            $value = (int)$valueConvert;
+
+                            $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$label.'</a> ('.$value.')</li>';
+                            $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$value.'"></counter>';
                         }
                     }
+                    $counterString .="</ul>";
+                } else {
+                    foreach ($counters as $counter) {
+                        // if exist main counter get ID of it
+                        $if_main = $counter->status == 1;
+                        if ($if_main) $main_counter['id'] = $counter->id;
 
-                    $c_debug[$counter->id]['previous_value'] = $thisCounter;
-
-                    $counterFunction = '';
-                    $appearOnNode = 1;
-
-                    if (count($node->counters) > 0)
-                    {
-                        foreach ($node->counters as $nodeCounter)
+                        $countersArray[$counter->id]['counter'] = $counter;
+                        $currentCountersState = '';
+                        if ($rootNode != NULL)
                         {
-                            if ($counter->id == $nodeCounter->counter->id)
+                            $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
+                            $oldCounter = $currentCountersState;
+                        }
+
+                        $label = $counter->name;
+                        if ($counter->icon_id != 0) $label = '<img src="'.URL::base().$counter->icon->path.'">';
+                        $countersArray[$counter->id]['label'] = $label;
+
+                        $thisCounter = null;
+                        if ($isRoot)
+                        {
+                            $thisCounter = $counter->start_value;
+                            if ($if_main) $main_counter['value'] = $thisCounter;
+                        }
+                        elseif ($currentCountersState != '')
+                        {
+                            $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
+                            $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
+                            $e = strpos($tmp, ']') + 1;
+                            $tmp = substr($tmp, 0, $e - 1);
+                            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+                            $thisCounter = $tmp;
+
+                            // get current max counter value
+                            if ($if_main)
                             {
-                                $counterFunction = $nodeCounter->function;
-                                $appearOnNode = $nodeCounter->display;
-                                break;
+                                preg_match('/(MCID=)(?<id>\d+),V=(?<value>\d+)/', $currentCountersState, $matches);
+                                $main_counter['value'] = Arr::get($matches, 'value', 0);
                             }
                         }
-                    }
 
-                    $c_debug[$counter->id]['counter_value'] = $counterFunction;
+                        $c_debug[$counter->id]['previous_value'] = $thisCounter;
 
-                    if ($counterFunction != '')
-                    {
-                        if ($counterFunction[0] == '=') $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
-                        else if ($counterFunction[0] == '-') $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
-                        else
+                        $counterFunction = '';
+                        $appearOnNode = 1;
+
+                        if (count($node->counters) > 0)
                         {
-                            $thisCounter += (int)$counterFunction;
-                            // we need only positive values
-                            if ($if_main) $main_counter['value'] += (int)$counterFunction;
+                            foreach ($node->counters as $nodeCounter)
+                            {
+                                if ($counter->id == $nodeCounter->counter->id)
+                                {
+                                    $counterFunction = $nodeCounter->function;
+                                    $appearOnNode = $nodeCounter->display;
+                                    break;
+                                }
+                            }
+                        }
+
+                        $c_debug[$counter->id]['counter_value'] = $counterFunction;
+
+                        if ($counterFunction != '')
+                        {
+                            if ($counterFunction[0] == '=') $thisCounter = substr($counterFunction, 1, strlen($counterFunction));
+                            else if ($counterFunction[0] == '-') $thisCounter -= substr($counterFunction, 1, strlen($counterFunction));
+                            else
+                            {
+                                $thisCounter += (int)$counterFunction;
+                                // we need only positive values
+                                if ($if_main) $main_counter['value'] += (int)$counterFunction;
+                            }
+                        }
+                        $countersArray[$counter->id]['value'] = $thisCounter;
+
+                        if ($counterFunction != '') $countersArray[$counter->id]['func'][] = $counterFunction;
+
+                        if (isset($countersFunc[$counter->id]) AND count($countersFunc[$counter->id]) > 0)
+                        {
+                            if (isset($countersArray[$counter->id]['func']))
+                            {
+                                if (count($countersArray[$counter->id]['func']) > 0) $countersArray[$counter->id]['func'] = array_merge($countersArray[$counter->id]['func'], $countersFunc[$counter->id]);
+                            }
+                            else $countersArray[$counter->id]['func'] = $countersFunc[$counter->id];
+                        }
+
+                        $countersArray[$counter->id]['visible'] = (($counter->visible != 0) & ($appearOnNode == 1)) ? true : false;
+
+                        $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
+
+                        $redirect = NULL;
+                        if ($rules != NULL and count($rules) > 0) {
+                            foreach ($rules as $rule) {
+                                $resultExp = FALSE;
+
+                                switch ($rule->relation->value) {
+                                    case 'eq':
+                                        if ($thisCounter == $rule->value) $resultExp = TRUE;
+                                        break;
+                                    case 'neq':
+                                        if ($thisCounter != $rule->value) $resultExp = TRUE;
+                                        break;
+                                    case 'leq':
+                                        if ($thisCounter <= $rule->value) $resultExp = TRUE;
+                                        break;
+                                    case 'lt':
+                                        if ($thisCounter < $rule->value) $resultExp = TRUE;
+                                        break;
+                                    case 'geq':
+                                        if ($thisCounter >= $rule->value) $resultExp = TRUE;
+                                        break;
+                                    case 'gt':
+                                        if ($thisCounter > $rule->value) $resultExp = TRUE;
+                                        break;
+                                }
+
+                                if ($resultExp == TRUE AND $rule->function == 'redir')
+                                {
+
+                                    $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
+                                    $counterValue = $thisCounter;
+                                    // if main counter and firs spot not sign, add rule value
+                                    if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+') ) $main_counter['value'] += $rule->counter_value;
+                                    $c_debug[$counter->id]['counter_rule_value'] = $rule->counter_value;
+                                    $redirect = $rule->redirect_node_id;
+                                }
+                            }
+
+                            if ($redirect != NULL) $countersArray[$counter->id]['redirect'] = $redirect;
                         }
                     }
-                    $countersArray[$counter->id]['value'] = $thisCounter;
-
-                    if ($counterFunction != '') $countersArray[$counter->id]['func'][] = $counterFunction;
-
-                    if (isset($countersFunc[$counter->id]) AND count($countersFunc[$counter->id]) > 0)
-                    {
-                        if (isset($countersArray[$counter->id]['func']))
-                        {
-                            if (count($countersArray[$counter->id]['func']) > 0) $countersArray[$counter->id]['func'] = array_merge($countersArray[$counter->id]['func'], $countersFunc[$counter->id]);
-                        }
-                        else $countersArray[$counter->id]['func'] = $countersFunc[$counter->id];
-                    }
-
-                    $countersArray[$counter->id]['visible'] = (($counter->visible != 0) & ($appearOnNode == 1)) ? true : false;
-
-                    $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
 
                     $redirect = NULL;
-                    if ($rules != NULL and count($rules) > 0) {
-                        foreach ($rules as $rule) {
-                            $resultExp = FALSE;
+                    $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
 
-                            switch ($rule->relation->value) {
-                                case 'eq':
-                                    if ($thisCounter == $rule->value) $resultExp = TRUE;
-                                    break;
-                                case 'neq':
-                                    if ($thisCounter != $rule->value) $resultExp = TRUE;
-                                    break;
-                                case 'leq':
-                                    if ($thisCounter <= $rule->value) $resultExp = TRUE;
-                                    break;
-                                case 'lt':
-                                    if ($thisCounter < $rule->value) $resultExp = TRUE;
-                                    break;
-                                case 'geq':
-                                    if ($thisCounter >= $rule->value) $resultExp = TRUE;
-                                    break;
-                                case 'gt':
-                                    if ($thisCounter > $rule->value) $resultExp = TRUE;
-                                    break;
-                            }
-
-                            if ($resultExp == TRUE AND $rule->function == 'redir')
-                            {
-
-                                $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
-                                $counterValue = $thisCounter;
-                                // if main counter and firs spot not sign, add rule value
-                                if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+') ) $main_counter['value'] += $rule->counter_value;
-                                $c_debug[$counter->id]['counter_rule_value'] = $rule->counter_value;
-                                $redirect = $rule->redirect_node_id;
+                    if (count($commonRules)){
+                        $values = array();
+                        if (count($countersArray)){
+                            foreach($countersArray as $key => $counter){
+                                $values[$key] = $counter['value'];
                             }
                         }
+                        $runtimelogic = new RunTimeLogic();
+                        $runtimelogic->values = $values;
+                        $stopRules = Session::instance()->get('stopCommonRules', array());
+                        foreach($commonRules as $rule){
+                            if (!in_array('RULE_'.$rule->id, $stopRules)){
 
-                        if ($redirect != NULL) $countersArray[$counter->id]['redirect'] = $redirect;
-                    }
-                }
+                                preg_match_all('/QU_ANSWER:(?<id>[^\]]*)\]\]\s*,\s*\'(?<response>[^\']*)/', $rule->rule, $matches);
 
-                $redirect = NULL;
-                $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
-                $jsonRule = array();
-
-                if (count($commonRules) > 0){
-                    $values = array();
-                    if (count($countersArray) > 0){
-                        foreach($countersArray as $key => $counter){
-                            $values[$key] = $counter['value'];
-                        }
-                    }
-                    $runtimelogic = new RunTimeLogic();
-                    $runtimelogic->values = $values;
-                    $stopRules = Session::instance()->get('stopCommonRules', array());
-                    foreach($commonRules as $rule){
-                        if (!in_array('RULE_'.$rule->id, $stopRules)){
-
-                            preg_match_all('/QU_ANSWER:(?<id>[^\]]*)\]\]\s*,\s*\'(?<response>[^\']*)/', $rule->rule, $matches);
-
-                            // prepare response for $jsonRule
-                            foreach(Arr::get($matches, 'response', array()) as $index=>$response)
-                            {
-                                if ($rule->lightning)
+                                // prepare response for $jsonRule
+                                foreach(Arr::get($matches, 'response', array()) as $index=>$response)
                                 {
-                                    $response = str_replace('[', '', $response);
-                                    $response = str_replace(']', '', $response);
-                                    $response = str_replace('"', '', $response);
-                                    $jsonRule[$response] = $matches['id'][$index];
+                                    if ($rule->lightning)
+                                    {
+                                        $response = str_replace('[', '', $response);
+                                        $response = str_replace(']', '', $response);
+                                        $response = str_replace('"', '', $response);
+                                        $jsonRule[$response] = $matches['id'][$index];
+                                    }
+                                }
+
+                                $array = $runtimelogic->parsingString($rule->rule, $sessionId);
+                                $c_debug['global_rules'][$rule->id] = $array;
+                                $resultLogic = $array['result'];
+
+                                if (isset($resultLogic['goto']) AND $resultLogic['goto'] != NULL AND $redirect == NULL) $redirect = $resultLogic['goto'];
+
+                                if (isset($resultLogic['counters']) AND count($resultLogic['counters']) > 0)
+                                {
+                                    foreach($resultLogic['counters'] as $key => $c)
+                                    {
+                                        $previousValue = $c;
+                                        $funcStr = $c - $previousValue;
+                                        if ($funcStr > 0) $funcStr = '+'.$funcStr;
+                                        $countersArray[$key]['func'][] = $funcStr;
+                                        $countersArray[$key]['value'] = $c;
+                                    }
+                                }
+
+                                if (isset($resultLogic['stop'])){
+                                    $stopRules[] = 'RULE_'.$rule->id;
+                                    Session::instance()->set('stopCommonRules', $stopRules);
+                                }
+
+                                if (isset($resultLogic['no-entry'])){
+                                    $message = '<p>Sorry but you haven\'t yet explored all the required options ...</p>';
+                                    return array('no-entry' => 1, 'message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
                                 }
                             }
-
-                            $array = $runtimelogic->parsingString($rule->rule, $sessionId);
-                            $c_debug['global_rules'][$rule->id] = $array;
-                            $resultLogic = $array['result'];
-
-                            if (isset($resultLogic['goto']) AND $resultLogic['goto'] != NULL AND $redirect == NULL) $redirect = $resultLogic['goto'];
-
-                            if (isset($resultLogic['counters']) AND count($resultLogic['counters']) > 0)
-                            {
-                                foreach($resultLogic['counters'] as $key => $c)
-                                {
-                                    $previousValue = $c;
-                                    $funcStr = $c - $previousValue;
-                                    if ($funcStr > 0) $funcStr = '+'.$funcStr;
-                                    $countersArray[$key]['func'][] = $funcStr;
-                                    $countersArray[$key]['value'] = $c;
-                                }
-                            }
-
-                            if (isset($resultLogic['stop'])){
-                                $stopRules[] = 'RULE_'.$rule->id;
-                                Session::instance()->set('stopCommonRules', $stopRules);
-                            }
-
-                            if (isset($resultLogic['no-entry'])){
-                                $message = '<p>Sorry but you haven\'t yet explored all the required options ...</p>';
-                                return array('no-entry' => 1, 'message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
-                            }
                         }
                     }
-                }
 
-                $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
-                foreach($visualDisplay as $display) {
-                    $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
-                    $counterString .= $this->getVisualDisplayHTML($display->id);
-                    $counterString .= '</div>';
-                }
+                    $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
+                    foreach($visualDisplay as $display) {
+                        $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
+                        $counterString .= $this->getVisualDisplayHTML($display->id);
+                        $counterString .= '</div>';
+                    }
 
-                $counterString .='<ul class="navigation">';
-                foreach($countersArray as $counter)
-                {
-                    $counterObj = Arr::get($counter, 'counter', false);
-                    if ($counterObj)
+                    $counterString .='<ul class="navigation">';
+                    foreach($countersArray as $counter)
                     {
-                        $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
-
-                        if (Arr::get($counter,'visible', false))
+                        $counterObj = Arr::get($counter, 'counter', false);
+                        if ($counterObj)
                         {
-                            $c_debug[$counterObj->id]['name'] = $counter['label'];
-                            $c_debug[$counterObj->id]['current_value'] = $counter['value'];
-                            $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$displayValue.')</li>';
-                            $remoteCounterString .= '<counter id="'.$counterObj->id.'" name="'.$counterObj->name.'" value="'.$counter['value'].'"></counter>';
+                            $displayValue = ($counterValue != 0) ? $counterValue : $counter['value'];
+
+                            if (Arr::get($counter,'visible', false))
+                            {
+                                $c_debug[$counterObj->id]['name'] = $counter['label'];
+                                $c_debug[$counterObj->id]['current_value'] = $counter['value'];
+                                $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$counter['label'].'</a> ('.$displayValue.')</li>';
+                                $remoteCounterString .= '<counter id="'.$counterObj->id.'" name="'.$counterObj->name.'" value="'.$counter['value'].'"></counter>';
+                            }
+                            if (isset($counter['redirect']) AND $redirect == NULL) $redirect = $counter['redirect'];
+
+                            $updateCounter .= '[CID='.$counterObj->id.',V='.$displayValue.']';
                         }
-                        if (isset($counter['redirect']) AND $redirect == NULL) $redirect = $counter['redirect'];
-
-                        $updateCounter .= '[CID='.$counterObj->id.',V='.$displayValue.']';
                     }
-                }
-                $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
-                $counterString .="</ul>";
+                    $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
+                    $counterString .="</ul>";
 
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
-                DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
+                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
 
-                Session::instance()->delete('questionChoices');
-                if ($redirect != NULL && $redirect != $node->id){
-                    Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
+                    Session::instance()->delete('questionChoices');
+                    if ($redirect != NULL && $redirect != $node->id){
+                        Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$redirect);
+                    }
                 }
 
                 return array(
-                    'c_debug' => $c_debug,
+                    'c_debug'       => $c_debug,
                     'counterString' => $counterString,
-                    'redirect' => $redirect,
-                    'remote' => $remoteCounterString,
-                    'jsonRule' => json_encode($jsonRule)
+                    'redirect'      => $redirect,
+                    'remote'        => $remoteCounterString,
+                    'jsonRule'      => json_encode($jsonRule)
                 );
             }
             return '';
         }
-
         return '';
     }
 

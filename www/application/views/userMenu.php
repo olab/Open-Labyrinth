@@ -23,7 +23,7 @@ if (isset($presentations) && is_array($presentations) && !empty($presentations))
     <h3><?php echo __('Open Presentations'); ?></h3>
     <ul class="unstyled"><?php
     foreach ($presentations as $presentation) { ?>
-        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base(); ?>presentationManager/render/<?php echo $presentation->id; ?>"> <?php echo $presentation->title; ?></a></li><?php
+        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base().'presentationManager/render/'.$presentation->id; ?>"> <?php echo $presentation->title; ?></a></li><?php
     } ?>
     </ul><?php
 }
@@ -34,7 +34,13 @@ if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinth
         foreach ($openLabyrinths as $labyrinth) { ?>
         <li>
             <i class="icon-arrow-right"></i>
-            <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a>
+            <a href="<?php echo URL::base().'renderLabyrinth/index/'.$labyrinth->id; ?>"><?php echo $labyrinth->name; ?></a><?php
+            if (isset($templateData['bookmarks'][$labyrinth->id])) { ?>
+            <a class="btn btn-warning" href="<?php echo URL::base().'renderLabyrinth/resume/'.$labyrinth->id; ?>">
+                <i class="icon-refresh icon-white"></i>Resume
+            </a><?php
+            }
+            ?>
         </li><?php
         } ?>
     </ul><?php

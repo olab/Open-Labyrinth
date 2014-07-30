@@ -33,6 +33,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $mapId       = $this->request->param('id', null);
         $this->mapId = $mapId;
         $node        = null;
+        $bookmark    = false;
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
 
@@ -62,7 +63,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 $node = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
             }
-        } else {
+        } elseif ($action == 'resume') {
+            $result = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($mapId, Auth::instance()->get_user()->id);
+            $node = DB_ORM::model('map_node')->getNodeById(Arr::get($result, 'node_id', 0));
+            $bookmark = Arr::get($result, 'id', 0);
+        } elseif ($action == 'go') {
             $nodeId   = $this->request->param('id2', null);
 
             if ($nodeId == null) {
@@ -78,23 +83,25 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
         }
-        $this->renderNode($node, $action);
+        $this->renderNode($node, $action, $bookmark);
     }
 
-    private function renderNode ($nodeObj, $action)
+    private function renderNode ($nodeObj, $action, $bookmark)
     {
         if ($nodeObj == NULL) Request::initial()->redirect(URL::base());
 
-        $editOnId   = $action ? 'id3' : 'id2';
+        $editOnId   = ($action == 'go') ? 'id3' : 'id2';
         $editOn     = $this->request->param($editOnId, null);
-        $bookMark   = $this->request->param('id4', null);
         $nodeId     = $nodeObj->id;
         $mapId      = $nodeObj->map_id;
-        $isRoot     = ($nodeObj->type == 1) ? true : false;
+        $isRoot     = ($nodeObj->type_id == 1) ? true : false;
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-        $data       = ($bookMark != NULL)
-            ? Model::factory('labyrinth')->execute($nodeId, (int) $bookMark)
+        $data       = ($action == 'resume')
+            ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
             : Model::factory('labyrinth')->execute($nodeId, null, $isRoot);
+
+        // delete $bookmark after use it
+        DB_ORM::delete('User_Bookmark')->where('id', '=', $bookmark)->execute();
 
         if ( ! $data) Request::initial()->redirect(URL::base());
 
@@ -138,9 +145,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         if ( ! isset($data['node_links']['linker']))
         {
+            $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
             if ($data['node']->link_style->name == 'type in text')
             {
-                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
                 $data['links'] = $result['links']['display'];
                 if(isset($data['alinkfil']) AND isset($data['alinknod']))
                 {
@@ -150,8 +157,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
             else
             {
-                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
-                $data['links'] = $result['links'] ? ( ! empty($result['links'])) : '';
+                $data['links'] = $result['links'];
             }
         }
         else $data['links'] = $data['node_links']['linker'];
@@ -197,271 +203,274 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $this->template = View::factory($skin)->set('templateData', $data);
     }
 
+    public function action_resume()
+    {
+        $this->renderLabyrinth('resume');
+    }
+
     public function action_index()
     {
-//        $this->renderLabyrinth('index');
-//        exit;
-        $mapId       = $this->request->param('id', null);
-        $editOn      = $this->request->param('id2', null);
-        $scenarioId  = Session::instance()->get('webinarId');
-        $this->mapId = $mapId;
-
-        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
-
-        $mapDB = DB_ORM::model('map', array($mapId));
-        if ($mapDB->security_id == 4)
-        {
-            $sessionId      = Session::instance()->id();
-            $checkValue     = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
-            $checkSession   = Session::instance()->get($checkValue);
-            if ($checkSession != '1')
-            {
-                $this->template             = View::factory('labyrinth/security');
-                $templateData['mapDB']      = $mapDB;
-                $templateData['title']      = 'OpenLabyrinth';
-                $templateData['keyError']   = Session::instance()->get('keyError');
-
-                Session::instance()->delete('keyError');
-
-                $this->template->set('templateData', $templateData);
-            }
-        }
-        else
-        {
-            Session::instance()->delete('questionChoices');
-            Session::instance()->delete('dragQuestionResponses');
-            Session::instance()->delete('counterFunc');
-            Session::instance()->delete('stopCommonRules');
-            Session::instance()->delete('arrayAddedQuestions');
-
-            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
-
-            if ($rootNode == NULL) Request::initial()->redirect(URL::base());
-
-            $idRootNode = $rootNode->id;
-            $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
-
-            if ( ! $data) Request::initial()->redirect(URL::base());
-
-            /* if exist poll node save its time */
-            $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($idRootNode, $scenarioId);
-
-            /* ----- patient ----- */
-            $data['patients'] = $this->checkPatient($idRootNode, $scenarioId, 'index');
-            foreach ($data['patients'] as $patient)
-            {
-                $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
-            }
-            /* ----- end patient ----- */
-
-            $data['navigation'] = $this->generateNavigation($data['sections']);
-
-            if ( ! isset($data['node_links']['linker']))
-            {
-                if ($data['node']->link_style->name == 'type in text')
-                {
-                    $result = $this->generateLinks($data['node'], $data['node_links']);
-                    $data['links'] = $result['links']['display'];
-                    if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                         $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                         $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
-                    }
-                } else {
-                    $result = $this->generateLinks($data['node'], $data['node_links']);
-                    $data['links'] = $result['links'];
-                }
-            } else {
-                $data['links'] = $data['node_links']['linker'];
-            }
-
-            if ($editOn != null AND $editOn == 1) $data['node_edit'] = TRUE;
-            else
-            {
-                if (( $data['node']->info != '' ) AND (strpos($data['node_text'],'[[INFO:') === false) AND $data['node']->show_info)
-                {
-                    $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
-                }
-                if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
-                {
-                    $search = '[[INFO:' . $data['node']->id . ']]';
-                    $data['node_text'] = str_replace($search, '',$data['node_text']);
-                }
-                $data['node_text'] = $this->parseText($data['node_text'], $mapId);
-            }
-
-            $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-            $skin = 'labyrinth/skin/basic/basic';
-            if ($data['map']->skin->enabled){
-                $data['skin_path'] = $data['map']->skin->path;
-                if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
-                    $skin = 'labyrinth/skin/basic/basic_template';
-
-                    $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
-                    $skinContent->set('templateData', $data);
-
-                    $data['skin'] = $skinContent;
-                    $skinData = json_decode($data['map']->skin->data, true);
-                    if($skinData != null && isset($skinData['body'])) {
-                        $data['bodyStyle'] = base64_decode($skinData['body']);
-                    }
-                } else {
-                    $skin = 'labyrinth/skin/basic/basic';
-                }
-            }else{
-                $data['skin_path'] = NULL;
-            }
-
-            $data['session'] = (int)$data['traces'][0]->session_id;
-            foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
-            {
-                $popup->text = $this->parseText($popup->text);
-                $data['map_popups'][] = $popup;
-            }
-
-            $this->template = View::factory($skin)->set('templateData', $data);
-        }
+        $this->renderLabyrinth('index');
+//        $mapId       = $this->request->param('id', null);
+//        $editOn      = $this->request->param('id2', null);
+//        $scenarioId  = Session::instance()->get('webinarId');
+//        $this->mapId = $mapId;
+//
+//        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
+//
+//        $mapDB = DB_ORM::model('map', array($mapId));
+//        if ($mapDB->security_id == 4)
+//        {
+//            $sessionId      = Session::instance()->id();
+//            $checkValue     = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
+//            $checkSession   = Session::instance()->get($checkValue);
+//            if ($checkSession != '1')
+//            {
+//                $this->template             = View::factory('labyrinth/security');
+//                $templateData['mapDB']      = $mapDB;
+//                $templateData['title']      = 'OpenLabyrinth';
+//                $templateData['keyError']   = Session::instance()->get('keyError');
+//
+//                Session::instance()->delete('keyError');
+//
+//                $this->template->set('templateData', $templateData);
+//            }
+//        }
+//        else
+//        {
+//            Session::instance()->delete('questionChoices');
+//            Session::instance()->delete('dragQuestionResponses');
+//            Session::instance()->delete('counterFunc');
+//            Session::instance()->delete('stopCommonRules');
+//            Session::instance()->delete('arrayAddedQuestions');
+//
+//            $rootNode = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+//
+//            if ($rootNode == NULL) Request::initial()->redirect(URL::base());
+//
+//            $idRootNode = $rootNode->id;
+//            $data = Model::factory('labyrinth')->execute($idRootNode, NULL, true);
+//
+//            if ( ! $data) Request::initial()->redirect(URL::base());
+//
+//            /* if exist poll node save its time */
+//            $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($idRootNode, $scenarioId);
+//
+//            /* ----- patient ----- */
+//            $data['patients'] = $this->checkPatient($idRootNode, $scenarioId, 'index');
+//            foreach ($data['patients'] as $patient)
+//            {
+//                $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
+//            }
+//            /* ----- end patient ----- */
+//
+//            $data['navigation'] = $this->generateNavigation($data['sections']);
+//
+//            if ( ! isset($data['node_links']['linker']))
+//            {
+//                if ($data['node']->link_style->name == 'type in text')
+//                {
+//                    $result = $this->generateLinks($data['node'], $data['node_links']);
+//                    $data['links'] = $result['links']['display'];
+//                    if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+//                         $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+//                         $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+//                    }
+//                } else {
+//                    $result = $this->generateLinks($data['node'], $data['node_links']);
+//                    $data['links'] = $result['links'];
+//                }
+//            } else {
+//                $data['links'] = $data['node_links']['linker'];
+//            }
+//
+//            if ($editOn != null AND $editOn == 1) $data['node_edit'] = TRUE;
+//            else
+//            {
+//                if (( $data['node']->info != '' ) AND (strpos($data['node_text'],'[[INFO:') === false) AND $data['node']->show_info)
+//                {
+//                    $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+//                }
+//                if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+//                {
+//                    $search = '[[INFO:' . $data['node']->id . ']]';
+//                    $data['node_text'] = str_replace($search, '',$data['node_text']);
+//                }
+//                $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+//            }
+//
+//            $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+//            $skin = 'labyrinth/skin/basic/basic';
+//            if ($data['map']->skin->enabled){
+//                $data['skin_path'] = $data['map']->skin->path;
+//                if(file_exists($_SERVER['DOCUMENT_ROOT'] . '/application/views/labyrinth/skin/' . $data['map']->skin->id . '/skin.php')) {
+//                    $skin = 'labyrinth/skin/basic/basic_template';
+//
+//                    $skinContent = View::factory('labyrinth/skin/' . $data['map']->skin->id . '/skin');
+//                    $skinContent->set('templateData', $data);
+//
+//                    $data['skin'] = $skinContent;
+//                    $skinData = json_decode($data['map']->skin->data, true);
+//                    if($skinData != null && isset($skinData['body'])) {
+//                        $data['bodyStyle'] = base64_decode($skinData['body']);
+//                    }
+//                } else {
+//                    $skin = 'labyrinth/skin/basic/basic';
+//                }
+//            }else{
+//                $data['skin_path'] = NULL;
+//            }
+//
+//            $data['session'] = (int)$data['traces'][0]->session_id;
+//            foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+//            {
+//                $popup->text = $this->parseText($popup->text);
+//                $data['map_popups'][] = $popup;
+//            }
+//
+//            $this->template = View::factory($skin)->set('templateData', $data);
+//        }
     }
 
     public function action_go()
     {
-//        $this->renderLabyrinth('go');
-//        exit;
-        $mapId       = $this->request->param('id', NULL);
-        $nodeId      = $this->request->param('id2', NULL);
-        $editOn      = $this->request->param('id3', NULL);
-        $bookMark    = $this->request->param('id4', NULL);
-        $this->mapId = $mapId;
-
-        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
-
-        if ($nodeId == NULL) {
-            $nodeId = Arr::get($_GET, 'id', NULL);
-            if ($nodeId == NULL AND $_POST) {
-                $nodeId = Arr::get($_POST, 'id', NULL);
-                if ($nodeId == NULL) {
-                    Request::initial()->redirect(URL::base());
-                    return;
-                }
-            }
-        }
-
-        $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
-        if ($node == NULL) Request::initial()->redirect(URL::base());
-
-        $data = ($bookMark != NULL)
-            ? Model::factory('labyrinth')->execute($node->id, (int) $bookMark)
-            : Model::factory('labyrinth')->execute($node->id);
-
-        /* if exist poll node save its time */
-        $scenarioId  = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-        $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $scenarioId);
-
-        /* ----- patient ----- */
-        $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
-        foreach ($data['patients'] as $patient)
-        {
-            $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
-        }
-        /* ----- end patient ----- */
-
-        $gotoNode = Session::instance()->get('goto', NULL);
-        if ($gotoNode != NULL)
-        {
-            Session::instance()->set('goto', NULL);
-            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
-        }
-
-        if ( ! $data) Request::initial()->redirect(URL::base());
-
-        $undoNodes = array();
-        if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
-        {
-            $sessionId              = (int)$data['traces'][0]->session_id;
-            $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
-            $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-            $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
-            $data['timeForNode']    = $timeForNode;
-            $data['session']        = $sessionId;
-
-            if ($data['node']->undo)
-            {
-                list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
-                $data['undoLinks'] = $undoLinks;
-            }
-            else $undoNodes = Arr::get($this->prepareUndoLinks($sessionId, $mapId, $nodeId), 1 ,null);
-        }
-
-        $data['navigation'] = $this->generateNavigation($data['sections']);
-        if ( ! isset($data['node_links']['linker']))
-        {
-            if ($data['node']->link_style->name == 'type in text')
-            {
-                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
-                $data['links'] = $result['links']['display'];
-                if(isset($data['alinkfil']) && isset($data['alinknod'])) {
-                    $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
-                    $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
-                }
-            }
-            else
-            {
-                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
-                if( ! empty($result['links'])) $data['links'] = $result['links'];
-                else $data['links'] = "";
-            }
-        }
-        else $data['links'] = $data['node_links']['linker'];
-
-        if ($editOn != NULL and $editOn == 1) $data['node_edit'] = TRUE;
-        else
-        {
-            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
-            {
-                $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
-            }
-
-            if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
-            {
-                $search = '[[INFO:' . $data['node']->id . ']]';
-                $data['node_text'] = str_replace($search, '',$data['node_text']);
-            }
-
-            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
-        }
-
-        $data['trace_links'] = $this->generateReviewLinks($data['traces']);
-        $data['skin_path'] = $data['map']->skin->path;
-
-        //Calculate time for Timer and Pop-up messages
-        $data['timer_start'] = 1;
-        $data['popup_start'] = 1;
-
-        // Parse text key for each nodes
-        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
-        {
-            $popup->text = $this->parseText($popup->text);
-            $data['map_popups'][] = $popup;
-        }
-
-        $skin = 'labyrinth/skin/basic/basic';
-        if ($data['map']->skin->enabled)
-        {
-            $data['skin_path'] = $data['map']->skin->path;
-            if (file_exists($_SERVER['DOCUMENT_ROOT'].'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php'))
-            {
-                $skin = 'labyrinth/skin/basic/basic_template';
-
-                $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
-                $skinData = json_decode($data['map']->skin->data, true);
-                if($skinData != null && isset($skinData['body'])) {
-                    $data['bodyStyle'] = base64_decode($skinData['body']);
-                }
-            }
-            else $skin = 'labyrinth/skin/basic/basic';
-        }
-        else $data['skin_path'] = NULL;
-
-        $this->template = View::factory($skin)->set('templateData', $data);
+        $this->renderLabyrinth('go');
+//        $mapId       = $this->request->param('id', NULL);
+//        $nodeId      = $this->request->param('id2', NULL);
+//        $editOn      = $this->request->param('id3', NULL);
+//        $bookMark    = $this->request->param('id4', NULL);
+//        $this->mapId = $mapId;
+//
+//        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
+//
+//        if ($nodeId == NULL) {
+//            $nodeId = Arr::get($_GET, 'id', NULL);
+//            if ($nodeId == NULL AND $_POST) {
+//                $nodeId = Arr::get($_POST, 'id', NULL);
+//                if ($nodeId == NULL) {
+//                    Request::initial()->redirect(URL::base());
+//                    return;
+//                }
+//            }
+//        }
+//
+//        $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
+//        if ($node == NULL) Request::initial()->redirect(URL::base());
+//
+//        $data = ($bookMark != NULL)
+//            ? Model::factory('labyrinth')->execute($node->id, (int) $bookMark)
+//            : Model::factory('labyrinth')->execute($node->id);
+//
+//        /* if exist poll node save its time */
+//        $scenarioId  = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+//        $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $scenarioId);
+//
+//        /* ----- patient ----- */
+//        $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
+//        foreach ($data['patients'] as $patient)
+//        {
+//            $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
+//        }
+//        /* ----- end patient ----- */
+//
+//        $gotoNode = Session::instance()->get('goto', NULL);
+//        if ($gotoNode != NULL)
+//        {
+//            Session::instance()->set('goto', NULL);
+//            Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$mapId.'/'.$gotoNode);
+//        }
+//
+//        if ( ! $data) Request::initial()->redirect(URL::base());
+//
+//        $undoNodes = array();
+//        if (isset($data['traces'][0]) AND $data['traces'][0]->session_id != null)
+//        {
+//            $sessionId              = (int)$data['traces'][0]->session_id;
+//            $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
+//            $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
+//            $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+//            $data['timeForNode']    = $timeForNode;
+//            $data['session']        = $sessionId;
+//
+//            if ($data['node']->undo)
+//            {
+//                list ($undoLinks, $undoNodes) = $this->prepareUndoLinks($sessionId, $mapId, $nodeId);
+//                $data['undoLinks'] = $undoLinks;
+//            }
+//            else $undoNodes = Arr::get($this->prepareUndoLinks($sessionId, $mapId, $nodeId), 1 ,null);
+//        }
+//
+//        $data['navigation'] = $this->generateNavigation($data['sections']);
+//        if ( ! isset($data['node_links']['linker']))
+//        {
+//            if ($data['node']->link_style->name == 'type in text')
+//            {
+//                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
+//                $data['links'] = $result['links']['display'];
+//                if(isset($data['alinkfil']) && isset($data['alinknod'])) {
+//                    $data['alinkfil'] = substr($result['links']['alinkfil'], 0, strlen($result['links']['alinkfil']) - 2);
+//                    $data['alinknod'] = substr($result['links']['alinknod'], 0, strlen($result['links']['alinknod']) - 2);
+//                }
+//            }
+//            else
+//            {
+//                $result = $this->generateLinks($data['node'], $data['node_links'], $undoNodes);
+//                if( ! empty($result['links'])) $data['links'] = $result['links'];
+//                else $data['links'] = "";
+//            }
+//        }
+//        else $data['links'] = $data['node_links']['linker'];
+//
+//        if ($editOn != NULL and $editOn == 1) $data['node_edit'] = TRUE;
+//        else
+//        {
+//            if (( $data['node']->info != '' ) && (strpos($data['node_text'],'[[INFO:') === false) && $data['node']->show_info)
+//            {
+//                $data['node_text'] .= '[[INFO:' . $data['node']->id . ']]';
+//            }
+//
+//            if (( $data['node']->info == '' ) && (strpos($data['node_text'],'[[INFO:')))
+//            {
+//                $search = '[[INFO:' . $data['node']->id . ']]';
+//                $data['node_text'] = str_replace($search, '',$data['node_text']);
+//            }
+//
+//            $data['node_text'] = $this->parseText($data['node_text'], $mapId);
+//        }
+//
+//        $data['trace_links'] = $this->generateReviewLinks($data['traces']);
+//        $data['skin_path'] = $data['map']->skin->path;
+//
+//        //Calculate time for Timer and Pop-up messages
+//        $data['timer_start'] = 1;
+//        $data['popup_start'] = 1;
+//
+//        // Parse text key for each nodes
+//        foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup)
+//        {
+//            $popup->text = $this->parseText($popup->text);
+//            $data['map_popups'][] = $popup;
+//        }
+//
+//        $skin = 'labyrinth/skin/basic/basic';
+//        if ($data['map']->skin->enabled)
+//        {
+//            $data['skin_path'] = $data['map']->skin->path;
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'].'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php'))
+//            {
+//                $skin = 'labyrinth/skin/basic/basic_template';
+//
+//                $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
+//                $skinData = json_decode($data['map']->skin->data, true);
+//                if($skinData != null && isset($skinData['body'])) {
+//                    $data['bodyStyle'] = base64_decode($skinData['body']);
+//                }
+//            }
+//            else $skin = 'labyrinth/skin/basic/basic';
+//        }
+//        else $data['skin_path'] = NULL;
+//
+//        $this->template = View::factory($skin)->set('templateData', $data);
     }
 
     public function checkPatient($nodeId, $scenarioId, $from)
@@ -907,15 +916,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_addBookmark()
     {
-        $this->auto_render = FALSE;
-        $sessionId  = $this->request->param('id', NULL);
-        $nodeId     = $this->request->param('id2', NULL);
+        $sessionId  = Session::instance()->get('session_id');
+        $nodeId     = $this->request->param('id', NULL);
+        $userId     = Auth::instance()->get_user()->id;
 
-        if ($sessionId != NULL AND $nodeId != NULL)
-        {
-            DB_ORM::model('user_bookmark')->addBookmark($nodeId, $sessionId);
+        if ($sessionId AND $nodeId) {
+            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
         }
-        echo TRUE;
         exit;
     }
 

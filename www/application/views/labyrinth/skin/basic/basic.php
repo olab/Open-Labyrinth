@@ -124,25 +124,6 @@
             if (restore) selObj.selectedIndex = 0;
         }
 
-        function ajaxBookmark() {
-            var xmlhttp;
-            var labsess = <?php if (isset($templateData['sessionId'])) echo $templateData['sessionId']; ?>;
-            var thisnode = "<?php if (isset($templateData['node'])) echo $templateData['node']->id; ?>";
-            var URL = "<?php echo URL::base(); ?>renderLabyrinth/addBookmark/" + labsess + "/" + thisnode;
-            if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-                xmlhttp = new XMLHttpRequest();
-            }
-            else if (window.ActiveXObject) {// code for IE6, IE5
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            else {
-                alert("Your browser does not support XMLHTTP for AJAX!");
-            }
-            xmlhttp.onreadystatechange = function () {};
-            xmlhttp.open("POST", URL, true);
-            xmlhttp.send(null);
-        }
-
         function timer(sec, block,reminder, check, remMsg, session) {
             var time    = sec;
 
@@ -326,11 +307,11 @@
                             </tr>
                         </table>
                     </td>
-                    <td class="centre_td" width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center">
-                        <?php if ($templateData['map']->timing) { ?>
-                             <h4>Timer: <div id="timer"></div><br /><br />
-                        <?php }?>
-                        <?php if (isset($templateData['navigation'])) echo $templateData['navigation']; ?>
+                    <td class="centre_td" width="19%" rowspan="2" valign="top" bgcolor="#FFFFFF"><p align="center"><?php
+                        if ($templateData['map']->timing) { ?>
+                        <h4>Timer: <div id="timer"></div><br /><br /><?php
+                        }
+                        echo Arr::get($templateData, 'navigation', ''); ?>
                         <h5>Map: <?php if (isset($templateData['map'])) echo $templateData['map']->name; ?>
                             (<?php if (isset($templateData['map'])) echo $id_map; ?>)<br/>
                             Node: <?php if (isset($templateData['node'])) echo $id_node; ?>
@@ -340,7 +321,7 @@
                         <input type="button" onclick='ajaxBookmark();' name="bookmark" value="bookmark"/>
                         <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                             <h5>
-                                <a href="<?php echo URL::base(); ?>renderLabyrinth/go/<?php echo $id_map; ?>/<?php echo $id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
+                                <a href="<?php echo URL::base().'renderLabyrinth/go/'.$id_map.'/'.$id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
                                     <?php echo !isset($templateData['node_edit']) ? __('turn editing on') : __('turn editing off'); ?>
                                 </a>
                             </h5>
