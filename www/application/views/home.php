@@ -95,7 +95,6 @@ $user = Auth::instance()->get_user(); ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="<?php echo URL::base(); ?>presentationManager"><?php echo __('Presentations'); ?></a></li>
                                             <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li><?php
                                             if ($type_name == 'superuser') { ?>

@@ -18,17 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
-if (isset($presentations) && is_array($presentations) && !empty($presentations)) { ?>
-    <h3><?php echo __('Open Presentations'); ?></h3>
-    <ul class="unstyled"><?php
-    foreach ($presentations as $presentation) { ?>
-        <li><i class="icon-arrow-right"></i> <a href="<?php echo URL::base().'presentationManager/render/'.$presentation->id; ?>"> <?php echo $presentation->title; ?></a></li><?php
-    } ?>
-    </ul><?php
-}
-
-if (isset($openLabyrinths) && is_array($openLabyrinths) && !empty($openLabyrinths)) { ?>
+if (isset($openLabyrinths)) { ?>
     <h3><?php echo __('Open Labyrinths'); ?></h3>
     <ul class="unstyled"><?php
         foreach ($openLabyrinths as $labyrinth) { ?>

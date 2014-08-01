@@ -7,7 +7,6 @@ class Policy_Access extends Policy {
         array('controller' => 'collectionManager', 'action' => 'addCollection'),
         array('controller' => 'labyrinthManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'exportImportManager', 'action' => 'index', 'isFullController' => true),
-        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'userManager', 'action' => 'index'),
         array('controller' => 'userManager', 'action' => 'addUser'),
@@ -34,7 +33,6 @@ class Policy_Access extends Policy {
     );
 
     private $authorRules = array(
-        array('controller' => 'presentationManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'remoteServiceManager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'userManager', 'action' => 'index'),
         array('controller' => 'userManager', 'action' => 'addUser'),

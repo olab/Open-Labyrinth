@@ -286,8 +286,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
         if ($type == 'reviewer') $builder->where('security_id', '=', 2, 'OR');
 
-        foreach ($builder->query()->as_array() as $record)
-        {
+        foreach ($builder->query()->as_array() as $record) {
             $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
         return $maps;
@@ -317,16 +316,13 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
 
+        $maps = array();
         if ($result->is_loaded()) {
-            $maps = array();
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
-            return $maps;
         }
-
-        return NULL;
+        return $maps;
     }
 
     public function getAllMapsForLearner($learnerId)

@@ -918,11 +918,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
     {
         $sessionId  = Session::instance()->get('session_id');
         $nodeId     = $this->request->param('id', NULL);
-        $userId     = Auth::instance()->get_user()->id;
+        $user       = Auth::instance()->get_user();
 
-        if ($sessionId AND $nodeId) {
-            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
+        if ($user AND $sessionId AND $nodeId) {
+            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $user->id);
         }
+
         exit;
     }
 
