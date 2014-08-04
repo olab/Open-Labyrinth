@@ -88,7 +88,8 @@ class Report_SJT extends Report
                 $this->implementation,
                 $mapData['mapId'],
                 $mapData['expertsScenarioId'],
-                $mapData['webinarId']
+                $mapData['webinarId'],
+                $mapData['sectionId']
             );
         }
     }

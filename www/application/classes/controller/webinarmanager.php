@@ -447,7 +447,7 @@ class Controller_WebinarManager extends Controller_Base {
         $stepKey            = $this->request->param('id2', null);
         $expertWebinarId    = $this->request->param('id3', null);
 
-        if ($webinarId == null AND $stepKey != null) Request::initial()->redirect(URL::base().'webinarmanager/index');
+        if ($webinarId == null AND $stepKey) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
         $isExistAccess = false;
@@ -488,6 +488,46 @@ class Controller_WebinarManager extends Controller_Base {
             $report->get();
         }
         else Request::initial()->redirect(URL::base().'home/index');
+    }
+
+    public function action_stepReportSJT()
+    {
+        $scenarioId          = $this->request->param('id', null);
+        $stepKey             = $this->request->param('id2', null);
+        $expertScenarioId    = $this->request->param('id3', null);
+
+        if ($scenarioId == null AND $stepKey) Request::initial()->redirect(URL::base().'webinarmanager/index');
+
+        $scenario = DB_ORM::model('webinar', array($scenarioId));
+        $isExistAccess = ((Auth::instance()->get_user()->id == $scenario->author_id) OR (Auth::instance()->get_user()->type->name == 'superuser'));
+
+        if ( ! $isExistAccess AND $scenario->publish) {
+            $jsonObject = json_decode($scenario->publish);
+            $isExistAccess = in_array($scenarioId . '-' . $stepKey, $jsonObject);
+        }
+
+        if ($isExistAccess) {
+            $report  = new Report_SJT(new Report_Impl_PHPExcel(), $scenario->title);
+            if(count($scenario->maps)) {
+                foreach($scenario->maps as $scenarioMap) {
+                    if($scenarioMap->step == $stepKey) {
+                        // if labyrinth, else section
+                        if ($scenarioMap->which == 'labyrinth') {
+                            $mapId = $scenarioMap->reference_id;
+                            $sectionId = false;
+                        } else {
+                            $mapId = DB_ORM::model('Map_Node_Section', array($scenarioMap->reference_id))->map_id;
+                            $sectionId = $scenarioMap->reference_id;
+                        }
+                        $report->add($mapId, $scenarioId, $expertScenarioId, $sectionId);
+                    }
+                }
+            }
+            $report->generate();
+            $report->get();
+        } else {
+            Request::initial()->redirect(URL::base().'home/index');
+        }
     }
 
     public function action_stepReportPoll()

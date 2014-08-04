@@ -29,7 +29,7 @@ class Report_SJT_Map extends Report_Element {
     private $expertsScenarioId;
     private $includeUsers = array();
 
-    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId)
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId, $sectionId)
     {
         parent::__construct($impl);
 
@@ -39,6 +39,7 @@ class Report_SJT_Map extends Report_Element {
         $this->webinarId         = $webinarId;
         $this->questions         = array();
         $this->expertsScenarioId = $expertsScenarioId;
+        $this->sectionId         = $sectionId;
 
         $this->loadElements();
     }
@@ -65,15 +66,21 @@ class Report_SJT_Map extends Report_Element {
         $localRow+=2;
 
         // get all nodes
-        $nodesObj = DB_ORM::select('Map_Node')->where('map_id', '=', $this->map->id)->query()->as_array();
+        $nodesObj = $this->sectionId
+            ? DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $this->sectionId)->query()->as_array()
+            : DB_ORM::select('Map_Node')->where('map_id', '=', $this->map->id)->query()->as_array();
 
         // get all SJT question by map id
         $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, array(8));
 
         foreach ($nodesObj as $nodeObj)
         {
-            $nodeId   = $nodeObj->id;
-            $nodeName = $nodeObj->title;
+            $nodeName = $this->sectionId
+                ? DB_ORM::model('Map_Node', array($nodeObj->node_id))->title
+                : $nodeObj->title;
+            $nodeId   = $this->sectionId
+                ? $nodeObj->node_id
+                : $nodeObj->id;
 
             foreach ($questions as $question)
             {
