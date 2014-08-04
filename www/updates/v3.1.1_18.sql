@@ -1,0 +1,1 @@
+UPDATE  `map_question_types` SET  `template_name` =  'draganddrop' WHERE  `map_question_types`.`id` =8;

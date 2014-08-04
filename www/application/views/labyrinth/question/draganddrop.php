@@ -20,12 +20,25 @@
  */
 $map         = Arr::get($templateData, 'map');
 $question    = Arr::get($templateData, 'question', false);
+$type        = $templateData['type']->id;
 $show_submit = $question ? $question->show_submit : 0; ?>
 <div class="page-header">
-    <h1><?php echo $question ? __('Edit question "').$question->stem . '"' : __('New question for "').$map->name.'"'; ?></h1>
+    <h1><?php echo $question ? __('Edit question "').$question->stem.'"' : __('New question for "').$map->name.'"'; ?></h1>
 </div>
 <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/questionPOST/'.$map->id.'/'.$templateData['type']->id; ?><?php echo $question ? '/'.$question->id : ''; ?>">
     <fieldset class="fieldset">
+        <div class="control-group">
+            <label class="control-label">Question type</label>
+            <div class="controls">
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="question_type_dd" type="radio" value="6" name="question_type" <?php echo ($type == 6) ? 'checked' : ''; ?>>
+                    <label data-class="btn-info" for="question_type_dd" class="btn">Drag and drop</label>
+
+                    <input autocomplete="off" id="question_type_sjt" type="radio" value="8" name="question_type" <?php echo ($type == 8) ? 'checked' : ''; ?>>
+                    <label data-class="btn-info" for="question_type_sjt" class="btn">Situational Judgement Testing</label>
+                </div>
+            </div>
+        </div>
         <div class="control-group">
             <label for="stem" class="control-label"><?php echo __('Stem'); ?></label>
             <div class="controls">
@@ -80,17 +93,12 @@ $show_submit = $question ? $question->show_submit : 0; ?>
 
     <div class="question-response-draggable-panel-group"><?php
         if(isset($templateData['question']) && count($templateData['question']->responses) > 0) {
-            $responseIndex = 1;
             foreach($templateData['question']->responses as $response) {
-                $jsonResponse  = '{';
-                $jsonResponse .= '"id": "' . $response->id . '", ';
-                $jsonResponse .= '"response": "' . base64_encode(str_replace('&#43;', '+', $response->response)) . '", ';
-                $jsonResponse .= '"order": "' . $response->order . '"';
-                $jsonResponse .= '}'; ?>
+                $jsonResponse  = '{"id": "'.$response->id.'", "response": "'.base64_encode(str_replace('&#43;', '+', $response->response)).'", "order": "'.$response->order.'"}'; ?>
                 <div class="response-panel sortable">
                     <input type="hidden" name="responses[]" value='<?php echo $jsonResponse; ?>'/>
                     <label for="response"><?php echo __('Response'); ?></label>
-                    <input type="text" class="response-input" value="<?php echo  $response->response; ?>"/>
+                    <input type="text" class="response-input" value="<?php echo $response->response; ?>"/>
                     <button type="button" class="btn-remove-response btn btn-danger btn-small"><i class="icon-trash"></i></button>
                     <span><?php echo 'Response id: '.$response->id ?></span>
                 </div><?php

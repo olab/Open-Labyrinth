@@ -90,16 +90,6 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['question'] = $questionObj;
             $this->templateData['used']     = count(DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU'));
 
-            // type Situational Judgement Testing
-            if ($questionObj->entry_type_id == 8)
-            {
-                $responses = DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->query()->as_array();
-                $this->templateData['responses'] = $responses;
-                foreach ($responses as $response) {
-                    $this->templateData['score'][$response->id] = DB_ORM::select('SJTResponse')->where('response_id', '=', $response->id)->order_by('position')->query()->as_array();
-                }
-            }
-
             if ($questionObj->settings)
             {
                 $jsonSettings = json_decode($questionObj->settings);

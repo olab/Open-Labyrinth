@@ -38,8 +38,8 @@ $userType   = Auth::instance()->get_user()->type->name;
         <label class="btn" for="SJT" data-class="btn-info"><?php echo __('SJT'); ?></label>
     </div>
     <select id="sct-webinars" style="display: none;"><?php
-        foreach ($templateData['scenario'] as $webinarObj) { ?>
-        <option value="<?php echo $webinarObj->id ?>" <?php if($webinarObj->id == $webinarId) echo 'selected'; ?>><?php echo $webinarObj->title ?></option><?php
+        foreach ($templateData['scenario'] as $scenarioObj) { ?>
+        <option value="<?php echo $scenarioObj->id ?>" <?php if($scenarioObj->id == $webinarId) echo 'selected'; ?>><?php echo $scenarioObj->title ?></option><?php
         } ?>
     </select>
 

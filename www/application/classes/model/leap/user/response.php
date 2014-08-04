@@ -179,4 +179,12 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
         return $responses;
     }
+
+    public function sjtConvertResponse ($response) {
+        $result = '';
+        foreach(json_decode($response) as $responseId){
+            $result .= DB_ORM::model('Map_Question_Response', array($responseId))->response.',';
+        }
+        return trim($result, ',');
+    }
 }

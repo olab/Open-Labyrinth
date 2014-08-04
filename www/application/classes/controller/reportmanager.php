@@ -137,11 +137,11 @@ class Controller_ReportManager extends Controller_Base
             $response = DB_ORM::model('user_response')->getResponse($session->id, $question->id);
             $responseObj = end($response);
             if ($question->entry_type_id == 8) {
-                $model = DB_ORM::model('SJTResponse');
-                $convertedResponse = $model->convertResponse($responseObj->response);
-                $responseObj->response = $convertedResponse.'<br>Points: '.$model->countPoints($responseObj->response);
+                $responseObj->response = DB_ORM::model('User_Response')->sjtConvertResponse($responseObj->response);
             }
-            if ($responseObj) $this->templateData['responses'][$question->id][] = $responseObj;
+            if ($responseObj) {
+                $this->templateData['responses'][$question->id][] = $responseObj;
+            }
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);

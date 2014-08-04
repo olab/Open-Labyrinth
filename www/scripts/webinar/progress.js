@@ -26,11 +26,11 @@ jQuery(document).ready(function()
     function clickOnButton (button){
         var typeId = button.attr('id');
 
-        if (typeId == '4R' || typeId == 'Poll' || typeId == 'SJT') {
+        if (typeId == '4R' || typeId == 'Poll') {
             th.hide();
             td.hide();
             webinar.hide();
-        } else if (typeId == 'SCT') {
+        } else if (typeId == 'SCT' || typeId == 'SJT') {
             th.show();
             td.show();
             webinar.show();

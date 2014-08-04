@@ -52,13 +52,14 @@ class Report_SJT extends Report
      * @param integer $webinarId - webinar ID
      * @param integer $webinarStep - webinar step
      */
-    public function add($mapId, $webinarId, $sectionId)
+    public function add($mapId, $webinarId, $expertsScenarioId, $sectionId)
     {
         if($mapId == null || $mapId <= 0) return;
 
         $this->maps[] = array(
             'mapId'             => $mapId,
             'webinarId'         => $webinarId,
+            'expertsScenarioId' => $expertsScenarioId,
             'sectionId'         => $sectionId
         );
     }
@@ -86,6 +87,7 @@ class Report_SJT extends Report
             $this->mapElements[] = new Report_SJT_Map(
                 $this->implementation,
                 $mapData['mapId'],
+                $mapData['expertsScenarioId'],
                 $mapData['webinarId']
             );
         }

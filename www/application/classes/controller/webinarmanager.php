@@ -555,7 +555,7 @@ class Controller_WebinarManager extends Controller_Base {
         $scenarioId         = $this->request->param('id', null);
         $mapId              = $this->request->param('id2', null);
         $sectionId          = $this->request->param('id3', null);
-        $expertWebinarId    = $this->request->param('id4', null);
+        $expertScenarioId   = $this->request->param('id4', null);
 
         if ($scenarioId == null AND $mapId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
@@ -563,7 +563,7 @@ class Controller_WebinarManager extends Controller_Base {
         {
             case 'SCT':
                 $report = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT Report '.DB_ORM::model('map', array((int)$mapId))->name);
-                $report->add($mapId, $scenarioId, $expertWebinarId, $sectionId);
+                $report->add($mapId, $scenarioId, $expertScenarioId, $sectionId);
                 $report->generate();
                 $report->get();
             break;
@@ -575,7 +575,7 @@ class Controller_WebinarManager extends Controller_Base {
             break;
             case 'SJT':
                 $report = new Report_SJT(new Report_Impl_PHPExcel(), 'SJT '.DB_ORM::model('map', array((int)$mapId))->name);
-                $report->add($mapId, $scenarioId, '');
+                $report->add($mapId, $scenarioId, $expertScenarioId, '');
                 $report->generate();
                 $report->get();
                 break;

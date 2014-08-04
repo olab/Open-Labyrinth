@@ -25,22 +25,22 @@ class Report_SJT_Map extends Report_Element {
     private $map;
     private $webinarId;
     private $questions;
+    private $experts = array();
+    private $expertsScenarioId;
     private $includeUsers = array();
 
-    public function __construct(Report_Impl $impl, $mapId, $webinarId)
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId)
     {
         parent::__construct($impl);
 
         if($mapId <= 0) return;
 
-        $this->map            = DB_ORM::model('map', array((int)$mapId));
-        $this->webinarId      = $webinarId;
-        $this->questions      = array();
+        $this->map               = DB_ORM::model('map', array((int)$mapId));
+        $this->webinarId         = $webinarId;
+        $this->questions         = array();
+        $this->expertsScenarioId = $expertsScenarioId;
 
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj)
-        {
-            $this->includeUsers[] = $wUserObj->user_id;
-        }
+        $this->loadElements();
     }
 
     /**
@@ -58,7 +58,11 @@ class Report_SJT_Map extends Report_Element {
 
         // scenario title
         $this->fillCell($column, $localRow, $this->map->name, 16);
-        $localRow+=3;
+        $localRow++;
+
+        // displayed scenario from where taken  experts
+        $this->fillCell($column, $localRow, 'Experts from \''.DB_ORM::model('Webinar', array($this->expertsScenarioId))->title.'\' scenario.');
+        $localRow+=2;
 
         // get all nodes
         $nodesObj = DB_ORM::select('Map_Node')->where('map_id', '=', $this->map->id)->query()->as_array();
@@ -78,7 +82,7 @@ class Report_SJT_Map extends Report_Element {
                 $lastUserResponse = 0;
                 $atLeastOneResponse = 0;
 
-                $responsePoints = $this->getPoints($question->id);
+                $responsePoints = $this->getPoints($question->id, $nodeId);
 
                 // ----- create second table ----- //
                 $this->fillCell(0, $localTablesRow, 'Player points');
@@ -185,6 +189,20 @@ class Report_SJT_Map extends Report_Element {
         return $offset + 4;
     }
 
+    private function loadElements ()
+    {
+        if($this->map == null OR count($this->map->nodes) <= 0) return;
+
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertsScenarioId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
+        {
+            $this->experts[] = $wUserObj->user_id;
+        }
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj)
+        {
+            $this->includeUsers[] = $wUserObj->user_id;
+        }
+    }
+
     /**
      * Get key for searching or sorting
      *
@@ -194,18 +212,124 @@ class Report_SJT_Map extends Report_Element {
         return $this->map->id;
     }
 
-    public function getPoints ($questionId)
+    public function getPoints ($questionId, $nodeId)
     {
-        $points = array();
-        $responses = DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->query()->as_array();
+        $calculateConsistent = array();
+        $poll                = array();
+        $scoreByPosition     = array(
+            '0' => array(
+                '0' => 4,
+                '1' => 3,
+                '2' => 2,
+                '3' => 1,
+                '4' => 0,
+            ),
+            '1' => array(
+                '0' => 3,
+                '1' => 4,
+                '2' => 3,
+                '3' => 2,
+                '4' => 1,
+            ),
+            '2' => array(
+                '0' => 2,
+                '1' => 3,
+                '2' => 4,
+                '3' => 3,
+                '4' => 2,
+            ),
+            '3' => array(
+                '0' => 1,
+                '1' => 2,
+                '2' => 3,
+                '3' => 4,
+                '4' => 3,
+            ),
+            '4' => array(
+                '0' => 0,
+                '1' => 1,
+                '2' => 2,
+                '3' => 3,
+                '4' => 4,
+            ),
+        );
 
         // get all response in correct order by question id
-        foreach ($responses as $response) {
-            $pointsObj = DB_ORM::select('SJTResponse')->where('response_id', '=', $response->id)->query()->as_array();
-            foreach ($pointsObj as $pointObj) {
-                $points[$response->id][$pointObj->position] = $pointObj->points;
+        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $response)
+        {
+            $poll[$response->id] = array();
+        }
+
+        // if response < 5, add
+        for ($i=count($poll); $i<5; $i++)
+        {
+            $poll[] = array();
+        }
+
+        // get experts response
+        foreach ($this->experts as $expertId)
+        {
+            $sessionObj = DB_ORM::select('User_Session')
+                ->where('user_id', '=', $expertId)
+                ->where('map_id', '=', $this->map->id)
+                ->where('webinar_id', '=', $this->expertsScenarioId)
+                ->query()
+                ->as_array();
+            $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+            if ($sessionObj)
+            {
+                $userResponse = DB_ORM::select('User_Response')
+                    ->where('question_id', '=', $questionId)
+                    ->where('node_id', '=', $nodeId)
+                    ->where('session_id', '=', $sessionObj->id)
+                    ->query()
+                    ->fetch(0);
+
+                if ($userResponse) {
+                    foreach (json_decode($userResponse->response) as $position=>$responseId) {
+                         if (isset($poll[$responseId])) {
+                             if (isset($poll[$responseId][$position])){
+                                 $poll[$responseId][$position] += 1;
+                             } else {
+                                 $poll[$responseId][$position] = 1;
+                             }
+                         }
+                    }
+                }
             }
         }
-        return $points;
+
+        for ($i = 0; $i < 5; $i++){
+            reset($poll);
+            $currentResponseId              = key($poll);
+            $winingId                       = $currentResponseId;
+            $position                       = key($poll[$currentResponseId]);
+            $biggestValue                   = Arr::get(Arr::get($poll, $currentResponseId, array()), $position);
+            $calculateConsistent[$position] = $biggestValue;
+            $wasFinalPosition               = false;
+
+            foreach ($poll as $responseId => $data) {
+                if (isset($poll[$responseId][$position]) AND $biggestValue <= $poll[$responseId][$position]) {
+                    if ( ! $wasFinalPosition) {
+                        $winingId = $responseId;
+                    }
+                    unset($poll[$responseId][$position]);
+                    if (count($poll[$currentResponseId]) == 0) {
+                        $wasFinalPosition = true;
+                    }
+                }
+            }
+
+            $calculateConsistent[$position] = $winingId;
+            unset($poll[$winingId]);
+        }
+
+        $score = array();
+        foreach ($calculateConsistent as $position => $responseId) {
+            $score[$responseId] = Arr::get($scoreByPosition, $position, array());
+        }
+        ksort($score);
+        return $score;
     }
 }
