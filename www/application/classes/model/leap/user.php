@@ -103,6 +103,11 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'max_length' => 11,
                 'nullable' => TRUE,
             )),
+            'modeUI' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => array('advanced','easy'),
+                'nullable' => FALSE,
+            )),
         );
 
         $this->relations = array(
@@ -274,14 +279,14 @@ private static function initialize_metadata($object)
         return $result[0];
     }
 
-    public function createUser($username, $password, $nickname, $email, $typeId, $languageId) {
-        $this->username = $username;
-        $this->password = Auth::instance()->hash($password);
-        $this->email = $email;
-        $this->nickname = $nickname;
-        $this->language_id = $languageId;
-        $this->type_id = $typeId;
-
+    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy') {
+        $this->username     = $username;
+        $this->password     = Auth::instance()->hash($password);
+        $this->email        = $email;
+        $this->nickname     = $nickname;
+        $this->language_id  = $languageId;
+        $this->type_id      = $typeId;
+        $this->modeUI       = $uiMode;
         $this->save();
     }
     
@@ -466,6 +471,12 @@ private static function initialize_metadata($object)
                 Policy::$last_code
             );
         }
+    }
+
+    public function changeUI($mode)
+    {
+        $this->modeUI = $mode;
+        $this->save();
     }
 }
 

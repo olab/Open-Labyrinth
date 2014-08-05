@@ -100,19 +100,17 @@ class Controller_UserManager extends Controller_Base {
     }
 
     public function action_saveNewUser() {
-        if (isset($_POST) && !empty($_POST)) {
+        if ( ! empty($_POST)) {
             Session::instance()->set('newUser', $_POST);
             $checkUserName = DB_ORM::model('user')->getUserByName(htmlspecialchars($_POST['uid']));
-            if (!empty($_POST['uemail'])) {
-                $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
-            } else {
-                $checkUserEmail = false;
-            }
+            $checkUserEmail = empty($_POST['uemail'])
+                ? false
+                : DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
 
-            if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)) {
+            if (( ! empty($_POST['uid'])) & ( ! $checkUserName) & ( ! $checkUserEmail)) {
                 $userData = $_POST;
 
-                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID']);
+                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID'], $userData['uiMode']);
 
                 if (isset($userData['sendEmail'])) {
                     $this->sendNewUserMail($userData);
@@ -123,11 +121,7 @@ class Controller_UserManager extends Controller_Base {
                 $this->templateData['newUser'] = $_POST;
                 $this->templateData['newUser']['langID'] = DB_ORM::model('language', array($_POST['langID']))->name;
                 $this->templateData['newUser']['usertype'] = DB_ORM::model('user_type', array($_POST['usertype']))->name;
-
-                $summaryView = View::factory('usermanager/userSummary');
-                $summaryView->set('templateData', $this->templateData);
-
-                $this->templateData['center'] = $summaryView;
+                $this->templateData['center'] = View::factory('usermanager/userSummary')->set('templateData', $this->templateData);
                 $this->template->set('templateData', $this->templateData);
             } else {
                 $error = array();

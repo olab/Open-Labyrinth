@@ -1509,3 +1509,7 @@ table.dataTable tr.even td[class*='sorting'] {
     font-size: 21px;
     margin: 0 5px -5px 25px;
 }
+
+.helpPopupLine{
+    margin: 5px 0;
+}

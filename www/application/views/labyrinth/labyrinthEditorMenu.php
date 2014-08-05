@@ -19,7 +19,8 @@
  *
  */
 if (isset($templateData['map'])) {
-    $id_map = $templateData['map']->id; ?>
+    $id_map = $templateData['map']->id;
+    $user = Auth::instance()->get_user();?>
     <div class="well" style="padding: 8px 0;">
         <ul class="nav nav-list">
             <li class="nav-header">Labyrinth</li>
@@ -34,36 +35,48 @@ if (isset($templateData['map'])) {
                 <div class="pull-right arrow"></div>
             </li>
             <li><a href="<?php echo URL::base().'labyrinthManager/global/'.$id_map; ?>"><i class="icon-edit"></i> <?php echo __('Details'); ?></a></li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li><a data-toggle="modal" href="#" data-target="#delete-labyrinth"><i class="icon-trash"></i> <?php echo __('Delete'); ?></a></li>
+            <?php } ?>
             <li class="nav-header">Core Layout</li>
             <li><a href="<?php echo URL::base().'visualManager/index/'.$id_map; ?>"><i class="icon-eye-open"></i> <?php echo __('Visual Editor'); ?></a></li>
             <li><a href="<?php echo URL::base().'nodeManager/index/'.$id_map; ?>"><i class="icon-circle-blank"></i> <?php echo __('Nodes'); ?></a></li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li><a href="<?php echo URL::base().'nodeManager/grid/'.$id_map.'/1'; ?>"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
+            <?php } ?>
             <li><a href="<?php echo URL::base().'linkManager/index/'.$id_map; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base().'nodeManager/sections/'.$id_map; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li><a href="<?php echo URL::base().'chatManager/index/'.$id_map; ?>"><i class="icon-comments-alt"></i> <?php echo __('Chats'); ?></a></li>
+            <?php } ?>
             <li><a href="<?php echo URL::base().'questionManager/index/'.$id_map; ?>"><i class="icon-question-sign"></i> <?php echo __('Questions'); ?></a></li>
             <li><a href="<?php echo URL::base().'avatarManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Avatars'); ?></a></li>
             <li><a href="<?php echo URL::base().'counterManager/index/'.$id_map; ?>"><i class="icon-dashboard"></i> <?php echo __('Counters'); ?></a></li>
             <li><a href="<?php echo URL::base().'counterManager/grid/'.$id_map; ?>"><i class="icon-th-large"></i> <?php echo __('Counter Grid'); ?></a></li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li><a href="<?php echo URL::base().'visualdisplaymanager/index/'.$id_map; ?>"><i class="icon-eye-open icon-white"></i> <?php echo __('Counter Displays'); ?></a><div class="pull-right arrow"></div></li>
             <li><a href="<?php echo URL::base().'counterManager/rules/'.$id_map; ?>"><i class="icon-check"></i> <?php echo __('Rules'); ?></a></li>
             <li><a href="<?php echo URL::base().'popupManager/index/'.$id_map; ?>"><i class="icon-envelope"></i> <?php echo __('Pop-up messages'); ?></a></li>
             <li><a href="<?php echo URL::base().'elementManager/index/'.$id_map; ?>"><i class="icon-stethoscope"></i> <?php echo __('Elements'); ?></a></li>
             <li><a href="<?php echo URL::base().'clusterManager/index/'.$id_map; ?>"><i class="icon-tags"></i> <?php echo __('Clusters'); ?></a></li>
             <li><a href="<?php echo URL::base().'patient/labyrinth/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Sets'); ?></a></li>
+            <?php } ?>
             <li class="nav-header">Case Design</li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li><a href="<?php echo URL::base().'feedbackManager/index/'.$id_map; ?>"><i class="icon-comment"></i> <?php echo __('Feedback'); ?></a></li>
             <li><a href="<?php echo URL::base().'skinManager/index/'.$id_map; ?>"><i class="icon-book"></i> <?php echo __('Skin'); ?></a></li>
+            <?php } ?>
             <li><a href="<?php echo URL::base().'fileManager/index/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Files'); ?></a></li>
             <li class="nav-header">Control</li>
             <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users'); ?></a></li>
             <li><a href="<?php echo URL::base().'reportManager/index/'.$id_map; ?>"><i class="icon-calendar"></i> <?php echo __('Sessions'); ?></a></li>
+            <?php if ($user->modeUI == 'advanced') { ?>
             <li class="nav-header">Global elements</li>
             <li><a href="<?php echo URL::base().'fileManager/globalFiles/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Global files'); ?></a></li>
             <li><a href="<?php echo URL::base().'avatarManager/globalAvatars/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Global avatars'); ?></a></li>
             <li><a href="<?php echo URL::base().'questionManager/globalQuestions/'.$id_map; ?>"><i class="icon-question-sign"></i> <?php echo __('Global questions'); ?></a></li>
+            <?php } ?>
         </ul>
     </div>
     <div class="modal hide fade" id="developer-notes">

@@ -66,10 +66,16 @@ class Controller_Base extends Controller_Template {
     {
         parent::before();
 
-//        $historyDir = DOCROOT.'updates/history.json';
-//        $version = 3.1;
-//        if (file_exists($historyDir)) $version = readfile($historyDir);
-//        $this->templateData['version'] = $version;
+        $historyDir = DOCROOT.'updates/history.json';
+        $version = 3.3;
+        if (file_exists($historyDir)) {
+            $versionInJSON  = file($historyDir);
+            $versionsOfDB   = json_decode(Arr::get($versionInJSON, 0, ''), true);
+            end($versionsOfDB);
+            $versionLastDB  = key($versionsOfDB);
+            $version        = substr($versionLastDB,1,3);
+        }
+        $this->templateData['version'] = $version;
 
         if (Auth::instance()->logged_in())
         {
@@ -248,5 +254,16 @@ class Controller_Base extends Controller_Template {
         $userObj->history_timestamp = NULL;
         $userObj->save();
         exit;
+    }
+
+    public function action_ui()
+    {
+        $mode = $this->request->param('id');
+        $userId = $this->request->param('id2');
+        $user = $userId
+            ? DB_ORM::model('User', array($userId))
+            : Auth::instance()->get_user();
+        $user->changeUI($mode);
+        Request::initial()->redirect($this->request->referrer());
     }
 }

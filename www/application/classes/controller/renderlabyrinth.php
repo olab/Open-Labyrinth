@@ -33,12 +33,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $this->mapId = $mapId;
         $node        = null;
         $bookmark    = false;
+        $mapWithKey  = false;
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
 
         if ($action == 'index') {
             $mapDB = DB_ORM::model('map', array($mapId));
             if ($mapDB->security_id == 4) {
+                $mapWithKey     = true;
                 $sessionId      = Session::instance()->id();
                 $checkValue     = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
                 $checkSession   = Session::instance()->get($checkValue);
@@ -83,7 +85,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
         }
-        $this->renderNode($node, $action, $bookmark);
+        if ( ! $mapWithKey) $this->renderNode($node, $action, $bookmark);
     }
 
     private function renderNode ($nodeObj, $action, $bookmark)
@@ -2061,8 +2063,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $labyrinthType  = $map->security_id;
         $idScenario     = false;
         $assignUser     = false;
-        if ($logged)
-        {
+        if ($logged) {
             $user       = Auth::instance()->get_user();
             $userType   = $user->type_id;
             $idUser     = $user->id;
@@ -2093,8 +2094,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             case '4':
                 return true;
             default:
-                if ($labyrinthType == 1) return true;
-                return false;
+                return ($labyrinthType == 1);
         }
     }
 
