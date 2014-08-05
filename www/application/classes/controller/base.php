@@ -71,9 +71,11 @@ class Controller_Base extends Controller_Template {
         if (file_exists($historyDir)) {
             $versionInJSON  = file($historyDir);
             $versionsOfDB   = json_decode(Arr::get($versionInJSON, 0, ''), true);
-            end($versionsOfDB);
-            $versionLastDB  = key($versionsOfDB);
-            $version        = substr($versionLastDB,1,3);
+            if (is_array($versionsOfDB)){
+                end($versionsOfDB);
+                $versionLastDB  = key($versionsOfDB);
+                $version        = substr($versionLastDB,1,3);
+            }
         }
         $this->templateData['version'] = $version;
 
