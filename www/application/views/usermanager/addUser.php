@@ -1,4 +1,5 @@
 <?php
+// TODO: merge with editUser view.
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *

@@ -153,7 +153,8 @@ $user = Auth::instance()->get_user(); ?>
                 <?php echo __('You do not have access to this case.'); ?>
             </div>
         </div><?php
-    if (isset($templateData)){ ?>
+    if (isset($templateData)){
+        if ($user) { ?>
         <div id="helpPopup" class="modal hide fade in">
             <button type="button" class="close" data-dismiss="modal">×</button>
             <div class="helpPopupLine">Version: <?php echo Arr::get($templateData, 'version'); ?></div>
@@ -165,7 +166,8 @@ $user = Auth::instance()->get_user(); ?>
                     <a href="<?php echo URL::base().'base/ui/advanced'; ?>" data-class="btn-info" class="btn <?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced</a>
                 </div>
             </div>
-        </div>
+        </div><?php
+        } ?>
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
