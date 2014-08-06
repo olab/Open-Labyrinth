@@ -18,11 +18,12 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$user = Auth::instance()->get_user();
+$uiMode = $user->modeUI;
 if (isset($templateData['map'])) {
     ?>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script language="javascript" type="text/javascript">
         tinymce.init({
             selector: "textarea",
@@ -120,8 +121,9 @@ if (isset($templateData['map'])) {
             </div>
         </div><?php
         } ?>
-    </fieldset>
-
+    </fieldset><?php
+    $orderIndex=1;
+    if ($uiMode == 'advanced') { ?>
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Users'); ?></legend><?php
         if (isset($templateData['securities'])) { ?>
@@ -144,7 +146,7 @@ if (isset($templateData['map'])) {
                     <a class="btn btn-info add-contributor" href=<?php echo URL::base().'labyrinthManager/addContributor/'.$templateData['map']->id; ?>><i class="icon-plus"></i><?php echo __('Add'); ?></a>
                 </div>
             </label>
-            <ul class="contributors-list add-contributor-parent"><?php $orderIndex=1;
+            <ul class="contributors-list add-contributor-parent"><?php
                 foreach (Arr::get($templateData, 'contributors', array()) as $contributor) { ?>
                 <li>
                     <p>
@@ -199,7 +201,8 @@ if (isset($templateData['map'])) {
             } ?>
             </div>
         </div>
-    </fieldset>
+    </fieldset><?php
+    } ?>
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Navigation');?> </legend><?php
@@ -226,7 +229,8 @@ if (isset($templateData['map'])) {
                 } ?>
             </div>
             </div><?php
-        } ?>
+        }
+        if ($uiMode == 'advanced') { ?>
         <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to navigate it in a certain time.">
             <label class="control-label"><?php echo __('Timing'); ?></label>
             <div class="controls">
@@ -295,9 +299,10 @@ if (isset($templateData['map'])) {
                            value=0 <?php if (!$templateData['map']->timing) echo 'checked=""'; ?>>
                 </label>
             </div>
-        </div>
-    </fieldset>
-
+        </div><?php
+        } ?>
+    </fieldset><?php
+    if ($uiMode == 'advanced') { ?>
     <fieldset class="fieldset">
         <legend><?php echo ('Labyrinth Forum Details'); ?></legend>
         <div class="control-group forum-details-container"><?php
@@ -322,7 +327,6 @@ if (isset($templateData['map'])) {
             } ?>
         </div>
     </fieldset>
-
     <fieldset class="fieldset fieldset-verification">
         <legend><?php echo __('Reviewer Information'); ?></legend><?php
         $verificationArray = array(
@@ -400,7 +404,8 @@ if (isset($templateData['map'])) {
             </div>
         </div>
     </fieldset><?php
-    echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
+        echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");
+    } ?>
 
     <div class="pull-right">
         <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>" onclick="return checkForm();">
@@ -410,7 +415,7 @@ if (isset($templateData['map'])) {
 
 <li class="add-contributor-bl" style="display: none;">
     <p>
-        <input type="hidden" name="contributor[order][<?php echo $orderIndex ?>]">
+        <input type="hidden" name="contributor[order][<?php echo $orderIndex; ?>]">
         <label><?php echo __('Name'); ?></label>
         <input type="text" name="contributor[name][]">
     </p>
