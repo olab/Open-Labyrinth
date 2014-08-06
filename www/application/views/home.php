@@ -48,7 +48,10 @@ $user = Auth::instance()->get_user(); ?>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container-fluid">
-                    <a href="<?php echo URL::base(); ?>" class="brand"><img src="<?php echo URL::base(); ?>images/openlabyrinth-header.png" alt="" /> <span>Open</span>Labyrinth</a><?php
+                    <a href="<?php echo URL::base(); ?>" class="brand">
+                        <img src="<?php echo URL::base(); ?>images/openlabyrinth-header.png" alt="" />
+                        <span>Open</span>Labyrinth
+                    </a><?php
                     if (Auth::instance()->logged_in()) { ?>
                         <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                             <span class="icon-bar"></span>
@@ -85,10 +88,11 @@ $user = Auth::instance()->get_user(); ?>
                                         <li><a href="<?php echo URL::base().'labyrinthManager/addManual'; ?>"><?php echo __('Create Manually'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Import Labyrinths'); ?></li>
-                                        <li><a href="<?php echo URL::base().'exportImportManager/importMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'exportImportManager/import'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                         <li class="divider"></li>
                                         <li class="nav-header"><?php echo __('Export Labyrinths'); ?></li>
                                         <li><a href="<?php echo URL::base().'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
+                                        <li><a href="<?php echo URL::base().'exportImportManager/exportAdvanced'; ?>"><?php echo __('Advanced export'); ?></a></li>
                                     </ul>
                                 </li><?php
                                     if ($type_name != 'author') { ?>

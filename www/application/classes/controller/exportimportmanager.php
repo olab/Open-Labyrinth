@@ -71,8 +71,8 @@ class Controller_ExportImportManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_importMVP() {
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Import MedBiquitous VP'))->set_url(URL::base() . 'exportimportmanager/importMVP'));
+    public function action_import() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Import MedBiquitous VP'))->set_url(URL::base().'exportimportmanager/import'));
         $this->templateData['center'] = View::factory('labyrinth/import/mvp');
         $this->template->set('templateData', $this->templateData);
     }
@@ -92,10 +92,15 @@ class Controller_ExportImportManager extends Controller_Base {
         Request::initial()->redirect(URL::base());
     }
 
-    public function action_exportMVP()
+    public function action_exportAdvanced(){
+        $this->action_exportMVP('exportAdvancedMap');
+    }
+
+    public function action_exportMVP($exportType = 'exportMVPMap')
     {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Export Medbiquitous ANSI'))->set_url(URL::base() . 'exportimportmanager/exportMVP'));
 
+        $this->templateData['exportType'] = $exportType;
         $this->templateData['maps'] = (Auth::instance()->get_user()->type->name == 'superuser')
             ? DB_ORM::model('map')->getAllEnabledMap()
             : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
@@ -104,16 +109,19 @@ class Controller_ExportImportManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_exportMVPMap()
+    public function action_exportAdvancedMap() {
+        $this->action_exportMVPMap('advanced');
+    }
+
+    public function action_exportMVPMap($type = 'MVP')
     {
         $mapId = $this->request->param('id', 0);
 
         if ( ! $mapId) Request::initial()->redirect(URL::base().'exportimportmanager/exportMVP');
 
-        $map                = DB_ORM::model('map', array((int) $mapId));
         $params['mapId']    = $mapId;
-        $params['mapName']  = $map->name;
-        $path               = ImportExport_Manager::getFormatSystem('MVP')->export($params);
+        $params['mapName']  = DB_ORM::model('map', array((int) $mapId))->name;
+        $path               = ImportExport_Manager::getFormatSystem($type)->export($params);
         $pathInfo           = pathinfo($path);
 
         header("Content-type: application/zip");
@@ -407,34 +415,30 @@ class Controller_ExportImportManager extends Controller_Base {
         unlink($tmpFileName);
     }
 
-    public function action_uploadMVP()
+    public function action_upload()
     {
         $lastMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
-        try
-        {
-            if (isset($_FILES) AND ! empty($_FILES)) {
+        try {
+            if (! empty($_FILES)) {
                 set_time_limit(0);
-                if (is_uploaded_file($_FILES['filename']['tmp_name']))
-                {
-                    move_uploaded_file($_FILES['filename']['tmp_name'], DOCROOT.'/files/'.$_FILES['filename']['name']);
-                    $fileName = 'files/'.$_FILES['filename']['name'];
+                $tmpName = $_FILES['filename']['tmp_name'];
+                $name = $_FILES['filename']['name'];
+                if (is_uploaded_file($tmpName)) {
+                    move_uploaded_file($tmpName, DOCROOT.'/files/'.$name);
+                    $fileName = 'files/'.$name;
                     $data = $this->importMVP(DOCROOT.$fileName);
                 }
             }
             Notice::add('Labyrinth <a target="_blank" href="'.URL::base().'labyrinthManager/info/'.$data["id"].'">'.$data["title"].'</a> has been successfully imported.', 'success');
-            Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             $message = $e->getMessage();
             Notice::add("Error, labyrinth was not imported correctly.".PHP_EOL.$message, 'error');
             $lastAddedMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
-            if ($lastMapOfCurrentUser != $lastAddedMapOfCurrentUser)
-            {
+            if ($lastMapOfCurrentUser != $lastAddedMapOfCurrentUser) {
                 DB_ORM::model('map')->deleteMap($lastAddedMapOfCurrentUser);
             }
-            Request::initial()->redirect(URL::base().'exportImportManager/importMVP');
         }
+        Request::initial()->redirect(URL::base().'exportImportManager/import');
     }
 
     public function getIdFromString($string) {
@@ -454,25 +458,20 @@ class Controller_ExportImportManager extends Controller_Base {
 
     public function importMVP($file)
     {
-        $zip = new ZipArchive;
-        $res = $zip->open($file);
+        $zip        = new ZipArchive;
+        $res        = $zip->open($file);
         $folderName = 'mvp'.rand().'/';
-        if ($res === true)
-        {
+        $data       = false;
+
+        if ($res === true) {
             $folderPath = DOCROOT.'files/'.$folderName;
             $zip->extractTo($folderPath);
             $zip->close();
             $data = $this->parseMVPFile($folderName);
             $this->deleteDir($folderPath);
         }
-        else
-        {
-            echo 'failed'; //TODO: redirect to error
-            Request::initial()->redirect(URL::base());
-            return false;
-        }
-
         unlink($file);
+
         return $data;
     }
 
@@ -483,14 +482,17 @@ class Controller_ExportImportManager extends Controller_Base {
         $tmpFileName = $tmpFolder.'/metadata.xml';
         $xml         = $this->parseXML($tmpFileName);
 
-        if (isset($xml->metadata->version))
-        {
+        if (isset($xml->metadata->version) AND $xml->metadata->version == 'advanced') {
+            ImportExport_Manager::getFormatSystem('advanced')->import($tmpFolder);
+            return true;
+        }
+
+        if (isset($xml->metadata->version)) {
             ImportExport_Manager::getFormatSystem('MVP')->import($tmpFolder);
             return true;
         }
 
-        if (isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim')
-        {
+        if (isset($xml->general->identifier->catalog) && $xml->general->identifier->catalog == 'vpSim') {
             ImportExport_Manager::getFormatSystem('MVPvpSim')->import(array(
                 'tmpFolder'        => $tmpFolder,
                 'filesFolder'      => DOCROOT.'files',
@@ -524,15 +526,14 @@ class Controller_ExportImportManager extends Controller_Base {
             }
             foreach ($xml->resources->resource as $resource) {
                 $attr = $resource->attributes();
-                if (!strstr($attr->href, 'xml')) {
+                if ( ! strstr($attr->href, 'xml')) {
                     $id = (string) $attr->identifier;
                     $elements[$id]['href'] = (string) $attr->href;
-                    $fileName = $this->endc(explode('/', (string) $attr->href));
-                    if (file_exists($tmpFolder . (string) $attr->href)){
+                    $fileName = end(explode('/', (string) $attr->href));
+                    if (file_exists($tmpFolder . (string) $attr->href)) {
                         copy($tmpFolder . (string) $attr->href, DOCROOT . '/files/'.$map->id.'/' . $fileName);
                         $values['path'] = 'files/'.$map->id.'/' . $fileName;
                         $values['name'] = $fileName;
-
                         $elementDB = DB_ORM::model('map_element')->saveElement($map->id, $values);
                         $elements[$id]['database_id'] = $elementDB->id;
                         $findElement[] = '[[MR:' . $id . ']]';
@@ -556,11 +557,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 $values['cDesc'] = '';
                 $values['cIconId'] = NULL;
                 $values['cStartV'] = (string) $counter->CounterInitValue;
-                if ((string) $attr->isVisible == 'true') {
-                    $values['cVisible'] = 1;
-                } else {
-                    $values['cVisible'] = 0;
-                }
+                $values['cVisible'] = ((string) $attr->isVisible == 'true') ? 1 : 0;
 
                 $counterDB = DB_ORM::model('map_counter')->addCounter($map->id, $values);
                 $countersArray[$id]['database_id'] = $counterDB->id;
@@ -653,7 +650,6 @@ class Controller_ExportImportManager extends Controller_Base {
                 $linkAttr = $link->attributes();
                 $linksArray[$i]['text'] = html_entity_decode((string) $linkAttr->label);
                 $linksArray[$i]['display'] = (int) $linkAttr->display;
-
                 $linksArray[$i]['node_id_1'] = $this->getIdFromString($link->ActivityNodeA);
                 $linksArray[$i]['node_id_2'] = $this->getIdFromString($link->ActivityNodeB);
                 $i++;
@@ -665,19 +661,10 @@ class Controller_ExportImportManager extends Controller_Base {
                 $nodeAttr = $node->attributes();
                 $id = (int) $nodeAttr->ID;
                 if (isset($nodeArray[$id])) {
-                    if ((string) $nodeAttr->undoLinks == 'y') {
-                        $nodeArray[$id]['undo'] = 1;
-                    } else {
-                        $nodeArray[$id]['undo'] = 0;
-                    }
-
-                    if ((string) $nodeAttr->nodeProbs == 'y') {
-                        $nodeArray[$id]['probability'] = 1;
-                    } else {
-                        $nodeArray[$id]['probability'] = 0;
-                    }
-
+                    $nodeArray[$id]['undo'] = ((string) $nodeAttr->undoLinks == 'y') ? 1 : 0;
+                    $nodeArray[$id]['probability'] = ((string) $nodeAttr->nodeProbs == 'y') ? 1 : 0;
                     $nodeArray[$id]['priority_id'] = 1;
+
                     if ((string) $nodeAttr->nodePriority == 'neg') {
                         $nodeArray[$id]['priority_id'] = 2;
                     } elseif ((string) $nodeAttr->nodePriority == 'pos') {
@@ -815,11 +802,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 $hasAnswers = true;
                 $questionAttr = $question->attributes();
                 $id = (int) $questionAttr->ID;
-                if ((string) $questionAttr->NumTries == 1) {
-                    $questionsArray[$id]['num_tries'] = 1;
-                } else {
-                    $questionsArray[$id]['num_tries'] = -1;
-                }
+                $questionsArray[$id]['num_tries'] = ((string) $questionAttr->NumTries == 1) ? 1 : -1;
 
                 switch ((string) $questionAttr->QuestionEntryType) {
                     case 'text':
@@ -853,14 +836,10 @@ class Controller_ExportImportManager extends Controller_Base {
                 $questionsArray[$id]['feedback'] = (string) $questionAttr->Feedback;
                 $questionsArray[$id]['show_answer'] = (string) $questionAttr->ShowAnswer;
                 $scoreCounter = (string) $questionAttr->ScoreCounter;
-                if (!empty($scoreCounter)) {
-                    if (isset($countersArray[$scoreCounter])) {
-                        $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
-                    }
+                if ( ! empty($scoreCounter) AND isset($countersArray[$scoreCounter])) {
+                    $questionsArray[$id]['counter_id'] = $countersArray[$scoreCounter]['database_id'];
                 }
-
                 $questionsArray[$id]['stem'] = (string) $question->OL_QuestionStem->div;
-
                 $questionDB = DB_ORM::model('map_question')->addFullQuestion($map->id, $questionsArray[$id]);
                 $questionsArray[$id]['database_id'] = $questionDB->id;
                 $findElement[] = '[[QU:' . $id . ']]';
@@ -874,14 +853,10 @@ class Controller_ExportImportManager extends Controller_Base {
                         $y = 'Resp' . $i . 'y';
                         $s = 'Resp' . $i . 's';
                         $f = 'Resp' . $i . 'f';
-                        if (!empty($question->$t->div)) {
+                        if ( ! empty($question->$t->div)) {
                             $questionResponces[$j]['response'] = (string) $question->$t->div;
                             $questionResponces[$j]['feedback'] = (string) $question->$f->div;
-                            if ((string) $question->$y->div == 'c') {
-                                $questionResponces[$j]['is_correct'] = 1;
-                            } else {
-                                $questionResponces[$j]['is_correct'] = 0;
-                            }
+                            $questionResponces[$j]['is_correct'] = ((string) $question->$y->div == 'c') ? 1 : 0;
 
                             $questionResponces[$j]['score'] = (string) $question->$s->div;
                             DB_ORM::model('map_question_response')->addFullResponses($questionDB->id, $questionResponces[$j]);
@@ -985,11 +960,9 @@ class Controller_ExportImportManager extends Controller_Base {
                 $vpdTextAttr = $vpdText->attributes();
                 if (strstr((string) $vpdTextAttr->id, 'NGR')) {
                     $id = 'ctt_' . $this->getIdFromString($vpdTextAttr->id);
-                    if($version == '3') {
-                        $nodeContentsArray[$id]['div'] = (string) base64_decode($vpdText->div);
-                    }else {
-                        $nodeContentsArray[$id]['div'] = $vpdText->div->asXML();
-                    }
+                    $nodeContentsArray[$id]['div'] = ($version == '3')
+                        ? (string) base64_decode($vpdText->div)
+                        : $vpdText->div->asXML();
                 } else {
                     $id = (int) $vpdTextAttr->id;
                     $elementsArray[$id]['type'] = 1;
@@ -999,7 +972,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($elementsArray) > 0) {
+        if (count($elementsArray)) {
             foreach ($elementsArray as $id => $element) {
                 $typeId = $element['type'];
                 unset($element['type']);
@@ -1009,7 +982,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($nodeArray) > 0) {
+        if (count($nodeArray)) {
             $config = array(
                 'indent'         => true,
                 'output-xhtml'   => true,
@@ -1025,8 +998,6 @@ class Controller_ExportImportManager extends Controller_Base {
                     $nodeArray[$key]['info'] = str_replace($findElement, $replaceElement, $nodeArray[$key]['info'] );
                     $nodeArray[$key]['info'] = $this->html_entity_decode_numeric($nodeArray[$key]['info']);
 
-
-
                     if(extension_loaded('tidy')){
                     // Specify configuration
                         $nodeArray[$key]['text']= $tidy->repairString($nodeArray[$key]['text'], $config, 'utf8');
@@ -1039,7 +1010,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($nodeArray) > 0) {
+        if (count($nodeArray)) {
             foreach ($nodeArray as $key => $node) {
                 $nodeDB = DB_ORM::model('map_node')->createFullNode($map->id, $node);
                 $nodeArray[$key]['database_id'] = $nodeDB->id;
@@ -1051,7 +1022,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($linksArray) > 0) {
+        if (count($linksArray)) {
             foreach ($linksArray as $link) {
                 $link['node_id_1'] = $nodeArray[$link['node_id_1']]['database_id'];
                 $link['node_id_2'] = $nodeArray[$link['node_id_2']]['database_id'];
@@ -1059,7 +1030,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($nodeSection) > 0) {
+        if (count($nodeSection)) {
             $values = array();
             foreach ($nodeSection as $section) {
                 $values['sectionname'] = $section['sectionname'];
@@ -1073,21 +1044,17 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        if (count($countersArray) > 0) {
+        if (count($countersArray)) {
             foreach ($countersArray as $counter) {
                 if (isset($counter['rules'])) {
                     foreach ($counter['rules'] as $rules) {
-                        if ($rules['node'] != ''){
-                            $rules['node'] = $nodeArray[$rules['node']]['database_id'];
-                        } else {
-                            $rules['node'] = '';
-                        }
+                        $rules['node'] = ($rules['node'] != '') ? $nodeArray[$rules['node']]['database_id'] : '';
                         DB_ORM::model('map_counter_rule')->addRule($counter['database_id'], $rules);
                     }
                 }
             }
         }
-        return array("title"=>$map->name, "id"=>$map->id);
+        return array("title" => $map->name, "id" => $map->id);
     }
 
     public function parseXML($tmpFileName)
@@ -1099,10 +1066,6 @@ class Controller_ExportImportManager extends Controller_Base {
         $xmlString      = str_replace(array("&amp;", "&"), array("&", "&amp;"), $xmlString);
 
         return simplexml_load_string($xmlString);
-    }
-
-    private function endc($array) {
-        return end($array);
     }
 
     private function deleteDir($dirPath) {
@@ -1125,7 +1088,7 @@ class Controller_ExportImportManager extends Controller_Base {
     {
         $string = html_entity_decode($string, $quote_style, $charset);
         $string = preg_replace_callback('~&#x([0-9a-fA-F]+);~i', array($this,"chr_utf8_callback"), $string);
-          $string = html_entity_decode($string, $quote_style, $charset);
+        $string = html_entity_decode($string, $quote_style, $charset);
         $string = preg_replace('~&#([0-9]+);~e', $this->chr_utf8("\\1"), $string);
         return $string;
     }
@@ -1159,11 +1122,12 @@ class Controller_ExportImportManager extends Controller_Base {
 
     private function chr_utf8($num)
     {
-        if ($num < 128) return chr($num);
-        if ($num < 2048) return chr(($num >> 6) + 192) . chr(($num & 63) + 128);
-        if ($num < 65536) return chr(($num >> 12) + 224) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
-        if ($num < 2097152) return chr(($num >> 18) + 240) . chr((($num >> 12) & 63) + 128) . chr((($num >> 6) & 63) + 128) . chr(($num & 63) + 128);
-        return '';
+        $result = '';
+        if ($num < 128)     $result = chr($num);
+        if ($num < 2048)    $result = chr(($num >> 6) + 192).chr(($num & 63) + 128);
+        if ($num < 65536)   $result = chr(($num >> 12) + 224).chr((($num >> 6) & 63) + 128).chr(($num & 63) + 128);
+        if ($num < 2097152) $result = chr(($num >> 18) + 240).chr((($num >> 12) & 63) + 128).chr((($num >> 6) & 63) + 128).chr(($num & 63) + 128);
+        return $result;
     }
 
 }

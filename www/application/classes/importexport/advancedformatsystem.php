@@ -23,8 +23,8 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * MVP format import/export system 
  */
-class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
-
+class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
+    
     private $folderName;
     private $folderPath;
     private $mediaElements;
@@ -39,7 +39,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         $mapId = $parameters['mapId'];
 
         $this->makeTempFolder($parameters['mapName']);
-        $metadata['version'] = 3;
+        $metadata['version'] = 'advanced';
         $this->createXMLFile('metadata', $metadata, false, false);
 
         $map = DB_SQL::select('default')->from('maps')->where('id', '=', $mapId)->query()->fetch(0);
@@ -281,70 +281,63 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
 
         $searchArray  = array();
         $replaceArray = array();
-        foreach ($nodeContentElements as $modelKey => $model)
-        {
-            if (isset($this->labyrinthArray[$model]) AND count($this->labyrinthArray[$model]) > 0)
-            {
-                foreach ($this->labyrinthArray[$model] as $key => $array)
-                {
+        foreach ($nodeContentElements as $modelKey => $model) {
+            if (isset($this->labyrinthArray[$model]) AND count($this->labyrinthArray[$model])) {
+                foreach ($this->labyrinthArray[$model] as $key => $array) {
                     $searchArray[]  = '[['.$modelKey.':'.$key.']]';
                     $replaceArray[] = '[['.$modelKey.':'.$array['database_id'].']]';
                 }
             }
         }
-
         $searchArray[] = 'renderLabyrinth/index/'.$this->labyrinthArray['map']['id'];
         $replaceArray[] = 'renderLabyrinth/index/'.$this->labyrinthArray['map']['database_id'];
 
-        if (isset($this->labyrinthArray['map_node'])){
-            if (count($this->labyrinthArray['map_node']) > 0){
-                $searchNodeIDArray = array();
-                $replaceNodeIDArray = array();
+        if (isset($this->labyrinthArray['map_node']) AND count($this->labyrinthArray['map_node'])) {
+            $searchNodeIDArray      = array();
+            $replaceNodeIDArray     = array();
+            $searchNodeLinksArray   = array();
+            $replaceNodeLinksArray  = array();
 
-                $searchNodeLinksArray = array();
-                $replaceNodeLinksArray = array();
-                foreach($this->labyrinthArray['map_node'] as $key => $node){
-                    $searchNodeIDArray[] = '['.$key.']';
-                    $replaceNodeIDArray[] = '['.$node['database_id'].']';
+            foreach($this->labyrinthArray['map_node'] as $key => $node){
+                $searchNodeIDArray[]        = '['.$key.']';
+                $replaceNodeIDArray[]       = '['.$node['database_id'].']';
+                $searchNodeLinksArray[]     = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['id'].'/'.$key;
+                $replaceNodeLinksArray[]    = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['database_id'].'/'.$node['database_id'];
+            }
 
-                    $searchNodeLinksArray[] = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['id'].'/'.$key;
-                    $replaceNodeLinksArray[] = 'renderLabyrinth/go/'.$this->labyrinthArray['map']['database_id'].'/'.$node['database_id'];
-                }
-                foreach($this->labyrinthArray['map_node'] as $key => $node){
-                    $md5Text = md5($node['text']);
-                    $node['text'] = str_replace($searchArray, $replaceArray, $node['text']);
-                    $node['text'] = str_replace($searchNodeLinksArray, $replaceNodeLinksArray, $node['text']);
-                    $node['text'] = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
-                    $newMd5Text = md5($node['text']);
+            foreach($this->labyrinthArray['map_node'] as $key => $node){
+                $md5Text             = md5($node['text']);
+                $node['text']        = str_replace($searchArray, $replaceArray, $node['text']);
+                $node['text']        = str_replace($searchNodeLinksArray, $replaceNodeLinksArray, $node['text']);
+                $node['text']        = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
+                $newMd5Text          = md5($node['text']);
+                $md5Conditional      = md5($node['conditional']);
+                $node['conditional'] = str_replace($searchNodeIDArray, $replaceNodeIDArray, $node['conditional']);
+                $newMd5Conditional   = md5($node['conditional']);
 
-                    $md5Conditional = md5($node['conditional']);
-                    $node['conditional'] = str_replace($searchNodeIDArray, $replaceNodeIDArray, $node['conditional']);
-                    $newMd5Conditional = md5($node['conditional']);
-
-                    if (($md5Text != $newMd5Text) || ($md5Conditional != $newMd5Conditional)){
-                        $nodeDB = DB_ORM::model('map_node', array((int) $node['database_id']));
-                        if ($nodeDB->is_loaded()){
-                            if ($md5Text != $newMd5Text){
-                                $nodeDB->text = $node['text'];
-                            }
-                            if ($md5Conditional != $newMd5Conditional) {
-                                $nodeDB->conditional = $node['conditional'];
-                            }
-                            $nodeDB->save();
+                if (($md5Text != $newMd5Text) || ($md5Conditional != $newMd5Conditional)) {
+                    $nodeDB = DB_ORM::model('map_node', array((int) $node['database_id']));
+                    if ($nodeDB->is_loaded()) {
+                        if ($md5Text != $newMd5Text) {
+                            $nodeDB->text = $node['text'];
                         }
+                        if ($md5Conditional != $newMd5Conditional) {
+                            $nodeDB->conditional = $node['conditional'];
+                        }
+                        $nodeDB->save();
                     }
                 }
             }
         }
 
-        if (isset($this->labyrinthArray['map_counter_commonrules'])){
-            foreach($this->labyrinthArray['map_counter_commonrules'] as $key => $rule){
-                $md5Rule = md5($rule['rule']);
-                $rule['rule'] = str_replace($searchArray, $replaceArray, $rule['rule']);
-                $newMd5Rule = md5($rule['rule']);
-                if ($md5Rule != $newMd5Rule){
+        if (isset($this->labyrinthArray['map_counter_commonrules'])) {
+            foreach($this->labyrinthArray['map_counter_commonrules'] as $rule) {
+                $md5Rule        = md5($rule['rule']);
+                $rule['rule']   = str_replace($searchArray, $replaceArray, $rule['rule']);
+                $newMd5Rule     = md5($rule['rule']);
+                if ($md5Rule != $newMd5Rule) {
                     $ruleDB = DB_ORM::model('map_counter_commonrules', array((int) $rule['database_id']));
-                    if ($ruleDB->is_loaded()){
+                    if ($ruleDB->is_loaded()) {
                         $ruleDB->rule = $rule['rule'];
                         $ruleDB->save();
                     }
@@ -352,14 +345,36 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
-        if (isset($this->labyrinthArray['map_question'])){
-            foreach($this->labyrinthArray['map_question'] as $key => $q){
-                $md5Q = md5($q['settings']);
-                $q['settings'] = str_replace($searchArray, $replaceArray, $q['settings']);
-                $newMd5Q = md5($q['settings']);
-                if ($md5Q != $newMd5Q){
+        //'map_visualdisplay_counter'
+        //'map_visualdisplay_image'
+        //'map_visualdisplay_panel'
+        if (isset($this->labyrinthArray['map_visualdisplay_counter'])) {
+            foreach($this->labyrinthArray['map_visualdisplay_counter'] as $vdCounter) {
+                $result = DB_ORM::model('map_counter_commonrules', array((int) $vdCounter['visual_id']));
+                $result->counter_id         = $vdCounter['counter_id'];
+                $result->label_x            = $vdCounter['label_x'];
+                $result->label_y            = $vdCounter['label_y'];
+                $result->label_angle        = $vdCounter['label_angle'];
+                $result->label_font_style   = $vdCounter['label_font_style'];
+                $result->label_text         = $vdCounter['label_text'];
+                $result->label_z_index      = $vdCounter['label_z_index'];
+                $result->value_x            = $vdCounter['value_x'];
+                $result->value_y            = $vdCounter['value_y'];
+                $result->value_angle        = $vdCounter['value_angle'];
+                $result->value_font_style   = $vdCounter['value_font_style'];
+                $result->value_z_index      = $vdCounter['value_z_index'];
+                $result->save();
+            }
+        }
+
+        if (isset($this->labyrinthArray['map_question'])) {
+            foreach($this->labyrinthArray['map_question'] as $q) {
+                $md5Q           = md5($q['settings']);
+                $q['settings']  = str_replace($searchArray, $replaceArray, $q['settings']);
+                $newMd5Q        = md5($q['settings']);
+                if ($md5Q != $newMd5Q) {
                     $qDB = DB_ORM::model('map_question', array((int) $q['database_id']));
-                    if ($qDB->is_loaded()){
+                    if ($qDB->is_loaded()) {
                         $qDB->settings = $q['settings'];
                         $qDB->save();
                     }
@@ -368,28 +383,24 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         }
 
         $mediaElements = $this->xml2array($tmpFolder, 'media_elements');
-        if (isset($mediaElements['media_elements_avatars'])){
-            if (count($mediaElements['media_elements_avatars']) > 0){
-                foreach($mediaElements['media_elements_avatars'] as $avatar){
-                    $filePath = $tmpFolder . 'media/' . $avatar;
-                    if (file_exists($filePath)){
-                        copy($filePath, DOCROOT . 'avatars/' . $avatar);
-                    }
+        if (isset($mediaElements['media_elements_avatars']) AND count($mediaElements['media_elements_avatars'])){
+            foreach($mediaElements['media_elements_avatars'] as $avatar){
+                $filePath = $tmpFolder.'media/'.$avatar;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'avatars/'.$avatar);
                 }
             }
         }
 
-        if (!file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'])) {
+        if ( ! file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'])) {
             mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'], 0777, true);
         }
 
-        if (isset($mediaElements['media_elements_files'])){
-            if (count($mediaElements['media_elements_files']) > 0){
-                foreach($mediaElements['media_elements_files'] as $file){
-                    $filePath = $tmpFolder . 'media/' . $file;
-                    if (file_exists($filePath)){
-                        copy($filePath, DOCROOT . 'files/' . $this->labyrinthArray['map']['database_id'] . '/' . $file);
-                    }
+        if (isset($mediaElements['media_elements_files']) AND count($mediaElements['media_elements_files'])) {
+            foreach($mediaElements['media_elements_files'] as $file){
+                $filePath = $tmpFolder.'media/'.$file;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'files/'.$this->labyrinthArray['map']['database_id'].'/'.$file);
                 }
             }
         }
@@ -434,15 +445,13 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         $builder     = DB_ORM::insert($modelName);
         $skipColumns = array('id');
 
-        if ($modelName == 'map')
-        {
+        if ($modelName == 'map') {
             $data['name']       = DB_ORM::model('map')->getMapName($data['name']);
             $data['author_id']  = Auth::instance()->get_user()->id;
             $data['skin_id']    = 1;
         }
 
-        if ($modelName == 'map_node')
-        {
+        if ($modelName == 'map_node') {
             $data['x']      = ($data['x'] == '') ? NULL : (int) $data['x'];
             $data['y']      = ($data['y'] == '') ? NULL : (int) $data['y'];
             $data['rgb']    = ($data['rgb'] == '') ? NULL : $data['rgb'];
@@ -451,76 +460,83 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
             $data['end']    = ($data['end'] == '') ? 0 : 1;
         }
 
-        if ($modelName == 'map_dam_element')
-        {
-            if (isset($this->labyrinthArray['map_dam'][$data['dam_id']])) $data['dam_id'] = $this->labyrinthArray['map_dam'][$data['dam_id']]['database_id'];
+        if ($modelName == 'map_dam_element') {
+            if (isset($this->labyrinthArray['map_dam'][$data['dam_id']])) {
+                $data['dam_id'] = $this->labyrinthArray['map_dam'][$data['dam_id']]['database_id'];
+            }
 
-            switch ($data['element_type'])
-            {
+            switch ($data['element_type']) {
                 case 'vpd':
-                    if (isset($this->labyrinthArray['map_vpd'][$data['element_id']])) $data['element_id'] = $this->labyrinthArray['map_vpd'][$data['element_id']]['database_id'];
+                    if (isset($this->labyrinthArray['map_vpd'][$data['element_id']])) {
+                        $data['element_id'] = $this->labyrinthArray['map_vpd'][$data['element_id']]['database_id'];
+                    }
                     break;
                 case 'mr':
-                    if (isset($this->labyrinthArray['map_element'][$data['element_id']])) $data['element_id'] = $this->labyrinthArray['map_element'][$data['element_id']]['database_id'];
+                    if (isset($this->labyrinthArray['map_element'][$data['element_id']])) {
+                        $data['element_id'] = $this->labyrinthArray['map_element'][$data['element_id']]['database_id'];
+                    }
                     break;
                 case 'dam':
-                    if (isset($this->labyrinthArray['map_dam'][$data['element_id']])) $data['element_id'] = $this->labyrinthArray['map_dam'][$data['element_id']]['database_id'];
+                    if (isset($this->labyrinthArray['map_dam'][$data['element_id']])) {
+                        $data['element_id'] = $this->labyrinthArray['map_dam'][$data['element_id']]['database_id'];
+                    }
                     break;
             }
         }
 
-        if ($modelName == 'map_element') $data['path'] = 'files/'.$this->labyrinthArray['map']['database_id'].'/'.$data['name'];
-
-        if ($modelName == 'map_node_link')
-        {
-            if (isset($this->labyrinthArray['map_node'][$data['node_id_1']])) $data['node_id_1'] = $this->labyrinthArray['map_node'][$data['node_id_1']]['database_id'];
-            if (isset($this->labyrinthArray['map_node'][$data['node_id_2']])) $data['node_id_2'] = $this->labyrinthArray['map_node'][$data['node_id_2']]['database_id'];
+        if ($modelName == 'map_element') {
+            $data['path'] = 'files/'.$this->labyrinthArray['map']['database_id'].'/'.$data['name'];
         }
 
-        if ($modelName == 'map_node_section_node' AND isset($this->labyrinthArray['map_node_section'][$data['section_id']]))
-        {
+        if ($modelName == 'map_node_link') {
+            if (isset($this->labyrinthArray['map_node'][$data['node_id_1']])) {
+                $data['node_id_1'] = $this->labyrinthArray['map_node'][$data['node_id_1']]['database_id'];
+            }
+            if (isset($this->labyrinthArray['map_node'][$data['node_id_2']])) {
+                $data['node_id_2'] = $this->labyrinthArray['map_node'][$data['node_id_2']]['database_id'];
+            }
+        }
+
+        if ($modelName == 'map_node_section_node' AND isset($this->labyrinthArray['map_node_section'][$data['section_id']])) {
             $data['section_id'] = $this->labyrinthArray['map_node_section'][$data['section_id']]['database_id'];
         }
 
-        if (isset($data['map_id'])) $data['map_id'] = $this->labyrinthArray['map']['database_id'];
+        if (isset($data['map_id'])) {
+            $data['map_id'] = $this->labyrinthArray['map']['database_id'];
+        }
 
-        if (isset($data['chat_id']) AND isset($this->labyrinthArray['map_chat'][$data['chat_id']]))
-        {
+        if (isset($data['chat_id']) AND isset($this->labyrinthArray['map_chat'][$data['chat_id']])) {
             $data['chat_id'] = $this->labyrinthArray['map_chat'][$data['chat_id']]['database_id'];
         }
 
-        if (isset($data['counter_id']))
-        {
+        if (isset($data['counter_id'])) {
             $data['counter_id'] = isset($this->labyrinthArray['map_counter'][$data['counter_id']])
                 ? $this->labyrinthArray['map_counter'][$data['counter_id']]['database_id']
                 : NULL;
         }
 
-        if (isset($data['node_id']) AND isset($this->labyrinthArray['map_node'][$data['node_id']]))
-        {
+        if (isset($data['node_id']) AND isset($this->labyrinthArray['map_node'][$data['node_id']])) {
             $data['node_id'] = $this->labyrinthArray['map_node'][$data['node_id']]['database_id'];
         }
 
-        if (isset($data['question_id']) AND isset($this->labyrinthArray['map_question'][$data['question_id']]))
-        {
+        if (isset($data['question_id']) AND isset($this->labyrinthArray['map_question'][$data['question_id']])) {
             $data['question_id'] = $this->labyrinthArray['map_question'][$data['question_id']]['database_id'];
         }
 
-        if (isset($data['vpd_id']) AND isset($this->labyrinthArray['map_vpd'][$data['vpd_id']]))
-        {
+        if (isset($data['vpd_id']) AND isset($this->labyrinthArray['map_vpd'][$data['vpd_id']])) {
             $data['vpd_id'] = $this->labyrinthArray['map_vpd'][$data['vpd_id']]['database_id'];
         }
 
-        if (isset($data['redirect_node_id']))
-        {
+        if (isset($data['redirect_node_id'])) {
             if ($data['redirect_node_id'] == '') $data['redirect_node_id'] = NULL;
             elseif (isset($this->labyrinthArray['map_node'][$data['redirect_node_id']])) $data['redirect_node_id'] = $this->labyrinthArray['map_node'][$data['redirect_node_id']]['database_id'];
         }
 
         $model = DB_ORM::model($modelName);
-        foreach($data as $key => $value)
-        {
-            if ( ! in_array($key, $skipColumns) AND $model->is_field($key)) $builder->column($key, $value);
+        foreach($data as $key => $value) {
+            if ( ! in_array($key, $skipColumns) AND $model->is_field($key)) {
+                $builder->column($key, $value);
+            }
         }
 
         return $builder->execute();
@@ -554,16 +570,16 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
     /**
      * Create temp folder 
      */
-    private function makeTempFolder($mapName = null) {
-        $this->folderPath = DOCROOT . 'tmp/';
-        if ($mapName != null){
-            $this->folderName = preg_replace("/[^A-Za-z0-9]/","",$mapName) . '_mvp_' . rand();
-        } else {
-            $this->folderName = 'mvp_' . rand();
-        }
+    private function makeTempFolder($mapName = null)
+    {
+        $this->folderPath = DOCROOT.'tmp/';
+
+        $this->folderName = ($mapName != null)
+            ? preg_replace("/[^A-Za-z0-9]/","",$mapName).'_advanced_'.rand()
+            : 'advanced_'.rand();
         
-        if(is_dir($this->folderPath . $this->folderName)) {
-            $this->folderName .= '_' . rand();
+        if (is_dir($this->folderPath.$this->folderName)) {
+            $this->folderName .= '_'.rand();
         }
         
         $this->folderPath .= $this->folderName;
@@ -616,11 +632,9 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         
         $this->makeMediaFolder();
         
-        foreach($elements as $e)
-        {
+        foreach($elements as $e) {
             $elementPath = DOCROOT.$e['path'];
-            if (file_exists($elementPath) AND is_dir($this->folderPath.'/media'))
-            {
+            if (file_exists($elementPath) AND is_dir($this->folderPath.'/media')) {
                 $pathInfo  = pathinfo($elementPath);
                 $extension = Arr::get($pathInfo, 'extension');
                 $extension = $extension ? '.'.$extension : '';
