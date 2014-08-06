@@ -132,14 +132,13 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
-        foreach ($questions as $question)
-        {
+        foreach ($questions as $question) {
             $response = DB_ORM::model('user_response')->getResponse($session->id, $question->id);
             $responseObj = end($response);
-            if ($question->entry_type_id == 8) {
-                $responseObj->response = DB_ORM::model('User_Response')->sjtConvertResponse($responseObj->response);
-            }
             if ($responseObj) {
+                if ($question->entry_type_id == 8) {
+                    $responseObj->response = DB_ORM::model('User_Response')->sjtConvertResponse($responseObj->response);
+                }
                 $this->templateData['responses'][$question->id][] = $responseObj;
             }
         }
