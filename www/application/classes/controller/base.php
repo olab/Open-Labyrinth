@@ -66,19 +66,6 @@ class Controller_Base extends Controller_Template {
     {
         parent::before();
 
-        $historyDir = DOCROOT.'updates/history.json';
-        $version = 3.3;
-        if (file_exists($historyDir)) {
-            $versionInJSON  = file($historyDir);
-            $versionsOfDB   = json_decode(Arr::get($versionInJSON, 0, ''), true);
-            if (is_array($versionsOfDB)){
-                end($versionsOfDB);
-                $versionLastDB  = key($versionsOfDB);
-                $version        = substr($versionLastDB,1,3);
-            }
-        }
-        $this->templateData['version'] = $version;
-
         if (Auth::instance()->logged_in())
         {
             $user                       = Auth::instance()->get_user();

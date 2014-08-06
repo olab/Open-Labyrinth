@@ -57,7 +57,7 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][3] = __("OAuth");
         $this->templateData['tabs'][3] = View::factory('systemmanager/oauth')->set('templateData', $this->templateData);
 
-        $this->templateData['tabsName'][4] = __("Upload README");
+        $this->templateData['tabsName'][4] = __("User Guide");
         $this->templateData['tabs'][4] = View::factory('systemmanager/uploadReadMe')->set('templateData', $this->templateData);
 
         $this->templateData['center'] = View::factory('systemmanager/view')->set('templateData', $this->templateData);
@@ -205,12 +205,15 @@ class Controller_SystemManager extends Controller_Base {
         $pathInfo   = pathinfo($file['name']);
         $extension  = $pathInfo['extension'];
 
-        if ($file["error"] > 0) echo 'Error: '.$file['error'].'<br>';
-        else
-        {
+        if ($file["error"]) {
+            Notice::add('Error: '.$file['error'], 'error');
+        } elseif ($file['type'] == 'application/pdf') {
             $existingFile = $this->getExistingReadMe();
-            if ($existingFile) unlink(DOCROOT.'/tmp/'.$existingFile);
-            move_uploaded_file($file['tmp_name'] , DOCROOT.'/tmp/ReadMe.'.$extension);
+            if ($existingFile) unlink(DOCROOT.'/documents/'.$existingFile);
+            move_uploaded_file($file['tmp_name'] , DOCROOT.'/documents/UserGuide.'.$extension);
+            Notice::add('File uploaded successfully.', 'success');
+        } else {
+            Notice::add('Please upload pdf file.', 'error');
         }
 
         Request::initial()->redirect(URL::base().'systemManager/#tabs-4');
@@ -220,26 +223,8 @@ class Controller_SystemManager extends Controller_Base {
     {
         $fileName = false;
         foreach(scandir(DOCROOT.'/tmp/') as $existingFileName){
-            if (strpos($existingFileName, 'ReadMe') !== false) $fileName = $existingFileName;
+            if (strpos($existingFileName, 'UserGuide') !== false) $fileName = $existingFileName;
         }
         return $fileName;
-    }
-
-    public function action_downloadReadMe()
-    {
-        $fileName = $this->getExistingReadMe();
-
-        if ($fileName) {
-            $path = DOCROOT.'/tmp/'.$fileName;
-
-            // Give file to user
-            header("Content-Disposition: attachment; filename=$fileName");
-            header("Content-length: ".filesize($path));
-
-            // send archive
-            readfile($path);
-            exit;
-        }
-        Request::initial()->redirect(URL::base());
     }
 }

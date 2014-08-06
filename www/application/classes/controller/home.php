@@ -88,14 +88,42 @@ class Controller_Home extends Controller_Base {
         Request::initial()->redirect(URL::base());
     }
 
+    public function action_about() {
+        if (Auth::instance()->logged_in()) {
+            $historyDir = DOCROOT.'updates/history.json';
+            $version = 3.0;
+            if (file_exists($historyDir)) {
+                $versionInJSON  = file($historyDir);
+                $versionsOfDB   = json_decode(Arr::get($versionInJSON, 0, ''), true);
+                if (is_array($versionsOfDB)){
+                    end($versionsOfDB);
+                    $versionLastDB  = key($versionsOfDB);
+                    $version        = substr($versionLastDB,1,strpos($versionLastDB, '_') - 1);
+                }
+            }
+            $this->templateData['version'] = $version;
+            $this->templateData['center'] = View::factory('about')->set('templateData', $this->templateData);
+            $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_userGuide()
+    {
+        $userGuide = 'documents/UserGuide.pdf';
+        if (file_exists($userGuide)) {
+            Request::initial()->redirect(URL::base().$userGuide);
+        } else {
+            exit ('User guide not loaded on server.');
+        }
+
+    }
+
     public function action_changePassword() {
         if (Auth::instance()->logged_in()) {
             $this->templateData['user'] = Auth::instance()->get_user();
-
-            $view = View::factory('changePassword');
-            $view->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $view;
+            $this->templateData['center'] = View::factory('changePassword')->set('templateData', $this->templateData);
             unset($this->templateData['left']);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);

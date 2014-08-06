@@ -94,30 +94,25 @@ class Controller_ReportManager extends Controller_Base
         $this->templateData['questions']    = $questions;
         $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($session->map_id);
 
-        if ($session->webinar_id AND $session->webinar_step)
-        {
+        if ($session->webinar_id AND $session->webinar_step) {
             $webinar = DB_ORM::model('webinar', array($session->webinar_id));
 
             $this->templateData['webinarID']        = $webinar->id;
             $this->templateData['webinarForum']     = $webinar->forum_id;
 
-            if (count($webinar->steps) > 0)
-            {
-                foreach ($webinar->steps as $step_order=>$webinarStep)
-                {
-                    if ($webinarStep->id != $session->webinar_step) continue;
-                    if (count($webinarStep->maps) > 0)
-                    {
-                        foreach($webinarStep->maps as $map_order=>$webinarStepMap)
-                        {
-                            if ($map_order+1 == count($webinarStep->maps) AND isset($webinar->steps[$step_order+1]))
-                            {
+            if (count($webinar->steps)) {
+                foreach ($webinar->steps as $step_order=>$webinarStep) {
+                    if ($webinarStep->id != $session->webinar_step) {
+                        continue;
+                    }
+                    if (count($webinarStep->maps)) {
+                        foreach($webinarStep->maps as $map_order=>$webinarStepMap) {
+                            if ($map_order + 1 == count($webinarStep->maps) AND isset($webinar->steps[$step_order+1])) {
                                 //DB_ORM::model('Webinar')->changeWebinarStep($webinar->id, $webinar->steps[$step_order+1]->id);
                             }
 
                             $isFinished = DB_ORM::model('user_session')->isUserFinishMap($webinarStepMap->reference_id, $session->user_id, $webinarStepMap->which, $webinar->id, $session->webinar_step);
-                            if ($isFinished == Model_Leap_User_Session::USER_NOT_PLAY_MAP)
-                            {
+                            if ($isFinished == Model_Leap_User_Session::USER_NOT_PLAY_MAP) {
                                 $this->templateData['nextCase'] = array(
                                     'webinarId'     => $webinar->id,
                                     'webinarStep'   => $webinarStep->id,

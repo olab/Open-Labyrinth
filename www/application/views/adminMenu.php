@@ -17,9 +17,7 @@
  *
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
- */
-?>
-
+ */ ?>
 <div class="row-fluid">
     <div class="span8">
         <div class="pull-left">

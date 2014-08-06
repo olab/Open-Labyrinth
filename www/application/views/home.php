@@ -144,7 +144,16 @@ $user = Auth::instance()->get_user(); ?>
                                     <li><a href="<?php echo URL::base().'webinarManager/my'; ?>"><?php echo __('My Scenarios'); ?></a></li><?php
                                 } ?>
                                 <li><a href="<?php echo URL::base(); ?>dforumManager"><?php echo __('Forums'); ?></a></li>
-                                <li><a data-toggle="modal" data-target="#helpPopup" href=""><?php echo __('Help'); ?></a></li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Help'); ?><b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="<?php echo URL::base().'home/about'; ?>">About</a></li>
+                                        <li><a onclick="window.open('<?php echo URL::base().'home/userGuide'; ?>');">User Guide</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </div><?php
                     } ?>
@@ -157,21 +166,7 @@ $user = Auth::instance()->get_user(); ?>
                 <?php echo __('You do not have access to this case.'); ?>
             </div>
         </div><?php
-    if (isset($templateData)){
-        if ($user) { ?>
-        <div id="helpPopup" class="modal hide fade in">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-            <div class="helpPopupLine">Version: <?php echo Arr::get($templateData, 'version'); ?></div>
-            <div class="helpPopupLine">Main website: <a href="http://openlabyrinth.ca/">openlabyrinth.ca</a></div>
-            <div class="helpPopupLine">Download: <a href="<?php echo URL::base().'systemManager/downloadReadMe'; ?>">README</a></div>
-            <div class="helpPopupLine">UI mode:
-                <div class="radio_extended btn-group">
-                    <a href="<?php echo URL::base().'base/ui/easy'; ?>" data-class="btn-info" class="btn <?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy</a>
-                    <a href="<?php echo URL::base().'base/ui/advanced'; ?>" data-class="btn-info" class="btn <?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced</a>
-                </div>
-            </div>
-        </div><?php
-        } ?>
+    if (isset($templateData)){ ?>
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
