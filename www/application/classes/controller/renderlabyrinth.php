@@ -33,29 +33,29 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $this->mapId = $mapId;
         $node        = null;
         $bookmark    = false;
-        $mapWithKey  = false;
+        $continue    = true;
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
 
         if ($action == 'index') {
             $mapDB = DB_ORM::model('map', array($mapId));
             if ($mapDB->security_id == 4) {
-                $mapWithKey     = true;
                 $sessionId      = Session::instance()->id();
                 $checkValue     = Auth::instance()->hash('checkvalue'.$mapId.$sessionId);
                 $checkSession   = Session::instance()->get($checkValue);
 
                 if ($checkSession != '1') {
-                    $this->template             = View::factory('labyrinth/security');
                     $templateData['mapDB']      = $mapDB;
                     $templateData['title']      = 'OpenLabyrinth';
                     $templateData['keyError']   = Session::instance()->get('keyError');
 
                     Session::instance()->delete('keyError');
 
-                    $this->template->set('templateData', $templateData);
+                    $this->template = View::factory('labyrinth/security')->set('templateData', $templateData);
+                    $continue = false;
                 }
-            } else {
+            }
+            if ($continue) {
                 Session::instance()->delete('questionChoices');
                 Session::instance()->delete('dragQuestionResponses');
                 Session::instance()->delete('counterFunc');
@@ -85,7 +85,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
         }
-        if ( ! $mapWithKey) $this->renderNode($node, $action, $bookmark);
+        if ($continue) $this->renderNode($node, $action, $bookmark);
     }
 
     private function renderNode ($nodeObj, $action, $bookmark)
@@ -189,7 +189,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
             $skinData = json_decode($data['map']->skin->data, true);
-            if ($skinData != null AND isset($skinData['body'])) $data['bodyStyle'] = base64_decode($skinData['body']);
+            if ($skinData != null AND isset($skinData['body'])) {
+                $data['bodyStyle'] = base64_decode($skinData['body']);
+            }
         }
 
         if ($action = 'index') {
