@@ -45,7 +45,7 @@ $(function() {
 
                 // played first audio of popup
                 var $audio = $popup.find('audio');
-                $audio.get(0).play();
+                if ($audio.length) $audio.get(0).play();
 
                 $.post(popupsAction, {popupId: $popup.attr('popup-id')}, function(data) {});
                 setTimeout(function() {
