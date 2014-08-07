@@ -35,7 +35,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $bookmark    = false;
         $continue    = true;
 
-        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) Request::initial()->redirect(URL::base());
+        if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) {
+            Session::instance()->set('redirectURL', $this->request->uri());
+            Request::initial()->redirect(URL::base());
+        }
 
         if ($action == 'index') {
             $mapDB = DB_ORM::model('map', array($mapId));

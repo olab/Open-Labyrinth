@@ -167,11 +167,8 @@ class Controller_Base extends Controller_Template {
                     ->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId($user_id))
                     ->set('templateData', $this->templateData);;
             }
-        }
-        else
-        {
-            if ($this->request->controller() == 'home' && $this->request->action() == 'index')
-            {
+        } else {
+            if ($this->request->controller() == 'home' AND $this->request->action() == 'index') {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
                 $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
                 Session::instance()->delete('redirectURL');
@@ -194,9 +191,7 @@ class Controller_Base extends Controller_Template {
                     ->set('openLabyrinths', $maps)
                     ->set('rootNodesMap', $rooNodesMap)
                     ->set('templateData', $this->templateData);
-            }
-            else
-            {
+            } else {
                 $controller = $this->request->controller();
                 $action = $this->request->action();
 
