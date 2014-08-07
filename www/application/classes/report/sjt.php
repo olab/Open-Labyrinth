@@ -87,8 +87,8 @@ class Report_SJT extends Report
             $this->mapElements[] = new Report_SJT_Map(
                 $this->implementation,
                 $mapData['mapId'],
-                $mapData['expertsScenarioId'],
                 $mapData['webinarId'],
+                $mapData['expertsScenarioId'],
                 $mapData['sectionId']
             );
         }

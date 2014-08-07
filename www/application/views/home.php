@@ -148,7 +148,7 @@ $user = Auth::instance()->get_user(); ?>
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Help'); ?><b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="<?php echo URL::base().'home/about'; ?>">About</a></li>
-                                        <li><a onclick="window.open('<?php echo URL::base().'home/userGuide'; ?>');">User Guide</a></li>
+                                        <li><a href="<?php echo URL::base().'home/userGuide'; ?>" target="_blank">User Guide</a></li>
                                         <li class="divider"></li>
                                         <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
                                         <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>

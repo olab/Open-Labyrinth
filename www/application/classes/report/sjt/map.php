@@ -55,7 +55,7 @@ class Report_SJT_Map extends Report_Element {
         $column             = 0;
         $firstColumnCounter = 0;
 
-        if($this->map == null) return $localRow;
+        if ($this->map == null) return $localRow;
 
         // scenario title
         $this->fillCell($column, $localRow, $this->map->name, 16);
@@ -82,6 +82,10 @@ class Report_SJT_Map extends Report_Element {
                 ? $nodeObj->node_id
                 : $nodeObj->id;
 
+            if (count($questions) == 0) {
+                $this->fillCell(0, $localRow, 'Users don\'t respond on any SJT questions yet.');
+            }
+
             foreach ($questions as $question)
             {
                 $firstColumnCounter++;
@@ -98,10 +102,10 @@ class Report_SJT_Map extends Report_Element {
                 $column++;
                 $localTablesRow++;
 
-                $questionResponse = array();
-                foreach(DB_ORM::select('Map_Question_Response')->where('question_id', '=', $question->id)->query()->as_array() as $responseObj) {
-                    $questionResponse[$responseObj->id] = $responseObj->response;
-                }
+                //                $questionResponse = array();
+                //                foreach(DB_ORM::select('Map_Question_Response')->where('question_id', '=', $question->id)->query()->as_array() as $responseObj) {
+                //                    $questionResponse[$responseObj->id] = $responseObj->response;
+                //                }
 
                 foreach ($this->includeUsers as $userId)
                 {
@@ -116,36 +120,30 @@ class Report_SJT_Map extends Report_Element {
                     $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
 
                     $userResponse = 'no response';
-                    if ($sessionObj)
-                    {
+                    if ($sessionObj) {
                         $userResponseObj = DB_ORM::select('User_Response')
                             ->where('question_id', '=', $question->id)
                             ->where('node_id', '=', $nodeId)
                             ->where('session_id', '=', $sessionObj->id)
                             ->query()
                             ->fetch(0);
-                        if ($userResponseObj)
-                        {
+                        if ($userResponseObj) {
                             $atLeastOneResponse++;
                             $userResponse = $userResponseObj->response;
                         }
                     }
 
-                    if ($atLeastOneResponse == 0 AND $lastUserResponse == count($this->includeUsers))
-                    {
+                    if ($atLeastOneResponse == 0 AND $lastUserResponse == count($this->includeUsers)) {
                         $column--;
                         continue 2;
                     }
 
                     if ($userResponse != 'no response') {
-                        $userResponseConvert = '';
                         $userResponseScore = 0;
                         foreach (json_decode($userResponse, true) as $position=>$responseId) {
                             if (isset($responsePoints[$responseId][$position])) $userResponseScore += $responsePoints[$responseId][$position];
-                            $userResponseConvert .= Arr::get($questionResponse, $responseId, '').',';
                         }
-                        $userResponseConvert = trim($userResponseConvert, ",");
-                        $userResponse = $userResponseConvert.';   Points: '.$userResponseScore;
+                        $userResponse = $userResponseScore.' '; // space need for left alignment in cell
                     }
 
                     $this->fillCell(0, $localTablesRow, DB_ORM::model('User', array($userId))->nickname);
@@ -160,11 +158,10 @@ class Report_SJT_Map extends Report_Element {
                 $this->fillCell(0, $localRow, 'Points for position');
                 $localTablesRow++;
 
-                for ($i = 0; $i < 5; $i++)
-                {
-                    $questionResponse = array_values($questionResponse);
-                    $response = isset($questionResponse[$i]) ? $questionResponse[$i] : '';
-                    $this->fillCell(0, $localTablesRow + $i, 'Response: '.$response);
+                for ($i = 0; $i < 5; $i++) {
+                //                    $questionResponse = array_values($questionResponse);
+                //                    $response = isset($questionResponse[$i]) ? $questionResponse[$i] : '';
+                    $this->fillCell(0, $localTablesRow + $i, 'Response: '.($i + 1));
                 }
 
                 foreach ($responsePoints as $pointObj)
@@ -188,8 +185,7 @@ class Report_SJT_Map extends Report_Element {
         }
 
         // clear last column
-        for ($i = $offset; $i<$offset+count($this->includeUsers); $i++)
-        {
+        for ($i = $offset; $i<$offset+count($this->includeUsers); $i++) {
             $this->fillCell($column+1, $i, '');
         }
 
@@ -200,12 +196,10 @@ class Report_SJT_Map extends Report_Element {
     {
         if($this->map == null OR count($this->map->nodes) <= 0) return;
 
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertsScenarioId)->where('expert', '=', 1)->query()->as_array() as $wUserObj)
-        {
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertsScenarioId)->where('expert', '=', 1)->query()->as_array() as $wUserObj) {
             $this->experts[] = $wUserObj->user_id;
         }
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj)
-        {
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj) {
             $this->includeUsers[] = $wUserObj->user_id;
         }
     }
@@ -262,14 +256,12 @@ class Report_SJT_Map extends Report_Element {
         );
 
         // get all response in correct order by question id
-        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $response)
-        {
+        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $response) {
             $poll[$response->id] = array();
         }
 
         // if response < 5, add
-        for ($i=count($poll); $i<5; $i++)
-        {
+        for ($i = count($poll); $i < 5; $i++) {
             $poll[] = array();
         }
 
@@ -284,8 +276,7 @@ class Report_SJT_Map extends Report_Element {
                 ->as_array();
             $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
 
-            if ($sessionObj)
-            {
+            if ($sessionObj) {
                 $userResponse = DB_ORM::select('User_Response')
                     ->where('question_id', '=', $questionId)
                     ->where('node_id', '=', $nodeId)
@@ -314,18 +305,12 @@ class Report_SJT_Map extends Report_Element {
             $position                       = key($poll[$currentResponseId]);
             $biggestValue                   = Arr::get(Arr::get($poll, $currentResponseId, array()), $position);
             $calculateConsistent[$position] = $biggestValue;
-            $wasFinalPosition               = false;
 
             foreach ($poll as $responseId => $data) {
-                if (isset($poll[$responseId][$position]) AND $biggestValue <= $poll[$responseId][$position]) {
-                    if ( ! $wasFinalPosition) {
-                        $winingId = $responseId;
-                    }
-                    unset($poll[$responseId][$position]);
-                    if (count($poll[$currentResponseId]) == 0) {
-                        $wasFinalPosition = true;
-                    }
+                if (isset($poll[$responseId][$position]) AND $biggestValue < $poll[$responseId][$position]) {
+                    $winingId = $responseId;
                 }
+                unset($poll[$responseId][$position]);
             }
 
             $calculateConsistent[$position] = $winingId;
