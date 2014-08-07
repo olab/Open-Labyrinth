@@ -42,6 +42,12 @@ $(function() {
         if (assignType in assignTypeCheck && assignTypeCheck[assignType]($popup)) {
             setTimeout(function() {
                 $popup.removeClass('hide');
+
+                // start play audio file, when popup appears
+                $.each($popup.find('audio'), function($k, $audio){
+                   $audio.play();
+                });
+
                 $.post(popupsAction, {popupId: $popup.attr('popup-id')}, function(data) {});
                 setTimeout(function() {
                     $.post(popupsAction, {popupId: $popup.attr('popup-id')}, function(){
