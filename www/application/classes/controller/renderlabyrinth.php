@@ -179,7 +179,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         // Parse text key for each nodes
         foreach (DB_ORM::model('map_popup')->getEnabledMapPopups($mapId) as $popup) {
-            $popup->text = $this->parseText($popup->text);
+            $popup->text = $this->parseText($popup->text, $mapId, 'popup');
             $data['map_popups'][] = $popup;
         }
 
@@ -1222,7 +1222,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
-    public static function parseText($text, $mapId = NULL)
+    public static function parseText($text, $mapId = NULL, $elementType = '')
     {
         $result = $text;
         $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR');
@@ -1249,7 +1249,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         if ($media->mime == 'application/x-shockwave-flash') {
                                             $replaceString = Controller_RenderLabyrinth::getSwfHTML($id);
                                         } elseif (strstr($media->mime, 'audio')) {
-                                            $replaceString = Controller_RenderLabyrinth::getAudioHTML($id);
+                                            $replaceString = Controller_RenderLabyrinth::getAudioHTML($id, $elementType);
                                         } else if(in_array($media->mime, array('image/jpg', 'image/jpeg', 'image/gif', 'image/png'))) {
                                             $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
                                         } else {
@@ -1309,9 +1309,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $file ? '<a class="file-link" href="'.URL::base().'renderlabyrinth/downloadFile/'.$file->id.'">'.$file->name.'</a>' : '';
     }
 
-    private static function getAudioHTML($id) {
+    private static function getAudioHTML($id, $elementType = '') {
         $audio = DB_ORM::model('map_element', array((int) $id));
-        return $audio ? '<audio src="'.URL::base().$audio->path.'" controls preload="auto" autoplay="autoplay" autobuffer></audio>' : '';
+        $attributes = $elementType == 'popup' ? '' : ' autoplay="autoplay" autobuffer';
+        return $audio ? '<audio src="'.URL::base().$audio->path.'" controls preload="auto"'.$attributes.'></audio>' : '';
     }
 
     private static function getSwfHTML($id)
