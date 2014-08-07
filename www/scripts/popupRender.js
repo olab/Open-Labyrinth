@@ -43,10 +43,9 @@ $(function() {
             setTimeout(function() {
                 $popup.removeClass('hide');
 
-                // start play audio file, when popup appears
-                $.each($popup.find('audio'), function($k, $audio){
-                   $audio.play();
-                });
+                // played first audio of popup
+                var $audio = $popup.find('audio');
+                $audio.get(0).play();
 
                 $.post(popupsAction, {popupId: $popup.attr('popup-id')}, function(data) {});
                 setTimeout(function() {
