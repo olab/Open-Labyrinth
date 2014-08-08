@@ -64,7 +64,9 @@ class Model_Labyrinth extends Model {
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
+                if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL'])
+                    ? $_COOKIE['OL']
+                    : $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
             }
 
             $webinarSession = DB_ORM::model('user_session', array((int)$sessionId));
