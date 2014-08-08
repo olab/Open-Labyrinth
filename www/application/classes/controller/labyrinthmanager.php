@@ -796,46 +796,42 @@ class Controller_LabyrinthManager extends Controller_Base {
         $reminder_seconds   = Arr::get($post, 'reminder_seconds', false);
         $reminder_minutes   = Arr::get($post, 'reminder_minutes', false);
 
-        if ($delta_time_seconds AND $delta_time_minutes)
-        {
+        if ($delta_time_seconds AND $delta_time_minutes) {
             unset($post['delta_time_seconds']);
             unset($post['delta_time_minutes']);
             $post['delta_time'] = $delta_time_minutes * 60 + $delta_time_seconds;;
         }
 
-        if ($reminder_seconds AND $reminder_minutes)
-        {
+        if ($reminder_seconds AND $reminder_minutes) {
             unset($post['reminder_seconds']);
             unset($post['reminder_minutes']);
             $post['reminder_time'] = $reminder_minutes * 60 + $reminder_seconds;;
         }
 
-        // Prepare to save verified data
-        if (count($post['verification']) > 0)
-        {
-            foreach($post['verification'] as $key => $value)
-            {
-                $verification = Arr::get($post, $key, 0);
-                $post['verification'][$key] = ($verification == 1) ? strtotime($post['verification'][$key]) : null;
+        if (isset($post['verification'])) {
+            if (count($post['verification'])) {
+                foreach($post['verification'] as $key => $value) {
+                    $verification = Arr::get($post, $key, 0);
+                    $post['verification'][$key] = ($verification == 1) ? strtotime($post['verification'][$key]) : null;
+                }
             }
+
+            if (isset($post['inst_guide']) AND isset($post['inst_guide_select'])) {
+                $post['verification']['inst_guide'] = ($post['inst_guide'] == 1) ? $post['inst_guide_select'] : null;
+            }
+            else {
+                $post['verification']['inst_guide'] = null;
+            }
+
+            $post['verification'] = json_encode($post['verification']);
         }
-
-        if (isset($post['inst_guide']) AND isset($post['inst_guide_select']))
-        {
-            $post['verification']['inst_guide'] = ($post['inst_guide'] == 1) ? $post['inst_guide_select'] : null;
-        }
-        else $post['verification']['inst_guide'] = null;
-
-        $post['verification'] = json_encode($post['verification']);
-
         DB_ORM::model('map')->updateMap($mapId, $post);
+
         // ---- add new contributor and update old ---- //
         DB_ORM::model('map_contributor')->updateContributors($mapId, $post);
         $contributor = Arr::get($post, 'contributor', array());
-        if ($contributor)
-        {
-            for ($i=0; $i<count($contributor['name']); $i++)
-            {
+        if ($contributor) {
+            for ($i=0; $i < count($contributor['name']); $i++) {
                 $order = key($contributor['order'])+$i;
                 DB_ORM::insert('Map_Contributor')
                     ->column('map_id', $mapId)
@@ -849,18 +845,19 @@ class Controller_LabyrinthManager extends Controller_Base {
         // ---- end add new contributor and update old ---- //
 
         $linkStyleId = Arr::get($post, 'linkStyle', null);
-        if ($linkStyleId != null) DB_ORM::model('map_node')->setLinkStyle($mapId, $linkStyleId);
+        if ($linkStyleId != null) {
+            DB_ORM::model('map_node')->setLinkStyle($mapId, $linkStyleId);
+        }
 
         $map = DB_ORM::model('map', array($mapId));
-        if ($map)
-        {
+        if ($map) {
             $map->dev_notes = Arr::get($post, 'devnotes', $map->dev_notes);
             $map->save();
         }
 
         Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$post);
-        if ($this->request->post('edit_key')) Request::initial()->redirect(URL::base().'labyrinthManager/editKeys/'.$mapId);
-        Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
+        $controller = $this->request->post('edit_key') ? 'editKeys' : 'global';
+        Request::initial()->redirect(URL::base().'labyrinthManager/'.$controller.'/'.$mapId);
     }
 
     public function action_editKeys() {
