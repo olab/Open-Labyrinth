@@ -150,6 +150,7 @@ class Controller_CollectionManager extends Controller_Base {
      * @param $idMap
      * @return bool - compatibility user type to map type
      */
+    // method is cloned from renderLabyrinth.php
     public function checkTypeCompatibility ($idMap)
     {
         $logged         = Auth::instance()->logged_in();
@@ -164,7 +165,7 @@ class Controller_CollectionManager extends Controller_Base {
             $user       = Auth::instance()->get_user();
             $userType   = $user->type_id;
             $idUser     = $user->id;
-            $idScenario = Session::instance()->get('webinarId');
+            $idScenario = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
             $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
         }
 
