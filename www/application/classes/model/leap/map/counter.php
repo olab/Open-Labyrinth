@@ -120,19 +120,16 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     
     public function getCountersByMap ($mapId, $lengthSort = false)
     {
+        $counters = array();
         $result = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->query();
 
         if ($result->is_loaded())
         {
-            $counters = array();
-
             foreach($result as $record) $counters[] = DB_ORM::model('map_counter', array((int)$record['id']));
 
             if ($lengthSort) usort($counters, function ($a, $b) { return strlen($b->name) - strlen($a->name); });
-
-            return $counters;
         }
-        return array();
+        return $counters;
     }
 
     public function addCounter($mapId, $values) {
@@ -222,22 +219,6 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return $counterMap;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $counters = array();
-            foreach($result as $record) {
-                $counters[] = $record;
-            }
-
-            return $counters;
-        }
-
-        return NULL;
-    }
-
     /**
      * @param $points string with value of all counters and main counter max_value
      * @param $map_id
@@ -279,5 +260,3 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         return $status;
     }
 }
-
-?>

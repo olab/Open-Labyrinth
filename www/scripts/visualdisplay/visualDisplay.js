@@ -1,7 +1,8 @@
 var VisualDisplay = function()
 {
     var self = this,
-        $container = $('#visualDisplay');
+        $container = $('#visualDisplay'),
+        urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
     
     var id = null,
         
@@ -43,7 +44,9 @@ var VisualDisplay = function()
         $counterValueBoldCheck = $('#counterValueBold'),
         $counterValueItalicCheck = $('#counterValueItalic'),
         $counterValueUnderlineCheck = $('#counterValueUnderline'),
-        
+
+        fontInput = $('#fontManage'),
+
         layoutPanel = new LayoutPanel();
         
     this.Init = function(visualDisplayId) {
@@ -168,47 +171,39 @@ var VisualDisplay = function()
     };
     
     this.SelectCounter = function(counter) {
-        if(counter == null) return;
+        if (counter == null) return;
         
         currentActiveCounter = counter;
         var angle = 0;
-        if(currentActiveCounter.$label != null) {
+
+        if (currentActiveCounter.$label != null) {
             $counterFontLabelFamilySelect.children('option').removeAttr('selected');
             $counterFontLabelFamilySelect.children('option[value="' + currentActiveCounter.$label.css('font-family').replace(/\'/g, '') + '"]').attr('selected', 'selected');
             
             $counterFontLabelSizeSelect.children('option').removeAttr('selected');
             $counterFontLabelSizeSelect.children('option[value="' + currentActiveCounter.$label.css('font-size') + '"]').attr('selected', 'selected');
-            
-            $counterLabelTextInput.val(currentActiveCounter.$label.text());
+
+            $counterLabelTextInput.val(currentActiveCounter.$label.html().replace(/<.*/, ''));
             $counterFontLabelColorInput.val(currentActiveCounter.$label.css('color'));
             $counterFontLabelColorInput.css('background-color', currentActiveCounter.$label.css('color'));
             $counterLabelZIndexInput.val(currentActiveCounter.$label.css('z-index'));
             
             angle = utils.GetRotationAngle(currentActiveCounter.$label);
-            if(angle != null) {
-                $counterLabelAngleInput.val(angle);
-            } else {
-                $counterLabelAngleInput.val(0);
-            }
+
+            if (angle != null) $counterLabelAngleInput.val(angle);
+            else $counterLabelAngleInput.val(0);
             
-            if(currentActiveCounter.$label.css('font-weight') == 'bold') {
-                $counterLabelBoldCheck.addClass('active');
-            } else {
-                $counterLabelBoldCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$label.css('font-style') == 'italic') {
-                $counterLabelItalicCheck.addClass('active');
-            } else {
-                $counterLabelItalicCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$label.css('text-decoration') == 'underline') {
-                $counterLabelUnderlineCheck.addClass('active');
-            } else {
-                $counterLabelUnderlineCheck.removeClass('active');
-            }
+            if (currentActiveCounter.$label.css('font-weight') == 'bold') $counterLabelBoldCheck.addClass('active');
+            else $counterLabelBoldCheck.removeClass('active');
+
+            if (currentActiveCounter.$label.css('font-style') == 'italic') $counterLabelItalicCheck.addClass('active');
+            else $counterLabelItalicCheck.removeClass('active');
+
+            if (currentActiveCounter.$label.css('text-decoration') == 'underline') $counterLabelUnderlineCheck.addClass('active');
+            else $counterLabelUnderlineCheck.removeClass('active');
         }
         
-        if(currentActiveCounter.$value != null) {
+        if (currentActiveCounter.$value != null) {
             $counterFontValueFamilySelect.children('option').removeAttr('selected');
             $counterFontValueFamilySelect.children('option[value="' + currentActiveCounter.$value.css('font-family').replace(/\'/g, '') + '"]').attr('selected', 'selected');
             
@@ -220,27 +215,18 @@ var VisualDisplay = function()
             $counterValueZIndexInput.val(currentActiveCounter.$value.css('z-index'));
             
             angle = utils.GetRotationAngle(currentActiveCounter.$value);
-            if(angle != null) {
-                $counterValueAngleInput.val(angle);
-            } else {
-                $counterValueAngleInput.val(0);
-            }
+
+            if(angle != null) $counterValueAngleInput.val(angle);
+            else $counterValueAngleInput.val(0);
             
-            if(currentActiveCounter.$value.css('font-weight') == 'bold') {
-                $counterValueBoldCheck.addClass('active');
-            } else {
-                $counterValueBoldCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$value.css('font-style') == 'italic') {
-                $counterValueItalicCheck.addClass('active');
-            } else {
-                $counterValueItalicCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$value.css('text-decoration') == 'underline') {
-                $counterValueUnderlineCheck.addClass('active');
-            } else {
-                $counterValueUnderlineCheck.removeClass('active');
-            }
+            if(currentActiveCounter.$value.css('font-weight') == 'bold') $counterValueBoldCheck.addClass('active');
+            else $counterValueBoldCheck.removeClass('active');
+
+            if(currentActiveCounter.$value.css('font-style') == 'italic') $counterValueItalicCheck.addClass('active');
+            else $counterValueItalicCheck.removeClass('active');
+
+            if(currentActiveCounter.$value.css('text-decoration') == 'underline') $counterValueUnderlineCheck.addClass('active');
+            else $counterValueUnderlineCheck.removeClass('active');
         }
     };
     
@@ -352,7 +338,7 @@ var VisualDisplay = function()
             panelsString,
             imagesString,
             countersString;
-        
+
         panelsString   = SerializeArray(panels, 'panels');
         imagesString   = SerializeArray(images, 'images');
         countersString = SerializeArray(counters, 'counters');
@@ -428,23 +414,22 @@ var VisualDisplay = function()
         }
     }
     
-    var DeserializeCounters = function(objCounters) {
+    var DeserializeCounters = function(objCounters){
         if(objCounters == null || objCounters.length <= 0) return;
-        
+
         var i = objCounters.length,
             counter = null;
+
         for(;i--;) {
             counter = new Counter();
             counter.CreateFromJSON(objCounters[i], $container, counterIDIndex, '0', self);
             
-            if(layoutPanel != null) {
-                layoutPanel.AddCounter(counterIDIndex, utils.Decode64(objCounters[i].labelText));
-            }
+            if (layoutPanel != null) layoutPanel.AddCounter(counterIDIndex, utils.Decode64(objCounters[i].labelText));
 
             counters.push(counter);
             counterIDIndex += 1;
         }
-    }
+    };
     
     var DeserializeImages = function(objImages) {
         if(objImages == null || objImages.length <= 0) return;
@@ -464,20 +449,19 @@ var VisualDisplay = function()
         }
     }
     
-    var SerializeArray = function(collection, name) {
-        if(collection == null || collection.length <= 0 || name == null) return null;
+    var SerializeArray = function (collection, name) {
+        if (collection == null || collection.length <= 0 || name == null) return null;
         
         var i = collection.length,
             result = '';
+
         for(;i--;) {
             result += collection[i].ToJSON() + ', ';
         }
-        
-        if(result.length > 2) {
-            result = '"' + name + '": [' + result.substring(0, result.length - 2) + ']';
-        }
+        if (result.length > 2) result = '"' + name + '": [' + result.substring(0, result.length - 2) + ']';
+
         return result;
-    }
+    };
     
     var RemoveElementById = function(elements, id) {
         if(elements == null || id == null) return;
@@ -587,10 +571,13 @@ var VisualDisplay = function()
     
     var ChangeLabelFontFamily = function() {
         var value = $counterFontLabelFamilySelect.children('option:selected').val();
+
+        fontInput.val(value);
+
         if(currentActiveCounter != null && currentActiveCounter.$label != null && value.length > 0) {
             currentActiveCounter.$label.css('font-family', value);
         }
-    }
+    };
     
     var ChangeLabelFontSize = function() {
         var value = $counterFontLabelSizeSelect.children('option:selected').val();
@@ -663,10 +650,13 @@ var VisualDisplay = function()
     
     var ChangeValueFontFamily = function() {
         var value = $counterFontValueFamilySelect.children('option:selected').val();
+
+        fontInput.val(value);
+
         if(currentActiveCounter != null && currentActiveCounter.$value != null && value.length > 0) {
             currentActiveCounter.$value.css('font-family', value);
         }
-    }
+    };
     
     var ChangeValueFontSize = function() {
         var value = $counterFontValueSizeSelect.children('option:selected').val();
@@ -718,7 +708,7 @@ var VisualDisplay = function()
                 currentActiveCounter.$value.css('font-style', 'italic');
             }
         }
-    }
+    };
     
     var ChangeValueUnderline = function() {
         if(currentActiveCounter != null && currentActiveCounter.$value != null) {
@@ -728,5 +718,27 @@ var VisualDisplay = function()
                 currentActiveCounter.$value.css('text-decoration', 'underline');
             }
         }
+    };
+
+    // ------ fonts ----- //
+    $('#fontManageAdd').click(function(){
+        fontManage('Add');
+    });
+
+    $('#fontManageDelete').click(function(){
+        fontManage('Delete');
+
+    });
+
+    function fontManage(action){
+        var fontName = fontInput.val();
+
+        $.get(urlBase + 'visualdisplaymanager/ajax' + action + 'Font/' + fontName,
+            function(){
+                window.location.href += currentTab;
+                location.reload();
+            }
+        );
     }
-}
+    // ------ end fonts ----- //
+};

@@ -88,6 +88,11 @@ abstract class Report_Impl {
     public abstract function setValue($value);
 
     /**
+     *
+     */
+    public abstract function setAutoWidth($index);
+
+    /**
      * Set active sheet
      *
      * @param integer $index - sheet index

@@ -23,12 +23,13 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_LabyrinthManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'authoredLabyrinth'));
     }
 
     public function action_index() {
@@ -689,76 +690,51 @@ class Controller_LabyrinthManager extends Controller_Base {
     public function action_editMap() {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+            Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_disableMap() {
+    public function action_disableMap()
+    {
         $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
-            DB_ORM::model('map')->disableMap($mapId);
-        }
-
-        Request::initial()->redirect(URL::base() . 'authoredLabyrinth');
+        if ($mapId) DB_ORM::model('map')->disableMap($mapId);
+        Request::initial()->redirect(URL::base().'authoredLabyrinth');
     }
 
-    public function action_global() {
+    public function action_global()
+    {
         $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
-            if ($this->templateData['map']->verification != null){
-                $this->templateData['verification'] = json_decode($this->templateData['map']->verification, true);
-            } else {
-                $this->templateData['verification'] = array();
-            }
-            $this->templateData['types'] = DB_ORM::model('map_type')->getAllTypes();
-            $this->templateData['skins'] = DB_ORM::model('map_skin')->getAllSkins();
-            $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
-            $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
-            $this->templateData['contributors'] = DB_ORM::model('map_contributor')->getAllContributors($mapId);
-            $this->templateData['contributor_roles'] = DB_ORM::model('map_contributor_role')->getAllRoles();
-            $this->templateData['linkStyles'] = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-            $this->templateData['files'] = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
+        $selectedLinkStyle  = DB_ORM::model('Map_Node')->getMainLinkStyles($mapId);
+        $map                = DB_ORM::model('map', array($mapId));
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base() . 'labyrinthManager/global/id/' . $mapId));
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map']                  = $map;
+        $this->templateData['authorsList']          = DB_ORM::select('User')->where('type_id', '=', 2)->where('type_id', '=', 6, 'OR')->order_by('nickname')->query()->as_array();
+        $this->templateData['verification']         = ($map->verification != null) ? json_decode($map->verification, true) : array();
+        $this->templateData['types']                = DB_ORM::model('map_type')->getAllTypes();
+        $this->templateData['skins']                = DB_ORM::model('map_skin')->getAllSkins();
+        $this->templateData['securities']           = DB_ORM::model('map_security')->getAllSecurities();
+        $this->templateData['sections']             = DB_ORM::model('map_section')->getAllSections();
+        $this->templateData['contributors']         = DB_ORM::model('map_contributor')->getAllContributors($mapId);
+        $this->templateData['contributor_roles']    = DB_ORM::model('map_contributor_role')->getAllRoles();
+        $this->templateData['linkStyles']           = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['selectedLinkStyles']   = $selectedLinkStyle ? $selectedLinkStyle : 5;
+        $this->templateData['files']                = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
+        $this->templateData['creators']             = DB_ORM::select('user')->where('type_id', '=', 2)->where('type_id', '=', 4, 'OR')->order_by('nickname')->query()->as_array();
+        $this->templateData['editCreator']          = TRUE;
+        $this->templateData['regAuthors']           = DB_ORM::model('map_user')->getAllAuthors($mapId);
+        $this->templateData['groupsOfLearner']      = DB_ORM::model('User_Group')->getGroupOfLearners($mapId);
+        $this->templateData['rootNodeMap'][$mapId]  = TRUE;
+        $this->templateData['left']                 = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']               = View::factory('labyrinth/global')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
 
-            $regAuthors = DB_ORM::model('map_user')->getAllAuthors($mapId);
-            if ($regAuthors != NULL) {
-                $this->templateData['regAuthors'] = $regAuthors;
-            }
-
-            $regLearners = DB_ORM::model('map_user')->getAllLearners($mapId);
-            if ($regLearners != NULL) {
-                $this->templateData['regLearners'] = $regLearners;
-            }
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $globalView = View::factory('labyrinth/global');
-            $globalView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $globalView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
-    }
-
-    public function action_addContributor() {
-        $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
-            DB_ORM::model('map_contributor')->createContributor($mapId);
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Details'))->set_url(URL::base().'labyrinthManager/global/id/'.$mapId));
     }
 
     public function action_addNewForum() {
@@ -808,81 +784,80 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_saveGlobal() {
-        $mapId = (int) $this->request->param('id', 0);
-        if (isset($_POST) && !empty($_POST)) {
-            if ($mapId) {
-                if ( isset($_POST['delta_time_seconds']) && isset($_POST['delta_time_minutes']) ) {
-                    $delta_time_seconds = $_POST['delta_time_seconds'];
-                    $delta_time_minutes = $_POST['delta_time_minutes'];
+    public function action_saveGlobal()
+    {
+        $mapId  = (int) $this->request->param('id', 0);
+        $post   = $this->request->post();
 
-                    $delta_timing = $delta_time_minutes * 60 + $delta_time_seconds;
+        if ( ! ($post AND $mapId)) Request::initial()->redirect(URL::base().'labyrinthManager/editMap/'.$mapId);
 
-                    unset($_POST['delta_time_seconds']);
-                    unset($_POST['delta_time_minutes']);
-                    $_POST['delta_time'] = $delta_timing;
-                }
+        $delta_time_seconds = Arr::get($post, 'delta_time_seconds', false);
+        $delta_time_minutes = Arr::get($post, 'delta_time_minutes', false);
+        $reminder_seconds   = Arr::get($post, 'reminder_seconds', false);
+        $reminder_minutes   = Arr::get($post, 'reminder_minutes', false);
 
-                if ( isset($_POST['reminder_seconds']) && isset($_POST['reminder_minutes']) ) {
-                    $reminder_seconds = $_POST['reminder_seconds'];
-                    $reminder_minutes = $_POST['reminder_minutes'];
-
-                    $reminder_time = $reminder_minutes * 60 + $reminder_seconds;
-
-                    unset($_POST['reminder_seconds']);
-                    unset($_POST['reminder_minutes']);
-                    $_POST['reminder_time'] = $reminder_time;
-                }
-
-
-                // Prepare to save verified data
-                if (count($_POST['verification']) > 0) {
-                    foreach($_POST['verification'] as $key => $value){
-                        if (isset($_POST[$key])){
-                            if ($_POST[$key] == 1){
-                                $_POST['verification'][$key] = strtotime($_POST['verification'][$key]);
-                            } else {
-                                $_POST['verification'][$key] = null;
-                            }
-                        } else {
-                            $_POST['verification'][$key] = null;
-                        }
-                    }
-                }
-                if (isset($_POST['inst_guide']) && isset($_POST['inst_guide_select'])){
-                    if ($_POST['inst_guide'] == 1){
-                        $_POST['verification']['inst_guide'] = $_POST['inst_guide_select'];
-                    } else {
-                        $_POST['verification']['inst_guide'] = null;
-                    }
-                } else {
-                    $_POST['verification']['inst_guide'] = null;
-                }
-                $_POST['verification'] = json_encode($_POST['verification']);
-
-                DB_ORM::model('map')->updateMap($mapId, $_POST);
-                DB_ORM::model('map_contributor')->updateContributors($mapId, $_POST);
-
-                $linkStyleId = Arr::get($_POST, 'linkStyle', null);
-                if($linkStyleId != null) {
-                    DB_ORM::model('map_node')->setLinkStyle($linkStyleId);
-                }
-
-                $map = DB_ORM::model('map', array($mapId));
-                if ($map) {
-                    $map->dev_notes = Arr::get($_POST, 'devnotes', $map->dev_notes);
-                    $map->save();
-                }
-
-                Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$_POST);
-                Request::initial()->redirect(URL::base().'labyrinthManager/global/'.$mapId);
-
-            } else {
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
-            }
-        } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
+        if ($delta_time_seconds AND $delta_time_minutes) {
+            unset($post['delta_time_seconds']);
+            unset($post['delta_time_minutes']);
+            $post['delta_time'] = $delta_time_minutes * 60 + $delta_time_seconds;;
         }
+
+        if ($reminder_seconds AND $reminder_minutes) {
+            unset($post['reminder_seconds']);
+            unset($post['reminder_minutes']);
+            $post['reminder_time'] = $reminder_minutes * 60 + $reminder_seconds;;
+        }
+
+        if (isset($post['verification'])) {
+            if (count($post['verification'])) {
+                foreach($post['verification'] as $key => $value) {
+                    $verification = Arr::get($post, $key, 0);
+                    $post['verification'][$key] = ($verification == 1) ? strtotime($post['verification'][$key]) : null;
+                }
+            }
+
+            if (isset($post['inst_guide']) AND isset($post['inst_guide_select'])) {
+                $post['verification']['inst_guide'] = ($post['inst_guide'] == 1) ? $post['inst_guide_select'] : null;
+            }
+            else {
+                $post['verification']['inst_guide'] = null;
+            }
+
+            $post['verification'] = json_encode($post['verification']);
+        }
+        DB_ORM::model('map')->updateMap($mapId, $post);
+
+        // ---- add new contributor and update old ---- //
+        DB_ORM::model('map_contributor')->updateContributors($mapId, $post);
+        $contributor = Arr::get($post, 'contributor', array());
+        if ($contributor) {
+            for ($i=0; $i < count($contributor['name']); $i++) {
+                $order = key($contributor['order'])+$i;
+                DB_ORM::insert('Map_Contributor')
+                    ->column('map_id', $mapId)
+                    ->column('role_id', $contributor['role'][$i])
+                    ->column('name', $contributor['name'][$i])
+                    ->column('organization', $contributor['org'][$i])
+                    ->column('order', $order)
+                    ->execute();
+            }
+        }
+        // ---- end add new contributor and update old ---- //
+
+        $linkStyleId = Arr::get($post, 'linkStyle', null);
+        if ($linkStyleId != null) {
+            DB_ORM::model('map_node')->setLinkStyle($mapId, $linkStyleId);
+        }
+
+        $map = DB_ORM::model('map', array($mapId));
+        if ($map) {
+            $map->dev_notes = Arr::get($post, 'devnotes', $map->dev_notes);
+            $map->save();
+        }
+
+        Model_Leap_Metadata_Record::updateMetadata("map",$mapId,$post);
+        $controller = $this->request->post('edit_key') ? 'editKeys' : 'global';
+        Request::initial()->redirect(URL::base().'labyrinthManager/'.$controller.'/'.$mapId);
     }
 
     public function action_editKeys() {
@@ -955,23 +930,17 @@ class Controller_LabyrinthManager extends Controller_Base {
         }
     }
 
-    public function action_info() {
+    public function action_info()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
 
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
+        if ( ! $mapId) Request::initial()->redirect(URL::base().'openLabyrinth');
 
-            $this->templateData['center'] = $infoView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
-        }
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['center'] = View::factory('labyrinth/labyrinthInfo')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_search() {

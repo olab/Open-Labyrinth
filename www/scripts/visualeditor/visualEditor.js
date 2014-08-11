@@ -41,7 +41,7 @@ var VisualEditor = function() {
     self.rightPanel = new RightPanel();
     self.unsavedData = false;
     self.save = null;
-    
+
     self.$aButtonsContianer = $('#ve_additionalActionButton');
     
     self.selectRightPanel = null;
@@ -114,7 +114,6 @@ var VisualEditor = function() {
             closeBtn: '.veRightPanelCloseBtn',
             colorInputId: '#colorpickerInput',
             colorPickerId: '#colopickerContainer',
-            onlySaveBtn: '#veRightPanelOnlySaveBtn',
             saveBtn: '#veRightPanelSaveBtn',
             accordion: '#veAccordionRightPanel',
             nodeRootBtn: '#veNodeRootBtn',
@@ -137,6 +136,7 @@ var VisualEditor = function() {
             unsavedDataChange: '#veRightPanel_unsaveddataChange',
             unsavedDataBtnChangeClose: '#veRightPanel_unsaveddataChange_close',
             showInfo: '#show_info',
+            isPrivate: '#is_private',
             annotation: '#annotation'
         });
         
@@ -401,7 +401,7 @@ var VisualEditor = function() {
             var nodesStr = '';
             for(var i = 0; i < nodes.length; i++) {
                 var pos = nodes[i].transform.GetPosition();
-                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "showInfo": "' + (nodes[i].showInfo ? 1 : 0) + '", "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "annotation": "' + encode64(nodes[i].annotation) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
+                nodesStr += '{"id": "' + nodes[i].id + '", "isRoot": "' + nodes[i].isRoot + '", "showInfo": "' + (nodes[i].showInfo ? 1 : 0) + '", "isPrivate": "' + (nodes[i].isPrivate ? 1 : 0) + '",  "isNew": "' + nodes[i].isNew + '", "title": "' + encode64(nodes[i].title) + '", "content": "' + encode64(nodes[i].content) + '", "support": "' + encode64(nodes[i].support) + '", "annotation": "' + encode64(nodes[i].annotation) + '", "supportKeywords": "' + nodes[i].supportKeywords + '", "isExit": "' + nodes[i].isExit + '", "linkStyle": "' + nodes[i].linkStyle + '", "nodePriority": "' + nodes[i].nodePriority + '", "undo": "' + nodes[i].undo + '", "isEnd": "' + nodes[i].isEnd + '", "x": "' + pos[0] + '", "y": "' + pos[1] + '", "color": "' + nodes[i].color + '"';
 
                 if(nodes[i].counters.length > 0) {
                     var counters = '';
@@ -512,6 +512,7 @@ var VisualEditor = function() {
                 node.isEnd = (object.nodes[i].isEnd == 'true');
                 node.isRoot = (object.nodes[i].isRoot == 'true');
                 node.showInfo = (object.nodes[i].showInfo == 1);
+                node.isPrivate = (object.nodes[i].isPrivate == 1);
                 var x = parseInt(object.nodes[i].x);
                 var y = parseInt(object.nodes[i].y);
 
@@ -1296,35 +1297,44 @@ var VisualEditor = function() {
         self.canvas.addEventListener("touchend", MouseUp, false);
         document.addEventListener("keydown", KeyDown, false);
         document.addEventListener("keyup", KeyUp, false);
-    }
+    };
     
     var MouseOut = function(event) {
         $('body').css('cursor', 'default');
         $('body').removeClass('clearCursor');
-    }
-    
+    };
+
     var KeyDown = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
 
-        if(ctrlKeyPressed && event.keyCode == 67) {
-            if(self.copyFunction != null)
-                self.copyFunction();
+        var activeAndSelectedNodes = $.merge(self.GetActiveNode(), self.GetSelectedNodes());
+
+        if (ctrlKeyPressed && event.keyCode == 67) {
+            if (self.copyFunction != null) self.copyFunction();
         } else if(ctrlKeyPressed && event.keyCode == 86) {
-            if(self.pasteFunction != null)
-                self.pasteFunction();
+            if (self.pasteFunction != null) self.pasteFunction();
+        } else if (ctrlKeyPressed && event.keyCode == 32) {
+            if (self.isSelectActive){
+                self.turnOnPanMode();
+            } else {
+                self.turnOnSelectMode();
+            }
         } else if((event.keyCode == 107) || (altKeyPressed && event.keyCode == 187) || (altKeyPressed && event.keyCode == 61)) {
-            if(self.zoomIn != null)
-                self.zoomIn();
+            if (self.zoomIn != null) self.zoomIn();
         } else if((event.keyCode == 109) || (altKeyPressed && event.keyCode == 189) || (altKeyPressed && event.keyCode == 173)) {
-            if(self.zoomOut != null)
-                self.zoomOut();
+            if(self.zoomOut != null) self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
-            if(self.save!= null)
-                self.save();
+            if(self.save!= null) self.save();
+        } else if((altKeyPressed && event.keyCode == 76)) {
+            var firstRecord = activeAndSelectedNodes[0];
+            if (firstRecord) ShowLinkConnector(firstRecord.id);
+        } else if((altKeyPressed && event.keyCode == 78)) {
+            $.each(activeAndSelectedNodes, function(key, node){
+                AddNodeWithLink(node.id);
+            });
         } else if((altKeyPressed && event.keyCode == 85)) {
-            if(self.update!= null)
-                self.update();
+            if(self.update!= null) self.update();
         } else if(event.keyCode == 46) {
             if(self.nodes != null && self.nodes.length > 0) {
                 var nodeId = 0;
@@ -1343,19 +1353,13 @@ var VisualEditor = function() {
                     }
                 }
             }
-        } else if (ctrlKeyPressed && event.keyCode == 32){
-            if (self.isSelectActive){
-                self.turnOnPanMode();
-            } else {
-                self.turnOnSelectMode();
-            }
         }
-    } 
+    };
     
     var KeyUp = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
-    }
+    };
     
     var UpdateMousePosition = function(event) {
         self.mouse.oldX = self.mouse.x;
@@ -1372,21 +1376,19 @@ var VisualEditor = function() {
             self.mouse.y = event.pageY - canvasOffsetTop;
         }
         
-        if(isNaN(self.mouse.x))
-            self.mouse.x = 0;
+        if(isNaN(self.mouse.x)) self.mouse.x = 0;
         
-        if(isNaN(self.mouse.y))
-            self.mouse.y = 0;
-    }
+        if(isNaN(self.mouse.y)) self.mouse.y = 0;
+    };
     
     // Events
     var MouseDown = function(event) {
-        //event.preventDefault();
         self.mouse.isDown = true;
         UpdateMousePosition(event);
 
-        var isRedraw = false;
-        var positions = [];
+        var isRedraw = false,
+            positions = [];
+
         if(self.nodes.length > 0) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
                 if(self.nodes[i].isSelected) {
@@ -1410,6 +1412,7 @@ var VisualEditor = function() {
                         ShowDeleteDialog(result[0]);
                         self.mouse.isDown = false;
                     } else if(result[1] == 'main') {
+                        $('#update').prop('disabled', true).css('background-color', '#cc0000');
                         ShowRightPanel(result[0], 'node');
                         self.mouse.isDown = false;
                     } else if(result[1] == 'deleteC') {
@@ -1462,11 +1465,10 @@ var VisualEditor = function() {
             isRedraw = true;
         }
 
-        if(isRedraw)
-            self.Render();
+        if (isRedraw) self.Render();
         
         return false;
-    }
+    };
     
     var MouseUp = function(event) {
         //event.preventDefault();
@@ -1776,7 +1778,7 @@ var VisualEditor = function() {
             self.Render();
         
         return false;
-    }
+    };
     
     var AddNodeWithLink = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1806,7 +1808,7 @@ var VisualEditor = function() {
         
         self.nodes.push(newNode);
         self.links.push(newLink);
-    }
+    };
     
     var SetRootNode = function(nodeId) {
         if(self.nodes.length <= 0) return;
@@ -1814,12 +1816,12 @@ var VisualEditor = function() {
         for(var i = 0; i < self.nodes.length; i++) {
             self.nodes[i].isRoot = (self.nodes[i].id == nodeId) ? true: false;
         }
-    }
+    };
     
     self.TranslateViewport = function(x, y) {
         viewport.TranslateWithoutScale(x, y);
         self.Render();
-    }
+    };
 
     var ShowLinkConnector = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1834,7 +1836,7 @@ var VisualEditor = function() {
         self.linkConnector.transform.SetIdentity();
         self.linkConnector.transform.Multiply(node.transform);
         self.linkConnector.transform.Translate(node.width * 0.5, -60);
-    }
+    };
     
     var ShowColorpickerDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1842,7 +1844,7 @@ var VisualEditor = function() {
             self.colorModal.SetNode(node);
             self.colorModal.Show();
         }
-    }
+    };
     
     var ShowLinkManagetDialog = function(linkId) {
         var link = self.GetLinkById(linkId);
@@ -1851,18 +1853,15 @@ var VisualEditor = function() {
             self.linkModal.SetLink(link);
             self.linkModal.Show();
         }
-    }
+    };
     
     var ShowRightPanel = function(elementId, mode) {
-        if(self.rightPanel != null) {
-            if(mode == 'node') {
-                var node = GetNodeById(elementId);
-                if(node != null) {
-                    self.rightPanel.TryChangeNode(node);
-                }
-            }
+        if(self.rightPanel != null && mode == 'node') {
+            var node = GetNodeById(elementId);
+            self.rightPanel.Save();
+            if (node != null) self.rightPanel.TryChangeNode(node);
         }
-    }
+    };
     
     var ShowNodeDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1871,11 +1870,11 @@ var VisualEditor = function() {
             self.nodeModal.SetNode(node);
             self.nodeModal.Show();
         }
-    }
+    };
     
     var ShowDeleteDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
-        var selectedNodes = new Array();
+        var selectedNodes = [];
         
         if(self.nodes != null && self.nodes.length > 0) {
             for(var i = 0; i < self.nodes.length; i++) {
@@ -1903,7 +1902,7 @@ var VisualEditor = function() {
         }
     
         return null;
-    }
+    };
     
     self.GetLinkById = function(id) {
         if(self.links.length <= 0) return null;
@@ -1947,19 +1946,33 @@ var VisualEditor = function() {
         return result;
     }
 
-    self.GetSelectedNodes = function() {
-        var result = new Array();
+    self.GetActiveNode = function() {
+        var result = [];
 
-        if(self.nodes.length <= 0) return result;
+        if (self.nodes.length <= 0) return result;
 
-        for(var i = self.nodes.length; i--;) {
-            if(self.nodes[i].isSelected) {
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isActive) {
                 result.push(self.nodes[i]);
             }
         }
 
         return result;
-    }
+    };
+
+    self.GetSelectedNodes = function() {
+        var result = [];
+
+        if (self.nodes.length <= 0) return result;
+
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isSelected) {
+                result.push(self.nodes[i]);
+            }
+        }
+
+        return result;
+    };
     
     var GetRootNode = function() {
         if(self.nodes.length <= 0) return null;

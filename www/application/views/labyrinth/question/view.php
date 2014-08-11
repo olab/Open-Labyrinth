@@ -21,21 +21,35 @@
 if (isset($templateData['map'])) { ?>
 <div class="page-header">
     <div class="pull-right question-btn-container">
-        <div class="btn-group">
-    <?php if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
-        <button class="btn btn-primary" data-toggle="dropdown">
+        <div class="btn-group"><?php
+            if (isset($templateData['question_types']) and count($templateData['question_types']) > 0) { ?>
+            <button class="btn btn-primary" data-toggle="dropdown">
                 <i class="icon-plus-sign icon-white"></i>Add Question<span class="caret"></span>
-            </button> <ul class="dropdown-menu">
-                <?php foreach ($templateData['question_types'] as $type) { ?>
-                    <li><a href="<?php echo URL::base(); ?>questionManager/question/<?php echo $templateData['map']->id; ?>/<?php echo $type->id; ?>"><?php echo $type->title; ?></a></li>
-                <?php } ?>
-            </ul><?php } ?>
+            </button>
+            <ul class="dropdown-menu"><?php
+                foreach ($templateData['question_types'] as $type) { ?>
+                <li><a href="<?php echo URL::base().'questionManager/question/'.$templateData['map']->id.'/'.$type->id; ?>"><?php echo $type->title; ?></a></li><?php
+                } ?>
+            </ul><?php
+            } ?>
             <button class="btn" id="copyQuestionBtn"><i class="icon-paste"></i> Paste question</button>
         </div>
-        </div>
-    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
     </div>
-
+    <h1><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h1>
+    </div><?php
+    if (isset($templateData['warningMessage'])) {
+        echo '<div class="alert alert-error">';
+        echo $templateData['warningMessage'];
+        if(isset($templateData['listOfUsedReferences']) && count($templateData['listOfUsedReferences']) > 0){
+            echo '<ul class="nav nav-tabs nav-stacked">';
+            foreach($templateData['listOfUsedReferences'] as $referense){
+                list($map, $node) = $referense;
+                echo '<li><a href="'.URL::base().'nodeManager/editNode/'.$node['node_id'].'">'.$map['map_name'].' / '.$node['node_title'].'('.$node['node_id'].')'.'</a></li>';
+            }
+            echo '</ul>';
+        }
+        echo '</div>';
+    } ?>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -45,24 +59,21 @@ if (isset($templateData['map'])) { ?>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-        <?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
-            <?php foreach ($templateData['questions'] as $question) { ?>
+        <tbody><?php
+        if (isset($templateData['questions']) and count($templateData['questions']) > 0) {
+            foreach ($templateData['questions'] as $question) { ?>
                 <tr>
-                    <td>
-                        <label><input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label>
-                    </td>
-                    <td>
-                        <?php echo $question->stem; ?>
-                    </td>
-                    <td>
-                        <?php echo $question->type->title; ?>
-                    </td>
+                    <td><label><input class="code" readonly="readonly" type="text" value="[[QU:<?php echo $question->id; ?>]]"></label></td>
+                    <td><?php echo $question->stem; ?></td>
+                    <td><?php echo $question->type->title; ?></td>
                     <td>
                         <div class="btn-group">
                             <a class="btn btn-info" href="<?php echo URL::base() . 'questionManager/question/' . $templateData['map']->id . '/' . $question->entry_type_id . '/' . $question->id; ?>"><i class="icon-edit"></i>Edit</a>
                             <a class="btn" href="<?php echo URL::base() . 'questionManager/duplicateQuestion/' . $templateData['map']->id . '/' . $question->id; ?>"><i class="icon-th"></i>Duplicate</a>
                             <a class="btn btn-danger" data-toggle="modal" href="javascript:void(0)" data-target="#delete-question-<?php echo $question->id; ?>"><i class="icon-trash"></i>Delete</a>
+                            <?php if(isset($templateData['isSuperuser'])) { ?>
+                                <a class="btn btn-info" href="<?php echo URL::base().'questionManager/exportQuestion/'.$templateData['map']->id.'/'.$question->id; ?>"><i class="icon-edit"></i>Export</a>
+                            <?php } ?>
                         </div>
                         <div class="modal hide alert alert-block alert-error fade in" id="delete-question-<?php echo $question->id; ?>">
                             <div class="modal-header">
@@ -78,9 +89,9 @@ if (isset($templateData['map'])) { ?>
                             </div>
                         </div>
                     </td>
-                </tr>
-            <?php } ?>
-        <?php } else { ?>
+                </tr><?php
+            }
+        } else { ?>
             <tr class="info"><td colspan="4">There are no available questions right now. You may add a question using the menu below.</td> </tr>
         <?php }?>
         </tbody>

@@ -162,21 +162,8 @@ class Model_Leap_Map_Dam_Element extends DB_ORM_Model {
         }
     }
 
-    public function exportMVP($damId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('dam_id', '=', $damId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $elements = array();
-            foreach($result as $record) {
-                $elements[] = $record;
-            }
-
-            return $elements;
-        }
-
-        return NULL;
+    public function exportMVP($damId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('dam_id', '=', $damId)->query()->as_array();
     }
 }
-
-?>

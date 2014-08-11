@@ -60,6 +60,22 @@ if (isset($templateData['map']) and isset($templateData['question_count']) and i
                         <?php } ?>
                     </select>
                 </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="is_private"><?php echo __('Private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" name="is_private" <?php if(isset($templateData['chat'])) { echo $templateData['chat']->is_private ? 'checked=""' : '"checked"';} ?>>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Used'); ?>
+                </label>
+                <div class="controls">
+                    <input type="text" readonly value="<?php if(isset($templateData['used'])) { echo $templateData['used']; }?>"/>
+                </div>
+            </div>
 
         </fieldset>
         <div id="questionContainer">

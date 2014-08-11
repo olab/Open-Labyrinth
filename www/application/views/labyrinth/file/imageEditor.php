@@ -56,8 +56,12 @@ if (isset($templateData['map']) && isset($templateData['file']) && (strstr($temp
         jQuery('#submit').click(function(){
             jQuery('#buttons').css('display', 'none');
             jQuery('#processing').css('display', 'block');
-            cropzoom.send('<?php echo URL::base().'fileManager/imageEditorPost/'.$templateData['map']->id.'/'.$templateData['file']->id; ?>','POST',{'filesrc':'<?php echo $src; ?>'},function(rta){
-                window.location.href = '<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>';
+            cropzoom.send(
+                '<?php echo URL::base().'fileManager/imageEditorPost/'.$templateData['map']->id.'/'.$templateData['file']->id; ?>',
+                'POST',
+                {'filesrc':'<?php echo $templateData['file']->path; ?>'},
+                function(){
+                    window.location.href = '<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>';
             });
         });
         jQuery('#restore').click(function(){

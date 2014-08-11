@@ -140,4 +140,9 @@ $(function() {
 
         return result;
     }
+
+    $('#addResponseSct').click(function() {
+        var block = $('.sct-js').last().clone().show();
+        $responsesContainer.append(block);
+    });
 });

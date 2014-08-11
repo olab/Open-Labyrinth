@@ -17,8 +17,7 @@
  *
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
- */
-?>
+ */ ?>
 <h3>Login</h3>
 <form id="loginForm" name="loginForm" method="post" action="<?php echo URL::base() . 'home/login' ?>">
     <label for="username"><?php echo __('Username'); ?></label>
@@ -26,39 +25,36 @@
 
     <label for="password"><?php echo __('Password'); ?></label>
     <input class="not-autocomplete" type="password" id="password" name="password" placeholder="<?php echo __('Your Password'); ?>" />
-    <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span>
-    
-    <?php if(isset($templateData['redirectURL'])) { ?>
-    <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/>
-    <?php } ?>
+    <span class="help-block"><a data-toggle="modal" href="#forgot-password-window"><?php echo __('Forgot My Password'); ?></a></span><?php
+    if(isset($templateData['redirectURL'])) { ?>
+    <input type="hidden" name="redirectURL" value="<?php echo $templateData['redirectURL']; ?>"/><?php
+    }
 
-    <?php
-        $showOAuth = false;
-        if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) {
-            foreach($templateData['oauthProviders'] as $provider) {
-                if($provider->icon != null && $provider->appId != null && $provider->secret != null) {
-                    $showOAuth = true;
-                    break;
-                }
+    $showOAuth = false;
+    if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) {
+        foreach($templateData['oauthProviders'] as $provider) {
+            if($provider->icon != null && $provider->appId != null && $provider->secret != null) {
+                $showOAuth = true;
+                break;
             }
         }
-    ?>
-    <?php if($showOAuth) { ?>
+    }
+    if($showOAuth) { ?>
     <div class="oauth-line">
         <div class="line"><div></div></div>
         <div class="text">OR</div>
         <div class="line"><div></div></div>
     </div>
-    <div class="oauth-icon-line">
-        <?php if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders']) > 0) { ?>
-            <?php foreach($templateData['oauthProviders'] as $provider) { ?>
-                <?php if($provider->icon != null && $provider->appId != null && $provider->secret != null) { ?>
-                    <a href="<?php echo URL::base(); ?>home/loginOAuth/<?php echo $provider->id ?>"><img width="32" src="<?php echo URL::base(); ?>images/oauth/<?php echo $provider->icon; ?>"></a>&nbsp;
-                <?php } ?>
-            <?php } ?>
-        <?php } ?>
-    </div>
-    <?php } ?>
+    <div class="oauth-icon-line"><?php
+        if(isset($templateData['oauthProviders']) && count($templateData['oauthProviders'])) {
+            foreach($templateData['oauthProviders'] as $provider) {
+                if($provider->icon != null && $provider->appId != null && $provider->secret != null) { ?>
+                    <a href="<?php echo URL::base().'home/loginOAuth/'.$provider->id ?>"><img width="32" src="<?php echo URL::base().'images/oauth/'.$provider->icon; ?>"></a>&nbsp;<?php
+                }
+            }
+        } ?>
+    </div><?php
+    } ?>
 
     <button type="submit" class="btn"><?php echo __('Login'); ?></button>
 </form>
@@ -71,7 +67,6 @@
     <div class="modal-body">
         <form id="forgot-password-form" action="<?php echo URL::base(); ?>home/resetPassword" method="post">
             <p><?php echo __('If you have forgotten your OpenLabyrinth password please enter your e-mail address in the form below to initiate the password reset process.'); ?></p>
-
             <div class="control-group">
                 <label class="control-label" for="email"><?php echo __('E-Mail Address'); ?></label>
                 <div class="controls">
@@ -88,10 +83,10 @@
         <button class="btn" data-dismiss="modal">Close</button>
         <button id="forgot-password-submit" class="btn btn-primary">Reset Password</button>
     </div>
-</div>
-<?php if(count(Notice::get()) > 0) { ?>
+</div><?php
+if(count(Notice::get())) { ?>
     <div class="alert alert-error">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <?php $m = Notice::get(); echo $m[0]; ?>
-    </div>
-<?php } ?>
+    </div><?php
+} ?>

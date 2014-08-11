@@ -86,10 +86,9 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 "emoticons template paste textcolor layer advtextcolor rdface imgmap"
             ],
             toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+            toolbar2: "link image imgmap | print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
             image_advtab: true,
             templates: [
-
             ],
             <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
             readonly: 1
@@ -111,10 +110,9 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 "emoticons template paste textcolor layer advtextcolor rdface imgmap"
             ],
             toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+            toolbar2: "link image imgmap | print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
             image_advtab: true,
             templates: [
-
             ],
             <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
             readonly: 1
@@ -201,6 +199,14 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 <div class="controls">
                     <input readonly="readonly" id="mnodekeyword" class="span6 code" type="text"
                            value="[[INFO:<?php echo $templateData['node']->id; ?>]]"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label" for="mnodekeyword"><?php echo __('Set "Supporting Information" to private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" id="is_private" name="is_private" <?php if(isset($templateData['node'])) { echo $templateData['node']->is_private ? 'checked=""' : '"checked"';} ?>>
                 </div>
             </div>
 
@@ -297,16 +303,11 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link Function Style'); ?></label>
-                <div class="controls">
-                    <?php if (isset($templateData['linkStyles'])) { ?>
-                        <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                            <label class="radio">
-                                <input type="radio" name="linkstyle"
-                                       value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'checked=""'; ?>><?php echo __($linkStyle->name); ?>
-                            </label>
-                        <?php } ?>
-                    <?php } ?>
-                </div>
+                <select name="linkstyle" style="margin-left: 18px; "><?php
+                    foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                        <option value="<?php echo $linkStyle->id ?>" <?php if ($linkStyle->id == $templateData['node']->link_style_id) echo 'selected'; ?>><?php echo __($linkStyle->name); ?></option><?php
+                    } ?>
+                </select>
             </div>
 
             <div class="control-group">
@@ -359,6 +360,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
         echo Helper_Controller_Metadata::displayEditor($templateData["node"],"map_node");?>
         <div class="form-actions">
             <div class="pull-right">
+            <input type="hidden" name="map_id" value="<?php echo $templateData['map']->id; ?>">
             <input class="btn btn-large btn-primary" type="submit" name="Submit"
                    value="<?php echo __('Save changes'); ?>"></div></div>
     </form>

@@ -25,7 +25,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Element extends DB_ORM_Model {
     private $mimes = array();
-    
+
     public function __construct() {
         parent::__construct();
 
@@ -103,6 +103,11 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
                 'savable' => TRUE,
                 'nullable' => FALSE,
                 'default' => TRUE
+            )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
             ))
         );
         
@@ -120,32 +125,10 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             ))
         );
         
-        $this->mimes[] = 'image/jpg';
-        $this->mimes[] = 'image/jpeg';
-        $this->mimes[] = 'image/gif';
-        $this->mimes[] = 'image/png';
-        $this->mimes[] = 'application/vnd.open';
-        $this->mimes[] = 'application/x-shockw';  
-        $this->mimes[] = 'application/x-shockwave-flash'; 
-        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        $this->mimes[] = 'video/x-msvideo';
-        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-        $this->mimes[] = 'application/msword';
-        $this->mimes[] = 'application/x-director';
-        $this->mimes[] = 'text/html';
-        $this->mimes[] = 'application/x-msaccess';
-        $this->mimes[] = 'video/quicktime';
-        $this->mimes[] = 'video/x-sgi-movie';
-        $this->mimes[] = 'video/mpeg';
-        $this->mimes[] = 'audio/mpeg';
-        $this->mimes[] = 'application/pdf';
-        $this->mimes[] = 'application/vnd.ms-powerpoint';
-        $this->mimes[] = 'audio/x-pn-realaudio';
-        $this->mimes[] = 'application/rtf';
-        $this->mimes[] = 'text/plain';
-        $this->mimes[] = 'audio/x-wav';
-        $this->mimes[] = 'application/zip';
-        $this->mimes[] = 'application/excel';
+        $this->mimes = array('image/jpg', 'image/jpeg', 'image/gif', 'image/png', 'application/vnd.open', 'application/x-shockw', 'application/x-shockwave-flash',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/x-msvideo', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/msword', 'application/x-director', 'text/html', 'application/x-msaccess', 'video/quicktime', 'video/x-sgi-movie', 'video/mpeg', 'audio/mpeg',
+            'application/pdf', 'application/vnd.ms-powerpoint', 'audio/x-pn-realaudio' ,'application/rtf', 'text/plain', 'audio/x-wav', 'application/zip', 'application/excel');
     }
 
     public static function data_source() {
@@ -200,7 +183,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getAllMediaFilesNotInIds($ids) {
+    public function getAllMediaFilesNotInIds($ids, $mapId) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('id', 'NOT IN', $ids, 'AND')
@@ -210,7 +193,9 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         if($result->is_loaded()) {
             $elements = array();
             foreach($result as $record) {
-                $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+                if($record['map_id'] == $mapId || ($record['map_id'] != $mapId && !$record['is_private'])){
+                    $elements[] = DB_ORM::model('map_element', array((int)$record['id']));
+                }
             }
             
             return $elements;
@@ -236,13 +221,13 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
 
     public function addFile($mapId, $values) {
         return DB_ORM::insert('map_element')
-                       ->column('map_id', $mapId)
-                       ->column('name', Arr::get($values, 'name', ''))
-                       ->column('mime', Arr::get($values, 'mime', ''))
-                       ->column('path', Arr::get($values, 'path', ''))
-                       ->column('width', Arr::get($values, 'width', 0))
-                       ->column('height', Arr::get($values, 'height', 0))
-                       ->execute();
+           ->column('map_id', $mapId)
+           ->column('name', Arr::get($values, 'name', ''))
+           ->column('mime', Arr::get($values, 'mime', ''))
+           ->column('path', Arr::get($values, 'path', ''))
+           ->column('width', Arr::get($values, 'width', 0))
+           ->column('height', Arr::get($values, 'height', 0))
+           ->execute();
     }
 
     public function uploadFile($mapId, $values) {
@@ -360,6 +345,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         $this->width_type = Arr::get($values, 'wv', $this->width_type);
         $this->height_type = Arr::get($values, 'hv', $this->height_type);
         $this->is_shared = Arr::get($values, 'shared', false);
+        $this->is_private = Arr::get($values, 'is_private', false);
 
         DB_ORM::model('map_element_metadata')->saveMetadata($this->id, $values);
         
@@ -376,58 +362,42 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         {
             $newFileName = $this->duplicateFile(DOCROOT.'/'.$element->path, $toMapId);
 
-            if($newFileName == null) continue;
-            
-            $newPath = 'files/'.$newFileName;
-            
-            $builder = DB_ORM::insert('map_element')
-                    ->column('map_id', $toMapId)
-                    ->column('mime', $element->mime)
-                    ->column('name', $newFileName)
-                    ->column('path', $newPath)
-                    ->column('args', $element->args)
-                    ->column('width', $element->width)
-                    ->column('height', $element->height)
-                    ->column('h_align', $element->h_align)
-                    ->column('v_align', $element->v_align)
-                    ->column('width_type', $element->width_type)
-                    ->column('height_type', $element->height_type);
-            
-            $elementMap[$element->id] = $builder->execute();
+            if ($newFileName == null) continue;
+
+            $newElement = DB_ORM::insert('map_element')
+                ->column('map_id',      $toMapId)
+                ->column('mime',        $element->mime)
+                ->column('name',        $newFileName)
+                ->column('path',        'files/'.$toMapId.'/'.$newFileName)
+                ->column('args',        $element->args)
+                ->column('width',       $element->width)
+                ->column('height',      $element->height)
+                ->column('h_align',     $element->h_align)
+                ->column('v_align',     $element->v_align)
+                ->column('width_type',  $element->width_type)
+                ->column('height_type', $element->height_type)
+                ->execute();
+
+            $elementMap[$element->id] = $newElement;
         }
         return $elementMap;
     }
     
-    private function duplicateFile($srcPath, $addName) {
-        if (strlen($srcPath) <= 0 || strlen($addName) <= 0) return null;
-        
-        if (!file_exists($srcPath)) return null;
+    private function duplicateFile($srcPath, $newMap)
+    {
+        if ( ! file_exists($srcPath)) return null;
         
         $path_info = pathinfo($srcPath);
-        $newFileName = $path_info['filename'].'_'.$addName;
-        $dstPath = $path_info['dirname'].'/'.$newFileName.'.'.Arr::get($path_info, 'extension');
-        
-        return (copy($srcPath, $dstPath)) ? $newFileName.'.'.Arr::get($path_info, 'extension') : null;
-    }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('map_id', '=', $mapId);
+        // create new directory
+        $oldDirectory = $path_info['dirname'];
+        $newDirectory = substr($oldDirectory, 0, strrpos($oldDirectory, '/')).'/'.$newMap.'/';
+        if ( ! file_exists($newDirectory)) mkdir($newDirectory);
 
-        $result = $builder->query();
+        // new file name path
+        $fileName = Arr::get($path_info,'basename');
+        $newPath  = $newDirectory.$fileName;
 
-        if($result->is_loaded()) {
-            $elements = array();
-            foreach($result as $record) {
-                $elements[] = $record;
-            }
-
-            return $elements;
-        }
-
-        return NULL;
+        return (copy($srcPath, $newPath)) ? $fileName : null;
     }
 }
-
-?>

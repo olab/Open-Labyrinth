@@ -18,19 +18,29 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
+if (isset($templateData)) { ?>
 <h1><?php echo __('System Settings'); ?></h1>
 <div id="tabs">
-    <ul>
-        <?php
+    <ul><?php
         foreach ($templateData['tabsName'] as $key => $tabsName) {
-            echo '<li><a href="#tabs-' . $key . '">' . $tabsName . '</a></li>';
-        }
-        ?>
-    </ul>
-    <?php
+            echo '<li><a href="#tabs-'.$key.'">'.$tabsName.'</a></li>';
+        } ?>
+    </ul><?php
     foreach ($templateData['tabs'] as $key => $tabs) {
-        echo '<div id="tabs-' . $key . '">' . $tabs . '</div>';
-    }
-    ?>
-</div>
+        echo '<div id="tabs-'.$key.'">';
+        if(count(Notice::get('success'))) { ?>
+            <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <?php echo Notice::get('success'); ?>
+            </div><?php
+        }
+        if(count(Notice::get('error'))) { ?>
+            <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <?php echo Notice::get('error'); ?>
+            </div><?php
+        }
+        echo $tabs.'</div>';
+    } ?>
+</div><?php
+} ?>

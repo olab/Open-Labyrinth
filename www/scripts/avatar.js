@@ -1,5 +1,4 @@
-var globalDir = "/images/avatar/";
-
+var globalDir = urlBasePhp + "/images/avatar/";
 var outlineLayerData;
 var fillAreaBody = {data: {}};
 var imageLoaded = 1;
@@ -9,23 +8,23 @@ var stream;
 AvatarSetup = function(setParams){
     params = setParams;
     AvatarRender();
-}
+};
 
 AvatarRender = function() {
-    var canvasWidth = 300,
-        canvasHeight = 300,
-        drawingAreaX = -20,
-        drawingAreaY = 30;
+    var canvasWidth     = 300,
+        canvasHeight    = 300,
+        drawingAreaX    = -20,
+        drawingAreaY    = 30,
+        curColor        = {r: 170, g: 132, b: 88},
+        colorBody       = {r: 170, g: 132, b: 88},
+        outlineImageObj = new OutlineImageRepos(),
+        avatar          = new Avatar(),
+        canvas          = document.getElementById("avatar_canvas"),
+        context         = canvas.getContext("2d");
 
-    var curColor = {r: 170, g: 132, b: 88};
-    var colorBody = {r: 170, g: 132, b: 88};
-    var outlineImageObj = new OutlineImageRepos();
-    var avatar = new Avatar();
-    var startBg = {r: 255, g: 255, b: 255}
-    var canvas = document.getElementById("avatar_canvas");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    var context = canvas.getContext("2d");
+
     avatarParamDef();
 
     function avatarParamDef(){
@@ -35,20 +34,20 @@ AvatarRender = function() {
         stream = new ObjectStream();
         stream.addElement('none', 'main', false, null, null);
 
-        param_default('sex', 'male');
-        param_default('age', '20');
-        param_default('mouth', 'smile');
-        param_default('eyes', 'open');
-        param_default('nose', 'nostrils');
+        param_default('sex',        'male');
+        param_default('age',        '20');
+        param_default('mouth',      'smile');
+        param_default('eyes',       'open');
+        param_default('nose',       'nostrils');
         param_default('accessory1', 'none');
         param_default('accessory2', 'none');
         param_default('accessory3', 'none');
-        param_default('skintone', 'AA8458');
-        param_default('bubble', 'none');
+        param_default('skintone',   'AA8458');
+        param_default('bubble',     'none');
         param_default('bubbletext', '');
 
         var addOutfit = false;
-        if (!param_default('outfit', 'naked')){addOutfit = true;}
+        if ( ! param_default('outfit', 'naked')){addOutfit = true;}
         param_default('clothcolor', 'FF0000');
 
         if (addOutfit){
@@ -57,7 +56,7 @@ AvatarRender = function() {
         }
 
         var addHairtype = false;
-        if (!param_default('hairtype', 'none')) {addHairtype = true;}
+        if ( ! param_default('hairtype', 'none')) {addHairtype = true;}
         param_default('haircolor', 'FFFFCC');
 
         if (addHairtype){
@@ -65,7 +64,7 @@ AvatarRender = function() {
             nextParent = 'hairtype';
         }
 
-        if (!param_default('environment', 'none')) {
+        if ( ! param_default('environment', 'none')) {
             stream.addElement(nextParent, 'environment', false, changeEnvironment, [params['environment']]);
             nextParent = 'environment';
         }
@@ -88,22 +87,19 @@ AvatarRender = function() {
     function ObjectStream(){
         this.objStream = {};
         this.addElement = function(parent, objName, status, callFunc, params){
-            var el = {
+            this.objStream[objName] = {
                 parent: parent,
                 status: status,
                 callFunc: callFunc,
                 params: params
             };
-            this.objStream[objName] = el;
         }
     }
 
     function StartStream(){
         for(key in stream.objStream){
             var element = stream.objStream[key];
-            if (element.parent != 'none'){
-                new StreamTimer(key, element);
-            }
+            if (element.parent != 'none') new StreamTimer(key, element);
         }
     }
 
@@ -256,6 +252,7 @@ AvatarRender = function() {
         }
         var obj = avatar.elMas['main'];
         var outlineImage = new Image();
+
         outlineImage.onload = function() {
             new RedrawCanvasLayer(objName, obj, outlineImage, colorBody);
         };

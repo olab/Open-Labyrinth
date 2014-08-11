@@ -122,25 +122,13 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      *
      * @return array|null
      */
-    public function getAllWebinars($userId = null) {
-        $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->column('id');
-        if (!is_null($userId)) {
-            $records = $records->where('author_id', '=', $userId);
-        }
-        $records = $records->query();
+    public function getAllWebinars($userId = null)
+    {
+        $query = DB_ORM::select('Webinar');
 
-        $result  = null;
-        if($records->is_loaded()) {
-            $result = array();
+        if ($userId) $query->where('author_id', '=', $userId);
 
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('webinar', array((int)$record['id']));
-            }
-        }
-
-        return $result;
+        return $query->query()->as_array();
     }
 
     /**
@@ -148,24 +136,28 @@ class Model_Leap_Webinar extends DB_ORM_Model {
      *
      * @param array $values - values
      */
-    public function saveWebinar($values) {
-        $webinarId = Arr::get($values, 'webinarId', null);
-        $webinar   = null;
-        $isNew     = false;
+    public function saveWebinar($values)
+    {
+        $webinarId      = Arr::get($values, 'webinarId', null);
+        $webinar        = null;
+        $isNew          = false;
         $isUseForumName = Arr::get($values, 'use', null);
-        $useForumId = Arr::get($values, 'forum', null);
-        $useTopicId = Arr::get($values, 'topic', null);
+        $useForumId     = Arr::get($values, 'forum', null);
+        $useTopicId     = Arr::get($values, 'topic', null);
+        $experts        = Arr::get($values, 'experts', array());
+        $poll_nodes     = Arr::get($values, 'poll_nodes', array());
 
-        if($webinarId == null || $webinarId < 0) {
-            $webinarBuilder = DB_ORM::insert('webinar')
-                                      ->column('title', Arr::get($_POST, 'title', ''))
-                                      ->column('author_id', Auth::instance()->get_user()->id);
-            $webinarBuilder->statement();
-
-            $webinarId = $webinarBuilder->execute();
+        if($webinarId == null || $webinarId < 0)
+        {
+            $webinarId = DB_ORM::insert('webinar')
+                ->column('title', Arr::get($_POST, 'title', ''))
+                ->column('author_id', Auth::instance()->get_user()->id)
+                ->execute();
             $webinar   = DB_ORM::model('webinar', array((int)$webinarId));
             $isNew     = true;
-        } else {
+        }
+        else
+        {
             $webinar = DB_ORM::model('webinar', array((int)$webinarId));
             DB_ORM::update('webinar')
                     ->set('title', Arr::get($values, 'title', ''))
@@ -179,12 +171,16 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 $stepName = Arr::get($values, 's' . $webinarStep->id . '_name', null);
                 DB_ORM::model('webinar_map')->removeMapsForStep($webinar->id, $webinarStep->id);
                 if($stepName != null) {
-                    $completedStepIDs['s' . $webinarStep->id . '_name'] = $webinarStep->id;
+                    $completedStepIDs['s'.$webinarStep->id.'_name'] = $webinarStep->id;
                     DB_ORM::model('webinar_step')->updateStep($webinarStep->id, $stepName);
-                    $maps = Arr::get($values, 's' . $webinarStep->id . '_labyrinths', null);
-                    if($maps != null && count($maps) > 0) {
-                        foreach($maps as $webinarStepMap) {
-                            DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarStepMap, $webinarStep->id);
+                    $maps = Arr::get($values, 's'.$webinarStep->id.'_labyrinths', null);
+                    if($maps != null && count($maps) > 0)
+                    {
+                        foreach($maps as $webinarStepMap)
+                        {
+                            $which = substr_count($webinarStepMap, 'section') ? 'section': 'labyrinth';
+                            if ($which == 'section') $webinarStepMap = str_replace('section', '', $webinarStepMap);
+                            DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarStepMap, $webinarStep->id, $which);
                         }
                     }
                 } else {
@@ -193,22 +189,25 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             }
         }
 
-        foreach($values as $key => $value) {
-            if(strpos($key, '_name') !== false && !isset($completedStepIDs[$key])) {
+        foreach($values as $key => $value)
+        {
+            if(strpos($key, '_name') !== false && !isset($completedStepIDs[$key]))
+            {
                 $pattern = '/s(\d+)_name/i';
                 $id = preg_replace($pattern, '$1', $key);
                 if(!is_numeric($id)) continue;
 
-                $stepName = Arr::get($values, 's' . $id . '_name', null);
+                $stepName = Arr::get($values, 's'.$id.'_name', null);
                 if($stepName == null) continue;
 
                 $stepId = DB_ORM::model('webinar_step')->addStep($webinar->id, $stepName);
 
-                $maps = Arr::get($values, 's' . $id . '_labyrinths', null);
-                if($maps != null && count($maps) > 0) {
-                    foreach($maps as $webinarMap) {
-                        DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarMap, $stepId);
-                    }
+                $maps = Arr::get($values, 's'.$id.'_labyrinths', array());
+                foreach($maps as $webinarMap)
+                {
+                    $which = substr_count($webinarMap, 'section') ? 'section': 'labyrinth';
+                    if ($which == 'section') $webinarMap = str_replace('section', '', $webinarMap);
+                    DB_ORM::model('webinar_map')->addMap($webinar->id, $webinarMap, $stepId, $which);
                 }
             }
         }
@@ -273,21 +272,25 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         DB_ORM::model('webinar_group')->removeAllGroups($webinarId);
         DB_ORM::model('webinar_user')->removeUsers($webinarId);
 
-        if($users != null && count($users) > 0) {
-            foreach($users as $userId) {
-                DB_ORM::model('webinar_user')->addUser($webinarId, $userId);
+        if(count($users) > 0)
+        {
+            foreach($users as $userId)
+            {
+                $expert = (in_array($userId, $experts)) ? 1 : 0;
+                DB_ORM::model('webinar_user')->addUser($webinarId, $userId, $expert);
                 $usersMap[$userId] = $userId;
             }
         }
 
-        if($groups != null && count($groups) > 0) {
+        if(count($groups) > 0) {
             foreach($groups as $groupId) {
                 DB_ORM::model('webinar_group')->addGroup($webinarId, $groupId);
                 $usersGroup = DB_ORM::model('group')->getAllUsersInGroup($groupId);
-                if($usersGroup != null && count($usersGroup) > 0) {
+                if(count($usersGroup) > 0) {
                     foreach($usersGroup as $userGroup) {
-                        if(!isset($usersMap[$userGroup->id])) {
-                            DB_ORM::model('webinar_user')->addUser($webinarId, $userGroup->id);
+                        if( ! isset($usersMap[$userGroup->id])) {
+                            $expert = (in_array($userGroup->id, $experts)) ? 1 : 0;
+                            DB_ORM::model('webinar_user')->addUser($webinarId, $userGroup->id, $expert);
                         }
                     }
                 }
@@ -297,6 +300,16 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $formUsers[] = Auth::instance()->get_user()->id;
         DB_ORM::model('dforum_users')->updateUsers($forumId, $formUsers);
         DB_ORM::model('dforum_groups')->updateGroups($forumId, $groups);
+
+        // create poll node
+        $updatePoLLNode = function ($poll_nodes, $webinarId)
+        {
+            // create poll node
+            for ($i=0; $i<count($poll_nodes); $i+=2)
+            {
+                if ($poll_nodes[$i]) DB_ORM::model('Webinar_PollNode')->update($poll_nodes[$i], $webinarId, $poll_nodes[$i+1]);
+            }
+        };
 
         if($isNew) {
             $updatedWebinar = DB_ORM::model('webinar', array((int)$webinar->id));
@@ -310,7 +323,28 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
                 DB_ORM::model('webinar')->changeWebinarStep($updatedWebinar->id, $min);
             }
+
+            $updatePoLLNode($poll_nodes, $webinarId);
         }
+
+        // ----- update poll node ----- //
+        $exist_poll_nodes = DB_ORM::model('Webinar_PollNode')->getWebinarNodes($webinarId);
+        foreach ($exist_poll_nodes as $pollNodeObj)
+        {
+            $nodeId = $pollNodeObj->node_id;
+            $key    = array_search($nodeId, $poll_nodes);
+
+            if($key !== false)
+            {
+                if ((int)$poll_nodes[$key+1] != $pollNodeObj->time) DB_ORM::model('Webinar_PollNode')->update($poll_nodes[$key], $webinarId, $poll_nodes[$key+1], $pollNodeObj->id);
+                unset($poll_nodes[$key]);
+                unset($poll_nodes[$key+1]);
+            }
+            else DB_ORM::model('Webinar_PollNode')->deleteNode($nodeId);
+        }
+        print_r($poll_nodes);
+        $updatePoLLNode(array_values($poll_nodes), $webinarId);
+        // ----- end update poll node ----- //
     }
 
     /**
@@ -413,6 +447,32 @@ class Model_Leap_Webinar extends DB_ORM_Model {
             }
         }
         return $res;
+    }
 
+    public function generateJSON($scenarioId)
+    {
+        $json   = array();
+        $steps  = DB_ORM::select('Webinar_Step')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+
+        foreach($steps as $stepObj)
+        {
+            $stepId                 = $stepObj->id;
+            $json['steps'][$stepId] = $stepObj->name;
+            $elements               = DB_ORM::select('Webinar_Map')->where('step', '=', $stepId)->query()->as_array();
+
+            foreach($elements as $elementObj)
+            {
+                $id     = $elementObj->reference_id;
+                $type   = $elementObj->which;
+
+                if ($type == 'labyrinth') $name = DB_ORM::model('Map', array($id))->name;
+                else $name = DB_ORM::model('Map_Node_Section', array($id))->name;
+
+                $json['elements'][$stepId][$elementObj->id]['id']   = $id;
+                $json['elements'][$stepId][$elementObj->id]['type'] = $type;
+                $json['elements'][$stepId][$elementObj->id]['name'] = $name;
+            }
+        }
+        return json_encode($json);
     }
 }

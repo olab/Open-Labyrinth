@@ -31,16 +31,26 @@
 </head>
 
 <body>
-    <div id="skinEditor"></div>
+    <div id="skinEditor">
+        <h4 style="text-align: center;"><?php echo $templateData['skinData']->name; ?></h4>
+        <div id="save-as-modal" class="modal block hide">
+            <div class="modal-body block">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <a class="btn" id="btn-save-as" style="float: right; margin: 20px 230px 0 0;">Save</a>
+                <label for="nodetitle" class="control-label" style="text-align: left;">
+                    <strong>New skin name:</strong><br>
+                    <input type="text" id="skinName" name="sectionNameInput" value=""/>
+                </label>
+            </div>
+        </div>
+    </div>
 
     <!-- GLOBAL VARIABLES -->
     <script>
-        function getPlayURL()   { return '<?php echo URL::base() . 'renderLabyrinth/index/' . $templateData['map']->id; ?>'; }
-        function getCloseURL()  { return '<?php echo URL::base() . 'labyrinthManager/global/' . $templateData['map']->id; ?>'; }
-        function getSkinId()    { return <?php echo $templateData['skinData']->id; ?>; }
-        function getUpdateURL() { return '<?php echo URL::base() . 'skinmanager/updateSkinData'; ?>'; }
+        var skinId = '<?php echo $templateData['skinData']->id; ?>',
+            mapId  = '<?php echo $templateData['map']->id; ?>';
         function getSkinData()  { return '<?php echo str_replace('\'', '\\\'', $templateData['skinData']->data); ?>'; }
-        function getUploadURL() { return '<?php echo URL::base() . 'skinmanager/uploadSkinImage'; ?>'; }
+        function getUploadURL() { return '<?php echo URL::base().'skinmanager/uploadSkinImage'; ?>'; }
         function getSkinHTML()  { return '<?php if(isset($templateData['skinHTML'])) { echo $templateData['skinHTML']; } ?>'; }
     </script>
 
@@ -82,7 +92,7 @@
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/linkspropertymodel.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/reviewpropertymodel.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/mapinfopropertymodel.js'); ?>"></script>
-    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/mapinfopropertymodel.js'); ?>"></script>
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/sectioninfopropertymodel.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/propertymodels/rootpropertymodel.js'); ?>"></script>
 
     <!-- COMPONENTS VIEWS -->
@@ -95,6 +105,7 @@
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/proprtyviews/linkspropertyview.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/proprtyviews/reviewpropertyview.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/proprtyviews/mapinfopropertyview.js'); ?>"></script>
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/proprtyviews/sectioninfopropertyview.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/proprtyviews/rootpropertyview.js'); ?>"></script>
 
     <!-- COMPONENTS -->
@@ -108,6 +119,7 @@
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/linkscomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/reviewcomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/mapinfocomponent.js'); ?>"></script>
+    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/sectioninfocomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/bookmarkcomponent.js'); ?>"></script>
     <script src="<?php echo ScriptVersions::get(URL::base().'scripts/skineditor/components/resetcomponent.js'); ?>"></script>
 

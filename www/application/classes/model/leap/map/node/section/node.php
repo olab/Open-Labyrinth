@@ -25,6 +25,8 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
 
+    public $nodeType = array('regular', 'in', 'out', 'crucial');
+
     public function __construct() {
         parent::__construct();
 
@@ -47,6 +49,12 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
             
             'order' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+
+            'node_type' => new DB_ORM_Field_String($this, array(
+                'max_length' => 45,
+                'enum' => $this->nodeType,
                 'nullable' => FALSE,
             )),
         );
@@ -95,23 +103,19 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         $this->save();
     }
 
-    public function updateNodesOrder($sectionId, $values) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $sections = array();
-            foreach($result as $record) {
-                $sections[] = DB_ORM::model('map_node_section_node', array((int)$record['id']));
-            }
+    public function updateSectionNodes($sectionId, $values)
+    {
+        $sectionNodeObj = DB_ORM::select('map_node_section_node')->where('section_id', '=', $sectionId)->query()->as_array();
 
-            if(count($sections) > 0) {
-                foreach($sections as $section) {
-                    $section->order = Arr::get($values, 'node_'.$section->id, $section->order);
-                    $section->save();
-                }
-            }
+        foreach($sectionNodeObj as $section)
+        {
+            $new_value = Arr::get($values, 'node_'.$section->id, $section->order);
+
+            $section->order = Arr::get($new_value, 'order', $section->order);
+            $section->node_type = Arr::get($new_value, 'node_type', $section->node_type);
+            $section->save();
         }
+
     }
     
     public function deleteNodeBySection($sectionId, $nodeId) {
@@ -156,20 +160,9 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         }
     }
 
-    public function exportMVP($sectionId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id');
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sections = array();
-            foreach($result as $record) {
-                $sections[] = $record;
-            }
-
-            return $sections;
-        }
-
-        return NULL;
+    public function exportMVP($sectionId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('section_id', '=', $sectionId)->order_by('id')->query()->as_array();
     }
 
     public function getIdSection ($id_node)
@@ -179,5 +172,24 @@ class Model_Leap_Map_Node_Section_Node extends DB_ORM_Model {
         if ($id_section) $id_section = $id_section->section_id;
 
         return $id_section;
+    }
+
+    public function getEndNode ($sectionId)
+    {
+        return DB_ORM::select('Map_Node_Section_Node')
+            ->where('section_id', '=', $sectionId)
+            ->where('node_type', '=', 'out')
+            ->where('node_type', '=', 'crucial', 'OR')
+            ->query()
+            ->as_array();
+    }
+
+    public function getInNode ($sectionId)
+    {
+        return DB_ORM::select('Map_Node_Section_Node')
+            ->where('section_id', '=', $sectionId)
+            ->where('node_type', '=', 'in')
+            ->query()
+            ->fetch(0);
     }
 }

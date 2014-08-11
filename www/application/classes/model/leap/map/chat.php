@@ -49,6 +49,12 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
+            ))
         );
         
         $this->relations = array(
@@ -105,7 +111,8 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         $builder = DB_ORM::insert('map_chat')
                 ->column('map_id', $mapId)
                 ->column('stem', Arr::get($values, 'cStem', ''))
-                ->column('counter_id', Arr::get($values, 'scount', 0));
+                ->column('counter_id', Arr::get($values, 'scount', 0))
+                ->column('is_private', (int) Arr::get($values, 'is_private', false));
         $newChatId = $builder->execute();
         
         $qarray = Arr::get($values, 'qarray', '');
@@ -128,6 +135,7 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
         
         $this->stem = Arr::get($values, 'cStem', $this->stem);
         $this->counter_id = Arr::get($values, 'scount', $this->counter_id);
+        $this->is_private = Arr::get($values, 'is_private', false);
         $this->save();
         
         DB_ORM::model('map_chat_element')->updateElementsByChatId($chatId, $values);
@@ -145,31 +153,11 @@ class Model_Leap_Map_Chat extends DB_ORM_Model {
                     ->column('map_id', $toMapId)
                     ->column('stem', $chat->stem)
                     ->column('counter_id', Arr::get($counterMap, $chat->counter_id))
+                    ->column('is_private', $chat->is_private)
                     ->execute();
 
             DB_ORM::model('map_chat_element')->duplicateElements($chat->id, $chatMap[$chat->id]);
         }
         return $chatMap;
     }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('map_id', '=', $mapId);
-
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $chats = array();
-            foreach($result as $record) {
-                $chats[] = $record;
-            }
-
-            return $chats;
-        }
-
-        return NULL;
-    }
 }
-
-?>

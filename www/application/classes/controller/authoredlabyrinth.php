@@ -29,38 +29,40 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
-        if (Auth::instance()->get_user()->type->name == 'superuser') {
-            $maps = DB_ORM::model('map')->getAllEnabledMap();
-        } else {
-            $maps = DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id);
-        }
+    public function action_index()
+    {
+        $user = Auth::instance()->get_user();
+        $maps = ($user->type->name == 'superuser')
+            ? DB_ORM::model('map')->getAllEnabledMap()
+            : DB_ORM::model('map')->getAllMapsForAuthorAndReviewer($user->id);
+
         $this->templateData['maps'] = $maps;
+        $this->templateData['bookmarks'] = array();
+        foreach ($maps as $map) {
+            $bookmark = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($map->id, $user->id);
+            if ($bookmark) $this->templateData['bookmarks'][$map->id] = 1;
+        }
 
-        $openView = View::factory('labyrinth/authored');
-        $openView->set('templateData', $this->templateData);
+        foreach (DB_ORM::model('Map_User')->getUserMaps($user->id) as $mapUserObj)
+        {
+            $this->templateData['authorRight'][$mapUserObj->map_id] = true;
+        }
 
-        $this->templateData['center'] = $openView;
-        unset($this->templateData['right']);
+        $this->templateData['center'] = View::factory('labyrinth/authored')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_info() {
+    public function action_info()
+    {
         $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Labyrinth Details'))->set_url(URL::base() . 'authoredLabyrinth/info/' . $mapId));
 
-            $this->templateData['map'] = DB_ORM::model('map', array($mapId));
+        if ( ! $mapId) Request::initial()->redirect(URL::base().'openLabyrinth');
 
-            $infoView = View::factory('labyrinth/labyrinthInfo');
-            $infoView->set('templateData', $this->templateData);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Labyrinth Details'))->set_url(URL::base() . 'authoredLabyrinth/info/' . $mapId));
 
-            $this->templateData['center'] = $infoView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
-        }
+        $this->templateData['map']      = DB_ORM::model('map', array($mapId));
+        $this->templateData['center']   = View::factory('labyrinth/labyrinthInfo')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_duplicate()

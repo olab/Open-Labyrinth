@@ -27,5 +27,3 @@ interface ImportExport_FormatSystem {
     public function import($parameters);
     public function export($parameters);
 }
-
-?>

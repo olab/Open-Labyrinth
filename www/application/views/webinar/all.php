@@ -19,9 +19,7 @@
  *
  */
 if (isset($templateData['webinar'])) { ?>
-<div class="page-header">
-    <h1><?php echo __('Statistics for ') . ' "' . $templateData['webinar']->title . '"'; ?></h1></div>
-
+<div class="page-header"><h1><?php echo __('Statistics for ').' "'.$templateData['webinar']->title.'"'; ?></h1></div>
 
 <table class="table table-striped table-bordered">
     <colgroup>
@@ -33,25 +31,21 @@ if (isset($templateData['webinar'])) { ?>
             <th><?php echo __("Date"); ?></th>
             <th><?php echo __("Actions"); ?></th>
         </tr>
-    </thead>
-<?php if(isset($templateData['history']) and count($templateData['history']) > 0) { ?>
-    <?php foreach($templateData['history'] as $history) { ?>
+    </thead><?php
+    if(isset($templateData['history']) and count($templateData['history']) > 0) {
+        foreach($templateData['history'] as $history) {
+        $showStats = URL::base().'webinarManager/showStats/'.$templateData['webinar']->id.'/'.$history['webinar_step'].'/'.$history['id']; ?>
         <tr>
-            <td> <a href="<?php echo URL::base().'webinarManager/showStats/'.$templateData['webinar']->id.'/'.$history['webinar_step'] . '/' .$history['id'] ; ?>"> <?php echo date('Y-m-d H:i:s',$history['date_save']); ?></a></td>
+            <td><a href="<?php echo $showStats; ?>"><?php echo date('Y-m-d H:i:s',$history['date_save']); ?></a></td>
             <td>
                 <div class="btn-group">
-                <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/showStats/'.$templateData['webinar']->id.'/'.$history['webinar_step'] . '/' .$history['id']; ?>">
-                    <i class="icon-pencil icon-white"></i>
-                    <?php echo __('Show'); ?>
-                </a>
+                <a class="btn btn-info" href="<?php echo $showStats; ?>"><i class="icon-pencil icon-white"></i><?php echo __('Show'); ?></a>
                 </div>
             </td>
-        </tr>
-        <?php } ?>
-    <?php } else{ ?>
-        <tr class="info"><td colspan="3">There are no statistics set yet.</td></tr>
-    <?php } ?>
-</table>
-
-
-<?php } ?>
+        </tr><?php
+        }
+    } else{ ?>
+        <tr class="info"><td colspan="3">There are no statistics set yet.</td></tr><?php
+    } ?>
+</table><?php
+} ?>

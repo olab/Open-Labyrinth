@@ -19,34 +19,25 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
-
 
         $(document).ready(function() {
             $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
-
-            $('#sidebar').animate({
-                width: 'toggle'
-            }, 0);
-
+            $('#sidebar').animate({ width: 'toggle' }, 0);
             $('.to-hide').toggleClass('hide');
             $('#content').toggleClass('span12 span10');
         });
 
-
-        var sendURL = '<?php echo URL::base(); ?>visualManager/updateJSON';
-        var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
-        var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
-        var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
-        var mapId = <?php echo $templateData['map']->id; ?>;
-        var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
-        var mapType = null;
-        var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
-        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
-        var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
+        var sendURL         = '<?php echo URL::base(); ?>visualManager/updateJSON',
+            bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
+            bufferPaste     = '<?php echo URL::base(); ?>visualManager/bufferPaste',
+            settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
+            logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
+            mapId           = <?php echo $templateData['map']->id; ?>,
+            mapJSON         = <?php echo (isset($templateData['mapJSON']) AND strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>,
+            mapType         = null,
+            mainLinkStyles  = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -68,7 +59,7 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
                 <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="ve-icon-settings"></i></button></p>
             </div>
-            
+
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px; display: none;">
                 <p>
                     <button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right">
@@ -152,6 +143,14 @@ if (isset($templateData['map'])) { ?>
                                 </div>
                             </div>
                             <div class="control-group block">
+                                <label for="is_private"
+                                       class="control-label"><strong><?php echo __('Set "Supporting Information" to private'); ?></strong></label>
+
+                                <div class="controls block">
+                                    <input id="is_private" name="is_private" type="checkbox"/>
+                                </div>
+                            </div>
+                            <div class="control-group block">
                                 <label for="show_info"
                                        class="control-label"><strong><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></strong></label>
 
@@ -169,13 +168,11 @@ if (isset($templateData['map'])) { ?>
                             <div>
                                 <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
                                     <div>
-                                        <div class="control-group">
-                                            <?php
+                                        <div class="control-group"><?php
                                             $countersData = '';
                                             foreach ($templateData['counters'] as $counter) {
-                                                $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
-                                                ?>
-                                                <?php echo $counter->name; ?>
+                                                $countersData .= "{id: '".$counter->id."', func: '#nodecounter_function_".$counter->id."', show: '#nodecounter_show_".$counter->id."'}, ";
+                                                echo $counter->name; ?>
                                                 <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
                                                 <div class="controls">
                                                     <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
@@ -187,11 +184,7 @@ if (isset($templateData['map'])) { ?>
                                                 </div>
                                             <?php } ?>
                                         </div>
-                                        <div id="counters" data="[<?php
-                                    if (strlen($countersData) > 2) {
-                                        echo substr($countersData, 0, strlen($countersData) - 2);
-                                    }
-                                    ?>]"></div>
+                                        <div id="counters" data="[<?php if (strlen($countersData) > 2) echo substr($countersData, 0, strlen($countersData) - 2); ?>]"></div>
                                     </div>
                                 <?php } ?>
                             </div>
@@ -210,10 +203,11 @@ if (isset($templateData['map'])) { ?>
                                         <label class="control-label"><strong>Link Function Style</strong></label>
 
                                         <div class="controls" id="linkStyleOptions">
-                                            <?php if (isset($templateData['linkStyles'])) { ?>
-                                                <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-                                                    <label class="radio"><input type="radio" name="style" value="<?php echo $linkStyle->id ?>"><?php echo __($linkStyle->name); ?></label>
-                                                <?php } ?>
+                                            <?php foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                                                <label class="radio">
+                                                    <input type="radio" name="style" value="<?php echo $linkStyle->id ?>">
+                                                    <?php echo __($linkStyle->name); ?>
+                                                </label>
                                             <?php } ?>
                                         </div>
                                     </div>
@@ -259,7 +253,6 @@ if (isset($templateData['map'])) { ?>
                 </div>
                 <div class="footer block">
                     <div class="btn-group">
-                        <a href="javascript:void(0)" class="btn btn-success" id="veRightPanelOnlySaveBtn">Save changes</a>
                         <a href="javascript:void(0)" class="btn btn-info" id="veRightPanelSaveBtn">Save changes and close</a>
                         <a href="javascript:void(0)" class="btn veRightPanelCloseBtn">Close panel</a>
                     </div>
@@ -605,5 +598,4 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
-
 <?php } ?>

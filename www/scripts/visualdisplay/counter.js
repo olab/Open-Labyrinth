@@ -1,64 +1,70 @@
 var Counter = function() {
-    var self = this;
-    var html = '<div id="%labelId%" class="only-draggable-panel">%label%</div> \
-                <div id="%valueId%" class="only-draggable-panel">%startValue%</div>';
-    
-    var currentId = null,
-        counterId = null,
+    var self        = this,
+        currentId   = null,
+        counterId   = null,
         label,
         value,
-        labelX = 0,
-        labelY = 0,
-        labelAngle = 0,
-        labelFont = '',
+        labelX      = 0,
+        labelY      = 0,
+        labelAngle  = 0,
+        labelFont   = '',
         labelZIndex = 10,
-        valueX = 0,
-        valueY = 14,
-        valueAngle = 0,
-        valueFont = '',
+        valueX      = 0,
+        valueY      = 14,
+        valueAngle  = 0,
+        valueFont   = '',
         valueZIndex = 10,
         visualDisplay;
-    
-    this.id = null;
-    this.$label = null;
-    this.$value = null;
-    
-    this.Create = function($container, elementId, cId, cLabel, cValue, vDisplay) {
+
+    self.id     = null;
+    self.$label = null;
+    self.$value = null;
+
+    self.Create = function($container, elementId, cId, cLabel, cValue, vDisplay) {
         if($container == null) return;
         
-        this.id = elementId;
-        counterId = cId;
-        label = cLabel;
-        value = cValue; 
-        visualDisplay = vDisplay;
-        
-        $container.append(html.replace('%labelId%', 'counterLabel_' + this.id)
-                              .replace('%label%', label)
-                              .replace('%valueId%', 'counterValue_' + this.id)
-                              .replace('%startValue%', value));
+        this.id         = elementId;
+        counterId       = cId;
+        label           = cLabel;
+        value           = cValue;
+        visualDisplay   = vDisplay;
+
+        $container.append(
+            '<div id="' + 'counterLabel_' + this.id + '" class="only-draggable-panel">' + label + '<sup>' + labelX + ', ' + labelY + '</sup></div>'+
+            '<div id="' + 'counterValue_' + this.id + '" class="only-draggable-panel">' + value + '<sup>' + valueX + ', ' + valueY + '</sup></div>');
                               
-        $('.only-draggable-panel').draggable({containment: $container, scroll: false, cursor: 'move'});
+        $('.only-draggable-panel').draggable({
+            containment: $container,
+            scroll: false,
+            cursor: 'move',
+            drag: function() {
+                var top = parseInt($(this).css('top')),
+                    left = parseInt($(this).css('left'));
+
+                $(this.firstElementChild).text(left + ", " + top);
+            }
+        });
 
         this.$label = $('#counterLabel_' + this.id);
         this.$value = $('#counterValue_' + this.id);
         
-        var color = '#000000',
-            font = 'Helvetica Neue',
-            fontWeight = 'normal',
-            fontStyle = 'normal',
-            textDecoration = 'none',
-            fontSize = 14,
-            fontSettings = null;
+        var color           = '#000000',
+            font            = 'Helvetica Neue',
+            fontWeight      = 'normal',
+            fontStyle       = 'normal',
+            textDecoration  = 'none',
+            fontSize        = 14,
+            fontSettings    = null;
         
-        if(labelFont.length > 0) {
+        if (labelFont.length > 0) {
             fontSettings = labelFont.split('%#%');
-            if(fontSettings.length == 6) {
-                font = fontSettings[0];
-                fontSize = fontSettings[1];
-                fontWeight = fontSettings[2];
-                color = fontSettings[3];
-                fontStyle = fontSettings[4];
-                textDecoration = fontSettings[5];
+            if (fontSettings.length == 6) {
+                font            = fontSettings[0];
+                fontSize        = fontSettings[1];
+                fontWeight      = fontSettings[2];
+                color           = fontSettings[3];
+                fontStyle       = fontSettings[4];
+                textDecoration  = fontSettings[5];
             }
         }
         
@@ -80,12 +86,12 @@ var Counter = function() {
         if(valueFont.length > 0) {
             fontSettings = valueFont.split('%#%');
             if(fontSettings.length == 6) {
-                font = fontSettings[0];
-                fontSize = fontSettings[1];
-                fontWeight = fontSettings[2];
-                color = fontSettings[3];
-                fontStyle = fontSettings[4];
-                textDecoration = fontSettings[5];
+                font            = fontSettings[0];
+                fontSize        = fontSettings[1];
+                fontWeight      = fontSettings[2];
+                color           = fontSettings[3];
+                fontStyle       = fontSettings[4];
+                textDecoration  = fontSettings[5];
             }
         }   
         
@@ -107,67 +113,30 @@ var Counter = function() {
         this.$label.live('click', CounterClick);
         this.$value.live('click', CounterClick);
     };
-    
-    this.CreateFromJSON = function(jsonObject, $container, elementId, cValue, vDisplay) {
-        if(jsonObject == null) return;
+
+    self.CreateFromJSON = function(jsonObject, $container, elementId, cValue, vDisplay) {
+
+        if (jsonObject == null) return;
         
-        if('id' in jsonObject) {
-            currentId = jsonObject.id;
-        }
-        
-        if('counterId' in jsonObject) {
-            counterId = jsonObject.counterId;
-        }
-        
-        if('labelX' in jsonObject) {
-            labelX = jsonObject.labelX;
-        }
-        
-        if('labelY' in jsonObject) {
-            labelY = jsonObject.labelY;
-        }
-        
-        if('labelAngle' in jsonObject) {
-            labelAngle = jsonObject.labelAngle;
-        }
-        
-        if('labelFont' in jsonObject) {
-            labelFont = jsonObject.labelFont;
-        }
-        
-        if('labelText' in jsonObject) {
-            label = utils.Decode64(jsonObject.labelText);
-        }
-        
-        if('labelZIndex' in jsonObject) {
-            labelZIndex = jsonObject.labelZIndex;
-        }
-        
-        if('valueX' in jsonObject) {
-            valueX = jsonObject.valueX;
-        }
-        
-        if('valueY' in jsonObject) {
-            valueY = jsonObject.valueY;
-        }
-        
-        if('valueAngle' in jsonObject) {
-            valueAngle = jsonObject.valueAngle;
-        }
-        
-        if('valueFont' in jsonObject) {
-            valueFont = jsonObject.valueFont;
-        }
-        
-        if('valueZIndex' in jsonObject) {
-            valueZIndex = jsonObject.valueZIndex;
-        }
-        
-        this.Create($container, elementId, counterId, label, cValue, vDisplay);
+        if ('id' in jsonObject) currentId = jsonObject.id;
+        if ('counterId' in jsonObject) counterId = jsonObject.counterId;
+        if ('labelX' in jsonObject) labelX = jsonObject.labelX;
+        if ('labelY' in jsonObject) labelY = jsonObject.labelY;
+        if ('labelAngle' in jsonObject) labelAngle = jsonObject.labelAngle;
+        if ('labelFont' in jsonObject) labelFont = jsonObject.labelFont;
+        if ('labelZIndex' in jsonObject) labelZIndex = jsonObject.labelZIndex;
+        if ('valueStart' in jsonObject) cValue = jsonObject.valueStart;
+        if ('valueX' in jsonObject) valueX = jsonObject.valueX;
+        if ('valueY' in jsonObject) valueY = jsonObject.valueY;
+        if ('valueAngle' in jsonObject) valueAngle = jsonObject.valueAngle;
+        if ('valueFont' in jsonObject) valueFont = jsonObject.valueFont;
+        if ('valueZIndex' in jsonObject) valueZIndex = jsonObject.valueZIndex;
+        if ('labelTextOriginal' in jsonObject) label = utils.Decode64(jsonObject.labelTextOriginal);
+        self.Create($container, elementId, counterId, label, cValue, vDisplay);
     };
-    
-    this.ToJSON = function() {
-        if(this.$label == null || this.$value == null) return null;
+
+    self.ToJSON = function() {
+        if (this.$label == null || this.$value == null) return null;
 
         return '{\
                      "id": "' + currentId + '",\
@@ -181,7 +150,7 @@ var Counter = function() {
                               + '%#%' + this.$label.css('color')
                               + '%#%' + this.$label.css('font-style') 
                               + '%#%' + this.$label.css('text-decoration') + '",\
-              "labelText": "' + utils.Encode64(this.$label.text()) + '",\
+              "labelText": "' + utils.Encode64(label) + '",\
             "labelZIndex": "' + this.$label.css('z-index') + '",\
                  "valueX": "' + this.$value.css('left').replace('px', '') + '",\
                  "valueY": "' + this.$value.css('top').replace('px', '') + '",\
@@ -200,5 +169,5 @@ var Counter = function() {
         if(visualDisplay != null) {
             visualDisplay.SelectCounter(self);
         }
-    }
+    };
 };

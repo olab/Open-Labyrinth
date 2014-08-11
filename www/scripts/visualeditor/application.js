@@ -118,6 +118,7 @@ $(function () {
 
     var autoSaveData = null;
     var body         = $('body');
+    var autoSaveInterval = 50000;
     var visualEditor = new VisualEditor();
         visualEditor.Init(params);
         visualEditor.copyFunction = copy;
@@ -287,7 +288,7 @@ $(function () {
 
     function update()
     {
-        if (!currentUserReadOnly) {
+        if ( ! currentUserReadOnly) {
             visualEditor.isChanged = false;
     
             if (autoSaveTimer != null)
@@ -301,10 +302,10 @@ $(function () {
             autoSaveData = null;
             $('#leaveBox').modal('hide');
     
-            $.post(sendURL, {
-                data:data.substring(0, data.length - 1),
-                id:mapId
-            }, function (data) {
+            $.post(
+                sendURL,
+                { data:data.substring(0, data.length - 1), id:mapId },
+                function (data) {
                 if (data && data.length > 0) {
                     data = data.substring(1, data.length - 1);
                     data = data.substring(0, data.length - 1);
@@ -408,7 +409,7 @@ $(function () {
 
     $('#settings').click(function() {
         $('#veSettings').modal();
-        $('#autosaveTime').val(autosaveInterval * 0.001);
+        $('#autosaveTime').val(autoSaveInterval * 0.001);
     });
 
     $('#veSaveSettings').click(function() {
@@ -418,9 +419,9 @@ $(function () {
                 value = 10;
             }
 
-            autosaveInterval = value * 1000;
+            autoSaveInterval = value * 1000;
             $.post(settingsURL, {
-                time: autosaveInterval
+                time: autoSaveInterval
             }, function(data) {
                 $('#veSettings').modal('hide');
             });
@@ -428,7 +429,6 @@ $(function () {
     });
 
     $('#fullScreen').tooltip();
-    $('#update').tooltip();
     $('#addNode').tooltip({html:true});
     $('#vePan').tooltip({html:true});
     $('#veSelect').tooltip({html:true});
@@ -527,13 +527,13 @@ $(function () {
         if (visualEditor.isChanged) {
             if (autoSaveTimerNotSet){
                 autoSaveTimerNotSet = false;
-                autoSaveTimer = setTimeout(autoSave, autosaveInterval);
+                autoSaveTimer = setTimeout(autoSave, autoSaveInterval);
             }
         }
     }
 
     function autoSave() {
-        if (autoSaveTimer != null) {clearTimeout(autoSaveTimer)};
+        if (autoSaveTimer != null) {clearTimeout(autoSaveTimer)}
 
         utils.ShowMessage($veMessageContainer, $veMessage, 'info', 'Autosaving...', null, $veActionButton, false);
         visualEditor.isChanged = false;

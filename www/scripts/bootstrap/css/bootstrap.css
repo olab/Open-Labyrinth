@@ -33,8 +33,6 @@ audio:not([controls]) {
 
 html {
   font-size: 100%;
-  -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
 }
 
 a:focus {
@@ -65,7 +63,6 @@ sub {
 }
 
 img {
-  width: auto\9;
   height: auto;
   max-width: 100%;
   vertical-align: middle;
@@ -89,7 +86,6 @@ textarea {
 
 button,
 input {
-  *overflow: visible;
   line-height: normal;
 }
 
@@ -979,9 +975,7 @@ pre {
   background-color: #f5f5f5;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 pre.prettyprint {
@@ -1076,9 +1070,7 @@ input[type="color"],
   line-height: 20px;
   color: #555555;
   vertical-align: middle;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+  border-radius: 4px;
 }
 
 input,
@@ -1147,8 +1139,6 @@ input[type="color"]:focus,
 input[type="radio"],
 input[type="checkbox"] {
   margin: 4px 0 0;
-  margin-top: 1px \9;
-  *margin-top: 0;
   line-height: normal;
 }
 
@@ -5575,17 +5565,13 @@ a.thumbnail:hover {
 }
 
 .label {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+  border-radius: 3px;
 }
 
 .badge {
   padding-right: 9px;
   padding-left: 9px;
-  -webkit-border-radius: 9px;
-     -moz-border-radius: 9px;
-          border-radius: 9px;
+  border-radius: 9px;
 }
 
 .label:empty,
@@ -6117,13 +6103,15 @@ h1 > .pull-right {
 }
 
 .patient-t td:nth-child(1){
-    width: 10%;
+    width: 15%;
     min-width: 66px;
 }
-.patient-t td:nth-child(2){ width: 65%;}
-.patient-t td:nth-child(3){
-    width: 25%;
-    min-width: 150px;
+.patient-t td:nth-child(2){ width: 25%;}
+.patient-t td:nth-child(3){ width: 25%;}
+.patient-t td:nth-child(4){ width: 25%;}
+.patient-t td:nth-child(5){
+    width: 20%;
+    min-width: 235px;
 }
 
 .no-maps {
@@ -6152,10 +6140,6 @@ input.assign-type {
     display: none;
 }
 
-.assign-same .assign-queue {
-    opacity: 0;
-}
-
 .assign-t td:nth-child(1){
     width: 15%;
     min-width: 155px;
@@ -6167,10 +6151,116 @@ input.assign-type {
     min-width: 150px;
 }
 
-.condition-control-group:nth-child(2) .dra{
+.wizard_button img {
+    width: 100%;
+}
+
+.report-type {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.report-type-title {
+    position: relative;
+    top: 1px;
+    padding-right: 5px;
+}
+
+#globalMapFrom {
+    position: relative;
+}
+
+.save-details {
+    position: absolute;
+    right: 0;
+    top: -15px;
+}
+
+.details-column:nth-child(1) {
+    width: 25%;
+}
+.details-column:nth-child(2) {
+    width: 75%;
+}
+
+#sct-webinars {
+    margin: 1px 0 0 30px;
+}
+
+#discrepancyMap {
+    position: relative;
+    margin-top: -38px;
+    z-index: 2;
+}
+
+.controls .node-select-js {
+    margin: 5px 10px 5px 0;
+}
+
+.poll-node-js {
+    display: block;
+    margin-top: 10px;
+}
+
+.poll-node-section {
+    margin-top: 10px;
+    width: 600px;
+}
+
+.poll-node-indent {
+    margin-right: 10px;
+}
+
+.patient-condition {
+    display: inline-block;
+}
+
+.patient-same,
+.patient-different {
+    display: inline-block;
+    width: 49%;
+}
+.patient-different {
     display: none;
 }
 
-.wizard_button img {
-    width: 100%;
+input.patient-type-js {
+    margin: -1px 5px 0 0;
+}
+
+.visual-map-js,
+.visual-section-js {
+    position: absolute;
+    bottom: -10px;
+}
+
+.visual-section-js {
+    left: 220px;
+}
+
+.visual-map-js:focus,
+.visual-section-js:focus {
+    outline-color: #808080;
+}
+
+#discardReload {
+    margin: 10px 15px;
+}
+
+input.lightning-chb {
+    position: relative;
+    margin-right: 5px;
+    top: -3px;
+}
+
+.second_parameter {
+    margin-left: 10px;
+}
+
+#assign-users th{
+    vertical-align: middle;
+}
+
+#webinarForm .submit-webinar-btn:first-child {
+    margin-top: -2px;
 }

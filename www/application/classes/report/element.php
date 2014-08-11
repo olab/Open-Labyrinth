@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Class Report 4R element
  */
-abstract class Report_4R_Element {
+abstract class Report_Element {
     protected $implementation = null;
 
     /**
@@ -48,4 +48,28 @@ abstract class Report_4R_Element {
      * @return mixed
      */
     public abstract function getKey();
+
+    public function getNameFromNumber($num)
+    {
+        $numeric    = $num % 26;
+        $letter     = chr(65 + $numeric);
+        $num2       = intval($num / 26);
+        if ($num2 > 0)
+        {
+            return $this->getNameFromNumber($num2 - 1).$letter;
+        } else
+        {
+            return $letter;
+        }
+    }
+
+    public function fillCell ($column, $row, $value, $fontSize = 12)
+    {
+        $column = $this->getNameFromNumber($column);
+
+        $this->implementation->setAutoWidth($column);
+        $this->implementation->setCursor($column.$row);
+        $this->implementation->setValue($value);
+        $this->implementation->setFontSize($column.$row, $fontSize);
+    }
 }

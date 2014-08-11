@@ -78,39 +78,12 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     }
 
     public function getSkinById($id){
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $id)->where('enabled', '=', '1');
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return DB_ORM::model('map_skin', array($result[0]['id']));
-        }
-
-        return NULL;
+        return DB_ORM::select('Map_Skin')->where('id', '=', $id)->where('enabled', '=', '1')->query()->fetch(0);
     }
 
-    public function getAllSkinsId() {
-        $builder = DB_SQL::select('default')->from($this->table())->column('id')->where('enabled', '=', '1');
-        $result = $builder->query();
-
-        $ids = array();
-        if ($result->is_loaded()) {
-            foreach ($result as $record) {
-                $ids[] = (int)$record['id'];
-            }
-        }
-
-        return $ids;
-    }
-
-    public function getAllSkins() {
-        $result = array();
-        $ids = $this->getAllSkinsId();
-        
-        foreach($ids as $id) {
-            $result[] = DB_ORM::model('map_skin', array($id));
-        }
-        
-        return $result;
+    public function getAllSkins()
+    {
+        return DB_ORM::select('Map_Skin')->where('enabled', '=', '1')->query()->as_array();
     }
 
     public function getSkinsByUserId($user_id){
@@ -130,7 +103,7 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
     public function updateSkinName($id, $name, $mapId){
         $error = false;
         $nameChanged = true;
-        $skin = $this->getMapBySkin($name);
+        $skin = $this->getMapByName($name);
         if ($skin != NULL){
             if ($skin->id != $id){
                 $error = true;
@@ -177,43 +150,32 @@ class Model_Leap_Map_Skin extends DB_ORM_Model {
         return false;
     }
 
-    public function addSkin ($skinName, $skinPath) {
-        $this->name = $skinName;
-        $this->path = $skinPath;
-        $this->user_id = Auth::instance()->get_user()->id;
-        $this->enabled = 1;
+    public function addSkin ($skinName, $skinPath)
+    {
+        $this->name     = $skinName;
+        $this->path     = $skinPath;
+        $this->user_id  = Auth::instance()->get_user()->id;
+        $this->enabled  = 1;
         $this->save();
-        $skin = $this->getMapBySkin($this->name);
-        return $skin;
+
+        return $this->getMapByName($this->name);
     }
 
-    public function getMapBySkin($name){
-        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name)->where('enabled', '=', '1');
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return DB_ORM::model('map_skin', array($result[0]['id']));
-        }
-
-        return NULL;
+    public function getMapByName($name){
+        return DB_ORM::select('Map_Skin')->where('name', '=', $name)->where('enabled', '=', '1')->query()->fetch(0);
     }
 
-    public function updateSkinData($skinId, $data, $html) {
-        DB_ORM::update('map_skin')
-                ->set('data', $data)
-                ->where('id', '=', $skinId)
-                ->execute();
+    public function updateSkinData($skinId, $data, $html)
+    {
+        DB_ORM::update('Map_Skin')->set('data', $data)->where('id', '=', $skinId)->execute();
+        $skinDir = DOCROOT.'/application/views/labyrinth/skin/'.$skinId.'/';
+        if( ! is_dir($skinDir)) mkdir($skinDir);
 
-        $skinDir = DOCROOT . '/application/views/labyrinth/skin/' . $skinId . '/';
-        if(!is_dir($skinDir)) { mkdir($skinDir); }
-
-        file_put_contents($skinDir . 'skin.source', $html);
+        file_put_contents($skinDir.'skin.source', $html);
         $skinBuilder         = new Skin_Basic_Builder($html);
         $skinBuilderDirector = new Skin_Basic_Director();
 
         $skinBuilderDirector->construct($skinBuilder);
-        file_put_contents($skinDir . 'skin.php', $skinBuilder->getSkin());
+        file_put_contents($skinDir.'skin.php', $skinBuilder->getSkin());
     }
 }
-
-?>

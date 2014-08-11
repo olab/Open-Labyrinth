@@ -95,20 +95,25 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
         return array();
     }
     
-    public function getVpdNotInArrayIDs($ids) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $vpds = array();
-            foreach($result as $record) {
+    public function getVpdNotInArrayIDs($ids, $mapId)
+    {
+        $result = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids)->query();
+        $vpds = array();
+        $vpdPrivate = '';
+
+        foreach ($result as $record) {
+            $vpdElements = DB_ORM::model('map_vpd_element')->getValuesByVpdId($record['id']);
+            foreach ($vpdElements as $vpdElement) {
+                if ($vpdElement->key == 'Private') {
+                    $vpdPrivate = $vpdElement->value;
+                }
+            }
+            if ($record['map_id'] == $mapId OR ($record['map_id'] != $mapId AND $vpdPrivate == 'Off')) {
                 $vpds[] = DB_ORM::model('map_vpd', array((int)$record['id']));
             }
-            
-            return $vpds;
         }
-        
-        return NULL;
+            
+        return $vpds;
     }
     
     public function createNewElement($mapId, $typeName, $values) {
@@ -142,34 +147,25 @@ class Model_Leap_Map_Vpd extends DB_ORM_Model {
 
         $vpdMap = array();
 
-        foreach ($vpds as $vpd)
-        {
-            $builder = DB_ORM::insert('map_vpd')
-                    ->column('map_id', $toMapId)
-                    ->column('vpd_type_id', $vpd->vpd_type_id);
-                    
-            $vpdMap[$vpd->id] = $builder->execute();
+        foreach ($vpds as $vpd) {
+            $vpdMap[$vpd->id] = DB_ORM::insert('map_vpd')
+                ->column('map_id', $toMapId)
+                ->column('vpd_type_id', $vpd->vpd_type_id)
+                ->execute();
         }
         
-        foreach($vpdMap as $k => $v) DB_ORM::model('map_vpd_element')->duplicateElement($k, $v);
+        foreach($vpdMap as $k => $v) {
+            DB_ORM::model('map_vpd_element')->duplicateElement($k, $v);
+        }
         return $vpdMap;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('vpd_type_id', 'ASC');
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $vpds = array();
-            foreach($result as $record) {
-                $vpds[] = $record;
-            }
-
-            return $vpds;
+    public function getMapId($vpdId){
+        $mapId = 0;
+        $results = DB_SQL::select('default')->from($this->table())->where('id', '=', $vpdId)->query();
+        foreach($results as $record){
+            $mapId = $record['map_id'];
         }
-
-        return NULL;
+        return $mapId;
     }
 }
-
-?>

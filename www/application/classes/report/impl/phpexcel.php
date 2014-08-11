@@ -94,6 +94,12 @@ class Report_Impl_PHPExcel extends Report_Impl {
         $activeSheet->setCellValue($this->cursor, $value);
     }
 
+    public function setAutoWidth($index) {
+        if($this->phpExcel == null || $index == null) return;
+
+        $this->phpExcel->getActiveSheet()->getColumnDimension($index)->setAutoSize(true);
+    }
+
     public function setActiveSheet($index) {
         if($this->phpExcel == null || $index == null || $index <= 0) return;
 

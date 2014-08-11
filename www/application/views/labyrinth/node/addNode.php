@@ -18,10 +18,8 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
-    <<script language="javascript" type="text/javascript"
-             src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+if (isset($templateData['map'])) { ?>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script language="javascript" type="text/javascript">
         tinymce.init({
             selector: ".mceEditor",
@@ -67,9 +65,7 @@ if (isset($templateData['map'])) {
             ]
         });
     </script>
-<div class="page-header">
-    <h1><?php echo __('Add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1>
-    </div>
+<div class="page-header"><h1><?php echo __('Add new node in Labyrinth ') . '"' . $templateData['map']->name . '"'; ?></h1></div>
 
     <form class="form-horizontal" id="form1" name="form1" method="post"
           action="<?php echo URL::base() . 'nodeManager/createNode/' . $templateData['map']->id; ?>">
@@ -100,13 +96,20 @@ if (isset($templateData['map'])) {
                               id="mnodeinfo" <?php if (isset($templateData['editMode']) && $templateData['editMode'] == 'w') echo 'class="mceEditor"'; ?>></textarea>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Set "Supporting Information" to private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" id="is_private" name="is_private">
+                </div>
+            </div>
 
             <div class="control-group">
                 <label for="show_info"
                        class="control-label"><?php echo __('Show "Supporting Information" button in the bottom of node'); ?></label>
 
                 <div class="controls">
-                    <input id="show_info" name="show_info" name="show_info" type="checkbox"/>
+                    <input id="show_info" name="show_info" type="checkbox"/>
                 </div>
             </div>
 
@@ -176,18 +179,11 @@ if (isset($templateData['map'])) {
 
             <div class="control-group">
                 <label class="control-label"><?php echo __('Link function style'); ?></label>
-                <?php if (isset($templateData['linkStyles'])) { ?>
-                    <?php foreach ($templateData['linkStyles'] as $linkStyle) { ?>
-
-                        <div class="controls">
-                            <label class="radio">
-                                <input type="radio" name="linkstyle"
-                                       value="<?php echo $linkStyle->id ?>"><?php echo $linkStyle->name; ?>
-                            </label>
-                        </div>
-                    <?php } ?>
-                <?php } ?>
-
+                <select name="linkstyle" style="margin-left: 18px;"><?php
+                foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                    <option value="<?php echo $linkStyle->id ?>" <?php if($linkStyle->id == Arr::get($templateData, 'mainLinkStyle')) echo 'selected'; ?>><?php echo $linkStyle->name; ?></option><?php
+                } ?>
+                </select>
             </div>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Node priority'); ?></label>

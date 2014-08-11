@@ -44,7 +44,7 @@ if (isset($templateData['map'])) { ?>
     <?php foreach($templateData['rules'] as $rule) { ?>
         <tr>
             <td><?php echo $rule->id; ?></td>
-            <td><?php if ($rule->isCorrect == 1) echo 'Yes'; else echo 'No'; ?></td>
+            <td><?php echo ($rule->isCorrect == 1) ? 'Yes' : 'No'; ?><?php if ($rule->lightning == 1) echo ' | Lightning'; ?></td>
             <td class="changeCodeToText"><?php echo $rule->rule; ?></td>
             <td>
                 <div class="btn-group">

@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_4R_Node extends Report_4R_Element {
+class Report_4R_Node extends Report_Element {
     private $nodeId;
     private $title;
     private $countOfChoices;

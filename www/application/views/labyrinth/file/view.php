@@ -51,7 +51,7 @@ if (isset($templateData['map'])) {
                 </button>
                 <span class="fileupload-loading"></span>
             </div>
-            <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio(.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a)</p>
+            <p>JPEG (.jpg + .jpeg), GIF (.gif), PNG (.png), Acrobat PDF (.pdf), Shockwave Flash (.swf), Microsoft Word, (.doc), Microsoft Excel (.xls), Microsoft PowerPoint (.ppt), Rich Text Format (.rtf), Quicktime Video (.mov), MPEG-4 Video (.mp4), Windows Media (.wmv), Real Stream (.ram), Real Stream (.rpm), Flash video, (.flv), MP3 audio(.mp3), WAV audio (.wav), AAC (m4a) audio (.m4a),ZIP arhive (.zip) </p>
             <div class="col-lg-5 fileupload-progress fade" style="margin-top: 22px;">
                 <div class="progress progress-striped active" id="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="margin-bottom: 0px;">
                     <div class="progress-bar progress-bar-success bar" style="width:0%;"></div>
@@ -161,8 +161,26 @@ if (isset($templateData['map'])) {
         {% } %}
     </script>
 
+    <?php if(isset($templateData['warningMessage'])){
+        echo '<div class="alert alert-error">';
+        echo $templateData['warningMessage'];
+        if(isset($templateData['listOfUsedReferences']) && count($templateData['listOfUsedReferences']) > 0){
+            echo '<ul class="nav nav-tabs nav-stacked">';
+            foreach($templateData['listOfUsedReferences'] as $referense){
+                    list($map, $node) = $referense;
+                    echo '<li><a href="' . URL::base() . 'nodeManager/editNode/' . $node['node_id'] . '">'
+                          .$map['map_name'].' / '.$node['node_title'].'('.$node['node_id'].')'.'</a></li>';
+            }
+            echo '</ul>';
+        }
+        echo '</div>';
+    }
+    ?>
+
+    <form method="POST" action="<?php echo URL::base() . 'fileManager/delCheked/' . $templateData['map']->id; ?>"  id="form_del_cheked">
     <table class="table table-striped table-bordered">
         <colgroup>
+            <col  style="width:2%;"/>
             <col style="width:25%"/>
             <col/>
             <col/>
@@ -170,6 +188,7 @@ if (isset($templateData['map'])) {
         </colgroup>
         <thead>
         <tr>
+            <th> </th>
             <th>Title &amp; preview</th>
             <th>Embeddable</th>
             <th>Details</th>
@@ -182,6 +201,9 @@ if (isset($templateData['map'])) {
             <?php foreach ($templateData['files'] as $file) { ?>
                 <tr>
                     <td>
+                        <input type="checkbox" class="check_box" name="namecb[]" value="<?php echo $file->id; ?>" />
+                    </td>
+                    <td>
                         <div class="span-12">
                            <a href="<?php echo URL::base() . $file->path; ?>"><?php echo $file->name; ?></a>
                         </div>
@@ -189,6 +211,7 @@ if (isset($templateData['map'])) {
                     $preview = '';
                     $isInput = false;
                     $isImage = false;
+                    $isArhive = false;
 
                     if ($file->mime == 'image/gif') {
                         $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
@@ -202,6 +225,10 @@ if (isset($templateData['map'])) {
                         $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
                         $isImage = true;
+                    }
+                    else if ($file->mime == 'application/zip') {
+                        $preview = '<img src="' . URL::base() . 'images/zipicon.gif">';
+                        $isArhive = true;
                     } else if ($file->mime == 'image/jpeg') {
                         $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
@@ -263,15 +290,41 @@ if (isset($templateData['map'])) {
 
                                 <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-picture"></i>Image
                                     editor</a>
+                        <?php } ?>
+                        <?php if ($isArhive) { ?>
+                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/arhiveUnZip/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-arhive"></i>UnZip</a>
                         <?php } ?></div>
                     </td>
                 </tr>
             <?php } ?>
+                <tr>
+                    <td>
+                        <input type="checkbox" name="cbname[]" id="maincb" />
+                    </td>
+                    <td>
+                       <a data-toggle="modal" href="#" data-target="#delete-checked" class="btn btn-danger"><i class="icon-trash"></i> <?php echo __('Delete checked'); ?></a>
+                    </td>
+                    <td colspan="3"></td>
+               </tr>
+
         <?php }else{ ?>
-        <tr class="info"><td colspan="4">There are no files available for this labyrinth, yet. You may add a file, using the form below.</td></tr>
+        <tr class="info"><td colspan="5">There are no files available for this labyrinth, yet. You may add a file, using the form below.</td></tr>
         <?php } ?>
         </tbody>
     </table>
+        <div class="modal hide alert alert-block alert-error fade in" id="delete-checked">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+        </div>
+        <div class="modal-body">
+            <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting checked file(s) from this labyrinth?'); ?></p>
+            <p>
+                <input type="submit" class="btn btn-danger" value="<?php echo __('Delete checked'); ?>"> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </p>
+        </div>
+    </div>
+    </form>
     <input type="hidden" id="redirect_url" name="redirect_url" value="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>" />
 
     <script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>

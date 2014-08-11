@@ -10,7 +10,7 @@ var UniqueObject = (function() {
      */
     function UniqueObject() {
         this._objectId = 'objectid-' + GUID.Get();
-    };
+    }
     
     /**
      * Get unique object Id

@@ -26,58 +26,50 @@ class Controller_ClusterManager extends Controller_Base {
     public function before() {
         $this->templateData['labyrinthSearch'] = 1;
 
-        parent::before();
-
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
+
+        parent::before();
     }
 
-    public function action_index() {
+    public function action_index()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['dams'] = DB_ORM::model('map_dam')->getAllDamByMap((int) $mapId);
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['dams'] = DB_ORM::model('map_dam')->getAllDamByMap((int) $mapId);
 
-            $view = View::factory('labyrinth/cluster/view');
-            $view->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $view;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        $ses = Session::instance();
+        if($ses->get('warningMessage')){
+            $this->templateData['warningMessage'] = $ses->get('warningMessage');
+            $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+            $ses->delete('listOfUsedReferences');
+            $ses->delete('warningMessage');
         }
+
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/cluster/view')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base().'clusterManager/index/'.$mapId));
     }
 
     public function action_addDam() {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
+        if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'clusterManager/addDam/' . $mapId));
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/cluster/add')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
 
-            $addView = View::factory('labyrinth/cluster/add');
-            $addView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $addView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
-        }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base().'clusterManager/index/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'clusterManager/addDam/'.$mapId));
     }
 
     public function action_saveNewDam() {
@@ -90,47 +82,61 @@ class Controller_ClusterManager extends Controller_Base {
         }
     }
 
-    public function action_deleteDam() {
+    public function action_deleteDam()
+    {
         $mapId = $this->request->param('id', NULL);
         $damId = $this->request->param('id2', NULL);
 
-        if ($damId != NULL and $mapId != NULL) {
-            Db_ORM::model('map_dam', array((int) $damId))->delete();
-            Request::initial()->redirect(URL::base() . 'clusterManager/index/' . $mapId);
-        } else {
-            Request::initial()->redirect(URL::base());
+        if ($damId AND $mapId)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+
+            $references = DB_ORM::model('map_node_reference')->getByElementType($damId, 'DAM');
+            if($references != NULL)
+            {
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The claster wasn\'t deleted. The selected claster is used in the following labyrinths:');
+            }
+            else DB_ORM::model('map_dam', array((int) $damId))->delete();
+            Request::initial()->redirect(URL::base().'clusterManager/index/'.$mapId);
         }
+        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_editCluster() {
+    public function action_editCluster()
+    {
         $mapId = $this->request->param('id', NULL);
         $damId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $damId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['dam'] = DB_ORM::model('map_dam', array((int) $damId));
-            $this->templateData['vpds'] = DB_ORM::model('map_dam')->getElementsNotAdded((int) $damId);
-            $this->templateData['files'] = DB_ORM::model('map_dam')->getMediaFilesNotAdded((int) $damId);
-            $this->templateData['dams'] = DB_ORM::model('map_dam')->getDamNotAdded((int) $damId);
-            $this->templateData['preview'] = Controller_RenderLabyrinth::parseText('[[DAM:' . $damId . ']]');
+        if ($mapId AND $damId)
+        {
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+            $this->templateData['map']      = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['dam']      = DB_ORM::model('map_dam', array((int) $damId));
+            $this->templateData['vpds']     = DB_ORM::model('map_dam')->getElementsNotAdded((int) $damId);
+            $this->templateData['files']    = DB_ORM::model('map_dam')->getMediaFilesNotAdded((int) $damId);
+            $this->templateData['dams']     = DB_ORM::model('map_dam')->getDamNotAdded((int) $damId);
+            $this->templateData['preview']  = Controller_RenderLabyrinth::parseText('[[DAM:' . $damId . ']]');
+
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($damId, 'DAM');
+            $this->templateData['used'] = count($usedElements);
+            $ses = Session::instance();
+            if($ses->get('dam_ses') == 'setPrivate')
+            {
+                $this->templateData['warningMessage'] = 'The claster is did not set to private. Please, check other labyrinths on reference on this claster.';
+                $ses->delete('avatar_ses');
+            }
+
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->templateData['center'] = View::factory('labyrinth/cluster/edit')->set('templateData', $this->templateData);
+            $this->template->set('templateData', $this->templateData);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
-
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['dam']->name)->set_url(URL::base() . 'clusterManager/index/' . $mapId. '/'. $this->templateData['dam']->id));
-            $editView = View::factory('labyrinth/cluster/edit');
-            $editView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $editView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
         }
+        else Request::initial()->redirect(URL::base());
     }
 
     public function action_updateDamName() {
@@ -138,6 +144,14 @@ class Controller_ClusterManager extends Controller_Base {
         $damId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $damId != NULL) {
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $damId, 'DAM');
+            $privete = Arr::get($_POST, 'is_private');
+            if($references != NULL && $privete){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The claster wasn\'t set to private. The selected claster is used in the following labyrinths:');
+                $_POST['is_private'] = FALSE;
+            }
             DB_ORM::model('map_dam')->updateDamName($damId, $_POST);
             Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
@@ -208,5 +222,3 @@ class Controller_ClusterManager extends Controller_Base {
     }
 
 }
-
-?>

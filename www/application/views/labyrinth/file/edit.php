@@ -212,7 +212,21 @@ if (isset($templateData['map']) and isset($templateData['file'])) {
                                 <input type="checkbox" name="shared" <?php echo $templateData['file']->is_shared ? 'checked="checked"' : ''; ?>>
                             </div>
                         </div>
+                        <div class="control-group">
+                            <label class="control-label" for="v"><?php echo __('Private'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="checkbox" name="is_private" <?php echo $templateData['file']->is_private ? 'checked=""' : '"checked"'; ?>>
+                            </div>
+                        </div>
 
+                        <div class="control-group">
+                            <label class="control-label"><?php echo __('Used'); ?>
+                            </label>
+                            <div class="controls">
+                                <input type="text" readonly value="<?php echo $templateData['used']; ?>"/>
+                            </div>
+                        </div>
                         <div class="control-group">
                             <label class="control-label" for="v"><?php echo __('Description'); ?>
                             </label>

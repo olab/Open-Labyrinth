@@ -178,5 +178,3 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         return $result;
     }
 }
-
-?>

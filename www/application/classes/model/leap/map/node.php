@@ -79,7 +79,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
-            
+
             'link_style_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
@@ -133,6 +133,12 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 'default' => FALSE,
                 'nullable' => FALSE,
                 'savable' => TRUE,
+            )),
+
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
             )),
 
             'annotation' => new DB_ORM_Field_Text($this, array(
@@ -259,10 +265,10 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 $builder = $builder->order_by('id', 'ASC');
         }
         $result = $builder->query();
-        
+
+        $nodes = array();
         if ($result->is_loaded())
         {
-            $nodes = array();
             $rootNodes = array();
             $endNodes = array();
 
@@ -282,29 +288,13 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $nodes = array_merge($nodes, $endNodes);
 
             if ($lengthSort) usort($nodes, function($a, $b) { return strlen($b->title) - strlen($a->title); });
-
-            return $nodes;
         }
-        return array();
+        return $nodes;
     }
     
-    public function getAllNode($mapId = null) {
-        $builder = DB_SQL::select('default')->from($this->table());
-        if($mapId != null)
-            $builder = $builder->where ('map_id', '=', $mapId);
-        
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $nodes = array();
-            foreach($result as $record) {
-                $nodes [] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-            
-            return $nodes;
-        }
-        
-        return NULL;
+    public function getAllNode ($mapId)
+    {
+        return DB_ORM::select('Map_Node')->where ('map_id', '=', $mapId)->query()->as_array();
     }
     
     public function createNode($values) {
@@ -315,13 +305,14 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('title',            Arr::get($values, 'mnodetitle', ''))
                 ->column('text',             Arr::get($values, 'mnodetext', ''))
                 ->column('type_id',          Arr::get($values, 'type_id', FALSE) ? Arr::get($values, 'type_id', FALSE) : 2)
+                ->column('is_private',       Arr::get($values, 'is_private', FALSE) ? 1 : 0)
                 ->column('probability',      Arr::get($values, 'mnodeprobability', FALSE))
                 ->column('info',             Arr::get($values, 'mnodeinfo', ''))
                 ->column('link_style_id',    Arr::get($values, 'linkstyle', 1))
                 ->column('link_type_id',     2)
                 ->column('priority_id',      Arr::get($values, 'priority', 1))
                 ->column('undo',             Arr::get($values, 'mnodeUndo', FALSE))
-                ->column('end',              Arr::get($values, 'ender', FALSE))
+                ->column('end',              (int) Arr::get($values, 'ender', FALSE))
                 ->column('show_info',        Arr::get($values, 'show_info', FALSE) ? 1 : 0)
                 ->column('annotation',       Arr::get($values, 'annotation', null))
                 ->execute()));
@@ -343,6 +334,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $record->conditional          = Arr::get($values, 'conditional', '');
         $record->conditional_message  = Arr::get($values, 'conditional_message', '');
         $record->info                 = Arr::get($values, 'info', '');
+        $record->is_private           = Arr::get($values, 'is_private', FALSE) ? 1 : 0;;
         $record->link_style_id        = Arr::get($values, 'link_style_id', 1);
         $record->link_type_id         = Arr::get($values, 'link_type_id', 1);
         $record->priority_id          = Arr::get($values, 'priority_id', 1);
@@ -357,7 +349,6 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         $record->save();
 
         return $record->getLastAddedNode($mapId);
-
     }
 
     public function createNodeFromJSON($mapId, $values) {
@@ -368,6 +359,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                 ->column('title', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', '')))))
                 ->column('text', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', '')))))
                 ->column('info', urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', '')))))
+                ->column('is_private', (int) Arr::get($values, 'is_private', 0) ? 1 : 0)
                 ->column('probability', (Arr::get($values, 'isExit', 'false') == 'true'))
                 ->column('type_id', (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2)
                 ->column('link_style_id', Arr::get($values, 'linkStyle', 1))
@@ -383,24 +375,34 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $builder->execute();
     }
 
-    public function updateNodeFromJSON($nodeId, $values) {
+    public function updateNodeFromJSON($mapId, $nodeId, $values)
+    {
         $this->id = $nodeId;
         $this->load();
-        if($this) {
-            $this->title = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
-            $this->text = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
-            $this->info = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
-            $this->probability = Arr::get($values, 'isExit', 'false') == 'true';
-            $this->type_id = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
-            $this->link_style_id = Arr::get($values, 'linkStyle', 1);
-            $this->priority_id = Arr::get($values, 'nodePriority', 1);
-            $this->undo = Arr::get($values, 'undo', 'false') == 'true';
-            $this->end = Arr::get($values, 'isEnd', 'false') == 'true';
-            $this->x = Arr::get($values, 'x', 0);
-            $this->y = Arr::get($values, 'y', 0);
-            $this->rgb = Arr::get($values, 'color', '#FFFFFF');
-            $this->show_info = (int) Arr::get($values, 'showInfo', 0);
-            $this->annotation = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
+
+        if($this)
+        {
+            $this->title            = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'title', ''))));
+            $text                   = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'content', ''))));
+            $info                   = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'support', ''))));
+            $crossReferences        = new CrossReferences();
+            $nodeText               = $crossReferences->checkReference($mapId, $nodeId, $text, $info);
+            $this->text             = isset($nodeText['text']) ? $nodeText['text'] : $text;
+            $this->info             = isset($nodeText['info']) ? $nodeText['info'] : $this->info = $info;
+            $reference              = DB_ORM::model('map_node_reference')->getNotParent($mapId, $nodeId, 'INFO');
+            $private                = (int) Arr::get($values, 'isPrivate', 0);
+            $this->is_private       = ($reference != NULL && $private) ? FALSE : $private;
+            $this->probability      = Arr::get($values, 'isExit', 'false') == 'true';
+            $this->type_id          = (Arr::get($values, 'isRoot', 'false') == 'true') ? 1 : 2;
+            $this->link_style_id    = Arr::get($values, 'linkStyle', 1);
+            $this->priority_id      = Arr::get($values, 'nodePriority', 1);
+            $this->undo             = Arr::get($values, 'undo', 'false') == 'true';
+            $this->end              = Arr::get($values, 'isEnd', 'false') == 'true';
+            $this->x                = Arr::get($values, 'x', 0);
+            $this->y                = Arr::get($values, 'y', 0);
+            $this->rgb              = Arr::get($values, 'color', '#FFFFFF');
+            $this->show_info        = (int) Arr::get($values, 'showInfo', 0);
+            $this->annotation       = urldecode(str_replace('+', '&#43;', base64_decode(Arr::get($values, 'annotation', null))));
 
             $this->save();
         }
@@ -430,6 +432,16 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
 
+    public function updateNodeInfo($nodeId, $text) {
+        $this->id = $nodeId;
+        $this->load();
+
+        if($this->is_loaded()) {
+            $this->info = $text;
+            $this->save();
+        }
+    }
+
     public function getLastAddedNode($mapId)
     {
         $result = DB_SQL::select('default')
@@ -448,8 +460,9 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->title = 'Root Node';
             $this->text = '';
             $this->info = '';
+            $this->is_private = FALSE;
             $this->probability = FALSE;
-            $this->link_style_id = 1;
+            $this->link_style_id = 5;
             $this->link_type_id = 2;
             $this->priority_id = 1;
             $this->type_id = 1;
@@ -468,6 +481,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->title = Arr::get($values, 'mnodetitle', $this->title);
             $this->text = Arr::get($values, 'mnodetext', $this->text);
             $this->info = Arr::get($values, 'mnodeinfo', $this->info);
+            $this->is_private = Arr::get($values, 'is_private', FALSE) ? 1 : 0;
             $this->probability = Arr::get($values, 'mnodeprobability', $this->probability);
             $this->link_style_id = Arr::get($values, 'linkstyle', $this->link_style_id);
             $this->link_type_id = Arr::get($values, 'linktype', $this->link_type_id);
@@ -546,20 +560,21 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
     }
     
-    public function getAllNodesNotInSection($mapId = null) {
+    public function getAllNodesNotInSection ($mapId = null)
+    {
         $tableName = DB_ORM::model('map_node_section_node');
         $builder = DB_SQL::select('default')
                 ->from($tableName::table())
                 ->column('node_id');
 
         $allNodeInSectionresult = $builder->query();
-        
+
         $ids = array();
-        if($allNodeInSectionresult->is_loaded()) {
-            foreach($allNodeInSectionresult as $record) {
-                $ids[] = (int)$record['node_id'];
-            }
+
+        foreach($allNodeInSectionresult as $record) {
+            $ids[] = (int)$record['node_id'];
         }
+
         $builder = NULL;
         if(count($ids) > 0) {
             $builder = DB_SQL::select('default')->from($this->table())->where('id', 'NOT IN', $ids);
@@ -568,28 +583,21 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         }
         if(isset($mapId))$builder->where("map_id","=",$mapId);
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $nodes = array();
-            foreach($result as $record) {
-                $nodes[] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-            
-            return $nodes;
+
+        $nodes = array();
+        foreach($result as $record) {
+            $nodes[] = DB_ORM::model('map_node', array((int)$record['id']));
         }
-        
-        return NULL;
+        return $nodes;
     }
 
-    public function setLinkStyle($linkStyleId) {
-        $linkStyles = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        if($linkStyles != null && count($linkStyles) > 0) {
-            foreach($linkStyles as $style) {
-                if($style->id == $linkStyleId) {
-                    DB_ORM::update('map_node')->set('link_style_id', $linkStyleId)->execute();
-                    break;
-                }
-            }
+    public function setLinkStyle($mapId, $linkStyleId)
+    {
+        $mainLinkStyle = $this->getMainLinkStyles($mapId);
+        foreach (DB_ORM::select('map_node')->where('map_id', '=', $mapId)->where('link_style_id', '=', $mainLinkStyle)->query()->as_array() as $nodeObj)
+        {
+            $nodeObj->link_style_id = $linkStyleId;
+            $nodeObj->save();
         }
     }
 
@@ -647,21 +655,9 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getRootNodeByMap($mapId) {
-        $typeId = DB_ORM::model('map_node_type')->getTypeByName('root')->id;
-        if($typeId != NULL) {
-            $builder = DB_SQL::select('default')
-                    ->from($this->table())
-                    ->where('type_id', '=', $typeId, 'AND')
-                    ->where('map_id', '=', $mapId);
-            $result = $builder->query();
-
-            if($result->is_loaded()) {
-                return DB_ORM::model('map_node', array((int)$result[0]['id']));
-            }
-        }
-        
-        return NULL;
+    public function getRootNodeByMap($mapId)
+    {
+        return DB_ORM::select('map_node')->where('type_id', '=', 1)->where('map_id', '=', $mapId)->query()->fetch(0);
     }
     
     public function deleteNode($nodeId) {
@@ -699,35 +695,38 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     
     public function duplicateNodes ($fromMapId, $toMapId)
     {
-        $nodesMap = array();
-        foreach($this->getNodesByMap($fromMapId) as $node)
+        $mapNodes = array();
+
+        foreach(DB_ORM::select('Map_Node')->where('map_id', '=', $fromMapId)->query()->as_array() as $node)
         {
-            $newNode = $this->createFullNode($toMapId, array(
-                'title'                 => $node->title,
-                'text'                  => $node->text,
-                'type_id'               => $node->type_id,
-                'probability'           => $node->probability,
-                'conditional'           => $node->conditional,
-                'conditional_message'   => $node->conditional_message,
-                'info'                  => $node->info,
-                'link_style_id'         => $node->link_style_id,
-                'link_type_id'          => $node->link_type_id,
-                'priority_id'           => $node->priority_id,
-                'kfp'                   => $node->kfp,
-                'undo'                  => $node->undo,
-                'end'                   => $node->end,
-                'x'                     => $node->x,
-                'y'                     => $node->y,
-                'rgb'                   => $node->rgb,
-                'show_info'             => $node->show_info,
-                'annotation'            => $node->annotation,
-            ));
-            $nodesMap[$node->id] = $newNode->id;
+            $newNode = DB_ORM::insert('Map_Node')
+                ->column('map_id',              $toMapId)
+                ->column('title',               $node->title)
+                ->column('text',                $node->text)
+                ->column('type_id',             $node->type_id)
+                ->column('probability',         $node->probability)
+                ->column('conditional',         $node->conditional)
+                ->column('conditional_message', $node->conditional_message)
+                ->column('info',                $node->info)
+                ->column('is_private',          $node->is_private)
+                ->column('link_style_id',       $node->link_style_id)
+                ->column('priority_id',         $node->priority_id)
+                ->column('kfp',                 $node->kfp)
+                ->column('undo',                $node->undo)
+                ->column('end',                 $node->end)
+                ->column('x',                   $node->x)
+                ->column('y',                   $node->y)
+                ->column('rgb',                 $node->rgb)
+                ->column('show_info',           $node->show_info)
+                ->column('annotation',          $node->annotation)
+                ->execute();
+
+            $mapNodes[$node->id] = $newNode;
         }
-        return $nodesMap;
+        return $mapNodes;
     }
     
-    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
+    public function replaceDuplcateNodeContenxt($nodeMap, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap, $mapId, $newMapId)
     {
         foreach ($nodeMap as $v)
         {
@@ -735,17 +734,35 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->load();
             $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
             $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            $this->text = $this->relativeLink($this->text, $mapId, $newMapId, $nodeMap);
+            $this->info = $this->relativeLink($this->info, $mapId, $newMapId, $nodeMap);
             $this->save();
         }
     }
-    
-    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap) {
+
+    private function relativeLink ($text, $oldMapId, $newMapId, $nodeMap)
+    {
+        foreach ($nodeMap as $oldNodeId => $newNodeId)
+        {
+            $searchIndex    = 'renderLabyrinth/index/'.$oldMapId.'/'.$oldNodeId;
+            $replaceIndex   = 'renderLabyrinth/index/'.$newMapId.'/'.$newNodeId;
+            $searchGo       = 'renderLabyrinth/go/'.$oldMapId.'/'.$oldNodeId;
+            $replaceGo      = 'renderLabyrinth/go/'.$newMapId.'/'.$newNodeId;
+            $text           = str_replace($searchIndex, $replaceIndex, $text);
+            $text           = str_replace($searchGo, $replaceGo, $text);
+        }
+        return $text;
+    }
+
+    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
+    {
         $result = $text;
 
         $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
 
-        foreach ($codes as $code) {
-            $regExp = '/[\[' . $code . ':\d\]]+/';
+        foreach ($codes as $code)
+        {
+            $regExp = '/[\['.$code.':\d\]]+/';
             if (preg_match_all($regExp, $text, $matches)) {
                 foreach ($matches as $match) {
                     foreach ($match as $value) {
@@ -782,8 +799,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                                     case 'INFO':
                                         break;
                                 }
-
-                                $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
+                                $result = str_replace('[['.$code.':'.$id.']]', $replaceString, $result);
                             }
                         }
                     }
@@ -794,39 +810,9 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $result;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $nodes = array();
-            foreach($result as $record) {
-                $nodes[] = $record;
-            }
-
-            return $nodes;
-        }
-
-        return NULL;
-    }
-
-    public function getEndNodesForMap($mapId) {
-        $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->where('end', '=', 1)
-                           ->column('id')
-                           ->query();
-
-        $result = null;
-        if($records->is_loaded()) {
-            $result = array();
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('map_node', array((int)$record['id']));
-            }
-        }
-
-        return $result;
+    public function getEndNodesForMap ($mapId)
+    {
+        return DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->where('end', '=', 1)->query()->as_array();
     }
 
     public function getNodeName($nodeId) {
@@ -841,6 +827,22 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
 
         return $name;
     }
-}
 
-?>
+    public function getMainLinkStyles ($mapId)
+    {
+        // 5 link style create
+        $linkStyle[1] = 0;
+        $linkStyle[2] = 0;
+        $linkStyle[3] = 0;
+        $linkStyle[4] = 0;
+        $linkStyle[5] = 0;
+
+        foreach (DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj)
+        {
+            if (isset($linkStyle[$nodeObj->link_style_id])) $linkStyle[$nodeObj->link_style_id] += 1;
+        }
+        // sort array, first key element contain main link style
+        arsort($linkStyle);
+        return key($linkStyle);
+    }
+}

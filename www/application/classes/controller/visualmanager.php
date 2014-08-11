@@ -23,6 +23,8 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_VisualManager extends Controller_Base {
 
+    public $mapId = 0;
+
     public function before() {
         $this->templateData['labyrinthSearch'] = 1;
 
@@ -36,33 +38,23 @@ class Controller_VisualManager extends Controller_Base {
         }
     }
 
-    public function action_index() {
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base() . 'visualManager/index/' . $this->mapId));
+    public function action_index()
+    {
+        $mapId = $this->mapId;
 
-        $saveJson = '';
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-        $this->templateData['node']         = DB_ORM::model('map_node')->getRootNodeByMap($this->mapId);
-        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int)$this->mapId);
-        $this->templateData['linkStyles']   = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
-        $this->templateData['priorities']   = DB_ORM::model('map_node_priority')->getAllPriorities();
-        $this->templateData['mapJSON']      = Model::factory('visualEditor')->generateJSON($this->mapId);;
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor'))->set_url(URL::base().'visualManager/index/'.$mapId));
 
-        if($saveJson != null)
-            $this->templateData['saveMapJSON'] = '\''.(strlen($saveJson->json) > 0 ? $saveJson->json : 'empty') . '\'';
+        $this->templateData['node']             = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
+        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['linkStyles']       = DB_ORM::model('map_node_link_style')->getAllLinkStyles();
+        $this->templateData['mainLinkStyles']   = DB_ORM::model('map_node')->getMainLinkStyles($mapId);
+        $this->templateData['priorities']       = DB_ORM::model('map_node_priority')->getAllPriorities();
+        $this->templateData['mapJSON']          = Model::factory('visualEditor')->generateJSON($mapId);
+        $this->templateData['left']             = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center']           = View::factory('labyrinth/visual')->set('templateData', $this->templateData);
 
-        if(Auth::instance()->logged_in()) {
-            $user = Auth::instance()->get_user();
-            if($user != null) {
-                $this->templateData['user'] = DB_ORM::model('user', array($user->id));
-            }
-        }
-
-        $visualView = View::factory('labyrinth/visual')->set('templateData', $this->templateData);
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-
-        $this->templateData['left'] = $leftView;
-        $this->templateData['center'] = $visualView;
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -114,12 +106,13 @@ class Controller_VisualManager extends Controller_Base {
 
     public function action_updateJSON() {
         $mapId = Arr::get($_POST, 'id', null);
-        $json = Arr::get($_POST, 'data', null);
+        $json  = Arr::get($_POST, 'data', null);
 
         $this->auto_render = false;
         Model::factory('visualEditor')->updateFromJSON($mapId, $json);
 
-        echo Model::factory('visualEditor')->generateJSON($mapId);
+        print_r(Model::factory('visualEditor')->generateJSON($mapId));
+        exit;
     }
 
 

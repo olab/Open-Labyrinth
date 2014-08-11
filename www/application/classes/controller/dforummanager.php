@@ -23,52 +23,48 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_DForumManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         parent::before();
-
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Forums'))->set_url(URL::base() . 'dforumManager'));
-
-        unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_index() {
-        $sortBy = $this->request->param('id', NULL);
-        $typeSort = $this->request->param('id2', 1);
-
-        if (is_null($sortBy)) $sortBy = 4;
-
-        $openForums = DB_ORM::model('dforum')->getAllForums($sortBy,$typeSort);
-
+    public function action_index()
+    {
+        $sortBy         = $this->request->param('id', 4);
+        $typeSort       = $this->request->param('id2', 1);
+        $openForums     = DB_ORM::model('dforum')->getAllForums($sortBy,$typeSort);
         $userForumsInfo = array();
         $userTopicsInfo = array();
-        if(Auth::instance()->logged_in()) {
+        $userId         = Auth::instance()->get_user()->id;
+
+        if (Auth::instance()->logged_in())
+        {
             $forumIds = array();
             $topicIds = array();
-            if(!isset($openForums)&&!empty($openForums))
-                foreach($openForums as $forum) {
-                    $forumIds[] = $forum['id'];
-                    if(isset($forum['topics']) && count($forum['topics']) > 0) {
-                        foreach($forum['topics'] as $topic) {
-                            $topicIds[] = $topic['id'];
-                        }
-                    }
-                }
 
-            $userForumsInfo = DB_ORM::model('dforum_users')->getForumUser($forumIds, Auth::instance()->get_user()->id);
-            $userTopicsInfo = DB_ORM::model('dtopic_users')->getTopicUser($topicIds, Auth::instance()->get_user()->id);
+            if( ! isset($openForums) AND ! empty($openForums))
+            {
+                foreach($openForums as $forum)
+                {
+                    $forumIds[] = $forum['id'];
+
+                    foreach(Arr::get($forum, 'topics', array()) as $topic) $topicIds[] = $topic['id'];
+                }
+            }
+
+            $userForumsInfo = DB_ORM::model('dforum_users')->getForumUser($forumIds, $userId);
+            $userTopicsInfo = DB_ORM::model('dtopic_users')->getTopicUser($topicIds, $userId);
         }
 
-        $this->templateData['forums'] = $openForums;
-        $this->templateData['typeSort'] = $typeSort;
-        $this->templateData['sortBy'] = $sortBy;
-        $this->templateData['userForumsInfo'] = $userForumsInfo;
-        $this->templateData['userTopicsInfo'] = $userTopicsInfo;
+        $this->templateData['forums']           = $openForums;
+        $this->templateData['typeSort']         = $typeSort;
+        $this->templateData['sortBy']           = $sortBy;
+        $this->templateData['userForumsInfo']   = $userForumsInfo;
+        $this->templateData['userTopicsInfo']   = $userTopicsInfo;
+        $this->templateData['center']           = View::factory('dforum/view')->set('templateData', $this->templateData);
 
-        $view = View::factory('dforum/view');
-        $view->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
 
