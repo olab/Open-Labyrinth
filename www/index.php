@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The directory in which your application specific resources are located.
  * The application directory must contain the bootstrap.php file.
@@ -45,6 +44,11 @@ define('EXT', '.php');
  * deprecated notices. Disable with: E_ALL & ~E_DEPRECATED
  */
 error_reporting(E_ALL | E_STRICT);
+
+
+ini_set('display_startup_errors',1);
+ini_set('display_errors',1);
+error_reporting(-1);
 
 /**
  * End of standard configuration! Changing any of the code below should only be
@@ -96,16 +100,79 @@ if ( ! defined('KOHANA_START_TIME'))
 if ( ! defined('KOHANA_START_MEMORY'))
 {
 	define('KOHANA_START_MEMORY', memory_get_usage());
+}                    
+
+require APPPATH.'bootstrap'.EXT;      
+
+// Load up the Basic LTI Support code                
+require_once 'application/classes/lti/database.php'; 
+require_once 'application/classes/lti/ims-blti/blti.php';      
+require_once 'application/classes/lti/user_handler.php';
+
+// Establish the database connection
+new LTIDatabase();  
+
+  
+$context = new BLTI(array('table' => ' oauth_providers', 'key_column' => 'appId', 'secret_column' => 'secret', 'context_column' => 'name'), true, false);  
+
+if ( $context->complete ) {
+  exit();
 }
 
-// Bootstrap the application
-require APPPATH.'bootstrap'.EXT;
+if ( ! $context->valid ) {
+  
+  /**
+   * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
+   * If no source is specified, the URI will be automatically detected.
+   */
+  $request = Request::factory();
+  $authUser = Auth::instance()->get_user();
+  
+  //gets the id of the consumer from the table "oauth provider"
+  $db = new LTIDatabase();
+  $query = "SELECT id FROM `oauth_providers` WHERE `name`='consumer'";
+  $db->setQuery($query);
+  $oauth = $db->loadObject();
+  
+  
+  
+  //if there is a user logged-in
+  //and the user is from an external consumer
+  if($authUser != null && $oauth->id > 0 && $authUser->oauth_provider_id == $oauth->id) {
+     
+    //if olab is called from the consumer then continue
+    //else logout and show the log-in form (redirects to index first)
+    if(isset($_REQUEST['oauth']) && $_REQUEST['oauth'] == 'consumer') {
+      $_SESSION['oauth_user_provider'] = $_REQUEST['oauth'];
+      echo $request->execute()->send_headers()->body();      
+    } else {
+      if(isset($_SESSION['oauth_user_provider']) && $_SESSION['oauth_user_provider'] == 'consumer') {
+        echo $request->execute()->send_headers()->body();
+      } else {
+        Auth::instance()->logout();
+        Request::initial()->redirect(URL::base());
+      }  
+    }
+  } else {
+    echo $request->execute()->send_headers()->body();    
+  }
+  
+  
+   
+} else {
+        
+  Request::factory();  
+   
+  $uh = new UserHandler();   
+  $uh->ltiUser($context);
+           
+  // Bootstrap the application
+  $uh->fetchOpenUser();       
+  
+  //if the user is successfully logged-in
+  //redirects to index.php?oauth=consumer      
+  $uh->loginUser();
 
-/**
- * Execute the main request. A source of the URI can be passed, eg: $_SERVER['PATH_INFO'].
- * If no source is specified, the URI will be automatically detected.
- */
-echo Request::factory()
-	->execute()
-	->send_headers()
-	->body();
+}
+
+?>
