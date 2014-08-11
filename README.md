@@ -18,6 +18,7 @@ Version 3.1 is very stable and recommended for production settings.
 
 If you want to see some of the latest development features, send us a note via info AT openlabyrinth DOT ca and we can set 
 you up with a test account at http://demo.openlabyrinth.ca/
+
 ===================================================================
 
 Open Labyrinth, Basic LTI Tool Provider
