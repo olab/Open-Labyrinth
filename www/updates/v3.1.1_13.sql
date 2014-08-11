@@ -1,2 +1,0 @@
-ALTER TABLE  `map_nodes` CHANGE  `link_style_id`  `link_style_id` INT( 10 ) UNSIGNED NULL DEFAULT NULL ;
-ALTER TABLE  `map_nodes` ADD FOREIGN KEY (  `link_style_id` ) REFERENCES  `openlabyrinth`.`map_node_link_stylies` ( `id` ) ON DELETE CASCADE ON UPDATE CASCADE ;
