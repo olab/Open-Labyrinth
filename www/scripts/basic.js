@@ -320,6 +320,8 @@ function toggle_visibility(id){
 function ajaxBookmark() {
     $.get(
         urlBase + 'renderLabyrinth/addBookmark/' + idNode,
-        function(){}
+        function(){
+            $("input[name='bookmark']").val('saved');
+        }
     )
 }

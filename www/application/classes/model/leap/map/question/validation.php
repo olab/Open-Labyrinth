@@ -134,4 +134,9 @@ class Model_Leap_Map_Question_Validation extends DB_ORM_Model {
     {
         DB_ORM::delete('Map_Question_Validation')->where('question_id', '=', $questionId)->execute();
     }
+
+    public function exportMVP($questionId)
+    {
+        return DB_SQL::select('default')->from('map_question_validation')->where('question_id', '=', $questionId)->query()->as_array();
+    }
 }

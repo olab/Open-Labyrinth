@@ -73,6 +73,8 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('map_question', $questions);
         $elementsArray = $this->mergeArraysFromDB($questions, 'map_question_response');
         $this->createXMLFile('map_question_response', $elementsArray);
+        $validationArray = $this->mergeArraysFromDB($questions, 'map_question_validation');
+        $this->createXMLFile('map_question_validation', $validationArray);
 
         $contributor = DB_SQL::select('default')->from('map_contributors')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_contributor', $contributor);
@@ -99,12 +101,12 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $links = DB_SQL::select('default')->from('map_node_links')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_node_link', $links);
 
-        $sections = DB_SQL::select('default')->from('map_node_sections')->where('map_id', '=', (int)$mapId)->query()->as_array();
+        $sections = DB_SQL::select('default')->from('map_node_sections')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_node_section', $sections);
         $elementsArray = $this->mergeArraysFromDB($sections, 'map_node_section_node');
         $this->createXMLFile('map_node_section_node', $elementsArray);
 
-        $visualDisplay = DB_SQL::select('default')->from('map_visual_displays')->where('map_id', '=', (int)$mapId)->query()->as_array();
+        $visualDisplay = DB_SQL::select('default')->from('map_visual_displays')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_visualdisplay', $visualDisplay);
         $visualDisplayCounters = $this->mergeArraysFromDB($visualDisplay, 'map_visualdisplay_counter');
         $this->createXMLFile('map_visualdisplay_counter', $visualDisplayCounters);
@@ -112,6 +114,21 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('map_visualdisplay_image', $visualDisplayImages);
         $visualDisplayPanels = $this->mergeArraysFromDB($visualDisplay, 'map_visualdisplay_panel');
         $this->createXMLFile('map_visualdisplay_panel', $visualDisplayPanels);
+
+        $popups = DB_SQL::select('default')->from('map_popups')->where('map_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('map_popup', $popups);
+        $popupsAssign = $this->mergeArraysFromDB($popups, 'map_popup_assign');
+        $this->createXMLFile('map_popup_assign', $popupsAssign);
+        $popupsCounters = $this->mergeArraysFromDB($popups, 'map_popup_counter');
+        $this->createXMLFile('map_popup_counter', $popupsCounters);
+        $popupsStyles = $this->mergeArraysFromDB($popups, 'map_popup_style');
+        $this->createXMLFile('map_popup_style', $popupsStyles);
+
+        $metadataStringFields = DB_SQL::select('default')->from('metadata_string_fields')->where('object_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('Metadata_LiteralRecord', $metadataStringFields);
+
+        $metadataStringFields = DB_SQL::select('default')->from('metadata_skos_fields')->where('object_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('Metadata_SkosRecord', $metadataStringFields);
 
         $this->createXMLFile('media_elements', $this->mediaElements, false, true);
         $this->createXMLFile('manifest', $this->manifest, false, true);
@@ -267,7 +284,6 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                 if (count($this->labyrinthArray[$file])) $this->labyrinthArray[$file] = $this->addToDB($file, $this->labyrinthArray[$file]);
             }
         }
-
         $nodeContentElements = array(
             'MR'    => 'map_element',
             'CHAT'  => 'map_chat',
@@ -276,6 +292,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
             'VPD'   => 'map_vpd',
             'QU'    => 'map_question',
             'CR'    => 'map_counter',
+            'CD'    => 'map_visualdisplay',
             'NODE'  => 'map_node'
         );
 
@@ -342,28 +359,6 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                         $ruleDB->save();
                     }
                 }
-            }
-        }
-
-        //'map_visualdisplay_counter'
-        //'map_visualdisplay_image'
-        //'map_visualdisplay_panel'
-        if (isset($this->labyrinthArray['map_visualdisplay_counter'])) {
-            foreach($this->labyrinthArray['map_visualdisplay_counter'] as $vdCounter) {
-                $result = DB_ORM::model('map_counter_commonrules', array((int) $vdCounter['visual_id']));
-                $result->counter_id         = $vdCounter['counter_id'];
-                $result->label_x            = $vdCounter['label_x'];
-                $result->label_y            = $vdCounter['label_y'];
-                $result->label_angle        = $vdCounter['label_angle'];
-                $result->label_font_style   = $vdCounter['label_font_style'];
-                $result->label_text         = $vdCounter['label_text'];
-                $result->label_z_index      = $vdCounter['label_z_index'];
-                $result->value_x            = $vdCounter['value_x'];
-                $result->value_y            = $vdCounter['value_y'];
-                $result->value_angle        = $vdCounter['value_angle'];
-                $result->value_font_style   = $vdCounter['value_font_style'];
-                $result->value_z_index      = $vdCounter['value_z_index'];
-                $result->save();
             }
         }
 
@@ -505,6 +500,10 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
             $data['map_id'] = $this->labyrinthArray['map']['database_id'];
         }
 
+        if ($modelName == 'Metadata_LiteralRecord' OR $modelName == 'Metadata_SkosRecord') {
+            $data['object_id'] = $this->labyrinthArray['map']['database_id'];
+        }
+
         if (isset($data['chat_id']) AND isset($this->labyrinthArray['map_chat'][$data['chat_id']])) {
             $data['chat_id'] = $this->labyrinthArray['map_chat'][$data['chat_id']]['database_id'];
         }
@@ -512,7 +511,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if (isset($data['counter_id'])) {
             $data['counter_id'] = isset($this->labyrinthArray['map_counter'][$data['counter_id']])
                 ? $this->labyrinthArray['map_counter'][$data['counter_id']]['database_id']
-                : NULL;
+                : 0;
         }
 
         if (isset($data['node_id']) AND isset($this->labyrinthArray['map_node'][$data['node_id']])) {
@@ -530,6 +529,24 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if (isset($data['redirect_node_id'])) {
             if ($data['redirect_node_id'] == '') $data['redirect_node_id'] = NULL;
             elseif (isset($this->labyrinthArray['map_node'][$data['redirect_node_id']])) $data['redirect_node_id'] = $this->labyrinthArray['map_node'][$data['redirect_node_id']]['database_id'];
+        }
+
+        if (isset($data['visual_id']) AND isset($this->labyrinthArray['map_visualdisplay'][$data['visual_id']])) {
+            $data['visual_id'] = $this->labyrinthArray['map_visualdisplay'][$data['visual_id']]['database_id'];
+        }
+
+        if (isset($data['popup_id']) AND isset($this->labyrinthArray['map_popup'][$data['popup_id']])) {
+            $data['popup_id'] = $this->labyrinthArray['map_popup'][$data['popup_id']]['database_id'];
+        }
+
+        if (isset($data['map_popup_id']) AND isset($this->labyrinthArray['map_popup'][$data['map_popup_id']])) {
+            $data['map_popup_id'] = $this->labyrinthArray['map_popup'][$data['map_popup_id']]['database_id'];
+            if ($modelName == 'map_popup_assign') {
+                $data['assign_to_id'] = $this->labyrinthArray['map_node'][$data['assign_to_id']]['database_id'];
+                if ($data['redirect_to_id']) {
+                    $data['redirect_to_id'] = $this->labyrinthArray['map_node'][$data['redirect_to_id']]['database_id'];
+                }
+            }
         }
 
         $model = DB_ORM::model($modelName);
