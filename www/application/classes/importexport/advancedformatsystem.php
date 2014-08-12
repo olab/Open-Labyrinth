@@ -114,6 +114,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('map_visualdisplay_image', $visualDisplayImages);
         $visualDisplayPanels = $this->mergeArraysFromDB($visualDisplay, 'map_visualdisplay_panel');
         $this->createXMLFile('map_visualdisplay_panel', $visualDisplayPanels);
+        $this->copyVDImages($visualDisplayImages, $mapId);
 
         $popups = DB_SQL::select('default')->from('map_popups')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_popup', $popups);
@@ -134,7 +135,6 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('manifest', $this->manifest, false, true);
 
         $result = $this->createZipArchive();
-
         $this->removeDir();
 
         return $result ? (DOCROOT.'tmp/'.$this->folderName.'.zip') : '';
@@ -194,7 +194,8 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
      * Create zip archive
      * @return boolean 
      */
-    private function createZipArchive() {
+    private function createZipArchive()
+    {
         if ( ! is_dir($this->folderPath)) return false;
         
         $dest = DOCROOT.'tmp/'.$this->folderName.'.zip';
@@ -208,26 +209,46 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                     }
                 }
             }
-            
             closedir($h);
         }
-        
-        if(is_dir($this->folderPath . '/media') && $zip != null) {
-            if($h = opendir($this->folderPath . '/media')) {
+
+        if(is_dir($this->folderPath.'/media') && $zip) {
+            if($h = opendir($this->folderPath.'/media')) {
                 if($zip->addEmptyDir('media')) {
                     while(false !== ($f = readdir($h))) {
-                        if(strstr($f, '.') && file_exists($this->folderPath . '/media/' . $f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
-                            $zip->addFile($this->folderPath . '/media/' . $f, 'media/' . $f);
+                        if(strstr($f, '.') && file_exists($this->folderPath.'/media/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
+                            $zip->addFile($this->folderPath.'/media/'.$f, 'media/'.$f);
                         }
                     }
-                }
 
+                    if (is_dir($this->folderPath.'/media/vdImages')){
+                        $vdImagesOpenDir = opendir($this->folderPath.'/media/vdImages');
+                        if($vdImagesOpenDir AND $zip->addEmptyDir('media/vdImages')) {
+                            while(false !== ($file = readdir($vdImagesOpenDir))) {
+                                if(strstr($file, '.') && file_exists($this->folderPath.'/media/vdImages/'.$file) && strcmp($file, '.') != 0 && strcmp($file, '..') != 0) {
+                                    $zip->addFile($this->folderPath.'/media/vdImages/'.$file, 'media/vdImages/'.$file);
+                                }
+                            }
+
+                            $vdThumbsOpenDir = opendir($this->folderPath.'/media/vdImages/thumbs');
+                            if($vdThumbsOpenDir AND $zip->addEmptyDir('media/vdImages/thumbs')) {
+                                while(false !== ($fileThumbs = readdir($vdThumbsOpenDir))) {
+                                    if(strstr($fileThumbs, '.') && file_exists($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs) && strcmp($fileThumbs, '.') != 0 && strcmp($fileThumbs, '..') != 0) {
+                                        $zip->addFile($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs, 'media/vdImages/thumbs/'.$fileThumbs);
+                                    }
+                                }
+                            }
+                            closedir($vdThumbsOpenDir);
+                        }
+                        closedir($vdImagesOpenDir);
+                    }
+                }
                 closedir($h);
             }
         }
         
         $zip->close();
-        
+
         return true;
     }
     
@@ -240,28 +261,39 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if( ! is_dir($this->folderPath)) return;
 
         $mediaFolder = $this->folderPath.'/media';
-        if(is_dir($mediaFolder))
-        {
-            if($h = opendir($mediaFolder))
-            {
-                while (false !== ($f = readdir($h)))
-                {
-                    if (file_exists($this->folderPath.'/media/'.$f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0)
-                    {
-                        unlink($this->folderPath.'/media/'.$f);
+        if (is_dir($mediaFolder) AND ($h = opendir($mediaFolder))) {
+            if ($vdImagesOpenDSir = opendir($this->folderPath.'/media/vdImages')) {
+                if ($vdThumbsOpenDSir = opendir($this->folderPath.'/media/vdImages/thumbs')) {
+                    while(false !== ($fileThumbs = readdir($vdThumbsOpenDSir))) {
+                        if(strstr($fileThumbs, '.') && file_exists($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs) && strcmp($fileThumbs, '.') != 0 && strcmp($fileThumbs, '..') != 0) {
+                            unlink($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs);
+                        }
+                    }
+                    closedir($vdThumbsOpenDSir);
+                    rmdir($this->folderPath.'/media/vdImages/thumbs');
+                }
+
+                while(false !== ($file = readdir($vdImagesOpenDSir))) {
+                    if(strstr($file, '.') && file_exists($this->folderPath.'/media/vdImages/'.$file) && strcmp($file, '.') != 0 && strcmp($file, '..') != 0) {
+                        unlink($this->folderPath.'/media/vdImages/'.$file);
                     }
                 }
-                closedir($h);
-                rmdir($mediaFolder);
+                closedir($vdImagesOpenDSir);
+                rmdir($this->folderPath.'/media/vdImages');
             }
+
+            while (false !== ($f = readdir($h))) {
+                if (file_exists($this->folderPath.'/media/'.$f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0) {
+                    unlink($this->folderPath.'/media/'.$f);
+                }
+            }
+            closedir($h);
+            rmdir($mediaFolder);
         }
 
-        if ($h = opendir($this->folderPath))
-        {
-            while (false !== ($f = readdir($h)))
-            {
-                if (file_exists($this->folderPath.'/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0)
-                {
+        if ($h = opendir($this->folderPath)) {
+            while (false !== ($f = readdir($h))) {
+                if (file_exists($this->folderPath.'/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
                     unlink($this->folderPath.'/'.$f);
                 }
             }
@@ -399,6 +431,33 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                 }
             }
         }
+
+        if ( ! file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages')) {
+            mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages', 0777, true);
+        }
+
+        if (isset($mediaElements['media_elements_vdimages']) AND count($mediaElements['media_elements_vdimages'])) {
+            foreach($mediaElements['media_elements_vdimages'] as $file){
+                $filePath = $tmpFolder.'media/vdImages/'.$file;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/'.$file);
+                }
+            }
+        }
+
+        if ( ! file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs')) {
+            mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs', 0777, true);
+        }
+
+        if (isset($mediaElements['media_elements_vdimages_thumbs']) AND count($mediaElements['media_elements_vdimages_thumbs'])) {
+            foreach($mediaElements['media_elements_vdimages_thumbs'] as $file){
+                $filePath = $tmpFolder.'media/vdImages/thumbs/'.$file;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs/'.$file);
+                }
+            }
+        }
+
         return true;
     }
 
@@ -608,10 +667,42 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
      * @return none 
      */
     private function makeMediaFolder() {
-        if(!is_dir($this->folderPath)) return;
+        if( ! is_dir($this->folderPath)) return;
         
-        if(!is_dir($this->folderPath . '/media')) {
-            mkdir($this->folderPath . '/media');
+        if( ! is_dir($this->folderPath.'/media')) {
+            mkdir($this->folderPath.'/media');
+        }
+    }
+
+    private function copyVDImages($images, $mapId)
+    {
+        if ( ! is_dir($this->folderPath) AND count($images) == 0) return;
+
+        if( ! is_dir($this->folderPath.'/media/vdImages')) {
+            mkdir($this->folderPath.'/media/vdImages');
+        }
+        if( ! is_dir($this->folderPath.'/media/vdImages/thumbs')) {
+            mkdir($this->folderPath.'/media/vdImages/thumbs');
+        }
+
+        foreach($images as $image) {
+            $imageName = Arr::get($image, 'name', false);
+            if ($imageName) {
+                $imagePath = DOCROOT.'files/'.$mapId.'/vdImages/'.$imageName;
+                if (file_exists($imagePath)) {
+                    copy($imagePath, $this->folderPath.'/media/vdImages/'.$imageName);
+                    $index = (isset($this->mediaElements['vdimages'])) ? count($this->mediaElements['vdimages']) : 0;
+                    $this->mediaElements['vdimages']['vdimages_'.$index] = $imageName;
+
+                    // create vd thumbs file
+                    $imageThumbsPath = DOCROOT.'files/'.$mapId.'/vdImages/thumbs/'.$imageName;
+                    if (file_exists($imageThumbsPath)) {
+                        copy($imageThumbsPath, $this->folderPath.'/media/vdImages/thumbs/'.$imageName);
+                        $index = (isset($this->mediaElements['vdimages_thumbs'])) ? count($this->mediaElements['vdimages_thumbs']) : 0;
+                        $this->mediaElements['vdimages_thumbs']['vdimages_thumbs_'.$index] = $imageName;
+                    }
+                }
+            }
         }
     }
     
