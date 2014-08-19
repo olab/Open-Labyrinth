@@ -1,4 +1,8 @@
 $(document).ready(function() {
+    $('#rule_submit_check').click(function() {
+        $(this).button('loading');
+        checkRule(1);
+    });
     $('#check_button').click(function() {
         checkRule(1);
     });
@@ -8,7 +12,9 @@ $(document).ready(function() {
 });
 
 function checkRule(submit){
-    if (submit != 1) $('#check_rule_button').button('loading');
+    if (submit != 1) {
+        $('#check_rule_button').button('loading');
+    }
 
     var ruleText = $('#code').val(),
         mapId = $('#mapId').val(),

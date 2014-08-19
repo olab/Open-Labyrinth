@@ -516,8 +516,18 @@ a.file-link:visited {
 }
 
 .questions {
+    font-size: 14px;
     background-color: #eeeeee;
     padding: 5px;
+}
+
+.questions a {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.questions p {
+    font-size: inherit;
 }
 
 .previous-answers {

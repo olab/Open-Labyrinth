@@ -1453,8 +1453,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $previousAnswers = '<p class="previous-answers">Previous answer:<br>'.$responses.'</p>';
                 }
             };
-
-            // ----- end answer ----- //
+            // ----- end previous answer ----- //
 
             if ($q_type == 'text') {
                 $getValidator($id, $validator, $errorMsg, $parameter);
@@ -1473,21 +1472,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
-                $addClass = '';
-                $cumulative = false;
-
-                // ----- only for cumulative ----- //
-                if ($qTitle == 'Cumulative') {
-                    $addClass = ' cumulative';
-                    $cumulative = true;
-                }
-                // ----- end only for cumulative ----- //
+                $cumulative = ($qTitle == 'Cumulative');
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
 
                 $result =
-                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$addClass.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'" placeholder="'.$question->prompt.'"></textarea>'.
+                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'" placeholder="'.$question->prompt.'"></textarea>'.
                     '<p>'.
                         '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
                         '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
@@ -1650,7 +1641,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 $result .= '</ul>';
             }
-            $result = '<div class="questions">'.$question->stem.$result.'</div>';
+            $result = '<div class="questions">'.$previousAnswers.$question->stem.$result.'</div>';
         }
         return $result;
     }

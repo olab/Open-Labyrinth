@@ -26,31 +26,31 @@ if (isset($templateData['map'])) {
     $errorMessage       = $validationObj ? $validationObj->error_message : '';
 
     $type = Arr::get($templateData, 'type');
-//    if ($type AND $type->title == 'Cumulative') { ?>
-<!--    <script language="javascript" type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?><!--"></script>-->
-<!--    <script language="javascript" type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?><!--"></script>-->
-<!--    <script language="javascript" type="text/javascript">-->
-<!--        tinymce.init({-->
-<!--            selector: "#fback",-->
-<!--            theme: "modern",-->
-<!--            content_css: "--><?php //echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?><!--",-->
-<!--            entity_encoding: "raw",-->
-<!--            contextmenu: "link image inserttable | cell row column",-->
-<!--            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,-->
-<!--            valid_elements : "+*[*]",-->
-<!--            plugins: ["compat3x",-->
-<!--                "advlist autolink lists link image charmap hr anchor pagebreak",-->
-<!--                "searchreplace wordcount visualblocks visualchars code fullscreen",-->
-<!--                "insertdatetime nonbreaking save table contextmenu directionality",-->
-<!--                "template paste textcolor layer advtextcolor rdface"-->
-<!--            ],-->
-<!--            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",-->
-<!--            toolbar2: " link image | forecolor backcolor layer restoredraft",-->
-<!--            image_advtab: true,-->
-<!--            templates: []-->
-<!--        });-->
-<!--    </script>--><?php
-//    } ?>
+    if ($type AND $type->title == 'Cumulative') { ?>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
+    <script language="javascript" type="text/javascript">
+        tinymce.init({
+            selector: "#qstem",
+            theme: "modern",
+            content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+            valid_elements : "+*[*]",
+            plugins: ["compat3x",
+                "advlist autolink lists link image charmap hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime nonbreaking save table contextmenu directionality",
+                "template paste textcolor layer advtextcolor rdface"
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+            toolbar2: " link image | forecolor backcolor layer restoredraft",
+            image_advtab: true,
+            templates: []
+        });
+    </script><?php
+    } ?>
 
     <div class="page-header">
         <h1><?php
@@ -148,7 +148,7 @@ if (isset($templateData['map'])) {
 
             <div class="pull-right">
                 <input style="float:right;" id="submit_button" class="btn btn-primary btn-large hide" type="submit" name="Submit" value="<?php echo __('Save question'); ?>">
-                <input style="float:right;" id="rule_submit_check" class="btn btn-primary btn-large" type="button" name="Check" value="<?php echo __('Save question'); ?>" onclick="return checkRule(1);">
+                <input style="float:right;" id="rule_submit_check" class="btn btn-primary btn-large" type="button" name="Check" value="<?php echo __('Save question'); ?>" data-loading-text="Checking rule...">
             </div>
 
         </div>
