@@ -526,24 +526,23 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem {
         return $builder->execute();
     }
 
-    private function convertValuesInArray($array)
+    public function convertValuesInArray($array)
     {
-        if (count($array) > 0)
-        {
-            foreach($array as $key => $value)
-            {
-                if (count($value) > 0)
-                {
-                    if (is_array($value)) $value = $this->convertValuesInArray($value);
-                    elseif (!is_numeric($value)) $value = base64_decode($value);
-                    else
-                    {
-                        if (is_numeric($value[0]))
-                        {
-                                $value = is_float($value) ? floatval($value) : intval($value);
+        if (count($array)) {
+            foreach($array as $key => $value) {
+                if (count($value)) {
+                    if (is_array($value)) {
+                        $value = $this->convertValuesInArray($value);
+                    } elseif (!is_numeric($value)) {
+                        $value = base64_decode($value);
+                    } else {
+                        if (is_numeric($value[0])) {
+                            $value = is_float($value) ? floatval($value) : intval($value);
                         }
                     }
-                } else $value = '';
+                } else {
+                    $value = '';
+                }
 
                 $array[$key] = $value;
             }
