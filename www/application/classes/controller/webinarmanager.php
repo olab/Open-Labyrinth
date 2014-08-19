@@ -810,4 +810,12 @@ class Controller_WebinarManager extends Controller_Base {
 
         exit(DB_ORM::model('Webinar')->generateJSON($scenarioId));
     }
+
+    public function action_resetCumulative()
+    {
+        $scenarioId = $this->request->param('id');
+        $mapId      = $this->request->param('id2');
+        DB_ORM::update('User_Session')->set('notCumulative', 1)->where('webinar_id', '=', $scenarioId)->where('map_id', '=', $mapId)->execute();
+        exit;
+    }
 }

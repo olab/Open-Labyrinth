@@ -39,17 +39,13 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
         toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
         toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
         image_advtab: true,
-        templates: [
-
-        ]
+        templates: []
     });
-
     var $labyrinthContainers = [];
 </script>
 
 <form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base() ?>webinarmanager/save">
-    <h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?> <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>" /></h1>
-
+    <h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?> <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>"/></h1>
 
     <input type="hidden" name="webinarId" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->id; ?>"/>
     <fieldset class="fieldset">
@@ -59,18 +55,18 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             <div class="controls">
                 <input type="text" class="span6" id="title" name="title" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->title; ?>" />
             </div>
-        </div>
-
-        <?php if(!isset($templateData['webinar'])) { ?>
-        <div class="control-group">
-            <label for="firstmessage" class="control-label"><?php echo __('First message'); ?></label>
-            <div class="controls"><textarea name="firstmessage" id="firstmessage" class="mceEditor"></textarea></div>
-        </div>
+        </div><?php
+        if ( ! isset($templateData['webinar'])) {
+            $forums = Arr::get($templateData, 'forums', array()); ?>
+            <div class="control-group">
+                <label for="firstmessage" class="control-label"><?php echo __('First message'); ?></label>
+                <div class="controls"><textarea name="firstmessage" id="firstmessage" class="mceEditor"></textarea></div>
+            </div>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Use existing forum') ?></label>
                 <div class="controls">
                     <div class="radio_extended btn-group">
-                        <?php if (count($templateData['forums'])) {?>
+                        <?php if ($forums) {?>
                             <input autocomplete="off" type="radio" id="use" name="use" value="1" />
                             <label data-class="btn-info" class="btn" for="use"><?php echo __('Use'); ?></label>
                         <?php }?>
@@ -83,29 +79,25 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                 <label class="control-label"><?php echo __('Forums') ?></label>
                 <div class="controls">
                     <select id="forum" name="forum"><?php
-                        if(isset($templateData['forums']) && count($templateData['forums']) > 0) {
-                            foreach($templateData['forums'] as $forum) { ?>
-                                <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option><?php
-                            }
-                        } ?>
+                    foreach ($templateData['forums'] as $forum) { ?>
+                        <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option><?php
+                    } ?>
                     </select>
                 </div>
                 <br /><?php
-                if(isset($templateData['forums']) && count($templateData['forums']) > 0) {
-                    foreach($templateData['forums'] as $forum) {
-                        if (count($forum['topics']) > 0) { ?>
-                        <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
-                            <label class="control-label"><?php echo __('Topics') ?></label>
-                            <div class="controls">
-                                <select id="topic" name="topic">
-                                    <option value="0">Please select</option><?php
-                                    foreach($forum['topics'] as $topic) { ?>
-                                    <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option><?php
-                                    } ?>
-                                </select>
-                            </div>
-                        </div><?php
-                        }
+                foreach($templateData['forums'] as $forum) {
+                    if (count($forum['topics'])) { ?>
+                    <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
+                        <label class="control-label"><?php echo __('Topics') ?></label>
+                        <div class="controls">
+                            <select id="topic" name="topic">
+                                <option value="0">Please select</option><?php
+                                foreach($forum['topics'] as $topic) { ?>
+                                <option value="<?php echo $topic['id']; ?>"><?php echo $topic['name']; ?></option><?php
+                                } ?>
+                            </select>
+                        </div>
+                    </div><?php
                     }
                 } ?>
             </div><?php
@@ -113,7 +105,7 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
     </fieldset>
 
     <div id="steps-container"><?php
-        if(isset($templateData['webinar']) && count($templateData['webinar']->steps) > 0) {
+        if(isset($templateData['webinar']) && count($templateData['webinar']->steps)) {
             foreach($templateData['webinar']->steps as $step) { ?>
             <fieldset class="fieldset step-container-<?php echo $step->id; ?>" stepId="<?php echo $step->id; ?>">
                 <legend>
@@ -122,7 +114,7 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                     <input type="hidden" name="stepIDs[]" value="<?php echo $step->id; ?>"/>
                 </legend>
                 <div id="labyrinth-container-<?php echo $step->id; ?>" containerId="<?php echo $step->id; ?>"><?php
-                    if(count($step->maps) > 0) {
+                    if(count($step->maps)) {
                         $index = 1;
                         foreach($step->maps as $stepMap) {
                         $section = ($stepMap->which == 'section'); ?>
@@ -140,19 +132,32 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                                 </select>
                                 <button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>
 
+                                <div class="poll-node-section">
+                                    <label>
+                                        <input type="checkbox" class="cumulative-chb" name="cumulative[<?php echo $step->id.'-key-'.$index; ?>]" value="1" <?php if ($stepMap->cumulative) echo 'checked'; ?>>Cumulative
+                                        <button type="button" class="cumulative-reset btn btn-info" style="<?php if ( ! $stepMap->cumulative) echo 'display: none;'; ?>" data-scenario="<?php echo $templateData['webinar']->id; ?>" data-map="<?php echo $mapId; ?>" data-loading-text="Loading...">Reset counters</button>
+                                    </label>
+                                </div>
+
                                 <div class="poll-node-section"><?php
                                     $mapData = Arr::get($templateData, $mapId, array());
                                     foreach (Arr::get($mapData, 'pollNodes', array()) as $selectedNodeId=>$time) { ?>
                                     <select class="node-select-js" name="poll_nodes[]">
                                         <option value="0">Select poll node</option><?php
                                         foreach (Arr::get($mapData, 'mapNodes', array()) as $id=>$title) { ?>
-                                        <option value="<?php echo $id; ?>" <?php if ($selectedNodeId == $id) { echo 'selected'; } ?>><?php echo $title.' (id: '.$id.')'; ?></option>
-                                        <?php } ?>
+                                        <option value="<?php echo $id; ?>" <?php if ($selectedNodeId == $id) echo 'selected'; ?>>
+                                            <?php echo $title.' (id: '.$id.')'; ?>
+                                        </option><?php
+                                        } ?>
                                     </select>
                                     <input type="text" value="<?php echo $time; ?> sec" class="poll-node-indent" name="poll_nodes[]" required>
-                                    <button class="btn btn-danger poll-node-indent delete-node-js" data-id="<?php echo $selectedNodeId; ?>"><i class="icon-trash"></i></button>
-                                    <?php } ?>
-                                    <button type="button" class="btn btn-info poll-node-js" data-id="<?php echo $mapId; ?>" data-loading-text="Loading...">Add poll node</button>
+                                    <button class="btn btn-danger poll-node-indent delete-node-js" data-id="<?php echo $selectedNodeId; ?>">
+                                        <i class="icon-trash"></i>
+                                    </button><?php
+                                    } ?>
+                                    <button type="button" class="btn btn-info poll-node-js" data-id="<?php echo $mapId; ?>" data-loading-text="Loading...">
+                                        Add poll node
+                                    </button>
                                 </div>
                             </div>
                         </div><?php
@@ -162,7 +167,9 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                 </div>
 
                 <div>
-                    <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>"><i class="icon-plus-sign"></i>Add map or section</button>
+                    <button class="btn btn-info add-labyrinth-btn" type="button" containerId="<?php echo $step->id; ?>">
+                        <i class="icon-plus-sign"></i>Add map or section
+                    </button>
                 </div>
 
                 <script>
@@ -192,7 +199,7 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
         </thead>
         <tbody><?php
         $loggedUserId = Auth::instance()->get_user()->id;
-        if(isset($templateData['webinar']) and count($templateData['webinar']->users) > 0) {
+        if(isset($templateData['webinar']) and count($templateData['webinar']->users)) {
             foreach($templateData['webinar']->users as $existUser) { ?>
             <tr><?php
                 $userArray = isset($templateData['usersMap'][$existUser->user_id]) ? $templateData['usersMap'][$existUser->user_id] : false;
@@ -235,9 +242,8 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             </tr><?php
         } ?>
         </tbody>
-    </table>
-
-    <?php if((isset($templateData['groups']) and count($templateData['groups']) > 0) || (isset($templateData['webinar']) and count($templateData['webinar']->groups) > 0)) { ?>
+    </table><?php
+    if((isset($templateData['groups']) and count($templateData['groups'])) OR (isset($templateData['webinar']) and count($templateData['webinar']->groups))) { ?>
     <h3>Assign the groups</h3>
     <table id="assign-users" class="table table-bordered table-striped">
         <colgroup>
@@ -251,15 +257,15 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
         </tr>
         </thead>
         <tbody><?php
-        if(isset($templateData['webinar']) and count($templateData['webinar']->groups) > 0) {
+        if(isset($templateData['webinar']) and count($templateData['webinar']->groups)) {
             foreach($templateData['webinar']->groups as $existGroup) { ?>
                 <tr>
                     <td style="text-align: center"><input type="checkbox" name="groups[]" value="<?php echo $existGroup->group_id; ?>" checked="checked"></td>
                     <td><?php echo $existGroup->group->name; ?></td>
-                </tr>
-            <?php }
+                </tr><?php
+            }
         }
-        if(isset($templateData['groups']) and count($templateData['groups']) > 0) {
+        if(isset($templateData['groups']) and count($templateData['groups'])) {
             foreach($templateData['groups'] as $group) { ?>
                 <tr>
                     <td style="text-align: center"><input type="checkbox" name="groups[]" value="<?php echo $group->id; ?>"></td>
@@ -268,8 +274,8 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             }
         } ?>
         </tbody>
-    </table>
-    <?php } ?>
+    </table><?php
+    } ?>
 
     <div class="form-actions">
         <div class="map-error-empty" style="float: left;margin-top: 12px;color: red;display: none;">Please select labyrinths for each step</div>
@@ -280,12 +286,11 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
 </form>
 
 <script>
-    var mapsJSON = {<?php if(isset($templateData['maps']) && count($templateData['maps']) > 0) {
+    var mapsJSON = {<?php if(isset($templateData['maps']) && count($templateData['maps'])) {
         echo 'maps: [';
         $mapsJSON = '';
         foreach($templateData['maps'] as $map) {
-            $ifSectionClass = get_class($map) == 'Model_Leap_Map_Node_Section';
-            $section = $ifSectionClass ? 'section' : '';
+            $section = (get_class($map) == 'Model_Leap_Map_Node_Section') ? 'section' : '';
             $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'", section: "'.$section.'"}, ';
         }
 

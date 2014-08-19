@@ -26,6 +26,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public $template = 'home'; // Default
     public $mapId = 0;
     public $questionsId = array();
+    public static $isCumulative = false;
+    public static $nodeId = 0;
 
     private function renderLabyrinth ($action)
     {
@@ -58,6 +60,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $continue = false;
                 }
             }
+
             if ($continue) {
                 Session::instance()->delete('questionChoices');
                 Session::instance()->delete('dragQuestionResponses');
@@ -66,6 +69,15 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Session::instance()->delete('arrayAddedQuestions');
 
                 $node = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
+            }
+
+            $cumulative = DB_ORM::select('Webinar_Map')
+                ->where('webinar_id', '=', Session::instance()->get('idScenario'))
+                ->where('reference_id', '=', $mapId)
+                ->query()
+                ->fetch(0);
+            if ($cumulative AND $cumulative->cumulative){
+                Controller_RenderLabyrinth::$isCumulative = true;
             }
         } elseif ($action == 'resume') {
             $result     = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($mapId, Auth::instance()->get_user()->id);
@@ -88,12 +100,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
         }
-        if ($continue) $this->renderNode($node, $action, $bookmark);
+
+        if ($continue) {
+            $this->renderNode($node, $action, $bookmark, Controller_RenderLabyrinth::$isCumulative);
+        }
     }
 
-    private function renderNode ($nodeObj, $action, $bookmark)
+    private function renderNode ($nodeObj, $action, $bookmark, $cumulative)
     {
-        if ($nodeObj == NULL) Request::initial()->redirect(URL::base());
+        if ($nodeObj == NULL) {
+            Request::initial()->redirect(URL::base());
+        }
+
+        Controller_RenderLabyrinth::$nodeId = $nodeObj->id;
 
         $editOnId   = ($action == 'go') ? 'id3' : 'id2';
         $editOn     = $this->request->param($editOnId, null);
@@ -103,7 +122,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
         $data       = ($action == 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
-            : Model::factory('labyrinth')->execute($nodeId, null, $isRoot);
+            : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, $cumulative);
 
         // delete $bookmark after use it
         DB_ORM::delete('User_Bookmark')->where('id', '=', $bookmark)->execute();
@@ -769,7 +788,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $nodeId = $this->request->param('id', NULL);
         if ($nodeId != NULL) {
             $node = DB_ORM::model('map_node', array((int) $nodeId));
-            $info = self::parseText( $node->info);
+            $info = self::parseText($node->info);
             $this->template = View::factory('labyrinth/node/info')->set('info', $info);
         }
     }
@@ -1229,7 +1248,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public static function parseText($text, $mapId = NULL, $elementType = '')
     {
-        $result = $text;
         $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR');
 
         foreach ($codes as $code)
@@ -1287,14 +1305,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                 }
 
-                                $result = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $result);
+                                $text = str_replace('<p>[[' . $code . ':' . $id . ']]</p>', $replaceString, $text);
                             }
                         }
                     }
                 }
             }
         }
-        return $result;
+        return $text;
     }
 
     private static function getInfoHTML($id) {
@@ -1375,23 +1393,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private static function getQuestionHTML ($id)
     {
-        $question   = DB_ORM::model('map_question', array((int) $id));
-        $result     = '';
-        $q_type     = $question->type->value;
+        $question        = DB_ORM::model('map_question', array((int) $id));
+        $result          = '';
+        $q_type          = $question->type->value;
+        $qTitle          = $question->type->title;
+        $previousAnswers = '';
 
-        if ($question)
-        {
+        if ($question) {
             // ----- get validator data ----- //
             $validator = '';
             $errorMsg  = '';
             $parameter = '';
 
-            $getValidator = function($id, &$validator, &$errorMsg, &$parameter)
-            {
+            $getValidator = function($id, &$validator, &$errorMsg, &$parameter) {
                 $validationObj = DB_ORM::model('Map_Question_Validation')->getRecord($id);
 
-                if ($validationObj)
-                {
+                if ($validationObj) {
                     $validator = 'data-validator="'.$validationObj->validator.'" ';
                     $errorMsg  = 'data-errorMsg="'.$validationObj->error_message.'" ';
                     $parameter = 'data-parameter="'.$validationObj->second_parameter.'" ';
@@ -1399,43 +1416,90 @@ class Controller_RenderLabyrinth extends Controller_Template {
             };
             // ----- end get validator data ----- //
 
-            if ($q_type == 'text')
-            {
+            // ----- previous answer ----- //
+            $getPreviousAnswers = function(&$previousAnswers, $mapId, $questionId, $nodeId, $cumulativeType) {
+                $idScenario     = Session::instance()->get('idScenario');
+                $responses      = '';
+                $responsesSQL   = array();
+
+                if ($idScenario AND Controller_RenderLabyrinth::$isCumulative){
+                    $responsesSQL = DB_SQL::select('default')
+                        ->from('user_sessions', 's')
+                        ->join('LEFT', 'user_responses', 'r')
+                        ->on('s.id', '=', 'r.session_id')
+                        ->where('s.webinar_id', '=', $idScenario)
+                        ->where('s.map_id', '=', $mapId)
+                        ->where('r.question_id', '=', $questionId)
+                        ->where('r.node_id', '=', $nodeId)
+                        ->query();
+                } elseif ($cumulativeType) {
+                    $responsesSQL = DB_SQL::select('default')
+                        ->from('user_sessions', 's')
+                        ->join('LEFT', 'user_responses', 'r')
+                        ->on('s.id', '=', 'r.session_id')
+                        ->where('s.map_id', '=', $mapId)
+                        ->where('r.question_id', '=', $questionId)
+                        ->where('r.node_id', '=', $nodeId)
+                        ->query();
+                }
+
+                foreach ($responsesSQL as $response) {
+                    if (isset($response['response'])) {
+                        $responses .= $response['response'].'<br>';
+                    }
+                }
+
+                if ($responses) {
+                    $previousAnswers = '<p class="previous-answers">Previous answer:<br>'.$responses.'</p>';
+                }
+            };
+
+            // ----- end answer ----- //
+
+            if ($q_type == 'text') {
                 $getValidator($id, $validator, $errorMsg, $parameter);
+                $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, false);
+
                 $result = '<input autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-single" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" placeholder="'.$question->prompt.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
-                if ($question->show_submit == 1)
-                {
+                if ($question->show_submit == 1) {
                     if ($question->submit_text != null) $submitText = $question->submit_text;
                     $result .= '/>
                         <span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
                         <button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'disabled\', \'disabled\');">'.$submitText.'</button>';
-                }
-                else {
+                } else {
                     $result .= 'onKeyUp="if (event.keyCode == 13) {$(\'#questionSubmit'.$question->id.'\').show(); $(\'#qresponse_'.$question->id.'\').attr(\'disabled\', \'disabled\'); }"/><span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>';
                 }
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
-            }
-            else if ($q_type == 'area')
-            {
+            } else if ($q_type == 'area') {
+                $addClass = '';
+                $cumulative = false;
+
+                // ----- only for cumulative ----- //
+                if ($qTitle == 'Cumulative') {
+                    $addClass = ' cumulative';
+                    $cumulative = true;
+                }
+                // ----- end only for cumulative ----- //
+
                 $getValidator($id, $validator, $errorMsg, $parameter);
+                $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
+
                 $result =
-                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'" placeholder="'.$question->prompt.'"></textarea>
-                    <p>
-                        <span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
-                        <button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
+                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$addClass.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'" placeholder="'.$question->prompt.'"></textarea>'.
+                    '<p>'.
+                        '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
+                        '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
                     </p>';
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
 
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
-            }
-            else if($q_type == 'mcq')
-            {
-                if (count($question->responses) > 0) {
-                    $result = '<div class="questionResponces ';
-                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul class="navigation">';
+            } else if($q_type == 'mcq') {
+                if (count($question->responses)) {
+                    $displayType = ($question->type_display == 1) ? ' horizontal' : '';
+                    $result = '<div class="questionResponces'.$displayType.'">';
+                    $result .= '<ul class="navigation">';
                     $i = 1;
                     foreach ($question->responses as $response)
                     {
@@ -1447,44 +1511,43 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         $i++;
                     }
                     $result .= '</ul></div>';
-                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
-                    {
+                    if($question->show_submit == 1 && $question->redirect_node_id) {
                         $result .=
                            '<div class="questionSubmitButton">
                             <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'"/></a>
                             </div>';
                     }
                 }
-            }
-            else if($q_type == 'pcq')
-            {
-                if (count($question->responses) > 0) {
-                    $result = '<div class="questionResponces questionForm_'.$question->id.' ';
-                    $result .= ($question->type_display == 1) ? 'horizontal' : '';
-                    $result .= '"><ul class="navigation">';
+            } else if($q_type == 'pcq') {
+                if (count($question->responses)) {
+                    $displayType = ($question->type_display == 1) ? ' horizontal' : '';
+                    $result = '<div class="questionResponces questionForm_'.$question->id.$displayType.'">';
+                    $result .= '<ul class="navigation">';
                     $i = 1;
+
                     foreach ($question->responses as $response) {
                         $result .= '<li>';
                         $result .= '<span id="click'.$response->id.'"><input type="radio" class="lightning-choice" name="option-'.$id.'" data-question="'.$question->id.'" data-response="'.$response->id.'" data-tries="'.$question->num_tries.'" data-val="'.$response->response.'"/></span>';
-                        $result .= '<span>' . $response->response . '</span>';
+                        $result .= '<span>'.$response->response.'</span>';
                         $result .= '<span id="AJAXresponse' . $response->id . '"></span>';
                         $result .= '</li>';
                         $i++;
                     }
-                    if($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
+
+                    if ($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
                     {
                         $result .=
                            '<div class="questionSubmitButton">
                             <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'" /></a>
                             </div>';
                     }
+                    $result .= '</div>';
                 }
-            }
-            else if ($q_type == 'sct')
-            {
+            } else if ($q_type == 'sct') {
                 $disposable = ($question->num_tries == 1) ? ' disposable' : '';
                 $horizontal = ($question->type_display == 1) ? ' horizontal' : '';
                 $result .= '<ul class="navigation'.$horizontal.'">';
+
                 foreach($question->responses as $response)
                 {
                     $result .= '<li>';
@@ -1496,29 +1559,27 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 };
                 $result .= '</ul>';
-            }
-            else if($q_type == 'slr')
-            {
+            } else if($q_type == 'slr') {
                 if($question->settings != null)
                 {
                     $settings = json_decode($question->settings);
                     $sliderValue = $settings->minValue;
 
-                    if($question->counter_id > 0) {
+                    if ($question->counter_id > 0) {
                         $sliderValue = Controller_RenderLabyrinth::getCurrentCounterValue($question->map_id, $question->counter_id);
-                    } else if(property_exists($settings, 'defaultValue')) {
+                    } else if (property_exists($settings, 'defaultValue')) {
                         $sliderValue = $settings->defaultValue;
                     }
 
-                    if($sliderValue > $settings->maxValue) {
+                    if ($sliderValue > $settings->maxValue) {
                         $sliderValue = $settings->maxValue;
-                    } else if($sliderValue < $settings->minValue) {
+                    } else if ($sliderValue < $settings->minValue) {
                         $sliderValue = $settings->minValue;
                     }
 
                     if($settings->showValue == 1) {
                         $result .= '<div style="margin-bottom: 22px;position:relative">
-                                        <input autocomplete="off" type="text" id="sliderQuestionR_' . $question->id . '" value="' . $settings->minValue . '" style="float: left;height: 20px;padding: 0;margin: 0;font-size: 11px;width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
+                                        <input autocomplete="off" type="text" id="sliderQuestionR_'.$question->id.'" value="'.$settings->minValue.'" style="float: left; height: 20px; padding: 0; margin: 0; font-size: 11px; width: 40px;" ' . ($settings->abilityValue == 0 ? 'disabled' : '') . '/>
                                         <div style="font-size: 12px;position: absolute;' . ($settings->orientation == 'hor' ? "top: 21px;left: 51px;" : "top: 2px;left: 74px;") . '">' . $settings->minValue . '</div>
                                         <script>
                                             var slider' . $question->id . ' = new dhtmlxSlider({
@@ -1572,26 +1633,24 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             } else if ($q_type == 'dd') {
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
-                foreach ($question->responses as $response)
-                {
+                foreach ($question->responses as $response) {
                     $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
                 }
                 $result .= '</ul>';
-                if ($question->show_submit == 1)
-                {
+
+                if ($question->show_submit == 1) {
                     $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submit';
                     $result .= '<span id="questionSubmit'.$question->id.'" style="display:none;font-size:12px">Answer has been sent.</span>
                         <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
                 }
             } else if ($q_type == 'sjt') {
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
-                foreach ($question->responses as $response)
-                {
+                foreach ($question->responses as $response){
                     $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
                 }
                 $result .= '</ul>';
             }
-            $result = '<table bgcolor="#eeeeee" width="100%"><tr><td><p>'.$question->stem.'</p>'.$result.'</td></tr></table>';
+            $result = '<div class="questions">'.$question->stem.$result.'</div>';
         }
         return $result;
     }
@@ -2001,24 +2060,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function generateReviewLinks($traces)
     {
-        if ($traces != NULL and count($traces) > 0) {
+        $result = '';
+        if (count($traces)) {
             $result = '<ul class="links navigation">';
-            $i = 0;
             foreach ($traces as $trace) {
-//                $result[] = array("startDate"=>date("Y,m,d,H,i,s", $trace->date_stamp),"endDate"=>date("Y,m,d,H,i,s"),"headline"=>"<a href='".URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id."'>".$trace->node->title."</a>",);
-//                if($i>0)
-//                    $result[$i-1]["endDate"] = date("Y,m,d,H,i,s", $trace->date_stamp);
-//                $i++;
-
-                $result .= '<li><a href=' . URL::base() . 'renderLabyrinth/review/' . $trace->node->map_id . '/' . $trace->node->id . '>' . $trace->node->title . '</a></li>';
+                $result .= '<li><a href='.URL::base().'renderLabyrinth/review/'.$trace->node->map_id.'/'.$trace->node->id.'>'.$trace->node->title.'</a></li>';
             }
-
-            //$result =json_encode($result);
             $result .= '</ul>';
-            return $result;
-        }
 
-        return '';
+        }
+        return $result;
     }
 
 
@@ -2074,9 +2125,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $user       = Auth::instance()->get_user();
             $userType   = $user->type_id;
             $idUser     = $user->id;
-            $idScenario = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+            $idScenario = Session::instance()->get('webinarId')
+                ? Session::instance()->get('webinarId')
+                : DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
             $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
         }
+
+        // save in the session, scenario or not
+        Session::instance()->set('idScenario', $idScenario);
 
         // first check by author_id, second check for author right
         $owner = $map->author_id == $idUser;

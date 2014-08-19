@@ -234,22 +234,21 @@ class Controller_SkinManager extends Controller_Base {
         $this->templateData['action']     = 'editSkins';
         $this->templateData['navigation'] = View::factory('labyrinth/skin/navigation')->set('templateData', $this->templateData);
 
-        if ($skinId != NULL)
-        {
+        if ($skinId) {
             $skinData = DB_ORM::model('map_skin')->getSkinById($skinId);
             $this->templateData['skinData'] = $skinData;
             $skinSourcePath = DOCROOT.'/application/views/labyrinth/skin/'.$skinId.'/skin.source';
 
-            if (file_exists($skinSourcePath)) $this->templateData['skinHTML'] = base64_encode(file_get_contents($skinSourcePath));
+            if (file_exists($skinSourcePath)) {
+                $this->templateData['skinHTML'] = base64_encode(file_get_contents($skinSourcePath));
+            }
 
             $this->templateData['action_url'] = URL::base().'skinManager/skinEditorUpload/'.$mapId;
             $this->templateData['skinError'] = Session::instance()->get('skinError');
             Session::instance()->delete('skinError');
             $this->template = View::factory($skinData->data != null ? 'labyrinth/skin/skinEditor' : 'labyrinth/skin/skinEditorOld');
             $this->template->set('templateData', $this->templateData);
-        }
-        else
-        {
+        } else {
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Skin'))->set_url(URL::base().'skinManager/index/'.$mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit my skins'))->set_url(URL::base().'skinManager/editSkins/'.$mapId));
@@ -452,17 +451,21 @@ class Controller_SkinManager extends Controller_Base {
         echo '{status: "ok"}';
     }
 
-    public function action_uploadSkinImage() {
+    public function action_uploadSkinImage()
+    {
         $this->auto_render = false;
 
-        $skinId = Arr::get($_POST, 'skinId', null);
+        $skinId   = Arr::get($_POST, 'skinId', null);
+        $fileName = Arr::get($_POST, 'fileName', null);
+
         if($skinId == null) { echo '{"status": "error", "errorMessage": "Wrong Skin ID"}'; return; }
 
         $data    = Arr::get($_POST, 'data', null);
-        $skinDir = $_SERVER['DOCUMENT_ROOT'] . '/files/skin_' . $skinId . '/';
-        if(!is_dir($skinDir)) { mkdir($skinDir); }
-        $fileName = time();
-        $file = $skinDir . $fileName;
+        $skinDir = $_SERVER['DOCUMENT_ROOT'].'/files/skin_'.$skinId.'/';
+        if( ! is_dir($skinDir)) {
+            mkdir($skinDir);
+        }
+        $file = $skinDir.$fileName;
 
         $this->base64_to_jpeg($data, $file);
 

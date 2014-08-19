@@ -227,7 +227,29 @@
             });
         });
     </script>
-    <?php
+<!--    <script type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?><!--"></script>-->
+<!--    <script language="javascript" type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?><!--"></script>-->
+<!--    <script language="javascript" type="text/javascript">-->
+<!--        tinymce.init({-->
+<!--            selector: ".cumulative",-->
+<!--            theme: "modern",-->
+<!--            content_css: "--><?php //echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?><!--",-->
+<!--            entity_encoding: "raw",-->
+<!--            contextmenu: "link image inserttable | cell row column",-->
+<!--            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,-->
+<!--            valid_elements : "+*[*]",-->
+<!--            plugins: ["compat3x",-->
+<!--                "advlist autolink lists link image charmap hr anchor pagebreak",-->
+<!--                "searchreplace wordcount visualblocks visualchars code fullscreen",-->
+<!--                "insertdatetime nonbreaking save table contextmenu directionality",-->
+<!--                "template paste textcolor layer advtextcolor rdface"-->
+<!--            ],-->
+<!--            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",-->
+<!--            toolbar2: " link image | forecolor backcolor layer restoredraft",-->
+<!--            image_advtab: true,-->
+<!--            templates: []-->
+<!--        });-->
+<!--    </script>--><?php
     if ($templateData['skin_path'] != NULL) {
         $doc_file = DOCROOT.'css/skin/'.$templateData['skin_path'].'/default.css';
         if (file_exists($doc_file)) {
@@ -237,36 +259,9 @@
     }
 
     $id_map  = $templateData['map']->id;
-    $id_node = $templateData['node']->id;
-    ?>
-</head>
-
+    $id_node = $templateData['node']->id; ?>
+    </head>
     <body>
-        <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
-<!--        <script type="text/javascript" src="--><?php //echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?><!--"></script>-->
-<!--        <script language="javascript" type="text/javascript" src="--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/tinymce.min.js"></script>-->
-<!--        <script language="javascript" type="text/javascript">-->
-<!--                tinymce.init({-->
-<!--                selector: "textarea",-->
-<!--                theme: "modern",-->
-<!--                content_css: "--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,--><?php //echo URL::base(); ?><!--scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",-->
-<!--                entity_encoding: "raw",-->
-<!--                contextmenu: "link image inserttable | cell row column rdfaceMain",-->
-<!--                closed: /^(br|hr|input|meta|img|link|param|area|source)$/,-->
-<!--                valid_elements : "+*[*]",-->
-<!--                plugins: ["compat3x",-->
-<!--                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",-->
-<!--                    "searchreplace wordcount visualblocks visualchars code fullscreen",-->
-<!--                    "insertdatetime media nonbreaking save table contextmenu directionality",-->
-<!--                    "emoticons template paste textcolor layer advtextcolor rdface imgmap"-->
-<!--                ],-->
-<!--                toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",-->
-<!--                toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",-->
-<!--                image_advtab: true,-->
-<!--                templates: []-->
-<!--            });-->
-<!--        </script>-->
-        <?php } ?>
         <div align="center" class="popup-outside-container">
             <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
                 <tr>

@@ -26,6 +26,11 @@ $(function() {
                                 '<div class="controls">' +
                                     '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6" data-section="1">' + mapsOptions + '</select> ' +
                                     '<button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>' +
+                                    '<div class="poll-node-section">'+
+                                        '<label>' +
+                                            '<input type="checkbox" class="cumulative-chb" name="cumulative[%containerId1%-key-%itemId1%]" value="1">Cumulative' +
+                                        '</label>' +
+                                    '</div>' +
                                     '<div class="poll-node-section">' +
                                     '<button type="button" class="btn btn-info poll-node-js">Add poll node</button>' +
                                     '</div>' +
@@ -46,12 +51,14 @@ $(function() {
         maxItemNumber += 1;
 
         html = html.replace('%itemId%'        , maxItemNumber)
+                   .replace('%itemId1%'        , maxItemNumber)
                    .replace('%itemNumber%'    , maxItemNumber)
                    .replace('%number%'        , maxItemNumber)
                    .replace('%id%'            , maxItemNumber)
                    .replace('%labelId%'       , maxItemNumber)
                    .replace('%containerForId%', containerId)
                    .replace('%containerId%'   , containerId)
+                   .replace('%containerId1%'  , containerId)
                    .replace('%containerName%' , containerId);
 
         $container.append(html);
@@ -73,7 +80,7 @@ $(function() {
                    .last()
                    .children()
                    .first()
-                   .attr('name', 's' + containerId + '_labyrinth[]');
+                   .attr('name', 's' + containerId + '_labyrinths[]');
         });
     });
 
@@ -228,4 +235,27 @@ $(function() {
 
         button.data('id', mapId);
     }
+
+    $('.cumulative-chb').change(function(){
+        var $this = $(this);
+        if($this.prop('checked')){
+            $this.next().show();
+        } else {
+            $this.next().hide();
+        }
+    });
+
+    $('.cumulative-reset').click(function(){
+        var $button     = $(this),
+            $mapId      = $button.data('map'),
+            $scenarioId = $button.data('scenario');
+
+        $button.button('loading');
+        $.get(
+            urlBase + 'webinarManager/resetCumulative/' + $scenarioId + '/' + $mapId,
+            function(){
+                $button.button('reset');
+            }
+        );
+    });
 });

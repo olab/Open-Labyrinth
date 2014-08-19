@@ -67,6 +67,10 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => TRUE,
                 'savable' => TRUE
+            )),
+            'notCumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
+                'savable' => TRUE
             ))
         );
 

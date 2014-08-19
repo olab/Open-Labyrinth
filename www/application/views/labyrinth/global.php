@@ -20,10 +20,9 @@
  */
 $user = Auth::instance()->get_user();
 $uiMode = $user->modeUI;
-if (isset($templateData['map'])) {
-    ?>
-    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
-    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+if (isset($templateData['map'])) { ?>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
     <script language="javascript" type="text/javascript">
         tinymce.init({
             selector: "textarea",

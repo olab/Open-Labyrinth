@@ -135,7 +135,7 @@ div.scroll {
 }
 
 .questionResponces.horizontal li {
-    float:left;
+    display: inline-block;
 }
 
 .questionResponces .questionSubmitButton {

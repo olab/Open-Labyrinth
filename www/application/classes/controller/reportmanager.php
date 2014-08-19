@@ -54,6 +54,7 @@ class Controller_ReportManager extends Controller_Base
 
     public function action_finishAndShowReport()
     {
+        Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
         $sessionId      = $this->request->param('id', NULL);
         $mapId          = $this->request->param('id2', NULL);
         $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);

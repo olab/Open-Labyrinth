@@ -6207,6 +6207,11 @@ input.assign-type {
     width: 600px;
 }
 
+.poll-node-section > label{
+    height: 30px;
+    line-height: 30px;
+}
+
 .poll-node-indent {
     margin-right: 10px;
 }
@@ -6263,4 +6268,12 @@ input.lightning-chb {
 
 #webinarForm .submit-webinar-btn:first-child {
     margin-top: -2px;
+}
+
+.cumulative-reset {
+    margin-left: 10px;
+}
+
+input.cumulative-chb {
+    margin: -1px 5px 0 0;
 }

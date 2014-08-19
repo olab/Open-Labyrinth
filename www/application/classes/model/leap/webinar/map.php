@@ -56,6 +56,9 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
+            )),
+            'cumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
             ))
         );
 
@@ -127,13 +130,14 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
             ->execute();
     }
 
-    public function addMap($scenarioId, $referenceId, $step, $which)
+    public function addMap($scenarioId, $referenceId, $step, $which, $cumulative = 0)
     {
         return DB_ORM::insert('webinar_map')
             ->column('webinar_id', $scenarioId)
             ->column('reference_id', $referenceId)
             ->column('which', $which)
             ->column('step', $step)
+            ->column('cumulative', $cumulative)
             ->execute();
     }
 

@@ -143,7 +143,7 @@ div.scroll {
 }
 
 .questionResponces.horizontal li {
-    float:left;
+    display: inline-block;
 }
 
 .questionResponces .questionSubmitButton {
@@ -508,4 +508,21 @@ a.file-link:visited {
 }
 .popup .info_for_admin.redirect_to {
     float:right;
+}
+
+.lightning-single,
+.lightning-multi {
+    margin: 0;
+}
+
+.questions {
+    background-color: #eeeeee;
+    padding: 5px;
+}
+
+.previous-answers {
+    display: inline-block;
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.1);
 }

@@ -34,10 +34,12 @@ var ImagePropertyView = (function(parent) {
         this._$right              = null;
         this._$bottom             = null;
         this._$src                = null;
-    };
+    }
     
     ImagePropertyView.prototype.AppendTo = function($container) {
-        if($container === null) { return; }
+        if($container === null) {
+            return;
+        }
         
         this._AppendLabelInput($container, {                label: 'Width', 
                                              viewModelProperyName: 'Width', 
