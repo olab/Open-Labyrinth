@@ -519,7 +519,7 @@ var BlockPropertyView = (function(parent) {
     BlockPropertyView.prototype._AppendImageInput = function($container, parameters) {
         var instance        = this,
             $ui             = null,
-            backgroundImage = 'non';
+            backgroundImage = 'none';
 
         if (instance._viewModel._parentId){
             var id = instance._viewModel._objectId;
