@@ -18,8 +18,10 @@
 *
 */
 /* Layout Stylesheet */
+@import 'basic.css';
+
 body {
-    margin:0px;
+    margin:0;
     font-family: Arial, Helvetica, sans-serif;
     color: #000000;
     text-align:center;
@@ -548,6 +550,3 @@ a.file-link:visited {
 .counter-color {color: #ff0000;}
 .counter-rule-color {color: orange;}
 .global-rule-color {color: #008000;}
-
-
-

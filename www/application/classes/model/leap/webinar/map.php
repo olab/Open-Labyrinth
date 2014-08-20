@@ -133,11 +133,11 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
     public function addMap($scenarioId, $referenceId, $step, $which, $cumulative = 0)
     {
         return DB_ORM::insert('webinar_map')
-            ->column('webinar_id', $scenarioId)
-            ->column('reference_id', $referenceId)
-            ->column('which', $which)
-            ->column('step', $step)
-            ->column('cumulative', $cumulative)
+            ->column('webinar_id',      $scenarioId)
+            ->column('reference_id',    $referenceId)
+            ->column('which',           $which)
+            ->column('step',            $step)
+            ->column('cumulative',      $cumulative)
             ->execute();
     }
 

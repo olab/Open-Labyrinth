@@ -8,6 +8,13 @@ var submitTextQ         = [],
     lightningNotSaved   = false,
     actionGoClicked     = false;
 
+function valToTextarea() {
+    tinyMCE.activeEditor.on('blur', function() {
+        $('#'+$(this).prop('id')).html(tinyMCE.activeEditor.getContent());
+    });
+}
+
+
 $(document).ready(function(){
     questions = $('[name^="qresponse_"]');
     var goLink = $('a[href^="/renderLabyrinth/go"]');
@@ -102,14 +109,16 @@ $(document).ready(function(){
     // ----- end patient ----- //
 
     // ----- lightning rule ----- //
-    var rightAnswer = false,
-        ruleExist = jsonRule.length > 2;
+    var rightAnswer     = false,
+        ruleExist       = jsonRule.length > 2,
+        $lightningMulti = $('.lightning-multi'),
+        cumulative      = $lightningMulti.hasClass('cumulative');
 
     $('.lightning-single').focusout(function(){
         validationAndLightningText($(this));
     });
 
-    $('.lightning-multi').focusout(function(){
+    $lightningMulti.focusout(function(){
         validationAndLightningText($(this));
     });
 

@@ -1,0 +1,30 @@
+.lightning-single,
+.lightning-multi {
+    margin: 0;
+}
+
+.questions {
+    font-size: 14px;
+    background-color: #eeeeee;
+    padding: 5px;
+}
+
+.questions a {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.questions p {
+    font-size: inherit;
+}
+
+.previous-answers {
+    display: inline-block;
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.previous-answers p {
+    margin: 0;
+}

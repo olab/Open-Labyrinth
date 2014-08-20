@@ -1305,7 +1305,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                 }
 
-                                $text = str_replace('<p>[[' . $code . ':' . $id . ']]</p>', $replaceString, $text);
+                                $text = str_replace('[[' . $code . ':' . $id . ']]', $replaceString, $text);
                             }
                         }
                     }
@@ -1445,12 +1445,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 foreach ($responsesSQL as $response) {
                     if (isset($response['response'])) {
-                        $responses .= $response['response'].'<br>';
+                        $responses .= $response['response'];
                     }
                 }
 
                 if ($responses) {
-                    $previousAnswers = '<p class="previous-answers">Previous answer:<br>'.$responses.'</p>';
+                    $previousAnswers = '<div class="previous-answers">Previous answer:'.html_entity_decode($responses).'</div>';
                 }
             };
             // ----- end previous answer ----- //
@@ -1472,13 +1472,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
-                $cumulative = ($qTitle == 'Cumulative');
+                $cumulative  = ($qTitle == 'Cumulative');
+                $class       = $cumulative ? ' cumulative' : '';
+                $placeholder = $cumulative ? '' : ' placeholder="'.$question->prompt.'"';
+                $content     = $cumulative ? htmlspecialchars($question->prompt) : '';
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
 
                 $result =
-                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'" placeholder="'.$question->prompt.'"></textarea>'.
+                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$content.'</textarea>'.
                     '<p>'.
                         '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
                         '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
@@ -1641,7 +1644,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 $result .= '</ul>';
             }
-            $result = '<div class="questions">'.$previousAnswers.$question->stem.$result.'</div>';
+            $result = '<div class="questions">'.$previousAnswers.'<p>'.$question->stem.'</p>'.$result.'</div>';
         }
         return $result;
     }
