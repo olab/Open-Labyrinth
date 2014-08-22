@@ -371,10 +371,10 @@ class Controller_WebinarManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_delete() {
+    public function action_delete()
+    {
         DB_ORM::model('webinar')->deleteWebinar($this->request->param('id', null));
-
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        Request::initial()->redirect(URL::base().'webinarmanager/index');
     }
 
     public function action_save()
@@ -638,15 +638,13 @@ class Controller_WebinarManager extends Controller_Base {
         $id        = $this->request->param('id3', null);
         $type      = $this->request->param('id4', null);
 
-        if ($webinarId > 0 AND $step > 0)
-        {
+        if ($webinarId AND $step) {
             Session::instance()->set('webinarId', $webinarId);
             Session::instance()->set('step', $step);
 
             //------ redirect to webinar section ------//
-            if ($type == 'section')
-            {
-                $section = DB_ORM::model('Map_Node_Section', array($id));
+            if ($type == 'section') {
+                $section     = DB_ORM::model('Map_Node_Section', array($id));
                 $sectionNode = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $id)->where('node_type', '=', 'in')->query()->fetch(0);
 
                 if ( ! $sectionNode) Request::initial()->redirect(URL::base());
@@ -667,7 +665,7 @@ class Controller_WebinarManager extends Controller_Base {
         $dataStatisticsIds = DB_ORM::model('statistics_user_session')->getSessionByWebinarId($webId);
         list($data, $ids) = DB_ORM::model('user_session')->getSessionByWebinarId($webId,$dataStatisticsIds);
 
-        if (count($data) > 0) {
+        if (count($data)) {
             // Save Statistics
             DB_ORM::model('statistics_user_session')->saveWebInarSession( $data );
             DB_ORM::model('statistics_user_sessiontrace')->saveWebInarSessionTraces( $ids );
@@ -676,11 +674,11 @@ class Controller_WebinarManager extends Controller_Base {
 
         DB_ORM::model('webinar')->resetWebinar($webId);
 
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        Request::initial()->redirect(URL::base().'webinarmanager/index');
     }
 
     public function action_updateInclude4R() {
-        $id = $this->request->param('id', null);
+        $id      = $this->request->param('id', null);
         $include = $this->request->param('id2', null);
 
         DB_ORM::model('webinar_user')->updateInclude4R($id, $include);
@@ -695,6 +693,7 @@ class Controller_WebinarManager extends Controller_Base {
         $expert = $this->request->param('id2', null);
 
         DB_ORM::model('Webinar_User')->updateExpert($id, $expert);
+
         return true;
     }
 
@@ -702,8 +701,7 @@ class Controller_WebinarManager extends Controller_Base {
     {
         $wId = $this->request->param('id', null);
         $mapsId = array();
-        foreach (DB_ORM::select('Webinar_Map')->where('webinar_id', '=', $wId)->query()->as_array() as $wObj)
-        {
+        foreach (DB_ORM::select('Webinar_Map')->where('webinar_id', '=', $wId)->query()->as_array() as $wObj){
             $mapsId[] = $wObj->reference_id;
         }
         echo(json_encode($mapsId));
@@ -716,8 +714,7 @@ class Controller_WebinarManager extends Controller_Base {
         $mapId      = $this->request->param('id');
         $sections   = DB_ORM::model('Map_Node_Section')->getSectionsByMapId($mapId);
 
-        foreach ($sections as $sectionObj)
-        {
+        foreach ($sections as $sectionObj){
             $response[$sectionObj->name] = $sectionObj->id;
         }
         echo json_encode($response);
@@ -729,8 +726,7 @@ class Controller_WebinarManager extends Controller_Base {
         $mapId  = $this->request->param('id');
         $result = array();
 
-        foreach(DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj)
-        {
+        foreach(DB_ORM::select('Map_Node')->where('map_id', '=', $mapId)->query()->as_array() as $nodeObj){
             $result[$nodeObj->title] = $nodeObj->id;
         }
         ksort($result);
@@ -745,7 +741,6 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_visualEditor ()
     {
         $scenarioId = $this->request->param('id');
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor')));
 
         $this->templateData['enabledMaps']  = DB_ORM::model('map')->getAllEnabledMap(0, 'name', 'ASC');
         $this->templateData['steps']        = DB_ORM::model('Webinar_Step')->getScenarioSteps($scenarioId);
@@ -753,6 +748,8 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['scenarioJSON'] = DB_ORM::model('Webinar')->generateJSON($scenarioId);
         $this->templateData['center']       = View::factory('webinar/canvas')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor')));
     }
 
     public function action_ajaxStepUpdate()
@@ -817,5 +814,53 @@ class Controller_WebinarManager extends Controller_Base {
         $mapId      = $this->request->param('id2');
         DB_ORM::update('User_Session')->set('notCumulative', 1)->where('webinar_id', '=', $scenarioId)->where('map_id', '=', $mapId)->execute();
         exit;
+    }
+
+    public function action_allConditions()
+    {
+        $this->templateData['scenarios']  = DB_ORM::select('Webinar')->order_by('title')->query()->as_array();
+        $this->templateData['conditions'] = DB_ORM::select('Conditions')->query()->as_array();
+        $this->templateData['center'] = View::factory('webinar/conditions')->set('templateData', $this->templateData);
+
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_saveConditions()
+    {
+        $post                    = $this->request->post();
+        $newConditionsName       = Arr::get($post, 'newConditionsName', array());
+        $newConditionsName       = array_filter($newConditionsName);
+        $newConditionsValue      = Arr::get($post, 'newConditionsValue', array());
+        $changedConditionsName   = Arr::get($post, 'changedConditionsName', array());
+        $changedConditionsValue  = Arr::get($post, 'changedConditionsValue', array());
+        $deletedConditions       = Arr::get($post, 'deletedConditions', array());
+        $deletedConditions       = array_filter($deletedConditions);
+        $conditionsModel         = DB_ORM::model('Conditions');
+
+        foreach ($newConditionsName as $key => $conditionsName){
+            $conditionsModel->add($conditionsName, $newConditionsValue[$key]);
+        }
+
+        foreach ($changedConditionsName as $id => $conditionsName){
+            $conditionsModel->update($conditionsName, $changedConditionsValue[$id], $id);
+        }
+
+        foreach ($deletedConditions as $id){
+            $conditionsModel->deleteRecord($id);
+        }
+
+        Request::initial()->redirect(URL::base().'webinarManager/allConditions');
+    }
+
+    public function action_editCondition()
+    {
+        $conditionId = $this->request->param('id');
+
+        //$this->templateData['map']        = DB_ORM::model('map', array($mapId));
+        //$this->templateData['nodes']      = DB_ORM::select('map_node')->where('map_id', '=', $mapId)->query()->as_array();
+        $this->templateData['condition'] = DB_ORM::model('Conditions', array($conditionId));
+        $this->templateData['scenarios'] = DB_ORM::select('Webinar')->order_by('title')->query()->as_array();
+        $this->templateData['center']    = View::factory('webinar/conditionEdit')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 }

@@ -358,15 +358,18 @@ class Controller_Home extends Controller_Base {
     public function action_historyAjaxCollaboration()
     {
         $this->auto_render  = false;
-        $usersInformation   = json_decode($this->templateData['historyOfAllUsers'], true);
         $result             = array();
-        $user               = $this->templateData['username'];
-        $userArray          = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
+        $user               = Auth::instance()->get_user();
+        $userName           = $user->nickname;
+        $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);;
+        $userArray          = Arr::get($usersInformation, $user->id, NULL);
         $uri                = Arr::get($userArray, 'href', NULL);
 
         if ($userArray AND $uri != NULL) {
             foreach ($usersInformation as $value) {
-                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) $result[$value['id']] = $value['username'];
+                if ($value['href'] == $uri AND $value['username'] != $userName AND $value['readonly'] == 1) {
+                    $result[$value['id']] = $value['username'];
+                }
             }
         }
         if ($uri == 'kick') $result['reloadPage'] = 1;

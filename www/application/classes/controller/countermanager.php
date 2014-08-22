@@ -162,9 +162,9 @@ class Controller_CounterManager extends Controller_Base {
         $this->templateData['nodes']    = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
         $this->templateData['popups']   = DB_ORM::model('map_popup')->getAllMapPopups((int) $mapId);
 
-        if ($counterId == NULL) $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-        else
-        {
+        if ($counterId == NULL) {
+            $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+        } else {
             $this->templateData['counters'][] = DB_ORM::model('map_counter', array((int) $counterId));
             $this->templateData['oneCounter'] = true;
         }

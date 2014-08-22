@@ -21,9 +21,9 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for map_presentation_maps table in database 
+ * Model for map_nodes table in database
  */
-class Model_Leap_Map_Presentation_Map extends DB_ORM_Model {
+class Model_Leap_Conditions extends DB_ORM_Model {
 
     public function __construct() {
         parent::__construct();
@@ -32,33 +32,13 @@ class Model_Leap_Map_Presentation_Map extends DB_ORM_Model {
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
-                'unsigned' => TRUE,
             )),
-            
-            'presentation_id' => new DB_ORM_Field_Integer($this, array(
+            'name' => new DB_ORM_Field_Text($this, array(
+                'nullable' => FALSE,
+            )),
+            'startValue' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
-                'unsigned' => TRUE,
-            )),
-            
-            'map_id' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
-            )),
-            
-            'order' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
-            )),
-        );
-        
-        $this->relations = array(
-            'map' => new DB_ORM_Relation_BelongsTo($this, array(
-                'child_key' => array('map_id'),
-                'parent_key' => array('id'),
-                'parent_model' => 'map',
             )),
         );
     }
@@ -68,21 +48,34 @@ class Model_Leap_Map_Presentation_Map extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'map_presentation_maps';
+        return 'conditions';
     }
 
     public static function primary_key() {
         return array('id');
-    }  
-    
-    public function add($presentationId, $mapId) {
-        if($presentationId != NULL and $mapId != NULL) {
-            $this->presentation_id = $presentationId;
-            $this->map_id = $mapId;
-            
-            $this->save();
-        }
+    }
+
+    public function add ($name, $value)
+    {
+        $record = new $this;
+        $record->name = $name;
+        $record->startValue = $value;
+        $record->save();
+    }
+
+    public function update ($name, $value, $id)
+    {
+        $this->id = $id;
+        $this->load();
+        $this->name = $name;
+        $this->startValue = $value;
+        $this->save();
+    }
+
+    public function deleteRecord ($id)
+    {
+        $record = new $this;
+        $record->id = $id;
+        $record->delete();
     }
 }
-
-?>

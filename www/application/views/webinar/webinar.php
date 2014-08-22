@@ -19,7 +19,6 @@
  *
  */
 $sectionIds = Arr::get($templateData, 'sections', array()); ?>
-
 <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script language="javascript" type="text/javascript">
     tinymce.init({
@@ -45,15 +44,17 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
 </script>
 
 <form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base() ?>webinarmanager/save">
-    <h1><?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?> <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>"/></h1>
-
-    <input type="hidden" name="webinarId" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->id; ?>"/>
+    <h1>
+        <?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?>
+        <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>"/>
+    </h1>
+    <input type="hidden" name="webinarId" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->id; ?>">
     <fieldset class="fieldset">
         <legend><?php echo __('Scenario Details'); ?></legend>
         <div class="control-group">
             <label class="control-label" for="title"><?php echo __('Scenario Title'); ?></label>
             <div class="controls">
-                <input type="text" class="span6" id="title" name="title" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->title; ?>" />
+                <input type="text" class="span6" id="title" name="title" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->title; ?>">
             </div>
         </div><?php
         if ( ! isset($templateData['webinar'])) {
@@ -65,18 +66,18 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Use existing forum') ?></label>
                 <div class="controls">
-                    <div class="radio_extended btn-group">
-                        <?php if ($forums) {?>
+                    <div class="radio_extended btn-group"><?php
+                        if ($forums) {?>
                             <input autocomplete="off" type="radio" id="use" name="use" value="1" />
-                            <label data-class="btn-info" class="btn" for="use"><?php echo __('Use'); ?></label>
-                        <?php }?>
+                            <label data-class="btn-info" class="btn" for="use"><?php echo __('Use'); ?></label><?php
+                        }?>
                         <input autocomplete="off" type="radio" id="notUse" name="use" value="0" checked="checked" />
                         <label data-class="btn-info" class="btn" for="notUse" rel="tooltip" title="Will be created a new forum"><?php echo __('Do not use'); ?></label>
                     </div>
                 </div>
             </div>
             <div class="control-group submitSettingsContainer hide">
-                <label class="control-label"><?php echo __('Forums') ?></label>
+                <label for="forum" class="control-label"><?php echo __('Forums') ?></label>
                 <div class="controls">
                     <select id="forum" name="forum"><?php
                     foreach ($templateData['forums'] as $forum) { ?>
@@ -88,7 +89,7 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                 foreach($templateData['forums'] as $forum) {
                     if (count($forum['topics'])) { ?>
                     <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
-                        <label class="control-label"><?php echo __('Topics') ?></label>
+                        <label for="topic" class="control-label"><?php echo __('Topics') ?></label>
                         <div class="controls">
                             <select id="topic" name="topic">
                                 <option value="0">Please select</option><?php
@@ -109,7 +110,7 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             foreach($templateData['webinar']->steps as $step) { ?>
             <fieldset class="fieldset step-container-<?php echo $step->id; ?>" stepId="<?php echo $step->id; ?>">
                 <legend>
-                    Step - <input type="text" name="s<?php echo $step->id; ?>_name" value="<?php echo $step->name; ?>"/>
+                    Step - <input type="text" name="s<?php echo $step->id; ?>_name" value="<?php echo $step->name; ?>">
                     <button class="btn btn-danger btn-remove-step"><i class="icon-trash"></i></button>
                     <input type="hidden" name="stepIDs[]" value="<?php echo $step->id; ?>"/>
                 </legend>

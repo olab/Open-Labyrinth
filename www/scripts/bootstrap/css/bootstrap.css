@@ -785,6 +785,45 @@ h4 small {
   border-bottom: 1px solid #eeeeee;
 }
 
+h1.page-header {
+    padding-bottom: 19px;
+    margin: 20px 0 30px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.page-header>.pull-right {
+    margin-top: 0;
+}
+
+.add-condition-js,
+.addConditionAssign {
+    margin-right: 10px;
+}
+
+#conditionsForm td:nth-child(1){
+    width: 220px;
+}
+#conditionsForm td:nth-child(2) input{
+    width: 98%;
+}
+#conditionsForm td:nth-child(3){
+    width: 250px;
+}
+#conditionsForm td:nth-child(4){
+    width: 157px;
+}
+#conditionsForm td:nth-child(5){
+    width: 104px;
+}
+td select.assign-condition{
+    margin-bottom: 10px;
+}
+td select.assign-condition:last-child{
+    margin-bottom: 0;
+}
+.conditionAssign{
+    margin: 0 0 0 30px;
+}
 ul,
 ol {
   padding: 0;

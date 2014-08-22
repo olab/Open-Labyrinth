@@ -725,10 +725,8 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->templateData['selectedLinkStyles']   = $selectedLinkStyle ? $selectedLinkStyle : 5;
         $this->templateData['files']                = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
         $this->templateData['creators']             = DB_ORM::select('user')->where('type_id', '=', 2)->where('type_id', '=', 4, 'OR')->order_by('nickname')->query()->as_array();
-        $this->templateData['editCreator']          = TRUE;
         $this->templateData['regAuthors']           = DB_ORM::model('map_user')->getAllAuthors($mapId);
         $this->templateData['groupsOfLearner']      = DB_ORM::model('User_Group')->getGroupOfLearners($mapId);
-        $this->templateData['rootNodeMap'][$mapId]  = TRUE;
         $this->templateData['left']                 = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->templateData['center']               = View::factory('labyrinth/global')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
@@ -943,17 +941,31 @@ class Controller_LabyrinthManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_search() {
-        $mapId = $this->request->param('id', null);
+    public function action_search()
+    {
+        $mapId      = $this->request->param('id', null);
         $searchText = Arr::get($_GET, 's', null);
 
         $searcher = new Searcher();
-
-        $searcher->addElement(new Searcher_Element_BasicMap_Dam($mapId, array(array('field' => 'id', 'label' => 'Id'),
-                                                                              array('field' => 'name', 'label' => 'Name'))));
-        $searcher->addElement(new Searcher_Element_BasicMap_Node($mapId, array(array('field' => 'id', 'label' => 'Id'),
-                                                                               array('field' => 'title', 'label' => 'Title'),
-                                                                               array('field' => 'text', 'label' => 'Content'))));
+        $searcher->addElement(
+            new Searcher_Element_BasicMap_Dam(
+                $mapId,
+                array(
+                    array('field' => 'id', 'label' => 'Id'),
+                    array('field' => 'name', 'label' => 'Name')
+                )
+            )
+        );
+        $searcher->addElement(
+            new Searcher_Element_BasicMap_Node(
+                $mapId,
+                array(
+                    array('field' => 'id', 'label' => 'Id'),
+                    array('field' => 'title', 'label' => 'Title'),
+                    array('field' => 'text', 'label' => 'Content')
+                )
+            )
+        );
         $searcher->addElement(new Searcher_Element_BasicMap_NodeSection($mapId, array(array('field' => 'id', 'label' => 'Id'),
                                                                                       array('field' => 'name', 'label' => 'Name'))));
         $searcher->addElement(new Searcher_Element_BasicMap_Counter($mapId, array(array('field' => 'id', 'label' => 'Id'),
@@ -972,18 +984,9 @@ class Controller_LabyrinthManager extends Controller_Base {
                                                                      array('field' => 'value', 'label' => 'Value', 'type' => 'element'))));
 
         $this->templateData['searchText'] = $searchText;
-
-        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-        $leftView->set('templateData', $this->templateData);
-
-        $view = View::factory('labyrinthSearchResult');
-        $view->set('data', $searcher->search($searchText));
-        $view->set('searchText', $searchText);
-
-        $this->templateData['center'] = $view;
-        $this->templateData['left'] = $leftView;
-        unset($this->templateData['right']);
+        $this->templateData['map']        = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['center']     = View::factory('labyrinthSearchResult')->set('data', $searcher->search($searchText))->set('searchText', $searchText);
+        $this->templateData['left']       = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 }

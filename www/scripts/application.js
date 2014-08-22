@@ -462,24 +462,28 @@ jQuery(document).ready(function(){
         users = null;
     if (!currentUserReadOnly && userHasBlockedAccess) {
         setInterval(function() {
-            $.get(historyAjaxCollaborationURL, function(data) {
-                usernames = [];
-                users = eval('(' + data + ')');
-                if (users['reloadPage'] == 1) $('#discardWarning').modal();
-                else {
-                    $.each(users, function(key, value){
-                        if (inArray(key, stopList)) delete users[key];
-                        else {
-                            stopList.push(key);
-                            usernames.push(value);
+            $.get(
+                historyAjaxCollaborationURL,
+                function(data) {
+                    usernames = [];
+                    users = eval('(' + data + ')');
+                    if (users['reloadPage'] == 1) {
+                        $('#discardWarning').modal();
+                    } else {
+                        $.each(users, function(key, value){
+                            if (inArray(key, stopList)) delete users[key];
+                            else {
+                                stopList.push(key);
+                                usernames.push(value);
+                            }
+                        });
+                        if (usernames.length) {
+                            utils = new Utils();
+                            utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                         }
-                    });
-                    if (usernames.length) {
-                        utils = new Utils();
-                        utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                     }
                 }
-            });
+            );
         }, 30000);
     }
 

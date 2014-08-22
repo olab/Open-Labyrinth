@@ -199,10 +199,11 @@ $user = Auth::instance()->get_user(); ?>
                             echo Arr::get($templateData, 'center'); ?>
                         </div>
                     </div><?php
-                    if(isset($templateData['left'])) ?>
+                    if (isset($templateData['left'])) { ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
                     </div><?php
+                    }
                     if (isset($templateData['right'])) { ?>
                         <div class="span2"><?php echo $templateData['right']; ?></div><?php
                     }
@@ -224,11 +225,9 @@ $user = Auth::instance()->get_user(); ?>
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
                 userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
                 currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>',
-                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', ''); ?>)');
+                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', array()); ?>)'),
+                historyShowWarningPopup = <?php echo Arr::get($templateData, 'historyShowWarningPopup', 0); ?>;
             <?php
-            if (isset($templateData['historyShowWarningPopup'])) { ?>
-                var historyShowWarningPopup = <?php echo $templateData['historyShowWarningPopup']; ?>;
-            <?php }
             if (isset($templateData['username'])) { ?>
                 var currentUser = '<?php echo $templateData['username']; ?>';
             <?php } ?>
