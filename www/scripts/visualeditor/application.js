@@ -116,9 +116,11 @@ $(function () {
         editor_selector: "mceEditorLite"
     });*/
 
-    var autoSaveData = null;
-    var body         = $('body');
-    var autoSaveInterval = 50000;
+    var autoSaveData     = null,
+        body             = $('body'),
+        autoSaveInterval = 50000,
+        urlBase          = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
+
     var visualEditor = new VisualEditor();
         visualEditor.Init(params);
         visualEditor.copyFunction = copy;
@@ -303,7 +305,7 @@ $(function () {
             $('#leaveBox').modal('hide');
     
             $.post(
-                sendURL,
+                urlBase + 'visualManager/updateJSON',
                 { data:data.substring(0, data.length - 1), id:mapId },
                 function (data) {
                 if (data && data.length > 0) {

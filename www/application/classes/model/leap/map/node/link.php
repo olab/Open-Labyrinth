@@ -240,18 +240,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
     
     public function getLinksByMap ($mapId)
     {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('map_id', '=', $mapId);
-        $result = $builder->query();
-        
-        if ($result->is_loaded())
-        {
-            $links = array();
-            foreach($result as $record) $links[] = DB_ORM::model('map_node_link', array((int)$record['id']));
-            return $links;
-        }
-        return array();
+        return DB_ORM::select('map_node_link')->where('map_id', '=', $mapId)->query()->as_array();
     }
     
     public function getLinkByNodeIDs($nodeA, $nodeB)

@@ -29,8 +29,7 @@ if (isset($templateData['map'])) { ?>
             $('#content').toggleClass('span12 span10');
         });
 
-        var sendURL         = '<?php echo URL::base(); ?>visualManager/updateJSON',
-            bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
+        var bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
             bufferPaste     = '<?php echo URL::base(); ?>visualManager/bufferPaste',
             settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
             logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
