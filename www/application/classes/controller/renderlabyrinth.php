@@ -28,19 +28,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public $questionsId = array();
     public static $isCumulative = false;
     public static $nodeId = 0;
+    public static $scenarioId = false;
 
     private function renderLabyrinth ($action)
     {
         $mapId       = $this->request->param('id', null);
-        $this->mapId = $mapId;
-        $node        = null;
-        $bookmark    = false;
-        $continue    = true;
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) {
             Session::instance()->set('redirectURL', $this->request->uri());
             Request::initial()->redirect(URL::base());
         }
+
+        $this->mapId = $mapId;
+        $node        = null;
+        $bookmark    = false;
+        $continue    = true;
+        $scenarioId  = Controller_RenderLabyrinth::$scenarioId;
 
         if ($action == 'index') {
             $mapDB = DB_ORM::model('map', array($mapId));
@@ -72,7 +75,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $cumulative = DB_ORM::select('Webinar_Map')
-                ->where('webinar_id', '=', Session::instance()->get('idScenario'))
+                ->where('webinar_id', '=', $scenarioId)
                 ->where('reference_id', '=', $mapId)
                 ->query()
                 ->fetch(0);
@@ -1418,16 +1421,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             // ----- previous answer ----- //
             $getPreviousAnswers = function(&$previousAnswers, $mapId, $questionId, $nodeId, $cumulativeType) {
-                $idScenario     = Session::instance()->get('idScenario');
+                $scenarioId     = Controller_RenderLabyrinth::$scenarioId;
                 $responses      = '';
                 $responsesSQL   = array();
 
-                if ($idScenario AND Controller_RenderLabyrinth::$isCumulative){
+                if ($scenarioId AND Controller_RenderLabyrinth::$isCumulative){
                     $responsesSQL = DB_SQL::select('default')
                         ->from('user_sessions', 's')
                         ->join('LEFT', 'user_responses', 'r')
                         ->on('s.id', '=', 'r.session_id')
-                        ->where('s.webinar_id', '=', $idScenario)
+                        ->where('s.webinar_id', '=', $scenarioId)
                         ->where('s.map_id', '=', $mapId)
                         ->where('r.question_id', '=', $questionId)
                         ->where('r.node_id', '=', $nodeId)
@@ -2126,11 +2129,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         // save in the session, scenario or not
-        Session::instance()->set('idScenario', $idScenario);
+        Controller_RenderLabyrinth::$scenarioId = $idScenario;
 
         // first check by author_id, second check for author right
         $owner = $map->author_id == $idUser;
-        if ( ! $owner AND $userType == 2) $owner = (bool) DB_ORM::select('Map_User')->where('user_id', '=', $idUser)->where('map_id', '=', $idMap)->query()->as_array();
+        if ( ! $owner AND $userType == 2) {
+            $owner = (bool) DB_ORM::select('Map_User')->where('user_id', '=', $idUser)->where('map_id', '=', $idMap)->query()->as_array();
+        }
 
         switch ($userType)
         {

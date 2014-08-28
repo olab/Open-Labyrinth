@@ -795,8 +795,7 @@ h1.page-header {
     margin-top: 0;
 }
 
-.add-condition-js,
-.addConditionAssign {
+.add-condition-js {
     margin-right: 10px;
 }
 
@@ -822,7 +821,7 @@ td select.assign-condition:last-child{
     margin-bottom: 0;
 }
 .conditionAssign{
-    margin: 0 0 0 30px;
+    margin: 0;
 }
 ul,
 ol {

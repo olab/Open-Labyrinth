@@ -35,11 +35,30 @@ $(function(){
     });
 
     var deleteAssignBl = function($this){
-        console.log($this.parent());
-        $this.parent().remove();
+        $this.parents('tr').remove();
     };
 
-    $('.deleteAssign').click(function(){
+    $assignConditionsForm.on('click', '.deleteAssign', function(){
         deleteAssignBl($(this));
+    });
+
+    $('.deleteExistingAssign').click(function(){
+        deleteAssignBl($(this));
+        var deletedItem = '<input type="hidden" name="deleteAssign[]" value="' + $(this).data('id') + '">';
+        $assignConditionsForm.append(deletedItem);
+    });
+
+    $('.nodesGrid').click(function(){
+        var $this = $(this),
+            $table = $this.parents('.table'),
+            $tBody = $table.find('tbody');
+
+        if ($this.hasClass('icon-minus')) {
+            $this.removeClass('icon-minus').addClass('icon-plus');
+            $tBody.hide();
+        } else {
+            $this.removeClass('icon-plus').addClass('icon-minus');
+            $tBody.show();
+        }
     });
 });

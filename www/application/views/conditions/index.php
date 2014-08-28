@@ -41,8 +41,11 @@
             <tr>
                 <td><input class="code" readonly="readonly" type="text" value="<?php echo '[[COND:'.$condition->id.']]'; ?>"></td>
                 <td><input type="text" name="changedConditionsName[<?php echo $condition->id ?>]" value="<?php echo $condition->name; ?>"></td>
-                <td>
-
+                <td><?php
+                    $assigns = Arr::get($templateData['assign'], $condition->id, array());
+                    foreach ($assigns as $assign) {
+                        echo $assign.'<br>';
+                    } ?>
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger deleteChangedCondition" data-id="<?php echo $condition->id ?>">

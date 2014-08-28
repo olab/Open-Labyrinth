@@ -246,9 +246,10 @@ private static function initialize_metadata($object)
     {
         $result = array();
 
-        foreach($this->getAllUsersId($order) as $id)
-        {
-            if (count($notInUsers) > 0 AND in_array($id, $notInUsers)) continue;
+        foreach($this->getAllUsersId($order) as $id) {
+            if (count($notInUsers) AND in_array($id, $notInUsers)) {
+                continue;
+            }
 
             $res = DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name')))
                 ->from($this->table(), 'u')
@@ -260,8 +261,11 @@ private static function initialize_metadata($object)
                 ->order_by('nickname', $order)
                 ->query();
 
-            foreach ($res as $record) $result[] = $record;
+            foreach ($res as $record) {
+                $result[] = $record;
+            }
         }
+
         return $result;
     }
 

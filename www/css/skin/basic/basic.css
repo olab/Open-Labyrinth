@@ -28,3 +28,9 @@
 .previous-answers p {
     margin: 0;
 }
+
+.visualDisplayCounterContainer {
+    margin-bottom: 10px;
+    position: relative;
+    text-align: right;
+}

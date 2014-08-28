@@ -23,15 +23,16 @@ defined('SYSPATH') or die('No direct script access.');
 class Model_Labyrinth extends Model {
 
     private $bookmark;
+    private $nodeId = 0;
 
     public function execute ($nodeId, $bookmark = NULL, $isRoot = false, $cumulative = false)
     {
         $this->bookmark     = $bookmark;
+        $this->nodeId       = $nodeId;
         $result             = array();
         $result['userId']   = (Auth::instance()->logged_in()) ? Auth::instance()->get_user()->id : 0;
         $node               = DB_ORM::model('map_node', array((int) $nodeId));
-        $webinarSection     = Session::instance()->get('webinarSection', false);
-        $webinarSectionId   = Session::instance()->get('webinarSectionId', false);
+        $scenarioSectionId  = Session::instance()->get('webinarSectionId', false);
 
         if ($node)
         {
@@ -52,7 +53,7 @@ class Model_Labyrinth extends Model {
                 $sessionId = DB_ORM::model('user_bookmark', array((int)$bookmark))->session_id;
                 Session::instance()->set('session_id', $sessionId);
                 setcookie('OL', $sessionId);
-            } else if ($isRoot OR $webinarSection == 'section') {
+            } else if ($isRoot OR Session::instance()->get('webinarSection', false) == 'section') {
                 $sessionId = DB_ORM::model('user_session')
                     ->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'), Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
 
@@ -77,10 +78,8 @@ class Model_Labyrinth extends Model {
             }
 
             $section = false;
-            if($webinarSectionId)
-            {
-                foreach (DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $webinarSectionId)->query()->as_array() as $sectionObj)
-                {
+            if($scenarioSectionId) {
+                foreach (DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $scenarioSectionId)->query()->as_array() as $sectionObj) {
                     $section[] = $sectionObj->node_id;
                 }
             }
@@ -95,8 +94,7 @@ class Model_Labyrinth extends Model {
             $previewSessionTrace        = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
             $result['c_debug']          = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId, $previewSessionTrace->node_id);
 
-            if ($conditional == NULL)
-            {
+            if ($conditional == NULL) {
                 if ($sessionId AND $bookmark) {
                     $traceObj = DB_ORM::select('user_sessionTrace')->where('session_id', '=', $sessionId)->query()->fetch(0);
                     $traceId = $traceObj ? $traceObj->id : 'notExist';
@@ -106,17 +104,17 @@ class Model_Labyrinth extends Model {
                     $traceId = 'notExist';
                 }
 
-                if (substr($result['node_text'], 0, 3) != '<p>') $result['node_text'] = '<p>'.$result['node_text'].'</p>';
+//                comment 27.08.2014
+//                if (substr($result['node_text'], 0, 3) != '<p>') {
+//                    $result['node_text'] = '<p>'.$result['node_text'].'</p>';
+//                }
 
                 $c = $this->counters($traceId, $sessionId, $node, $isRoot, $cumulative);
                 if ($c != NULL) {
-                    if (isset($c['no-entry']))
-                    {
-                        $result['node_text'] = '<p>' . $c['message'] . '</p>';
+                    if (isset($c['no-entry'])) {
+                        $result['node_text'] = '<p>'.$c['message'].'</p>';
                         $result['node_links']['linker'] = $c['linker'];
-                    }
-                    else
-                    {
+                    } else {
                         $result['jsonRule'] = $c['jsonRule'];
                         $result['counters'] = $c['counterString'];
                         $result['c_debug'] = array_replace_recursive($c['c_debug'], $result['c_debug']);
@@ -135,7 +133,9 @@ class Model_Labyrinth extends Model {
             $result['traces'] = $trace;
 
             // Records trace info for visual display counters
-            if (Arr::get($trace, 0, false)) Session::instance()->set('traceCountersValues', $trace[0]->counters);
+            if (Arr::get($trace, 0, false)) {
+                Session::instance()->set('traceCountersValues', $trace[0]->counters);
+            }
 
             $result['sessionId'] = $sessionId;
         }
@@ -336,40 +336,36 @@ class Model_Labyrinth extends Model {
     private function conditional($sessionId, $node) {
         if ($node != NULL and $node->conditional != '')
         {
-            $mode = 'o';
-            if (strstr($node->conditional, 'and')) $mode = 'a';
-
+            $mode = strstr($node->conditional, 'and') ? 'a' : 'o';
             $nodes = array();
             $conditional = $node->conditional;
-            while (strlen($conditional) > 0)
-            {
-                if ($conditional[0] == '[')
-                {
-                    for ($i = 1; $i < strlen($conditional); $i++)
-                    {
-                        if ($conditional[$i] == ']')
-                        {
+            while (strlen($conditional)) {
+                if ($conditional[0] == '[') {
+                    for ($i = 1; $i < strlen($conditional); $i++) {
+                        if ($conditional[$i] == ']') {
                             $id = substr($conditional, 1, $i - 1);
-                            if (is_numeric($id)) $nodes[] = (int) $id;
+                            if (is_numeric($id)) {
+                                $nodes[] = (int) $id;
+                            }
                             break;
                         }
                     }
                 }
-
                 $conditional = substr($conditional, 1, strlen($conditional));
             }
 
             $count = DB_ORM::model('user_sessionTrace')->getCountTracks($sessionId, $nodes);
+            $message = ($node->conditional_message != '')
+                ? $node->conditional_message
+                : '<p>Sorry but you haven\'t yet explored all the required options ...</p>';
 
-            $message = '<p>Sorry but you haven\'t yet explored all the required options ...</p>';
-            if ($node->conditional_message != '') $message = $node->conditional_message;
-
-            if (($mode == 'a' AND $count < count($nodes)) OR ($mode == 'o' AND $count <= 0))
-            {
-                return array('message' => $message, 'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>');
+            if (($mode == 'a' AND $count < count($nodes)) OR ($mode == 'o' AND $count <= 0)) {
+                return array(
+                    'message' => $message,
+                    'linker' => '<p><a href="javascript:history.back()">&laquo; back</a></p>'
+                );
             }
         }
-
         return NULL;
     }
 
@@ -599,12 +595,13 @@ class Model_Labyrinth extends Model {
                 $countersFunc           = ($countersFunc != NULL) ? json_decode($countersFunc, true) : NULL;
                 $jsonRule               = array();
                 $continue               = true;
+                $visualDisplay          = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
 
                 if ($rootNode == NULL) return '';
 
                 if ($cumulative) {
                     $sessionObj = DB_ORM::select('User_Session')
-                        ->where('webinar_id', '=', Session::instance()->get('idScenario'))
+                        ->where('webinar_id', '=', Controller_RenderLabyrinth::$scenarioId)
                         ->where('map_id', '=', $node->map_id)
                         ->where('notCumulative', '=', 0)
                         ->order_by('id', 'DESC')
@@ -614,64 +611,30 @@ class Model_Labyrinth extends Model {
                     if ($sessionObj) {
                         $sessionTrace = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionObj->id)->query()->fetch(0);
 
-                        $traceCounters = $sessionTrace->counters;
-                        DB_ORM::update('User_SessionTrace')->set('counters', $traceCounters)->where('session_id', '=', $sessionId)->execute();
+                        $countersTrace = $sessionTrace->counters;
+                        DB_ORM::update('User_SessionTrace')->set('counters', $countersTrace)->where('session_id', '=', $sessionId)->execute();
 
-                        $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
-                        foreach($visualDisplay as $display) {
-                            $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
-                            $counterString .= $this->getVisualDisplayHTML($display->id);
-                            $counterString .= '</div>';
-                        }
+                        $htmlCounters = $this->htmlCounters($visualDisplay, $counters, $countersTrace);
+                        $counterString = $htmlCounters['htmlCounters'];
+                        $remoteCounterString = $htmlCounters['htmlCountersRemote'];
 
-                        $counterString .='<ul class="navigation">';
-                        foreach($counters as $counter)
-                        {
-                            if ($counter->visible)
-                            {
-                                $label = ($counter->icon_id != 0) ? '<img src="'.URL::base().$counter->icon->path.'">' : $counter->name;
-                                $valueConvert = strpos($traceCounters, 'CID='.$counter->id.',V=');
-                                $valueConvert = substr($traceCounters, $valueConvert + strlen('CID='.$counter->id.',V='));
-                                $value = (int)$valueConvert;
-
-                                $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$label.'</a> ('.$value.')</li>';
-                                $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$value.'"></counter>';
-                            }
-                        }
-                        $counterString .="</ul>";
                         $continue = false;
                     }
                 }
 
                 if ($this->bookmark) {
-                    $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
-                    foreach($visualDisplay as $display) {
-                        $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
-                        $counterString .= $this->getVisualDisplayHTML($display->id);
-                        $counterString .= '</div>';
-                    }
+                    $traceObj = DB_ORM::model('user_sessiontrace', array($traceId));
+                    $countersTrace = $traceObj->counters;
 
-                    $counterString .='<ul class="navigation">';
-                    foreach($counters as $counter)
-                    {
-                        $traceObj = DB_ORM::model('user_sessiontrace', array($traceId));
-                        if ($counter->visible AND $traceObj)
-                        {
-                            $label = ($counter->icon_id != 0) ? '<img src="'.URL::base().$counter->icon->path.'">' : $counter->name;
-                            $valueConvert = strpos($traceObj->counters, 'CID='.$counter->id.',V=');
-                            $valueConvert = substr($traceObj->counters, $valueConvert + strlen('CID='.$counter->id.',V='));
-                            $value = (int)$valueConvert;
-
-                            $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$label.'</a> ('.$value.')</li>';
-                            $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$value.'"></counter>';
-                        }
-                    }
-                    $counterString .="</ul>";
+                    $htmlCounters = $this->htmlCounters($visualDisplay, $counters, $countersTrace);
+                    $counterString = $htmlCounters['htmlCounters'];
+                    $remoteCounterString = $htmlCounters['htmlCountersRemote'];
                 } elseif ($continue) {
                     foreach ($counters as $counter) {
-                        // if exist main counter get ID of it
                         $if_main = $counter->status == 1;
-                        if ($if_main) $main_counter['id'] = $counter->id;
+                        if ($if_main) {
+                            $main_counter['id'] = $counter->id; // if exist main counter get ID of it
+                        }
 
                         $countersArray[$counter->id]['counter'] = $counter;
                         $currentCountersState = DB_ORM::model('user_sessionTrace')->getCounterByIDs($sessionId, $rootNode->map_id, $rootNode->id);
@@ -740,7 +703,6 @@ class Model_Labyrinth extends Model {
                         $countersArray[$counter->id]['visible'] = (($counter->visible != 0) & ($appearOnNode == 1)) ? true : false;
 
                         $rules = DB_ORM::model('map_counter_rule')->getRulesByCounterId($counter->id);
-
                         $redirect = NULL;
                         foreach ($rules as $rule) {
                             $resultExp = FALSE;
@@ -772,7 +734,9 @@ class Model_Labyrinth extends Model {
                                 $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
                                 $counterValue = $thisCounter;
                                 // if main counter and firs spot not sign, add rule value
-                                if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+') ) $main_counter['value'] += $rule->counter_value;
+                                if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+')) {
+                                    $main_counter['value'] += $rule->counter_value;
+                                }
                                 $c_debug[$counter->id]['counter_rule_value'] = $rule->counter_value;
                                 $redirect = $rule->redirect_node_id;
                             }
@@ -783,9 +747,10 @@ class Model_Labyrinth extends Model {
                         }
                     }
 
+                    $conditionString = $this->htmlCondition(); // change conditions, by the visit node
+
                     $redirect = NULL;
                     $commonRules = DB_ORM::model('map_counter_commonrules')->getRulesByMapId($node->map_id);
-
                     if (count($commonRules)){
                         $values = array();
                         foreach($countersArray as $key => $counter){
@@ -842,9 +807,8 @@ class Model_Labyrinth extends Model {
                         }
                     }
 
-                    $visualDisplay = DB_ORM::model('map_visualdisplay')->getMapDisplaysShowOnAllPages($node->map_id);
                     foreach($visualDisplay as $display) {
-                        $counterString .= '<div class="visualDisplayCounterContainer" style="margin-bottom: 10px; position: relative; text-align: right">';
+                        $counterString .= '<div class="visualDisplayCounterContainer">';
                         $counterString .= $this->getVisualDisplayHTML($display->id);
                         $counterString .= '</div>';
                     }
@@ -870,8 +834,8 @@ class Model_Labyrinth extends Model {
                             $updateCounter .= '[CID='.$counterObj->id.',V='.$displayValue.']';
                         }
                     }
-                    $updateCounter .='[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
-                    $counterString .="</ul>";
+                    $updateCounter .= '[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
+                    $counterString .= '</ul>'.$conditionString;
 
                     DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                     DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
@@ -893,6 +857,86 @@ class Model_Labyrinth extends Model {
             return '';
         }
         return '';
+    }
+
+    private function htmlCounters($visualDisplay, $counters, $countersTrace){
+        $counterString       = '';
+        $remoteCounterString = '';
+        $result              = array();
+        $conditionString     = $this->htmlCondition(); // change conditions, by the visit node
+
+        foreach($visualDisplay as $display) {
+            $counterString .= '<div class="visualDisplayCounterContainer">';
+            $counterString .= $this->getVisualDisplayHTML($display->id);
+            $counterString .= '</div>';
+        }
+
+        $counterString .='<ul class="navigation">';
+        foreach($counters as $counter)
+        {
+            if ($counter->visible)
+            {
+                $label = ($counter->icon_id != 0) ? '<img src="'.URL::base().$counter->icon->path.'">' : $counter->name;
+                $valueConvert = strpos($countersTrace, 'CID='.$counter->id.',V=');
+                $valueConvert = substr($countersTrace, $valueConvert + strlen('CID='.$counter->id.',V='));
+                $value = (int)$valueConvert;
+
+                $counterString .= '<li><a data-toggle="modal" href="#" data-target="#counter-debug">'.$label.'</a> ('.$value.')</li>';
+                $remoteCounterString .= '<counter id="'.$counter->id.'" name="'.$counter->name.'" value="'.$value.'"></counter>';
+            }
+        }
+        $counterString .="</ul>".$conditionString;
+
+        $result['htmlCounters'] = $counterString;
+        $result['htmlCountersRemote'] = $remoteCounterString;
+
+        return $result;
+    }
+
+    private function htmlCondition() {
+        $scenarioId = Controller_RenderLabyrinth::$scenarioId;
+        $conditionString = '';
+        $conditionChangeObj = DB_ORM::select('Conditions_Change')
+            ->where('scenario_id', '=', $scenarioId)
+            ->where('node_id', '=', $this->nodeId)
+            ->query()
+            ->as_array();
+
+        if ($conditionChangeObj) {
+            $conditionString = '<ul class="navigation">';
+            foreach ($conditionChangeObj as $changeObj) {
+                $change = trim($changeObj->value);
+                if (strlen($change)) {
+                    $sign           = $change[0];
+                    $change         = (int) preg_replace('/\D/', '', $change);
+                    $assignObj      = DB_ORM::select('Conditions_Assign')
+                        ->where('scenario_id', '=', $scenarioId)
+                        ->where('condition_id', '=', $changeObj->condition_id)
+                        ->query()
+                        ->fetch(0);
+                    $currentValue   = $assignObj->value;
+                    $result         = $currentValue;
+
+                    if ($sign == '=') {
+                        $result = $change;
+                    } elseif ($sign == '-') {
+                        $result -= $change;
+                    } else {
+                        $result += $change;
+                    }
+
+                    $assignObj->value = $result;
+                    $assignObj->save();
+
+                    if ($changeObj->appears){
+                        $conditionString .= '<li>'.DB_ORM::model('Conditions',array($changeObj->condition_id))->name.' ('.$result.')</li>';
+                    }
+                }
+            }
+            $conditionString .= '</ul>';
+        }
+
+        return $conditionString;
     }
 
     private static function getVisualDisplayHTML($visualDisplayId) {

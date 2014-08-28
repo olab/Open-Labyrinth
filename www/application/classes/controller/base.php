@@ -62,11 +62,26 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'mapUserManager', 'action' => 'index'),
     );
 
-    // TODO: check for controllers, delete action.
     private $exceptionsTopMenu = array(
-        'webinarManager/allConditions',
+        'webinarmanager/allConditions',
         'webinarmanager/saveConditions',
         'webinarmanager/editCondition',
+        'webinarmanager/editConditionSave',
+        'webinarmanager/index',
+        'webinarmanager/edit',
+        'webinarmanager/resetCondition',
+        'webinarmanager/save',
+        'webinarmanager/mapsGrid',
+        'webinarmanager/saveMapsGrid',
+        'webinarmanager/play',
+        'webinarmanager/progress',
+        'webinarmanager/my',
+        'webinarmanager/render',
+        'usermanager/editUser',
+        'usermanager/saveOldUser',
+        'usermanager/index',
+        'home/login',
+        'home/logout',
     );
 
     private $exceptionLeftMenu = array(
@@ -82,7 +97,7 @@ class Controller_Base extends Controller_Template {
 
         if (Auth::instance()->logged_in()) {
             $uri                        = $this->request->detect_uri();
-            $controllerAction           = $this->request->controller().'/'.$this->request->action();
+            $controllerAction           = strtolower($this->request->controller()).'/'.$this->request->action();
             $topMenu                    = in_array($controllerAction, $this->exceptionsTopMenu);
             $leftMenu                   = in_array($controllerAction, $this->exceptionLeftMenu);
             $user                       = Auth::instance()->get_user();
@@ -211,13 +226,13 @@ class Controller_Base extends Controller_Template {
                 $action = $this->request->action();
 
                 $isRedirect = true;
-                foreach ($this->unauthorizedRules as $rule)
-                {
-                    if ($controller == $rule['controller'] && $action == $rule['action']) $isRedirect = false;
+                foreach ($this->unauthorizedRules as $rule) {
+                    if ($controller == $rule['controller'] AND $action == $rule['action']) {
+                        $isRedirect = false;
+                    }
                 }
                 
-                if ($isRedirect)
-                {
+                if ($isRedirect) {
                     Session::instance()->set('redirectURL', $this->request->uri());
                     Notice::add('Please login first.');
                     Request::initial()->redirect(URL::base());

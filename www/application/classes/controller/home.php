@@ -25,17 +25,18 @@ class Controller_Home extends Controller_Base {
 
     public function action_index() {}
 
-    public function action_login() {
-        if ($_POST)
-        {
+    public function action_login()
+    {
+        if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
             $redirectURL = URL::base();
-            if ( ! $status)
-            {
+            if ( ! $status) {
                 Session::instance()->set('redirectURL', (Arr::get($_POST, 'redirectURL', '')));
                 Notice::add('You have entered the wrong username/password combination. Please try again.');
             }
-            else $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
+            else {
+                $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
+            }
             
             Request::initial()->redirect($redirectURL);
         }

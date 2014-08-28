@@ -83,7 +83,7 @@ class Controller_WebinarManager extends Controller_Base {
         $webinarId = $this->request->param('id', null);
 
         $MapsObj = (Auth::instance()->get_user()->type->name == 'superuser')
-            ? DB_ORM::model('map')->getAllEnabledMap()
+            ? DB_ORM::model('map')->getAllEnabledMap(0, 'name', 'ASC')
             : DB_ORM::model('map')->getAllEnabledAndAuthoredMap(Auth::instance()->get_user()->id, 0, true);
 
         $this->templateData['maps'] = $MapsObj;
@@ -818,9 +818,19 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_allConditions()
     {
-        $this->templateData['scenarios']  = DB_ORM::select('Webinar')->order_by('title')->query()->as_array();
-        $this->templateData['conditions'] = DB_ORM::select('Conditions')->query()->as_array();
-        $this->templateData['center'] = View::factory('webinar/conditions')->set('templateData', $this->templateData);
+        $conditions                         = DB_ORM::select('Conditions')->query()->as_array();
+        $this->templateData['scenarios']    = DB_ORM::select('Webinar')->order_by('title')->query()->as_array();
+        $this->templateData['conditions']   = $conditions;
+        $this->templateData['assign']       = array();
+
+        foreach ($conditions as $condition) {
+            $assigns = DB_ORM::select('Conditions_Assign')->where('condition_id', '=', $condition->id)->query()->as_array();
+            foreach ($assigns as $assign) {
+                $scenario = DB_ORM::model('webinar', array($assign->scenario_id));
+                $this->templateData['assign'][$condition->id][] = $scenario->title;
+            }
+        }
+        $this->templateData['center'] = View::factory('conditions/index')->set('templateData', $this->templateData);
 
         $this->template->set('templateData', $this->templateData);
     }
@@ -856,11 +866,106 @@ class Controller_WebinarManager extends Controller_Base {
     {
         $conditionId = $this->request->param('id');
 
-        //$this->templateData['map']        = DB_ORM::model('map', array($mapId));
-        //$this->templateData['nodes']      = DB_ORM::select('map_node')->where('map_id', '=', $mapId)->query()->as_array();
         $this->templateData['condition'] = DB_ORM::model('Conditions', array($conditionId));
+        $this->templateData['assign']    = DB_ORM::select('Conditions_Assign')->where('condition_id', '=', $conditionId)->query()->as_array();
         $this->templateData['scenarios'] = DB_ORM::select('Webinar')->order_by('title')->query()->as_array();
-        $this->templateData['center']    = View::factory('webinar/conditionEdit')->set('templateData', $this->templateData);
+        $this->templateData['center']    = View::factory('conditions/edit')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_editConditionSave()
+    {
+        $conditionId    = $this->request->param('id');
+        $post           = $this->request->post();
+        $newAssign      = Arr::get($post, 'newConditionAssign', array());
+        $newAssign      = array_unique($newAssign);
+        $changedAssign  = Arr::get($post, 'changedConditionAssign', array());
+        $deleteAssign   = Arr::get($post, 'deleteAssign', array());
+        $assignModel    = DB_ORM::model('Conditions_Assign');
+        $startValue     = DB_ORM::model('Conditions', array($conditionId))->startValue;
+
+        foreach ($newAssign as $scenarioId){
+            if ($scenarioId != 'None') {
+                $assignModel->add($conditionId, $scenarioId, $startValue);
+            }
+        }
+
+        foreach ($changedAssign as $id => $scenarioId){
+            $assignModel->update($id, $scenarioId);
+        }
+
+        foreach ($deleteAssign as $id){
+            $assignModel->deleteRecord($id);
+        }
+
+        Request::initial()->redirect($this->request->referrer());
+    }
+
+    public function action_mapsGrid()
+    {
+        $scenarioId         = $this->request->param('id');
+        $conditionId        = $this->request->param('id2');
+        $scenarioElements   = DB_ORM::select('Webinar_Map')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+
+        $this->templateData['scenario'] = DB_ORM::model('Webinar', array($scenarioId));
+        $this->templateData['condition'] = DB_ORM::model('Conditions', array($conditionId));
+
+        foreach ($scenarioElements as $element) {
+            $elementObj = ($element->which == 'labyrinth')
+                ? DB_ORM::model('Map', array($element->reference_id))
+                : DB_ORM::model('Map_Node_Section', array($element->reference_id));
+
+            $nodesTitle = 'Nodes of '.$element->which.'\'s \''.$elementObj->name.'\'';
+
+            if ($element->which == 'labyrinth') {
+                $this->templateData['nodes'][$nodesTitle] = DB_ORM::select('Map_Node')->where('map_id', '=', $element->reference_id)->query()->as_array();
+            } else {
+                $noseSection = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $element->reference_id)->query()->as_array();
+                foreach ($noseSection as $obj) {
+                    $this->templateData['nodes'][$nodesTitle][] = $obj->node;
+                }
+            }
+        }
+
+        $conditionsChange = DB_ORM::select('Conditions_Change')->where('scenario_id', '=', $scenarioId)->where('condition_id', '=', $conditionId)->query()->as_array();
+        $this->templateData['existingNode'] = array();
+        foreach ($conditionsChange as $obj) {
+            $this->templateData['existingNode'][$obj->node_id]['value'] = $obj->value;
+            $this->templateData['existingNode'][$obj->node_id]['appears'] = $obj->appears;
+            $this->templateData['existingNode'][$obj->node_id]['id'] = $obj->id;
+        }
+
+        $this->templateData['center'] = View::factory('conditions/mapsGrid')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_saveMapsGrid()
+    {
+        $conditionId  = $this->request->param('id');
+        $scenarioId   = $this->request->param('id2');
+        $post         = $this->request->post();
+        $newNodes     = Arr::get($post, 'newNodes', array());
+        $existNodes   = Arr::get($post, 'existNodes', array());
+
+        foreach ($newNodes as $nodeId => $data) {
+            DB_ORM::model('Conditions_Change')->add($conditionId, $scenarioId, $nodeId, Arr::get($data, 'value', 0), Arr::get($data, 'appears', 0));
+        }
+
+        foreach ($existNodes as $id => $data) {
+            DB_ORM::model('Conditions_Change')->update($id, Arr::get($data, 'value', 0), Arr::get($data, 'appears', 0));
+        }
+
+        Request::initial()->redirect($this->request->referrer());
+    }
+
+    public function action_resetCondition()
+    {
+        $assignId       = $this->request->param('id');
+        $conditionId    = $this->request->param('id2');
+        $value          = DB_ORM::model('Conditions', array($conditionId))->startValue;
+
+        DB_ORM::model('Conditions_Assign')->resetValue($assignId, $value);
+
+        Request::initial()->redirect($this->request->referrer());
     }
 }

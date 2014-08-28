@@ -56,7 +56,18 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
             <div class="controls">
                 <input type="text" class="span6" id="title" name="title" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->title; ?>">
             </div>
-        </div><?php
+        </div>
+<!--        <div class="control-group">-->
+<!--            <label class="control-label">--><?php //echo __('Switching Steps'); ?><!--</label>-->
+<!--            <div class="controls">-->
+<!--                <div class="radio_extended btn-group">-->
+<!--                    <input type="radio" name="switchingSteps" id="manually" checked="">-->
+<!--                    <label for="manually" data-class="btn-info" class="btn active btn-info">Manually</label>-->
+<!--                    <input type="radio" name="switchingSteps" id="automatic">-->
+<!--                    <label for="automatic" data-class="btn-info" class="btn">Automatic</label>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>--><?php
         if ( ! isset($templateData['webinar'])) {
             $forums = Arr::get($templateData, 'forums', array()); ?>
             <div class="control-group">
