@@ -458,7 +458,10 @@ class Controller_SkinManager extends Controller_Base {
         $skinId   = Arr::get($_POST, 'skinId', null);
         $fileName = Arr::get($_POST, 'fileName', null);
 
-        if($skinId == null) { echo '{"status": "error", "errorMessage": "Wrong Skin ID"}'; return; }
+        if ($skinId == null) {
+            echo '{"status": "error", "errorMessage": "Wrong Skin ID"}';
+            return;
+        }
 
         $data    = Arr::get($_POST, 'data', null);
         $skinDir = $_SERVER['DOCUMENT_ROOT'].'/files/skin_'.$skinId.'/';
@@ -466,13 +469,13 @@ class Controller_SkinManager extends Controller_Base {
             mkdir($skinDir);
         }
         $file = $skinDir.$fileName;
-
         $this->base64_to_jpeg($data, $file);
 
-        echo '{"status": "ok", "path": "' . URL::base() . 'files/skin_' . $skinId . '/' . $fileName . '"}';
+        echo '{"status": "ok", "path": "'.URL::base().'files/skin_'.$skinId.'/'.$fileName.'"}';
     }
 
     function base64_to_jpeg($base64_string, $output_file) {
+
         $ifp = fopen($output_file, "wb");
 
         $data = explode(',', $base64_string);

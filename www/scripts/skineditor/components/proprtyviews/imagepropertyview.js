@@ -189,18 +189,23 @@ var ImagePropertyView = (function(parent) {
             
             this[parameters['viewComponent']] = $ui.find('input');
             this[parameters['viewComponent']].change(function(e) {
-                if(!this.files[0]) { return; }
-                
-                var fileReader = new FileReader();
+                if( ! this.files[0]) {
+                    return;
+                }
+                var fileReader = new FileReader(),
+                    fileName   = this.files[0].name;
                 
                 fileReader.onload = function(e) {
                     $.ajax({
                         url: getUploadURL(),
                         type: 'POST',
-                        data: { skinId: skinId, data: e.target.result},
+                        data: { skinId: skinId, data: e.target.result, fileName: fileName},
                         success: function(data) {
+                            console.log(data);
                             var object = JSON.parse(data);
-                            if(object === null || object.status === 'error') { alert("ERROR"); }
+                            if(object === null || object.status === 'error') {
+                                alert("ERROR");
+                            }
 
                             instance._viewModel.SetSrc(object.path);
                         }
