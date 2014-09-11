@@ -6,6 +6,9 @@ var ImagePropertyView = (function(parent) {
                                                     '<label>@LABEL@: </label>' +
                                                     '<div><button class="btn">Add file</button><button class="btn btn-danger"><i class="icon-trash icon-white"></i></button><input type="file"/></div>' +
                                                  '</div>';
+    ImagePropertyView.LABEL_FILE_INPUT_NAME    = '<div class="label-input-control">' +
+                                                    '<label>Image name: </label><div class="skin_image">@IMAGE_NAME@</div>'+
+                                                 '</div>';
     
     function ImagePropertyView(viewModel) { 
         ImagePropertyView.super.constructor.apply(this);
@@ -181,11 +184,21 @@ var ImagePropertyView = (function(parent) {
     
     ImagePropertyView.prototype._AppendImageInput = function($container, parameters) {
         var instance = this,
-            $ui      = null;
-        
+            $ui      = null,
+            backgroundImage = 'none';
+
+        if (instance._viewModel._objectId){
+            var id = instance._viewModel._objectId;
+            backgroundImage = $('img#' + id).prop('src');
+            backgroundImage = backgroundImage.split('/');
+            backgroundImage = backgroundImage[backgroundImage.length-1];
+        }
+
         if('label'         in parameters &&
            'viewComponent' in parameters) {
             $ui = $(ImagePropertyView.LABEL_FILE_INPUT_HTML.replace('@LABEL@', parameters['label'])).appendTo($container);
+            console.log(backgroundImage);
+            var $fileName = $(ImagePropertyView.LABEL_FILE_INPUT_NAME.replace('@IMAGE_NAME@', backgroundImage)).appendTo($container);
             
             this[parameters['viewComponent']] = $ui.find('input');
             this[parameters['viewComponent']].change(function(e) {
@@ -201,10 +214,13 @@ var ImagePropertyView = (function(parent) {
                         type: 'POST',
                         data: { skinId: skinId, data: e.target.result, fileName: fileName},
                         success: function(data) {
-                            console.log(data);
                             var object = JSON.parse(data);
                             if(object === null || object.status === 'error') {
                                 alert("ERROR");
+                            }
+
+                            if (fileName) {
+                                $fileName.find('.skin_image').html(fileName);
                             }
 
                             instance._viewModel.SetSrc(object.path);
