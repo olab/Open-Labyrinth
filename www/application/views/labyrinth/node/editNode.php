@@ -86,7 +86,7 @@ if (isset($templateData['map']) and isset($templateData['node'])) {
                 "emoticons template paste textcolor layer advtextcolor rdface imgmap"
             ],
             toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain rdfaceRun",
             image_advtab: true,
             templates: [
 

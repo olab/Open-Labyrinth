@@ -34,16 +34,7 @@ class Controller_Vocabulary_Inline_Api extends RESTful_Controller
 
 
 
-    public function action_add()
-    {
-        $values = $this->request->post();
-        if (!empty($values)) {
-            $metadata = DB_ORM::model('metadata');
-            $metadata->load($values);
-            $metadata->save();
-        }
-        Request::initial()->redirect(URL::base() . 'metadata/manager/');
-    }
+
 
 
     public function action_get()
@@ -63,7 +54,10 @@ class Controller_Vocabulary_Inline_Api extends RESTful_Controller
                 break;
             case "types":
             {
-                echo json_encode(Model_Leap_Vocabulary_EntityType::getConfig());
+                $dummyConfig = Helper_Model_AnnotatedEntity::generateDummyEntities();
+                $vocabletsConfig = Model_Leap_Vocabulary_EntityType::getConfig();
+                $config = array_merge_recursive($dummyConfig,$vocabletsConfig);
+                echo json_encode($config);
             }
                 break;
 

@@ -10,12 +10,6 @@ class Controller_Vocabulary_Inline_Pages extends Controller_Template
 {
     public $template = 'simple';
     protected $templateData = array();
-    public function before()
-    {
-
-        parent::before();
-
-    }
 
     public function action_schema()
     {
@@ -31,24 +25,46 @@ class Controller_Vocabulary_Inline_Pages extends Controller_Template
 
     }
 
-    public function action_install()
+    public function action_annotate()
     {
+        $view = View::factory('vocabulary/inline/annotate');
+        $view->set('templateData', $this->templateData);
 
-        $values = $this->request->query();
+        $this->templateData['center'] = $view;
 
-        Model_Leap_Vocabulary_Vocablet::install($values["vocablet"]);
-        Request::initial()->redirect(URL::base() . 'vocabulary/vocablets/manager/');
+        $this->template->set('templateData', $this->templateData);
 
     }
 
-    public function action_uninstall(){
+    public function after(){
 
-        $values = $this->request->post();
-        $vocablet = Model_Leap_Vocabulary_Vocablet::getVocabletByGuid($values['guid']);
-
-        $vocablet->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/vocablets/manager/');
+        if(!in_array($this->request->action(),array(
+            "annotator"
+        ))){
+            parent::after();
+        }
     }
+
+    public function action_annotator(){
+        //var_dump($this->request->query());die;
+        $text = $this->request->query('text');
+
+
+        //$text = "Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye.";
+
+
+        $annotator = new Helper_Model_AnnotatedEntity();
+        $annotator->load($text);
+        $annotator->parse();
+
+        $out = $annotator->output();
+        $this->template = null;
+        $this->response->headers('Content-Type','application/json');
+        $this->response->body(json_encode($out));
+
+    }
+
+
 
 
 
