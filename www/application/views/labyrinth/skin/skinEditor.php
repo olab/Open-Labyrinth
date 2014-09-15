@@ -23,7 +23,6 @@
 <html>
 <head>
     <title>Skin editor v1.0</title>
-
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/skineditor/jquery/ui-lightness/jquery-ui-1.9.1.custom.min.css">
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>scripts/farbtastic/farbtastic.css">
@@ -47,8 +46,9 @@
 
     <!-- GLOBAL VARIABLES -->
     <script>
-        var skinId = '<?php echo $templateData['skinData']->id; ?>',
-            mapId  = '<?php echo $templateData['map']->id; ?>';
+        var skinId  = '<?php echo $templateData['skinData']->id; ?>',
+            mapId   = '<?php echo $templateData['map']->id; ?>',
+            urlBase = '<?php echo URL::base(); ?>';
         function getSkinData()  { return '<?php echo str_replace('\'', '\\\'', $templateData['skinData']->data); ?>'; }
         function getUploadURL() { return '<?php echo URL::base().'skinmanager/uploadSkinImage'; ?>'; }
         function getSkinHTML()  { return '<?php if(isset($templateData['skinHTML'])) { echo $templateData['skinHTML']; } ?>'; }
