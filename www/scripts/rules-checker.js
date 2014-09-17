@@ -26,12 +26,16 @@ function checkRule(submit){
         function(data){
             (data == 1) ? checkSuccess() : checkFailed();
             $('#check_rule_button').button('reset');
-            if (submit == 1) $('#submit_button').click();
+            if (submit == 1) {
+                $('#submit_button').click();
+            }
         }
     ).fail(
         function(){
             checkFailed();
-            if (submit == 1) $('#submit_button').click();
+            if (submit == 1) {
+                $('#submit_button').click();
+            }
         }
     );
 }

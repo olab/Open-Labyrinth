@@ -69,6 +69,11 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 'max_length' => 100,
                 'nullable' => TRUE,
                 'savable' => TRUE
+            )),
+            'changeSteps' => new DB_ORM_Field_Text($this, array(
+                'enum' => array('manually', 'automatic'),
+                'nullable' => TRUE,
+                'savable' => TRUE
             ))
         );
 
@@ -150,9 +155,17 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         $creatorId      = Auth::instance()->get_user()->id;
 
         if($scenarioId) {
-            DB_ORM::update('webinar')->set('title', $title)->where('id', '=', $scenarioId)->execute();
+            DB_ORM::update('webinar')
+                ->set('title', $title)
+                ->set('changeSteps', $values['switchingSteps'])
+                ->where('id', '=', $scenarioId)
+                ->execute();
         } else {
-            $scenarioId = DB_ORM::insert('webinar')->column('title', $title)->column('author_id', $creatorId)->execute();
+            $scenarioId = DB_ORM::insert('webinar')
+                ->column('title', $title)
+                ->column('author_id', $creatorId)
+                ->column('changeSteps', $values['switchingSteps'])
+                ->execute();
             $isNew      = true;
         }
 
@@ -336,49 +349,38 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         DB_ORM::model('webinar_user')->removeUsers($webinarId);
         DB_ORM::model('webinar_group')->removeAllGroups($webinarId);
 
-        if($webinar != null && $webinar->forum_id > 0) {
+        if($webinar != null && $webinar->forum_id) {
             DB_ORM::model('dforum')->deleteForum($webinar->forum_id);
         }
 
-        DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('id', '=', $webinarId)
-                ->execute();
+        DB_SQL::delete('default')->from($this->table())->where('id', '=', $webinarId)->execute();
     }
 
-    /**
-     * Change webinar step
-     *
-     * @param integer $webinarId - webinar ID
-     * @param integer $step - number of step
-     */
-    public function changeWebinarStep($webinarId, $step) {
-        DB_ORM::update('webinar')
-                ->set('current_step', $step)
-                ->where('id', '=', $webinarId)
-                ->execute();
+    public function changeWebinarStep($scenarioId, $stepId)
+    {
+        DB_ORM::update('webinar')->set('current_step', $stepId)->where('id', '=', $scenarioId)->execute();
     }
 
-    /**
-     * Return all webinars for user
-     *
-     * @param integer $userId - user ID
-     * @return array - array of users
-     */
-    public function getWebinarsForUser($userId) {
+    public function changeToStep($stepId)
+    {
+        $scenarioId =  DB_ORM::model('Webinar_Step', $stepId)->webinar_id;
+        $this->changeWebinarStep($scenarioId, $stepId);
+    }
+
+    public function getScenariosByUser($userId)
+    {
         $records = DB_SQL::select('default')
            ->from($this->table())
            ->join('left', 'webinar_users')
            ->on('webinar_users.webinar_id', '=', 'webinars.id')
            ->where('webinar_users.user_id', '=', $userId)
            ->column('webinars.id')
-           ->query();
+           ->query()
+           ->as_array();
 
-        $result = null;
-        if($records->is_loaded()) {
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('webinar', array((int)$record['id']));
-            }
+        $result = array();
+        foreach($records as $record) {
+            $result[] = DB_ORM::model('webinar', array((int)$record['id']));
         }
 
         return $result;

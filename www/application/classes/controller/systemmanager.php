@@ -60,6 +60,10 @@ class Controller_SystemManager extends Controller_Base {
         $this->templateData['tabsName'][4] = __("User Guide");
         $this->templateData['tabs'][4] = View::factory('systemmanager/uploadReadMe')->set('templateData', $this->templateData);
 
+        $this->templateData['twitterCredits'] = DB_ORM::select('TwitterCredits')->query()->fetch(0);
+        $this->templateData['tabsName'][5] = __("Twitter Notification");
+        $this->templateData['tabs'][5] = View::factory('systemmanager/twitterNotification')->set('templateData', $this->templateData);
+
         $this->templateData['center'] = View::factory('systemmanager/view')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
@@ -226,5 +230,22 @@ class Controller_SystemManager extends Controller_Base {
             if (strpos($existingFileName, 'UserGuide') !== false) $fileName = $existingFileName;
         }
         return $fileName;
+    }
+
+    public function action_saveTwitterCredits()
+    {
+        $id                 = $this->request->post('id');
+        $apiKey             = $this->request->post('apiKey');
+        $apiSecret          = $this->request->post('apiSecret');
+        $accessToken        = $this->request->post('accessToken');
+        $accessTokenSecret  = $this->request->post('accessTokenSecret');
+
+        if ($id) {
+            DB_ORM::model('TwitterCredits')->update($id, $apiKey, $apiSecret, $accessToken, $accessTokenSecret);
+        } else {
+            DB_ORM::model('TwitterCredits')->add($apiKey, $apiSecret, $accessToken, $accessTokenSecret);
+        }
+
+        Request::initial()->redirect(URL::base().'systemmanager/#tabs-5');
     }
 }

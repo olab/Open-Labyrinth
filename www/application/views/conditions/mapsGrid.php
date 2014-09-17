@@ -15,7 +15,7 @@
                     </h4>
                 </th>
                 <th style="width:155px;">
-                    <?php echo __('Appear on node'); ?>
+                    <?php echo __('Appear on node'); ?><br>
                     <a href="javascript:void(0)" id="counter_id_<?php echo $condition->id; ?>" class="btn btn-info btn-mini toggle-all-on">all on</a>
                     <a href="javascript:void(0)" id="counter_id_<?php echo $condition->id; ?>" class="btn btn-info btn-mini toggle-all-off">all off</a>
                     <a href="javascript:void(0)" id="counter_id_<?php echo $condition->id; ?>" class="btn btn-info btn-mini toggle-reverse">reverse</a>
@@ -34,7 +34,7 @@
                     <input class="input-small not-autocomplete" type="text" size="5" name="<?php echo $name; ?>[value]" placeholder="Value" value="<?php echo $value ?>">
                     <label>
                         <input autocomplete="off" name="<?php echo $name; ?>[appears]" class="chk_counter_id_<?php echo $condition->id; ?>" type="checkbox" value="1" <?php if ($appears) echo 'checked'; ?>/>
-                        <?php echo __("appear on node"); ?>
+                        <?php echo __("appear on node"); ?><br>
                     </label>
                 </td>
             </tr><?php

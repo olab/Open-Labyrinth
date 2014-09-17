@@ -19,14 +19,11 @@
  *
  */
 if (isset($templateData['map'])) {
-    $rueObj      = Arr::get($templateData, 'commonRule', false);
-    $ruleId      = $rueObj ? $rueObj->id : false;
-    $ruleText    = $rueObj ? $rueObj->rule : '';
-    $ruleCorrect = $rueObj ? $rueObj->isCorrect : 0;
-    $lightning   = $rueObj ? $rueObj->lightning : 0;?>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
-<script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules-checker.js"></script>
-
+    $ruleObj      = Arr::get($templateData, 'commonRule', false);
+    $ruleId      = $ruleObj ? $ruleObj->id : false;
+    $ruleText    = $ruleObj ? $ruleObj->rule : '';
+    $ruleCorrect = $ruleObj ? $ruleObj->isCorrect : 0;
+    $lightning   = $ruleObj ? $ruleObj->lightning : 0; ?>
 <div class="page-header"><h1><?php echo $ruleId ? __('Edit Rule') : __('Add Rule'); ?></h1></div>
 <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCommonRule/'.$templateData['map']->id.'/'.$ruleId; ?>">
     <label><input class="lightning-chb" type="checkbox" name="lightning" <?php if ($lightning) echo 'checked'; ?>>Lightning rule</label>
@@ -44,6 +41,10 @@ if (isset($templateData['map'])) {
     <a id="availableNodesId" style="display:none;"><?php echo $templateData['nodes']['id']; ?></a>
     <a id="availableCountersText" style="display:none;"><?php echo $templateData['counters']['text']; ?></a>
     <a id="availableCountersId" style="display:none;"><?php echo $templateData['counters']['id']; ?></a>
+    <a id="availableConditionsText" style="display:none;"><?php echo $templateData['conditions']['text']; ?></a>
+    <a id="availableConditionsId" style="display:none;"><?php echo $templateData['conditions']['id']; ?></a>
+    <a id="availableStepsText" style="display:none;"><?php echo $templateData['steps']['text']; ?></a>
+    <a id="availableStepsId" style="display:none;"><?php echo $templateData['steps']['id']; ?></a>
 
     <div class="pull-right" style="margin-top:10px;">
         <input style="float:right;" id="submit_button" type="submit" class="btn btn-primary btn-large hide " name="check_save" value="<?php echo __('Save rule'); ?>">
@@ -56,7 +57,8 @@ if (isset($templateData['map'])) {
             <dd>
                 <span class="label label-warning">The rule hasn't been checked.</span>
                 <span class="hide label label-success">The rule is correct.</span>
-                <span class="hide label label-important">The rule has error(s).</span></dd>
+                <span class="hide label label-important">The rule has error(s).</span>
+            </dd>
         </dl>
         <input style="float:left;" id="check_rule_button" type="button" class="btn btn-primary btn-large" name="check-rule" data-loading-text="Checking..." value="<?php echo __('Check rule'); ?>">
     </div>
@@ -66,3 +68,5 @@ if (isset($templateData['map'])) {
     <input type="hidden" name="isCorrect" id="isCorrect" value="<?php echo $ruleCorrect; ?>" />
 </form><?php
 } ?>
+<script src="<?php echo ScriptVersions::get(URL::base().'scripts/rules.js'); ?>"></script>
+<script src="<?php echo ScriptVersions::get(URL::base().'scripts/rules-checker.js'); ?>"></script>

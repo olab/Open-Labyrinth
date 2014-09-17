@@ -18,57 +18,52 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-$sectionIds = Arr::get($templateData, 'sections', array()); ?>
-<script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
-<script language="javascript" type="text/javascript">
-    tinymce.init({
-        selector: "textarea",
-        theme: "modern",
-        content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-        entity_encoding: "raw",
-        contextmenu: "link image inserttable | cell row column rdfaceMain",
-        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-        valid_elements : "+*[*]",
-        plugins: ["compat3x",
-            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
-            "searchreplace wordcount visualblocks visualchars code fullscreen",
-            "insertdatetime media nonbreaking save table contextmenu directionality",
-            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
-        ],
-        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
-        image_advtab: true,
-        templates: []
-    });
-    var $labyrinthContainers = [];
-</script>
+$sectionIds = Arr::get($templateData, 'sections', array());
+$isScenario = isset($templateData['webinar']);
+$scenario   = Arr::get($templateData, 'webinar', false); ?>
+<script>
+    var $labyrinthContainers = [],
+        mapsJSON = {<?php
+        if(count($templateData['maps'])) {
+            echo 'maps: [';
+            $mapsJSON = '';
+            foreach($templateData['maps'] as $map) {
+                $section = (get_class($map) == 'Model_Leap_Map_Node_Section') ? 'section' : '';
+                $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'", section: "'.$section.'"}, ';
+            }
 
-<form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base() ?>webinarmanager/save">
+            if(strlen($mapsJSON) > 2) {
+                echo substr($mapsJSON, 0, strlen($mapsJSON) - 2);
+            }
+            echo ']';
+        } ?>};
+</script>
+<form class="form-horizontal" id="webinarForm" name="webinarForm" method="post" action="<?php echo URL::base().'webinarmanager/save'; ?>">
     <h1>
-        <?php echo isset($templateData['webinar']) ? 'Edit' : 'Create'; echo __(" Scenario"); ?>
-        <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo isset($templateData['webinar']) ? 'Save Scenario' : 'Create Scenario'; ?>"/>
+        <?php echo $isScenario ? 'Edit' : 'Create'; echo __(" Scenario"); ?>
+        <input type="submit" class="btn btn-primary btn-large submit-webinar-btn pull-right" name="submit" value="<?php echo $isScenario ? 'Save Scenario' : 'Create Scenario'; ?>"/>
     </h1>
-    <input type="hidden" name="webinarId" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->id; ?>">
+    <input type="hidden" name="webinarId" value="<?php if($isScenario) echo $scenario->id; ?>">
     <fieldset class="fieldset">
         <legend><?php echo __('Scenario Details'); ?></legend>
         <div class="control-group">
             <label class="control-label" for="title"><?php echo __('Scenario Title'); ?></label>
             <div class="controls">
-                <input type="text" class="span6" id="title" name="title" value="<?php if(isset($templateData['webinar'])) echo $templateData['webinar']->title; ?>">
+                <input type="text" class="span6" id="title" name="title" value="<?php if($isScenario) echo $scenario->title; ?>">
             </div>
         </div>
-<!--        <div class="control-group">-->
-<!--            <label class="control-label">--><?php //echo __('Switching Steps'); ?><!--</label>-->
-<!--            <div class="controls">-->
-<!--                <div class="radio_extended btn-group">-->
-<!--                    <input type="radio" name="switchingSteps" id="manually" checked="">-->
-<!--                    <label for="manually" data-class="btn-info" class="btn active btn-info">Manually</label>-->
-<!--                    <input type="radio" name="switchingSteps" id="automatic">-->
-<!--                    <label for="automatic" data-class="btn-info" class="btn">Automatic</label>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>--><?php
-        if ( ! isset($templateData['webinar'])) {
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Switching Steps'); ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group">
+                    <input type="radio" name="switchingSteps" id="manually" value="manually" <?php if($scenario->changeSteps == 'manually') echo 'checked'; ?>>
+                    <label for="manually" data-class="btn-info" class="btn active btn-info">Manually</label>
+                    <input type="radio" name="switchingSteps" id="automatic" value="automatic" <?php if($scenario->changeSteps == 'automatic') echo 'checked'; ?>>
+                    <label for="automatic" data-class="btn-info" class="btn">Automatic</label>
+                </div>
+            </div>
+        </div><?php
+        if ( ! $isScenario) {
             $forums = Arr::get($templateData, 'forums', array()); ?>
             <div class="control-group">
                 <label for="firstmessage" class="control-label"><?php echo __('First message'); ?></label>
@@ -91,13 +86,13 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
                 <label for="forum" class="control-label"><?php echo __('Forums') ?></label>
                 <div class="controls">
                     <select id="forum" name="forum"><?php
-                    foreach ($templateData['forums'] as $forum) { ?>
+                    foreach ($forums as $forum) { ?>
                         <option value="<?php echo $forum['id']; ?>"><?php echo $forum['name']; ?></option><?php
                     } ?>
                     </select>
                 </div>
                 <br /><?php
-                foreach($templateData['forums'] as $forum) {
+                foreach($forums as $forum) {
                     if (count($forum['topics'])) { ?>
                     <div class="topics hide" id="topics-<?php echo $forum['id'];?>">
                         <label for="topic" class="control-label"><?php echo __('Topics') ?></label>
@@ -297,21 +292,29 @@ $sectionIds = Arr::get($templateData, 'sections', array()); ?>
     </div>
 </form>
 
-<script>
-    var mapsJSON = {<?php if(isset($templateData['maps']) && count($templateData['maps'])) {
-        echo 'maps: [';
-        $mapsJSON = '';
-        foreach($templateData['maps'] as $map) {
-            $section = (get_class($map) == 'Model_Leap_Map_Node_Section') ? 'section' : '';
-            $mapsJSON .= '{id: '.$map->id.', name: "'.base64_encode($map->name).'", section: "'.$section.'"}, ';
-        }
-
-        if(strlen($mapsJSON) > 2) {
-            echo substr($mapsJSON, 0, strlen($mapsJSON) - 2);
-        }
-        echo ']';
-    } ?>};
-</script>
-
 <script src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
-<script src="<?php echo ScriptVersions::get(URL::base().'scripts/webinar.js'); ?>"></script>
+<script src="<?php echo ScriptVersions::get(URL::base().'scripts/webinar.js'); ?>"></script><?php
+if ( ! $isScenario) { ?>
+<script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+<script language="javascript" type="text/javascript">
+    tinymce.init({
+        selector: "textarea",
+        theme: "modern",
+        content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime media nonbreaking save table contextmenu directionality",
+            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
+        ],
+        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
+        image_advtab: true,
+        templates: []
+    });
+</script><?php }
+?>

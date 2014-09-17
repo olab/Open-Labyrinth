@@ -19,26 +19,26 @@
  *
  */
 defined('SYSPATH') or die('No direct script access.');
+require_once(DOCROOT.'/twitter/src/twitter.class.php');
 
-session_start();
-class Session
+class Notification
 {
-    public static function set($key, $value){
-        $_SESSION[$key] = $value;
+    function sendTwit(mysqli $connection, $subject, $to = ''){
+        $query = 'SELECT * FROM twitter_credits';
+        $result = mysqli_query($connection, $query);
+        $credits = mysqli_fetch_array($result);
+        $twitter = new Twitter($credits['API_key'], $credits['API_secret'], $credits['Access_token'], $credits['Access_token_secret']);
+        try {
+            $twitter->send($to.' '.$subject);
+        } catch (TwitterException $e) {
+            echo "Error: ", $e->getMessage();
+        }
     }
 
-    public static function get($key, $default = NULL) {
-        if(isset($_SESSION[$key]) && !empty($_SESSION[$key]))
-            return $_SESSION[$key];
-        else
-            return $default;
-    }
+    function sendEMail($to, $subject, $from){
+        $message = 'All you need to know in subject.';
+        $headers = 'From: '.$from."\r\n".'Reply-To: '.$from."\r\n".'X-Mailer: PHP/'.phpversion();
 
-    public static function get_once($key, $default = NULL){
-        $value = Session::get($key, $default);
-        unset($_SESSION[$key]);
-        return $value;
+        mail($to, $subject, $message, $headers);
     }
-
 }
-

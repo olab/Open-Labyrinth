@@ -1111,6 +1111,15 @@ input[type="color"],
   border-radius: 4px;
 }
 
+input.counter-grid {
+    margin: 0;
+}
+.counter-grid-tb th:nth-child(1){
+    width: 220px;
+}
+.counter-grid-tb th:nth-child(3){
+    width: 315px;
+}
 input,
 textarea,
 .uneditable-input {
@@ -1959,9 +1968,8 @@ div.tipsy{
 
 }
 
-legend + .control-group {
-  margin-top: 20px;
-  -webkit-margin-top-collapse: separate;
+input.orderInSection {
+    margin: -2px 3px 0 0;
 }
 
 .form-horizontal .control-group {

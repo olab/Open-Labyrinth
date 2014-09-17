@@ -34,7 +34,7 @@ if (isset($templateData['map'])) { ?>
             settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
             logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
             mapId           = <?php echo $templateData['map']->id; ?>,
-            mapJSON         = <?php echo (isset($templateData['mapJSON']) AND strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>,
+            mapJSON         = <?php echo Arr::get($templateData, 'mapJSON', 'null'); ?>,
             mapType         = null,
             mainLinkStyles  = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
@@ -164,8 +164,8 @@ if (isset($templateData['map'])) { ?>
                                     <textarea class="mceEditorLite" name="annotation" id="annotation"></textarea>
                                 </div>
                             </div>
-                            <div>
-                                <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+                            <div><?php
+                                if (isset($templateData['counters']) and count($templateData['counters'])) { ?>
                                     <div>
                                         <div class="control-group"><?php
                                             $countersData = '';
@@ -180,12 +180,12 @@ if (isset($templateData['map'])) { ?>
                                                 <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Appear on node</strong></label>
                                                 <div class="controls">
                                                     <input type="checkbox" id="nodecounter_show_<?php echo $counter->id; ?>" value="1" />
-                                                </div>
-                                            <?php } ?>
+                                                </div><?php
+                                            } ?>
                                         </div>
                                         <div id="counters" data="[<?php if (strlen($countersData) > 2) echo substr($countersData, 0, strlen($countersData) - 2); ?>]"></div>
-                                    </div>
-                                <?php } ?>
+                                    </div><?php
+                                } ?>
                             </div>
                             <div class="row-fluid block">
                                 <div class="span6">
@@ -200,14 +200,13 @@ if (isset($templateData['map'])) { ?>
                                 <div class="span6">
                                     <div class="control-group">
                                         <label class="control-label"><strong>Link Function Style</strong></label>
-
-                                        <div class="controls" id="linkStyleOptions">
-                                            <?php foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                                        <div class="controls" id="linkStyleOptions"><?php
+                                            foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
                                                 <label class="radio">
                                                     <input type="radio" name="style" value="<?php echo $linkStyle->id ?>">
                                                     <?php echo __($linkStyle->name); ?>
-                                                </label>
-                                            <?php } ?>
+                                                </label><?php
+                                            } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -217,12 +216,10 @@ if (isset($templateData['map'])) { ?>
                                     <div class="control-group">
                                         <label class="control-label"><strong>Node Priorities</strong></label>
 
-                                        <div class="controls" id="nodePriorities">
-                                            <?php if (isset($templateData['priorities'])) { ?>
-                                                <?php foreach ($templateData['priorities'] as $priority) { ?>
-                                                    <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label>
-                                                <?php } ?>
-                                            <?php } ?>
+                                        <div class="controls" id="nodePriorities"><?php
+                                            foreach (Arr::get($templateData, 'priorities', array()) as $priority) { ?>
+                                                <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label><?php
+                                            } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -279,13 +276,13 @@ if (isset($templateData['map'])) { ?>
                 <div class="visual-editor-right-panel-tabs">&nbsp;</div>
                 <legend style="margin-left: 5px">Sections</legend>
                 <div class="control-group block" style="margin-left: 5px">
-                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Choice section:</strong></label>
+                    <label class="control-label"><strong>Choice section:</strong></label>
                     <div class="controls">
                         <select id="sectionsNodesSelect"></select>
                     </div>
 
                     <div id="sectionSettings" class="hide">
-                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Name:</strong></label>
+                        <label class="control-label" style="text-align: left;"><strong>Name:</strong></label>
                         <div class="controls">
                             <input type="text" id="sectionName" style="margin-bottom: 0"/>
                             <div class="btn-group">
@@ -294,6 +291,16 @@ if (isset($templateData['map'])) { ?>
                             </div>
                         </div>
                     </div>
+
+                    <div id="orderInSection" class="hide">
+                        <label class="control-label"><strong>Order in section:</strong></label>
+                        <div class="controls">
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="x" value="x"/>By X</label>
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="y" value="y"/>By Y</label>
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="random" value="random"/>Random</label>
+                        </div>
+                    </div>
+
                     <div id="sectionNodeContainer"></div>
                 </div>
 
@@ -487,29 +494,29 @@ if (isset($templateData['map'])) { ?>
                 <br/>
                 <div class="block" align="left">
                     <form class="form-horizontal">
-                    <div class="control-group block">
-                        <label class="control-label"><?php echo __('Link label'); ?></label>
-                        <div class="controls block">
-                            <input type="text" id="labelText"/>
+                        <div class="control-group block">
+                            <label class="control-label"><?php echo __('Link label'); ?></label>
+                            <div class="controls block">
+                                <input type="text" id="labelText"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group block">
-                        <label class="control-label" for="mimage"><?php echo __('Link image'); ?></label>
-                        <div class="controls block">
-                            <?php if (isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" <?php if (isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option>
-                                    <?php foreach ($templateData['images'] as $image) { ?>
-                                        <option value="<?php echo $image->id; ?>" <?php if (isset($templateData['editLink']) and $image->id == $templateData['editLink']->image_id) echo 'selected=""'; ?>><?php echo $image->name; ?> (<?php echo $image->id; ?>)</option>
-                                    <?php } ?>
-                                </select>
-                            <?php } else { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" select="">no image</option>
-                                </select>
-                            <?php } ?>
-                    </div>
-                </div>
+                        <div class="control-group block">
+                            <label class="control-label" for="mimage"><?php echo __('Link image'); ?></label>
+                            <div class="controls block"><?php
+                                if (isset($templateData['images']) and count($templateData['images'])) { ?>
+                                    <select name="linkImage" id="mimage">
+                                        <option value="0" <?php if (isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option><?php
+                                        foreach ($templateData['images'] as $image) { ?>
+                                        <option value="<?php echo $image->id; ?>" <?php if (isset($templateData['editLink']) and $image->id == $templateData['editLink']->image_id) echo 'selected=""'; ?>><?php echo $image->name; ?> (<?php echo $image->id; ?>)</option><?php
+                                        } ?>
+                                    </select><?php
+                                } else { ?>
+                                    <select name="linkImage" id="mimage">
+                                        <option value="0" select="">no image</option>
+                                    </select><?php
+                                } ?>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

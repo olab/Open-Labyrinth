@@ -441,7 +441,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         $sectionId = (int) $this->request->param('id2', 0);
         if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
-            DB_ORM::model('map_node_section')->updateSectionName($sectionId, $_POST);
+            DB_ORM::model('map_node_section')->updateSectionRow($sectionId, $_POST);
             Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
             Request::initial()->redirect(URL::base());

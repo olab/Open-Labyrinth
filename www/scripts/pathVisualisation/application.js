@@ -2,7 +2,7 @@ $(function () {
     var params = {
         'canvasContainer':'#canvasContainer',
         'canvasId':'#canvas',
-        'aButtonsContianer': '#ve_additionalActionButton',
+        'aButtonsContainer': '#ve_additionalActionButton',
         'sectionSelectId': '#sectionsNodesSelect'
     };
 

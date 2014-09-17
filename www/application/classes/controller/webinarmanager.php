@@ -42,13 +42,10 @@ class Controller_WebinarManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_my() {
-        $this->templateData['webinars'] = DB_ORM::model('webinar')->getWebinarsForUser(Auth::instance()->get_user()->id);
-
-        $this->templateData['center'] = View::factory('webinar/my');
-        $this->templateData['center']->set('templateData', $this->templateData);
-
-        unset($this->templateData['right']);
+    public function action_my()
+    {
+        $this->templateData['scenarios'] = DB_ORM::model('webinar')->getScenariosByUser(Auth::instance()->get_user()->id);
+        $this->templateData['center'] = View::factory('webinar/my')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -353,21 +350,19 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_render()
     {
-        $webinarId = $this->request->param('id', null);
-        $webinar   = DB_ORM::model('webinar', array((int)$webinarId));
+        $scenarioId = $this->request->param('id', null);
+        $scenario   = DB_ORM::model('webinar', array($scenarioId));
 
-        if(count($webinar->steps) > 0)
-        {
-            foreach($webinar->maps as $webinarMap)
-            {
-                $this->templateData['mapsMap'][$webinarMap->step][$webinarMap->reference_id] = ($webinarMap->step <= $webinar->current_step)
-                    ? DB_ORM::model('user_session')->isUserFinishMap($webinarMap->reference_id, Auth::instance()->get_user()->id, $webinarMap->which, $webinarId, $webinar->current_step)
+        if(count($scenario->steps)) {
+            foreach($scenario->maps as $scenarioMap) {
+                $this->templateData['mapsMap'][$scenarioMap->step][$scenarioMap->reference_id] = ($scenarioMap->step <= $scenario->current_step)
+                    ? DB_ORM::model('user_session')->isUserFinishMap($scenarioMap->reference_id, Auth::instance()->get_user()->id, $scenarioMap->which, $scenarioId, $scenario->current_step)
                     : 0;
             }
         }
-        $this->templateData['webinar']  = $webinar;
-        $this->templateData['center']   = View::factory('webinar/render')->set('templateData', $this->templateData);
 
+        $this->templateData['scenario']  = $scenario;
+        $this->templateData['center']   = View::factory('webinar/render')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -383,17 +378,18 @@ class Controller_WebinarManager extends Controller_Base {
         Request::initial()->redirect(URL::base().'webinarmanager/index');
     }
 
-    public function action_changeStep() {
-        $webinarId = $this->request->param('id' , null);
-        $step      = $this->request->param('id2', null);
-        $redirect  = $this->request->param('id3', null);
+    public function action_changeStep()
+    {
+        $scenarioId = $this->request->param('id' , null);
+        $step       = $this->request->param('id2', null);
+        $redirect   = $this->request->param('id3', null);
 
-        DB_ORM::model('webinar')->changeWebinarStep($webinarId, $step);
+        DB_ORM::model('webinar')->changeWebinarStep($scenarioId, $step);
 
         if ($redirect == null){
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Request::initial()->redirect(URL::base().'webinarmanager/index');
         } else {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/progress/'.$webinarId);
+            Request::initial()->redirect(URL::base().'webinarmanager/progress/'.$scenarioId);
         }
     }
 
@@ -633,27 +629,30 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_play()
     {
-        $webinarId = $this->request->param('id', null);
-        $step      = $this->request->param('id2', null);
-        $id        = $this->request->param('id3', null);
-        $type      = $this->request->param('id4', null);
+        $scenarioId = $this->request->param('id', null);
+        $step       = $this->request->param('id2', null);
+        $id         = $this->request->param('id3', null);
+        $type       = $this->request->param('id4', null);
 
-        if ($webinarId AND $step) {
-            Session::instance()->set('webinarId', $webinarId);
+        if ($scenarioId AND $step) {
+            Session::instance()->set('webinarId', $scenarioId);
             Session::instance()->set('step', $step);
 
-            //------ redirect to webinar section ------//
+            //------ redirect to scenario section ------//
             if ($type == 'section') {
                 $section     = DB_ORM::model('Map_Node_Section', array($id));
                 $sectionNode = DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $id)->where('node_type', '=', 'in')->query()->fetch(0);
 
-                if ( ! $sectionNode) Request::initial()->redirect(URL::base());
+                if ( ! $sectionNode) {
+                    Notice::add('Section must have start node', 'error');
+                    Request::initial()->redirect($this->request->referrer());
+                }
 
                 Session::instance()->set('webinarSection', $type);
                 Session::instance()->set('webinarSectionId', $id);
                 Request::initial()->redirect(URL::base().'renderLabyrinth/go/'.$section->map->id.'/'.$sectionNode->node_id);
             }
-            //------ end redirect to webinar section ------//
+            //------ end redirect to scenario section ------//
         }
 
         Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$id);

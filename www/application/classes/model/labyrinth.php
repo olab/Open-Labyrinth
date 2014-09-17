@@ -77,7 +77,7 @@ class Model_Labyrinth extends Model {
             }
 
             $section = false;
-            if($scenarioSectionId) {
+            if($scenarioSectionId){
                 foreach (DB_ORM::select('Map_Node_Section_Node')->where('section_id', '=', $scenarioSectionId)->query()->as_array() as $sectionObj) {
                     $section[] = $sectionObj->node_id;
                 }
@@ -256,30 +256,72 @@ class Model_Labyrinth extends Model {
         return FALSE;
     }
 
-    private function generateLinks ($node, $section)
-    {
-        if (count($node->links) > 0)
-        {
-            $result = array();
-            foreach ($node->links as $link)
-            {
-                if ($section AND ! in_array($link->node_id_2, $section)) continue;
+    private function getOrderInSections($mapId) {
+        $result = array();
+        $sections = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
 
-                switch ($node->link_type->name)
-                {
+        foreach ($sections as $section) {
+            $orderBy = $section->orderBy;
+
+            if ($orderBy == 'random') {
+                continue;
+            }
+
+            foreach ($section->nodes as $node) {
+                $nodeObj = DB_ORM::model('map_node', $node->node_id);
+                $coordinate = $nodeObj->$orderBy;
+                if (isset($result[$coordinate])){
+                    $coordinate += 1;
+                }
+                $result[$coordinate] = $node->node_id;
+            }
+        }
+
+        ksort($result);
+        $result = array_values($result);
+        $result = array_flip($result);
+        return $result;
+    }
+
+    private function generateLinks($node, $section)
+    {
+        $orderInSection = $section
+            ? $this->getOrderInSections($node->map_id)
+            : false;
+
+        if (count($node->links)) {
+
+            $result = array();
+
+            foreach ($node->links as $link) {
+                if ($section AND ! in_array($link->node_id_2, $section)) {
+                    continue;
+                }
+
+                $position = $orderInSection
+                    ? Arr::get($orderInSection, $link->node_id_2) + 100 // +100 means that nodes (less than 100) which not in section go before
+                    : false;
+
+                if ($position) {
+                    $result[$position] = $link;
+                } else {
+                    $result[] = $link;
+                }
+
+
+                /*switch ($node->link_type->name) {
                     case 'ordered':
                         $order = $link->order * 10000;
-                        if (isset($result[$order]))
-                        {
+                        if (isset($result[$order])) {
                             $nextIndex = $this->findNextIndex($result, $order + 1);
                             $result[$nextIndex] = $link;
+                        } else {
+                            $result[$order] = $link;
                         }
-                        else $result[$order] = $link;
                         break;
                     case 'random order':
                         $randomIndex = rand(0, 100000);
-                        if (isset($result[$randomIndex]))
-                        {
+                        if (isset($result[$randomIndex])) {
                             $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
                             $result[$nextIndex] = $link;
                         }
@@ -287,8 +329,7 @@ class Model_Labyrinth extends Model {
                         break;
                     case 'random select one *':
                         $randomIndex = rand(0, 100000) * ($link->probability == 0 ? 1 : $link->probability);
-                        if (isset($result[$randomIndex]))
-                        {
+                        if (isset($result[$randomIndex])) {
                             $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
                             $result[$nextIndex] = $link;
                         }
@@ -297,12 +338,11 @@ class Model_Labyrinth extends Model {
                     default:
                         $result[] = $link;
                         break;
-                }
+                }*/
             }
 
-            if ($node->link_type_id == 3)
-            {
-                if (count($result) > 0){
+            if ($node->link_type_id == 3) {
+                if (count($result)){
                     $resultRandomOne = array();
                     $keys = array_keys($result);
                     rsort($keys);
@@ -310,27 +350,14 @@ class Model_Labyrinth extends Model {
                     $result = $resultRandomOne;
                 }
             }
-
-            return $this->clearArray($result);
+            ksort($result);
+            return $result;
         }
         return NULL;
     }
 
     private function findNextIndex($result, $index){
         return isset($result[$index]) ? $this->findNextIndex($result, $index + 1) : $index;
-    }
-
-    private function clearArray($array) {
-        if (count($array) > 0) {
-            $result = array();
-            $array_keys = array_keys($array);
-            sort($array_keys);
-            foreach($array_keys as $key){
-                $result[] = $array[$key];
-            }
-            return $result;
-        }
-        return NULL;
     }
 
     private function conditional($sessionId, $node)
@@ -821,11 +848,14 @@ class Model_Labyrinth extends Model {
                         }
                     }
                     $updateCounter .= '[MCID='.$main_counter['id'].',V='.$main_counter['value'].']';
-                    $conditionString = $this->htmlCondition(); // change conditions, by the visit node
-                    $counterString .= '</ul>'.$conditionString;
 
                     DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter, $traceId);
                     DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id, $updateCounter);
+
+                    // Cron must execute after user_sessionTrace update
+                    DB_ORM::model('Cron')->parseRule($node->map_id);
+                    $conditionString = $this->htmlCondition();
+                    $counterString .= '</ul>'.$conditionString;
 
                     Session::instance()->delete('questionChoices');
                     if ($redirect != NULL && $redirect != $node->id){
@@ -892,18 +922,18 @@ class Model_Labyrinth extends Model {
         if ($conditionChangeObj) {
             $conditionString = '<ul class="navigation">';
             foreach ($conditionChangeObj as $changeObj) {
-                $change = trim($changeObj->value);
-                if (strlen($change)) {
-                    $sign           = $change[0];
-                    $change         = (int) preg_replace('/\D/', '', $change);
-                    $assignObj      = DB_ORM::select('Conditions_Assign')
-                        ->where('scenario_id', '=', $scenarioId)
-                        ->where('condition_id', '=', $changeObj->condition_id)
-                        ->query()
-                        ->fetch(0);
-                    $currentValue   = $assignObj->value;
-                    $result         = $currentValue;
+                $assignObj      = DB_ORM::select('Conditions_Assign')
+                    ->where('scenario_id', '=', $scenarioId)
+                    ->where('condition_id', '=', $changeObj->condition_id)
+                    ->query()
+                    ->fetch(0);
+                $currentValue   = $assignObj->value;
+                $result         = $currentValue;
 
+                $change = trim($changeObj->value);
+                if ($change) {
+                    $sign   = $change[0];
+                    $change = (int) preg_replace('/\D/', '', $change);
                     if ($sign == '=') {
                         $result = $change;
                     } elseif ($sign == '-') {
@@ -911,13 +941,12 @@ class Model_Labyrinth extends Model {
                     } else {
                         $result += $change;
                     }
-
                     $assignObj->value = $result;
                     $assignObj->save();
+                }
 
-                    if ($changeObj->appears){
-                        $conditionString .= '<li>'.DB_ORM::model('Conditions',array($changeObj->condition_id))->name.' ('.$result.')</li>';
-                    }
+                if ($changeObj->appears){
+                    $conditionString .= '<li>'.DB_ORM::model('Conditions',array($changeObj->condition_id))->name.' ('.$result.')</li>';
                 }
             }
             $conditionString .= '</ul>';

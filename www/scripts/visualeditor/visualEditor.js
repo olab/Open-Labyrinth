@@ -42,7 +42,7 @@ var VisualEditor = function() {
     self.unsavedData = false;
     self.save = null;
 
-    self.$aButtonsContianer = $('#ve_additionalActionButton');
+    self.$aaButtonsContainer = $('#ve_additionalActionButton');
     
     self.selectRightPanel = null;
 
@@ -75,13 +75,13 @@ var VisualEditor = function() {
         if('sectionSelectId' in params) {
             self.$sectionSelect = $(params.sectionSelectId);
         }
-        
-        if('aButtonsContainer' in params)
-        {
-            self.$aButtonsContianer = $(params.aButtonsContianer);
+
+        if('aButtonsContainer' in params) {
+
+            self.$aButtonsContainer = $(params.aButtonsContainer);
             
             $('#deleteSNodesBtn').click(function() {
-                if(self.nodes != null && self.nodes.length > 0) {
+                if(self.nodes != null && self.nodes.length) {
                     var nodeId = 0;
                     for(var i = 0; i < self.nodes.length; i++) {
                         if(self.nodes[i].isSelected) {
@@ -235,14 +235,12 @@ var VisualEditor = function() {
 
         if(self.preview != null) self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
         
-        if(self.$aButtonsContianer != null)
-        {
-            if(self.IsExistSelectElements())
-            {
+        if(self.$aButtonsContainer != null) {
+            if(self.IsExistSelectElements()) {
                 checkRevisitStatus();
-                self.$aButtonsContianer.show() ;
+                self.$aButtonsContainer.show() ;
             }
-            else self.$aButtonsContianer.hide();
+            else self.$aButtonsContainer.hide();
         }
                     
     };
@@ -370,7 +368,7 @@ var VisualEditor = function() {
     // Serialize nodes info
     self.Serialize = function() {
         return SerializeElements(self.nodes, self.links);
-    }
+    };
     
     self.SerializeSelected = function() {
         var selectedNodes = [];
@@ -446,7 +444,7 @@ var VisualEditor = function() {
             }
         }
 
-        if(self.sections.length > 0) {
+        if(self.sections.length) {
             var sectionStr   = '',
                 sectionNodes = '';
             for(var i = self.sections.length; i--;) {
@@ -454,9 +452,9 @@ var VisualEditor = function() {
                 for(var j = self.sections[i].nodes.length; j--;) {
                     sectionNodes += '{"nodeId": "' + self.sections[i].nodes[j].node.id + '", "order": "' + self.sections[i].nodes[j].order + '"}, ';
                 }
-                if(sectionNodes.length > 0) {
+                if(sectionNodes.length) {
                     sectionNodes = sectionNodes.substring(0, sectionNodes.length - 2);
-                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + encode64(self.sections[i].name) + '", "nodes": [' + sectionNodes + ']}, ';
+                    sectionStr += '{"id": "' + self.sections[i].id + '", "orderBy": "' + self.sections[i].orderBy + '", "name": "' + encode64(self.sections[i].name) + '", "nodes": [' + sectionNodes + ']}, ';
                 }
             }
 
@@ -477,7 +475,7 @@ var VisualEditor = function() {
         }
 
         return result;
-    }
+    };
     
     // Deserialize nodes info
     self.Deserialize = function(jsonString) {
@@ -576,10 +574,11 @@ var VisualEditor = function() {
             }
         }
 
-        if('sections' in object && object.sections.length > 0) {
+        if('sections' in object && object.sections.length) {
             for(var i = object.sections.length; i--;) {
                 var color   = self.GetRandomColor(),
-                    section = new Section(object.sections[i].id, decode64(object.sections[i].name), color);
+                    section = new Section(object.sections[i].id, decode64(object.sections[i].name), color, object.sections[i].orderBy);
+
                 if('nodes' in object.sections[i] && object.sections[i].nodes.length > 0) {
                     for(var j = object.sections[i].nodes.length; j--;) {
                         var n = GetNodeById(object.sections[i].nodes[j].nodeId);
@@ -1541,12 +1540,8 @@ var VisualEditor = function() {
                 }
             }
             self.selectorTool.MouseUp(self.mouse, viewport);
-            if(self.$aButtonsContianer != null) {
-                if(existSelect) {
-                    self.$aButtonsContianer.show();
-                } else {
-                    self.$aButtonsContianer.hide();
-                }
+            if(self.$aButtonsContainer != null) {
+                existSelect ? self.$aButtonsContainer.show() : self.$aButtonsContainer.hide();
             }
             
             isRedraw = true;
@@ -1556,6 +1551,7 @@ var VisualEditor = function() {
         if(selectedNodes.length > 0) {
             self.$sectionSelect.empty();
             $('#sectionSettings').addClass('hide');
+            $('#orderInSection').addClass('hide');
             $('#sectionNodeContainer').empty();
             var options = '<option value="">Select section</option>';
             var existSectionsId = [];
@@ -1616,19 +1612,19 @@ var VisualEditor = function() {
         self.Render();
 
         return addedNodes;
-    }
+    };
 
     self.GetSectionById = function(id) {
-        if(self.sections == null || self.sections.length <= 0) return null;
+        if(self.sections.length <= 0) return null;
 
-        for(var i = self.sections.length; i--;) {
+        for (var i = self.sections.length; i--;) {
             if(self.sections[i].id == id) {
                 return self.sections[i];
             }
         }
 
         return null;
-    }
+    };
 
     self.RemoveNodeFromSection = function(sectionId, nodeId) {
         var section = self.GetSectionById(sectionId),
@@ -2035,12 +2031,13 @@ var VisualEditor = function() {
         self.Render();
     };
 
-    self.UpdateSection = function(sectionId, sectionName, nodes) {
+    self.UpdateSection = function(sectionId, sectionName, nodes, orderBy) {
         var section = self.GetSectionById(sectionId);
 
         if(section == null) return;
 
         section.name = sectionName;
+        section.orderBy = orderBy;
 
         for(var i = nodes.length; i--;) {
             for(var k = section.nodes.length; k--;) {
@@ -2050,7 +2047,7 @@ var VisualEditor = function() {
                 }
             }
         }
-    }
+    };
 
     var GetSectionId = function() {
         sectionNodeId += 1;

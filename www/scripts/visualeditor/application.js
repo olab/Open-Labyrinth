@@ -2,7 +2,7 @@ $(function () {
     var params = {
         'canvasContainer':'#canvasContainer',
         'canvasId':'#canvas',
-        'aButtonsContianer': '#ve_additionalActionButton',
+        'aButtonsContainer': '#ve_additionalActionButton',
         'sectionSelectId': '#sectionsNodesSelect'
     };
 
@@ -293,8 +293,7 @@ $(function () {
         if ( ! currentUserReadOnly) {
             visualEditor.isChanged = false;
     
-            if (autoSaveTimer != null)
-            {
+            if (autoSaveTimer != null) {
                 clearTimeout(autoSaveTimer);
                 autoSaveTimerNotSet = true;
             }
@@ -677,6 +676,7 @@ $(function () {
 
     $('#veSectionClosePanelBtn').click(function() {
         $('#veSectionPanel').addClass('hide');
+        $('#orderInSection').addClass('hide');
     });
 
     $('#sectionsNodesSelect').change(function() {
@@ -696,6 +696,7 @@ $(function () {
 
         visualEditor.RemoveSection(sectionId);
         $('#sectionSettings').addClass('hide');
+        $('#orderInSection').addClass('hide');
         $('#sectionNodeContainer').empty();
         $('#sectionsNodesSelect option[value="' + sectionId + '"]').remove();
     });
@@ -717,18 +718,29 @@ $(function () {
             length  = 0,
             append  = '';
 
+        $('.orderInSection').each(function(index, value){
+                var $value = $(value);
+                if ($value.data('value') == section.orderBy){
+                    $value.prop('checked', true);
+                }
+            }
+        );
+
         $('#sectionSettings').removeClass('hide');
+        $('#orderInSection').removeClass('hide');
         $('#sectionName').val(section.name);
         $('#veSectionSaveBtn').attr('sectionId', section.id);
         $('#removeSection').attr('sectionId', section.id);
         $('#addNodeToSection').attr('sectionId', section.id);
         $('#sectionNodeContainer').empty().append('<div><b>Nodes:</b></div>');
+
         if(section != null) {
             length = section.nodes.length;
-            if(length > 0) {
+            if(length) {
                 for(var i = length; i--;) {
                     options = '';
                     append  = '';
+
                     for(var j = 0; j < length; j++) {
                         options += '<option value="' + j + '" ' + (j == section.nodes[i].order ? 'selected="selected"' : '') + '>' + j + '</option>';
                     }
@@ -748,16 +760,20 @@ $(function () {
 
     $('#veSectionSaveBtn').click(function() {
         var sectionName = $('#sectionName').val(),
+            orderBy     = $('.orderInSection:checked').val(),
             $nodes      = $('.sectionNode'),
             nodes       = [],
             nodeId      = 0;
 
         $nodes.each(function(index, value) {
             nodeId = $(this).attr('nodeId');
-            nodes.push({nodeId: nodeId, order: $('#selectSectionNodeOrder' + nodeId).val()});
+            nodes.push({
+                nodeId: nodeId,
+                order: $('#selectSectionNodeOrder' + nodeId).val()
+            });
         });
 
-        visualEditor.UpdateSection($(this).attr('sectionId'), sectionName, nodes);
+        visualEditor.UpdateSection($(this).attr('sectionId'), sectionName, nodes, orderBy);
     });
 
     $('#sectionsBtn').click(function() {

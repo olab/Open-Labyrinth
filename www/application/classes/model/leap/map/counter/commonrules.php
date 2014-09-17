@@ -89,12 +89,12 @@ class Model_Leap_Map_Counter_CommonRules extends DB_ORM_Model {
     
     public function addRule($mapId, $rule, $isCorrect, $lightning)
     {
-        $this->map_id = $mapId;
-        $this->rule = $rule;
-        $this->lightning = $lightning;
-        $this->isCorrect = $isCorrect;
-
-        $this->save();
+        return DB_ORM::insert('Map_Counter_CommonRules')
+            ->column('map_id', $mapId)
+            ->column('rule', $rule)
+            ->column('lightning', $lightning)
+            ->column('isCorrect', $isCorrect)
+            ->execute();
     }
 
     public function editRule($ruleId, $rule, $isCorrect, $lightning)
