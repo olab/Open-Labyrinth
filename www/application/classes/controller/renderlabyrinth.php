@@ -105,11 +105,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         if ($continue) {
-            $this->renderNode($node, $action, $bookmark, Controller_RenderLabyrinth::$isCumulative);
+            $this->renderNode($node, $action, $bookmark);
         }
     }
 
-    private function renderNode ($nodeObj, $action, $bookmark, $cumulative)
+    private function renderNode ($nodeObj, $action, $bookmark)
     {
         if ($nodeObj == NULL) {
             Request::initial()->redirect(URL::base());
@@ -125,7 +125,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
         $data       = ($action == 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
-            : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, $cumulative);
+            : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, Controller_RenderLabyrinth::$isCumulative);
 
         // delete $bookmark after use it
         DB_ORM::delete('User_Bookmark')->where('id', '=', $bookmark)->execute();
@@ -137,8 +137,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         /* ----- patient ----- */
         $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
-        foreach ($data['patients'] as $patient)
-        {
+        foreach ($data['patients'] as $patient) {
             $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
         }
         /* ----- end patient ----- */
@@ -209,7 +208,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         $skin = 'labyrinth/skin/basic/basic';
-        if ($data['map']->skin->enabled AND file_exists($_SERVER['DOCUMENT_ROOT'].'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php')) {
+        if ($data['map']->skin->enabled AND file_exists(DOCROOT.'/application/views/labyrinth/skin/'.$data['map']->skin->id.'/skin.php')) {
             $skin = 'labyrinth/skin/basic/basic_template';
 
             $data['skin'] = View::factory('labyrinth/skin/'.$data['map']->skin->id.'/skin')->set('templateData', $data);
@@ -1151,18 +1150,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
         }
 
-        if (is_array($links) and count($links) > 0)
-        {
+        if (is_array($links) AND count($links)) {
             $result['remote_links'] = '';
             $result['links']        = '';
-            foreach ($links as $link)
-            {
-                if (isset($undoNodes[$link->node_2->id])) continue;
+            foreach ($links as $link) {
+                if (isset($undoNodes[$link->node_2->id])) {
+                    continue;
+                }
 
                 $title = ($link->text != '' and $link->text != ' ') ? $link->text : $link->node_2->title;
 
-                switch ($node->link_style->name)
-                {
+                switch ($node->link_style->name) {
                     case 'hyperlinks':
                         $content = ($link->image_id != 0) ? '<img src="'.URL::base().$link->image->path.'">' : $title;
                         $result['links'] .= '<li><a href="'.URL::base().'renderLabyrinth/go/'.$node->map_id.'/'.$link->node_id_2.'">'.$content.'</a></li>';
@@ -1181,8 +1179,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
 
-            switch ($node->link_style->name)
-            {
+            switch ($node->link_style->name) {
                 case 'hyperlinks':
                     $result['links'] = '<ul class="links navigation">'.$result['links'].'</ul>';
                     break;
@@ -1208,17 +1205,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
             else if ($node->end) $result['links'] .= $endNodeTemplate;
 
             return $result;
-        }
-        else
-        {
-            if ($node->end and $node->link_style->name == 'type in text')
-            {
+        } else {
+            if ($node->end and $node->link_style->name == 'type in text') {
                 if( ! isset($result['links']['display'])) $result['links']['display'] = '';
                 $result['links']['display'] .= $endNodeTemplate;
                 return $result;
-            }
-            else if ($node->end)
-            {
+            } else if ($node->end) {
                 $result['links'] .= $endNodeTemplate;
                 return $result;
             }
