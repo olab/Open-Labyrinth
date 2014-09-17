@@ -98,7 +98,7 @@ if (isset($templateData['map'])) { ?>
                         echo $preview; ?>
                     </td>
                     <td><?php
-                        $currentFile = DOCROOT . '/' . 'global/files/' . $file['name'];
+                        $currentFile = DOCROOT.'/'.'global/files/'.$file['name'];
                         if (file_exists($currentFile)){
                             echo (filesize($currentFile) / 1000).'KB<br/>last modified '.date('d.m.Y H:i:s.', filemtime($currentFile));
                         } else {
@@ -107,7 +107,7 @@ if (isset($templateData['map'])) { ?>
                     </td>
                     <td>
                         <div class="btn-group-vertical"><?php
-                            if(!$file['there']){?>
+                            if( ! $file['there']){?>
                                 <a class="btn btn-info" href="<?php echo URL::base().'fileManager/addToLabyrinth/'.$templateData['map']->id.'/'.base64_encode($file['name']); ?>">
                                     <i class="icon-edit"></i><?php echo __('Add to labyrinth'); ?>
                                 </a><?php
@@ -124,5 +124,5 @@ if (isset($templateData['map'])) { ?>
         </tbody>
     </table>
     <script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-    <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script><?php
+    <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script><?php
 } ?>
