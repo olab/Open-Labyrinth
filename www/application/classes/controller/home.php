@@ -352,8 +352,9 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['left']);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 
     public function action_historyAjaxCollaboration()
@@ -361,20 +362,25 @@ class Controller_Home extends Controller_Base {
         $this->auto_render  = false;
         $result             = array();
         $user               = Auth::instance()->get_user();
-        $userName           = $user->nickname;
-        $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);;
-        $userArray          = Arr::get($usersInformation, $user->id, NULL);
-        $uri                = Arr::get($userArray, 'href', NULL);
+        if ($user) {
+            $userName           = $user->nickname;
+            $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);;
+            $userArray          = Arr::get($usersInformation, $user->id, NULL);
+            $uri                = Arr::get($userArray, 'href', NULL);
 
-        if ($userArray AND $uri != NULL) {
-            foreach ($usersInformation as $value) {
-                if ($value['href'] == $uri AND $value['username'] != $userName AND $value['readonly'] == 1) {
-                    $result[$value['id']] = $value['username'];
+            if ($userArray AND $uri != NULL) {
+                foreach ($usersInformation as $value) {
+                    if ($value['href'] == $uri AND $value['username'] != $userName AND $value['readonly'] == 1) {
+                        $result[$value['id']] = $value['username'];
+                    }
                 }
             }
+            if ($uri == 'kick') $result['reloadPage'] = 1;
+            exit(json_encode($result));
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        if ($uri == 'kick') $result['reloadPage'] = 1;
-        exit(json_encode($result));
+
     }
 
 }
