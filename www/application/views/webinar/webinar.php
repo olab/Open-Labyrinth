@@ -20,7 +20,8 @@
  */
 $sectionIds = Arr::get($templateData, 'sections', array());
 $isScenario = isset($templateData['webinar']);
-$scenario   = Arr::get($templateData, 'webinar', false); ?>
+$scenario   = Arr::get($templateData, 'webinar', false);
+$changeStep = $scenario ? $scenario->changeStep : "manually"; ?>
 <script>
     var $labyrinthContainers = [],
         mapsJSON = {<?php
@@ -56,9 +57,9 @@ $scenario   = Arr::get($templateData, 'webinar', false); ?>
             <label class="control-label"><?php echo __('Switching Steps'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">
-                    <input type="radio" name="switchingSteps" id="manually" value="manually" <?php if($scenario->changeSteps == 'manually') echo 'checked'; ?>>
+                    <input type="radio" name="switchingSteps" id="manually" value="manually" <?php if($changeStep == 'manually') echo 'checked'; ?>>
                     <label for="manually" data-class="btn-info" class="btn active btn-info">Manually</label>
-                    <input type="radio" name="switchingSteps" id="automatic" value="automatic" <?php if($scenario->changeSteps == 'automatic') echo 'checked'; ?>>
+                    <input type="radio" name="switchingSteps" id="automatic" value="automatic" <?php if($changeStep == 'automatic') echo 'checked'; ?>>
                     <label for="automatic" data-class="btn-info" class="btn">Automatic</label>
                 </div>
             </div>
