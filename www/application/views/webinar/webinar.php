@@ -21,7 +21,7 @@
 $sectionIds = Arr::get($templateData, 'sections', array());
 $isScenario = isset($templateData['webinar']);
 $scenario   = Arr::get($templateData, 'webinar', false);
-$changeStep = $scenario ? $scenario->changeStep : "manually"; ?>
+$changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
 <script>
     var $labyrinthContainers = [],
         mapsJSON = {<?php
