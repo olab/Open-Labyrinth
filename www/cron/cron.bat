@@ -1,1 +1,0 @@
-"D:\Work\OpenServerOld\modules\php\PHP-5.3.27\php.exe" -c "D:\Work\OpenServerOld\userdata\temp\config\php.ini" "cron.php"

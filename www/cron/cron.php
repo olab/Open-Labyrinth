@@ -33,3 +33,5 @@ $mysqli = new mysqliConnection('cron');
 $connection = $mysqli->connect();
 new cronRules($connection);
 $mysqli->closeConnect($connection);
+
+echo 'Done';
