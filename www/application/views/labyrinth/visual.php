@@ -300,8 +300,8 @@ if (isset($templateData['map'])) { ?>
                             <label><input type="radio" class="orderInSection" name="orderInSection" data-value="random" value="random"/>Random</label>
                         </div>
                     </div>
-
-                    <div id="sectionNodeContainer"></div>
+                <!-- Manual order of all nodes in section -->
+                <!-- <div id="sectionNodeContainer"></div>-->
                 </div>
 
                 <div class="footer block">
