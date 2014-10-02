@@ -135,7 +135,7 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
         return array('id');
     }
 
-    public function saveUser($key, $values)
+    public function saveConsumer($key, $values)
     {
         $hours      = Arr::get($values, 'hours', '00');
         $minute     = Arr::get($values, 'minute', '00');

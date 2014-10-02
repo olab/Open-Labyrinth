@@ -149,7 +149,7 @@ class Controller_Base extends Controller_Template {
         'base/ui',
         'ltimanager/index',
         'ltimanager/userView',
-        'ltimanager/saveUser',
+        'ltimanager/saveConsumer',
         'ltimanager/deleteUser',
         'ltimanager/info',
     );

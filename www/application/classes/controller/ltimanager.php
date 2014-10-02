@@ -46,13 +46,13 @@ class Controller_LtiManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('User Manager')));
     }
 
-    public function action_saveUser()
+    public function action_saveConsumer()
     {
         $post   = $this->request->post();
         $id     = Arr::get($post, 'id', null);
         $post['without_end_date'] = Arr::get($post, 'without_end_date', 0);
 
-        DB_ORM::model('Lti_Consumer')->saveUser($id, $post);
+        DB_ORM::model('Lti_Consumer')->saveConsumer($id, $post);
 
         Request::initial()->redirect(URL::base().'ltimanager');
     }

@@ -257,7 +257,7 @@ class Controller_ReportManager extends Controller_Base
         if( ! is_null($toolProvider)){
             $progress = explode(' of ',$progress);
             $score = ($progress[1] != 0) ? round((($progress[0]*100/$progress[1])/100),3) : 0;
-            $returnUrl = LTI_ToolProvider::sendScore($score);
+            $returnUrl = Lti_ToolProvider::sendScore($score);
             Auth::instance()->logout();
             Request::initial()->redirect( ! is_null($returnUrl) ? $returnUrl : URL::base());
         }
