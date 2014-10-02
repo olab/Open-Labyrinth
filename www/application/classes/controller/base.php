@@ -233,7 +233,6 @@ class Controller_Base extends Controller_Template {
     public function before()
     {
         parent::before();
-
         $this->getLtiPost();
 
         if ($_POST OR $_GET OR $this->request->is_ajax()) {

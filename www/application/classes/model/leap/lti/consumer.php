@@ -128,7 +128,7 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'lti_consumer';
+        return 'lti_consumers';
     }
 
     public static function primary_key() {
