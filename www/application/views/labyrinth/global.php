@@ -342,14 +342,13 @@ if (isset($templateData['map'])) { ?>
             <label class="control-label"><?php echo __($value) ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group" style="float:left;">
-                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"
-                        <?php if (isset($templateData['verification'][$key])){
+                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"<?php
+                    if (isset($templateData['verification'][$key])){
                         echo ($templateData['verification'][$key] == null) ? 'checked="checked"' : '';
                     } else {
                         echo 'checked="checked"';
-                    }
-                        ?>
-                            />
+                    } ?>
+                    />
                     <label data-class="btn-danger" data-value="no" class="btn" for="<?php echo $key; ?>0"><?php echo __('No'); ?></label>
 
                     <input autocomplete="off" type="radio" id="<?php echo $key; ?>1" name="<?php echo $key; ?>" value="1" <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? 'checked="checked"' : '') ?>/>

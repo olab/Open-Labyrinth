@@ -108,6 +108,10 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'enum' => array('advanced','easy'),
                 'nullable' => FALSE,
             )),
+            'is_lti' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => TRUE,
+                'default' => false,
+            )),
         );
 
         $this->relations = array(
@@ -227,12 +231,14 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId ($order = 'DESC')
+    public function getAllUsersId ($order = 'DESC', $isLti = false)
     {
         $ids = array();
-        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
+        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->where('is_lti', '=', $isLti)->query();
 
-        foreach ($result as $record) $ids[] = $record['id'];
+        foreach ($result as $record) {
+            $ids[] = $record['id'];
+        }
 
         return $ids;
     }
@@ -283,7 +289,7 @@ private static function initialize_metadata($object)
         return $result[0];
     }
 
-    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy') {
+    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy', $isLti = false) {
         $this->username     = $username;
         $this->password     = Auth::instance()->hash($password);
         $this->email        = $email;
@@ -291,10 +297,11 @@ private static function initialize_metadata($object)
         $this->language_id  = $languageId;
         $this->type_id      = $typeId;
         $this->modeUI       = $uiMode;
+        $this->is_lti       = $isLti;
         $this->save();
     }
     
-    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId) {
+    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId, $isLti = false) {
         $this->id = $id;
         $this->load();
         
@@ -306,6 +313,7 @@ private static function initialize_metadata($object)
         $this->nickname = $nickname;
         $this->language_id = $languageId;
         $this->type_id = $typeId;
+        $this->is_lti = $isLti;
         
         $this->save();
     }

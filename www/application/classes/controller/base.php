@@ -147,6 +147,11 @@ class Controller_Base extends Controller_Template {
         'home/about',
         'home/userGuide',
         'base/ui',
+        'lti/index',
+        'lti/userView',
+        'lti/saveUser',
+        'lti/deleteUser',
+        'lti/info',
     );
 
     private $exceptionLeftMenu = array(
@@ -228,6 +233,8 @@ class Controller_Base extends Controller_Template {
     public function before()
     {
         parent::before();
+
+        $this->getLtiPost();
 
         if ($_POST OR $_GET OR $this->request->is_ajax()) {
             return;
@@ -417,5 +424,19 @@ class Controller_Base extends Controller_Template {
             : Auth::instance()->get_user();
         $user->changeUI($mode);
         Request::initial()->redirect($this->request->referrer());
+    }
+
+    private function getLtiPost()
+    {
+        if ( ! empty($_POST['lti_message_type'])){
+            $dataConnector = new Lti_DataConnector();
+            $tool = new LTI_ToolProvider('lti_do_connect', $dataConnector);
+            $tool->setParameterConstraint('resource_link_id', TRUE, 40);
+            $tool->setParameterConstraint('user_id', TRUE);
+            // Get settings and check whether sharing is enabled.
+            $tool->allowSharing = TRUE;
+            $tool->execute();
+            exit();
+        }
     }
 }

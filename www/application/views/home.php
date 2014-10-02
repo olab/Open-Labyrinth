@@ -110,7 +110,9 @@ $user = Auth::instance()->get_user(); ?>
                                                 <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
                                                 <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
-                                                <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li><?php
+                                                <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="<?php echo URL::base(); ?>lti"><?php echo __('LTI'); ?></a></li><?php
                                                 }
                                             } ?>
                                         </ul>

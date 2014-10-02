@@ -83,6 +83,7 @@ class Controller_ReportManager extends Controller_Base
     public function action_showReport()
     {
         $reportId = $this->request->param('id', NULL);
+        $isFromLabyrinth = $this->request->param('id2', 0);
 
         if ($reportId == NULL) {
             Request::initial()->redirect(URL::base());
@@ -96,6 +97,11 @@ class Controller_ReportManager extends Controller_Base
         $this->templateData['counters']     = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
         $this->templateData['questions']    = $questions;
         $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($session->map_id);
+
+        if($isFromLabyrinth){
+            $progress = DB_ORM::model('Map_Counter')->progress($this->templateData['session']->traces['0']->counters, $this->templateData['session']->map->id);
+            $this->setScore($progress);
+        }
 
         if ($session->webinar_id AND $session->webinar_step) {
             $scenario = DB_ORM::model('webinar', array($session->webinar_id));
@@ -243,5 +249,18 @@ class Controller_ReportManager extends Controller_Base
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$id_map));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$id_map));
+    }
+
+    private function setScore($progress){
+        $ses = Session::instance();
+        $toolProvider = $ses->get('lti_tool_provider');
+        if( ! is_null($toolProvider)){
+            $progress = explode(' of ',$progress);
+            $score = ($progress[1] != 0) ? round((($progress[0]*100/$progress[1])/100),3) : 0;
+            $returnUrl = LTI_ToolProvider::sendScore($score);
+            Auth::instance()->logout();
+            Request::initial()->redirect( ! is_null($returnUrl) ? $returnUrl : URL::base());
+        }
+        return;
     }
 }
