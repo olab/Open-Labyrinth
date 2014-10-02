@@ -30,7 +30,7 @@ $withoutEndDate = $ltiUser ? $ltiUser->without_end_date : 0;
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
 
 <h1><?php echo $ltiUser ? __("Edit user") : __('Add user'); ?></h1>
-<form class="form-horizontal left" method="post" action="<?php echo URL::base().'lti/saveUser'; ?>">
+<form class="form-horizontal left" method="post" action="<?php echo URL::base().'ltimanager/saveUser'; ?>">
     <input type="hidden" name="id" value="<?php echo $ltiUserId; ?>">
     <fieldset>
         <legend>Consumer Details</legend>

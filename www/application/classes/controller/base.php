@@ -147,11 +147,11 @@ class Controller_Base extends Controller_Template {
         'home/about',
         'home/userGuide',
         'base/ui',
-        'lti/index',
-        'lti/userView',
-        'lti/saveUser',
-        'lti/deleteUser',
-        'lti/info',
+        'ltimanager/index',
+        'ltimanager/userView',
+        'ltimanager/saveUser',
+        'ltimanager/deleteUser',
+        'ltimanager/info',
     );
 
     private $exceptionLeftMenu = array(
@@ -430,7 +430,7 @@ class Controller_Base extends Controller_Template {
     {
         if ( ! empty($_POST['lti_message_type'])){
             $dataConnector = new Lti_DataConnector();
-            $tool = new LTI_ToolProvider('lti_do_connect', $dataConnector);
+            $tool = new Lti_ToolProvider('lti_do_connect', $dataConnector);
             $tool->setParameterConstraint('resource_link_id', TRUE, 40);
             $tool->setParameterConstraint('user_id', TRUE);
             // Get settings and check whether sharing is enabled.

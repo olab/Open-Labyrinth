@@ -21,11 +21,11 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Controller_LTI extends Controller_Base {
+class Controller_LtiManager extends Controller_Base {
 
     public function before() {
         parent::before();
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__("Lti manager"))->set_url(URL::base().'lti/index'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__("Lti manager"))->set_url(URL::base().'ltimanager/index'));
     }
 
     public function action_index()
@@ -54,7 +54,7 @@ class Controller_LTI extends Controller_Base {
 
         DB_ORM::model('Lti_Consumer')->saveUser($id, $post);
 
-        Request::initial()->redirect(URL::base().'lti');
+        Request::initial()->redirect(URL::base().'ltimanager');
     }
 
     public function action_deleteUser() {
@@ -62,7 +62,7 @@ class Controller_LTI extends Controller_Base {
         $user = DB_ORM::model('Lti_Consumer', $id);
         $user->delete();
 
-        Request::initial()->redirect(URL::base().'lti/');
+        Request::initial()->redirect(URL::base().'ltimanager');
     }
 
     public function action_getXML(){ //TODO: change xml credentials

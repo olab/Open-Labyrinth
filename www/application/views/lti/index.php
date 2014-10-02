@@ -21,7 +21,7 @@
 ?>
 <h1 class="page-header">
     <?php echo __('Consumers manager'); ?>
-    <a class="btn btn-primary pull-right" href="<?php echo URL::base().'lti/userView'; ?>"><i class="icon-plus-sign icon-white"></i><?php echo __('Add a consumer'); ?></a>
+    <a class="btn btn-primary pull-right" href="<?php echo URL::base().'ltimanager/userView'; ?>"><i class="icon-plus-sign icon-white"></i><?php echo __('Add a consumer'); ?></a>
 </h1>
 
 <div class="alert alert-success alert-dismissible" role="alert">
@@ -51,7 +51,7 @@
             <td><?php echo $user->without_end_date ? 'Without end date' : $user->enable_until; ?></td>
             <td>
                 <div class="btn-group">
-                    <a class="btn btn-info" href="<?php echo URL::base().'lti/userView/'.$user->id; ?>"><i class="icon-edit icon-white"></i><?php echo __('Edit'); ?></a>
+                    <a class="btn btn-info" href="<?php echo URL::base().'ltimanager/userView/'.$user->id; ?>"><i class="icon-edit icon-white"></i><?php echo __('Edit'); ?></a>
                     <a data-toggle="modal" href="javascript:void(0)" data-target="<?php echo '#deleteNode'.$user->id; ?>" class="btn btn-danger"><i class="icon-trash icon-white"></i><?php echo __('Delete'); ?></a>
                 </div>
 
@@ -63,7 +63,7 @@
                     <div class="modal-body">
                         <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $user->name . '" user?'); ?></p>
                         <p>
-                            <a class="btn btn-danger" href="<?php echo URL::base().'lti/deleteUser/'.$user->id; ?>"><?php echo __('Delete'); ?></a>
+                            <a class="btn btn-danger" href="<?php echo URL::base().'ltimanager/deleteUser/'.$user->id; ?>"><?php echo __('Delete'); ?></a>
                             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                         </p>
                     </div>
