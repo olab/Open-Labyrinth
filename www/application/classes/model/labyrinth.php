@@ -283,18 +283,16 @@ class Model_Labyrinth extends Model {
         return $result;
     }
 
-    private function generateLinks($node, $section)
+    private function generateLinks($node, $scenarioSection)
     {
-        $orderInSection = $section
-            ? $this->getOrderInSections($node->map_id)
-            : false;
+        $orderInSection = $this->getOrderInSections($node->map_id);
 
         if (count($node->links)) {
 
             $result = array();
 
             foreach ($node->links as $link) {
-                if ($section AND ! in_array($link->node_id_2, $section)) {
+                if ($scenarioSection AND ! in_array($link->node_id_2, $scenarioSection)) {
                     continue;
                 }
 

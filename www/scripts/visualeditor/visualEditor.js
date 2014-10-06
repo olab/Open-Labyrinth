@@ -574,6 +574,7 @@ var VisualEditor = function() {
             }
         }
 
+        self.sections = [];
         if('sections' in object && object.sections.length) {
             for(var i = object.sections.length; i--;) {
                 var color   = self.GetRandomColor(),
@@ -593,7 +594,7 @@ var VisualEditor = function() {
                 self.sections.push(section);
             }
         }
-        
+
         if('nodeMap' in object && object.nodeMap.length > 0 && self.history != null) {
             self.history.Remap(object.nodeMap);
         }

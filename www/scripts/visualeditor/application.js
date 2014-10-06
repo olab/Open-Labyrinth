@@ -297,12 +297,12 @@ $(function () {
                 clearTimeout(autoSaveTimer);
                 autoSaveTimerNotSet = true;
             }
-    
+
             var data = visualEditor.Serialize();
             utils.ShowMessage ($veMessageContainer, $veMessage, 'info', 'Updating...', null, $veActionButton, true);
             autoSaveData = null;
             $('#leaveBox').modal('hide');
-    
+
             $.post(
                 urlBase + 'visualManager/updateJSON',
                 { data:data.substring(0, data.length - 1), id:mapId },
@@ -677,6 +677,7 @@ $(function () {
     $('#veSectionClosePanelBtn').click(function() {
         $('#veSectionPanel').addClass('hide');
         $('#orderInSection').addClass('hide');
+        $('#update').prop('disabled', false).css('background-color', '#777676');
     });
 
     $('#sectionsNodesSelect').change(function() {
@@ -778,5 +779,6 @@ $(function () {
 
     $('#sectionsBtn').click(function() {
         $('#veSectionPanel').removeClass('hide');
+        $('#update').prop('disabled', true).css('background-color', '#cc0000');
     });
 });

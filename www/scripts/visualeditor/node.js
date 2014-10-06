@@ -316,7 +316,7 @@ var Node = function() {
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
-        
+
         return (x  >= (pos[0] + self.headerHeight * scale[0]) && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1]) && y <= (pos[1] + (self.height) * scale[1])); 
     };
     
