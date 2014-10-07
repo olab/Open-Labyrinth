@@ -258,14 +258,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getMapByName($name)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name);
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return DB_ORM::model('map', array($result[0]['id']));
-        }
-
-        return NULL;
+        return DB_ORM::select('Map')->where('name', '=', $name)->query()->fetch();
     }
 
     public function getAllEnabledMap($limit = 0, $sortColumn = 'id', $sortType = 'DESC')
@@ -528,7 +521,10 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->save();
 
         $map = $this->getMapByName($this->name);
-        if ($isCreateRoot) DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+
+        if ($isCreateRoot) {
+            DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+        }
         return $map;
     }
 

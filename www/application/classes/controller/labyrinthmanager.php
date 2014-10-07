@@ -67,7 +67,7 @@ class Controller_LabyrinthManager extends Controller_Base {
     {
         $stepId         = $this->request->param('id', '1');
         $action         = $this->request->param('id2', 'none');
-        $receivedMapId  = $this->request->param('id3', 'none');
+        $receivedMapId  = $this->request->param('id3', 0);
         $typeStep3      = null;
         $createSkin     = false;
         $post           = $this->request->post();
@@ -102,7 +102,6 @@ class Controller_LabyrinthManager extends Controller_Base {
 
                 $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($receivedMapId);
                 break;
-
             case 'labyrinthType':
                 $labyrinthType = $_POST['labyrinthType'];
                 $session = Session::instance();
@@ -114,21 +113,18 @@ class Controller_LabyrinthManager extends Controller_Base {
                     Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId);
                 exit;
                 break;
-
             case 'addNewLabyrinth':
-                if (isset($_POST) && !empty($_POST)) {
-                    $session = Session::instance();
-                    $id = 0;
-                    $_POST['type'] = $session->get('labyrinthType');
+                if (isset($_POST) && ! empty($_POST)) {
+                    $_POST['type'] = Session::instance()->get('labyrinthType');
                     $_POST['author'] = Auth::instance()->get_user()->id;
-                    if($receivedMapId != null && $receivedMapId > 0) {
+                    if ($receivedMapId > 0) {
                         DB_ORM::model('map')->updateMap($receivedMapId, $_POST);
                         $id = $receivedMapId;
                     } else {
                         $map = DB_ORM::model('map')->createMap($_POST, false);
                         $id = $map->id;
                     }
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/2/' . $id);
+                    Request::initial()->redirect(URL::base().'labyrinthManager/caseWizard/2/'.$id);
                 } else {
                     Request::initial()->redirect(URL::base());
                 }
@@ -624,13 +620,17 @@ class Controller_LabyrinthManager extends Controller_Base {
                 }
                 break;
         }
+
         switch ($stepId) {
             case '1':
-                if($action != NULL){
+                if ($action != NULL){
+                    // create map object, which used below, and fill it.
+                    $map = DB_ORM::model('map');
+                    print_r($post);
                     $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
                     $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
                 }
-                if($action > 0) {
+                if ($action > 0) {
                     $this->templateData['map'] = DB_ORM::model('map', array((int) $action));
                 }
                 break;
