@@ -735,7 +735,7 @@ class Model_Labyrinth extends Model {
                                 $thisCounter = $this->calculateCounterFunction($thisCounter, $rule->counter_value);
                                 $counterValue = $thisCounter;
                                 // if main counter and firs spot not sign, add rule value
-                                if($if_main AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]='+')) {
+                                if($if_main AND strlen($counterFunction) AND (is_int( (int) $counterFunction[0]) OR $counterFunction[0]=='+')) {
                                     $main_counter['value'] += $rule->counter_value;
                                 }
                                 $c_debug[$counter->id]['counter_rule_value'] = $rule->counter_value;
