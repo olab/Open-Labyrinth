@@ -288,22 +288,21 @@ class Model_Labyrinth extends Model {
         $orderInSection = $this->getOrderInSections($node->map_id);
 
         if (count($node->links)) {
-
-            $result = array();
-
+            $withPosition = array();
+            $withOutPosition = array();
             foreach ($node->links as $link) {
                 if ($scenarioSection AND ! in_array($link->node_id_2, $scenarioSection)) {
                     continue;
                 }
 
                 $position = $orderInSection
-                    ? Arr::get($orderInSection, $link->node_id_2) + 100 // +100 means that nodes (less than 100) which not in section go before
+                    ? Arr::get($orderInSection, $link->node_id_2, false)
                     : false;
 
-                if ($position) {
-                    $result[$position] = $link;
+                if ($position === false) {
+                    $withOutPosition[] = $link;
                 } else {
-                    $result[] = $link;
+                    $withPosition[$position] = $link;
                 }
 
 
@@ -338,7 +337,8 @@ class Model_Labyrinth extends Model {
                         break;
                 }*/
             }
-
+            ksort($withPosition);
+            $result = array_merge($withPosition, $withOutPosition);
             if ($node->link_type_id == 3) {
                 if (count($result)){
                     $resultRandomOne = array();
@@ -348,7 +348,6 @@ class Model_Labyrinth extends Model {
                     $result = $resultRandomOne;
                 }
             }
-            ksort($result);
             return $result;
         }
         return NULL;
