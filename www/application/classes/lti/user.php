@@ -66,13 +66,11 @@ class Lti_User {
      * @param string      $id      User ID value
      */
     public function __construct($resource_link, $id) {
-
         $this->initialise();
         $this->resource_link = $resource_link;
         $this->context = &$this->resource_link;
         $this->id = $id;
         $this->load();
-
     }
 
     /**

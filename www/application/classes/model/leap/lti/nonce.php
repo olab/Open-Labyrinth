@@ -63,11 +63,22 @@ class Model_Leap_Lti_Nonce extends DB_ORM_Model {
         return array('value');
     }
     public function saveNonce($values) {
-        return DB_ORM::insert('lti_Nonce')
-            ->column('consumer_key',        Arr::get($values, 'consumer_key',''))
-            ->column('value',               Arr::get($values, 'value',''))
-            ->column('expires',             Arr::get($values, 'expires', ''))
-            ->execute();
+        $consumerKey = Arr::get($values, 'consumer_key', 0);
+        $isRecord = DB_ORM::select('Lti_Nonce')->where('consumer_key', '=', $consumerKey)->query()->fetch();
+        if ($isRecord) {
+            DB_ORM::update('Lti_Nonce')
+                ->set('value', Arr::get($values, 'value',''))
+                ->set('expires', Arr::get($values, 'expires', ''))
+                ->where('consumer_key', '=', $consumerKey)
+                ->execute();
+        } else {
+            DB_ORM::insert('Lti_Nonce')
+                ->column('consumer_key', $consumerKey)
+                ->column('value', Arr::get($values, 'value',''))
+                ->column('expires', Arr::get($values, 'expires', ''))
+                ->execute();
+        }
+        return $consumerKey;
     }
 
     public function getAllRecords() {
@@ -82,11 +93,6 @@ class Model_Leap_Lti_Nonce extends DB_ORM_Model {
     }
 
     public function getByKeyId($key, $value){
-        $builder = DB_SQL::select('default')->from($this->table())->where('consumer_key', '=', $key, 'AND')->where('value', '=', $value);
-        $result = $builder->query();
-        if($result->is_loaded()) {
-            return $result;
-        }
-        return NULL;
+        return DB_ORM::select('Lti_Nonce')->where('consumer_key', '=', $key)->where('value', '=', $value)->query()->fetch();
     }
 }

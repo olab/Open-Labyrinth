@@ -151,7 +151,7 @@ class Lti_ToolProvider {
 /**
  *  True if debug messages explaining the cause of errors are to be returned to the tool consumer.
  */
-  private $debugMode = FALSE;
+  private $debugMode = TRUE;
 /**
  *  Array of LTI parameter constraints for auto validation checks.
  */
@@ -278,15 +278,15 @@ class Lti_ToolProvider {
  *
  * @return boolean True if no error reported
  */
-  private function doCallback() {
-
+  private function doCallback()
+  {
     if (isset($this->callbackHandler['connect'])) {
       $result = $this->lti_do_connect();
           //call_user_func($this->callbackHandler['connect'], $this);
 
-#
-### Callback function may return HTML, a redirect URL, or a boolean value
-#
+        #
+        ### Callback function may return HTML, a redirect URL, or a boolean value
+        #
       if (is_string($result)) {
         if ((substr($result, 0, 7) == 'http://') || (substr($result, 0, 8) == 'https://')) {
           $this->redirectURL = $result;
@@ -305,54 +305,51 @@ class Lti_ToolProvider {
 
   }
 
-    /*-------------------------------------------------------------------
- * This function is called when a successful LTI call is made. Is is
- * passed a class (tool_provider) that can access all the details of
- * the LTI call
- *
- * Parameters
- *  tool_provider - intance of of BasicLti_Tool_Provider
- *-----------------------------------------------------------------*/
-    private function lti_do_connect() {
+        /*-------------------------------------------------------------------
+     * This function is called when a successful LTI call is made. Is is
+     * passed a class (tool_provider) that can access all the details of
+     * the LTI call
+     *
+     * Parameters
+     *  tool_provider - intance of of BasicLti_Tool_Provider
+     *-----------------------------------------------------------------*/
+    private function lti_do_connect()
+    {
         Auth::instance()->logout();
 
-        $key = $this->resource_link->getKey();
-        $user = DB_ORM::model('user')->getUserByName($key);
-
-        $role = null;
-        $admin = $this->user->isAdmin();
-        $author = $this->user->isStaff();
-        $learner =  $this->user->isLearner();
-        if($admin) $role = 4;
-        elseif($author) $role = 2;
-        elseif($learner) $role = 1;
+        $admin      = $this->user->isAdmin();
+        $author     = $this->user->isStaff();
+        $learner    =  $this->user->isLearner();
+        $role       = null;
+        if ($admin) $role = 4;
+        elseif ($author) $role = 2;
+        elseif ($learner) $role = 1;
 
         if($this->consumer->role != $role){
             $this->message = 'Sorry, you`r declared permission das`t match permission in SparkWorks.';
             return FALSE;
         }
-        $islti = 1;
+
+        $isLti      = 1;
         $languageId = 1;
+        $uiMode     = 'easy';
+        $password   = $this->consumer->secret;
+        $nickname   = $this->user->fullname;
+        $key = $this->resource_link->getKey();
+        $user = DB_ORM::model('user')->getUserByName($key);
+        $email      = $this->user->email;
         if ($user) {
             // If user exists, simply save the current details
             $id = $user->id;
-            $nickname = $this->user->fullname;
-            $password = $this->consumer->secret;
-            $email = $this->user->email;
-            $typeId = $role;
-            DB_ORM::model('user')->updateUser($id, $password, $nickname, $email, $typeId, $languageId, $islti);
+            DB_ORM::model('User')->updateUser($id, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
         } else {
-            $username =  $key;
-            $password = $this->consumer->secret;
-            $nickname = $this->user->fullname;
-            $email = $this->user->email;
-            $typeId = $role;
-            DB_ORM::model('user')->createUser($username, $password, $nickname, $email, $typeId, $languageId, $islti);
+            $username = $key;
+            DB_ORM::model('User')->createUser($username, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
         }
 
         $status = Auth::instance()->login($key, $this->consumer->secret);
         if ($status) {
-            $redirectURL = URL::base() . Arr::get($_POST, 'redirectURL', '');
+            $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
         }
 
         $ses = Session::instance();
@@ -505,25 +502,20 @@ class Lti_ToolProvider {
     }
 
     if ($this->isOK) {
+        try {
+            $store  = new Lti_OAuthDataStore($this);
+            $server = new OAuthServer($store);
+            $method = new OAuthSignatureMethod_HMAC_SHA1();
 
-      try {
-
-        $store = new Lti_OAuthDataStore($this);
-        $server = new OAuthServer($store);
-
-        $method = new OAuthSignatureMethod_HMAC_SHA1();
-        $server->add_signature_method($method);
-        $request = OAuthRequest::from_request();
-        $res = $server->verify_request($request);
-
-      } catch (Exception $e) {
-
-        $this->isOK = FALSE;
-        if (empty($this->reason)) {
-          $this->reason = 'OAuth signature check failed - perhaps an incorrect secret or timestamp.';
+            $server->add_signature_method($method);
+            $request = OAuthRequest::from_request();
+            $res = $server->verify_request($request);
+        } catch (Exception $e) {
+            $this->isOK = FALSE;
+            if (empty($this->reason)) {
+              $this->reason = 'OAuth signature check failed - perhaps an incorrect secret or timestamp.';
+            }
         }
-    }
-
     }
 #
 ### Validate launch parameters
@@ -596,9 +588,8 @@ class Lti_ToolProvider {
           $this->resource_link->setSetting($name, $value);
         }
       }
-#
-### Set the user instance
-#
+
+        //Set the user instance
       $user_id = '';
       if (isset($_POST['user_id'])) {
         $user_id = trim($_POST['user_id']);

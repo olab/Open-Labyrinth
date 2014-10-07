@@ -192,15 +192,15 @@ private static function initialize_metadata($object)
 
     public function createOAuthUser($oauthProviderId, $oauthId, $nickname) {
         return DB_ORM::insert('user')
-                        ->column('username', $oauthId . 'username')
-                        ->column('password', Auth::instance()->hash($oauthId . 'password'))
-                        ->column('email', $oauthId . '@email.generated')
-                        ->column('nickname', $nickname)
-                        ->column('language_id', 1)
-                        ->column('type_id', 1)
-                        ->column('oauth_provider_id', $oauthProviderId)
-                        ->column('oauth_id', $oauthId)
-                        ->execute();
+            ->column('username', $oauthId . 'username')
+            ->column('password', Auth::instance()->hash($oauthId . 'password'))
+            ->column('email', $oauthId . '@email.generated')
+            ->column('nickname', $nickname)
+            ->column('language_id', 1)
+            ->column('type_id', 1)
+            ->column('oauth_provider_id', $oauthProviderId)
+            ->column('oauth_id', $oauthId)
+            ->execute();
     }
 
     public function getUserByEmail($email) {
@@ -290,15 +290,16 @@ private static function initialize_metadata($object)
     }
 
     public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy', $isLti = false) {
-        $this->username     = $username;
-        $this->password     = Auth::instance()->hash($password);
-        $this->email        = $email;
-        $this->nickname     = $nickname;
-        $this->language_id  = $languageId;
-        $this->type_id      = $typeId;
-        $this->modeUI       = $uiMode;
-        $this->is_lti       = $isLti;
-        $this->save();
+        DB_ORM::insert('User')
+            ->column('username', $username)
+            ->column('password', Auth::instance()->hash($password))
+            ->column('email', $email)
+            ->column('nickname', $nickname)
+            ->column('language_id', $languageId)
+            ->column('type_id', $typeId)
+            ->column('modeUI', $uiMode)
+            ->column('is_lti', $isLti)
+            ->execute();
     }
     
     public function updateUser($id, $password, $nickname, $email, $typeId, $languageId, $isLti = false) {

@@ -72,7 +72,7 @@ class Lti_OAuthDataStore extends OAuthDataStore {
     function lookup_nonce($consumer, $token, $value, $timestamp) {
 
         $nonce = new Lti_ConsumerNonce($this->tool_provider->consumer, $value);
-        $ok = !$nonce->load();
+        $ok = ! $nonce->load();
         if ($ok) {
             $ok = $nonce->save();
         }

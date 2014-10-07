@@ -29,10 +29,10 @@ class Lti_DataConnector {
 ###
 #    Load the tool consumer from the database
 ###
-    public function Tool_Consumer_load($consumer) {
+    public function Tool_Consumer_load(Lti_ToolConsumer $consumer) {
 
         $ok = FALSE;
-        $row = DB_ORM::model('Lti_Consumer', array($consumer->getKey()));
+        $row = DB_ORM::select('Lti_Consumer')->where('consumer_key', '=', $consumer->getKey())->query()->fetch(0);
         if ($row) {
             $consumer->name = $row->name;
             $consumer->secret = $row->secret;
@@ -386,17 +386,15 @@ class Lti_DataConnector {
 ###
 #    Save the consumer nonce in the database
 ###
-    public function Consumer_Nonce_save($nonce) {
-
+    public function Consumer_Nonce_save(Lti_ConsumerNonce $nonce) {
         $expires = date('Y-m-d H:i:s', $nonce->expires);
         $data = array(
             'consumer_key'  => $nonce->getKey(),
             'value'         => $nonce->getValue(),
             'expires'       => $expires
         );
-        DB_ORM::model('Lti_nonce')->saveNonce($data);
+        DB_ORM::model('Lti_Nonce')->saveNonce($data);
         return true;
-
     }
 
 
@@ -466,10 +464,8 @@ class Lti_DataConnector {
 #    Load the user from the database
 ###
     public function User_load($user) {
-
         $ok = FALSE;
-
-        $row = DB_ORM::model('lti_User')->getByKeyContextIdUserId($user->getResourceLink()->getKey(),$user->getResourceLink()->getId(), $user->getId(Lti_ToolProvider::ID_SCOPE_ID_ONLY));
+        $row = DB_ORM::model('Lti_User')->getByKeyContextIdUserId($user->getResourceLink()->getKey(),$user->getResourceLink()->getId(), $user->getId(Lti_ToolProvider::ID_SCOPE_ID_ONLY));
         if ($row) {
             $user->lti_result_sourcedid = $row['lti_result_sourcedid'];
             $user->created = strtotime($row['created']);

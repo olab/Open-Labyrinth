@@ -500,7 +500,7 @@ class OAuthServer {
 
   protected $data_store;
 
-  function __construct($data_store) {
+  function __construct(Lti_OAuthDataStore $data_store) {
     $this->data_store = $data_store;
   }
 
@@ -556,7 +556,7 @@ class OAuthServer {
   /**
    * verify an api call, checks all the parameters
    */
-  public function verify_request(&$request) {
+  public function verify_request(OAuthRequest &$request) {
     $this->get_version($request);
     $consumer = $this->get_consumer($request);
     $token = $this->get_token($request, $consumer, "access");
@@ -568,7 +568,7 @@ class OAuthServer {
   /**
    * version 1
    */
-  private function get_version(&$request) {
+  private function get_version(OAuthRequest &$request) {
     $version = $request->get_parameter("oauth_version");
     if (!$version) {
       // Service Providers MUST assume the protocol version to be 1.0 if this parameter is not present. 
@@ -702,17 +702,12 @@ class OAuthServer {
       );
 
     // verify that the nonce is uniqueish
-    $found = $this->data_store->lookup_nonce(
-      $consumer,
-      $token,
-      $nonce,
-      $timestamp
-    );
+    $found = $this->data_store->lookup_nonce($consumer, $token, $nonce, $timestamp);
+
     if ($found) {
       throw new OAuthException("Nonce already used: $nonce");
     }
   }
-
 }
 
 class OAuthDataStore {
