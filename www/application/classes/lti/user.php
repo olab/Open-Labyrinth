@@ -107,16 +107,14 @@ class Lti_User {
      *
      * @return boolean True if the user object was successfully saved
      */
-    public function save() {
-
+    public function save()
+    {
         if (!empty($this->lti_result_sourcedid)) {
             $ok = $this->resource_link->getConsumer()->getDataConnector()->User_save($this);
         } else {
             $ok = TRUE;
         }
-
         return $ok;
-
     }
 
     /**

@@ -116,9 +116,9 @@ class Lti_DataConnector {
         );
         if (is_null($consumer->created)) {
             $key = '';
-            $ok = DB_ORM::model('lti_Consumer')->saveConsumer($key, $data);
+            $ok = DB_ORM::model('Lti_Consumer')->saveConsumer($key, $data);
         } else {
-            $ok = DB_ORM::model('lti_Consumer')->saveConsumer($key, $data);
+            $ok = DB_ORM::model('Lti_Consumer')->saveConsumer($key, $data);
         }
         return $ok;
     }
@@ -475,11 +475,11 @@ class Lti_DataConnector {
         return $ok;
     }
 
-###
-#    Save the user to the database
-###
-    public function User_save($user) {
-
+    ###
+    #    Save the user to the database
+    ###
+    public function User_save($user)
+    {
         $time = time();
         $now = date('Y-m-d H:i:s', $time);
         $data = array(
@@ -492,10 +492,11 @@ class Lti_DataConnector {
         );
 
         if (is_null($user->created)) {
-            DB_ORM::model('lti_User')->addUser($data);
+            DB_ORM::model('Lti_User')->addUser($data);
         } else {
-            DB_ORM::model('lti_User')->updateUser($data);
+            DB_ORM::model('Lti_User')->updateUser($data);
         }
+
         if (is_null($user->created)) {
             $user->created = $time;
         }

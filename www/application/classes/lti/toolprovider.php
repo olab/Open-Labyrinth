@@ -546,9 +546,9 @@ class Lti_ToolProvider {
 
     if ($this->isOK) {
       $this->consumer->defaultEmail = $this->defaultEmail;
-#
-### Set the request context/resource link
-#
+        #
+        ### Set the request context/resource link
+        #
       $this->resource_link = new Lti_ResourceLink($this->consumer, trim($_POST['resource_link_id']));
       if (isset($_POST['context_id'])) {
         $this->resource_link->lti_context_id = trim($_POST['context_id']);
@@ -568,7 +568,7 @@ class Lti_ToolProvider {
         $title = "Course {$this->resource_link->getId()}";
       }
       $this->resource_link->title = $title;
-// Save LTI parameters
+        // Save LTI parameters
       foreach ($this->lti_settings_names as $name) {
         if (isset($_POST[$name])) {
           $this->resource_link->setSetting($name, $_POST[$name]);
@@ -576,13 +576,13 @@ class Lti_ToolProvider {
           $this->resource_link->setSetting($name, NULL);
         }
       }
-// Delete any existing custom parameters
+        // Delete any existing custom parameters
       foreach ($this->resource_link->getSettings() as $name => $value) {
         if (strpos($name, 'custom_') === 0) {
           $this->resource_link->setSetting($name);
         }
       }
-// Save custom parameters
+        // Save custom parameters
       foreach ($_POST as $name => $value) {
         if (strpos($name, 'custom_') === 0) {
           $this->resource_link->setSetting($name, $value);
@@ -595,27 +595,26 @@ class Lti_ToolProvider {
         $user_id = trim($_POST['user_id']);
       }
       $this->user = new Lti_User($this->resource_link, $user_id);
-#
-### Set the user name
-#
+        #
+        ### Set the user name
+        #
       $firstname = (isset($_POST['lis_person_name_given'])) ? $_POST['lis_person_name_given'] : '';
       $lastname = (isset($_POST['lis_person_name_family'])) ? $_POST['lis_person_name_family'] : '';
       $fullname = (isset($_POST['lis_person_name_full'])) ? $_POST['lis_person_name_full'] : '';
       $this->user->setNames($firstname, $lastname, $fullname);
-#
-### Set the user email
-#
+        #
+        ### Set the user email
+        #
       $email = (isset($_POST['lis_person_contact_email_primary'])) ? $_POST['lis_person_contact_email_primary'] : '';
       $this->user->setEmail($email, $this->defaultEmail);
-#
-### Set the user roles
-#
+        #
+        ### Set the user roles
+        #
       if (isset($_POST['roles'])) {
         $this->user->roles = Lti_ToolProvider::parseRoles($_POST['roles']);
       }
-#
-### Save the user instance
-#
+
+      // Save the user instance
       $saveUser = false;
       if (isset($_POST['lis_result_sourcedid'])) {
         if ($this->user->lti_result_sourcedid != $_POST['lis_result_sourcedid']) {
@@ -625,9 +624,9 @@ class Lti_ToolProvider {
       } else if (!empty($this->user->lti_result_sourcedid)) {
         $this->user->delete();
       }
-#
-### Initialise the consumer and check for changes
-#
+        #
+        ### Initialise the consumer and check for changes
+        #
       if ($this->consumer->lti_version != $_POST['lti_version']) {
         $this->consumer->lti_version = $_POST['lti_version'];
         $doSaveConsumer = TRUE;
@@ -643,7 +642,7 @@ class Lti_ToolProvider {
         if (isset($_POST['tool_consumer_info_version'])) {
           $version .= "-{$_POST['tool_consumer_info_version']}";
         }
-// do not delete any existing consumer version if none is passed
+        // do not delete any existing consumer version if none is passed
         if ($this->consumer->consumer_version != $version) {
           $this->consumer->consumer_version = $version;
           $doSaveConsumer = TRUE;
@@ -670,30 +669,23 @@ class Lti_ToolProvider {
         $doSaveConsumer = TRUE;
       }
     }
-#
-### Persist changes to consumer
-#
+        #
+        ### Persist changes to consumer
+        #
     if ($doSaveConsumer) {
       $this->consumer->save();
     }
 
     if ($this->isOK) {
-#
-### Check if a share arrangement is in place for this resource link
-#
-      $this->isOK = $this->checkForShare();
-#
-### Persist changes to resource link
-#
+      $this->isOK = $this->checkForShare(); //Check if a share arrangement is in place for this resource link
+
+      // Persist changes to resource link
       $this->resource_link->save();
       if($saveUser){
           $this->user->save();
       }
-
     }
-
     return $this->isOK;
-
   }
 
 /**
