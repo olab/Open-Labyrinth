@@ -177,7 +177,7 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
             $enableUntil    = ($endDate != null) ? $endDateString : $user->enable_until;
         }
 
-        if ($user) {
+        if (($user instanceof Model_Leap_Lti_Consumer) AND $user->id) {
             $user->name             = Arr::get($values, 'name', $user->name);
             $user->secret           = Arr::get($values, 'secret', $user->secret);
             $user->lti_version      = Arr::get($values, 'lti_version', $user->lti_version);
