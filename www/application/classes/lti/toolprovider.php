@@ -326,7 +326,7 @@ class Lti_ToolProvider {
         elseif ($learner) $role = 1;
 
         if($this->consumer->role != $role){
-            $this->message = 'Sorry, you`r declared permission das`t match permission in SparkWorks.';
+            $this->message = 'User has chosen wrong type of permission (the role).';
             return FALSE;
         }
 

@@ -165,7 +165,10 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
             $endDateString = $endDate->format('Y-m-d H:i:s');
         }
 
-        $user = DB_ORM::select('Lti_Consumer')->where('consumer_key' , '=', $key)->query()->fetch();
+        // if $key numeric - id of record, else - consumer key
+        $user = is_numeric($key)
+            ? DB_ORM::model('Lti_Consumer', array($key))
+            : DB_ORM::select('Lti_Consumer')->where('consumer_key' , '=', $key)->query()->fetch();
         if(isset($values['enable_from'])){
             $enableFrom     = Arr::get($values, 'enable_from', $user->enable_from);
             $enableUntil    = Arr::get($values, 'enable_until', $user->enable_until);

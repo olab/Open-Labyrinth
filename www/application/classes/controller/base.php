@@ -265,7 +265,7 @@ class Controller_Base extends Controller_Template {
             // ----- end check access ----- //
 
             if ($topMenu) return;
-
+            
             foreach ($usersHistory as $value) {
                 if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
                     ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {

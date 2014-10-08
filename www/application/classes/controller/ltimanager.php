@@ -79,8 +79,8 @@ class Controller_LtiManager extends Controller_Base {
             xsi:schemaLocation = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd
                                   http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd
                                   http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd">
-          <title>SparkWorks</title>
-          <description>Access to SparkWorks using LTI</description>
+          <title>OpenLabyrinth</title>
+          <description>Access to OpenLabyrinth using LTI</description>
           <launch_url>{'$url'}</launch_url>
           <secure_launch_url />
           <icon>{""}</icon>
