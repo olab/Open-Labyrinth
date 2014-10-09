@@ -155,7 +155,10 @@ class Controller_FileManager extends Controller_Base {
             if(isset($url_info['basename'])){
                 $name = $url_info['basename'];
 
-                $path = DOCROOT . '/files/'.$mapId.'/';
+                $path = DOCROOT.'/files/'.$mapId.'/';
+                if ( ! is_dir($path)) {
+                    mkdir($path);
+                }
                 if (file_exists($path.$name)){
                     $name = uniqid().'_'.$name;
                 }

@@ -18,7 +18,11 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-$user = Auth::instance()->get_user(); ?>
+$user = Auth::instance()->get_user();
+$modeUI = 'easy';
+if ($user) {
+    $modeUI = $user->modeUI;
+}?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -99,14 +103,14 @@ $user = Auth::instance()->get_user(); ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu"><?php
-                                            if ($user->modeUI == 'advanced') { ?>
+                                            if ($modeUI == 'advanced') { ?>
                                             <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li>
                                             <li class="divider"></li><?php
                                             }
                                             if ($type_name == 'superuser') { ?>
                                                 <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li><?php
-                                                if ($user->modeUI == 'advanced') { ?>
+                                                if ($modeUI == 'advanced') { ?>
                                                 <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
                                                 <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
@@ -124,13 +128,13 @@ $user = Auth::instance()->get_user(); ?>
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li><?php
-                                            if ($user->modeUI == 'advanced') { ?>
+                                            if ($modeUI == 'advanced') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li><?php
                                             } ?>
                                         </ul>
                                     </li><?php
-                                    if ($user->modeUI == 'advanced') { ?>
+                                    if ($modeUI == 'advanced') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Sets'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
@@ -152,8 +156,8 @@ $user = Auth::instance()->get_user(); ?>
                                         <li><a href="<?php echo URL::base().'home/about'; ?>">About</a></li>
                                         <li><a href="<?php echo URL::base().'home/userGuide'; ?>" target="_blank">User Guide</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
-                                        <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>
                                     </ul>
                                 </li>
                             </ul>

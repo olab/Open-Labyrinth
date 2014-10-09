@@ -194,19 +194,16 @@ class Lti_ToolProvider {
  * @return mixed Returns TRUE or FALSE, a redirection URL or HTML
  */
   public function execute() {
-### Set return URL if available
-#
+
+    // Set return URL if available
     if (isset($_POST['launch_presentation_return_url'])) {
       $this->return_url = $_POST['launch_presentation_return_url'];
     }
-#
-### Perform action
-#
+
     if ($this->authenticate()) {
       $this->doCallback();
     }
     $this->result();
-
   }
 
 
@@ -422,44 +419,39 @@ class Lti_ToolProvider {
         echo $this->output;
       }
     }
-  }
+    }
 
-/**
- * Check the authenticity of the LTI launch request.
- *
- * The consumer, resource link and user objects will be initialised if the request is valid.
- *
- * @return boolean True if the request has been successfully validated.
- */
-  private function authenticate() {
+    /**
+     * Check the authenticity of the LTI launch request.
+     *
+     * The consumer, resource link and user objects will be initialised if the request is valid.
+     *
+     * @return boolean True if the request has been successfully validated.
+     */
+    private function authenticate() {
+        $doSaveConsumer = FALSE;
 
-#
-### Set debug mode
-#
-    $this->debugMode = isset($_POST['custom_debug']) && (strtolower($_POST['custom_debug']) == 'true');
-#
-### Get the consumer
-#
-    $doSaveConsumer = FALSE;
-// Check all required launch parameter constraints
-    $this->isOK = isset($_POST['oauth_consumer_key']);
-    if ($this->isOK) {
-      $this->isOK = isset($_POST['lti_message_type']) && ($_POST['lti_message_type'] == 'basic-lti-launch-request');
-    }
-    if ($this->isOK) {
-      $this->isOK = isset($_POST['lti_version']) && ($_POST['lti_version'] == self::LTI_VERSION);
-    }
-    if ($this->isOK) {
-      $this->isOK = isset($_POST['resource_link_id']) && (strlen(trim($_POST['resource_link_id'])) > 0);
-    }
-// Check consumer key
-    if ($this->isOK) {
-      $this->consumer = new Lti_ToolConsumer($_POST['oauth_consumer_key'], $this->data_connector);
-      $this->isOK = !is_null($this->consumer->created);
-      if ($this->debugMode && !$this->isOK) {
-        $this->reason = 'Invalid consumer key.';
-      }
-    }
+        // Check all required launch parameter constraints
+        $this->isOK = isset($_POST['oauth_consumer_key']);
+        if ($this->isOK) {
+            $this->isOK = isset($_POST['lti_message_type']) && ($_POST['lti_message_type'] == 'basic-lti-launch-request');
+        }
+        if ($this->isOK) {
+            $this->isOK = isset($_POST['lti_version']) && ($_POST['lti_version'] == self::LTI_VERSION);
+        }
+        if ($this->isOK) {
+            $this->isOK = isset($_POST['resource_link_id']) && (strlen(trim($_POST['resource_link_id'])) > 0);
+        }
+
+        // Check consumer key
+        if ($this->isOK) {
+            $this->consumer = new Lti_ToolConsumer($_POST['oauth_consumer_key'], $this->data_connector);
+            $this->isOK = ! is_null($this->consumer->created);
+            if ($this->debugMode && !$this->isOK) {
+                $this->reason = 'Invalid consumer key.';
+            }
+        }
+
     $now = time();
     if ($this->isOK) {
       $today = date('Y-m-d', $now);

@@ -255,10 +255,11 @@ class Lti_User {
      * @return boolean True if the user has a role of administrator
      */
     public function isAdmin() {
-
-        return $this->hasRole('Administrator') || $this->hasRole('urn:lti:sysrole:ims/lis/SysAdmin') ||
-        $this->hasRole('urn:lti:sysrole:ims/lis/Administrator') || $this->hasRole('urn:lti:instrole:ims/lis/Administrator');
-
+        return (
+            $this->hasRole('Administrator') ||
+            $this->hasRole('urn:lti:sysrole:ims/lis/SysAdmin') ||
+            $this->hasRole('urn:lti:sysrole:ims/lis/Administrator') ||
+            $this->hasRole('urn:lti:instrole:ims/lis/Administrator'));
     }
 
     /**
@@ -267,9 +268,10 @@ class Lti_User {
      * @return boolean True if the user has a role of instructor, contentdeveloper or teachingassistant
      */
     public function isStaff() {
-
-        return ($this->hasRole('Instructor') || $this->hasRole('ContentDeveloper') || $this->hasRole('TeachingAssistant'));
-
+        return (
+            $this->hasRole('Instructor') ||
+            $this->hasRole('ContentDeveloper') ||
+            $this->hasRole('TeachingAssistant'));
     }
 
     /**
@@ -278,9 +280,9 @@ class Lti_User {
      * @return boolean True if the user has a role of learner
      */
     public function isLearner() {
-
-        return $this->hasRole('Learner');
-
+        return (
+            $this->hasRole('Learner') ||
+            $this->hasRole('urn:lti:instrole:ims/lis/Student'));
     }
 
 ###
@@ -295,13 +297,10 @@ class Lti_User {
      * @return boolean True if the user has the specified role
      */
     private function hasRole($role) {
-
         if (substr($role, 0, 4) != 'urn:') {
-            $role = 'urn:lti:role:ims/lis/' . $role;
+            $role = 'urn:lti:role:ims/lis/'.$role;
         }
-
         return in_array($role, $this->roles);
-
     }
 
 }

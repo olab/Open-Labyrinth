@@ -48,7 +48,7 @@
     <script>
         var skinId  = '<?php echo $templateData['skinData']->id; ?>',
             mapId   = '<?php echo $templateData['map']->id; ?>',
-            urlBase = '<?php echo URL::base(); ?>';
+            urlBase = '<?php echo URL::site(); ?>';
         function getSkinData()  { return '<?php echo str_replace('\'', '\\\'', $templateData['skinData']->data); ?>'; }
         function getUploadURL() { return '<?php echo URL::base().'skinmanager/uploadSkinImage'; ?>'; }
         function getSkinHTML()  { return '<?php if(isset($templateData['skinHTML'])) { echo $templateData['skinHTML']; } ?>'; }

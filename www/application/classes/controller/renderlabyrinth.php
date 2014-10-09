@@ -32,7 +32,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private function renderLabyrinth ($action)
     {
-        $mapId       = $this->request->param('id', null);
+        $mapId = $this->request->param('id', null);
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) {
             Session::instance()->set('redirectURL', $this->request->uri());
@@ -2135,7 +2135,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if ($assignUser OR
                     ($labyrinthType == 1) OR
                     ($labyrinthType == 2 AND $idScenario) OR
-                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                    ($labyrinthType == 3 AND ($owner OR $idScenario)) OR
+                    ($labyrinthType == 4)) return true;
                 return false;
             case '2':
             case '3':
@@ -2143,12 +2144,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 if ($assignUser OR
                     ($labyrinthType == 1) OR
                     ($labyrinthType == 2) OR
-                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                    ($labyrinthType == 3 AND ($owner OR $idScenario)) OR
+                    ($labyrinthType == 4)) return true;
                 return false;
             case '4':
                 return true;
             default:
-                return ($labyrinthType == 1);
+                return (($labyrinthType == 1) OR ($labyrinthType == 4));
         }
     }
 

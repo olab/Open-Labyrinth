@@ -33,6 +33,7 @@
     <thead>
         <tr>
             <th>Name</th>
+            <th>Permissions</th>
             <th>Consumer Key</th>
             <th>Available</th>
             <th>Enable from</th>
@@ -42,9 +43,14 @@
     </thead>
     <tbody><?php
     if (isset($templateData['users']) AND count($templateData['users'])){
-        foreach ($templateData['users'] as $user) { ?>
+        foreach ($templateData['users'] as $user) {
+            $role = $user->role;
+            if ($role == 4) $permissions = 'Superuser';
+            elseif ($role == 2) $permissions = 'Author';
+            else $permissions = 'Learner';?>
         <tr>
             <td><?php echo $user->name; ?></td>
+            <td><?php echo $permissions; ?></td>
             <td><?php echo $user->consumer_key; ?></td>
             <td><?php echo $user->enabled ? 'Yes' : 'No'; ?></td>
             <td><?php echo $user->enable_from; ?></td>
