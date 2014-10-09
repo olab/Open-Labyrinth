@@ -30,8 +30,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public static $nodeId = 0;
     public static $scenarioId = false;
 
-    private function renderLabyrinth ($action)
+    private function renderLabyrinth($action)
     {
+        Lti_DataConnector::getLtiPost();
+
         $mapId = $this->request->param('id', null);
 
         if ( ! ($mapId AND $this->checkTypeCompatibility($mapId))) {

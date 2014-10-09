@@ -544,5 +544,17 @@ class Lti_DataConnector {
 
     }
 
+    static function getLtiPost(){
+        if ( ! empty($_POST['lti_message_type'])){
+            $dataConnector = new Lti_DataConnector();
+            $tool = new Lti_ToolProvider('lti_do_connect', $dataConnector);
+            $tool->setParameterConstraint('resource_link_id', TRUE, 40);
+            $tool->setParameterConstraint('user_id', TRUE);
+            // Get settings and check whether sharing is enabled.
+            $tool->allowSharing = TRUE;
+            $tool->execute();
+            exit();
+        }
+    }
+
 }
-?>
