@@ -345,14 +345,15 @@ class Lti_ToolProvider {
         }
 
         $status = Auth::instance()->login($key, $this->consumer->secret);
+        $redirectURL = URL::site(NULL, TRUE);
         if ($status) {
-            $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
+            $redirectURL .= Arr::get($_SERVER, 'REDIRECT_URL', '');
         }
 
         $ses = Session::instance();
         $ses->set('lti_tool_provider',$this);
         // Return URL for re-direction by Tool Provider class
-        return URL::site(NULL, TRUE);
+        return $redirectURL;
     }
 
     static public function sendScore($score){
