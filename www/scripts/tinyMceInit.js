@@ -18,8 +18,7 @@ function tinyMceInit(selector, readOnly){
         toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
         toolbar2: "link image imgmap | print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
         image_advtab: true,
-        templates: [
-        ],
+        templates: [],
         convert_urls: false,
         readonly: readOnly
     });
