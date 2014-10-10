@@ -96,8 +96,7 @@ Kohana::$config->attach(new Config_File);
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
-$modules = array(
-
+Kohana::modules(array(
     'auth' => MODPATH . 'auth', // Basic authentication
     // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
     // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
@@ -111,18 +110,8 @@ $modules = array(
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface
     'oauth' => MODPATH . 'oauth', // OAuth module
-    'phpexcel' => MODPATH . 'phpexcel',
-    'kohana-media' => MODPATH . 'kohana-media',
-
-);
-
-Kohana::modules($modules);
-$mods = Model_Leap_Vocabulary_Vocablet::getEnabled();
-
-$mods = array_merge( $modules,$mods);
-//var_dump($mods);die;
-
-
+    'phpexcel' => MODPATH . 'phpexcel'
+));
 
 
 /**
@@ -164,46 +153,17 @@ Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
         'controller' => 'manager',
         'action' => 'index',
     ));
-Route::set('vocabulary_vocablets', '<directory>(/<controller>(/<action>))',
-    array(
-        'directory' => 'vocabulary/vocablets'
-    ))
-    ->defaults(
-        array(
-            'controller' => 'manager',
-            'action' => 'index',
-        ));
-Route::set('vocabulary_inline', '<directory>(/<controller>(/<action>))',
-    array(
-        'directory' => 'vocabulary/inline'
-    ))
-    ->defaults(
-        array(
-            'controller' => 'manager',
-            'action' => 'index',
-        ));
-Route::set('vocabulary_inline_entities', '<directory>(/<controller>(/<action>))',
-    array(
-        'directory' => 'vocabulary/inline/entities'
-    ))
-    ->defaults(
-        array(
-            'controller' => 'manager',
-            'action' => 'index',
-        ));
 
 Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
     array(
         'directory' => 'vocabulary'
     ))
-    ->defaults(
-        array(
+    ->defaults(array(
     'controller' => 'manager',
     'action' => 'index',
 ));
 
 
-Kohana::modules($mods);
 Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<id5>)(/<id6>)))')
         ->defaults(array(
             'controller' => 'home',
@@ -214,6 +174,3 @@ Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', '
     ->defaults(array(
         'controller' => 'error'
     ));
-
-
-
