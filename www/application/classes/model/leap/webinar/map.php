@@ -56,6 +56,9 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
+            )),
+            'cumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
             ))
         );
 
@@ -127,13 +130,26 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
             ->execute();
     }
 
-    public function addMap($webinarId, $referencId, $step, $which)
+    public function addMap($scenarioId, $referenceId, $step, $which, $cumulative = 0)
     {
         return DB_ORM::insert('webinar_map')
-            ->column('webinar_id', $webinarId)
-            ->column('reference_id', $referencId)
-            ->column('which', $which)
-            ->column('step', $step)
+            ->column('webinar_id',      $scenarioId)
+            ->column('reference_id',    $referenceId)
+            ->column('which',           $which)
+            ->column('step',            $step)
+            ->column('cumulative',      $cumulative)
             ->execute();
+    }
+
+    public function elementsForAjax ($stepId)
+    {
+        $result = array();
+        $dbElements = DB_ORM::select('Webinar_Map')->where('step', '=', $stepId)->query()->as_array();
+
+        foreach ($dbElements as $element){
+            $result[$element->which][$element->reference_id] = $element->id;
+        }
+
+        return $result;
     }
 }

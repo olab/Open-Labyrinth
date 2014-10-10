@@ -34,7 +34,7 @@ var VisualEditor = function()
     self.save = null;
     self.path = [];
 
-    self.$aButtonsContianer = $('#ve_additionalActionButton');
+    self.$aButtonsContainer = $('#ve_additionalActionButton');
 
     self.selectRightPanel = null;
 
@@ -657,10 +657,8 @@ var VisualEditor = function()
 
             self.selectorTool.MouseUp(self.mouse, viewport);
 
-            if (self.$aButtonsContianer != null)
-            {
-                if(existSelect) self.$aButtonsContianer.show();
-                else self.$aButtonsContianer.hide();
+            if (self.$aButtonsContainer != null) {
+                existSelect ? self.$aButtonsContainer.show() : self.$aButtonsContainer.hide();
             }
             
             isRedraw = true;

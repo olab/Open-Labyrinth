@@ -38,22 +38,22 @@ if (isset($templateData['map'])) {
                 <th><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
-        <tbody>
-        <?php foreach($templateData['skinList'] as $skin){
-        $haveOne = true;
-        ?>
+        <tbody><?php foreach($templateData['skinList'] as $skin){
+        $haveOne = true; ?>
         <tr>
-            <td>
-                <p><?php echo $skin->id;  ?></p>
-            </td>
-            <td>
-                <p><?php echo $skin->name; ?></p>
-            </td>
+            <td><p><?php echo $skin->id;  ?></p></td>
+            <td><p><?php echo $skin->name; ?></p></td>
             <td class="center">
                 <a href="<?php echo URL::base().'skinManager/editSkins/'.$templateData['map']->id.'/'.$skin->id; ?>" class="btn btn-info">
                     <i class="icon-edit icon-white"></i>
                     <?php echo __('Edit'); ?>
                 </a>
+                <?php if ($skin->data) { ?>
+                <a href="<?php echo URL::base().'skinManager/exportSkins/'.$skin->id; ?>" class="btn btn-info">
+                    <i class="icon-trash icon-white"></i>
+                    <?php echo __('Export skin'); ?>
+                </a>
+                <?php } ?>
                 <a data-toggle="modal" href="#" data-target="#delete-skin-<?php echo $skin->id; ?>" class="btn btn-danger">
                     <i class="icon-trash icon-white"></i>
                     <?php echo __('Delete'); ?>
@@ -64,19 +64,20 @@ if (isset($templateData['map'])) {
                         <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
                     </div>
                     <div class="modal-body">
-                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $skin->name . '" skin?'); ?></p>
+                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "'.$skin->name.'" skin?'); ?></p>
                         <p>
-                            <a class="btn btn-danger" href="<?php echo URL::base() . 'skinManager/deleteSkin/'.$templateData['map']->id.'/'.$skin->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>                        </p>
+                            <a class="btn btn-danger" href="<?php echo URL::base().'skinManager/deleteSkin/'.$templateData['map']->id.'/'.$skin->id; ?>"><?php echo __('Delete'); ?></a>
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                        </p>
                     </div>
                 </div>
             </td>
-        </tr>
-        <?php } ?>
+        </tr><?php
+        } ?>
         </tbody>
-    </table>
-    <?php if (!$haveOne){
+    </table><?php
+    if ( ! $haveOne) {
         echo '<div class="alert alert-info">'.__("You don't have your own skins. Please create at least one skin.").'</div>';
     } ?>
-</div>
-
-<?php } ?>
+</div><?php
+} ?>

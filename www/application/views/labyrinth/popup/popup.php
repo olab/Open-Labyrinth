@@ -19,45 +19,18 @@
  *
  */
 ?>
-
-<script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinyMceInit.js'); ?>"></script>
+<script type="text/javascript">
     var labyrinthAssignTypeId = <?php echo Popup_Assign_Types::LABYRINTH; ?>,
         nodeAssignTypeId      = <?php echo Popup_Assign_Types::NODE; ?>,
-        sectionAssignTypeId   = <?php echo Popup_Assign_Types::SECTION; ?>;
+        sectionAssignTypeId   = <?php echo Popup_Assign_Types::SECTION; ?>,
+        readOnly = <?php echo (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) ? 1 : 0; ?>;
+    tinyMceInit('textarea', readOnly);
 </script>
-<script language="javascript" type="text/javascript"
-        src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <script src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
 <script src="<?php echo ScriptVersions::get(URL::base().'scripts/popup.js'); ?>"></script>
 <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
-
-<script language="javascript" type="text/javascript">
-    tinymce.init({
-        selector: "textarea",
-        theme: "modern",
-        content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-        entity_encoding: "raw",
-        contextmenu: "link image inserttable | cell row column rdfaceMain",
-        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-        valid_elements : "+*[*]",
-        plugins: ["compat3x",
-            "advlist autolink lists link image charmap print preview hr anchor pagebreak",
-            "searchreplace wordcount visualblocks visualchars code fullscreen",
-            "insertdatetime media nonbreaking save table contextmenu directionality",
-            "emoticons template paste textcolor layer advtextcolor rdface imgmap"
-        ],
-        toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-        toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
-        image_advtab: true,
-        templates: [
-
-        ],
-        <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
-        readonly: 1
-        <?php } ?>
-    });
-</script>
-
 <h1>
     <?php echo isset($templateData['popup']) ? (__('Edit message') . ' - "' .  $templateData['popup']->title . '"') : __('Add new message'); ?>
 </h1>

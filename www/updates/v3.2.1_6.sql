@@ -1,0 +1,1 @@
+ALTER TABLE  `map_node_sections` ADD  `orderBy` ENUM(  'random',  'x',  'y' ) NOT NULL ;

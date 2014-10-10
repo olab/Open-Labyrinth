@@ -41,8 +41,8 @@ var VisualEditor = function() {
     self.rightPanel = new RightPanel();
     self.unsavedData = false;
     self.save = null;
-    
-    self.$aButtonsContianer = $('#ve_additionalActionButton');
+
+    self.$aaButtonsContainer = $('#ve_additionalActionButton');
     
     self.selectRightPanel = null;
 
@@ -75,13 +75,13 @@ var VisualEditor = function() {
         if('sectionSelectId' in params) {
             self.$sectionSelect = $(params.sectionSelectId);
         }
-        
-        if('aButtonsContainer' in params)
-        {
-            self.$aButtonsContianer = $(params.aButtonsContianer);
+
+        if('aButtonsContainer' in params) {
+
+            self.$aButtonsContainer = $(params.aButtonsContainer);
             
             $('#deleteSNodesBtn').click(function() {
-                if(self.nodes != null && self.nodes.length > 0) {
+                if(self.nodes != null && self.nodes.length) {
                     var nodeId = 0;
                     for(var i = 0; i < self.nodes.length; i++) {
                         if(self.nodes[i].isSelected) {
@@ -114,7 +114,6 @@ var VisualEditor = function() {
             closeBtn: '.veRightPanelCloseBtn',
             colorInputId: '#colorpickerInput',
             colorPickerId: '#colopickerContainer',
-            onlySaveBtn: '#veRightPanelOnlySaveBtn',
             saveBtn: '#veRightPanelSaveBtn',
             accordion: '#veAccordionRightPanel',
             nodeRootBtn: '#veNodeRootBtn',
@@ -236,14 +235,12 @@ var VisualEditor = function() {
 
         if(self.preview != null) self.preview.Render(self.nodes, self.links, viewport, self.canvas.width, self.canvas.height);
         
-        if(self.$aButtonsContianer != null)
-        {
-            if(self.IsExistSelectElements())
-            {
+        if(self.$aButtonsContainer != null) {
+            if(self.IsExistSelectElements()) {
                 checkRevisitStatus();
-                self.$aButtonsContianer.show() ;
+                self.$aButtonsContainer.show() ;
             }
-            else self.$aButtonsContianer.hide();
+            else self.$aButtonsContainer.hide();
         }
                     
     };
@@ -371,7 +368,7 @@ var VisualEditor = function() {
     // Serialize nodes info
     self.Serialize = function() {
         return SerializeElements(self.nodes, self.links);
-    }
+    };
     
     self.SerializeSelected = function() {
         var selectedNodes = [];
@@ -447,7 +444,7 @@ var VisualEditor = function() {
             }
         }
 
-        if(self.sections.length > 0) {
+        if(self.sections.length) {
             var sectionStr   = '',
                 sectionNodes = '';
             for(var i = self.sections.length; i--;) {
@@ -455,9 +452,9 @@ var VisualEditor = function() {
                 for(var j = self.sections[i].nodes.length; j--;) {
                     sectionNodes += '{"nodeId": "' + self.sections[i].nodes[j].node.id + '", "order": "' + self.sections[i].nodes[j].order + '"}, ';
                 }
-                if(sectionNodes.length > 0) {
+                if(sectionNodes.length) {
                     sectionNodes = sectionNodes.substring(0, sectionNodes.length - 2);
-                    sectionStr += '{"id": "' + self.sections[i].id + '", "name": "' + encode64(self.sections[i].name) + '", "nodes": [' + sectionNodes + ']}, ';
+                    sectionStr += '{"id": "' + self.sections[i].id + '", "orderBy": "' + self.sections[i].orderBy + '", "name": "' + encode64(self.sections[i].name) + '", "nodes": [' + sectionNodes + ']}, ';
                 }
             }
 
@@ -478,7 +475,7 @@ var VisualEditor = function() {
         }
 
         return result;
-    }
+    };
     
     // Deserialize nodes info
     self.Deserialize = function(jsonString) {
@@ -577,10 +574,12 @@ var VisualEditor = function() {
             }
         }
 
-        if('sections' in object && object.sections.length > 0) {
+        self.sections = [];
+        if('sections' in object && object.sections.length) {
             for(var i = object.sections.length; i--;) {
                 var color   = self.GetRandomColor(),
-                    section = new Section(object.sections[i].id, decode64(object.sections[i].name), color);
+                    section = new Section(object.sections[i].id, decode64(object.sections[i].name), color, object.sections[i].orderBy);
+
                 if('nodes' in object.sections[i] && object.sections[i].nodes.length > 0) {
                     for(var j = object.sections[i].nodes.length; j--;) {
                         var n = GetNodeById(object.sections[i].nodes[j].nodeId);
@@ -595,7 +594,7 @@ var VisualEditor = function() {
                 self.sections.push(section);
             }
         }
-        
+
         if('nodeMap' in object && object.nodeMap.length > 0 && self.history != null) {
             self.history.Remap(object.nodeMap);
         }
@@ -1298,35 +1297,44 @@ var VisualEditor = function() {
         self.canvas.addEventListener("touchend", MouseUp, false);
         document.addEventListener("keydown", KeyDown, false);
         document.addEventListener("keyup", KeyUp, false);
-    }
+    };
     
     var MouseOut = function(event) {
         $('body').css('cursor', 'default');
         $('body').removeClass('clearCursor');
-    }
-    
+    };
+
     var KeyDown = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
 
-        if(ctrlKeyPressed && event.keyCode == 67) {
-            if(self.copyFunction != null)
-                self.copyFunction();
+        var activeAndSelectedNodes = $.merge(self.GetActiveNode(), self.GetSelectedNodes());
+
+        if (ctrlKeyPressed && event.keyCode == 67) {
+            if (self.copyFunction != null) self.copyFunction();
         } else if(ctrlKeyPressed && event.keyCode == 86) {
-            if(self.pasteFunction != null)
-                self.pasteFunction();
+            if (self.pasteFunction != null) self.pasteFunction();
+        } else if (ctrlKeyPressed && event.keyCode == 32) {
+            if (self.isSelectActive){
+                self.turnOnPanMode();
+            } else {
+                self.turnOnSelectMode();
+            }
         } else if((event.keyCode == 107) || (altKeyPressed && event.keyCode == 187) || (altKeyPressed && event.keyCode == 61)) {
-            if(self.zoomIn != null)
-                self.zoomIn();
+            if (self.zoomIn != null) self.zoomIn();
         } else if((event.keyCode == 109) || (altKeyPressed && event.keyCode == 189) || (altKeyPressed && event.keyCode == 173)) {
-            if(self.zoomOut != null)
-                self.zoomOut();
+            if(self.zoomOut != null) self.zoomOut();
         } else if((altKeyPressed && event.keyCode == 83)) {
-            if(self.save!= null)
-                self.save();
+            if(self.save!= null) self.save();
+        } else if((altKeyPressed && event.keyCode == 76)) {
+            var firstRecord = activeAndSelectedNodes[0];
+            if (firstRecord) ShowLinkConnector(firstRecord.id);
+        } else if((altKeyPressed && event.keyCode == 78)) {
+            $.each(activeAndSelectedNodes, function(key, node){
+                AddNodeWithLink(node.id);
+            });
         } else if((altKeyPressed && event.keyCode == 85)) {
-            if(self.update!= null)
-                self.update();
+            if(self.update!= null) self.update();
         } else if(event.keyCode == 46) {
             if(self.nodes != null && self.nodes.length > 0) {
                 var nodeId = 0;
@@ -1345,19 +1353,13 @@ var VisualEditor = function() {
                     }
                 }
             }
-        } else if (ctrlKeyPressed && event.keyCode == 32){
-            if (self.isSelectActive){
-                self.turnOnPanMode();
-            } else {
-                self.turnOnSelectMode();
-            }
         }
-    } 
+    };
     
     var KeyUp = function(event) {
         ctrlKeyPressed = event.ctrlKey;
         altKeyPressed = event.altKey;
-    }
+    };
     
     var UpdateMousePosition = function(event) {
         self.mouse.oldX = self.mouse.x;
@@ -1374,21 +1376,19 @@ var VisualEditor = function() {
             self.mouse.y = event.pageY - canvasOffsetTop;
         }
         
-        if(isNaN(self.mouse.x))
-            self.mouse.x = 0;
+        if(isNaN(self.mouse.x)) self.mouse.x = 0;
         
-        if(isNaN(self.mouse.y))
-            self.mouse.y = 0;
-    }
+        if(isNaN(self.mouse.y)) self.mouse.y = 0;
+    };
     
     // Events
     var MouseDown = function(event) {
-        //event.preventDefault();
         self.mouse.isDown = true;
         UpdateMousePosition(event);
 
-        var isRedraw = false;
-        var positions = [];
+        var isRedraw = false,
+            positions = [];
+
         if(self.nodes.length > 0) {
             for(var i = self.nodes.length - 1; i >= 0; i--) {
                 if(self.nodes[i].isSelected) {
@@ -1412,6 +1412,7 @@ var VisualEditor = function() {
                         ShowDeleteDialog(result[0]);
                         self.mouse.isDown = false;
                     } else if(result[1] == 'main') {
+                        $('#update').prop('disabled', true).css('background-color', '#cc0000');
                         ShowRightPanel(result[0], 'node');
                         self.mouse.isDown = false;
                     } else if(result[1] == 'deleteC') {
@@ -1464,11 +1465,10 @@ var VisualEditor = function() {
             isRedraw = true;
         }
 
-        if(isRedraw)
-            self.Render();
+        if (isRedraw) self.Render();
         
         return false;
-    }
+    };
     
     var MouseUp = function(event) {
         //event.preventDefault();
@@ -1541,12 +1541,8 @@ var VisualEditor = function() {
                 }
             }
             self.selectorTool.MouseUp(self.mouse, viewport);
-            if(self.$aButtonsContianer != null) {
-                if(existSelect) {
-                    self.$aButtonsContianer.show();
-                } else {
-                    self.$aButtonsContianer.hide();
-                }
+            if(self.$aButtonsContainer != null) {
+                existSelect ? self.$aButtonsContainer.show() : self.$aButtonsContainer.hide();
             }
             
             isRedraw = true;
@@ -1556,6 +1552,7 @@ var VisualEditor = function() {
         if(selectedNodes.length > 0) {
             self.$sectionSelect.empty();
             $('#sectionSettings').addClass('hide');
+            $('#orderInSection').addClass('hide');
             $('#sectionNodeContainer').empty();
             var options = '<option value="">Select section</option>';
             var existSectionsId = [];
@@ -1616,19 +1613,19 @@ var VisualEditor = function() {
         self.Render();
 
         return addedNodes;
-    }
+    };
 
     self.GetSectionById = function(id) {
-        if(self.sections == null || self.sections.length <= 0) return null;
+        if(self.sections.length <= 0) return null;
 
-        for(var i = self.sections.length; i--;) {
+        for (var i = self.sections.length; i--;) {
             if(self.sections[i].id == id) {
                 return self.sections[i];
             }
         }
 
         return null;
-    }
+    };
 
     self.RemoveNodeFromSection = function(sectionId, nodeId) {
         var section = self.GetSectionById(sectionId),
@@ -1778,7 +1775,7 @@ var VisualEditor = function() {
             self.Render();
         
         return false;
-    }
+    };
     
     var AddNodeWithLink = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1808,7 +1805,7 @@ var VisualEditor = function() {
         
         self.nodes.push(newNode);
         self.links.push(newLink);
-    }
+    };
     
     var SetRootNode = function(nodeId) {
         if(self.nodes.length <= 0) return;
@@ -1816,12 +1813,12 @@ var VisualEditor = function() {
         for(var i = 0; i < self.nodes.length; i++) {
             self.nodes[i].isRoot = (self.nodes[i].id == nodeId) ? true: false;
         }
-    }
+    };
     
     self.TranslateViewport = function(x, y) {
         viewport.TranslateWithoutScale(x, y);
         self.Render();
-    }
+    };
 
     var ShowLinkConnector = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1836,7 +1833,7 @@ var VisualEditor = function() {
         self.linkConnector.transform.SetIdentity();
         self.linkConnector.transform.Multiply(node.transform);
         self.linkConnector.transform.Translate(node.width * 0.5, -60);
-    }
+    };
     
     var ShowColorpickerDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1844,7 +1841,7 @@ var VisualEditor = function() {
             self.colorModal.SetNode(node);
             self.colorModal.Show();
         }
-    }
+    };
     
     var ShowLinkManagetDialog = function(linkId) {
         var link = self.GetLinkById(linkId);
@@ -1853,18 +1850,15 @@ var VisualEditor = function() {
             self.linkModal.SetLink(link);
             self.linkModal.Show();
         }
-    }
+    };
     
     var ShowRightPanel = function(elementId, mode) {
-        if(self.rightPanel != null) {
-            if(mode == 'node') {
-                var node = GetNodeById(elementId);
-                if(node != null) {
-                    self.rightPanel.TryChangeNode(node);
-                }
-            }
+        if(self.rightPanel != null && mode == 'node') {
+            var node = GetNodeById(elementId);
+            self.rightPanel.Save();
+            if (node != null) self.rightPanel.TryChangeNode(node);
         }
-    }
+    };
     
     var ShowNodeDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
@@ -1873,11 +1867,11 @@ var VisualEditor = function() {
             self.nodeModal.SetNode(node);
             self.nodeModal.Show();
         }
-    }
+    };
     
     var ShowDeleteDialog = function(nodeId) {
         var node = GetNodeById(nodeId);
-        var selectedNodes = new Array();
+        var selectedNodes = [];
         
         if(self.nodes != null && self.nodes.length > 0) {
             for(var i = 0; i < self.nodes.length; i++) {
@@ -1905,7 +1899,7 @@ var VisualEditor = function() {
         }
     
         return null;
-    }
+    };
     
     self.GetLinkById = function(id) {
         if(self.links.length <= 0) return null;
@@ -1949,19 +1943,33 @@ var VisualEditor = function() {
         return result;
     }
 
-    self.GetSelectedNodes = function() {
-        var result = new Array();
+    self.GetActiveNode = function() {
+        var result = [];
 
-        if(self.nodes.length <= 0) return result;
+        if (self.nodes.length <= 0) return result;
 
-        for(var i = self.nodes.length; i--;) {
-            if(self.nodes[i].isSelected) {
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isActive) {
                 result.push(self.nodes[i]);
             }
         }
 
         return result;
-    }
+    };
+
+    self.GetSelectedNodes = function() {
+        var result = [];
+
+        if (self.nodes.length <= 0) return result;
+
+        for (var i = self.nodes.length; i--;) {
+            if (self.nodes[i].isSelected) {
+                result.push(self.nodes[i]);
+            }
+        }
+
+        return result;
+    };
     
     var GetRootNode = function() {
         if(self.nodes.length <= 0) return null;
@@ -2024,12 +2032,13 @@ var VisualEditor = function() {
         self.Render();
     };
 
-    self.UpdateSection = function(sectionId, sectionName, nodes) {
+    self.UpdateSection = function(sectionId, sectionName, nodes, orderBy) {
         var section = self.GetSectionById(sectionId);
 
         if(section == null) return;
 
         section.name = sectionName;
+        section.orderBy = orderBy;
 
         for(var i = nodes.length; i--;) {
             for(var k = section.nodes.length; k--;) {
@@ -2039,7 +2048,7 @@ var VisualEditor = function() {
                 }
             }
         }
-    }
+    };
 
     var GetSectionId = function() {
         sectionNodeId += 1;

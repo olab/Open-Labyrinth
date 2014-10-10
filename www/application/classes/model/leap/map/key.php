@@ -123,22 +123,4 @@ class Model_Leap_Map_Key extends DB_ORM_Model {
                 ->execute();
         }
     }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $keys = array();
-            foreach($result as $record) {
-                $keys[] = $record;
-            }
-
-            return $keys;
-        }
-
-        return NULL;
-    }
 }
-
-?>

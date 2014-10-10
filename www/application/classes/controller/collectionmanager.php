@@ -63,41 +63,44 @@ class Controller_CollectionManager extends Controller_Base {
         }
     }
 
-    public function action_viewAll(){
+    public function action_viewAll()
+    {
         $collectionId = $this->request->param('id', 0);
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View Collection'))->set_url(URL::base() . 'collectionManager/viewAll/' . $collectionId));
 
         if ($collectionId) {
-            $this->templateData['collection'] = DB_ORM::model('map_collection', array((int) $collectionId));
-
-            $editView = View::factory('labyrinth/collection/viewAll');
-            $editView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $editView;
-            unset($this->templateData['right']);
+            $collectionMap = DB_ORM::model('map_collection', array((int) $collectionId));
+            $this->templateData['canEdit'] = array();
+            foreach ($collectionMap->maps as $map) {
+                if ($this->checkTypeCompatibility($map->map->id)) $this->templateData['canEdit'][] = $map->map->id;
+            }
+            $this->templateData['collection'] = $collectionMap;
+            $this->templateData['center'] = View::factory('labyrinth/collection/viewAll')->set('templateData', $this->templateData);
             $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base());
         }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View Collection'))->set_url(URL::base() . 'collectionManager/viewAll/' . $collectionId));
     }
 
-    public function action_editCollection() {
+    public function action_editCollection()
+    {
         $collectionId = $this->request->param('id', 0);
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Collection'))->set_url(URL::base() . 'collectionManager/editCollection/' . $collectionId));
 
         if ($collectionId) {
-            $this->templateData['collection'] = DB_ORM::model('map_collection', array((int) $collectionId));
-            $this->templateData['maps'] = DB_ORM::model('map_collectionMap')->getAllNotAddedMaps((int) $collectionId);
+            $collectionMap = DB_ORM::model('map_collection', array((int) $collectionId));
+            $this->templateData['canEdit'] = array();
+            foreach ($collectionMap->maps as $map) {
+                if (DB_ORM::model('User')->can('edit', array('mapId' => $map->map->id))) $this->templateData['canEdit'][] = $map->map->id;
+            }
+            $this->templateData['collection']   = $collectionMap;
+            $this->templateData['maps']         = DB_ORM::model('map_collectionMap')->getAllNotAddedMaps((int) $collectionId);
+            $this->templateData['center']       = View::factory('labyrinth/collection/edit')->set('templateData', $this->templateData);
 
-            $editView = View::factory('labyrinth/collection/edit');
-            $editView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $editView;
-            unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base());
         }
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Collection'))->set_url(URL::base() . 'collectionManager/editCollection/' . $collectionId));
     }
 
     public function action_updateName() {
@@ -140,6 +143,57 @@ class Controller_CollectionManager extends Controller_Base {
             Request::initial()->redirect(URL::base() . 'collectionManager/editCollection/' . $collectionId);
         } else {
             Request::initial()->redirect(URL::base());
+        }
+    }
+
+    /**
+     * @param $idMap
+     * @return bool - compatibility user type to map type
+     */
+    // method is cloned from renderLabyrinth.php
+    public function checkTypeCompatibility ($idMap)
+    {
+        $logged         = Auth::instance()->logged_in();
+        $userType       = false;
+        $idUser         = false;
+        $map            = DB_ORM::model('Map', array($idMap));
+        $labyrinthType  = $map->security_id;
+        $idScenario     = false;
+        $assignUser     = false;
+        if ($logged)
+        {
+            $user       = Auth::instance()->get_user();
+            $userType   = $user->type_id;
+            $idUser     = $user->id;
+            $idScenario = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
+            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
+        }
+
+        // first check by author_id, second check for author right
+        $owner = $map->author_id == $idUser;
+        if ( ! $owner AND $userType == 2) $owner = (bool) DB_ORM::select('Map_User')->where('user_id', '=', $idUser)->where('map_id', '=', $idMap)->query()->as_array();
+
+        switch ($userType)
+        {
+            case '1':
+                if ($assignUser OR
+                    ($labyrinthType == 1) OR
+                    ($labyrinthType == 2 AND $idScenario) OR
+                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                return false;
+            case '2':
+            case '3':
+            case '6':
+                if ($assignUser OR
+                    ($labyrinthType == 1) OR
+                    ($labyrinthType == 2) OR
+                    ($labyrinthType == 3 AND ($owner OR $idScenario))) return true;
+                return false;
+            case '4':
+                return true;
+            default:
+                if ($labyrinthType == 1) return true;
+                return false;
         }
     }
 

@@ -37,7 +37,7 @@ var LinksPropertyModel = (function(parent) {
         this.ButtonColor1       = '#CACACA';
         this.ButtonColor2       = '#FFFFFF';
         this.ButtonFontColor    = '#000000';
-    };
+    }
 
     LinksPropertyModel.prototype.GetObjectData = function(serializationInfo) {
         if(serializationInfo == null || !(serializationInfo instanceof SerializationInfo)) {

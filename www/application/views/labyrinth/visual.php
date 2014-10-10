@@ -19,35 +19,24 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript">
-
 
         $(document).ready(function() {
             $('a.toggles i').toggleClass('icon-chevron-left icon-chevron-right');
-
-            $('#sidebar').animate({
-                width: 'toggle'
-            }, 0);
-
+            $('#sidebar').animate({ width: 'toggle' }, 0);
             $('.to-hide').toggleClass('hide');
             $('#content').toggleClass('span12 span10');
         });
 
-
-        var sendURL = '<?php echo URL::base(); ?>visualManager/updateJSON';
-        var autoSaveURL = '<?php echo URL::base(); ?>visualManager/autoSave';
-        var bufferCopy = '<?php echo URL::base(); ?>visualManager/bufferCopy';
-        var bufferPaste = '<?php echo URL::base(); ?>visualManager/bufferPaste';
-        var mapId = <?php echo $templateData['map']->id; ?>;
-        var mapJSON = <?php echo (isset($templateData['mapJSON']) && strlen($templateData['mapJSON']) > 0) ? $templateData['mapJSON'] : 'null'; ?>;
-        var saveMapJSON = <?php echo (isset($templateData['saveMapJSON']) && strlen($templateData['saveMapJSON']) > 0) ? $templateData['saveMapJSON'] : 'null'; ?>;
-        var mapType = null;
-        var settingsURL = '<?php echo URL::base(); ?>visualManager/updateSettings';
-        var autosaveInterval = <?php echo isset($templateData['user']) ? $templateData['user']->visualEditorAutosaveTime : 50000; ?>;
-        var logoutUrl = '<?php echo URL::base().'home/logout'; ?>';
-        var mainLinkStyles = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
+        var bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
+            bufferPaste     = '<?php echo URL::base(); ?>visualManager/bufferPaste',
+            settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
+            logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
+            mapId           = <?php echo $templateData['map']->id; ?>,
+            mapJSON         = <?php echo Arr::get($templateData, 'mapJSON', 'null'); ?>,
+            mapType         = null,
+            mainLinkStyles  = <?php echo Arr::get($templateData, 'mainLinkStyles', 5) ?>;
     </script>
     <div class="page-header to-hide">
     <h1 class="clear-margin-bottom"><?php echo $templateData['map']->name; ?></h1>
@@ -69,7 +58,7 @@ if (isset($templateData['map'])) { ?>
                 <p><button type="button" class="round-btn" id="zoomOut" data-toggle="tooltip" data-original-title="Zoom&nbsp;out" data-placement="right"><i class="ve-icon-zoom-out"></i></button></p>
                 <p><button type="button" class="round-btn" id="settings" data-toggle="tooltip" data-original-title="Settings" data-placement="right"><i class="ve-icon-settings"></i></button></p>
             </div>
-            
+
             <div id="ve_additionalActionButton" style="position: absolute; top: 5px; left: 85px; display: none;">
                 <p>
                     <button type="button" class="round-btn" id="copySNodesBtn" data-toggle="tooltip" data-original-title="Copy" data-placement="right">
@@ -175,16 +164,14 @@ if (isset($templateData['map'])) { ?>
                                     <textarea class="mceEditorLite" name="annotation" id="annotation"></textarea>
                                 </div>
                             </div>
-                            <div>
-                                <?php if (isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
+                            <div><?php
+                                if (isset($templateData['counters']) and count($templateData['counters'])) { ?>
                                     <div>
-                                        <div class="control-group">
-                                            <?php
+                                        <div class="control-group"><?php
                                             $countersData = '';
                                             foreach ($templateData['counters'] as $counter) {
-                                                $countersData .= "{id: '" . $counter->id . "', func: '#nodecounter_function_" . $counter->id . "', show: '#nodecounter_show_" . $counter->id . "'}, ";
-                                                ?>
-                                                <?php echo $counter->name; ?>
+                                                $countersData .= "{id: '".$counter->id."', func: '#nodecounter_function_".$counter->id."', show: '#nodecounter_show_".$counter->id."'}, ";
+                                                echo $counter->name; ?>
                                                 <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Counter function</strong></label>
                                                 <div class="controls">
                                                     <input type="text" id="nodecounter_function_<?php echo $counter->id; ?>" value="" />
@@ -193,16 +180,12 @@ if (isset($templateData['map'])) { ?>
                                                 <label for="nodesupportkeywords" class="control-label" style="text-align: left;"><strong>Appear on node</strong></label>
                                                 <div class="controls">
                                                     <input type="checkbox" id="nodecounter_show_<?php echo $counter->id; ?>" value="1" />
-                                                </div>
-                                            <?php } ?>
+                                                </div><?php
+                                            } ?>
                                         </div>
-                                        <div id="counters" data="[<?php
-                                    if (strlen($countersData) > 2) {
-                                        echo substr($countersData, 0, strlen($countersData) - 2);
-                                    }
-                                    ?>]"></div>
-                                    </div>
-                                <?php } ?>
+                                        <div id="counters" data="[<?php if (strlen($countersData) > 2) echo substr($countersData, 0, strlen($countersData) - 2); ?>]"></div>
+                                    </div><?php
+                                } ?>
                             </div>
                             <div class="row-fluid block">
                                 <div class="span6">
@@ -217,14 +200,13 @@ if (isset($templateData['map'])) { ?>
                                 <div class="span6">
                                     <div class="control-group">
                                         <label class="control-label"><strong>Link Function Style</strong></label>
-
-                                        <div class="controls" id="linkStyleOptions">
-                                            <?php foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
+                                        <div class="controls" id="linkStyleOptions"><?php
+                                            foreach (Arr::get($templateData, 'linkStyles', array()) as $linkStyle) { ?>
                                                 <label class="radio">
                                                     <input type="radio" name="style" value="<?php echo $linkStyle->id ?>">
                                                     <?php echo __($linkStyle->name); ?>
-                                                </label>
-                                            <?php } ?>
+                                                </label><?php
+                                            } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -234,12 +216,10 @@ if (isset($templateData['map'])) { ?>
                                     <div class="control-group">
                                         <label class="control-label"><strong>Node Priorities</strong></label>
 
-                                        <div class="controls" id="nodePriorities">
-                                            <?php if (isset($templateData['priorities'])) { ?>
-                                                <?php foreach ($templateData['priorities'] as $priority) { ?>
-                                                    <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label>
-                                                <?php } ?>
-                                            <?php } ?>
+                                        <div class="controls" id="nodePriorities"><?php
+                                            foreach (Arr::get($templateData, 'priorities', array()) as $priority) { ?>
+                                                <label class="radio"><input type="radio" name="priority" value="<?php echo $priority->id ?>"><?php echo $priority->name; ?></label><?php
+                                            } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -269,7 +249,6 @@ if (isset($templateData['map'])) { ?>
                 </div>
                 <div class="footer block">
                     <div class="btn-group">
-                        <a href="javascript:void(0)" class="btn btn-success" id="veRightPanelOnlySaveBtn">Save changes</a>
                         <a href="javascript:void(0)" class="btn btn-info" id="veRightPanelSaveBtn">Save changes and close</a>
                         <a href="javascript:void(0)" class="btn veRightPanelCloseBtn">Close panel</a>
                     </div>
@@ -297,13 +276,13 @@ if (isset($templateData['map'])) { ?>
                 <div class="visual-editor-right-panel-tabs">&nbsp;</div>
                 <legend style="margin-left: 5px">Sections</legend>
                 <div class="control-group block" style="margin-left: 5px">
-                    <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Choice section:</strong></label>
+                    <label class="control-label"><strong>Choice section:</strong></label>
                     <div class="controls">
                         <select id="sectionsNodesSelect"></select>
                     </div>
 
                     <div id="sectionSettings" class="hide">
-                        <label for="nodetitle" class="control-label" style="text-align: left;"><strong>Name:</strong></label>
+                        <label class="control-label" style="text-align: left;"><strong>Name:</strong></label>
                         <div class="controls">
                             <input type="text" id="sectionName" style="margin-bottom: 0"/>
                             <div class="btn-group">
@@ -312,7 +291,17 @@ if (isset($templateData['map'])) { ?>
                             </div>
                         </div>
                     </div>
-                    <div id="sectionNodeContainer"></div>
+
+                    <div id="orderInSection" class="hide">
+                        <label class="control-label"><strong>Order in section:</strong></label>
+                        <div class="controls">
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="x" value="x"/>By X</label>
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="y" value="y"/>By Y</label>
+                            <label><input type="radio" class="orderInSection" name="orderInSection" data-value="random" value="random"/>Random</label>
+                        </div>
+                    </div>
+                <!-- Manual order of all nodes in section -->
+                <!-- <div id="sectionNodeContainer"></div>-->
                 </div>
 
                 <div class="footer block">
@@ -505,29 +494,29 @@ if (isset($templateData['map'])) { ?>
                 <br/>
                 <div class="block" align="left">
                     <form class="form-horizontal">
-                    <div class="control-group block">
-                        <label class="control-label"><?php echo __('Link label'); ?></label>
-                        <div class="controls block">
-                            <input type="text" id="labelText"/>
+                        <div class="control-group block">
+                            <label class="control-label"><?php echo __('Link label'); ?></label>
+                            <div class="controls block">
+                                <input type="text" id="labelText"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="control-group block">
-                        <label class="control-label" for="mimage"><?php echo __('Link image'); ?></label>
-                        <div class="controls block">
-                            <?php if (isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" <?php if (isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option>
-                                    <?php foreach ($templateData['images'] as $image) { ?>
-                                        <option value="<?php echo $image->id; ?>" <?php if (isset($templateData['editLink']) and $image->id == $templateData['editLink']->image_id) echo 'selected=""'; ?>><?php echo $image->name; ?> (<?php echo $image->id; ?>)</option>
-                                    <?php } ?>
-                                </select>
-                            <?php } else { ?>
-                                <select name="linkImage" id="mimage">
-                                    <option value="0" select="">no image</option>
-                                </select>
-                            <?php } ?>
-                    </div>
-                </div>
+                        <div class="control-group block">
+                            <label class="control-label" for="mimage"><?php echo __('Link image'); ?></label>
+                            <div class="controls block"><?php
+                                if (isset($templateData['images']) and count($templateData['images'])) { ?>
+                                    <select name="linkImage" id="mimage">
+                                        <option value="0" <?php if (isset($templateData['editLink']) and $templateData['editLink']->image_id == NULL) echo 'selected=""'; ?>>no image</option><?php
+                                        foreach ($templateData['images'] as $image) { ?>
+                                        <option value="<?php echo $image->id; ?>" <?php if (isset($templateData['editLink']) and $image->id == $templateData['editLink']->image_id) echo 'selected=""'; ?>><?php echo $image->name; ?> (<?php echo $image->id; ?>)</option><?php
+                                        } ?>
+                                    </select><?php
+                                } else { ?>
+                                    <select name="linkImage" id="mimage">
+                                        <option value="0" select="">no image</option>
+                                    </select><?php
+                                } ?>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -615,5 +604,4 @@ if (isset($templateData['map'])) { ?>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/visualEditor.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/farbtastic/farbtastic.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/application.js'); ?>"></script>
-
 <?php } ?>

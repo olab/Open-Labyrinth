@@ -11,7 +11,7 @@ var ComponentsManager = (function() {
         this._components    = [];
         this._blocks        = [];
         this._rootComponent = null;
-    };
+    }
     
     ComponentsManager._instance = null;
     
@@ -43,6 +43,7 @@ var ComponentsManager = (function() {
             { name: 'counterscontainer', title: 'Counters Container Component', icon: 'icon-counters' },
             { name: 'links',             title: 'Links Component',              icon: 'icon-links' },
             { name: 'review',            title: 'Review Component',             icon: 'icon-review' },
+            { name: 'sectioninfo',       title: 'Section',                      icon: 'icon-info' },
             { name: 'mapinfo',           title: 'Map Info Component',           icon: 'icon-info' },
             { name: 'bookmark',          title: 'Bookmark Component',           icon: 'icon-bookmark' },
             { name: 'reset',             title: 'Reset Component',              icon: 'icon-reset' }
@@ -59,9 +60,8 @@ var ComponentsManager = (function() {
      */
     ComponentsManager.prototype.GetComponentById = function(componentId) {
         var result = null;
-        
         if(componentId === null) { return result; }
-        
+
         for(var i = this._components.length; i--;) {
             if(this._components[i].GetId() === componentId) {
                 result = this._components[i];
@@ -176,6 +176,9 @@ var ComponentsManager = (function() {
             case 'mapinfo':
                 component = new MapInfoComponent();
                 break;
+            case 'section':
+                component = new SectionInfoComponent();
+                break;
             case 'bookmark':
                 component = new BookmarkComponent();
                 break;
@@ -184,7 +187,9 @@ var ComponentsManager = (function() {
                 break;
         }
         
-        if(component !== null) { this._components.push(component); }
+        if (component !== null) {
+
+            this._components.push(component); }
         
         return component;
     };

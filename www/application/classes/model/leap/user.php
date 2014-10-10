@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Model for users table in database
  */
-class Model_Leap_User extends DB_ORM_Model {
+class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
 
     public function __construct() {
         parent::__construct();
@@ -102,6 +102,15 @@ class Model_Leap_User extends DB_ORM_Model {
             'history_timestamp' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => TRUE,
+            )),
+            'modeUI' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => array('advanced','easy'),
+                'nullable' => FALSE,
+            )),
+            'is_lti' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => TRUE,
+                'default' => false,
             )),
         );
 
@@ -183,15 +192,15 @@ private static function initialize_metadata($object)
 
     public function createOAuthUser($oauthProviderId, $oauthId, $nickname) {
         return DB_ORM::insert('user')
-                        ->column('username', $oauthId . 'username')
-                        ->column('password', Auth::instance()->hash($oauthId . 'password'))
-                        ->column('email', $oauthId . '@email.generated')
-                        ->column('nickname', $nickname)
-                        ->column('language_id', 1)
-                        ->column('type_id', 1)
-                        ->column('oauth_provider_id', $oauthProviderId)
-                        ->column('oauth_id', $oauthId)
-                        ->execute();
+            ->column('username', $oauthId . 'username')
+            ->column('password', Auth::instance()->hash($oauthId . 'password'))
+            ->column('email', $oauthId . '@email.generated')
+            ->column('nickname', $nickname)
+            ->column('language_id', 1)
+            ->column('type_id', 1)
+            ->column('oauth_provider_id', $oauthProviderId)
+            ->column('oauth_id', $oauthId)
+            ->execute();
     }
 
     public function getUserByEmail($email) {
@@ -222,58 +231,47 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId ($order = 'DESC')
+    public function getAllUsersId ($order = 'DESC', $isLti = false)
     {
-        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
-        
         $ids = array();
-        if ($result->is_loaded())
-        {
-            foreach ($result as $record)
-            {
-                $ids[] = (int)$record['id'];
-            }
+        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->where('is_lti', '=', $isLti)->query();
+
+        foreach ($result as $record) {
+            $ids[] = $record['id'];
         }
+
         return $ids;
     }
     
     public function getAllUsers($order = 'DESC')
     {
-        $result = array();
-        $ids = $this->getAllUsersId($order);
-        
-        foreach($ids as $id) {
-            $result[] = DB_ORM::model('user', array($id));
-        }
-
-        return $result;
+        return DB_ORM::select('User')->order_by('nickname', $order)->query()->as_array();
     }
 
     public function getAllUsersAndAuth($order = 'DESC', $notInUsers = array())
     {
         $result = array();
-        $ids = $this->getAllUsersId($order);
 
-        foreach($ids as $id)
-        {
-            if (count($notInUsers) > 0) {
-                if (in_array($id, $notInUsers)){
-                    continue;
-                }
+        foreach($this->getAllUsersId($order) as $id) {
+            if (count($notInUsers) AND in_array($id, $notInUsers)) {
+                continue;
             }
 
-            $user= DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name') ))->from($this->table(), 'u')
+            $res = DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name')))
+                ->from($this->table(), 'u')
                 ->join('LEFT','oauth_providers','op')
                 ->on('u.oauth_provider_id','=','op.id')
                 ->join('LEFT','user_types','ut')
                 ->on('u.type_id','=','ut.id')
                 ->where('u.id', '=', $id)
-                ->order_by('nickname', $order);
+                ->order_by('nickname', $order)
+                ->query();
 
-            $res = $user->query();
-
-            foreach ($res as $record) $result[] = $record;
+            foreach ($res as $record) {
+                $result[] = $record;
+            }
         }
+
         return $result;
     }
 
@@ -291,18 +289,20 @@ private static function initialize_metadata($object)
         return $result[0];
     }
 
-    public function createUser($username, $password, $nickname, $email, $typeId, $languageId) {
-        $this->username = $username;
-        $this->password = Auth::instance()->hash($password);
-        $this->email = $email;
-        $this->nickname = $nickname;
-        $this->language_id = $languageId;
-        $this->type_id = $typeId;
-
-        $this->save();
+    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy', $isLti = false) {
+        DB_ORM::insert('User')
+            ->column('username', $username)
+            ->column('password', Auth::instance()->hash($password))
+            ->column('email', $email)
+            ->column('nickname', $nickname)
+            ->column('language_id', $languageId)
+            ->column('type_id', $typeId)
+            ->column('modeUI', $uiMode)
+            ->column('is_lti', $isLti)
+            ->execute();
     }
     
-    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId) {
+    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId, $isLti = false) {
         $this->id = $id;
         $this->load();
         
@@ -314,6 +314,7 @@ private static function initialize_metadata($object)
         $this->nickname = $nickname;
         $this->language_id = $languageId;
         $this->type_id = $typeId;
+        $this->is_lti = $isLti;
         
         $this->save();
     }
@@ -375,39 +376,23 @@ private static function initialize_metadata($object)
             ->as_array();
     }
 
-    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC') {
-        $users = array();
-        if($ids != NULL) {
-            $builder = DB_SQL::select('default')
-                    ->from($this->table())
-                    ->where('id', 'NOT IN', $ids)
-                    ->order_by('nickname', $order);
+    public function getUsersByTypeName($typeName, $ids = NULL, $order = 'DESC')
+    {
+        $result = array();
 
-            $result = $builder->query();
-            if($result->is_loaded()) {
-                foreach($result as $record) {
-                    $users[] = DB_ORM::model('user', array((int)$record['id']));
-                }
-            }
-        } else {
-            $users = $this->getAllUsers($order);
+        if ($ids != NULL) $users = DB_ORM::select('Model_Leap_User')->where('id', 'NOT IN', $ids)->order_by('nickname', $order)->query()->as_array();
+        else $users = $this->getAllUsers($order);
+
+        foreach ($users as $user)
+        {
+            if ($user->type->name == $typeName) $result[] = $user;
         }
-        
-        if($users != NULL and count($users) > 0) {
-            $result = array();
-            foreach($users as $user) {
-                if($user->type->name == $typeName) {
-                    $result[] = $user;
-                }
-            }
-            
-            return $result;
-        }
-        
-        return NULL;
+
+        return $result;
     }
 
-    public function updateSettings($userId, $settings) {
+    public function updateSettings($userId, $settings)
+    {
         DB_ORM::update('user')->set('visualEditorAutosaveTime', Arr::get($settings, 'time', 50000))->where('id', '=', $userId)->execute();
     }
 
@@ -458,6 +443,53 @@ private static function initialize_metadata($object)
             }
         }
         return $return;
+    }
+
+    public function can($policy_name, $args = array())
+    {
+        $status = FALSE;
+        try
+        {
+            $this->id = Auth::instance()->get_user()->id;
+            $this->load();
+
+            $reflection = new ReflectionClass('Policy_'.$policy_name);
+            $class      = $reflection->newInstanceArgs();
+            $status     = $class->execute($this, $args);
+            if (TRUE === $status) return TRUE;
+        }
+        catch (ReflectionException $ex) // try and find a message based policy
+        {
+            // Try each of this user's roles to match a policy
+            foreach ($this->roles->find_all() as $role)
+            {
+                $status = Kohana::message('policy', $policy_name.'.'.$role->id);
+                if ($status) return TRUE;
+            }
+        }
+        // We don't know what kind of specific error this was
+        if (FALSE === $status) $status = Policy::GENERAL_FAILURE;
+        Policy::$last_code = $status;
+        return TRUE === $status;
+    }
+
+    public function assert($policy_name, $args = array())
+    {
+        $status = $this->can($policy_name, $args);
+        if (TRUE !== $status)
+        {
+            throw new Policy_Exception(
+                'Could not authorize policy :policy',
+                array(':policy' => $policy_name),
+                Policy::$last_code
+            );
+        }
+    }
+
+    public function changeUI($mode)
+    {
+        $this->modeUI = $mode;
+        $this->save();
     }
 }
 

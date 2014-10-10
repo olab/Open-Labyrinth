@@ -32,13 +32,20 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
     public function action_index()
     {
         $user = Auth::instance()->get_user();
-        $this->templateData['maps'] = ($user->type->name == 'superuser')
+        $maps = ($user->type->name == 'superuser')
             ? DB_ORM::model('map')->getAllEnabledMap()
             : DB_ORM::model('map')->getAllMapsForAuthorAndReviewer($user->id);
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $user->id)->query()->as_array() as $authorRightObj)
+        $this->templateData['maps'] = $maps;
+        $this->templateData['bookmarks'] = array();
+        foreach ($maps as $map) {
+            $bookmark = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($map->id, $user->id);
+            if ($bookmark) $this->templateData['bookmarks'][$map->id] = 1;
+        }
+
+        foreach (DB_ORM::model('Map_User')->getUserMaps($user->id) as $mapUserObj)
         {
-            $this->templateData['authorRight'][$authorRightObj->map_id] = true;
+            $this->templateData['authorRight'][$mapUserObj->map_id] = true;
         }
 
         $this->templateData['center'] = View::factory('labyrinth/authored')->set('templateData', $this->templateData);

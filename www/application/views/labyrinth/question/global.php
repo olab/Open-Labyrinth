@@ -30,29 +30,28 @@ if (isset($templateData['map'])) { ?>
             <th>Actions</th>
         </tr>
         </thead>
-        <tbody>
-        <?php if (isset($templateData['questions']) and count($templateData['questions']) > 0) { ?>
-            <?php foreach ($templateData['questions'] as $question) { ?>
+        <tbody><?php
+        if (isset($templateData['questions']) and count($templateData['questions'])) {
+            foreach ($templateData['questions'] as $question) { ?>
                 <tr>
-                    <td>
-                        <?php echo $question->stem; ?>
-                    </td>
-                    <td>
-                        <?php foreach($templateData['question_types'] as $type){
-                            if($type['id'] == $question->entry_type_id){
+                    <td><?php echo base64_decode($question->stem); ?></td>
+                    <td><?php
+                        foreach ($templateData['question_types'] as $type){
+                            if ($type['id'] == $question->entry_type_id){
                                 echo $type['title'];
                             }
-                        }
-                        ?>
+                        } ?>
                     </td>
                     <td>
-                        <a class="btn btn-info" href="<?php echo URL::base().'questionManager/importQuestion/'.$templateData['map']->id . '/' . base64_encode($question->name_file); ?>"><i class="icon-edit"></i>Add to labyrinth</a>
+                        <a class="btn btn-info" href="<?php echo URL::base().'questionManager/importQuestion/'.$templateData['map']->id.'/'.$question->name_file; ?>"><i class="icon-edit"></i>Add to labyrinth</a>
                     </td>
-                </tr>
-            <?php } ?>
-        <?php } else { ?>
-            <tr class="info"><td colspan="3">There are no available questions right now. You may add a question using the menu below.</td> </tr>
-        <?php }?>
+                </tr><?php
+            }
+        } else { ?>
+            <tr class="info">
+                <td colspan="3">There are no available questions right now. You may add a question using the menu below.</td>
+            </tr><?php
+        }?>
         </tbody>
-    </table>
-<?php } ?>
+    </table><?php
+} ?>

@@ -25,7 +25,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Element extends DB_ORM_Model {
     private $mimes = array();
-    
+
     public function __construct() {
         parent::__construct();
 
@@ -125,32 +125,10 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
             ))
         );
         
-        $this->mimes[] = 'image/jpg';
-        $this->mimes[] = 'image/jpeg';
-        $this->mimes[] = 'image/gif';
-        $this->mimes[] = 'image/png';
-        $this->mimes[] = 'application/vnd.open';
-        $this->mimes[] = 'application/x-shockw';  
-        $this->mimes[] = 'application/x-shockwave-flash'; 
-        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        $this->mimes[] = 'video/x-msvideo';
-        $this->mimes[] = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-        $this->mimes[] = 'application/msword';
-        $this->mimes[] = 'application/x-director';
-        $this->mimes[] = 'text/html';
-        $this->mimes[] = 'application/x-msaccess';
-        $this->mimes[] = 'video/quicktime';
-        $this->mimes[] = 'video/x-sgi-movie';
-        $this->mimes[] = 'video/mpeg';
-        $this->mimes[] = 'audio/mpeg';
-        $this->mimes[] = 'application/pdf';
-        $this->mimes[] = 'application/vnd.ms-powerpoint';
-        $this->mimes[] = 'audio/x-pn-realaudio';
-        $this->mimes[] = 'application/rtf';
-        $this->mimes[] = 'text/plain';
-        $this->mimes[] = 'audio/x-wav';
-        $this->mimes[] = 'application/zip';
-        $this->mimes[] = 'application/excel';
+        $this->mimes = array('image/jpg', 'image/jpeg', 'image/gif', 'image/png', 'application/vnd.open', 'application/x-shockw', 'application/x-shockwave-flash',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/x-msvideo', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/msword', 'application/x-director', 'text/html', 'application/x-msaccess', 'video/quicktime', 'video/x-sgi-movie', 'video/mpeg', 'audio/mpeg',
+            'application/pdf', 'application/vnd.ms-powerpoint', 'audio/x-pn-realaudio' ,'application/rtf', 'text/plain', 'audio/x-wav', 'application/zip', 'application/excel');
     }
 
     public static function data_source() {
@@ -243,13 +221,13 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
 
     public function addFile($mapId, $values) {
         return DB_ORM::insert('map_element')
-                       ->column('map_id', $mapId)
-                       ->column('name', Arr::get($values, 'name', ''))
-                       ->column('mime', Arr::get($values, 'mime', ''))
-                       ->column('path', Arr::get($values, 'path', ''))
-                       ->column('width', Arr::get($values, 'width', 0))
-                       ->column('height', Arr::get($values, 'height', 0))
-                       ->execute();
+           ->column('map_id', $mapId)
+           ->column('name', Arr::get($values, 'name', ''))
+           ->column('mime', Arr::get($values, 'mime', ''))
+           ->column('path', Arr::get($values, 'path', ''))
+           ->column('width', Arr::get($values, 'width', 0))
+           ->column('height', Arr::get($values, 'height', 0))
+           ->execute();
     }
 
     public function uploadFile($mapId, $values) {
@@ -414,7 +392,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         // create new directory
         $oldDirectory = $path_info['dirname'];
         $newDirectory = substr($oldDirectory, 0, strrpos($oldDirectory, '/')).'/'.$newMap.'/';
-        mkdir($newDirectory);
+        if ( ! file_exists($newDirectory)) mkdir($newDirectory);
 
         // new file name path
         $fileName = Arr::get($path_info,'basename');
@@ -422,25 +400,4 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
 
         return (copy($srcPath, $newPath)) ? $fileName : null;
     }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('map_id', '=', $mapId);
-
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $elements = array();
-            foreach($result as $record) {
-                $elements[] = $record;
-            }
-
-            return $elements;
-        }
-
-        return NULL;
-    }
 }
-
-?>

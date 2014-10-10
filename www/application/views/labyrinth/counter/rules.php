@@ -21,9 +21,13 @@
 if (isset($templateData['map'])) { ?>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/rules.js"></script>
 <div class="page-header">
-    <div class="pull-right"><a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>"><i class="icon-plus-sign"></i> <?php echo __('Add rule'); ?></a></div>
-    <h1><?php echo __('Rules for ') . ' "' . $templateData['map']->name . '"'; ?></h1></div>
-
+    <div class="pull-right">
+        <a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCommonRule/'.$templateData['map']->id; ?>">
+            <i class="icon-plus-sign"></i> <?php echo __('Add rule'); ?>
+        </a>
+    </div>
+    <h1><?php echo __('Rules for ').' "'.$templateData['map']->name.'"'; ?></h1>
+</div>
 
 <table class="table table-striped table-bordered">
     <colgroup>
@@ -40,11 +44,12 @@ if (isset($templateData['map'])) { ?>
             <th><?php echo __("Actions"); ?></th>
         </tr>
     </thead>
-<?php if(isset($templateData['rules']) and count($templateData['rules']) > 0) { ?>
-    <?php foreach($templateData['rules'] as $rule) { ?>
+    <tbody><?php
+    if(isset($templateData['rules']) and count($templateData['rules'])) {
+        foreach($templateData['rules'] as $rule) { ?>
         <tr>
             <td><?php echo $rule->id; ?></td>
-            <td><?php if ($rule->isCorrect == 1) echo 'Yes'; else echo 'No'; ?></td>
+            <td><?php echo ($rule->isCorrect == 1) ? 'Yes' : 'No'; ?><?php if ($rule->lightning == 1) echo ' | Lightning'; ?></td>
             <td class="changeCodeToText"><?php echo $rule->rule; ?></td>
             <td>
                 <div class="btn-group">
@@ -68,15 +73,20 @@ if (isset($templateData['map'])) { ?>
                     </div>
                 </div>
             </td>
-        </tr>
-        <?php } ?>
-    <?php } else{ ?>
-        <tr class="info"><td colspan="4">There are no rules set yet. You may add a rule by clicking the button below</td></tr>
-    <?php } ?>
+        </tr><?php
+        }
+    } else { ?>
+        <tr class="info"><td colspan="4">There are no rules set yet. You may add a rule by clicking the button below</td></tr><?php
+    } ?>
+    </tbody>
 </table>
 
 <a id="availableNodesText" style="display:none;"><?php echo $templateData['nodes']['text']; ?></a>
 <a id="availableNodesId" style="display:none;"><?php echo $templateData['nodes']['id']; ?></a>
 <a id="availableCountersText" style="display:none;"><?php echo $templateData['counters']['text']; ?></a>
 <a id="availableCountersId" style="display:none;"><?php echo $templateData['counters']['id']; ?></a>
+<a id="availableConditionsText" style="display:none;"><?php echo $templateData['conditions']['text']; ?></a>
+<a id="availableConditionsId" style="display:none;"><?php echo $templateData['conditions']['id']; ?></a>
+<a id="availableStepsText" style="display:none;"><?php echo $templateData['steps']['text']; ?></a>
+<a id="availableStepsId" style="display:none;"><?php echo $templateData['steps']['id']; ?></a>
 <?php } ?>

@@ -29,6 +29,10 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
         parent::__construct();
 
         $this->fields = array(
+            'id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE
+            )),
             'map_popup_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE
@@ -133,6 +137,11 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
                     ->column('border_transparent',          Arr::get($values, 'border_transparent',   '0%'))
                     ->execute();
         }
+    }
+
+    public function exportMVP($popupId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('map_popup_id', '=', $popupId)->query()->as_array();
     }
 }
 

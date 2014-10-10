@@ -259,31 +259,14 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getMapByName($name)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('name', '=', $name);
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return DB_ORM::model('map', array($result[0]['id']));
-        }
-
-        return NULL;
+        return DB_ORM::select('Map')->where('name', '=', $name)->query()->fetch();
     }
 
-    public function getAllEnabledMap($limit = 0)
+    public function getAllEnabledMap($limit = 0, $sortColumn = 'id', $sortType = 'DESC')
     {
-        $maps = array();
-        $builder = DB_SQL::select('default')->from($this->table())->where('enabled', '=', 1)->order_by('id', 'DESC');
+        $builder    = DB_ORM::select('Map')->where('enabled', '=', 1)->order_by($sortColumn, $sortType);
         if ($limit) $builder->limit($limit);
-        $result = $builder->query();
-
-        if ($result->is_loaded())
-        {
-            foreach ($result as $record) {
-                $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-        }
-
-        return $maps;
+        return $builder->query()->as_array();
     }
 
     public function getAllEnabledOpenVisibleMap ($type = false)
@@ -297,8 +280,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
         if ($type == 'reviewer') $builder->where('security_id', '=', 2, 'OR');
 
-        foreach ($builder->query()->as_array() as $record)
-        {
+        foreach ($builder->query()->as_array() as $record) {
             $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
         return $maps;
@@ -320,25 +302,21 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where_block('(')
             ->where('m.security_id', '=', 1)
             ->where('m.security_id', '=', 2, 'OR')
-            ->where('m.security_id', '=', 4, 'OR')
+            ->where('m.author_id', '=', $user_id, 'OR')
             ->where_block('(', 'OR')
-            ->where('m.security_id', '=', 3)
             ->where('mu.user_id', '=', $user_id, 'AND')
             ->where_block(')')
             ->where_block(')');
 
         $result = $builder->query();
 
+        $maps = array();
         if ($result->is_loaded()) {
-            $maps = array();
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
-            return $maps;
         }
-
-        return NULL;
+        return $maps;
     }
 
     public function getAllMapsForLearner($learnerId)
@@ -411,7 +389,7 @@ class Model_Leap_Map extends DB_ORM_Model
             }
         }
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
         {
             $mapId = $authorRightObj->map_id;
             if ( ! in_array($mapId, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($mapId));
@@ -450,12 +428,9 @@ class Model_Leap_Map extends DB_ORM_Model
             $alreadyAttendMap[] = $record['id'];
         }
 
-        foreach (DB_ORM::select('AuthorRight')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
+        foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj)
         {
-            if ( ! in_array($authorRightObj->map_id, $alreadyAttendMap))
-            {
-                $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
-            }
+            if ( ! in_array($authorRightObj->map_id, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
         }
 
         return $maps;
@@ -547,16 +522,19 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->save();
 
         $map = $this->getMapByName($this->name);
-        if ($isCreateRoot) DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+
+        if ($isCreateRoot) {
+            DB_ORM::model('map_node')->createDefaultRootNode($map->id);
+        }
         return $map;
     }
 
     public function updateMapForumAssign($mapId, $newForumId) {
         DB_SQL::update('default')
-                ->table($this->table())
-                ->set('assign_forum_id', $newForumId)
-                ->where('id', '=', $mapId)
-                ->execute();
+            ->table($this->table())
+            ->set('assign_forum_id', $newForumId)
+            ->where('id', '=', $mapId)
+            ->execute();
     }
 
     public function createVUEMap($title, $authorId)
@@ -630,7 +608,6 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->load();
 
         $this->skin_id = $value;
-
         $this->save();
     }
 
@@ -676,10 +653,8 @@ class Model_Leap_Map extends DB_ORM_Model
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
-
             return $maps;
         }
-
         return NULL;
     }
 
@@ -701,6 +676,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function getSearchMap($key, $onlyTitle = TRUE)
     {
+        $maps = array();
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('enabled', '=', 1)
@@ -710,26 +686,20 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
 
-        if ($result->is_loaded())
-        {
-            $maps           = array();
-            $userMaps       = array();
-            $user           = Auth::instance()->get_user();
-            $userId         = $user->id;
-            $userType       = $user->type_id;
-            $userMapsObj    = ($userType == 4)
-                ? DB_ORM::model('map')->getAllEnabledMap()
-                : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($userId);
+        $userMaps       = array();
+        $user           = Auth::instance()->get_user();
+        $userMapsObj    = ($user->type_id == 4)
+            ? DB_ORM::model('map')->getAllEnabledMap()
+            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
 
-            foreach ($userMapsObj as $map) $userMaps[] = $map->id;
-
-            foreach ($result as $record)
-            {
-                if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
-            }
-            return $maps;
+        foreach ($userMapsObj as $map) {
+            $userMaps[] = $map->id;
         }
-        return NULL;
+
+        foreach ($result as $record) {
+            if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
+        }
+        return $maps;
     }
 
     public function duplicateMap ($mapId)
@@ -788,47 +758,44 @@ class Model_Leap_Map extends DB_ORM_Model
     public function getMapName($mapName, $mapId = 0)
     {
         $result = $mapName;
-        $builder = DB_SQL::select('default')
+        $query = DB_SQL::select('default')
             ->from($this->table())
             ->where('name', '=', $mapName)
-                ->column('name')
-                ->column('id');
-        $query = $builder->query();
+            ->column('name')
+            ->column('id')
+            ->query();
 
-        if ($query->is_loaded() && $query->count() > 0) {
-            if($query->count() == 1 && $mapId > 0 && $query[0]['id'] == $mapId) {
+        if ($query->is_loaded() && $query->count()) {
+            if($query->count() == 1 AND $mapId AND $query[0]['id'] == $mapId) {
                 return $result;
             }
 
             $addNumber = 1;
-            $tmpName = $mapName . '_%';
-            $builder = DB_SQL::select('default')
+            $tmpName = $mapName.'_%';
+            $query = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('name', 'like', $tmpName)
-                ->column('name');
-            $query = $builder->query();
-            if ($query->is_loaded() && $query->count() > 0) {
+                ->column('name')
+                ->query();
+
+            if ($query->is_loaded() && $query->count()) {
                 foreach ($query as $record) {
-                    $expl = explode($mapName . '_', $record['name']);
-                    if (count($expl) == 2) {
-                        if (is_int((int)$expl[1])) {
-                            $n = (int)$expl[1];
-                            if ($addNumber <= $n)
-                                $addNumber = $n + 1;
+                    $expl = explode($mapName.'_', $record['name']);
+                    if (count($expl) == 2 AND is_int((int)$expl[1])) {
+                        $n = (int)$expl[1];
+                        if ($addNumber <= $n) {
+                            $addNumber = $n + 1;
                         }
                     }
                 }
             }
-
-            $result .= '_' . $addNumber;
+            $result .= '_'.$addNumber;
         }
-
         return $result;
     }
 
     public function countLinks(){
-        $result = count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
-        return $result;
+        return count(DB_ORM::model("Model_Leap_Map_Node_Link")->getLinksByMap($this->id));
     }
 
     public function createLinearMap($mapId, $values) {
@@ -893,20 +860,6 @@ class Model_Leap_Map extends DB_ORM_Model
         }
     }
 
-    public function exportMVP($mapId){
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('id', '=', $mapId);
-
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            return $result[0];
-        }
-
-        return NULL;
-    }
-
     public function getAllowedMap($userId)
     {
         $result = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
@@ -926,22 +879,7 @@ class Model_Leap_Map extends DB_ORM_Model
             $res[] =  $val['id'];
         }
 
-        foreach (DB_ORM::select('AuthorRight')->query()->as_array() as $authorRightObj)
-        {
-            $res[] = $authorRightObj->map_id;
-        }
-
         return $res;
-    }
-
-    public function editRight ($mapId)
-    {
-        $map                = DB_ORM::model('map', array($mapId));
-        $user               = Auth::instance()->get_user();
-        $authorRight        = DB_ORM::select('authorRight')->where('user_id', '=', $user->id)->query()->as_array();
-        $editRight          = $user ? ($user->type_id == 4 OR $user->id == $map->author_id OR $authorRight) : false;
-        if ( ! $editRight) Request::initial()->redirect(URL::base());
-        return true;
     }
 }
 

@@ -1,4 +1,5 @@
 <?php
+// TODO: merge with addUser view.
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,7 +19,8 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if(isset($templateData['user'])) { ?>
+if(isset($templateData['user'])) {
+    $user = $templateData['user']; ?>
 <script language="javascript" type="text/javascript" src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
 <div class="page-header">
     <div class="pull-right"><?php
@@ -81,6 +83,17 @@ if(isset($templateData['user'])) { ?>
                 else { ?>
                 <div style="margin-top: 5px; text-transform: capitalize; "><?php echo Arr::get($templateData, 'userType'); ?></div><?php
                 } ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('UI mode:'); ?></label>
+            <div class="controls">
+                <div class="helpPopupLine">
+                    <div class="radio_extended btn-group">
+                        <a href="<?php echo URL::base().'base/ui/easy/'.$user->id; ?>" data-class="btn-info" class="btn <?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy</a>
+                        <a href="<?php echo URL::base().'base/ui/advanced/'.$user->id; ?>" data-class="btn-info" class="btn <?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced</a>
+                    </div>
+                </div>
             </div>
         </div>
     </fieldset><?php

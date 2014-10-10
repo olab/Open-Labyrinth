@@ -220,15 +220,14 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     }
 
     public function createTrace($sessionId, $userId, $mapId, $nodeId) {
-        $time    = $this->setElapsedTime($sessionId);
-        $builder = DB_ORM::insert('user_sessionTrace')
+        $time = $this->setElapsedTime($sessionId);
+        return DB_ORM::insert('user_sessionTrace')
                 ->column('session_id', $sessionId)
                 ->column('user_id', $userId)
                 ->column('map_id', $mapId)
                 ->column('node_id', $nodeId)
-                ->column('date_stamp', $time);
-        
-        return $builder->execute();
+                ->column('date_stamp', $time)
+                ->execute();
     }
 
     public function setElapsedTime($sessionId) {
@@ -321,52 +320,28 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null)
     {
         $builder = DB_ORM::update('user_sessionTrace')
-                ->set('counters', $newCounters)
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('map_id', '=', $mapId, 'AND');
+            ->set('counters', $newCounters)
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('map_id', '=', $mapId, 'AND');
 
-        if($traceId != null) {
+        if ($traceId != null) {
             $builder = $builder->where('id', '=', $traceId, 'AND');
-            $builder = $builder->where('node_id', '=', $nodeId);
-        } else {
-            $builder = $builder->where('node_id', '=', $nodeId);
         }
 
         $builder
+            ->where('node_id', '=', $nodeId)
             ->order_by('id', 'ASC')
             ->limit(1)
             ->execute();
     }
     
-    public function getTraceBySessionID($sessionId , $getType = 'obj') {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId)
-                ->order_by('id', 'ASC');
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-
-            $traces = array();
-            foreach($result as $record) {
-                if ($getType != 'array') {
-                    $traces[] = DB_ORM::model('user_sessionTrace', array((int)$record['id']));
-                }
-                else {
-                    $traces[] = $record;
-                }
-            }
-
-            return $traces;
-        }
-
-        return NULL;
+    public function getTraceBySessionID($sessionId) {
+        return DB_ORM::select('user_sessiontrace')->where('session_id', '=', $sessionId)->order_by('id', 'ASC')->query()->as_array();
     }
     
     public function getCountersValues($sessionId) {
         $traces = $this->getTraceBySessionID($sessionId);
-        
-        if($traces != NULL and count($traces) > 0) {
+        if(count($traces)) {
             $result = array();
             $i = 0;
             foreach($traces as $trace) {
@@ -393,10 +368,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 }
                 $i++;
             }
-            
             return $result;
         }
-        
         return NULL;
     }
 
@@ -414,6 +387,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     }
 
     public function getDateStampBySessionAndNodeId($sessionId, $nodeId){
+        $res = array();
         $result = DB_SQL::select('default')
             ->from($this->table())
             ->column('date_stamp')
@@ -423,7 +397,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             ->query();
 
         if ($result->is_loaded()) {
-            $res = array();
             foreach($result as $record) {
                 $res[] = $record['date_stamp'];
             }

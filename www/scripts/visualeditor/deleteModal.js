@@ -26,7 +26,7 @@ var DeleteModal = function() {
         
         if('rightPanel' in parameters)
             self.rightPanel = parameters.rightPanel;
-    }
+    };
     
     self.Show = function(mode) {
         dialogMode = mode;
@@ -42,7 +42,7 @@ var DeleteModal = function() {
             
             $modal.modal();
         }
-    }
+    };
     
     self.Hide = function() {
         if($modal != null) {
@@ -52,36 +52,31 @@ var DeleteModal = function() {
             $('.deleteModalContentNodes').hide();
             $modal.modal('hide');
         }
-    }
+    };
      
     var ApplyEvent = function() {
         if(dialogMode == 'single') {
             if(self.node != null && visualEditor != null) {
                 visualEditor.DeleteNodeById(self.node.id);
                 self.node = null;
-
                 visualEditor.Render();
             }
         } else if(dialogMode == 'multiple') {
             if(self.selectedNodes != null && self.selectedNodes.length > 0 && visualEditor != null) {
                 for(var i = 0; i < self.selectedNodes.length; i++) {
-                    if(!self.selectedNodes[i].isRoot)
-                    visualEditor.DeleteNodeById(self.selectedNodes[i].id);
+                    if( ! self.selectedNodes[i].isRoot) visualEditor.DeleteNodeById(self.selectedNodes[i].id);
                 }
-                
                 visualEditor.Render();
             }
         }
         
-        if(self.rightPanel != null)
-            self.rightPanel.Hide();
+        if(self.rightPanel != null) self.rightPanel.Hide();
         
         self.Hide();
-        
-        if(self.selectRoot) {
-            utils.ShowMessage($('#ve_message'), $('#ve_message_text'), 'error', 'You cannot delete the root node.', 3000, $('#ve_actionButton'), false);
-        }
+        $('#update').prop('disabled', false).css('background-color', '#777676');
+
+        if(self.selectRoot) utils.ShowMessage($('#ve_message'), $('#ve_message_text'), 'error', 'You cannot delete the root node.', 3000, $('#ve_actionButton'), false);
 
         return false;
     }
-}
+};

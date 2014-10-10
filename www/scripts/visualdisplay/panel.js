@@ -105,7 +105,7 @@ var Panel = function() {
         if(visualDisplay != null) {
             visualDisplay.SelectPanel(self);
         }
-    }
+    };
 
     this.Coordinate = function (){
         $(this.$panel).draggable({

@@ -58,12 +58,18 @@ class Skin_Basic_Builder implements Skin_Builder {
         $this->skin = str_replace('{REVIEW}', '<div><a href="#" onclick="toggle_visibility(\'track\');"><p class=\'style2\'><strong>Review your pathway</strong></p></a></div><div id=\'track\' style=\'display:none\'><?php if(isset($templateData[\'trace_links\'])){echo $templateData[\'trace_links\'];}?></div>', $this->skin);
     }
 
+    public function buildSection() {
+        $this->skin = str_replace(
+            '{SECTION_INFO}',
+            '<?php if (isset($templateData[\'navigation\'])) echo $templateData[\'navigation\']; ?>',
+            $this->skin);
+    }
+
     public function buildMapInfo() {
         $this->skin = str_replace('{MAP_INFO}', '<?php if ($templateData[\'map\']->timing) { ?>
                                                     <div>Timer: <div id="timer"></div>
                                                     <br /><br />
                                                  <?php }?>
-                                                 <?php if (isset($templateData[\'navigation\'])) echo $templateData[\'navigation\']; ?>
                                                  <div>
                                                     Map: <?php if(isset($templateData[\'map\'])) echo $templateData[\'map\']->name; ?> (<?php if (isset($templateData[\'map\'])) echo $templateData[\'map\']->id; ?>) <br/>
                                                     Node: <?php if (isset($templateData[\'node\'])) echo $templateData[\'node\']->id; ?><br/>
@@ -71,7 +77,7 @@ class Skin_Basic_Builder implements Skin_Builder {
     }
 
     public function buildBookmark() {
-        $this->skin = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' name="bookmark" value="bookmark"/>', $this->skin);
+        $this->skin = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' value="Bookmark"/>', $this->skin);
     }
 
     public function buildReset() {

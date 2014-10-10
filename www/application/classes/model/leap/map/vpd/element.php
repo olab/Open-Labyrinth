@@ -130,21 +130,8 @@ class Model_Leap_Map_Vpd_Element extends DB_ORM_Model {
         }
     }
 
-    public function exportMVP($vpdId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('vpd_id', '=', $vpdId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $elements = array();
-            foreach($result as $record) {
-                $elements[] = $record;
-            }
-
-            return $elements;
-        }
-
-        return NULL;
+    public function exportMVP($vpdId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('vpd_id', '=', $vpdId)->query()->as_array();
     }
 }
-
-?>

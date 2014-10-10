@@ -18,36 +18,15 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-    ?>
-    <script src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
-    <script language="javascript" type="text/javascript"
-            src="<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/tinymce.min.js"></script>
-    <script language="javascript" type="text/javascript">
-        tinymce.init({
-            selector: "textarea",
-            theme: "modern",
-            content_css: "<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,<?php echo URL::base(); ?>scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css",
-            entity_encoding: "raw",
-            contextmenu: "link image inserttable | cell row column rdfaceMain",
-            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
-            valid_elements : "+*[*]",
-            plugins: ["compat3x",
-                "advlist autolink lists link image charmap print preview hr anchor pagebreak",
-                "searchreplace wordcount visualblocks visualchars code fullscreen",
-                "insertdatetime media nonbreaking save table contextmenu directionality",
-                "emoticons template paste textcolor layer advtextcolor rdface imgmap"
-            ],
-            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            toolbar2: " link image imgmap|print preview media | forecolor backcolor emoticons ltr rtl layer restoredraft | rdfaceMain",
-            image_advtab: true,
-            templates: [
-
-            ],
-            <?php if (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) { ?>
-            readonly: 1
-            <?php } ?>
-        });
+$user = Auth::instance()->get_user();
+$uiMode = $user->modeUI;
+if (isset($templateData['map'])) { ?>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/editableselect.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinyMceInit.js'); ?>"></script>
+    <script type="text/javascript">
+        var readOnly = <?php echo (isset($templateData['historyShowWarningPopup']) && ($templateData['historyShowWarningPopup'])) ? 1 : 0; ?>;
+        tinyMceInit('textarea', readOnly);
     </script>
 
     <h1><?php echo __('Labyrinth ').'"'.$templateData['map']->name.'"'; ?></h1>
@@ -120,11 +99,13 @@ if (isset($templateData['map'])) {
             </div>
         </div><?php
         } ?>
-    </fieldset>
-
+    </fieldset><?php
+    $orderIndex=1;
+    if ($uiMode == 'advanced') { ?>
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Users'); ?></legend><?php
-        if (isset($templateData['securities'])) { ?>
+        if (isset($templateData['securities'])) {
+            $currentSecurityId = $templateData['map']->security_id; ?>
             <div class="control-group">
                 <label class="control-label"><?php echo __('Security'); ?></label>
                 <div class="controls">
@@ -133,7 +114,7 @@ if (isset($templateData['map'])) {
                         <option value="<?php echo $security->id; ?>"<?php if ($security->id == $templateData['map']->security_id) echo ' selected'; ?>><?php echo $security->name; ?></option><?php
                         } ?>
                     </select>
-                    <button <?php if ($templateData['map']->security_id !== '4') echo 'style="display:none;"'; ?> id="edit_keys" class="btn btn-primary" value="1" name="edit_key">Edit keys</button>
+                    <button <?php if ($currentSecurityId != 4) echo 'style="display:none;"'; ?> id="edit_keys" class="btn btn-primary" value="1" name="edit_key">Edit keys</button>
                 </div>
             </div>
         <?php } ?>
@@ -144,7 +125,7 @@ if (isset($templateData['map'])) {
                     <a class="btn btn-info add-contributor" href=<?php echo URL::base().'labyrinthManager/addContributor/'.$templateData['map']->id; ?>><i class="icon-plus"></i><?php echo __('Add'); ?></a>
                 </div>
             </label>
-            <ul class="contributors-list add-contributor-parent"><?php $orderIndex=1;
+            <ul class="contributors-list add-contributor-parent"><?php
                 foreach (Arr::get($templateData, 'contributors', array()) as $contributor) { ?>
                 <li>
                     <p>
@@ -175,31 +156,12 @@ if (isset($templateData['map'])) {
         <div class="control-group">
             <label class="control-label"><?php echo __('Creator'); ?>:</label>
             <div class="controls">
-                <select name="creator" <?php if ( ! $templateData['editCreator']) echo 'disabled'; ?>><?php
+                <select name="creator"><?php
                 foreach (Arr::get($templateData, 'creators', array()) as $creators) { ?>
                     <option value="<?php echo $creators->id; ?>" <?php if($templateData['map']->author_id == $creators->id) echo 'selected'; ?>><?php echo $creators->nickname; ?></option><?php
                 } ?>
                 </select>
             </div>
-        </div>
-
-        <div class="control-group author-bl">
-            <label class="control-label">
-                <span><?php echo __('Author right'); ?></span>
-                <div class="pull-right">
-                    <a class="btn btn-info add-author"><i class="icon-plus"></i><?php echo __('Add'); ?></a>
-                </div>
-            </label><?php
-            foreach (Arr::get($templateData, 'authorRight', array()) as $existAuthor) { ?>
-            <div class="controls" style="margin-bottom: 10px;">
-                <select name="authors[<?php echo $existAuthor->id; ?>]"><?php
-                    foreach (Arr::get($templateData, 'authorsList', array()) as $author) { ?>
-                    <option value="<?php echo $author->id; ?>" <?php if($existAuthor->user_id == $author->id) echo 'selected'; ?>><?php echo $author->nickname; ?></option><?php
-                    } ?>
-                </select>
-                <button type="button" class="btn btn-danger delete-author" data-id="<?php echo $existAuthor->id; ?>"><i class="icon-trash icon-white"></i>Delete</button>
-            </div><?php
-            } ?>
         </div>
 
         <div class="control-group">
@@ -218,7 +180,8 @@ if (isset($templateData['map'])) {
             } ?>
             </div>
         </div>
-    </fieldset>
+    </fieldset><?php
+    } ?>
 
     <fieldset class="fieldset">
         <legend><?php echo __('Labyrinth Navigation');?> </legend><?php
@@ -245,7 +208,8 @@ if (isset($templateData['map'])) {
                 } ?>
             </div>
             </div><?php
-        } ?>
+        }
+        if ($uiMode == 'advanced') { ?>
         <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to navigate it in a certain time.">
             <label class="control-label"><?php echo __('Timing'); ?></label>
             <div class="controls">
@@ -314,9 +278,10 @@ if (isset($templateData['map'])) {
                            value=0 <?php if (!$templateData['map']->timing) echo 'checked=""'; ?>>
                 </label>
             </div>
-        </div>
-    </fieldset>
-
+        </div><?php
+        } ?>
+    </fieldset><?php
+    if ($uiMode == 'advanced') { ?>
     <fieldset class="fieldset">
         <legend><?php echo ('Labyrinth Forum Details'); ?></legend>
         <div class="control-group forum-details-container"><?php
@@ -341,7 +306,6 @@ if (isset($templateData['map'])) {
             } ?>
         </div>
     </fieldset>
-
     <fieldset class="fieldset fieldset-verification">
         <legend><?php echo __('Reviewer Information'); ?></legend><?php
         $verificationArray = array(
@@ -358,14 +322,13 @@ if (isset($templateData['map'])) {
             <label class="control-label"><?php echo __($value) ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group" style="float:left;">
-                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"
-                        <?php if (isset($templateData['verification'][$key])){
+                    <input autocomplete="off" type="radio" id="<?php echo $key; ?>0" name="<?php echo $key; ?>" value="0"<?php
+                    if (isset($templateData['verification'][$key])){
                         echo ($templateData['verification'][$key] == null) ? 'checked="checked"' : '';
                     } else {
                         echo 'checked="checked"';
-                    }
-                        ?>
-                            />
+                    } ?>
+                    />
                     <label data-class="btn-danger" data-value="no" class="btn" for="<?php echo $key; ?>0"><?php echo __('No'); ?></label>
 
                     <input autocomplete="off" type="radio" id="<?php echo $key; ?>1" name="<?php echo $key; ?>" value="1" <?php echo ((isset($templateData['verification'][$key]) && $templateData['verification'][$key]) ? 'checked="checked"' : '') ?>/>
@@ -419,7 +382,8 @@ if (isset($templateData['map'])) {
             </div>
         </div>
     </fieldset><?php
-    echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");?>
+        echo Helper_Controller_Metadata::displayEditor($templateData["map"], "map");
+    } ?>
 
     <div class="pull-right">
         <input type="submit" class="btn btn-primary btn-large" name="GlobalSubmit" value="<?php echo __('Save changes'); ?>" onclick="return checkForm();">
@@ -429,7 +393,7 @@ if (isset($templateData['map'])) {
 
 <li class="add-contributor-bl" style="display: none;">
     <p>
-        <input type="hidden" name="contributor[order][<?php echo $orderIndex ?>]">
+        <input type="hidden" name="contributor[order][<?php echo $orderIndex; ?>]">
         <label><?php echo __('Name'); ?></label>
         <input type="text" name="contributor[name][]">
     </p>
@@ -449,15 +413,6 @@ if (isset($templateData['map'])) {
     </p>
     <p><a class="btn btn-small btn-danger del-contributor-js"><i class="icon-trash"></i></a></p>
 </li>
-
-<div class="controls add-author-bl" style="margin-bottom: 10px; display: none;">
-    <select name="authors_new[]"><?php
-        foreach (Arr::get($templateData, 'authorsList', array()) as $author) { ?>
-            <option value="<?php echo $author->id; ?>"><?php echo $author->nickname; ?></option><?php
-        } ?>
-    </select>
-    <button type="button" class="btn btn-danger delete-author-bl"><i class="icon-trash icon-white"></i>Delete</button>
-</div>
 
 <script>
     createEditableSelect(document.getElementById('delta_time_seconds'));
