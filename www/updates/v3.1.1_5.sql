@@ -1,1 +1,0 @@
-UPDATE `map_node_link_stylies` SET `name` = 'hyperlinks' WHERE `map_node_link_stylies`.`id` = 1;
