@@ -677,27 +677,33 @@ class Model_Leap_Map extends DB_ORM_Model
     public function getSearchMap($key, $onlyTitle = TRUE)
     {
         $maps = array();
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('enabled', '=', 1)
-            ->where('name', 'LIKE', '%'.$key.'%');
+        $user = Auth::instance()->get_user();
+        if ($user !== NULL) {
+            $userMapsObj    = ($user->type_id == 4)
+                ? DB_ORM::model('map')->getAllEnabledMap()
+                : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
 
-        if ( ! $onlyTitle) $builder->where('abstract', 'LIKE', '%'.$key.'%', 'OR');
+            $userMaps = array();
+            foreach ($userMapsObj as $map) {
+                $userMaps[] = $map->id;
+            }
 
-        $result = $builder->query();
+            $builder = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('enabled', '=', 1)
+                ->where('name', 'LIKE', '%'.$key.'%');
 
-        $userMaps       = array();
-        $user           = Auth::instance()->get_user();
-        $userMapsObj    = ($user->type_id == 4)
-            ? DB_ORM::model('map')->getAllEnabledMap()
-            : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
+            if ( ! $onlyTitle) {
+                $builder->where('abstract', 'LIKE', '%'.$key.'%', 'OR');
+            }
 
-        foreach ($userMapsObj as $map) {
-            $userMaps[] = $map->id;
-        }
+            $result = $builder->query();
 
-        foreach ($result as $record) {
-            if (in_array($record['id'], $userMaps)) $maps[] = DB_ORM::model('map', array((int)$record['id']));
+            foreach ($result as $record) {
+                if (in_array($record['id'], $userMaps)) {
+                    $maps[] = DB_ORM::model('map', array((int)$record['id']));
+                }
+            }
         }
         return $maps;
     }

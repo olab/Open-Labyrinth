@@ -166,12 +166,10 @@ class Controller_Home extends Controller_Base {
             $key    = Arr::get($_POST, 'searchterm', NULL);
             $title  = ($scope == 'a');
 
-            if ($key != NULL)
-            {
+            if ($key != NULL) {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
-
                 $rootNodes = array();
-                foreach($maps as $map){
+                foreach ($maps as $map) {
                     $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
@@ -182,8 +180,7 @@ class Controller_Home extends Controller_Base {
 
                 $this->template->set('templateData', $this->templateData);
             }
-        }
-        else {
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
