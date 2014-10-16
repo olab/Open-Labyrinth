@@ -417,7 +417,11 @@ class Controller_ExportImportManager extends Controller_Base {
 
     public function action_upload()
     {
-        $lastMapOfCurrentUser = DB_ORM::model('map')->getLastEnabledAndAuthoredMap($this->templateData['user_id']);
+        $user = Auth::instance()->get_user();
+        $lastMapOfCurrentUser = ($user !== NULL)
+            ? DB_ORM::model('map')->getLastEnabledAndAuthoredMap($user->id)
+            : false;
+
         try {
             if (! empty($_FILES)) {
                 set_time_limit(0);

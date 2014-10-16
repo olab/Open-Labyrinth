@@ -325,28 +325,16 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
         else {
             return false;
         }
-
-
-
-
     }
 
     public static function getEnabled(){
-        $builder = DB_SQL::select('default')->from(self::table())->where('state', '=', 1);
-        $result = $builder->query();
-
-        if ($result->is_loaded()) {
-            $vocablets = array();
-
-            foreach ($result as $record) {
-                $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
-                $vocablets[$vocablet->name] =
-                    DOCROOT . "extensions/vocablets/". $vocablet->name;
-            }
-
-            return $vocablets;
+        $result = DB_SQL::select('default')->from(self::table())->where('state', '=', 1)->query()->as_array();
+        $vocablets = array();
+        foreach ($result as $record) {
+            $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
+            $vocablets[$vocablet->name] = DOCROOT."extensions/vocablets/".$vocablet->name;
         }
-        return array();
+        return $vocablets;
     }
 
     private static function getEnabledObjects(){
