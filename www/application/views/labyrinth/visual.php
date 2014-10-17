@@ -32,6 +32,7 @@ if (isset($templateData['map'])) { ?>
         var bufferCopy      = '<?php echo URL::base(); ?>visualManager/bufferCopy',
             bufferPaste     = '<?php echo URL::base(); ?>visualManager/bufferPaste',
             settingsURL     = '<?php echo URL::base(); ?>visualManager/updateSettings',
+            baseURL         = '<?php echo URL::base(); ?>',
             logoutUrl       = '<?php echo URL::base().'home/logout'; ?>',
             mapId           = <?php echo $templateData['map']->id; ?>,
             mapJSON         = <?php echo Arr::get($templateData, 'mapJSON', 'null'); ?>,
