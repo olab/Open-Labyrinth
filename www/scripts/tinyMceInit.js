@@ -1,10 +1,10 @@
-function tinyMceInit(selector, readOnly){
-    var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
+var baseURL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
 
+function tinyMceInit(selector, readOnly){
     tinymce.init({
         selector: selector,
         theme: "modern",
-        content_css: urlBase + 'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,' + urlBase + 'scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css',
+        content_css: baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,' + baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css',
         entity_encoding: "raw",
         contextmenu: "link image inserttable | cell row column rdfaceMain",
         closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
