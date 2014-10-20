@@ -76,14 +76,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $node = DB_ORM::model('map_node')->getRootNodeByMap((int) $mapId);
             }
 
-            $cumulative = DB_ORM::select('Webinar_Map')
-                ->where('webinar_id', '=', $scenarioId)
-                ->where('reference_id', '=', $mapId)
-                ->query()
-                ->fetch(0);
-            if ($cumulative AND $cumulative->cumulative){
-                Controller_RenderLabyrinth::$isCumulative = true;
+            $reset = $this->request->query('reset');
+            if ( ! $reset) {
+                $cumulative = DB_ORM::select('Webinar_Map')
+                    ->where('webinar_id', '=', $scenarioId)
+                    ->where('reference_id', '=', $mapId)
+                    ->query()
+                    ->fetch(0);
+
+                if ($cumulative AND $cumulative->cumulative){
+                    Controller_RenderLabyrinth::$isCumulative = true;
+                }
             }
+
         } elseif ($action == 'resume') {
             $result     = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($mapId, Auth::instance()->get_user()->id);
             $node       = DB_ORM::model('map_node')->getNodeById(Arr::get($result, 'node_id', 0));
@@ -1023,16 +1028,20 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public function action_reset()
     {
-        $mapId       = $this->request->param('id', null);
-        $webinarId   = $this->request->param('id2', null);
-        $webinarStep = $this->request->param('id3', null);
+        $mapId        = $this->request->param('id', null);
+        $scenarioId   = $this->request->param('id2', null);
+        $scenarioStep = $this->request->param('id3', null);
 
-        if ($webinarId AND $webinarStep) {
-            Session::instance()->set('webinarId', $webinarId);
-            Session::instance()->set('step', $webinarStep);
+        if ($scenarioId AND $scenarioStep) {
+            Session::instance()->set('webinarId', $scenarioId);
+            Session::instance()->set('step', $scenarioStep);
+
+            //DB_ORM::model('User_SessionTrace')->serReset($mapId);
         }
 
-        Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$mapId);
+        DB_ORM::model('qCumulative')->setReset($mapId);
+
+        Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$mapId.'?reset=true');
     }
 
     public function action_ajaxDraggingQuestionResponse()
@@ -1448,14 +1457,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         ->where('r.node_id', '=', $nodeId)
                         ->query();
                 } elseif ($cumulativeType) {
-                    $responsesSQL = DB_SQL::select('default')
+                    $builder = DB_SQL::select('default')
                         ->from('user_sessions', 's')
                         ->join('LEFT', 'user_responses', 'r')
                         ->on('s.id', '=', 'r.session_id')
                         ->where('s.map_id', '=', $mapId)
                         ->where('r.question_id', '=', $questionId)
-                        ->where('r.node_id', '=', $nodeId)
-                        ->query();
+                        ->where('r.node_id', '=', $nodeId);
+                    $resetObj = DB_ORM::select('qCumulative')->where('question_id', '=', $questionId)->where('map_id', '=', $mapId)->query()->fetch();
+                    if ($resetObj) {
+                        $builder->where('s.start_time', '>=', $resetObj->reset);
+                    }
+                    $responsesSQL = $builder->query();
                 }
 
                 foreach ($responsesSQL as $response) {
@@ -1465,7 +1478,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 if ($responses) {
-                    $previousAnswers = '<div class="previous-answers">Previous answer:'.html_entity_decode($responses).'</div>';
+                    $previousAnswers = 'Previous answer:'.html_entity_decode($responses);
                 }
             };
             // ----- end previous answer ----- //
@@ -1496,7 +1509,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
 
                 $result =
-                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$content.'</textarea>'.
+                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$previousAnswers.$content.'</textarea>'.
                     '<p>'.
                         '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
                         '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
@@ -1659,7 +1672,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
                 $result .= '</ul>';
             }
-            $result = '<div class="questions">'.$previousAnswers.'<p>'.$question->stem.'</p>'.$result.'</div>';
+            $result = '<div class="questions"><p>'.$question->stem.'</p>'.$result.'</div>';
         }
         return $result;
     }

@@ -90,13 +90,12 @@ class Controller_ReportManager extends Controller_Base
         }
 
         $session    = DB_ORM::model('user_session', array((int)$reportId));
-        $questions  = DB_ORM::select('map_question')->where('map_id', '=', $session->map_id)->query()->as_array();
+        $mapId      = $session->map_id;
 
         $this->templateData['session']      = $session;
         $this->templateData['map']          = $session->map;
         $this->templateData['counters']     = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
-        $this->templateData['questions']    = $questions;
-        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($session->map_id);
+        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($mapId);
 
         if($isFromLabyrinth){
             $progress = DB_ORM::model('Map_Counter')->progress($this->templateData['session']->traces['0']->counters, $this->templateData['session']->map->id);
@@ -136,14 +135,18 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
+        $questions = DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array();
+        $this->templateData['questions'] = $questions;
         foreach ($questions as $question) {
-            $response = DB_ORM::model('user_response')->getResponse($session->id, $question->id);
+            $questionId = $question->id;
+            $this->templateData['cumulative']   = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId);
+            $response = DB_ORM::model('user_response')->getResponse($session->id, $questionId);
             $responseObj = end($response);
             if ($responseObj) {
                 if ($question->entry_type_id == 8) {
                     $responseObj->response = DB_ORM::model('User_Response')->sjtConvertResponse($responseObj->response);
                 }
-                $this->templateData['responses'][$question->id][] = $responseObj;
+                $this->templateData['responses'][$questionId][] = $responseObj;
             }
         }
 
