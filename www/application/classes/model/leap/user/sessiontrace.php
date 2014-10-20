@@ -419,4 +419,14 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $sessionTraces = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->query()->as_array();
         return (count($sessionTraces) == 1) ? $sessionTraces[0] : $sessionTraces[count($sessionTraces)-2];
     }
+
+    public function getEndSessionTime($sessionId)
+    {
+        $result = 0;
+        $record = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->order_by('end_date_stamp', 'DESC')->query()->fetch(0);
+        if ($record !== false) {
+            $result = $record->end_date_stamp;
+        }
+        return $result;
+    }
 }

@@ -139,7 +139,8 @@ class Controller_ReportManager extends Controller_Base
         $this->templateData['questions'] = $questions;
         foreach ($questions as $question) {
             $questionId = $question->id;
-            $this->templateData['cumulative']   = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId);
+            $endSession = DB_ORM::model('User_SessionTrace')->getEndSessionTime($session->id);
+            $this->templateData['cumulative'] = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId, $endSession);
             $response = DB_ORM::model('user_response')->getResponse($session->id, $questionId);
             $responseObj = end($response);
             if ($responseObj) {

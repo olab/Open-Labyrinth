@@ -1035,8 +1035,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if ($scenarioId AND $scenarioStep) {
             Session::instance()->set('webinarId', $scenarioId);
             Session::instance()->set('step', $scenarioStep);
-
-            //DB_ORM::model('User_SessionTrace')->serReset($mapId);
         }
 
         DB_ORM::model('qCumulative')->setReset($mapId);
