@@ -22,37 +22,39 @@
 function getRandomColor(){
     mt_srand((double)microtime()*1000000);
     $c = '';
-    while(strlen($c)<6){
+    while (strlen($c)<6) {
         $c .= sprintf("%02X", mt_rand(0, 255));
     }
     return $c;
 }
-if (isset($templateData['session'])) { ?>
 
-    <?php if (isset($templateData['nextCase']) || isset($templateData['webinarForum']) || isset($templateData['webinarID'])) { ?>
+if (isset($templateData['session'])) {
+    if (isset($templateData['nextCase']) || isset($templateData['webinarForum']) || isset($templateData['webinarID'])) { ?>
     <h3>Scenario actions</h3>
     <div>
     <?php if(isset($templateData['nextCase'])) { ?>
-        <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['nextCase']['webinarId']; ?>/<?php echo $templateData['nextCase']['webinarStep']; ?>/<?php echo $templateData['nextCase']['webinarMap']; ?>" class="btn btn-success"><i class="icon-play"></i><?php echo __("Play the next labyrinth"); ?></a>
+        <a href="<?php echo URL::base().'webinarManager/play/'.$templateData['nextCase']['webinarId'].'/'.$templateData['nextCase']['webinarStep'].'/'.$templateData['nextCase']['webinarMap']; ?>" class="btn btn-success"><i class="icon-play"></i><?php echo __("Play the next labyrinth"); ?></a>
     <?php }
     if(isset($templateData['webinarForum'])) { ?>
         <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinarForum'];?>">
             <i class="icon-comment icon-white"></i>
             <?php echo __('Go to the Forum Topic'); ?>
-        </a>
-    <?php }
+        </a><?php
+    }
     if(isset($templateData['webinarForum'])) { ?>
         <a class="btn" href="<?php echo URL::base(); ?>webinarManager/render/<?php echo $templateData['webinarID'];?>">
             <i class="icon-folder-open icon-white"></i>
             <?php echo __('Go to the Scenario steps'); ?>
-        </a>
-    <?php } ?>
+        </a><?php
+    } ?>
     </div>
-    <hr/>
-    <?php } ?>
+    <hr/><?php
+    } ?>
 
-    <div class="pull-right"><a href="<?php echo URL::base() ?>reportManager/exportToExcel/<?php echo $templateData['session']->id; ?>" class="btn btn-primary"><?php echo __('Export to Excel'); ?></a></div>
-    <h1 class="report-title"><?php echo __('Labyrinth session "') . $templateData['session']->map->name . '"' . ' user ' . $templateData['session']->user->nickname; ?></h1>
+    <div class="pull-right">
+        <a href="<?php echo URL::base().'reportManager/exportToExcel/'.$templateData['session']->id; ?>" class="btn btn-primary"><?php echo __('Export to Excel'); ?></a>
+    </div>
+    <h1 class="report-title"><?php echo __('Labyrinth session "').$templateData['session']->map->name.'"'.' user '.$templateData['session']->user->nickname; ?></h1>
 
 
     <table class="table  table-striped table-bordered">
@@ -86,23 +88,21 @@ if (isset($templateData['session'])) { ?>
                     }
                     $t = $max - $templateData['session']->start_time;
                     echo date('i:s', $t);
-                }
-                ?></td>
+                } ?>
+            </td>
         </tr>
         <tr>
             <td>nodes visited</td>
-            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;
-                <?php
-                    $mustVisited = 0;
-                    $mustAvoid   = 0;
-                    if(count($templateData['session']->traces) > 0) {
-                        foreach($templateData['session']->traces as $trace) {
-                            if($trace->node->priority_id == 3) { $mustVisited++; }
-                            if($trace->node->priority_id == 2) { $mustAvoid++; }
-                        }
+            <td><?php echo count($templateData['session']->traces); ?>&nbsp;<?php echo __('nodes visited altogether of which'); ?>&nbsp;<?php
+                $mustVisited = 0;
+                $mustAvoid   = 0;
+                if(count($templateData['session']->traces) > 0) {
+                    foreach($templateData['session']->traces as $trace) {
+                        if($trace->node->priority_id == 3) { $mustVisited++; }
+                        if($trace->node->priority_id == 2) { $mustAvoid++; }
                     }
-                ?>
-                <?php echo $mustVisited;  ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
+                }
+                echo $mustVisited;  ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
                 <?php echo $mustAvoid; ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
         </tr>
         <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters, $templateData['session']->map->id)):?>
@@ -119,138 +119,134 @@ if (isset($templateData['session'])) { ?>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
         </tr>
-    <?php }?>
-
-    <?php if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
+    <?php }
+    if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for time taken'); ?></td>
             <td><?php foreach($templateData['feedbacks']['timeTaken'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-
-        <?php } ?>
-
-    <?php if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
+    <?php }
+    if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for nodes visit'); ?></td>
             <td> <?php foreach($templateData['feedbacks']['nodeVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-        <?php } ?>
-    <?php if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
+    <?php }
+    if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for must visit'); ?></td>
             <td><?php foreach($templateData['feedbacks']['mustVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-        <?php } ?>
-    <?php if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
+    <?php }
+    if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for must avoid'); ?></td>
             <td><?php foreach($templateData['feedbacks']['mustAvoid'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-        <?php } ?>
-    <?php if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
+    <?php }
+    if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
         <tr>
-        <td><?php echo __('feedback for counters'); ?></td>
-        <td><?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?></td>
-    </tr>
+            <td><?php echo __('feedback for counters'); ?></td>
+            <td><?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?></td>
+        </tr>
+    </table><?php
+    }
 
+    if ($templateData['questions'] != NULL) {?>
+    <h3><?php echo __('Questions'); ?></h3>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <td>ID</td>
+            <td>type</td>
+            <td>stem</td>
+            <td>response</td>
+            <td>correct</td>
+            <td><?php echo __('feedback'); ?></td>
+        </tr>
+        </thead>
+        <tbody><?php
+        foreach($templateData['questions'] as $question) {
+            $responseMap = array();
+            $user_response = '';
+            if($question->type->value == 'dd' && count($question->responses) > 0) {
+                foreach($question->responses as $r) {
+                    $responseMap[$r->id] = $r;
+                }
+            } ?>
+            <tr>
+                <td><?php echo $question->id; ?></td>
+                <td><?php echo $question->type->title; ?></td>
+                <td><?php echo $question->stem; ?></td>
+                <td><?php
+                    if (isset($templateData['responses'][$question->id]) AND count($templateData['responses'][$question->id]) > 0) {
+                        foreach ($templateData['responses'][$question->id] as $response) {
+                            if ($question->type->value == 'dd') {
+                                $jsonObj = json_decode($response->response, true);
+                                if (count($jsonObj)) {
+                                    foreach($jsonObj as $o) {
+                                        if (isset($responseMap[$o]))  echo '<p>'.$responseMap[$o]->response.'</p>';
+                                    }
+                                }
+                            } else {
+                                $user_response = $response->response;
+                                echo '<p>'.$response->response.'</p>';
+                            }
+                        }
+                    } else {
+                        echo 'no response';
+                    } ?>
+                </td>
+                <td><?php
+                    if ($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' AND count($question->responses) > 0) {
+                        foreach($question->responses as $resp) {
+                            if ($user_response == $resp->response) $user_response = $resp->feedback;
+                            if($resp->is_correct == 1) echo '<p>'.$resp->response.'</p>';
+                        }
+                    } else {
+                        echo 'n/a';
+                    } ?>
+                </td>
+                <td><?php
+                    if ($question->feedback) echo 'Question: '.$question->feedback.'<br>';
+                    if ($user_response) echo 'Answer: '.$user_response; ?>
+                </td>
+            </tr><?php
+        } ?>
+        </tbody>
+    </table><?php
+    } ?>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <td>node</td>
+            <td><?php echo __('time elapsed (in seconds)'); ?></td>
+            <td><?php echo __('time spent on node'); ?></td>
+        </tr>
+        </thead>
+        <tbody><?php
+        if (count($templateData['session']->traces) > 0) {
+            $flag = true;
+            for ($i = 0; $i < count($templateData['session']->traces); $i++) { ?>
+                <tr>
+                    <td><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</td>
+                    <td><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></td>
+                    <td><?php if($templateData['session']->traces[$i]->end_date_stamp != null) {
+                            echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                        } else {
+                            if(isset($templateData['session']->traces[$i + 1])) {
+                                echo $templateData['session']->traces[$i + 1]->date_stamp - $templateData['session']->traces[$i]->date_stamp;
+                            } else  {
+                                echo '-';
+                            }
+                        } ?>
+                    </td>
+                </tr><?php
+            }
+        } ?>
+        </tbody>
     </table>
-<?php } ?>
-                            <h3><?php echo __('Questions'); ?></h3>
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr>
-                                    <td>ID</td>
-                                    <td>type</td>
-                                    <td>stem</td>
-                                    <td>response</td>
-                                    <td>correct</td>
-                                    <td><?php echo __('feedback'); ?></td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php if($templateData['questions'] != NULL) {
-                                    foreach($templateData['questions'] as $question) {
-                                        $responseMap = array();
-                                        $user_response = '';
-                                        if($question->type->value == 'dd' && count($question->responses) > 0) {
-                                            foreach($question->responses as $r) {
-                                                $responseMap[$r->id] = $r;
-                                            }
-                                        } ?>
-                                        <tr>
-                                            <td><?php echo $question->id; ?></td>
-                                            <td><?php echo $question->type->title; ?></td>
-                                            <td><?php echo $question->stem; ?></td>
-                                            <td><?php
-                                                if(isset($templateData['responses'][$question->id])) {
-                                                    if(count($templateData['responses'][$question->id]) > 0) {
-                                                        foreach($templateData['responses'][$question->id] as $response) {
-                                                            if($question->type->value == 'dd') {
-                                                                $jsonObj = json_decode($response->response, true);
-                                                                if($jsonObj != null && count($jsonObj) > 0) {
-                                                                    foreach($jsonObj as $o) {
-                                                                        if(isset($responseMap[$o]))  echo '<p>'.$responseMap[$o]->response.'</p>';
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                $user_response = $response->response;
-                                                                echo '<p>'.$response->response.'</p>';
-                                                            }
-                                                        }
-                                                    } else echo 'no response';
-                                                } else echo 'no response'; ?>
-                                            </td>
-                                            <td><?php
-                                                if ($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' ) {
-                                                    if(count($question->responses) > 0) {
-                                                        foreach($question->responses as $resp) {
-                                                            if ($user_response == $resp->response) $user_response = $resp->feedback;
-                                                            if($resp->is_correct == 1) echo '<p>'.$resp->response.'</p>';
-                                                        }
-                                                    } else { echo 'n/a'; }
-                                                } else { echo 'n/a'; } ?>
-                                            </td>
-                                            <td><?php
-                                                if ($question->feedback) echo 'Question: '.$question->feedback.'<br>';
-                                                if ($user_response) echo 'Answer: '.$user_response; ?>
-                                            </td>
-                                        </tr>
-                                    <?php }
-                                } ?>
-                                </tbody>
-                            </table>
-
-                            <table class="table table-striped table-bordered">
-                                <thead>
-                                <tr>
-                                    <td>node</td>
-                                    <td><?php echo __('time elapsed (in seconds)'); ?></td>
-                                    <td><?php echo __('time spent on node'); ?></td>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                <?php if (count($templateData['session']->traces) > 0) {
-                                    $flag = true; ?>
-                                <?php for ($i = 0; $i < count($templateData['session']->traces); $i++) { ?>
-                                                                <tr>
-                                            <td><?php echo $templateData['session']->traces[$i]->node->title; ?> (<?php echo $templateData['session']->traces[$i]->node_id; ?>)</td>
-                                            <td><?php echo $templateData['session']->traces[$i]->date_stamp - $templateData['session']->start_time; ?></td>
-                                            <td><?php if($templateData['session']->traces[$i]->end_date_stamp != null) {
-                                                    echo $templateData['session']->traces[$i]->end_date_stamp - $templateData['session']->traces[$i]->date_stamp;
-                                                } else {
-                                                    if(isset($templateData['session']->traces[$i + 1])) {
-                                                        echo $templateData['session']->traces[$i + 1]->date_stamp - $templateData['session']->traces[$i]->date_stamp;
-                                                    } else  {
-                                                        echo '-';
-                                                    }
-                                                } ?></td>
-                                        </tr>
-                        <?php } ?>
-                    <?php } ?>
-                    </tr>
-                                </tbody>
-                            </table>
 
                 <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
                     <param name="FlashVars" value="&dataXML=<graph bgcolor='FFFFFF' canvasbgcolor='FFFFFF' xaxisname='node path (node IDs)' yaxisname='time on node (s)' caption='Node Path Analysis'>

@@ -22,101 +22,79 @@ defined('SYSPATH') or die('No direct script access.');
 
 class CrossReferences {
 
-    public function checkReference($mapId, $nodeId, $text, $info){
-        $textRecords = array();
+    public function checkReference($mapId, $nodeId, $text, $info)
+    {
+        $textRecords   = array();
         $textRecords[] = $this->getReferenceField($mapId, $nodeId, $text);
         $textRecords[] = $this->getReferenceField($mapId, $nodeId, $info);
-        $replace = array();
-        for($i = 0; $i<=1; $i++){
-            if($textRecords[$i]){
-                foreach($textRecords[$i] as $record){
+        $replace       = array();
+        for($i = 0; $i<=1; $i++)
+        {
+            if($textRecords[$i])
+            {
+                foreach($textRecords[$i] as $record)
+                {
                     $key = false;
                     $parent = false;
-                    switch ($record['type']){
+                    switch ($record['type'])
+                    {
                         case 'MR':
                             $element = DB_ORM::model('map_element', array((int) $record['element_id']));
-                            if($element->map_id && !$element->is_private){
-                                $key = true;
-                            }
-                            if($element->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($element->map_id && !$element->is_private) $key = true;
+                            if ($element->map_id == $mapId) $parent = true;
                             break;
                         case 'VPD':
                             $vpdElements = DB_ORM::model('map_vpd_element')->getValuesByVpdId($record['element_id']);
-                            if($vpdElements){
-                                foreach($vpdElements as $vpdElement){
-                                    if($vpdElement->key == 'Private'){
-                                        $vpdPrivate = $vpdElement->value;
-                                    }
+                            if ($vpdElements)
+                            {
+                                foreach($vpdElements as $vpdElement)
+                                {
+                                    if($vpdElement->key == 'Private') $vpdPrivate = $vpdElement->value;
                                 }
                             }
-                            if(empty($vpdPrivate)) {
-                                $vpdPrivate = 'Off';
-                            }
-                            if($vpdPrivate == 'Off'){
-                                $key = true;
-                            }
+                            if (empty($vpdPrivate)) $vpdPrivate = 'Off';
+                            if ($vpdPrivate == 'Off') $key = true;
                             $vpdMapId = DB_ORM::model('map_vpd')->getMapId($record['element_id']);
-                            if($vpdMapId == $mapId){
-                                $parent = true;
-                            }
+                            if ($vpdMapId == $mapId) $parent = true;
                             break;
                         case 'QU':
                             $question = DB_ORM::model('map_question', array((int) $record['element_id']));
-                            if($question->map_id && !$question->is_private){
-                                $key = true;
-                            }
-                            if($question->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($question->map_id && !$question->is_private) $key = true;
+                            if ($question->map_id == $mapId) $parent = true;
                             break;
                         case 'INFO':
                             $nod = DB_ORM::model('map_node', array((int) $record['element_id']));
-                            if($nod->map_id && !$nod->is_private){
-                                $key = true;
-                            }
-                            if($nod->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($nod->map_id && !$nod->is_private) $key = true;
+                            if ($nod->map_id == $mapId) $parent = true;
                             break;
                         case 'AV':
                             $avatar = DB_ORM::model('map_avatar', array((int) $record['element_id']));
-                            if($avatar->map_id && !$avatar->is_private){
-                                $key = true;
-                            }
-                            if($avatar->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($avatar->map_id && !$avatar->is_private) $key = true;
+                            if ($avatar->map_id == $mapId) $parent = true;
                             break;
                         case 'CHAT':
                             $chat = DB_ORM::model('map_chat', array((int) $record['element_id']));
-                            if($chat->map_id && !$chat->is_private){
-                                $key = true;
-                            }
-                            if($chat->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($chat->map_id && !$chat->is_private) $key = true;
+                            if ($chat->map_id == $mapId) $parent = true;
                             break;
                         case 'DAM':
                             $dam = DB_ORM::model('map_dam', array((int) $record['element_id']));
-                            if($dam->map_id && !$dam->is_private){
-                                $key = true;
-                            }
-                            if($dam->map_id == $mapId){
-                                $parent = true;
-                            }
+                            if ($dam->map_id && !$dam->is_private) $key = true;
+                            if ($dam->map_id == $mapId) $parent = true;
                             break;
                     }
-                    if($key || $parent){
-                        $this->addReferenceToBD($mapId, $nodeId, $record);
-                    } else {
+
+                    if ($key || $parent) $this->addReferenceToBD($mapId, $nodeId, $record);
+                    else
+                    {
                         $search = '[['.$record['type'].':'.$record['element_id'].']]';
-                        if($i == 0){
+                        if($i == 0)
+                        {
                             $text = str_replace($search, '', $text);
                             $replace['text'] = $text;
                         }
-                        if($i == 1){
+                        if($i == 1)
+                        {
                             $info = str_replace($search, '', $info);
                             $replace['info'] = $info;
                         }

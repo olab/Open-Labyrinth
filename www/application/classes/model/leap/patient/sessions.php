@@ -33,15 +33,7 @@ class Model_Leap_Patient_Sessions extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            'id_assign' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
             'id_patient' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
-            'id_type' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
@@ -51,7 +43,19 @@ class Model_Leap_Patient_Sessions extends DB_ORM_Model {
             'patient_condition' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
             )),
-            'current_map' => new DB_ORM_Field_Integer($this, array(
+            'deactivateNode' => new DB_ORM_Field_Text($this, array(
+                'nullable' => FALSE,
+            )),
+            'whose_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
+            'whose' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => array('user', 'group'),
+                'nullable' => FALSE,
+            )),
+            'scenario_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
@@ -70,16 +74,30 @@ class Model_Leap_Patient_Sessions extends DB_ORM_Model {
         return array('id');
     }
 
-    public function create($id_assign, $id_patient, $assign_type)
+    public function create($patientId, $whose, $whoseId, $scenarioId)
     {
-        DB_ORM::insert('Patient_Sessions')
-            ->column('id_assign', $id_assign)
-            ->column('id_patient', $id_patient)
-            ->column('id_type', $assign_type)
+        $sessionId = DB_ORM::insert('Patient_Sessions')
+            ->column('id_patient', $patientId)
+            ->column('whose_id', $whoseId)
+            ->column('whose', $whose)
+            ->column('scenario_id', $scenarioId)
             ->column('patient_condition', '')
             ->execute();
+
+        return DB_ORM::model('Patient_Sessions', array($sessionId));
     }
 
+    public function getSession($patientId, $whose, $whoseId, $scenarioId)
+    {
+        return DB_ORM::select('Patient_Sessions')
+            ->where('whose', '=', $whose)
+            ->where('scenario_id', '=', $scenarioId)
+            ->where('whose_id', '=', $whoseId)
+            ->where('id_patient', '=', $patientId)
+            ->order_by('id', 'DESC')
+            ->query()
+            ->fetch(0);
+    }
 }
 
 

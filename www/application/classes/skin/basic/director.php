@@ -28,6 +28,7 @@ class Skin_Basic_Director {
         $builder->buildCounters();
         $builder->buildLinks();
         $builder->buildMapInfo();
+        $builder->buildSection();
         $builder->buildReset();
         $builder->buildReview();
         $builder->buildTitle();

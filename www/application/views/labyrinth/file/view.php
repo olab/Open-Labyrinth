@@ -18,9 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
-if (isset($templateData['map'])) {
-    ?>
+if (isset($templateData['map'])) { ?>
 <script>
     var dataURL = '<?php echo URL::base(); ?>scripts/fileupload/php/';
     var replaceAction = '<?php echo URL::base(); ?>fileManager/replaceFiles';
@@ -174,8 +172,7 @@ if (isset($templateData['map'])) {
             echo '</ul>';
         }
         echo '</div>';
-    }
-    ?>
+    } ?>
 
     <form method="POST" action="<?php echo URL::base() . 'fileManager/delCheked/' . $templateData['map']->id; ?>"  id="form_del_cheked">
     <table class="table table-striped table-bordered">
@@ -195,10 +192,9 @@ if (isset($templateData['map'])) {
             <th>Actions</th>
         </tr>
         </thead>
-        <tbody>
-
-        <?php if (isset($templateData['files']) and count($templateData['files']) > 0) { ?>
-            <?php foreach ($templateData['files'] as $file) { ?>
+        <tbody><?php
+        if (isset($templateData['files']) and count($templateData['files']) > 0) {
+            foreach ($templateData['files'] as $file) { ?>
                 <tr>
                     <td>
                         <input type="checkbox" class="check_box" name="namecb[]" value="<?php echo $file->id; ?>" />
@@ -206,12 +202,11 @@ if (isset($templateData['map'])) {
                     <td>
                         <div class="span-12">
                            <a href="<?php echo URL::base() . $file->path; ?>"><?php echo $file->name; ?></a>
-                        </div>
-                         <?php
+                        </div><?php
                     $preview = '';
                     $isInput = false;
                     $isImage = false;
-                    $isArhive = false;
+                    $isArchive = false;
 
                     if ($file->mime == 'image/gif') {
                         $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
@@ -228,7 +223,7 @@ if (isset($templateData['map'])) {
                     }
                     else if ($file->mime == 'application/zip') {
                         $preview = '<img src="' . URL::base() . 'images/zipicon.gif">';
-                        $isArhive = true;
+                        $isArchive = true;
                     } else if ($file->mime == 'image/jpeg') {
                         $preview = '<img style="max-width:600px" src="' . URL::base() . $file->path . '?' . time() . '" />';
                         $isInput = true;
@@ -279,24 +274,21 @@ if (isset($templateData['map'])) {
                         }
                         ?>
                     </td>
-                    <td>
-
-                    <div class="btn-group-vertical">
-                            <a class="btn btn-info" href="<?php echo URL::base() . 'fileManager/editFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-edit"></i> Edit</a>
-
-                        <a class="btn btn-danger" href="<?php echo URL::base() . 'fileManager/deleteFile/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-trash"></i> Delete</a>
-
-                        <?php if ($isImage) { ?>
-
-                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/imageEditor/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-picture"></i>Image
-                                    editor</a>
-                        <?php } ?>
-                        <?php if ($isArhive) { ?>
-                                <a class="btn btn-inverse" href="<?php echo URL::base() . 'fileManager/arhiveUnZip/' . $templateData['map']->id . '/' . $file->id; ?>"><i class="icon-arhive"></i>UnZip</a>
-                        <?php } ?></div>
+                    <td><?php
+                        $params = $templateData['map']->id.'/'.$file->id; ?>
+                        <div class="btn-group-vertical">
+                            <a class="btn btn-info" href="<?php echo URL::base().'fileManager/editFile/'.$params; ?>"><i class="icon-edit"></i> Edit</a>
+                            <a class="btn btn-danger" href="<?php echo URL::base().'fileManager/deleteFile/'.$params; ?>"><i class="icon-trash"></i> Delete</a><?php
+                            if ($isImage) { ?>
+                            <a class="btn btn-inverse" href="<?php echo URL::base().'fileManager/imageEditor/'.$params; ?>"><i class="icon-picture"></i>Image editor</a><?php
+                            }
+                            if ($isArchive) { ?>
+                            <a class="btn btn-inverse" href="<?php echo URL::base().'fileManager/arhiveUnZip/'.$params; ?>"><i class="icon-arhive"></i>UnZip</a><?php
+                            } ?>
+                        </div>
                     </td>
-                </tr>
-            <?php } ?>
+                </tr><?php
+            } ?>
                 <tr>
                     <td>
                         <input type="checkbox" name="cbname[]" id="maincb" />
@@ -305,39 +297,36 @@ if (isset($templateData['map'])) {
                        <a data-toggle="modal" href="#" data-target="#delete-checked" class="btn btn-danger"><i class="icon-trash"></i> <?php echo __('Delete checked'); ?></a>
                     </td>
                     <td colspan="3"></td>
-               </tr>
-
-        <?php }else{ ?>
+               </tr><?php
+        }else{ ?>
         <tr class="info"><td colspan="5">There are no files available for this labyrinth, yet. You may add a file, using the form below.</td></tr>
         <?php } ?>
         </tbody>
     </table>
-        <div class="modal hide alert alert-block alert-error fade in" id="delete-checked">
+
+    <div class="modal hide alert alert-block alert-error fade in" id="delete-checked">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
         </div>
         <div class="modal-body">
             <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting checked file(s) from this labyrinth?'); ?></p>
-            <p>
-                <input type="submit" class="btn btn-danger" value="<?php echo __('Delete checked'); ?>"> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </p>
+            <p><input type="submit" class="btn btn-danger" value="<?php echo __('Delete checked'); ?>"> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button></p>
         </div>
     </div>
-    </form>
-    <input type="hidden" id="redirect_url" name="redirect_url" value="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>" />
+</form>
+<input type="hidden" id="redirect_url" name="redirect_url" value="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>" />
 
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>
-    <script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-    <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
-
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.iframe-transport.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-process.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-image.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-audio.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-video.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-validate.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload-ui.js"></script>
-    <script src="<?php echo URL::base(); ?>scripts/filemanager.js"></script>
-<?php } ?>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>
+<script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.iframe-transport.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-process.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-image.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-audio.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-video.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-validate.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload-ui.js"></script>
+<script src="<?php echo URL::base(); ?>scripts/filemanager.js"></script><?php
+} ?>

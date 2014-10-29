@@ -82,10 +82,8 @@ class Model_Leap_Group extends DB_ORM_Model {
         $ids = $this->getAllGroupsId($order);
 
         foreach($ids as $id) {
-            if (count($notInGroups) > 0) {
-                if (in_array($id, $notInGroups)){
-                    continue;
-                }
+            if (count($notInGroups) AND in_array($id, $notInGroups)){
+                continue;
             }
             $result[] = DB_ORM::model('group', array($id));
         }

@@ -69,53 +69,48 @@ class Model_Leap_Webinar_Step extends DB_ORM_Model {
         return array('id');
     }
 
-    /**
-     * Remove all steps from webinar
-     *
-     * @param integer $webinarId - webinar ID
-     */
-    public function removeSteps($webinarId) {
+    public function removeSteps($webinarId)
+    {
         DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('webinar_id', '=', $webinarId)
-                ->execute();
+            ->from($this->table())
+            ->where('webinar_id', '=', $webinarId)
+            ->execute();
     }
 
-    /**
-     * Add new step
-     *
-     * @param integer $webinarId - webinar ID
-     * @param string $stepName - step name
-     * @return integer - new webinar step ID
-     */
-    public function addStep($webinarId, $stepName) {
+    public function addStep($webinarId, $stepName)
+    {
         return DB_ORM::insert('webinar_step')
-                       ->column('webinar_id', $webinarId)
-                       ->column('name', $stepName)
-                       ->execute();
+           ->column('webinar_id', $webinarId)
+           ->column('name', $stepName)
+           ->execute();
     }
 
-    /**
-     * Remove webinar step
-     *
-     * @param integer $stepId - webinar step ID
-     */
-    public function removeStep($stepId) {
+    public function removeStep($stepId)
+    {
         DB_ORM::delete('webinar_step')
-                ->where('id', '=', $stepId)
-                ->execute();
+            ->where('id', '=', $stepId)
+            ->execute();
     }
 
-    /**
-     * Update webinar step
-     *
-     * @param integer $stepId - webinar step ID
-     * @param string $name - new step name
-     */
-    public function updateStep($stepId, $name) {
+    public function updateStep($stepId, $name)
+    {
         DB_ORM::update('webinar_step')
-                ->set('name', $name)
-                ->where('id', '=', $stepId)
-                ->execute();
+            ->set('name', $name)
+            ->where('id', '=', $stepId)
+            ->execute();
+    }
+
+    public function getScenarioSteps($scenarioId)
+    {
+        return DB_ORM::select('Webinar_Step')->where('webinar_id', '=', $scenarioId)->order_by('name', 'ASC')->query()->as_array();
+    }
+
+    public function getOnlyId($scenarioId)
+    {
+        $result = array();
+        foreach ($this->getScenarioSteps($scenarioId) as $step){
+            $result[$step->id] = 0;
+        };
+        return $result;
     }
 }

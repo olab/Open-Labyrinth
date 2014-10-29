@@ -18,6 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$fonts = Arr::get($templateData, 'fonts', array());
 ?>
 
 <script type="text/javascript">
@@ -157,31 +158,24 @@
 </div>
 
 <div class="visual-display-panel tab-pane" id="countersTab">
+    <div class="manageFonts">
+        <label>Font name:<input type="text" id="fontManage" value="<?php echo current($fonts); ?>"/></label>
+        <button type="button" id="fontManageAdd" class="btn btn-primary">Add</button><?php
+        if (Auth::instance()->get_user()->type_id == 4) { ?>
+        <button type="button" id="fontManageDelete" class="btn btn-primary">Delete</button><?php
+        } ?>
+    </div>
+
     <div class="panel-content">
         <div class="block">
             <div class="panel-control-group">
                 <div class="row">
                     <div class="panel-control-label"><?php echo __('Label font family'); ?>:</div>
                     <div class="panel-control">
-                        <select id="counterFontLabelFamily">
-                            <option value="Helvetica Neue">Default</option>
-                            <option value="Andale Mono">Andale Mono</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Arial Black">Arial Black</option>
-                            <option value="Book Antiqua">Book Antiqua</option>
-                            <option value="Comic Sans MS">Comic Sans MS</option>
-                            <option value="Courier New">Courier New</option>
-                            <option value="Georgia">Georgia</option>
-                            <option value="Helvetica">Helvetica</option>
-                            <option value="Impact">Impact</option>
-                            <option value="Symbol">Symbol</option>
-                            <option value="Tahoma">Tahoma</option>
-                            <option value="Terminal">Terminal</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Trebuchet MS">Trebuchet MS</option>
-                            <option value="Verdana">Verdana</option>
-                            <option value="Webdings">Webdings</option>
-                            <option value="Wingdings">Wingdings</option>
+                        <select id="counterFontLabelFamily"><?php
+                        foreach($fonts as $font) { ?>
+                            <option value="<?php echo $font; ?>"><?php echo $font; ?></option><?php
+                        } ?>
                         </select>
                     </div>
                 </div>
@@ -234,25 +228,10 @@
                 <div class="row">
                     <div class="panel-control-label"><?php echo __('Value font family'); ?>:</div>
                     <div class="panel-control">
-                        <select id="counterFontValueFamily">
-                            <option value="Helvetica Neue">Default</option>
-                            <option value="Andale Mono">Andale Mono</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Arial Black">Arial Black</option>
-                            <option value="Book Antiqua">Book Antiqua</option>
-                            <option value="Comic Sans MS">Comic Sans MS</option>
-                            <option value="Courier New">Courier New</option>
-                            <option value="Georgia">Georgia</option>
-                            <option value="Helvetica">Helvetica</option>
-                            <option value="Impact">Impact</option>
-                            <option value="Symbol">Symbol</option>
-                            <option value="Tahoma">Tahoma</option>
-                            <option value="Terminal">Terminal</option>
-                            <option value="Times New Roman">Times New Roman</option>
-                            <option value="Trebuchet MS">Trebuchet MS</option>
-                            <option value="Verdana">Verdana</option>
-                            <option value="Webdings">Webdings</option>
-                            <option value="Wingdings">Wingdings</option>
+                        <select id="counterFontValueFamily"><?php
+                            foreach($fonts as $font) { ?>
+                            <option value="<?php echo $font; ?>"><?php echo $font; ?></option><?php
+                            } ?>
                         </select>
                     </div>
                 </div>

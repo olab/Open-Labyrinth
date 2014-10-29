@@ -80,7 +80,7 @@ class Model_VisualEditor extends Model {
         $links    = DB_ORM::model('map_node_link')->getLinksByMap($mapId);
         $sections = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
 
-        if ($nodes != NULL and count($nodes) > 0) {
+        if (count($nodes)) {
             $nodesJSON = '';
             foreach ($nodes as $node) {
                 $title = base64_encode(str_replace('&#43;', '+', $node->title));
@@ -112,7 +112,7 @@ class Model_VisualEditor extends Model {
         }
 
         $clearLinks = $this->getClearLinks($links);
-        if ($clearLinks != NULL and count($clearLinks) > 0) {
+        if (count($clearLinks)) {
             $linksJSON = '';
             foreach ($clearLinks as $id => $value) {
                 $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '", label: "' . base64_encode(str_replace('&#43;', '+', $value['link']->text)) . '", imageId: ' . $value['link']->image_id . '}, ';
@@ -125,14 +125,14 @@ class Model_VisualEditor extends Model {
             }
         }
 
-        if($sections != null && count($sections) > 0) {
+        if(count($sections)) {
             $sectionsJSON = '';
             foreach($sections as $section) {
-                $sectionsJSON .= '{ id: ' . $section->id . ', name: "' . base64_encode(str_replace('&#43;', '+', $section->name)) . '"';
-                if($section->nodes != null && count($section->nodes) > 0) {
+                $sectionsJSON .= '{ id: '.$section->id.', name: "'.base64_encode(str_replace('&#43;', '+', $section->name)).'", orderBy: "'.$section->orderBy.'"';
+                if(count($section->nodes)) {
                     $sectionsJSON .= ', nodes: [';
                     foreach($section->nodes as $sectionNode) {
-                        $sectionsJSON .= '{ nodeId: ' . $sectionNode->node_id . ', order: ' . $sectionNode->order . '}, ';
+                        $sectionsJSON .= '{ nodeId: '.$sectionNode->node_id.', order: '.$sectionNode->order.'}, ';
                     }
                     $sectionsJSON  = substr($sectionsJSON, 0, strlen($sectionsJSON) - 2);
                     $sectionsJSON .= ']';
@@ -158,9 +158,8 @@ class Model_VisualEditor extends Model {
 
     private function getClearLinks($links)
     {
-        if ($links == null || count($links) <= 0) return array();
-
         $linkMap = array();
+        $result  = array();
 
         foreach ($links as $link) {
             if ( ! isset($linkMap[$link->node_id_2][$link->node_id_1])) {
@@ -171,10 +170,6 @@ class Model_VisualEditor extends Model {
                 $linkMap[$link->node_id_2][$link->node_id_1]['link'] = $link;
             }
         }
-
-        if (count($linkMap) <= 0) return array();
-
-        $result = array();
 
         foreach ($linkMap as $key1 => $l) {
             foreach ($l as $key2 => $v) {
@@ -393,32 +388,25 @@ class Model_VisualEditor extends Model {
         }
     }
 
-    public function updateFromJSON($mapId, $jsonString) {
-        $obj = json_decode($jsonString, true);
+    public function updateFromJSON($mapId, $jsonString)
+    {
+        $obj                = json_decode($jsonString, true);
+        $currentNodes       = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $currentLinks       = DB_ORM::model('map_node_link')->getLinksByMap($mapId);
+        $currentSections    = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
+        $clearLinks         = $this->getClearLinks($currentLinks);
+        $currentNodesHash   = $this->createNodesHashTable($currentNodes);
+        $currentLinksHash   = $this->createLinksHashTable($currentLinks);
+        $nodesUpdate        = array();
+        $linksUpdate        = array();
+        $newNodesMap        = array();
 
-        $map = DB_ORM::model('map', array((int) $mapId));
-        $currentNodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
-        $currentLinks = DB_ORM::model('map_node_link')->getLinksByMap($mapId);
-        $currentSections = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
-        $clearLinks = $this->getClearLinks($currentLinks);
-        $currentNodesHash = $this->createNodesHashTable($currentNodes);
-        $currentLinksHash = $this->createLinksHashTable($currentLinks);
-        $currentSectionsHash = $this->createSectionHashTable($currentSections);
+        $this->createSectionHashTable($currentSections);
 
-        if ($map == null)
-            return false;
-
-        $nodesUpdate = array();
-        $linksUpdate = array();
-        $newNodesMap = array();
-        $newSections = array();
-
-        if ($obj == null) {
-            if (isset($currentNodes) && count($currentNodes) > 0) {
-                $this->deleteAllNodesWithLinks($currentNodes);
-            }
+        if ($obj == null AND count($currentNodes)) {
+            $this->deleteAllNodesWithLinks($currentNodes);
         } else {
-            if (isset($obj['nodes']) && count($obj['nodes']) > 0) {
+            if (isset($obj['nodes']) AND count($obj['nodes'])) {
                 $nodesMap = array();
                 foreach ($obj['nodes'] as $node) {
                     $nodesMap[$node['id']] = $node['id'];
@@ -431,12 +419,8 @@ class Model_VisualEditor extends Model {
                     }
                 }
 
-                if ($currentNodesHash != null && count($currentNodesHash) > 0) {
-                    foreach ($currentNodesHash as $id => $node) {
-                        if (!isset($nodesMap[$id])) {
-                            $nodesUpdate['delete'][] = $node;
-                        }
-                    }
+                foreach ($currentNodesHash as $id => $node) {
+                    if ( ! isset($nodesMap[$id])) $nodesUpdate['delete'][] = $node;
                 }
             }
         }
@@ -444,42 +428,32 @@ class Model_VisualEditor extends Model {
         if (isset($nodesUpdate['new'])) {
             $newNodesMap = $this->createNewNodes($mapId, $nodesUpdate['new']);
         }
-
         if (isset($nodesUpdate['update'])) {
             $this->updateNodes($nodesUpdate['update']);
         }
-
         if (isset($nodesUpdate['delete'])) {
             $this->deleteNodesWithLinks($nodesUpdate['delete']);
         }
 
-        if ($obj != null && isset($obj['links']) && count($obj['links']) > 0) {
+        if ($obj != null AND isset($obj['links']) && count($obj['links'])) {
             $linksMap = array();
             foreach ($obj['links'] as $link) {
                 $linksMap[$link['id']] = $link;
 
-                if (isset($newNodesMap[$link['nodeA']])) {
-                    $link['nodeA'] = $newNodesMap[$link['nodeA']];
-                }
+                if (isset($newNodesMap[$link['nodeA']])) $link['nodeA'] = $newNodesMap[$link['nodeA']];
+                if (isset($newNodesMap[$link['nodeB']])) $link['nodeB'] = $newNodesMap[$link['nodeB']];
 
-                if (isset($newNodesMap[$link['nodeB']])) {
-                    $link['nodeB'] = $newNodesMap[$link['nodeB']];
-                }
-
-                if (isset($currentLinksHash[$link['id']])) {
-                    $linksUpdate['update'][] = $link;
-                } else {
-                    $linksUpdate['new'][] = $link;
-                }
+                if (isset($currentLinksHash[$link['id']])) $linksUpdate['update'][] = $link;
+                else $linksUpdate['new'][] = $link;
             }
 
-            if ($clearLinks != null && count($clearLinks) > 0) {
-                foreach ($clearLinks as $link) {
-                    if (!isset($linksMap[$link['link']->id]))
-                        $linksUpdate['delete'][] = $link['link'];
+            foreach ($clearLinks as $link)
+            {
+                if ( ! isset($linksMap[$link['link']->id])) {
+                    $linksUpdate['delete'][] = $link['link'];
                 }
             }
-        } else if ($currentLinks != null && count($currentLinks) > 0) {
+        } else if (count($currentLinks)) {
             foreach ($currentLinks as $link) {
                 $link->delete();
             }
@@ -487,9 +461,9 @@ class Model_VisualEditor extends Model {
 
         if (isset($linksUpdate['new'])) {
             foreach ($linksUpdate['new'] as $link) {
-                $v = array();
-                $v['text'] = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
-                $v['image_id'] = $link['imageId'];
+                $v              = array();
+                $v['text']      = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
+                $v['image_id']  = $link['imageId'];
 
                 if ($link['type'] == 'direct') {
                     $v['node_id_1'] = $link['nodeA'];
@@ -518,149 +492,123 @@ class Model_VisualEditor extends Model {
         if (isset($linksUpdate['update'])) {
             foreach ($linksUpdate['update'] as $link) {
                 $l = DB_ORM::model('map_node_link', array((int) $link['id']));
-                if($l != null) {
+                if ($l != null) {
                     $l->text = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
                     $l->image_id = $link['imageId'];
-
                     $l->save();
-                }
-                if ($link['type'] == 'direct') {
-                    if ($l != null) {
-                        DB_ORM::delete('map_node_link')->where('map_id', '=', $mapId, 'AND')
-                                ->where('node_id_1', '=', $l->node_id_2, 'AND')
-                                ->where('node_id_2', '=', $l->node_id_1)
-                                ->execute();
+
+                    if ($link['type'] == 'direct') {
+                        DB_ORM::delete('map_node_link')->where('map_id', '=', $mapId, 'AND')->where('node_id_1', '=', $l->node_id_2, 'AND')->where('node_id_2', '=', $l->node_id_1)->execute();
 
                         if ($l->node_id_1 != (int) $link['nodeA']) {
                             $t = $l->node_id_1;
                             $l->node_id_1 = $l->node_id_2;
                             $l->node_id_2 = $t;
-
                             $l->save();
                         }
-                    }
-                } else if ($link['type'] == 'back') {
-                    if ($l != null) {
-                        DB_ORM::delete('map_node_link')
-                                ->where('node_id_1', '=', $l->node_id_2, 'AND')
-                                ->where('node_id_2', '=', $l->node_id_1)
-                                ->execute();
+                    } else if ($link['type'] == 'back') {
+                        DB_ORM::delete('map_node_link')->where('node_id_1', '=', $l->node_id_2, 'AND')->where('node_id_2', '=', $l->node_id_1)->execute();
 
                         if ($l->node_id_1 != (int) $link['nodeB']) {
                             $t = $l->node_id_1;
                             $l->node_id_1 = $l->node_id_2;
                             $l->node_id_2 = $t;
-
                             $l->save();
                         }
-                    }
-                } else if ($link['type'] == 'dual') {
-                    if ($l != null) {
-                        $b = DB_ORM::model('map_node_link')->getLinkByNodeIDs($l->node_id_2, $l->node_id_1);
-                        if ($b == null) {
-                            $v['node_id_1'] = $l->node_id_2;
-                            $v['node_id_2'] = $l->node_id_1;
-                            $v['text'] = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
-                            $v['image_id'] = $link['imageId'];
-
-                            DB_ORM::model('map_node_link')->addFullLink($mapId, $v);
-                        } else {
-                            $b->text = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
-                            $b->image_id = $link['imageId'];
-
-                            $b->save();
+                    } else if ($link['type'] == 'dual') {
+                        if ($l != null) {
+                            $b = DB_ORM::model('map_node_link')->getLinkByNodeIDs($l->node_id_2, $l->node_id_1);
+                            if ($b == null) {
+                                $v['node_id_1'] = $l->node_id_2;
+                                $v['node_id_2'] = $l->node_id_1;
+                                $v['text'] = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
+                                $v['image_id'] = $link['imageId'];
+                                DB_ORM::model('map_node_link')->addFullLink($mapId, $v);
+                            } else {
+                                $b->text = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
+                                $b->image_id = $link['imageId'];
+                                $b->save();
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (isset($linksUpdate['delete']) && count($linksUpdate['delete']) > 0) {
+        if (isset($linksUpdate['delete']) AND count($linksUpdate['delete'])) {
             foreach ($linksUpdate['delete'] as $link) {
-                DB_ORM::delete('map_node_link')
-                        ->where('node_id_1', '=', $link->node_id_1, 'AND')
-                        ->where('node_id_2', '=', $link->node_id_2)->execute();
-
-                DB_ORM::delete('map_node_link')
-                        ->where('node_id_1', '=', $link->node_id_2, 'AND')
-                        ->where('node_id_2', '=', $link->node_id_1)->execute();
+                DB_ORM::delete('map_node_link')->where('node_id_1', '=', $link->node_id_1, 'AND')->where('node_id_2', '=', $link->node_id_2)->execute();
+                DB_ORM::delete('map_node_link')->where('node_id_1', '=', $link->node_id_2, 'AND')->where('node_id_2', '=', $link->node_id_1)->execute();
             }
         }
 
-        if (isset($obj['sections']) && count($obj['sections']) > 0) {
+        if (isset($obj['sections']) AND count($obj['sections'])) {
             $sectionIdMap = array();
-            $sectionId = null;
+            $sectionId    = null;
             foreach ($obj['sections'] as $section) {
-                if(isset($section['id']) && strpos($section['id'], 'n') != FALSE) {
-                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))))->id;
+                if (isset($section['id']) AND strpos($section['id'], 'n') != FALSE) {
+                    $sectionId = DB_ORM::model('map_node_section')->createSection($mapId, array('sectionname' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))), $section['orderBy'])->id;
                 } else {
                     $sectionId = $section['id'];
-                    DB_ORM::model('map_node_section')->updateSectionName($section['id'], array('sectiontitle' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))));
+                    DB_ORM::model('map_node_section')->updateSectionRow($sectionId, array('sectiontitle' => urldecode(str_replace('+', '&#43;', base64_decode($section['name'])))), $section['orderBy']);
                 }
 
-                if(isset($section['nodes']) && count($section['nodes']) > 0) {
+                if (isset($section['nodes']) AND count($section['nodes'])) {
                     $sectionIdMap[$sectionId] = $sectionId;
 
                     DB_ORM::model('map_node_section_node')->deleteNodesBySection($sectionId);
                     foreach($section['nodes'] as $sNode) {
                         $order = $sNode['order'];
                         $nodeId = $sNode['nodeId'];
-
-                        if(isset($newNodesMap[$nodeId])) {
+                        if (isset($newNodesMap[$nodeId])) {
                             $nodeId = $newNodesMap[$nodeId];
                         }
-
                         DB_ORM::model('map_node_section_node')->createNode($nodeId, $sectionId, $order);
                     }
-                } else if($sectionId > 0) {
+                } else if ($sectionId > 0) {
                     DB_ORM::model('map_node_section')->deleteSection($sectionId);
                 }
             }
 
-            if($currentSections != null && count($currentSections) > 0) {
-                foreach($currentSections as $s) {
-                    if(!isset($sectionIdMap[$s->id])) {
-                        DB_ORM::model('map_node_section')->deleteSection($s->id);
-                    }
+            foreach($currentSections as $s) {
+                if( ! isset($sectionIdMap[$s->id])) {
+                    DB_ORM::model('map_node_section')->deleteSection($s->id);
                 }
             }
         } else {
-            if($currentSections != null && count($currentSections) > 0) {
-                foreach($currentSections as $s) {
-                    DB_ORM::model('map_node_section')->deleteSection($s->id);
-                }
+            foreach ($currentSections as $s) {
+                DB_ORM::model('map_node_section')->deleteSection($s->id);
             }
         }
 
         return true;
     }
 
-    private function createNewNodes($mapId, $nodes) {
-        if ($nodes == null || count($nodes) <= 0)
-            return array();
-
+    private function createNewNodes($mapId, $nodes)
+    {
         $nodeMap = array();
-        $model = DB_ORM::model('map_node');
+        $model   = DB_ORM::model('map_node');
         foreach ($nodes as $node) {
             $nodeMap[$node['id']] = $model->createNodeFromJSON($mapId, $node);
             $this->updateNodeCountersFromJSON($node, $nodeMap[$node['id']]);
         }
-
         return $nodeMap;
     }
 
-    private function updateNodes($nodes) {
-        if ($nodes == null || count($nodes) <= 0)
-            return;
+    private function updateNodes($nodes)
+    {
+        if ($nodes == null || count($nodes) <= 0) return;
         $mapId = Arr::get($_POST, 'id');
-        foreach ($nodes as $node) {
+        foreach ($nodes as $node)
+        {
             DB_ORM::model('map_node')->updateNodeFromJSON($mapId, $node['id'], $node);
             $this->updateNodeCountersFromJSON($node, $node['id']);
         }
     }
 
-    private function updateNodeCountersFromJSON($node, $nodeId) {
-        if (isset($node['counters']) && count($node['counters']) > 0) {
+    private function updateNodeCountersFromJSON($node, $nodeId)
+    {
+        if (isset($node['counters']) && count($node['counters'])) {
             foreach ($node['counters'] as $counter) {
                 $nodeCounter = DB_ORM::model('map_node_counter')->getNodeCounter($nodeId, $counter['id']);
                 if ($nodeCounter != null) {
@@ -673,15 +621,12 @@ class Model_VisualEditor extends Model {
     }
 
     private function createNodesHashTable($nodes) {
-        if ($nodes == null || count($nodes) <= 0)
-            return array();
-
         $result = array();
         foreach ($nodes as $node) {
-            if (!isset($result[$node->id]))
+            if ( ! isset($result[$node->id])) {
                 $result[$node->id] = $node;
+            }
         }
-
         return $result;
     }
 
@@ -712,8 +657,6 @@ class Model_VisualEditor extends Model {
     }
 
     private function deleteNodesWithLinks($nodes) {
-        if ($nodes == null || count($nodes) <= 0)
-            return;
         $mapId = Arr::get($_POST, 'id', NULL);
         $model = DB_ORM::model('map_node');
         foreach ($nodes as $node) {

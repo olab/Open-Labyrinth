@@ -33,7 +33,7 @@ var MapInfoPropertyView = (function(parent) {
         this._$top                = null;
         this._$right              = null;
         this._$bottom             = null;
-    };
+    }
 
     MapInfoPropertyView.prototype.AppendTo = function($container) {
         if($container === null) { return; }
@@ -163,7 +163,7 @@ var MapInfoPropertyView = (function(parent) {
                     viewComponent: '_$paddingBottom'}]});
         this._AppendSelectLabelInput($container, {              label: 'Font family',
             options: [{value: 'andale mono', text: 'Andale Mono'},
-                {value: 'arial', text: 'Arial'},
+                {value: 'Arial', text: 'Arial'},
                 {value: 'arial black', text: 'Arial Black'},
                 {value: 'book antiqua', text: 'Book Antiqua'},
                 {value: 'comic sans ms', text: 'Comic Sans MS'},

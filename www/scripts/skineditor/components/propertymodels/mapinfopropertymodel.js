@@ -34,7 +34,7 @@ var MapInfoPropertyModel = (function(parent) {
         this.Top                = 'auto';
         this.Right              = 'auto';
         this.Bottom             = 'auto';
-    };
+    }
 
     MapInfoPropertyModel.prototype.GetObjectData = function(serializationInfo) {
         if(serializationInfo == null || !(serializationInfo instanceof SerializationInfo)) {

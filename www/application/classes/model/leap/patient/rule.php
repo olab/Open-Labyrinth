@@ -33,14 +33,10 @@ class Model_Leap_Patient_Rule extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
-            'id_patient_relation' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
-            )),
             'rule' => new DB_ORM_Field_Text($this, array(
                 'nullable' => FALSE,
             )),
-            'name' => new DB_ORM_Field_Integer($this, array(
+            'isCorrect' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 1,
                 'nullable' => FALSE,
             )),
@@ -52,11 +48,19 @@ class Model_Leap_Patient_Rule extends DB_ORM_Model {
     }
 
     public static function table() {
-        return 'patient_relation_rule';
+        return 'patient_rule';
     }
 
     public static function primary_key() {
         return array('id');
+    }
+
+    public function update($rule, $correct, $connectionId)
+    {
+        $record = $connectionId ? DB_ORM::model('Patient_Rule', array($connectionId)) : new $this;
+        $record->rule = $rule;
+        $record->isCorrect = $correct;
+        $record->save();
     }
 
 }

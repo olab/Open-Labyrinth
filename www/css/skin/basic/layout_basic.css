@@ -18,8 +18,10 @@
 *
 */
 /* Layout Stylesheet */
+@import 'basic.css';
+
 body {
-    margin:0px;
+    margin:0;
     font-family: Arial, Helvetica, sans-serif;
     color: #000000;
     text-align:center;
@@ -135,7 +137,7 @@ div.scroll {
 }
 
 .questionResponces.horizontal li {
-    float:left;
+    display: inline-block;
 }
 
 .questionResponces .questionSubmitButton {
@@ -528,26 +530,3 @@ a.file-link:visited {
     display: inline-block;
     margin-right: 10px;
 }
-
-.colored-bl {
-    position: absolute;
-    display: inline-block;
-    margin: 3px 0 0 -19px;
-    width: 15px;
-    height: 10px;
-}
-
-.colored-bl.popup-color {background: #800080;}
-.colored-bl.question-color {background: #0000ff;}
-.colored-bl.counter-color {background: #ff0000;}
-.colored-bl.counter-rule-color {background: orange;}
-.colored-bl.global-rule-color {background: #008000;}
-
-.popup-color {color: #800080;}
-.question-color {color: #0000ff;}
-.counter-color {color: #ff0000;}
-.counter-rule-color {color: orange;}
-.global-rule-color {color: #008000;}
-
-
-

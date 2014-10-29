@@ -18,70 +18,56 @@
 * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
 *
 */
-if (isset($templateData['map'])) {
-       ?>
-
-   <h1><?php echo __('Labyrinth information for') . ' "' . $templateData['map']->name . '"'; ?></h1>
+if (isset($templateData['map'])) { ?>
+   <h1><?php echo __('Labyrinth information for').' "'.$templateData['map']->name.'"'; ?></h1>
    <table class="table table-bordered table-striped">
-               <tbody>
+       <tbody>
+       <tr>
+           <td><?php echo __('title'); ?></td>
+           <td><?php echo $templateData['map']->name; ?></td>
+       </tr>
+       <tr>
+           <td><?php echo __('authors'); ?></td>
+           <td><?php
+               if (count($templateData['map']->authors) > 0) {
+                   foreach ($templateData['map']->authors as $author) {
+                       echo $author->user->nickname.'('.$author->user->username.'),';
+                   }
+               } ?>
+           </td>
+       </tr>
+       <tr>
+           <td><?php echo __('keywords'); ?></td>
+           <td><?php echo $templateData['map']->keywords; ?></td>
+       </tr>
+       <tr>
+           <td><?php echo __('Labyrinth type'); ?></td>
+           <td><?php echo $templateData['map']->type->name; ?></td>
+       </tr>
+       <tr>
+           <td><?php echo __('security'); ?></td>
+           <td><?php echo $templateData['map']->security->name; ?></td>
+       </tr>
+       <tr>
+           <td><?php echo __('number of nodes'); ?></td>
+           <td><?php
+               echo (count($templateData['map']->nodes) > 0) ? count($templateData['map']->nodes) : '0'; ?>
+           </td>
+        </tr>
+       <tr>
+           <td><?php echo __('number of links'); ?></td>
+           <td><?php echo $templateData['map']->countLinks();?></td>
+       </tr><?php
+       $vars = $templateData["map"]->as_array();
+       foreach ($vars as $property) {
+           if (Helper_Controller_Metadata::isMetadataRecord($property)){ ?>
                <tr>
-                       <td><?php echo __('title'); ?></td>
-                       <td><?php echo $templateData['map']->name; ?></td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('authors'); ?></td>
-                       <td>
-                               <?php if (count($templateData['map']->authors) > 0) { ?>
-                                       <?php foreach ($templateData['map']->authors as $author) { ?>
-                                               <?php echo $author->user->nickname; ?> (<?php echo $author->user->username; ?>),
-                                           <?php } ?>
-                                   <?php } ?>
-                           </td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('keywords'); ?></td>
-                       <td><?php echo $templateData['map']->keywords; ?></td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('Labyrinth type'); ?></td>
-                       <td><?php echo $templateData['map']->type->name; ?></td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('security'); ?></td>
-                       <td><?php echo $templateData['map']->security->name; ?></td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('number of nodes'); ?></td>
-                       <td>
-                               <?php
-                               if (count($templateData['map']->nodes) > 0) {
-                                       echo count($templateData['map']->nodes);
-               } else {
-                                       echo '0';
-               }
-               ?>
-                           </td>
-                   </tr>
-               <tr>
-                       <td><?php echo __('number of links'); ?></td>
-                       <td><?php echo $templateData['map']->countLinks();?></td>
-                   </tr>
-           <?php
-
-
-           $vars = $templateData["map"]->as_array();
-
-           foreach ($vars as $property):?>    <?php if (Helper_Controller_Metadata::isMetadataRecord($property)): ?>
-                   <tr>
-                           <?php $view =  Helper_Controller_Metadata::getView($property); ?>
-                <td><?php echo $view["label"]?></td>
-                           <td>
-
-                                   <?php echo $view["body"]?>
-                               </td>
-                       </tr>  <?php endif; ?>
-                   <?php endforeach;?>
-               </tbody>
-           </table>
-
-<?php } ?>
+                   <?php $view =  Helper_Controller_Metadata::getView($property); ?>
+                   <td><?php echo $view["label"]?></td>
+                   <td><?php echo $view["body"]?></td>
+               </tr><?php
+           }
+       } ?>
+       </tbody>
+   </table><?php
+} ?>

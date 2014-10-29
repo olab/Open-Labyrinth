@@ -18,47 +18,37 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
-
-<?php if (isset($templateData['maps'])) { ?>
+if (count($templateData['maps'])) { ?>
     <h1><?php echo __('Labyrinths'); ?></h1>
-
     <table  class="table table-striped table-bordered" id="my-labyrinths">
         <colgroup>
             <col style="width: 70%" />
             <col style="width: 30%" />
+        </colgroup>
         <thead>
             <tr>
                 <th><?php echo __('Labyrinth Title'); ?></th>
                 <th><?php echo __('Actions'); ?></th>
             </tr>
         </thead>
-        <tbody>
-            <?php
+        <tbody><?php
             foreach ($templateData['maps'] as $map) {
-                ?>
+                $exportType = $templateData['exportType']; ?>
                 <tr>
-                    <td>
-                        <?php echo $map->name; ?>
-                    </td>
+                    <td><?php echo $map->name; ?></td>
                     <td class="center">
-                        <a class="btn btn-info" href="<?php echo URL::base() . 'exportimportmanager/exportMVPMap/' . $map->id; ?>">
-                            <i class="icon-edit icon-white"></i>
-                            Export
+                        <a class="btn btn-info" href="<?php echo URL::base().'exportimportmanager/'.$exportType.'/'.$map->id; ?>">
+                            <i class="icon-edit icon-white"></i>Export
                         </a>
                     </td>
-
-
-                </tr>
-                <?php
-            }
-            ?>
+                </tr><?php
+            } ?>
         </tbody>
-    </table>
-<?php } else { ?>
+    </table><?php
+} else { ?>
     <div class="alert alert-info">
         <p class="lead"><?php echo __('You do not appear to have any labyrinths authored at this time.'); ?></p>
         <p><?php echo __('Now is as good-a-time as any to click the Create Labyrinth button above.'); ?></p>
-    </div>
-<?php } ?>
+    </div><?php
+} ?>
 

@@ -189,10 +189,10 @@ var Node = function() {
         }
 
         return isRedraw;
-    }
+    };
     
     self.MouseClick = function(mouse, viewport) {
-        var result = new Array();
+        var result = [];
 
         if(self.IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
             result[0] = self.id;
@@ -215,7 +215,7 @@ var Node = function() {
         }
         
         return result;
-    }
+    };
     
     self.IsNodeInRect = function(x, y, width, height, viewport) {
         var tr = new Transform();
@@ -316,9 +316,9 @@ var Node = function() {
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
-        
+
         return (x  >= (pos[0] + self.headerHeight * scale[0]) && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1]) && y <= (pos[1] + (self.height) * scale[1])); 
-    }
+    };
     
     self.TranslateNode = function(dx, dy, viewport) {
         var scale = viewport.GetScale();
@@ -350,7 +350,7 @@ var Node = function() {
     
     var DrawLinkButton = function(context) {
         var grd = context.createLinearGradient(self.headerHeight * 0.5, 5, self.headerHeight * 0.5, self.linkButtonRaius*2 + 5);
-        if(self.isRoot) {
+        if (self.isRoot) {
             grd.addColorStop(0, '#eec46a');
             grd.addColorStop(1, '#dcaa41');
         } else {
@@ -390,7 +390,7 @@ var Node = function() {
         context.lineWidth = self.linkButtonLineWidth;
         context.strokeStyle = self.linkButtonStrokeColor;
         context.stroke();
-    }
+    };
     
     var DrawAddButton = function(context) {
         var grd = context.createLinearGradient(self.headerHeight * 0.5, self.height - self.addButtonRadius*2 - 5, self.headerHeight * 0.5, self.height - self.addButtonRadius - 5);
@@ -402,24 +402,24 @@ var Node = function() {
             grd.addColorStop(1, '#a6a6a6');
         }
         context.save();
-            context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
+        context.beginPath();
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
 
-            context.clip();
-            
-            context.beginPath();
-            context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
-            context.fill();
+        context.clip();
 
-            context.beginPath();
-            context.lineWidth = 4;
-            context.shadowColor   = (self.isRoot) ? self.addButtonRootBgShadowColor : self.addButtonBgShadowColor;;
-            context.shadowBlur    = 2;
-            context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
-            context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
-            context.stroke();
+        context.beginPath();
+        context.fillStyle = grd;
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
+        context.fill();
+
+        context.beginPath();
+        context.lineWidth = 4;
+        context.shadowColor   = (self.isRoot) ? self.addButtonRootBgShadowColor : self.addButtonBgShadowColor;;
+        context.shadowBlur    = 2;
+        context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
+        context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
+        context.stroke();
         context.restore();
         
         context.beginPath();
@@ -430,7 +430,7 @@ var Node = function() {
         context.lineWidth = self.addButtonLineWidth;
         context.strokeStyle = self.addButtonLineColor;
         context.stroke();
-    }
+    };
     
     var DrawTitle = function (context, title)
     {

@@ -1,4 +1,4 @@
-var urlBase = window.location.origin + '/';
+var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
 
 jQuery(document).ready(function()
 {
@@ -19,6 +19,9 @@ jQuery(document).ready(function()
     $('#Poll').change(function() {
         clickOnButton($(this));
     });
+    $('#SJT').change(function() {
+        clickOnButton($(this));
+    });
 
     function clickOnButton (button){
         var typeId = button.attr('id');
@@ -27,7 +30,7 @@ jQuery(document).ready(function()
             th.hide();
             td.hide();
             webinar.hide();
-        } else if (typeId == 'SCT') {
+        } else if (typeId == 'SCT' || typeId == 'SJT') {
             th.show();
             td.show();
             webinar.show();

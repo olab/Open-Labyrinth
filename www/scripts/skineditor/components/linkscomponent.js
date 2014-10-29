@@ -158,11 +158,18 @@ var LinksComponent = (function(parent) {
                     $('<style>' +
                         '#' + this.GetId() + ' .btn { color: ' + this._model['ButtonFontColor'] + ';' +
                         'background-image: -moz-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');' +
-                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] +'), to(' + this._model[args['modelPropertyName']] +'));' +
-                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +');' +
-                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +');' +
-                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] +', ' + this._model[args['modelPropertyName']] +'); ' +
-                        '}</style>').appendTo(this._$uiContainer);
+                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] +'), to(' + this._model['ButtonColor1'] +'));' +
+                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor1'] +', ' + this._model['ButtonColor1'] +');' +
+                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');' +
+                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] +', ' + this._model['ButtonColor1'] +');} ' +
+
+                        '#' + this.GetId() + ' .btn:hover {color: ' + this._model['ButtonFontColor'] + ';' +
+                        'background-image: -moz-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
+                        'background-image: -webkit-gradient(linear, 0 0, 0 100%, from(' + this._model['ButtonColor2'] + '), to(#e6e6e6));' +
+                        'background-image: -webkit-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
+                        'background-image: -o-linear-gradient(top, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
+                        'background-image: linear-gradient(to bottom, ' + this._model['ButtonColor2'] + ', #e6e6e6);' +
+                    '</style>').appendTo(this._$uiContainer);
                 } else {
                     var object = JSON.parse(['{"', args['cssPropertyName'], '":"', this._model[args['modelPropertyName']], '"}'].join(''));
                     this._$uiContainer.css(object);

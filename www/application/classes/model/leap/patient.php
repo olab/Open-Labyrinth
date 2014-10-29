@@ -25,6 +25,13 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Patient extends DB_ORM_Model {
 
+    public $allType = array(
+        'Longitudinal same set',
+        'Longitudinal different set',
+        'Parallel same set',
+        'Parallel different set'
+    );
+
     public function __construct() {
         parent::__construct();
 
@@ -36,7 +43,12 @@ class Model_Leap_Patient extends DB_ORM_Model {
             'name' => new DB_ORM_Field_String($this, array(
                 'max_length' => 45,
                 'nullable' => FALSE,
-            ))
+            )),
+            'type' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => $this->allType,
+                'nullable' => FALSE,
+            )),
         );
     }
 
@@ -52,10 +64,10 @@ class Model_Leap_Patient extends DB_ORM_Model {
         return array('id');
     }
 
-    public function update ($name, $id)
+    public function update ($name, $type, $id)
     {
-        if ($id) DB_ORM::update('Patient')->set('name', $name)->where('id', '=', $id)->execute();
-        else $id = DB_ORM::insert('Patient')->column('name', $name)->execute();
+        if ($id) DB_ORM::update('Patient')->set('name', $name)->set('type', $type)->where('id', '=', $id)->execute();
+        else $id = DB_ORM::insert('Patient')->column('name', $name)->column('type', $type)->execute();
         return $id;
     }
 }

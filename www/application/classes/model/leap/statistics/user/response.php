@@ -72,30 +72,30 @@ class Model_Leap_Statistics_User_Response extends DB_ORM_Model {
         return array('id');
     }
     
-    public function saveWebInarResponse(array $ids) {
+    public function saveScenarioResponse(array $ids)
+    {
         $data = array();
         foreach ($ids as $id) {
             $data[] = DB_ORM::model('user_response')->getResponsesBySessionID($id);
         }
-        foreach ($data as $responses => $res){
-            foreach ($res as $response) {
-
-                $builder = DB_ORM::insert('statistics_user_response')
+        foreach ($data as $res)
+        {
+            foreach ($res as $response)
+            {
+                DB_ORM::insert('statistics_user_response')
                     ->column('id', $response['id'])
                     ->column('question_id', $response['question_id'])
                     ->column('session_id', $response['session_id'])
                     ->column('response', $response['response'])
-                    ->column('node_id', $response['node_id']);
-                $builder->execute();
+                    ->column('node_id', $response['node_id'])
+                    ->execute();
             }
         }
     }
 
     public function getResponses($questionId, $sessions) {
 
-        if (!count($sessions)) {
-            $sessions = array('');
-        }
+        if ( ! count($sessions)) $sessions = array('');
 
         $builder = DB_SQL::select('default')
             ->from($this->table())
@@ -111,9 +111,6 @@ class Model_Leap_Statistics_User_Response extends DB_ORM_Model {
 
             return $responces;
         }
-
         return NULL;
     }
 }
-
-?>

@@ -187,7 +187,7 @@ body {
 .skin-editor-property-window .label-select-control select { width: 56%; }
 
 .skin-editor-panel .skin-editor-property-window .label-input-control.file { 
-    clear: both; 
+    clear: both;
     margin-bottom: 10px;
 }
 .skin-editor-panel .skin-editor-property-window .label-input-control.file > div { position: relative; }
@@ -335,3 +335,11 @@ body {
 .jstree .jstree-checked a .jstree-checkbox { _background-position:-38px -19px; }
 .jstree .jstree-unchecked a .jstree-checkbox { _background-position:-2px -19px; }
 /* IE6 END */
+
+.skin_image {
+    padding: 5px 0;
+    color: #777;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+}

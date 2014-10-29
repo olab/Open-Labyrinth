@@ -34,14 +34,16 @@ class Controller_NodeManager extends Controller_Base {
     public function action_index()
     {
         $mapId = (int) $this->request->param('id', 0);
-        DB_ORM::model('Map')->editRight($mapId);
 
-        if ($mapId) {
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        if ($mapId)
+        {
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
 
             $ses = Session::instance();
-            if($ses->get('warningMessage')){
+            if($ses->get('warningMessage'))
+            {
                 $this->templateData['warningMessage'] = $ses->get('warningMessage');
                 $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
                 $ses->delete('listOfUsedReferences');
@@ -122,7 +124,7 @@ class Controller_NodeManager extends Controller_Base {
         $node   = DB_ORM::model('map_node', array($nodeId));
         $mapId  = $node->map_id;
 
-        DB_ORM::model('Map')->editRight($mapId);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         $this->templateData['tinyMCEv3']    = $tinyMCEv3;
         $this->templateData['node']         = $node;
@@ -207,8 +209,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId  = (int) $this->request->param('id', 0);
         $nodeId = (int) $this->request->param('id2', 0);
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         if ( ! $nodeId) Request::initial()->redirect(URL::base());
 
         $references = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
@@ -318,8 +319,7 @@ class Controller_NodeManager extends Controller_Base {
 
         if ( ! $mapId) Request::initial()->redirect(URL::base());
 
-        DB_ORM::model('Map')->editRight($mapId);
-
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['orderBy']      = $orderBy;
         $this->templateData['logicSort']    = $logicSort;
         $this->templateData['map']          = DB_ORM::model('map', array($mapId));
@@ -352,10 +352,10 @@ class Controller_NodeManager extends Controller_Base {
 
     public function action_sections() {
         $mapId = (int) $this->request->param('id', 0);
-        if ($mapId) {
+        if ($mapId)
+        {
 
-            DB_ORM::model('Map')->editRight($mapId);
-
+            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['node_sections'] = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
             $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
@@ -441,7 +441,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         $sectionId = (int) $this->request->param('id2', 0);
         if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
-            DB_ORM::model('map_node_section')->updateSectionName($sectionId, $_POST);
+            DB_ORM::model('map_node_section')->updateSectionRow($sectionId, $_POST);
             Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
             Request::initial()->redirect(URL::base());

@@ -1,6 +1,8 @@
 jQuery(document).ready(function(){
-    var browserUpdateWarning = new BrowserUpdateWarning();
-    var body = $('body');
+    var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/',
+        browserUpdateWarning = new BrowserUpdateWarning(),
+        body = $('body');
+
     browserUpdateWarning.Check();
     
     //------------------Case Wizard--------------------//
@@ -385,7 +387,11 @@ jQuery(document).ready(function(){
         $('form').attr('action', url).submit();
     });
 
+    var sameLabyrinthUser = null;
+
+    if (typeof historyOfAllUsers == 'undefined') var historyOfAllUsers = [];
     $.each(historyOfAllUsers, function(key, value) {
+        sameLabyrinthUser = value;
         if (value['username'] != currentUser && value['readonly'] != 1) {
             var links = $('a[href="' + value['href'] + '"]');
             var re = /(grid|visualManager)/i;
@@ -394,40 +400,59 @@ jQuery(document).ready(function(){
 
             $.each(links, function() {
                 if (re.test(value['href'])) {
-                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/counterManager/grid/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
-                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/nodeManager/grid/' + labyrinthId[1] + '/1" />').parent().css('position', 'relative');
-                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="/visualManager/index/' + labyrinthId[1] + '" />').parent().css('position', 'relative');
+                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/counterManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/nodeManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/visualManager/index/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
                 } else {
-                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append('<span rel="tooltip" title="Checkin by ' + value['username'] + '" class="lock" id="' + value['href'] + '" />').parent().css('position', 'relative');
+                    $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], value['href'], value.id)).parent().css('position', 'relative');
                 }
                 var deleteButton = $(this).nextAll('.btn.btn-danger');
-                if (deleteButton.length) {
-                    deleteButton.remove();
-                }
+                if (deleteButton.length) deleteButton.remove();
+
                 var imageEditButton = $(this).nextAll('.btn.btn-inverse');
-                if (imageEditButton.length) {
-                    imageEditButton.remove();
-                }
+                if (imageEditButton.length) imageEditButton.remove();
             });
         }
     });
 
+    $('#discard').click(function(){
+        var userId = $(this).data('user'),
+            href   = $(this).data('href').substring(1);
+        $.get(
+            urlBase + 'home/ajaxLogout/' + userId,
+            function(){
+                window.location.href = urlBase + href;
+            }
+        );
+    });
+
+    function createSpan(userName, id, idUser){
+        return '<span rel="tooltip" title="Checkin by ' + userName + '" class="lock" id="' + id + '" data-user="' + idUser + '" />';
+    }
+
+    var readonlyNotice = $('#readonly-notice');
     $(".showCustomModalWindow").click(function() {
-        var url = $(this).children('.lock').attr('id');
-        var obj = $('#readonly-notice');
-        obj.find('a.btn').attr('href', url);
-        obj.modal('show');
+        var url     = $(this).children('.lock').attr('id'),
+            userId  = $(this).children('.lock').data('user'),
+            discard = readonlyNotice.find('#discard');
+
+        discard.data('user', userId);
+        discard.data('href', url);
+        readonlyNotice.find('a.btn').attr('href', url);
+        readonlyNotice.modal('show');
 
     });
 
     $(".lock").tooltip({placement: "right"});
 
+    if (typeof historyShowWarningPopup == 'undefined') var historyShowWarningPopup = false;
     if (historyShowWarningPopup) {
         $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
         $('.btn').attr('href', 'javascript:void(0)');
         $('.editable-text').attr('contenteditable', 'false');
         $('.row-fluid form').attr('action','');
         $('.row-fluid input').attr('onclick','javascript:void(0)');
+        readonlyNotice.find("button").prop('disabled', false);
     }
 
     var messageContainer = $('#collaboration_message'),
@@ -436,26 +461,38 @@ jQuery(document).ready(function(){
     var stopList = [],
         usernames = [],
         users = null;
+    if (typeof currentUserReadOnly == 'undefined') var currentUserReadOnly = false;
+    if (typeof userHasBlockedAccess == 'undefined') var userHasBlockedAccess = false;
     if (!currentUserReadOnly && userHasBlockedAccess) {
         setInterval(function() {
-            $.get(historyAjaxCollaborationURL, function(data) {
-                usernames = [];
-                users = eval('(' + data + ')');
-                $.each(users, function(key, value){
-                    if (inArray(key, stopList)) {
-                        delete users[key];
+            $.get(
+                historyAjaxCollaborationURL,
+                function(data) {
+                    usernames = [];
+                    users = eval('(' + data + ')');
+                    if (users['reloadPage'] == 1) {
+                        $('#discardWarning').modal();
                     } else {
-                        stopList.push(key);
-                        usernames.push(value);
+                        $.each(users, function(key, value){
+                            if (inArray(key, stopList)) delete users[key];
+                            else {
+                                stopList.push(key);
+                                usernames.push(value);
+                            }
+                        });
+                        if (usernames.length) {
+                            utils = new Utils();
+                            utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
+                        }
                     }
-                });
-                if (usernames.length) {
-                    utils = new Utils();
-                    utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                 }
-            });
+            );
         }, 30000);
     }
+
+    $('#discardReload').click(function(){
+        window.location.reload();
+    });
 
     function inArray(needle, haystack) {
         var length = haystack.length;
@@ -493,6 +530,21 @@ jQuery(document).ready(function(){
     });
 
     $('.remove-condition-js').live('click', function(){
+        if ($(this).data('delete')) {
+            var deleteRecord = $(this).next().find('select'),
+                input        = '<input type="hidden" name="' + deleteRecord.data('id') + '">';
+
+            $(this).parent().before(input);
+        }
+        $(this).parent().remove();
+    });
+
+    $('.remove-scenario-js').live('click', function(){
+        var id = $(this).data('id');
+        if(id){
+            var input = '<input type="hidden" name="scenario_delete[]" value="'+ id + '">';
+            $(this).parent().before(input);
+        }
         $(this).parent().remove();
     });
 
@@ -517,24 +569,6 @@ jQuery(document).ready(function(){
         }
     });
 
-    $('#assign-type').change(function(){
-        var type        = $(this).find('option:selected').val(),
-            assignField = $('.assign-bl-js'),
-            assignBlocks = assignField.children('.condition-control-group');
-
-        if (type == 2 || type == 4) assignField.removeClass('assign-same');
-        if ((type == 1 || type == 3) && assignField.not('assign-same'))
-        {
-            assignIterator = 0;
-            assignField.addClass('assign-same');
-            for (var i=0; i<assignBlocks.length; i++)
-            {
-                var assignBlock = assignBlocks.eq(i);
-                if (assignBlock.hasClass('add-assign-bl')) assignBlock.remove();
-            }
-        }
-    });
-
     $('.add-r-patient-js').click(function(){
         var block = $('.r-patient-js').last().clone().show();
         block.insertBefore($(this));
@@ -556,19 +590,61 @@ jQuery(document).ready(function(){
         $(this).parents('.add-contributor-bl').remove();
     });
 
-    $('.add-author').click(function(){
-        var bl = $('.add-author-bl').last().clone().show();
-        $('.author-bl').append(bl);
+    $('.patient-type-js').change(function(){
+        if ($(this).data('type') == 'different') {
+            $('.patient-different').show();
+            $('.patient-same').hide();
+        } else {
+            $('.patient-different').hide();
+            $('.patient-same').show();
+        }
     });
 
-    $('.delete-author-bl').live('click', function(){
-        $(this).parent().remove();
+    var patientCondition = $('.patient-condition-js');
+
+    patientCondition.each(function(){
+        getPatientCondition($(this));
     });
 
-    $('.delete-author').live('click', function(){
-        var id  = $(this).data('id'),
-            url = window.location.origin + '/labyrinthManager/deleteAuthor/' + id;
-        $.get(url, function() {});
-        $(this).parent().remove();
+    patientCondition.change(function(){
+        getPatientCondition($(this));
     });
+
+    function getPatientCondition(obj)
+    {
+        $.get(
+            urlBase + 'patient/ajaxGetCondition/' + obj.val(),
+            function(data){
+                var ul = '<ul style="list-style-type: none; margin: 0;">';
+                obj.next().remove();
+                $.each($.parseJSON(data), function(id, name){
+                    ul += '<li>[[COND:' + id + ']] - ' + name + '</li>';
+                });
+                ul += '</ul>';
+                obj.after(ul);
+            }
+        );
+    }
+
+    var validatorSelect = $('.validator');
+    if (validatorSelect) {
+        validatorSelect.change(function(){
+            var $this        = $(this),
+                value        = $(this).val(),
+                errorMessage = $(this).parent().parent().next(),
+                parameter    = $this.find(":selected").data('parameter'),
+                nextElement  = $this.next(),
+                newInput     = '<input class="second_parameter" type="text" name="second_parameter" placeholder="@placeholder@">';
+
+            if (nextElement.hasClass('second_parameter')) nextElement.remove();
+
+            if (value == 'no validator') errorMessage.hide();
+
+            if (parameter) {
+                errorMessage.show();
+                if (parameter == 'range') $this.after(newInput.replace('@placeholder@', 'Enter min, max'));
+                else if (parameter != 'str') $this.after(newInput.replace('@placeholder@', 'Enter ' + parameter));
+            }
+        });
+    }
 });

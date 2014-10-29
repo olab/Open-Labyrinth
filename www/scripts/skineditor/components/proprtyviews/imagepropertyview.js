@@ -6,6 +6,9 @@ var ImagePropertyView = (function(parent) {
                                                     '<label>@LABEL@: </label>' +
                                                     '<div><button class="btn">Add file</button><button class="btn btn-danger"><i class="icon-trash icon-white"></i></button><input type="file"/></div>' +
                                                  '</div>';
+    ImagePropertyView.LABEL_FILE_INPUT_NAME    = '<div class="label-input-control">' +
+                                                    '<label>Image name: </label><div class="skin_image">@IMAGE_NAME@</div>'+
+                                                 '</div>';
     
     function ImagePropertyView(viewModel) { 
         ImagePropertyView.super.constructor.apply(this);
@@ -34,10 +37,12 @@ var ImagePropertyView = (function(parent) {
         this._$right              = null;
         this._$bottom             = null;
         this._$src                = null;
-    };
+    }
     
     ImagePropertyView.prototype.AppendTo = function($container) {
-        if($container === null) { return; }
+        if($container === null) {
+            return;
+        }
         
         this._AppendLabelInput($container, {                label: 'Width', 
                                              viewModelProperyName: 'Width', 
@@ -179,26 +184,44 @@ var ImagePropertyView = (function(parent) {
     
     ImagePropertyView.prototype._AppendImageInput = function($container, parameters) {
         var instance = this,
-            $ui      = null;
-        
+            $ui      = null,
+            backgroundImage = 'none';
+
+        if (instance._viewModel._objectId){
+            var id = instance._viewModel._objectId;
+            backgroundImage = $('img#' + id).prop('src');
+            backgroundImage = backgroundImage.split('/');
+            backgroundImage = backgroundImage[backgroundImage.length-1];
+        }
+
         if('label'         in parameters &&
            'viewComponent' in parameters) {
             $ui = $(ImagePropertyView.LABEL_FILE_INPUT_HTML.replace('@LABEL@', parameters['label'])).appendTo($container);
+            console.log(backgroundImage);
+            var $fileName = $(ImagePropertyView.LABEL_FILE_INPUT_NAME.replace('@IMAGE_NAME@', backgroundImage)).appendTo($container);
             
             this[parameters['viewComponent']] = $ui.find('input');
             this[parameters['viewComponent']].change(function(e) {
-                if(!this.files[0]) { return; }
-                
-                var fileReader = new FileReader();
+                if( ! this.files[0]) {
+                    return;
+                }
+                var fileReader = new FileReader(),
+                    fileName   = this.files[0].name;
                 
                 fileReader.onload = function(e) {
                     $.ajax({
                         url: getUploadURL(),
                         type: 'POST',
-                        data: { skinId: getSkinId(), data: e.target.result},
+                        data: { skinId: skinId, data: e.target.result, fileName: fileName},
                         success: function(data) {
                             var object = JSON.parse(data);
-                            if(object === null || object.status === 'error') { alert("ERROR"); }
+                            if(object === null || object.status === 'error') {
+                                alert("ERROR");
+                            }
+
+                            if (fileName) {
+                                $fileName.find('.skin_image').html(fileName);
+                            }
 
                             instance._viewModel.SetSrc(object.path);
                         }

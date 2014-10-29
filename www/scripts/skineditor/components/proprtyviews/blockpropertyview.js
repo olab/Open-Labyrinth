@@ -20,9 +20,12 @@ var BlockPropertyView = (function(parent) {
                                                     '<div><select>@OPTIONS@</select></div>' +
                                                  '</div>';
     BlockPropertyView.LABEL_SELECT_OPTION_HTML = '<option value="@VALUE@">@TEXT@</option>';
-    BlockPropertyView.LABEL_FILE_INPUT_HTML    = '<div class="label-input-control file" style="margin-bottom: 10px">' +
+    BlockPropertyView.LABEL_FILE_INPUT_HTML    = '<div class="label-input-control file">' +
                                                     '<label>@LABEL@: </label>' +
                                                     '<div><button class="btn">Add file</button><button class="btn btn-danger"><i class="icon-trash icon-white"></i></button><input type="file"/></div>' +
+                                                 '</div>';
+    BlockPropertyView.LABEL_FILE_INPUT_NAME    = '<div class="label-input-control">' +
+                                                    '<label>Image name: </label><div class="skin_image">@IMAGE_NAME@</div>'+
                                                  '</div>';
     BlockPropertyView.LABEL_ALIGN_INPUT_HTML   = '<div class="label-input-control">' +
                                                     '<label>@LABEL@: </label>' +
@@ -36,11 +39,10 @@ var BlockPropertyView = (function(parent) {
                                                     '<label>@LABEL@: </label>' +
                                                     '<div><input type="checkbox" style="width: 5%; margin-top: 9px;" value="1"/></div></div>';
     
-    function BlockPropertyView(viewModel) { 
+    function BlockPropertyView(viewModel) {
         BlockPropertyView.super.constructor.apply(this);
         
         this._viewModel           = viewModel;
-        
         this._$name               = null;
         this._$width              = null;
         this._$minWidth           = null;
@@ -74,10 +76,12 @@ var BlockPropertyView = (function(parent) {
         this._$right              = null;
         this._$bottom             = null;
         this._$isPopupInside      = null;
-    };
+    }
     
     BlockPropertyView.prototype.AppendTo = function($container) {
-        if($container === null) { return; }
+        if($container === null) {
+            return;
+        }
         
         this._AppendLabelInput($container, {                label: 'Width', 
                                              viewModelProperyName: 'Width', 
@@ -163,10 +167,10 @@ var BlockPropertyView = (function(parent) {
                                                 modelPropertyName: 'BackgroundColor', 
                                                   cssPropertyName: 'background-color', 
                                                     viewComponent: '_$backgroundColor' });
-        this._AppendImageInput($container, {                label: 'Background image', 
-                                             viewModelProperyName: 'BackgroundURL', 
+        this._AppendImageInput($container, {                label: 'Background image',
+                                             viewModelProperyName: 'BackgroundURL',
                                                 modelPropertyName: 'BackgroundURL', 
-                                                  cssPropertyName: 'background-image', 
+                                                  cssPropertyName: 'background-image',
                                                     viewComponent: '_$backgroundURL' });
         this._AppendSelectLabelInput($container, {          label: 'Background repeat', 
                                                           options: [{value: 'no-repeat', text: 'no-repeat'},
@@ -474,7 +478,7 @@ var BlockPropertyView = (function(parent) {
         var instance    = this,
             $ui         = null,
             optionsHTML = '';
-        
+
         if('label'                            in parameters && 
            'options'                          in parameters &&
            'viewModelProperyName'             in parameters && 
@@ -486,10 +490,10 @@ var BlockPropertyView = (function(parent) {
                 optionsHTML += BlockPropertyView.LABEL_SELECT_OPTION_HTML.replace('@VALUE@', parameters['options'][i].value)
                                                                          .replace('@TEXT@', parameters['options'][i].text);
             }
-            
+
             $ui = $(BlockPropertyView.LABEL_SELECT_HTML.replace('@LABEL@', parameters['label'])
                                                        .replace('@OPTIONS@', optionsHTML)).appendTo($container);
-            
+
             this[parameters['viewComponent']] = $ui.find('select');
             this[parameters['viewComponent']].val(this._viewModel.GetProperty(parameters['viewModelProperyName']));
             this[parameters['viewComponent']].change(function(e) {
@@ -513,9 +517,20 @@ var BlockPropertyView = (function(parent) {
     };
     
     BlockPropertyView.prototype._AppendImageInput = function($container, parameters) {
-        var instance = this,
-            $ui      = null;
-        
+        var instance        = this,
+            $ui             = null,
+            backgroundImage = 'none';
+
+        if (instance._viewModel._parentId){
+            var id = instance._viewModel._objectId;
+            backgroundImage = $('div#' + id).css('background-image');
+        } else {
+            backgroundImage = $('body').css('background-image');
+        }
+
+        backgroundImage = backgroundImage.split('/');
+        backgroundImage = backgroundImage[backgroundImage.length-1].slice(0,-1);
+
         if('label'                            in parameters && 
            'viewModelProperyName'             in parameters && 
            parameters['viewModelProperyName'] in this._viewModel &&
@@ -524,28 +539,35 @@ var BlockPropertyView = (function(parent) {
            'viewComponent'                    in parameters) {
 
             $ui = $(BlockPropertyView.LABEL_FILE_INPUT_HTML.replace('@LABEL@', parameters['label'])).appendTo($container);
-            
+            var $fileName = $(BlockPropertyView.LABEL_FILE_INPUT_NAME.replace('@IMAGE_NAME@', backgroundImage)).appendTo($container);
+
             this[parameters['viewComponent']] = $ui.find('input');
-            this[parameters['viewComponent']].change(function(e) {
-                if(!this.files[0]) { return; }
-                
-                var fileReader = new FileReader();
-                
+            this[parameters['viewComponent']].change(function() {
+                if( ! this.files[0]) return;
+
+                var fileReader = new FileReader(),
+                    fileName = this.files[0].name;
+
                 fileReader.onload = function(e) {
                     $.ajax({
                         url: getUploadURL(),
                         type: 'POST',
-                        data: { skinId: getSkinId(), data: e.target.result},
+                        data: {skinId: skinId, fileName: fileName, data: e.target.result},
                         success: function(data) {
                             var object = JSON.parse(data);
-                            if(object === null || object.status === 'error') { alert("ERROR"); }
+                            if(object === null || object.status === 'error') {
+                                alert("ERROR");
+                            }
+                            if (fileName) {
+                                $fileName.find('.skin_image').html(fileName);
+                            }
 
                             instance._viewModel.SetProperty(instance, {
-                                modelPropertyName: parameters['modelPropertyName'],
-                                cssPropertyName: parameters['cssPropertyName'],
-                                properyName: parameters['viewModelProperyName'],
-                                newValue: ['url(', object.path, ')'].join(''),
-                                viewComponent: parameters['viewComponent']
+                                modelPropertyName:  parameters['modelPropertyName'],
+                                cssPropertyName:    parameters['cssPropertyName'],
+                                properyName:        parameters['viewModelProperyName'],
+                                newValue:           ['url(', object.path, ')'].join(''),
+                                viewComponent:      parameters['viewComponent']
                             });
                         }
                     });
@@ -556,11 +578,11 @@ var BlockPropertyView = (function(parent) {
             
             $ui.find('.btn-danger').click(function() {
                 instance._viewModel.SetProperty(instance, {
-                        modelPropertyName: parameters['modelPropertyName'],
-                          cssPropertyName: parameters['cssPropertyName'],
-                              properyName: parameters['viewModelProperyName'], 
-                                 newValue: 'none', 
-                            viewComponent: parameters['viewComponent']
+                    modelPropertyName:  parameters['modelPropertyName'],
+                    cssPropertyName:    parameters['cssPropertyName'],
+                    properyName:        parameters['viewModelProperyName'],
+                    newValue:           'none',
+                    viewComponent:      parameters['viewComponent']
                 });
             });
         }

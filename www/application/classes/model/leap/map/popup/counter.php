@@ -178,5 +178,9 @@ class Model_Leap_Map_Popup_Counter extends DB_ORM_Model {
         }
         return $result;
     }
+
+    public function exportMVP($popupId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('popup_id', '=', $popupId)->query()->as_array();
+    }
 }
-?>

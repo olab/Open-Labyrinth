@@ -28,6 +28,7 @@ interface Skin_Builder {
     public function buildLinks();
     public function buildReview();
     public function buildMapInfo();
+    public function buildSection();
     public function buildBookmark();
     public function buildReset();
     public function getSkin();

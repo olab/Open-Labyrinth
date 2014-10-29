@@ -81,6 +81,8 @@ Kohana::init(array(
     'errors' => TRUE
 ));
 
+Cookie::$path = Kohana::$base_url;
+
 /**
  * Attach the file write to logging. Multiple writers are supported.
  */
@@ -101,6 +103,7 @@ $modules = array(
     // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
     'database' => MODPATH . 'database', // Database access
     // 'image'      => MODPATH.'image',      // Image manipulation
+    'acl' => MODPATH . 'acl', // Access control module
     'orm' => MODPATH . 'orm', // Object Relationship Mapping
     // 'unittest'   => MODPATH.'unittest',   // Unit testing
     // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation

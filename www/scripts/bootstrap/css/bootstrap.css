@@ -785,6 +785,44 @@ h4 small {
   border-bottom: 1px solid #eeeeee;
 }
 
+h1.page-header {
+    padding-bottom: 19px;
+    margin: 20px 0 30px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.page-header>.pull-right {
+    margin-top: 0;
+}
+
+.add-condition-js {
+    margin-right: 10px;
+}
+
+#conditionsForm td:nth-child(1){
+    width: 220px;
+}
+#conditionsForm td:nth-child(2) input{
+    width: 98%;
+}
+#conditionsForm td:nth-child(3){
+    width: 250px;
+}
+#conditionsForm td:nth-child(4){
+    width: 157px;
+}
+#conditionsForm td:nth-child(5){
+    width: 104px;
+}
+td select.assign-condition{
+    margin-bottom: 10px;
+}
+td select.assign-condition:last-child{
+    margin-bottom: 0;
+}
+.conditionAssign{
+    margin: 0;
+}
 ul,
 ol {
   padding: 0;
@@ -1073,6 +1111,15 @@ input[type="color"],
   border-radius: 4px;
 }
 
+input.counter-grid {
+    margin: 0;
+}
+.counter-grid-tb th:nth-child(1){
+    width: 220px;
+}
+.counter-grid-tb th:nth-child(3){
+    width: 315px;
+}
 input,
 textarea,
 .uneditable-input {
@@ -1921,9 +1968,8 @@ div.tipsy{
 
 }
 
-legend + .control-group {
-  margin-top: 20px;
-  -webkit-margin-top-collapse: separate;
+input.orderInSection {
+    margin: -2px 3px 0 0;
 }
 
 .form-horizontal .control-group {
@@ -5565,17 +5611,13 @@ a.thumbnail:hover {
 }
 
 .label {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+  border-radius: 3px;
 }
 
 .badge {
   padding-right: 9px;
   padding-left: 9px;
-  -webkit-border-radius: 9px;
-     -moz-border-radius: 9px;
-          border-radius: 9px;
+  border-radius: 9px;
 }
 
 .label:empty,
@@ -6107,12 +6149,11 @@ h1 > .pull-right {
 }
 
 .patient-t td:nth-child(1){
-    width: 10%;
+    width: 15%;
     min-width: 66px;
 }
-.patient-t td:nth-child(2){ width: 35%;}
-.patient-t td:nth-child(3){ width: 30%;}
-.patient-t td:nth-child(4){
+.patient-t td:nth-child(2){ width: 65%;}
+.patient-t td:nth-child(3){
     width: 25%;
     min-width: 150px;
 }
@@ -6143,6 +6184,10 @@ input.assign-type {
     display: none;
 }
 
+.assign-same .assign-queue {
+    opacity: 0;
+}
+
 .assign-t td:nth-child(1){
     width: 15%;
     min-width: 155px;
@@ -6152,10 +6197,6 @@ input.assign-type {
 .assign-t td:nth-child(4){
     width: 15%;
     min-width: 150px;
-}
-
-.condition-control-group:nth-child(2) .dra{
-    display: none;
 }
 
 .wizard_button img {
@@ -6214,6 +6255,28 @@ input.assign-type {
     width: 600px;
 }
 
+.poll-node-section > label{
+    height: 30px;
+    line-height: 30px;
+}
+
 .poll-node-indent {
     margin-right: 10px;
+}
+
+.patient-condition {
+    display: inline-block;
+}
+
+.patient-same,
+.patient-different {
+    display: inline-block;
+    width: 49%;
+}
+.patient-different {
+    display: none;
+}
+
+.wizard_button img {
+    width: 100%;
 }
