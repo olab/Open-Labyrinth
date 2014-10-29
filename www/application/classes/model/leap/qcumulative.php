@@ -61,7 +61,15 @@ class Model_Leap_qCumulative extends DB_ORM_Model {
         return array('id');
     }
 
-    public function setReset($mapId)
+    public function setResetByScenario($scenarioId)
+    {
+        $mapsId = DB_ORM::model('webinar_map')->getMapsId($scenarioId);
+        foreach ($mapsId as $mapId) {
+            $this->setResetByMap($mapId);
+        }
+    }
+
+    public function setResetByMap($mapId)
     {
         $questions = DB_ORM::select('Map_Question')->where('map_id', '=', $mapId)->where('entry_type_id', '=', 9)->query()->as_array();
         foreach ($questions as $question) {

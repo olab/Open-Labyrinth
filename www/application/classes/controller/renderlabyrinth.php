@@ -1037,7 +1037,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             Session::instance()->set('step', $scenarioStep);
         }
 
-        DB_ORM::model('qCumulative')->setReset($mapId);
+        DB_ORM::model('qCumulative')->setResetByMap($mapId);
 
         Request::initial()->redirect(URL::base().'renderLabyrinth/index/'.$mapId.'?reset=true');
     }
@@ -1501,10 +1501,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $cumulative  = ($qTitle == 'Cumulative');
                 $class       = $cumulative ? ' cumulative' : '';
                 $placeholder = $cumulative ? '' : ' placeholder="'.$question->prompt.'"';
-                $content     = $cumulative ? htmlspecialchars($question->prompt) : '';
+                $content     = '';
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
+
+                if ( ! $previousAnswers AND $cumulative) {
+                    $content = htmlspecialchars($question->prompt);
+                }
 
                 $result =
                     '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$previousAnswers.$content.'</textarea>'.

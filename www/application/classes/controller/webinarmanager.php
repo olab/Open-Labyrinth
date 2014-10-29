@@ -659,10 +659,10 @@ class Controller_WebinarManager extends Controller_Base {
     }
 
     public function action_reset() {
-        $webId = $this->request->param('id', null);
+        $scenarioId = $this->request->param('id', null);
 
-        $dataStatisticsIds = DB_ORM::model('statistics_user_session')->getSessionByWebinarId($webId);
-        list($data, $ids) = DB_ORM::model('user_session')->getSessionByWebinarId($webId,$dataStatisticsIds);
+        $dataStatisticsIds = DB_ORM::model('statistics_user_session')->getSessionByWebinarId($scenarioId);
+        list($data, $ids) = DB_ORM::model('user_session')->getSessionByWebinarId($scenarioId,$dataStatisticsIds);
 
         if (count($data)) {
             // Save Statistics
@@ -671,7 +671,8 @@ class Controller_WebinarManager extends Controller_Base {
             DB_ORM::model('statistics_user_response')->saveScenarioResponse( $ids );
         }
 
-        DB_ORM::model('webinar')->resetWebinar($webId);
+        DB_ORM::model('qCumulative')->setResetByScenario($scenarioId);
+        DB_ORM::model('webinar')->resetWebinar($scenarioId);
 
         Request::initial()->redirect(URL::base().'webinarmanager/index');
     }

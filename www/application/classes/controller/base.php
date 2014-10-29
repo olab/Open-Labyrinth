@@ -69,6 +69,7 @@ class Controller_Base extends Controller_Template {
         'webinarmanager/editConditionSave',
         'webinarmanager/index',
         'webinarmanager/edit',
+        'webinarmanager/reset',
         'webinarmanager/resetCondition',
         'webinarmanager/save',
         'webinarmanager/mapsGrid',

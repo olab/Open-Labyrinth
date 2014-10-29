@@ -9,15 +9,15 @@ var submitTextQ         = [],
     actionGoClicked     = false;
 
 function valToTextarea() {
-    tinyMCE.activeEditor.on('blur', function() {
+    tinyMCE.activeEditor.on('keyUp', function() {
         $('#'+$(this).prop('id')).html(tinyMCE.activeEditor.getContent());
     });
 }
 
-
 $(document).ready(function(){
     questions = $('[name^="qresponse_"]');
     var goLink = $('a[href^="/renderLabyrinth/go"]');
+
     goLink.click(function(e){
 
         toNodeHref = e.currentTarget.href;

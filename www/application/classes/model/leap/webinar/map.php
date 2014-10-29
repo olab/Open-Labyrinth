@@ -152,4 +152,18 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
 
         return $result;
     }
+
+    public function getMapsId($scenarioId)
+    {
+        $result = array();
+        $records = DB_ORM::select('webinar_map')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+        foreach ($records as $record) {
+            if ($record->which == 'section') {
+                $result[] = DB_ORM::model('map_node_section', array($record->reference_id))->map_id;
+            } else {
+                $result[] = $record->reference_id;
+            }
+        }
+        return $result;
+    }
 }
