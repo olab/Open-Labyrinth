@@ -332,6 +332,12 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
     }
 
     public static function getEnabled(){
+        error_reporting(E_ALL ^ E_DEPRECATED);
+        $checktable  = DB::query(null,'SHOW TABLES LIKE "vocablets"')->execute();
+         //$table_exists = mysql_num_rows($checktable) > 0;
+
+        if($checktable==false) return array();
+
         $builder = DB_SQL::select('default')->from(self::table())->where('state', '=', 1);
         $result = $builder->query();
 
