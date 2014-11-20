@@ -679,37 +679,34 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         return NULL;
     }
 
-    public function importQuestion($question, $responses) {
-        $builder = DB_ORM::insert('map_question')
-            ->column('map_id', $question->map_id)
-            ->column('stem', $question->stem)
-            ->column('entry_type_id', $question->entry_type_id)
-            ->column('width', $question->width)
-            ->column('height', $question->height)
-            ->column('feedback', $question->feedback)
-            ->column('show_answer', $question->show_answer)
-            ->column('num_tries', $question->num_tries)
-            ->column('counter_id', NULL)
-            ->column('show_submit', $question->show_submit)
-            ->column('redirect_node_id', NULL)
-            ->column('submit_text', $question->submit_text)
-            ->column('type_display', $question->type_display)
-            ->column('settings', $question->settings);
+    public function importQuestion($question, $responses)
+    {
+        unset($question->name_file);
+        unset($question->id);
 
+        $builder = DB_ORM::insert('map_question');
+        foreach ($question as $key => $value) {
+            $value = (string) $value;
+            if ( ! is_numeric($value)) {
+                $value = base64_decode($value);
+            }
+            $builder->column($key, $value);
+        }
         $newId = $builder->execute();
 
-        if(count($responses) > 0) {
-            foreach($responses as $response) {
-                DB_ORM::insert('map_question_response')
-                    ->column('question_id', $newId)
-                    ->column('response', $response->response)
-                    ->column('feedback', $response->feedback)
-                    ->column('is_correct', $response->is_correct)
-                    ->column('score', $response->score)
-                    ->column('from', $response->from)
-                    ->column('to', $response->to)
-                    ->execute();
+        foreach($responses as $response) {
+            unset($response['id']);
+            $response['question_id'] = $newId;
+
+            $builder = DB_ORM::insert('map_question_response');
+            foreach ($response as $key => $value) {
+                $value = (string) $value;
+                if ( ! is_numeric($value)) {
+                    $value = base64_decode($value);
+                }
+                $builder->column($key, $value);
             }
+            $builder->execute();
         }
     }
 }

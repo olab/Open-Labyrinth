@@ -62,17 +62,196 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'mapUserManager', 'action' => 'index'),
     );
 
+    private $exceptionsTopMenu = array(
+        'webinarmanager/allConditions',
+        'webinarmanager/saveConditions',
+        'webinarmanager/editCondition',
+        'webinarmanager/editConditionSave',
+        'webinarmanager/index',
+        'webinarmanager/edit',
+        'webinarmanager/reset',
+        'webinarmanager/resetCondition',
+        'webinarmanager/save',
+        'webinarmanager/mapsGrid',
+        'webinarmanager/saveMapsGrid',
+        'webinarmanager/play',
+        'webinarmanager/progress',
+        'webinarmanager/my',
+        'webinarmanager/render',
+        'webinarmanager/mapReport4R',
+        'webinarmanager/mapReportSCT',
+        'webinarmanager/mapReportPoll',
+        'webinarmanager/mapReportSJT',
+        'webinarmanager/stepReport4R',
+        'webinarmanager/stepReportSCT',
+        'webinarmanager/stepReportPoll',
+        'webinarmanager/stepReportSJT',
+        'webinarmanager/changeStep',
+        'webinarmanager/publishStep',
+        'usermanager/editUser',
+        'usermanager/saveOldUser',
+        'usermanager/index',
+        'usermanager/addGroup',
+        'usermanager/editGroup',
+        'usermanager/removeMember',
+        'usermanager/deleteGroup',
+        'home/login',
+        'home/logout',
+        'reportmanager/finishAndShowReport',
+        'countermanager/checkCommonRule',
+        'questionmanager/questionPOST',
+        'questionmanager/deleteQuestion',
+        'questionmanager/duplicateQuestion',
+        'questionmanager/exportQuestion',
+        'avatarmanager/addAvatar',
+        'avatarmanager/updateAvatar',
+        'countermanager/addCounter',
+        'popupmanager/deletePopup',
+        'skinmanager/saveSelectedSkin',
+        'skinmanager/uploadNewSkin',
+        'skinmanager/exportSkins',
+        'skinmanager/deleteSkin',
+        'countermanager/deleteCommonRule',
+        'systemmanager/index',
+        'systemmanager/saveTwitterCredits',
+        'systemmanager/updatePasswordResetSettings',
+        'systemmanager/updateMediaUploadCopyright',
+        'systemmanager/updateSupportEmails',
+        'systemmanager/saveOAuth',
+        'systemmanager/uploadReadMe',
+        'collectionmanager/index',
+        'collectionmanager/editCollection',
+        'collectionmanager/viewAll',
+        'labyrinthmanager/caseWizard',
+        'labyrinthmanager/addManual',
+        'labyrinthmanager/addNewMap',
+        'exportimportmanager/import',
+        'exportimportmanager/upload',
+        'exportimportmanager/exportMVP',
+        'exportimportmanager/exportMVPMap',
+        'exportimportmanager/exportAdvanced',
+        'exportimportmanager/exportAdvancedMap',
+        'remoteservicemanager/index',
+        'todaytipmanager/index',
+        'todaytipmanager/editTip',
+        'todaytipmanager/archive',
+        'todaytipmanager/saveTip',
+        'todaytipmanager/deleteTip',
+        'todaytipmanager/addTip',
+        'metadata/manager',
+        'vocabulary/manager',
+        'vocabulary/mappings',
+        'dforummanager/index',
+        'dforummanager/addForum',
+        'dforummanager/editForum',
+        'dforummanager/deleteForum',
+        'home/about',
+        'home/userGuide',
+        'base/ui',
+        'ltimanager/index',
+        'ltimanager/userView',
+        'ltimanager/saveConsumer',
+        'ltimanager/deleteUser',
+        'ltimanager/info',
+    );
+
+    private $exceptionLeftMenu = array(
+        'labyrinthmanager/global',
+        'labyrinthmanager/conditionsGrid',
+        'labyrinthmanager/saveGlobal',
+        'labyrinthmanager/disableMap',
+        'labyrinthmanager/info',
+        'labyrinthmanager/editMap',
+        'labyrinthmanager/deleteMap',
+        'labyrinthmanager/editKeys',
+        'labyrinthmanager/saveKeys',
+        'labyrinthmanager/deleteKey',
+        'visualmanager/index',
+        'visualmanager/updateJSON',
+        'nodemanager/index',
+        'nodemanager/editNode',
+        'nodemanager/setRootNode',
+        'nodemanager/deleteNode',
+        'nodemanager/updateNode',
+        'nodemanager/grid',
+        'nodemanager/saveGrid',
+        'nodemanager/sections',
+        'nodemanager/editSection',
+        'nodemanager/deleteNodeSection',
+        'nodemanager/addNodeSection',
+        'nodemanager/updateSection',
+        'linkmanager/index',
+        'linkmanager/editLinks',
+        'linkmanager/editLink',
+        'linkmanager/deleteLink',
+        'linkmanager/updateOrder',
+        'linkmanager/updateLinkType',
+        'linkmanager/updateLinkStyle',
+        'linkmanager/addLink',
+        'questionmanager/index',
+        'questionmanager/question',
+        'avatarmanager/index',
+        'avatarmanager/editAvatar',
+        'avatarmanager/deleteAvatar',
+        'avatarmanager/exportAvatar',
+        'countermanager/index',
+        'countermanager/addCounter',
+        'countermanager/index',
+        'countermanager/editCounter',
+        'countermanager/addRule',
+        'countermanager/rules',
+        'countermanager/updateCounter',
+        'countermanager/grid',
+        'countermanager/updateGrid',
+        'countermanager/addCommonRule',
+        'countermanager/updateCommonRule',
+        'countermanager/editCommonRule',
+        'visualdisplaymanager/index',
+        'visualdisplaymanager/display',
+        'visualdisplaymanager/save',
+        'visualdisplaymanager/deleteDisplay',
+        'popupmanager/index',
+        'popupmanager/newPopup',
+        'popupmanager/savePopup',
+        'popupmanager/editPopup',
+        'elementmanager/index',
+        'elementmanager/addNewElement',
+        'skinmanager/index',
+        'skinmanager/createSkin',
+        'skinmanager/editSkins',
+        'skinmanager/listSkins',
+        'skinmanager/uploadSkin',
+        'filemanager/index',
+        'filemanager/editFile',
+        'filemanager/deleteFile',
+        'filemanager/imageEditor',
+        'filemanager/delCheked',
+        'mapusermanager/index',
+        'mapusermanager/addUser',
+        'reportmanager/index',
+        'reportmanager/pathVisualisation',
+        'reportmanager/summaryReport',
+        'reportmanager/showReport',
+    );
+
     public function before()
     {
         parent::before();
+        Lti_DataConnector::getLtiPost();
 
-        if (Auth::instance()->logged_in())
-        {
+        if ($_POST OR $_GET OR $this->request->is_ajax()) {
+            return;
+        }
+
+        if (Auth::instance()->logged_in()) {
+            $uri                        = $this->request->detect_uri();
+            $controllerAction           = strtolower($this->request->controller()).'/'.$this->request->action();
+            $topMenu                    = in_array($controllerAction, $this->exceptionsTopMenu);
+            $leftMenu                   = in_array($controllerAction, $this->exceptionLeftMenu);
             $user                       = Auth::instance()->get_user();
             $user_type_name             = $user->type->name;
             $user_id                    = $user->id;
-            $usersHistory               = DB_ORM::model('user')->getUsersHistory($user_id);
-            $uri                        = $this->request->detect_uri();
+            $usersHistory               = $topMenu ? array() : DB_ORM::model('user')->getUsersHistory($user_id);
             $historyShowWarningPopup    = 0;
             $readonly                   = NULL;
 
@@ -83,32 +262,36 @@ class Controller_Base extends Controller_Template {
                 'id'         => (int) $this->request->param('id', 0),
                 'id2'        => (int) $this->request->param('id2', 0),
             );
-            if ($user->can('access', $argsForAccess)) Request::initial()->redirect(URL::base());
+
+            if ($user->can('access', $argsForAccess)) {
+                Request::initial()->redirect(URL::base());
+            }
             // ----- end check access ----- //
 
-            foreach ($usersHistory as $value)
-            {
+            if ($topMenu) return;
+            
+            foreach ($usersHistory as $value) {
                 if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
-                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))
-                {
+                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;
                 }
             }
 
+            $this->templateData['historyOfAllUsers']        = json_encode($usersHistory);
             $this->templateData['user_id']                  = $user_id;
-            $this->templateData['userHasBlockedAccess']     = ( ! $this->request->is_ajax()) ? $this->addUserHistory($user_id, $readonly) : 0;
+            $this->templateData['userHasBlockedAccess']     = $this->addUserHistory($user_id, $readonly);
             $this->templateData['historyShowWarningPopup']  = $historyShowWarningPopup;
             $this->templateData['currentUserReadOnly']      = $readonly;
-            $this->templateData['historyOfAllUsers']        = json_encode($usersHistory);
             $this->templateData['username']                 = Auth::instance()->get_user()->nickname;
 
             I18n::lang(Auth::instance()->get_user()->language->key);
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Home'))->set_url(URL::base()));
 
-            if ($user_type_name == 'superuser' OR $user_type_name == 'author' OR $user_type_name == 'Director')
-            {
+            if ($leftMenu) return;
+
+            if ($user_type_name == 'superuser' OR $user_type_name == 'author' OR $user_type_name == 'Director') {
                 $this->templateData['todayTip'] = DB_ORM::model('todaytip')->getTodayTips();
 
                 $rootNodeMaps = ($user_type_name == 'superuser')
@@ -117,8 +300,7 @@ class Controller_Base extends Controller_Template {
                 $this->templateData['latestAuthoredLabyrinths'] = array_slice($rootNodeMaps, 0 ,7);
 
                 $rooNodesMap = array();
-                foreach($rootNodeMaps as $map)
-                {
+                foreach($rootNodeMaps as $map) {
                     $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
@@ -127,25 +309,21 @@ class Controller_Base extends Controller_Template {
                 /* Fetch the latest played labyrinths. */
                 $mapIDs = array();
                 $sessions = DB_ORM::model('user_session')->getAllSessionByUser($user_id, 7);
-                if (count($sessions) > 0)
-                {
-                    foreach ($sessions as $s)
-                    {
-                        $mapIDs[] = $s->map_id;
-                    }
+
+                foreach ($sessions as $s) {
+                    $mapIDs[] = $s->map_id;
                 }
 
-                if (count($mapIDs) > 0) $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
+                if (count($mapIDs)) {
+                    $this->templateData['latestPlayedLabyrinths'] = DB_ORM::model('map')->getMapsIn($mapIDs);
+                }
 
                 $this->templateData['center'] = View::factory('adminMenu')->set('templateData', $this->templateData);
-            }
-            else
-            {
+            } else {
                 $maps = DB_ORM::model('map')->getAllEnabledOpenVisibleMap($user_type_name);
                 $rooNodesMap = array();
 
-                foreach($maps as $map)
-                {
+                foreach ($maps as $map) {
                     $rooNodesMap[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
@@ -161,11 +339,11 @@ class Controller_Base extends Controller_Template {
                     }
                     $centerView->set('openLabyrinths', $maps);
                 }
-                else $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
+                else {
+                    $centerView->set('openLabyrinths', DB_ORM::model('map')->getAllMapsForRegisteredUser($user_id));
+                }
 
-                $this->templateData['center'] = $centerView
-                    ->set('presentations', DB_ORM::model('map_presentation')->getPresentationsByUserId($user_id))
-                    ->set('templateData', $this->templateData);;
+                $this->templateData['center'] = $centerView->set('templateData', $this->templateData);;
             }
         } else {
             if ($this->request->controller() == 'home' AND $this->request->action() == 'index') {
@@ -196,13 +374,13 @@ class Controller_Base extends Controller_Template {
                 $action = $this->request->action();
 
                 $isRedirect = true;
-                foreach ($this->unauthorizedRules as $rule)
-                {
-                    if ($controller == $rule['controller'] && $action == $rule['action']) $isRedirect = false;
+                foreach ($this->unauthorizedRules as $rule) {
+                    if ($controller == $rule['controller'] AND $action == $rule['action']) {
+                        $isRedirect = false;
+                    }
                 }
                 
-                if ($isRedirect)
-                {
+                if ($isRedirect) {
                     Session::instance()->set('redirectURL', $this->request->uri());
                     Notice::add('Please login first.');
                     Request::initial()->redirect(URL::base());
@@ -250,4 +428,5 @@ class Controller_Base extends Controller_Template {
         $user->changeUI($mode);
         Request::initial()->redirect($this->request->referrer());
     }
+
 }

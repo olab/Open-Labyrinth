@@ -33,6 +33,34 @@
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-1.7.2.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-touch-punch.min.js'); ?>"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
+    <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
+    <script language="javascript" type="text/javascript">
+        tinymce.init({
+            selector: ".cumulative",
+            theme: "modern",
+            content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
+            entity_encoding: "raw",
+            contextmenu: "link image inserttable | cell row column",
+            closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+            valid_elements : "+*[*]",
+            plugins: ["compat3x",
+                "advlist autolink lists link image charmap hr anchor pagebreak",
+                "searchreplace wordcount visualblocks visualchars code fullscreen",
+                "insertdatetime nonbreaking save table contextmenu directionality",
+                "template paste textcolor layer advtextcolor rdface"
+            ],
+            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+            toolbar2: " link image | forecolor backcolor layer restoredraft",
+            image_advtab: true,
+            templates: [],
+            setup: function(editor) {
+                editor.on('init', function(e) {
+                    valToTextarea();
+                });
+            }
+        });
+    </script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>

@@ -19,33 +19,27 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-    <div class="page-header">   <div class="pull-right">
-            <div class="btn-group">
-                <a class="btn btn-primary" href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">
-                    <i class="icon-plus-sign"></i>
-                    <?php echo __('Add counter'); ?></a>
-              </div>
-        </div>
-<h1><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?></h1>
-     </div>
-<table class="table table-striped table-bordered">
-    <colgroup>
-        <col style="width: 5%">
-        <col style="width: 55%">
-        <col style="width: 40%">
-    </colgroup>
-    <thead>
-        <tr>
-            <th><?php echo __("Embeddable"); ?></th>
-            <th><?php echo __("Name"); ?></th>
-            <th><?php echo __("Actions"); ?></th>
-        </tr>
-    </thead>
-<?php if(isset($templateData['counters']) and count($templateData['counters']) > 0) { ?>
-    <?php foreach($templateData['counters'] as $counter) { ?>
+    <div class="page-header">
+        <h1><?php echo __('Counters') . ' "' . $templateData['map']->name . '"'; ?>
+            <a class="btn btn-primary pull-right" href="<?php echo URL::base().'counterManager/addCounter/'.$templateData['map']->id; ?>">
+                <i class="icon-plus-sign"></i><?php echo __('Add counter'); ?>
+            </a>
+        </h1>
+    </div>
+    <table class="table table-striped table-bordered counter-grid-tb">
+        <thead>
+            <tr>
+                <th><?php echo __("Embeddable"); ?></th>
+                <th><?php echo __("Name"); ?></th>
+                <th><?php echo __("Actions"); ?></th>
+            </tr>
+    </thead><?php
+    if (count($templateData['counters'])) { ?>
+    <tbody><?php
+        foreach($templateData['counters'] as $counter) { ?>
         <tr>
             <td>
-                <label><input class="code" readonly="readonly" type="text" value="[[CR:<?php echo $counter->id; ?>]]"></label>
+                <input class="code counter-grid" readonly="readonly" type="text" value="[[CR:<?php echo $counter->id; ?>]]">
             </td>
             <td><?php echo $counter->name; ?></td>
             <td>
@@ -72,18 +66,20 @@ if (isset($templateData['map'])) { ?>
                         <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
                     </div>
                     <div class="modal-body">
-                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $counter->name . '" counter?'); ?></p>
+                        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "'.$counter->name.'" counter?'); ?></p>
                         <p>
-                            <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('Delete'); ?></a> <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>                        </p>
+                            <a class="btn btn-danger" href="<?php echo URL::base().'counterManager/deleteCounter/'.$templateData['map']->id.'/'.$counter->id; ?>"><?php echo __('Delete'); ?></a>
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                        </p>
                     </div>
                 </div>
             </td>
-        </tr>
-        <?php } ?>
-    <?php } else{ ?>
+        </tr><?php
+        } ?>
+    </tbody><?php
+    } else{ ?>
         <tr class="info">
             <td colspan="3">There are no counters in this labyrinth, yet. You may add one, clicking the button above.</td>
-        </tr>
-    <?php } ?>
-
-<?php } ?>
+        </tr><?php
+    }
+} ?>

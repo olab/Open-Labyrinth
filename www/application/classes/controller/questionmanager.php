@@ -71,7 +71,9 @@ class Controller_QuestionManager extends Controller_Base {
         $map        = DB_ORM::model('map', array((int)$mapId));
         $type       = DB_ORM::model('map_question_type', array((int) $typeId));
 
-        if ( ! ($map AND $type)) Request::initial()->redirect(URL::base());
+        if ( ! ($map AND $type)) {
+            Request::initial()->redirect(URL::base());
+        }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
@@ -90,13 +92,11 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['question'] = $questionObj;
             $this->templateData['used']     = count(DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU'));
 
-            if ($questionObj->settings)
-            {
+            if ($questionObj->settings) {
                 $jsonSettings = json_decode($questionObj->settings);
                 $this->templateData['questionSettings'] = $jsonSettings;
 
-                if ($questionObj->type->value == 'area' OR $questionObj->type->value == 'text')
-                {
+                if ($questionObj->type->value == 'area' OR $questionObj->type->value == 'text') {
                     $this->templateData['isCorrect'] = Arr::get($jsonSettings, 1, 0);
                     $this->templateData['question']->settings = Arr::get($jsonSettings, 0, '');
                 }
@@ -106,8 +106,7 @@ class Controller_QuestionManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
         }
 
-        if ($type->value == 'area' OR $type->value == 'text')
-        {
+        if ($type->value == 'area' OR $type->value == 'text' OR $type->value == 'cml') {
             $validation = DB_ORM::model('Map_Question_Validation');
             $validators = array_merge($validation->one_parameter, $validation->two_parameter, $validation->three_parameter);
             ksort($validators);
@@ -248,71 +247,72 @@ class Controller_QuestionManager extends Controller_Base {
         Request::initial()->redirect($this->request->referrer());
     }
 
-    public function action_globalQuestions(){
+    public function action_globalQuestions()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL)
-        {
-            DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+
+        if ($mapId) {
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+
             $allTypes = DB_ORM::model('map_question_type')->getAllTypes();
             $array = array();
             foreach($allTypes as $key=>$type){
                 $array[$key]['id'] = $type->id;
                 $array[$key]['title'] = $type->title;
             }
+
             $this->templateData['question_types'] = $array;
-            $this->templateData['questions'] = $this->getFiledsArray('global/questions/', 'question');
+            $this->templateData['questions'] = $this->getFieldsArray('global/questions/', 'question');
 
             if (Auth::instance()->get_user()->type->name == 'superuser') {
                 $this->templateData['isSuperuser'] = true;
             }
 
+            $this->templateData['center'] = View::factory('labyrinth/question/global')->set('templateData', $this->templateData);
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->template->set('templateData', $this->templateData);
+
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
-
-            $questionView = View::factory('labyrinth/question/global');
-            $questionView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['center'] = $questionView;
-            $this->templateData['left'] = $leftView;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    public function action_exportQuestion(){
-        $mapId = $this->request->param('id', NULL);
+    public function action_exportQuestion()
+    {
+        $mapId      = $this->request->param('id', NULL);
         $questionId = $this->request->param('id2', NULL);
-        if ($mapId != NULL && $questionId!= NULL) {
-            $rand = uniqid();
-            $tmpfolder = 'tmp/' . $rand . '/';
-            if(mkdir($tmpfolder)){
-                $questionName = 'question_'.$rand . '.xml';
-                $responseName = 'response_'.$rand . '.xml';
+        if ($mapId AND $questionId) {
+            $rand       = uniqid();
+            $tmpFolder  = 'tmp/'.$rand.'/';
+            if (mkdir($tmpFolder)) {
+                $questionName = 'question_'.$rand.'.xml';
+                $responseName = 'response_'.$rand.'.xml';
                 $question = DB_ORM::model('map_question')->getQuestionById($questionId);
                 $question[0]['name_file'] = $questionName;
-                $this->createXMLFile($tmpfolder, $questionName, $question);
+                $this->createXMLFile($tmpFolder, $questionName, $question);
                 $elementsArray = $this->mergeArraysFromDB($question, 'map_question_response');
-                $this->createXMLFile($tmpfolder, $responseName, $elementsArray);
-                $this->createZipArchive($tmpfolder, $rand);
-                $this->removeDirectory($tmpfolder);
-                $zipFile = 'tmp/' . $rand . '.zip';
-               $pathInfo = pathinfo($zipFile);
+                $this->createXMLFile($tmpFolder, $responseName, $elementsArray);
+                $this->createZipArchive($tmpFolder, $rand);
+                $this->removeDirectory($tmpFolder);
+
+                $zipFile = 'tmp/'.$rand.'.zip';
                 header("Cache-Control: public");
                 header("Content-Description: File Transfer");
-                header("Content-Disposition: attachment; filename=" . $pathInfo['basename']);
+                header("Content-Disposition: attachment; filename=".$question[0]['stem'].'.zip');
                 header("Content-Type: application/zip");
                 header("Content-Transfer-Encoding: binary");
-                readfile('tmp/' . $rand . '.zip');
+                readfile('tmp/'.$rand.'.zip');
                 unlink($zipFile);
-            } else Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
-        } else Request::initial()->redirect(URL::base());
+            } else {
+                Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            }
+        } else {
+            Request::initial()->redirect(URL::base());
+        }
     }
 
     private function createZipArchive($folderPath, $name)
@@ -343,8 +343,9 @@ class Controller_QuestionManager extends Controller_Base {
         rmdir($dir);
     }
 
-    private function createXMLFile($path, $name, $array){
-        if (count($array) > 0){
+    private function createXMLFile($path, $name, $array)
+    {
+        if (count($array)){
             $xml = new SimpleXMLElement('<xml />');
             $arrayXml = $xml->addChild($name);
             $this->createXMLTree($arrayXml, $name, $array);
@@ -359,12 +360,16 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
 
-    private function createXMLTree($xml, $name, $array){
-        if (count($array) > 0){
+    private function createXMLTree($xml, $name, $array)
+    {
+        if (count($array)){
             foreach($array as $key => $value){
                 if(is_array($value)){
                     $this->createXMLTree($xml->addChild($name.'_'.$key), $name.'_'.$key, $value);
-                }else{
+                }else {
+                    if ( ! is_numeric($value)) {
+                        $value = base64_encode($value);
+                    }
                     $xml->addChild($key, $value);
                 }
             }
@@ -385,61 +390,68 @@ class Controller_QuestionManager extends Controller_Base {
     }
 
     public function action_importQuestion(){
-        $mapId = $this->request->param('id', NULL);
+        $mapId        = $this->request->param('id', NULL);
         $questionFile = base64_decode($this->request->param('id2', NULL));
-        if($mapId != NULL){
-            if(file_exists('global/questions/' . $questionFile)){
-                $response = NULL;
-                $qustions = $this->getFiledsArray('global/questions/', 'question');
-                $xmlResponse = explode('_',$questionFile);
-                $xmlResponse = explode('.',$xmlResponse[1]);
-                if(is_file('global/questions/' . 'response_' . $xmlResponse[0].'.xml')){
-                    $xmlfile = file_get_contents('global/questions/' . 'response_' . $xmlResponse[0].'.xml');
-                    $responses = simplexml_load_string($xmlfile);
-                    foreach($responses as $key=>$item){
-                        if($key == 'response_' . $xmlResponse[0] . '.xml'){
-                            $response =  $item;
-                        }
+        if ($mapId){
+            if (file_exists('global/questions/'.$questionFile)){
+                $response     = array();
+                $questions    = $this->getFieldsArray('global/questions/', 'question');
+                $xmlResponse  = explode('_',$questionFile);
+                $xmlResponse  = explode('.',$xmlResponse[1]);
+                $responseFile = 'response_'.$xmlResponse[0].'.xml';
+
+                if (is_file('global/questions/'.$responseFile)){
+                    $xmlFile    = file_get_contents('global/questions/'.$responseFile);
+                    $responses  = simplexml_load_string($xmlFile);
+                    $json       = json_encode($responses);
+                    $array      = json_decode($json, true);
+                    foreach (Arr::get($array, $responseFile, array()) as $value){
+                            $response[] = $value;
                     }
                 }
-                foreach($qustions as $question){
-                    if($question->name_file == $questionFile){
+
+                foreach ($questions as $question){
+                    if (base64_decode($question->name_file) == $questionFile){
                         DB_ORM::model('map_question')->importQuestion($question, $response);
                     }
                 }
             }
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
     }
 
-    private function getFiledsArray($dir, $name){
-        if(is_dir($dir)) {
-            $listOfFile = scandir($dir);
+    private function getFieldsArray($dir, $name)
+    {
+        $dataArray = array();
+        if (is_dir($dir)) {
+            $listOfFile       = scandir($dir);
             $listFileQuestion = array();
-            foreach($listOfFile as $file){
-                $part  = explode('_', $file);
+
+            foreach ($listOfFile as $file){
+                $part = explode('_', $file);
                 if($part[0] == $name){
                     $listFileQuestion[] = $file;
                 }
             }
+
             $data = array();
             foreach($listFileQuestion as $file){
-                $xmlfile = file_get_contents($dir . $file);
-                $ob = simplexml_load_string($xmlfile);
+                $xmlFile = file_get_contents($dir.$file);
+                $ob      = simplexml_load_string($xmlFile);
                 foreach($ob as $files){
                     $data[] = $files;
                 }
             }
-            $dataarray = array();
+
             foreach($data as $key=>$tags){
                 foreach($tags as $tag){
-                    $dataarray[$key] = $tag;
+                    $dataArray[$key] = $tag;
                 }
             }
         }
-        return $dataarray;
+        return $dataArray;
     }
 
 }

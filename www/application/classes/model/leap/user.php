@@ -108,6 +108,10 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'enum' => array('advanced','easy'),
                 'nullable' => FALSE,
             )),
+            'is_lti' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => TRUE,
+                'default' => false,
+            )),
         );
 
         $this->relations = array(
@@ -188,15 +192,15 @@ private static function initialize_metadata($object)
 
     public function createOAuthUser($oauthProviderId, $oauthId, $nickname) {
         return DB_ORM::insert('user')
-                        ->column('username', $oauthId . 'username')
-                        ->column('password', Auth::instance()->hash($oauthId . 'password'))
-                        ->column('email', $oauthId . '@email.generated')
-                        ->column('nickname', $nickname)
-                        ->column('language_id', 1)
-                        ->column('type_id', 1)
-                        ->column('oauth_provider_id', $oauthProviderId)
-                        ->column('oauth_id', $oauthId)
-                        ->execute();
+            ->column('username', $oauthId . 'username')
+            ->column('password', Auth::instance()->hash($oauthId . 'password'))
+            ->column('email', $oauthId . '@email.generated')
+            ->column('nickname', $nickname)
+            ->column('language_id', 1)
+            ->column('type_id', 1)
+            ->column('oauth_provider_id', $oauthProviderId)
+            ->column('oauth_id', $oauthId)
+            ->execute();
     }
 
     public function getUserByEmail($email) {
@@ -227,12 +231,14 @@ private static function initialize_metadata($object)
         }
     }
 
-    public function getAllUsersId ($order = 'DESC')
+    public function getAllUsersId ($order = 'DESC', $isLti = false)
     {
         $ids = array();
-        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->query();
+        $result = DB_SQL::select('default')->from($this->table())->column('id')->order_by('nickname', $order)->where('is_lti', '=', $isLti)->query();
 
-        foreach ($result as $record) $ids[] = $record['id'];
+        foreach ($result as $record) {
+            $ids[] = $record['id'];
+        }
 
         return $ids;
     }
@@ -246,9 +252,10 @@ private static function initialize_metadata($object)
     {
         $result = array();
 
-        foreach($this->getAllUsersId($order) as $id)
-        {
-            if (count($notInUsers) > 0 AND in_array($id, $notInUsers)) continue;
+        foreach($this->getAllUsersId($order) as $id) {
+            if (count($notInUsers) AND in_array($id, $notInUsers)) {
+                continue;
+            }
 
             $res = DB_SQL::select('default',array(DB::expr( 'u.*') , DB::expr('op.icon as icon'), DB::expr('ut.name as type_name')))
                 ->from($this->table(), 'u')
@@ -260,8 +267,11 @@ private static function initialize_metadata($object)
                 ->order_by('nickname', $order)
                 ->query();
 
-            foreach ($res as $record) $result[] = $record;
+            foreach ($res as $record) {
+                $result[] = $record;
+            }
         }
+
         return $result;
     }
 
@@ -279,18 +289,20 @@ private static function initialize_metadata($object)
         return $result[0];
     }
 
-    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy') {
-        $this->username     = $username;
-        $this->password     = Auth::instance()->hash($password);
-        $this->email        = $email;
-        $this->nickname     = $nickname;
-        $this->language_id  = $languageId;
-        $this->type_id      = $typeId;
-        $this->modeUI       = $uiMode;
-        $this->save();
+    public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy', $isLti = false) {
+        DB_ORM::insert('User')
+            ->column('username', $username)
+            ->column('password', Auth::instance()->hash($password))
+            ->column('email', $email)
+            ->column('nickname', $nickname)
+            ->column('language_id', $languageId)
+            ->column('type_id', $typeId)
+            ->column('modeUI', $uiMode)
+            ->column('is_lti', $isLti)
+            ->execute();
     }
     
-    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId) {
+    public function updateUser($id, $password, $nickname, $email, $typeId, $languageId, $isLti = false) {
         $this->id = $id;
         $this->load();
         
@@ -302,6 +314,7 @@ private static function initialize_metadata($object)
         $this->nickname = $nickname;
         $this->language_id = $languageId;
         $this->type_id = $typeId;
+        $this->is_lti = $isLti;
         
         $this->save();
     }

@@ -25,17 +25,18 @@ class Controller_Home extends Controller_Base {
 
     public function action_index() {}
 
-    public function action_login() {
-        if ($_POST)
-        {
+    public function action_login()
+    {
+        if ($_POST) {
             $status = Auth::instance()->login($_POST['username'], $_POST['password']);
             $redirectURL = URL::base();
-            if ( ! $status)
-            {
+            if ( ! $status) {
                 Session::instance()->set('redirectURL', (Arr::get($_POST, 'redirectURL', '')));
                 Notice::add('You have entered the wrong username/password combination. Please try again.');
             }
-            else $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
+            else {
+                $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
+            }
             
             Request::initial()->redirect($redirectURL);
         }
@@ -165,12 +166,10 @@ class Controller_Home extends Controller_Base {
             $key    = Arr::get($_POST, 'searchterm', NULL);
             $title  = ($scope == 'a');
 
-            if ($key != NULL)
-            {
+            if ($key != NULL) {
                 $maps = DB_ORM::model('map')->getSearchMap($key, $title);
-
                 $rootNodes = array();
-                foreach($maps as $map){
+                foreach ($maps as $map) {
                     $rootNodes[$map->id] = DB_ORM::model('map_node')->getRootNodeByMap($map->id);
                 }
 
@@ -181,8 +180,7 @@ class Controller_Home extends Controller_Base {
 
                 $this->template->set('templateData', $this->templateData);
             }
-        }
-        else {
+        } else {
             Request::initial()->redirect(URL::base());
         }
     }
@@ -351,26 +349,35 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['left']);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 
     public function action_historyAjaxCollaboration()
     {
         $this->auto_render  = false;
-        $usersInformation   = json_decode($this->templateData['historyOfAllUsers'], true);
         $result             = array();
-        $user               = $this->templateData['username'];
-        $userArray          = Arr::get($usersInformation, $this->templateData['user_id'], NULL);
-        $uri                = Arr::get($userArray, 'href', NULL);
+        $user               = Auth::instance()->get_user();
+        if ($user) {
+            $userName           = $user->nickname;
+            $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);;
+            $userArray          = Arr::get($usersInformation, $user->id, NULL);
+            $uri                = Arr::get($userArray, 'href', NULL);
 
-        if ($userArray AND $uri != NULL) {
-            foreach ($usersInformation as $value) {
-                if ($value['href'] == $uri AND $value['username'] != $user AND $value['readonly'] == 1) $result[$value['id']] = $value['username'];
+            if ($userArray AND $uri != NULL) {
+                foreach ($usersInformation as $value) {
+                    if ($value['href'] == $uri AND $value['username'] != $userName AND $value['readonly'] == 1) {
+                        $result[$value['id']] = $value['username'];
+                    }
+                }
             }
+            if ($uri == 'kick') $result['reloadPage'] = 1;
+            exit(json_encode($result));
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        if ($uri == 'kick') $result['reloadPage'] = 1;
-        exit(json_encode($result));
+
     }
 
 }

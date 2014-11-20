@@ -9,7 +9,7 @@
 
 defined('SYSPATH') or die('No direct script access.');
 
-abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Record
+class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Record
 {
     public function __construct() {
         parent::__construct();
@@ -53,7 +53,6 @@ abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Rec
     }
 
     public  static function table() {
-
         return 'metadata_string_fields';
     }
 
@@ -61,19 +60,19 @@ abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Rec
         return array('id');
     }
 
-    public function updateRecord($recId, $value){
+    public function updateRecord($recId, $value)
+    {
         $this->id = $recId;
         $this->load();
-
-                if($value != NULL) {
-                    $this->value = $value;
-                }
-
-                $this->save();
+        if ($value != NULL) {
+            $this->value = $value;
+        }
+        $this->save();
     }
 
 
-    public function newRecord($field_id,$objectId, $value=""){
+    public function newRecord($field_id,$objectId, $value="")
+    {
         $this->object_id = $objectId;
         $this->field_id = $field_id;
         $this->value = $value;
@@ -83,19 +82,16 @@ abstract class Model_Leap_Metadata_LiteralRecord extends Model_Leap_Metadata_Rec
     }
 
 
-    public function getRecord($recId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $recId);
-        $result = $builder->query();
+    public function getRecord($recId)
+    {
+        $result = DB_SQL::select('default')->from($this->table())->where('id', '=', $recId)->query();
 
-        if($result->is_loaded()) {
-            $records = array();
-            foreach($result as $record) {
-                $records[] = DB_ORM::model($this->field->getModelname(), array($record['id']));
-            }
-
-            return $records;
+        $records = array();
+        foreach($result as $record) {
+            $records[] = DB_ORM::model($this->field->getModelname(), array($record['id']));
         }
-        return NULL;
+
+        return $records;
     }
 
 

@@ -389,7 +389,7 @@ jQuery(document).ready(function(){
 
     var sameLabyrinthUser = null;
 
-
+    if (typeof historyOfAllUsers == 'undefined') var historyOfAllUsers = [];
     $.each(historyOfAllUsers, function(key, value) {
         sameLabyrinthUser = value;
         if (value['username'] != currentUser && value['readonly'] != 1) {
@@ -445,6 +445,7 @@ jQuery(document).ready(function(){
 
     $(".lock").tooltip({placement: "right"});
 
+    if (typeof historyShowWarningPopup == 'undefined') var historyShowWarningPopup = false;
     if (historyShowWarningPopup) {
         $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
         $('.btn').attr('href', 'javascript:void(0)');
@@ -460,26 +461,32 @@ jQuery(document).ready(function(){
     var stopList = [],
         usernames = [],
         users = null;
+    if (typeof currentUserReadOnly == 'undefined') var currentUserReadOnly = false;
+    if (typeof userHasBlockedAccess == 'undefined') var userHasBlockedAccess = false;
     if (!currentUserReadOnly && userHasBlockedAccess) {
         setInterval(function() {
-            $.get(historyAjaxCollaborationURL, function(data) {
-                usernames = [];
-                users = eval('(' + data + ')');
-                if (users['reloadPage'] == 1) $('#discardWarning').modal();
-                else {
-                    $.each(users, function(key, value){
-                        if (inArray(key, stopList)) delete users[key];
-                        else {
-                            stopList.push(key);
-                            usernames.push(value);
+            $.get(
+                historyAjaxCollaborationURL,
+                function(data) {
+                    usernames = [];
+                    users = eval('(' + data + ')');
+                    if (users['reloadPage'] == 1) {
+                        $('#discardWarning').modal();
+                    } else {
+                        $.each(users, function(key, value){
+                            if (inArray(key, stopList)) delete users[key];
+                            else {
+                                stopList.push(key);
+                                usernames.push(value);
+                            }
+                        });
+                        if (usernames.length) {
+                            utils = new Utils();
+                            utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                         }
-                    });
-                    if (usernames.length) {
-                        utils = new Utils();
-                        utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'User(s) ' + usernames.join(', ') + ' join you in this page in readonly mode', 7000);
                     }
                 }
-            });
+            );
         }, 30000);
     }
 

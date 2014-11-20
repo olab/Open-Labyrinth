@@ -155,7 +155,10 @@ class Controller_FileManager extends Controller_Base {
             if(isset($url_info['basename'])){
                 $name = $url_info['basename'];
 
-                $path = DOCROOT . '/files/'.$mapId.'/';
+                $path = DOCROOT.'/files/'.$mapId.'/';
+                if ( ! is_dir($path)) {
+                    mkdir($path);
+                }
                 if (file_exists($path.$name)){
                     $name = uniqid().'_'.$name;
                 }
@@ -556,52 +559,44 @@ class Controller_FileManager extends Controller_Base {
         }
     }
 
-    public function action_globalFiles(){
+    public function action_globalFiles()
+    {
         $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL)
-        {
+        if ($mapId) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+
             $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['files'] = array();
             $path = 'global/files/';
             $filesArray = $this->getListFiles($path);
             $elements = DB_ORM::model('map_element')->getAllFilesByMap($mapId);
-            $this->templateData['files'] = array();
             $list = array();
-            foreach($filesArray as $file){
-                $list['there'] = false;
-                foreach($elements as $element){
-                    if($element->name == $file) $list['there'] = true;
-                }
-            $list['name'] = $file;
-            $this->templateData['files'][] = $list;
-            }
+            $totalSize = 0;
 
-            $totalsize = 0;
-            if (count($filesArray) > 0){
-                foreach($filesArray as $file){
-                    $filePath = DOCROOT.$path.$file;
-                    if(file_exists($filePath)){
-                        $totalsize += filesize($filePath);
+            foreach ($filesArray as $file) {
+                $filePath = DOCROOT.$path.$file;
+                if(file_exists($filePath)){
+                    $totalSize += filesize($filePath);
+                }
+
+                $list['there'] = false;
+                foreach ($elements as $element) {
+                    if ($element->name == $file) {
+                        $list['there'] = true;
                     }
                 }
+                $list['name'] = $file;
+                $this->templateData['files'][] = $list;
             }
 
-            $this->templateData['files_size'] = DB_ORM::model('map_element')->sizeFormat($totalsize);
-            $this->templateData['files_count'] = count($this->templateData['files']);
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
-
-            $fileView = View::factory('labyrinth/file/global');
-            $fileView->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $fileView;
-            unset($this->templateData['right']);
+            $this->templateData['files_size']   = DB_ORM::model('map_element')->sizeFormat($totalSize);
+            $this->templateData['files_count']  = count($this->templateData['files']);
+            $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->templateData['center']       = View::factory('labyrinth/file/global')->set('templateData', $this->templateData);
             $this->template->set('templateData', $this->templateData);
+
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global files'))->set_url(URL::base().'fileManager/index/'.$mapId));
         } else {
             Request::initial()->redirect(URL::base());
         }

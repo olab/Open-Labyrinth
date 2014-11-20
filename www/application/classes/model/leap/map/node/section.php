@@ -45,6 +45,11 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+
+            'orderBy' => new DB_ORM_Field_Text($this, array(
+                'enum' => array('x', 'y', 'random'),
+                'nullable' => FALSE,
+            )),
         );
         
         $this->relations = array(
@@ -79,23 +84,12 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
     }
     
     public function getAllSectionsByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', (int)$mapId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $sections = array();
-            foreach($result as $record) {
-                $sections[] = DB_ORM::model('map_node_section', array((int)$record['id']));
-            }
-            
-            return $sections;
-        }
-        
-        return NULL;
+        return DB_ORM::select('map_node_section')->where('map_id', '=', $mapId)->query()->as_array();
     }
     
-    public function createSection($mapId, $values) {
+    public function createSection($mapId, $values, $orderBy) {
         $this->map_id = $mapId;
+        $this->orderBy = $orderBy;
         $this->name = Arr::get($values, 'sectionname', '');
         $this->save();
         return $this->getLastAddedSection($mapId);
@@ -112,11 +106,12 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         return NULL;
     }
     
-    public function updateSectionName($id, $values) {
+    public function updateSectionRow($id, $values, $orderBy = 'random') {
         $this->id = $id;
         $this->load();
         
         $this->name = Arr::get($values, 'sectiontitle', $this->name);
+        $this->orderBy = $orderBy;
         $this->save();
     }
     

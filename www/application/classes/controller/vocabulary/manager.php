@@ -53,42 +53,9 @@ class Controller_Vocabulary_Manager extends Controller_Base
 
     public function action_import(){
 
-
-
         $uri = $this->request->query('uri');
-        $uri_abs = $uri;
-        $graph = new Graphite();
-        if (!parse_url($uri, PHP_URL_SCHEME) != '') $uri_abs  = Model_Leap_Vocabulary::getGraphUri().$uri;
 
-        $graph->load( $uri_abs );
-
-        $terms =  $graph->allSubjects();
-
-        $termLabels = array();
-
-        $vocabularies = array();
-
-        foreach($terms as $term){
-            $termUri  =  $term->toString();
-            $vocab_term = DB_ORM_Model::factory("vocabulary_term");
-            $vocab_term->newTerm($termUri, $term->label(),$term->type());
-
-            $termLabels[] = $term->toString();
-            if($vocab_term->vocabulary->namespace!=="")
-                $vocabularies[$vocab_term->vocabulary->namespace]=$vocab_term->vocabulary;
-
-        }
-
-
-
-        foreach($vocabularies as $vocab){
-
-            $vocab->load();
-            $vocab->alternative_source_uri = $uri;
-            $vocab->save();
-
-        }
-
+        $termLabels = Model_Leap_Vocabulary::import($uri);
 
 
         $this->templateData['uri'] = $uri;

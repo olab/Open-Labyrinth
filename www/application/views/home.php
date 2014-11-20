@@ -18,7 +18,11 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-$user = Auth::instance()->get_user(); ?>
+$user = Auth::instance()->get_user();
+$modeUI = 'easy';
+if ($user) {
+    $modeUI = $user->modeUI;
+}?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -99,18 +103,20 @@ $user = Auth::instance()->get_user(); ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu"><?php
-                                            if ($user->modeUI == 'advanced') { ?>
+                                            if ($modeUI == 'advanced') { ?>
                                             <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li>
                                             <li class="divider"></li><?php
                                             }
                                             if ($type_name == 'superuser') { ?>
                                                 <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li><?php
-                                                if ($user->modeUI == 'advanced') { ?>
+                                                if ($modeUI == 'advanced') { ?>
                                                 <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
                                                 <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
-                                                <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li><?php
+                                                <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li>
+                                                <li class="divider"></li>
+                                                <li><a href="<?php echo URL::base(); ?>ltimanager"><?php echo __('LTI'); ?></a></li><?php
                                                 }
                                             } ?>
                                         </ul>
@@ -122,13 +128,13 @@ $user = Auth::instance()->get_user(); ?>
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a></li><?php
-                                            if ($user->modeUI == 'advanced') { ?>
+                                            if ($modeUI == 'advanced') { ?>
                                             <li class="divider"></li>
                                             <li><a href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a></li><?php
                                             } ?>
                                         </ul>
                                     </li><?php
-                                    if ($user->modeUI == 'advanced') { ?>
+                                    if ($modeUI == 'advanced') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Sets'); ?><b class="caret"></b></a>
                                         <ul class="dropdown-menu">
@@ -150,8 +156,8 @@ $user = Auth::instance()->get_user(); ?>
                                         <li><a href="<?php echo URL::base().'home/about'; ?>">About</a></li>
                                         <li><a href="<?php echo URL::base().'home/userGuide'; ?>" target="_blank">User Guide</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($user->modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
-                                        <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($user->modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/easy'; ?>" class="<?php if ($modeUI == 'easy') echo 'active btn-info'; ?>">Easy UI</a></li>
+                                        <li><a href="<?php echo URL::base().'base/ui/advanced'; ?>" class="<?php if ($modeUI == 'advanced') echo 'active btn-info'; ?>">Advanced UI</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -163,7 +169,7 @@ $user = Auth::instance()->get_user(); ?>
         <div class="root-error-container">
             <div id="rootNodeMessage" class="alert alert-error root-alert hide">
                 <button type="button" class="root-error-close close">×</button>
-                <?php echo __('You do not have access to this case.'); ?>
+                <?php echo __('You have not set a root node, so your labyrinth will not play. Please return to the visual editor, and click on the starting node -> Actions -> Set as Root'); ?>
             </div>
         </div><?php
     if (isset($templateData)){ ?>
@@ -199,10 +205,11 @@ $user = Auth::instance()->get_user(); ?>
                             echo Arr::get($templateData, 'center'); ?>
                         </div>
                     </div><?php
-                    if(isset($templateData['left'])) ?>
+                    if (isset($templateData['left'])) { ?>
 					<div>
                         <a href="javascript:void(0)" class="toggles"><i class="icon-chevron-left"></i></a>
                     </div><?php
+                    }
                     if (isset($templateData['right'])) { ?>
                         <div class="span2"><?php echo $templateData['right']; ?></div><?php
                     }
@@ -214,7 +221,8 @@ $user = Auth::instance()->get_user(); ?>
         </div>
         <input type="hidden" id="browserWarningImages" value="<?php echo URL::base(); ?>scripts/browser/images/"/>
 
-        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
+        <!--script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script-->
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.10.4.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/browser/js/BrowserUpdateWarning_jQuery.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
@@ -224,11 +232,9 @@ $user = Auth::instance()->get_user(); ?>
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
                 userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
                 currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>',
-                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', ''); ?>)');
+                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', '[]'); ?>)'),
+                historyShowWarningPopup = <?php echo Arr::get($templateData, 'historyShowWarningPopup', 0); ?>;
             <?php
-            if (isset($templateData['historyShowWarningPopup'])) { ?>
-                var historyShowWarningPopup = <?php echo $templateData['historyShowWarningPopup']; ?>;
-            <?php }
             if (isset($templateData['username'])) { ?>
                 var currentUser = '<?php echo $templateData['username']; ?>';
             <?php } ?>

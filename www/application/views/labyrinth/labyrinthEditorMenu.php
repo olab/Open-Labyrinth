@@ -20,16 +20,13 @@
  */
 if (isset($templateData['map'])) {
     $id_map = $templateData['map']->id;
-    $user = Auth::instance()->get_user();?>
+    $user = Auth::instance()->get_user();
+    if ($user) { ?>
     <div class="well" style="padding: 8px 0;">
         <ul class="nav nav-list">
             <li class="nav-header">Labyrinth</li>
-            <li class="top"><?php
-                if(isset($templateData['rootNodeMap']) AND isset($templateData['rootNodeMap'][$id_map]) AND $templateData['rootNodeMap'][$id_map] != null) { ?>
-                <a href="<?php echo URL::base().'renderLabyrinth/index/'.$id_map; ?>" target="_blank"><?php
-                } else { ?>
-                <a class="show-root-error" href="javascript:void(0)"><?php
-                } ?>
+            <li class="top">
+                <a href="<?php echo URL::base().'renderLabyrinth/index/'.$id_map; ?>" target="_blank">
                     <i class="icon-play icon-white"></i> <?php echo __('Play'); ?>
                 </a>
                 <div class="pull-right arrow"></div>
@@ -78,7 +75,9 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'questionManager/globalQuestions/'.$id_map; ?>"><i class="icon-question-sign"></i> <?php echo __('Global questions'); ?></a></li>
             <?php } ?>
         </ul>
-    </div>
+    </div><?php
+    } ?>
+
     <div class="modal hide fade" id="developer-notes">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

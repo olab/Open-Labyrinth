@@ -192,4 +192,9 @@ class Model_Leap_Map_Popup_Assign extends DB_ORM_Model {
             ->column('redirect_type_id', $redirectType)
             ->execute();
     }
+
+    public function exportMVP($popupId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('map_popup_id', '=', $popupId)->query()->as_array();
+    }
 }

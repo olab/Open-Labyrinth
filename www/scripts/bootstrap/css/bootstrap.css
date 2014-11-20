@@ -785,6 +785,44 @@ h4 small {
   border-bottom: 1px solid #eeeeee;
 }
 
+h1.page-header {
+    padding-bottom: 19px;
+    margin: 20px 0 30px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.page-header>.pull-right {
+    margin-top: 0;
+}
+
+.add-condition-js {
+    margin-right: 10px;
+}
+
+#conditionsForm td:nth-child(1){
+    width: 220px;
+}
+#conditionsForm td:nth-child(2) input{
+    width: 98%;
+}
+#conditionsForm td:nth-child(3){
+    width: 250px;
+}
+#conditionsForm td:nth-child(4){
+    width: 157px;
+}
+#conditionsForm td:nth-child(5){
+    width: 104px;
+}
+td select.assign-condition{
+    margin-bottom: 10px;
+}
+td select.assign-condition:last-child{
+    margin-bottom: 0;
+}
+.conditionAssign{
+    margin: 0;
+}
 ul,
 ol {
   padding: 0;
@@ -1073,6 +1111,15 @@ input[type="color"],
   border-radius: 4px;
 }
 
+input.counter-grid {
+    margin: 0;
+}
+.counter-grid-tb th:nth-child(1){
+    width: 220px;
+}
+.counter-grid-tb th:nth-child(3){
+    width: 315px;
+}
 input,
 textarea,
 .uneditable-input {
@@ -1921,9 +1968,8 @@ div.tipsy{
 
 }
 
-legend + .control-group {
-  margin-top: 20px;
-  -webkit-margin-top-collapse: separate;
+input.orderInSection {
+    margin: -2px 3px 0 0;
 }
 
 .form-horizontal .control-group {
@@ -6106,12 +6152,10 @@ h1 > .pull-right {
     width: 15%;
     min-width: 66px;
 }
-.patient-t td:nth-child(2){ width: 25%;}
-.patient-t td:nth-child(3){ width: 25%;}
-.patient-t td:nth-child(4){ width: 25%;}
-.patient-t td:nth-child(5){
-    width: 20%;
-    min-width: 235px;
+.patient-t td:nth-child(2){ width: 65%;}
+.patient-t td:nth-child(3){
+    width: 25%;
+    min-width: 150px;
 }
 
 .no-maps {
@@ -6138,6 +6182,10 @@ input.assign-type {
 
 .assign-same .add-assign-js {
     display: none;
+}
+
+.assign-same .assign-queue {
+    opacity: 0;
 }
 
 .assign-t td:nth-child(1){
@@ -6207,6 +6255,11 @@ input.assign-type {
     width: 600px;
 }
 
+.poll-node-section > label{
+    height: 30px;
+    line-height: 30px;
+}
+
 .poll-node-indent {
     margin-right: 10px;
 }
@@ -6224,43 +6277,6 @@ input.assign-type {
     display: none;
 }
 
-input.patient-type-js {
-    margin: -1px 5px 0 0;
-}
-
-.visual-map-js,
-.visual-section-js {
-    position: absolute;
-    bottom: -10px;
-}
-
-.visual-section-js {
-    left: 220px;
-}
-
-.visual-map-js:focus,
-.visual-section-js:focus {
-    outline-color: #808080;
-}
-
-#discardReload {
-    margin: 10px 15px;
-}
-
-input.lightning-chb {
-    position: relative;
-    margin-right: 5px;
-    top: -3px;
-}
-
-.second_parameter {
-    margin-left: 10px;
-}
-
-#assign-users th{
-    vertical-align: middle;
-}
-
-#webinarForm .submit-webinar-btn:first-child {
-    margin-top: -2px;
+.wizard_button img {
+    width: 100%;
 }

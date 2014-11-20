@@ -8,7 +8,7 @@ var editor=parentWin.rdface_editor;
 var EditEntities = {
 	init : function() {
 		//load schemas
-		$.getJSON(plugin_url+'/schema_creator/selection.json', function(data) {
+		$.getJSON(baseURL+"vocabulary/inline/api/?query=types", function(data) {
 			all_schemas=data;
 			$.each(data.datatypes,function(i,v){
 				all_datatypes.push(i);

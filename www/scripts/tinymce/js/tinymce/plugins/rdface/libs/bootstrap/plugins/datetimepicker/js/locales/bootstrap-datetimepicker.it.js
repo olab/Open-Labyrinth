@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Italian translation for bootstrap-datetimepicker
  * Enrico Rubboli <rubboli@gmail.com>
  */

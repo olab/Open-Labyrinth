@@ -1,4 +1,4 @@
-﻿# Project : bootstrap-datetimepicker
+# Project : bootstrap-datetimepicker
 ======================================
 
 [![Build Status](https://travis-ci.org/smalot/bootstrap-datetimepicker.png?branch=master)](https://travis-ci.org/smalot/bootstrap-datetimepicker)

@@ -73,6 +73,8 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('map_question', $questions);
         $elementsArray = $this->mergeArraysFromDB($questions, 'map_question_response');
         $this->createXMLFile('map_question_response', $elementsArray);
+        $validationArray = $this->mergeArraysFromDB($questions, 'map_question_validation');
+        $this->createXMLFile('map_question_validation', $validationArray);
 
         $contributor = DB_SQL::select('default')->from('map_contributors')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_contributor', $contributor);
@@ -99,12 +101,12 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $links = DB_SQL::select('default')->from('map_node_links')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_node_link', $links);
 
-        $sections = DB_SQL::select('default')->from('map_node_sections')->where('map_id', '=', (int)$mapId)->query()->as_array();
+        $sections = DB_SQL::select('default')->from('map_node_sections')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_node_section', $sections);
         $elementsArray = $this->mergeArraysFromDB($sections, 'map_node_section_node');
         $this->createXMLFile('map_node_section_node', $elementsArray);
 
-        $visualDisplay = DB_SQL::select('default')->from('map_visual_displays')->where('map_id', '=', (int)$mapId)->query()->as_array();
+        $visualDisplay = DB_SQL::select('default')->from('map_visual_displays')->where('map_id', '=', $mapId)->query()->as_array();
         $this->createXMLFile('map_visualdisplay', $visualDisplay);
         $visualDisplayCounters = $this->mergeArraysFromDB($visualDisplay, 'map_visualdisplay_counter');
         $this->createXMLFile('map_visualdisplay_counter', $visualDisplayCounters);
@@ -112,12 +114,27 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         $this->createXMLFile('map_visualdisplay_image', $visualDisplayImages);
         $visualDisplayPanels = $this->mergeArraysFromDB($visualDisplay, 'map_visualdisplay_panel');
         $this->createXMLFile('map_visualdisplay_panel', $visualDisplayPanels);
+        $this->copyVDImages($visualDisplayImages, $mapId);
+
+        $popups = DB_SQL::select('default')->from('map_popups')->where('map_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('map_popup', $popups);
+        $popupsAssign = $this->mergeArraysFromDB($popups, 'map_popup_assign');
+        $this->createXMLFile('map_popup_assign', $popupsAssign);
+        $popupsCounters = $this->mergeArraysFromDB($popups, 'map_popup_counter');
+        $this->createXMLFile('map_popup_counter', $popupsCounters);
+        $popupsStyles = $this->mergeArraysFromDB($popups, 'map_popup_style');
+        $this->createXMLFile('map_popup_style', $popupsStyles);
+
+        $metadataStringFields = DB_SQL::select('default')->from('metadata_string_fields')->where('object_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('Metadata_LiteralRecord', $metadataStringFields);
+
+        $metadataStringFields = DB_SQL::select('default')->from('metadata_skos_fields')->where('object_id', '=', $mapId)->query()->as_array();
+        $this->createXMLFile('Metadata_SkosRecord', $metadataStringFields);
 
         $this->createXMLFile('media_elements', $this->mediaElements, false, true);
         $this->createXMLFile('manifest', $this->manifest, false, true);
 
         $result = $this->createZipArchive();
-
         $this->removeDir();
 
         return $result ? (DOCROOT.'tmp/'.$this->folderName.'.zip') : '';
@@ -177,7 +194,8 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
      * Create zip archive
      * @return boolean 
      */
-    private function createZipArchive() {
+    private function createZipArchive()
+    {
         if ( ! is_dir($this->folderPath)) return false;
         
         $dest = DOCROOT.'tmp/'.$this->folderName.'.zip';
@@ -191,26 +209,46 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                     }
                 }
             }
-            
             closedir($h);
         }
-        
-        if(is_dir($this->folderPath . '/media') && $zip != null) {
-            if($h = opendir($this->folderPath . '/media')) {
+
+        if(is_dir($this->folderPath.'/media') && $zip) {
+            if($h = opendir($this->folderPath.'/media')) {
                 if($zip->addEmptyDir('media')) {
                     while(false !== ($f = readdir($h))) {
-                        if(strstr($f, '.') && file_exists($this->folderPath . '/media/' . $f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
-                            $zip->addFile($this->folderPath . '/media/' . $f, 'media/' . $f);
+                        if(strstr($f, '.') && file_exists($this->folderPath.'/media/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
+                            $zip->addFile($this->folderPath.'/media/'.$f, 'media/'.$f);
                         }
                     }
-                }
 
+                    if (is_dir($this->folderPath.'/media/vdImages')){
+                        $vdImagesOpenDir = opendir($this->folderPath.'/media/vdImages');
+                        if($vdImagesOpenDir AND $zip->addEmptyDir('media/vdImages')) {
+                            while(false !== ($file = readdir($vdImagesOpenDir))) {
+                                if(strstr($file, '.') && file_exists($this->folderPath.'/media/vdImages/'.$file) && strcmp($file, '.') != 0 && strcmp($file, '..') != 0) {
+                                    $zip->addFile($this->folderPath.'/media/vdImages/'.$file, 'media/vdImages/'.$file);
+                                }
+                            }
+
+                            $vdThumbsOpenDir = opendir($this->folderPath.'/media/vdImages/thumbs');
+                            if($vdThumbsOpenDir AND $zip->addEmptyDir('media/vdImages/thumbs')) {
+                                while(false !== ($fileThumbs = readdir($vdThumbsOpenDir))) {
+                                    if(strstr($fileThumbs, '.') && file_exists($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs) && strcmp($fileThumbs, '.') != 0 && strcmp($fileThumbs, '..') != 0) {
+                                        $zip->addFile($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs, 'media/vdImages/thumbs/'.$fileThumbs);
+                                    }
+                                }
+                            }
+                            closedir($vdThumbsOpenDir);
+                        }
+                        closedir($vdImagesOpenDir);
+                    }
+                }
                 closedir($h);
             }
         }
         
         $zip->close();
-        
+
         return true;
     }
     
@@ -223,28 +261,39 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if( ! is_dir($this->folderPath)) return;
 
         $mediaFolder = $this->folderPath.'/media';
-        if(is_dir($mediaFolder))
-        {
-            if($h = opendir($mediaFolder))
-            {
-                while (false !== ($f = readdir($h)))
-                {
-                    if (file_exists($this->folderPath.'/media/'.$f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0)
-                    {
-                        unlink($this->folderPath.'/media/'.$f);
+        if (is_dir($mediaFolder) AND ($h = opendir($mediaFolder))) {
+            if ($vdImagesOpenDSir = opendir($this->folderPath.'/media/vdImages')) {
+                if ($vdThumbsOpenDSir = opendir($this->folderPath.'/media/vdImages/thumbs')) {
+                    while(false !== ($fileThumbs = readdir($vdThumbsOpenDSir))) {
+                        if(strstr($fileThumbs, '.') && file_exists($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs) && strcmp($fileThumbs, '.') != 0 && strcmp($fileThumbs, '..') != 0) {
+                            unlink($this->folderPath.'/media/vdImages/thumbs/'.$fileThumbs);
+                        }
+                    }
+                    closedir($vdThumbsOpenDSir);
+                    rmdir($this->folderPath.'/media/vdImages/thumbs');
+                }
+
+                while(false !== ($file = readdir($vdImagesOpenDSir))) {
+                    if(strstr($file, '.') && file_exists($this->folderPath.'/media/vdImages/'.$file) && strcmp($file, '.') != 0 && strcmp($file, '..') != 0) {
+                        unlink($this->folderPath.'/media/vdImages/'.$file);
                     }
                 }
-                closedir($h);
-                rmdir($mediaFolder);
+                closedir($vdImagesOpenDSir);
+                rmdir($this->folderPath.'/media/vdImages');
             }
+
+            while (false !== ($f = readdir($h))) {
+                if (file_exists($this->folderPath.'/media/'.$f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0) {
+                    unlink($this->folderPath.'/media/'.$f);
+                }
+            }
+            closedir($h);
+            rmdir($mediaFolder);
         }
 
-        if ($h = opendir($this->folderPath))
-        {
-            while (false !== ($f = readdir($h)))
-            {
-                if (file_exists($this->folderPath.'/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0)
-                {
+        if ($h = opendir($this->folderPath)) {
+            while (false !== ($f = readdir($h))) {
+                if (file_exists($this->folderPath.'/'.$f) && strcmp($f, '.') != 0 && strcmp($f, '..') != 0) {
                     unlink($this->folderPath.'/'.$f);
                 }
             }
@@ -267,7 +316,6 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                 if (count($this->labyrinthArray[$file])) $this->labyrinthArray[$file] = $this->addToDB($file, $this->labyrinthArray[$file]);
             }
         }
-
         $nodeContentElements = array(
             'MR'    => 'map_element',
             'CHAT'  => 'map_chat',
@@ -276,6 +324,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
             'VPD'   => 'map_vpd',
             'QU'    => 'map_question',
             'CR'    => 'map_counter',
+            'CD'    => 'map_visualdisplay',
             'NODE'  => 'map_node'
         );
 
@@ -345,28 +394,6 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
             }
         }
 
-        //'map_visualdisplay_counter'
-        //'map_visualdisplay_image'
-        //'map_visualdisplay_panel'
-        if (isset($this->labyrinthArray['map_visualdisplay_counter'])) {
-            foreach($this->labyrinthArray['map_visualdisplay_counter'] as $vdCounter) {
-                $result = DB_ORM::model('map_counter_commonrules', array((int) $vdCounter['visual_id']));
-                $result->counter_id         = $vdCounter['counter_id'];
-                $result->label_x            = $vdCounter['label_x'];
-                $result->label_y            = $vdCounter['label_y'];
-                $result->label_angle        = $vdCounter['label_angle'];
-                $result->label_font_style   = $vdCounter['label_font_style'];
-                $result->label_text         = $vdCounter['label_text'];
-                $result->label_z_index      = $vdCounter['label_z_index'];
-                $result->value_x            = $vdCounter['value_x'];
-                $result->value_y            = $vdCounter['value_y'];
-                $result->value_angle        = $vdCounter['value_angle'];
-                $result->value_font_style   = $vdCounter['value_font_style'];
-                $result->value_z_index      = $vdCounter['value_z_index'];
-                $result->save();
-            }
-        }
-
         if (isset($this->labyrinthArray['map_question'])) {
             foreach($this->labyrinthArray['map_question'] as $q) {
                 $md5Q           = md5($q['settings']);
@@ -404,6 +431,33 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                 }
             }
         }
+
+        if ( ! file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages')) {
+            mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages', 0777, true);
+        }
+
+        if (isset($mediaElements['media_elements_vdimages']) AND count($mediaElements['media_elements_vdimages'])) {
+            foreach($mediaElements['media_elements_vdimages'] as $file){
+                $filePath = $tmpFolder.'media/vdImages/'.$file;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/'.$file);
+                }
+            }
+        }
+
+        if ( ! file_exists(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs')) {
+            mkdir(DOCROOT.'/files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs', 0777, true);
+        }
+
+        if (isset($mediaElements['media_elements_vdimages_thumbs']) AND count($mediaElements['media_elements_vdimages_thumbs'])) {
+            foreach($mediaElements['media_elements_vdimages_thumbs'] as $file){
+                $filePath = $tmpFolder.'media/vdImages/thumbs/'.$file;
+                if (file_exists($filePath)){
+                    copy($filePath, DOCROOT.'files/'.$this->labyrinthArray['map']['database_id'].'/vdImages/thumbs/'.$file);
+                }
+            }
+        }
+
         return true;
     }
 
@@ -505,6 +559,10 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
             $data['map_id'] = $this->labyrinthArray['map']['database_id'];
         }
 
+        if ($modelName == 'Metadata_LiteralRecord' OR $modelName == 'Metadata_SkosRecord') {
+            $data['object_id'] = $this->labyrinthArray['map']['database_id'];
+        }
+
         if (isset($data['chat_id']) AND isset($this->labyrinthArray['map_chat'][$data['chat_id']])) {
             $data['chat_id'] = $this->labyrinthArray['map_chat'][$data['chat_id']]['database_id'];
         }
@@ -512,7 +570,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if (isset($data['counter_id'])) {
             $data['counter_id'] = isset($this->labyrinthArray['map_counter'][$data['counter_id']])
                 ? $this->labyrinthArray['map_counter'][$data['counter_id']]['database_id']
-                : NULL;
+                : 0;
         }
 
         if (isset($data['node_id']) AND isset($this->labyrinthArray['map_node'][$data['node_id']])) {
@@ -530,6 +588,24 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if (isset($data['redirect_node_id'])) {
             if ($data['redirect_node_id'] == '') $data['redirect_node_id'] = NULL;
             elseif (isset($this->labyrinthArray['map_node'][$data['redirect_node_id']])) $data['redirect_node_id'] = $this->labyrinthArray['map_node'][$data['redirect_node_id']]['database_id'];
+        }
+
+        if (isset($data['visual_id']) AND isset($this->labyrinthArray['map_visualdisplay'][$data['visual_id']])) {
+            $data['visual_id'] = $this->labyrinthArray['map_visualdisplay'][$data['visual_id']]['database_id'];
+        }
+
+        if (isset($data['popup_id']) AND isset($this->labyrinthArray['map_popup'][$data['popup_id']])) {
+            $data['popup_id'] = $this->labyrinthArray['map_popup'][$data['popup_id']]['database_id'];
+        }
+
+        if (isset($data['map_popup_id']) AND isset($this->labyrinthArray['map_popup'][$data['map_popup_id']])) {
+            $data['map_popup_id'] = $this->labyrinthArray['map_popup'][$data['map_popup_id']]['database_id'];
+            if ($modelName == 'map_popup_assign') {
+                $data['assign_to_id'] = $this->labyrinthArray['map_node'][$data['assign_to_id']]['database_id'];
+                if ($data['redirect_to_id']) {
+                    $data['redirect_to_id'] = $this->labyrinthArray['map_node'][$data['redirect_to_id']]['database_id'];
+                }
+            }
         }
 
         $model = DB_ORM::model($modelName);
@@ -591,10 +667,42 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
      * @return none 
      */
     private function makeMediaFolder() {
-        if(!is_dir($this->folderPath)) return;
+        if( ! is_dir($this->folderPath)) return;
         
-        if(!is_dir($this->folderPath . '/media')) {
-            mkdir($this->folderPath . '/media');
+        if( ! is_dir($this->folderPath.'/media')) {
+            mkdir($this->folderPath.'/media');
+        }
+    }
+
+    private function copyVDImages($images, $mapId)
+    {
+        if ( ! is_dir($this->folderPath) AND count($images) == 0) return;
+
+        if( ! is_dir($this->folderPath.'/media/vdImages')) {
+            mkdir($this->folderPath.'/media/vdImages');
+        }
+        if( ! is_dir($this->folderPath.'/media/vdImages/thumbs')) {
+            mkdir($this->folderPath.'/media/vdImages/thumbs');
+        }
+
+        foreach($images as $image) {
+            $imageName = Arr::get($image, 'name', false);
+            if ($imageName) {
+                $imagePath = DOCROOT.'files/'.$mapId.'/vdImages/'.$imageName;
+                if (file_exists($imagePath)) {
+                    copy($imagePath, $this->folderPath.'/media/vdImages/'.$imageName);
+                    $index = (isset($this->mediaElements['vdimages'])) ? count($this->mediaElements['vdimages']) : 0;
+                    $this->mediaElements['vdimages']['vdimages_'.$index] = $imageName;
+
+                    // create vd thumbs file
+                    $imageThumbsPath = DOCROOT.'files/'.$mapId.'/vdImages/thumbs/'.$imageName;
+                    if (file_exists($imageThumbsPath)) {
+                        copy($imageThumbsPath, $this->folderPath.'/media/vdImages/thumbs/'.$imageName);
+                        $index = (isset($this->mediaElements['vdimages_thumbs'])) ? count($this->mediaElements['vdimages_thumbs']) : 0;
+                        $this->mediaElements['vdimages_thumbs']['vdimages_thumbs_'.$index] = $imageName;
+                    }
+                }
+            }
         }
     }
     

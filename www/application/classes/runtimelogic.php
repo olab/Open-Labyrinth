@@ -32,11 +32,10 @@ class RunTimeLogic {
     public function parsingString($string, $sessionId = 0)
     {
         $this->sessionId = $sessionId;
+        $array['errors'] = array();
+        $array['result'] = array();
 
-        if ( ! empty($string))
-        {
-            $parseFullString = false;
-            $finalResult     = array();
+        if ($string) {
             $changedCounters = array();
             $errors          = array();
             $r               = array();
@@ -44,51 +43,50 @@ class RunTimeLogic {
 
             preg_match_all("/".$pattern."/is", $string, $matches);
 
-            if (count($matches[0]) > 0)
-            {
+            if (count($matches[0])) {
                 foreach($matches[0] as $newIF){
                     $resultCon = $this->replaceConditions($newIF);
                     $resultStr = $this->replaceFunctions($resultCon);
                     ob_start();
-                    $finalResult = eval($resultStr['str']);
+                    $finalResult = @eval($resultStr['str']);
                     $checkErrors = ob_get_contents();
                     ob_end_clean();
 
-                    if ($checkErrors != '') $this->errors[] = $newIF;
-                    else
-                    {
-                        if (isset($finalResult['counters']) AND (count($finalResult['counters']) > 0))
-                        {
-                            foreach($finalResult['counters'] as $key => $value)
-                            {
+                    if ($checkErrors != '') {
+                        $this->errors[] = $newIF;
+                    } else {
+                        if (isset($finalResult['counters']) AND (count($finalResult['counters']))) {
+                            foreach($finalResult['counters'] as $key => $value) {
                                 $this->values[$key] = $value;
                                 $changedCounters[$key] = $value;
                             }
                         }
 
-                        if (isset($finalResult['stop']) AND ($finalResult['stop'] == 1)) break;
-                        if (isset($finalResult['break']) AND ($finalResult['break'] == 1)) break;
+                        if (isset($finalResult['stop']) AND ($finalResult['stop'] == 1)) {
+                            break;
+                        }
+                        if (isset($finalResult['break']) AND ($finalResult['break'] == 1)) {
+                            break;
+                        }
                     }
                 }
                 $finalResult['counters'] = $changedCounters;
-            } else $parseFullString = true;
-
-            if ($parseFullString)
-            {
+            } else {
                 $resultCon = $this->replaceConditions($string);
                 $resultStr = $this->replaceFunctions($resultCon);
                 ob_start();
                 $finalResult = @eval($resultStr['str']);
                 $checkErrors = ob_get_contents();
                 ob_end_clean();
-                if ($checkErrors != '') $this->errors[] = $string;
+                if ($checkErrors != '') {
+                    $this->errors[] = $string;
+                }
             }
 
             $array['result'] = $finalResult;
             $array['errors'] = $this->errors;
-            return $array;
         }
-        return null;
+        return $array;
     }
 
     public function replaceFunctions ($string)
@@ -101,8 +99,8 @@ class RunTimeLogic {
         $previousNodeId = 0;
 
         $pattern = 'MATCH\s*\\(\\[\\[CR:(\d+)\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
@@ -113,8 +111,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'NOT-MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $questionAnswers = $this->getQUAnswer($matches[1][$key]);
@@ -137,8 +135,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
@@ -157,8 +155,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)\s*ON_NODE\s*\((.*?[^)]*)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $onNode = json_decode($matches[4][0], true);
@@ -185,8 +183,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'UPPER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $replace[$i] = ' strtoupper("'.$this->getValue($matches[1][$key]).'") ';
@@ -196,8 +194,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'LOWER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $replace[$i] = ' strtolower("'.$this->getValue($matches[1][$key]).'") ';
@@ -207,8 +205,8 @@ class RunTimeLogic {
         }
 
         $pattern = 'PROPER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $replace[$i] = ' ucfirst("'.$this->getValue($matches[1][$key]).'") ';
@@ -218,8 +216,8 @@ class RunTimeLogic {
         }
 
         $pattern = '\\[\\[CR:(\d+)\\]\\]\sDIV\s(\d+)';
-        if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0]) > 0){
+        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
+            if (count($matches[0])){
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $replace[$i] = ' intval("'.$this->getValue($matches[1][$key]).'" / '.$matches[2][$key].') ';
@@ -236,7 +234,7 @@ class RunTimeLogic {
         $pattern = '\\[\\[CR:(\d+)\\]\\]';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCounter'), $string);
 
-        $pattern = '\\[\\[COND:(\d+)\\]\\]';
+        $pattern = '\[\[COND:(\d+)\]\]';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCondition'), $string);
 
         $pattern = '\\[\\[QU_ANSWER\\]\\]';
@@ -259,9 +257,17 @@ class RunTimeLogic {
         return '"'.$this->getValue($matches[1]).'"';
     }
 
-    private function replaceCondition($matches)
+    private function replaceCondition()
     {
-        return '"'.$this->getConditionValue($matches[1]).'"';
+        $value = 'notExist';
+        $scenarioId = Controller_RenderLabyrinth::$scenarioId;
+        if ($scenarioId) {
+            $obj = DB_ORM::select('Conditions_Assign')->where('scenario_id', '=', Controller_RenderLabyrinth::$scenarioId)->query()->fetch(0);
+            if ($obj) {
+                $value = $obj->value;
+            }
+        }
+        return '"'.$value.'"';
     }
 
     private function replaceQuestionAnswer($matches)
@@ -272,35 +278,37 @@ class RunTimeLogic {
     public function getValue($id)
     {
         $value = 0;
-        if (isset($this->values[$id])) $value = $this->values[$id];
-        return $value;
-    }
-
-    public function getConditionValue($id){
-        $value = 0;
-        if (isset($this->conditionValue[$id])) $value = $this->conditionValue[$id];
+        if (isset($this->values[$id])) {
+            $value = $this->values[$id];
+        }
         return $value;
     }
 
     public function getQUAnswer($id = null, $nodesId = array())
     {
         $return = '';
-        if ($id == null) $id = $this->questionId;
+        if ($id == null) {
+            $id = $this->questionId;
+        }
 
-        if ($this->questionResponse != null) $return = $this->questionResponse;
-        else
-        {
+        if ($this->questionResponse != null) {
+            $return = $this->questionResponse;
+        } else {
             $sessionId = Session::instance()->get('session_id', $id);
             $questionType = DB_ORM::model('Map_Question', array($id))->entry_type_id;
             $responses = DB_ORM::model('user_response')->getResponse($sessionId, $id, $nodesId);
             $numberOfResponses = count($responses);
 
-            foreach ($responses as $value)
-            {
+            foreach ($responses as $value) {
                 $response = $value->response;
-                if ($questionType == 7) $response = DB_ORM::model('Map_Question_Response', array($response))->response;
-                if ($numberOfResponses > 1) $return[] = $response;
-                else $return = $response;
+                if ($questionType == 7) {
+                    $response = DB_ORM::model('Map_Question_Response', array($response))->response;
+                }
+                if ($numberOfResponses > 1) {
+                    $return[] = $response;
+                } else {
+                    $return = $response;
+                }
             }
         }
         return $return;
@@ -308,10 +316,12 @@ class RunTimeLogic {
 
     public function replaceConditions($string)
     {
-        $pattern = '\s(THEN)\s(?=\\[\\[COND|\\[\\[CR|DEACTIVATE|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
+        $string = DB_ORM::model('Cron')->replaceConditions($string);
+
+        $pattern = '\s(THEN)\s(?=\[\[COND|\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
 
-        $pattern = '\s(ELSE)\s(?=\\[\\[COND|\\[\\[CR|DEACTIVATE|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ENDIF|;\s*IF|$)';
+        $pattern = '\s(ELSE)\s(?=\[\[COND\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ENDIF|;\s*IF|$)';
         $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
 
         $pattern = '\sENDIF\s';
@@ -345,8 +355,7 @@ class RunTimeLogic {
             $resultStr .= $this->parseAction($action);
         }
 
-        $resultStr = (($matches[1] == 'THEN') ? ' ) { ' : ' } else { ').$resultStr;
-        return $resultStr;
+        return (($matches[1] == 'THEN') ? ' ) { ' : ' } else { ').$resultStr;
     }
 
     public function parseAction($str)

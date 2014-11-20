@@ -1,10 +1,11 @@
 var Section = (function() {
-    function Section(id, name, color) {
-        this.id    = id;
-        this.name  = name;
-        this.color = color;
-        this.nodes = [];
-    };
+    function Section(id, name, color, orderBy) {
+        this.id         = id;
+        this.name       = name;
+        this.color      = color;
+        this.orderBy    = orderBy;
+        this.nodes      = [];
+    }
 
     Section.prototype.deleteNode = function(nodeId) {
         if(this.nodes.length <= 0) return;
@@ -14,7 +15,7 @@ var Section = (function() {
                 this.nodes.splice(i, 1);
             }
         }
-    }
+    };
 
     return Section;
 })();

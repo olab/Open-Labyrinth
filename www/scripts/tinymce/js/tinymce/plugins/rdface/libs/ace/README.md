@@ -1,4 +1,4 @@
-﻿Ace (Ajax.org Cloud9 Editor)
+Ace (Ajax.org Cloud9 Editor)
 ============================
 
 Ace is a code editor written in JavaScript.

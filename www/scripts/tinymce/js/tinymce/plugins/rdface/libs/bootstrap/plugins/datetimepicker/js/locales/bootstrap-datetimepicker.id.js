@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Bahasa translation for bootstrap-datetimepicker
  * Azwar Akbar <azwar.akbar@gmail.com>
  */

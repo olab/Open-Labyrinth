@@ -93,7 +93,9 @@ class Report_SJT_Map extends Report_Element {
                 $lastUserResponse = 0;
                 $atLeastOneResponse = 0;
 
-                $responsePoints = $this->getPoints($question->id, $nodeId);
+                $getPoints      = $this->getPoints($question->id, $nodeId);
+                $responsePoints = Arr::get($getPoints, 'score');
+                $responseVotes  = Arr::get($getPoints, 'votes');
 
                 // ----- create second table ----- //
                 $this->fillCell(0, $localTablesRow, 'Player points');
@@ -143,7 +145,7 @@ class Report_SJT_Map extends Report_Element {
                         foreach (json_decode($userResponse, true) as $position=>$responseId) {
                             if (isset($responsePoints[$responseId][$position])) $userResponseScore += $responsePoints[$responseId][$position];
                         }
-                        $userResponse = $userResponseScore.' '; // space need for left alignment in cell
+                        $userResponse = $userResponseScore;
                     }
 
                     $this->fillCell(0, $localTablesRow, DB_ORM::model('User', array($userId))->nickname);
@@ -164,18 +166,11 @@ class Report_SJT_Map extends Report_Element {
                     $this->fillCell(0, $localTablesRow + $i, 'Response: '.($i + 1));
                 }
 
-                foreach ($responsePoints as $pointObj)
+                foreach ($responseVotes as $votes)
                 {
-                    $points = '[';
-                    foreach ($pointObj as $point) {
-                        $points .= $point.'|';
-                    }
-                    $points = trim($points, "|");
-                    $points .= ']';
-
                     $this->fillCell($column, $headerRow - 1, $nodeName.': (ID -'.$nodeId.')');
                     $this->fillCell($column, $headerRow, $question->stem.': (ID -'.$question->id.')');
-                    $this->fillCell($column, $localTablesRow, $points);
+                    $this->fillCell($column, $localTablesRow, $votes);
                     $localTablesRow++;
                 }
 
@@ -215,8 +210,8 @@ class Report_SJT_Map extends Report_Element {
 
     public function getPoints ($questionId, $nodeId)
     {
-        $calculateConsistent = array();
         $poll                = array();
+        $result              = array();
         $scoreByPosition     = array(
             '0' => array(
                 '0' => 4,
@@ -256,13 +251,13 @@ class Report_SJT_Map extends Report_Element {
         );
 
         // get all response in correct order by question id
-        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $response) {
-            $poll[$response->id] = array();
+        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $responseObj) {
+            $poll[$responseObj->id] = 0;
         }
 
         // if response < 5, add
         for ($i = count($poll); $i < 5; $i++) {
-            $poll[] = array();
+            $poll[] = 0;
         }
 
         // get experts response
@@ -285,43 +280,27 @@ class Report_SJT_Map extends Report_Element {
                     ->fetch(0);
 
                 if ($userResponse) {
-                    foreach (json_decode($userResponse->response) as $position=>$responseId) {
+                    $response = json_decode($userResponse->response);
+                    $response = array_reverse($response);
+
+                    foreach ($response as $value => $responseId) {
                          if (isset($poll[$responseId])) {
-                             if (isset($poll[$responseId][$position])){
-                                 $poll[$responseId][$position] += 1;
-                             } else {
-                                 $poll[$responseId][$position] = 1;
-                             }
+                             $poll[$responseId] += $value;
                          }
                     }
                 }
             }
         }
-
-        for ($i = 0; $i < 5; $i++){
-            reset($poll);
-            $currentResponseId              = key($poll);
-            $winingId                       = $currentResponseId;
-            $position                       = key($poll[$currentResponseId]);
-            $biggestValue                   = Arr::get(Arr::get($poll, $currentResponseId, array()), $position);
-            $calculateConsistent[$position] = $biggestValue;
-
-            foreach ($poll as $responseId => $data) {
-                if (isset($poll[$responseId][$position]) AND $biggestValue < $poll[$responseId][$position]) {
-                    $winingId = $responseId;
-                }
-                unset($poll[$responseId][$position]);
-            }
-
-            $calculateConsistent[$position] = $winingId;
-            unset($poll[$winingId]);
-        }
+        $result['votes'] = $poll;
 
         $score = array();
-        foreach ($calculateConsistent as $position => $responseId) {
+        arsort($poll);
+        $poll = array_keys($poll);
+        foreach ($poll as $position => $responseId) {
             $score[$responseId] = Arr::get($scoreByPosition, $position, array());
         }
-        ksort($score);
-        return $score;
+        $result['score'] = $score;
+
+        return $result;
     }
 }

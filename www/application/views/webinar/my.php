@@ -18,7 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
+$scenarios = Arr::get($templateData, 'scenarios', array()); ?>
 <div class="page-header">
     <h1><?php echo __('My Scenario'); ?></h1>
 </div>
@@ -29,47 +29,44 @@
         <col style="width: 30%" />
     </colgroup>
     <thead>
-    <tr>
-        <th><?php echo __('Scenario Title'); ?></th>
-        <th><?php echo __('Step'); ?></th>
-        <th><?php echo __('Actions'); ?></th>
-    </tr>
+        <tr>
+            <th><?php echo __('Scenario Title'); ?></th>
+            <th><?php echo __('Step'); ?></th>
+            <th><?php echo __('Actions'); ?></th>
+        </tr>
     </thead>
-    <tbody>
-    <?php if(isset($templateData['webinars']) && count($templateData['webinars']) > 0) { ?>
-        <?php foreach($templateData['webinars'] as $webinar) { ?>
+    <tbody><?php if(count($scenarios)) {
+        foreach($scenarios as $scenario) { ?>
             <tr>
-                <td><a href="<?php echo URL::base(); ?>"><?php echo $webinar->title; ?></a></td>
-                <td>
-                    <?php
-                    if($webinar->current_step != null && $webinar->steps != null && count($webinar->steps) > 0) {
-                        foreach($webinar->steps as $webinarStep) {
-                            if($webinarStep->id == $webinar->current_step) {
-                                echo $webinarStep->name;
+                <td><a href="<?php echo URL::base(); ?>"><?php echo $scenario->title; ?></a></td>
+                <td><?php
+                    if(count($scenario->steps)) {
+                        foreach($scenario->steps as $scenarioStep) {
+                            if($scenarioStep->id == $scenario->current_step) {
+                                echo $scenarioStep->name;
                                 break;
                             }
                         }
                     } else {
                         echo '-';
-                    }
-                    ?>
+                    } ?>
                 </td>
                 <td class="center">
                     <div class="btn-group">
-                        <a class="btn btn-info" href="<?php echo URL::base() . 'webinarManager/render/' . $webinar->id; ?>">
+                        <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/render/'.$scenario->id; ?>">
                             <i class="icon-folder-open icon-white"></i>
                             <span class="visible-desktop">Open</span>
                         </a>
                         &nbsp;
-                        <a class="btn btn-info" href="<?php echo URL::base() . 'webinarManager/progress/' . $webinar->id; ?>">
+                        <a class="btn btn-info" href="<?php echo URL::base().'webinarManager/progress/'.$scenario->id; ?>">
                             <i class="icon-calendar icon-white"></i>
                             <span class="visible-desktop">Show progress</span>
                         </a>
                     </div>
                 </td>
-            </tr>
-        <?php } ?>
-    <?php } else { ?>
+            </tr><?php
+        }
+    } else { ?>
         <tr class="info"><td colspan="4">There are no available Scenarios right now.</td> </tr>
     <?php } ?>
     </tbody>

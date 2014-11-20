@@ -1,4 +1,4 @@
-﻿/**
+/**
 * vkBeautify - javascript plugin to pretty-print or minify text in XML, JSON, CSS and SQL formats.
 *  
 * Version - 0.99.00.beta 
@@ -113,7 +113,7 @@ vkbeautify.prototype.xml = function(text,step) {
 			} else 
 			// <elm></elm> //
 			if( /^<\w/.exec(ar[ix-1]) && /^<\/\w/.exec(ar[ix]) &&
-				/^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('http://rdface.aksw.org/','')) { 
+				/^<[\w:\-\.\,]+/.exec(ar[ix-1]) == /^<\/[\w:\-\.\,]+/.exec(ar[ix])[0].replace('/','')) { 
 				str += ar[ix];
 				if(!inComment) deep--;
 			} else

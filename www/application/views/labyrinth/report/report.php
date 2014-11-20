@@ -189,8 +189,21 @@ if (isset($templateData['session'])) {
                                     }
                                 }
                             } else {
-                                $user_response = $response->response;
-                                echo '<p>'.$response->response.'</p>';
+                                $user_response = html_entity_decode($response->response);
+                                if (isset($templateData['cumulative'][$response->question_id])) {
+                                    foreach ($templateData['cumulative'][$response->question_id] as $cumulativeResponse) {
+                                        $cumulativeResponse = html_entity_decode($cumulativeResponse);
+                                        if (strpos($cumulativeResponse, $user_response) !== false) {
+                                            echo '<div style="background: #ffff00;">';
+                                                echo $user_response;
+                                            echo '</div>';
+                                        } else {
+                                            echo $cumulativeResponse;
+                                        }
+                                    }
+                                } else {
+                                    echo $user_response;
+                                }
                             }
                         }
                     } else {
@@ -209,7 +222,7 @@ if (isset($templateData['session'])) {
                 </td>
                 <td><?php
                     if ($question->feedback) echo 'Question: '.$question->feedback.'<br>';
-                    if ($user_response) echo 'Answer: '.$user_response; ?>
+                    if ($user_response) echo 'Answer: '.html_entity_decode($user_response); ?>
                 </td>
             </tr><?php
         } ?>

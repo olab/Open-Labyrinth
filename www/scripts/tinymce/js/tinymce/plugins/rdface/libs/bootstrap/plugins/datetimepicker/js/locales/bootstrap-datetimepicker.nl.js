@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Dutch translation for bootstrap-datetimepicker
  * Reinier Goltstein <mrgoltstein@gmail.com>
  */

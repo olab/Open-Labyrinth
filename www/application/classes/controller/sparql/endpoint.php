@@ -58,9 +58,10 @@
         public function before()
         {
             $sparql_config = Kohana::$config->load('sparql');
-            $url = $sparql_config["endpoint"];
-            if(isset($url))
-                $this->request->redirect ($url);
+
+
+            if(isset($sparql_config["driver"])&&$sparql_config["driver"]!="Helper_RDF_Store_Arc")
+                $this->request->redirect ($sparql_config["endpoint"]);
 
             $store = Helper_RDF_Store::getDriver();
 

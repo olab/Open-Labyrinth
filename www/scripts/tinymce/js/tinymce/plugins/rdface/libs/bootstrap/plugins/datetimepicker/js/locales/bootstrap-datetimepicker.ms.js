@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Malay translation for bootstrap-datetimepicker
  * Ateman Faiz <noorulfaiz@gmail.com>
  */

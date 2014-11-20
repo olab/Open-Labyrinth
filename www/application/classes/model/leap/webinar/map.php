@@ -56,6 +56,9 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
+            )),
+            'cumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
             ))
         );
 
@@ -127,13 +130,14 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
             ->execute();
     }
 
-    public function addMap($scenarioId, $referenceId, $step, $which)
+    public function addMap($scenarioId, $referenceId, $step, $which, $cumulative = 0)
     {
         return DB_ORM::insert('webinar_map')
-            ->column('webinar_id', $scenarioId)
-            ->column('reference_id', $referenceId)
-            ->column('which', $which)
-            ->column('step', $step)
+            ->column('webinar_id',      $scenarioId)
+            ->column('reference_id',    $referenceId)
+            ->column('which',           $which)
+            ->column('step',            $step)
+            ->column('cumulative',      $cumulative)
             ->execute();
     }
 
@@ -146,6 +150,20 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
             $result[$element->which][$element->reference_id] = $element->id;
         }
 
+        return $result;
+    }
+
+    public function getMapsId($scenarioId)
+    {
+        $result = array();
+        $records = DB_ORM::select('webinar_map')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+        foreach ($records as $record) {
+            if ($record->which == 'section') {
+                $result[] = DB_ORM::model('map_node_section', array($record->reference_id))->map_id;
+            } else {
+                $result[] = $record->reference_id;
+            }
+        }
         return $result;
     }
 }

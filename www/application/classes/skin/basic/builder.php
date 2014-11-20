@@ -77,7 +77,7 @@ class Skin_Basic_Builder implements Skin_Builder {
     }
 
     public function buildBookmark() {
-        $this->skin = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\'/>', $this->skin);
+        $this->skin = str_replace('{BOOKMARK}', '<input type="button" onclick=\'ajaxBookmark();\' value="Bookmark"/>', $this->skin);
     }
 
     public function buildReset() {
