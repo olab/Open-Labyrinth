@@ -290,62 +290,68 @@ class Model_Labyrinth extends Model {
         if (count($node->links)) {
             $withPosition = array();
             $withOutPosition = array();
+            $orderType = $node->link_type->name;
+
             foreach ($node->links as $link) {
                 if ($scenarioSection AND ! in_array($link->node_id_2, $scenarioSection)) {
                     continue;
                 }
 
-                $position = $orderInSection
-                    ? Arr::get($orderInSection, $link->node_id_2, false)
-                    : false;
+                if ($orderType == 'ordered' AND count($orderInSection)) {
 
-                if ($position === false) {
-                    $withOutPosition[] = $link;
+                    $position = $orderInSection
+                        ? Arr::get($orderInSection, $link->node_id_2, false)
+                        : false;
+
+                    if ($position === false) {
+                        $withOutPosition[] = $link;
+                    } else {
+                        $withPosition[$position] = $link;
+                    }
                 } else {
-                    $withPosition[$position] = $link;
+                    switch ($node->link_type->name) {
+                        case 'ordered':
+                            $order = $link->order * 10000;
+                            if (isset($withOutPosition[$order])) {
+                                $nextIndex = $this->findNextIndex($withOutPosition, $order + 1);
+                                $withOutPosition[$nextIndex] = $link;
+                            } else {
+                                $withOutPosition[$order] = $link;
+                            }
+                            break;
+                        case 'random order':
+                            $randomIndex = rand(0, 100000);
+                            if (isset($withOutPosition[$randomIndex])) {
+                                $nextIndex = $this->findNextIndex($withOutPosition, $randomIndex + 1);
+                                $withOutPosition[$nextIndex] = $link;
+                            } else {
+                                $withOutPosition[$randomIndex] = $link;
+                            }
+                            break;
+                        case 'random select one *':
+                            $randomIndex = rand(0, 100000) * ($link->probability == 0 ? 1 : $link->probability);
+                            if (isset($withOutPosition[$randomIndex])) {
+                                $nextIndex = $this->findNextIndex($withOutPosition, $randomIndex + 1);
+                                $withOutPosition[$nextIndex] = $link;
+                            } else {
+                                $withOutPosition[$randomIndex] = $link;
+                            }
+                            break;
+                        default:
+                            $withOutPosition[] = $link;
+                            break;
+                    }
                 }
-
-
-                /*switch ($node->link_type->name) {
-                    case 'ordered':
-                        $order = $link->order * 10000;
-                        if (isset($result[$order])) {
-                            $nextIndex = $this->findNextIndex($result, $order + 1);
-                            $result[$nextIndex] = $link;
-                        } else {
-                            $result[$order] = $link;
-                        }
-                        break;
-                    case 'random order':
-                        $randomIndex = rand(0, 100000);
-                        if (isset($result[$randomIndex])) {
-                            $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
-                            $result[$nextIndex] = $link;
-                        }
-                        else $result[$randomIndex] = $link;
-                        break;
-                    case 'random select one *':
-                        $randomIndex = rand(0, 100000) * ($link->probability == 0 ? 1 : $link->probability);
-                        if (isset($result[$randomIndex])) {
-                            $nextIndex = $this->findNextIndex($result, $randomIndex + 1);
-                            $result[$nextIndex] = $link;
-                        }
-                        else $result[$randomIndex] = $link;
-                        break;
-                    default:
-                        $result[] = $link;
-                        break;
-                }*/
             }
+
             ksort($withPosition);
             $result = array_merge($withPosition, $withOutPosition);
+
             if ($node->link_type_id == 3) {
-                if (count($result)){
-                    $resultRandomOne = array();
-                    $keys = array_keys($result);
-                    rsort($keys);
-                    $resultRandomOne[0] = $result[$keys[0]];
-                    $result = $resultRandomOne;
+                $amount = count($result);
+                if($amount){
+                    $rand = rand(0, $amount - 1);
+                    $result = array($result[$rand]);
                 }
             }
             return $result;
