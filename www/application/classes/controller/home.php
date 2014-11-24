@@ -98,8 +98,10 @@ class Controller_Home extends Controller_Base {
                 $versionsOfDB   = json_decode(Arr::get($versionInJSON, 0, ''), true);
                 if (is_array($versionsOfDB)){
                     end($versionsOfDB);
-                    $versionLastDB  = key($versionsOfDB);
-                    $version        = substr($versionLastDB,1,strpos($versionLastDB, '_') - 1);
+                    $versionLastDB = key($versionsOfDB);
+                    $subVersion = strpos($versionLastDB, '_');
+                    $subEnd     = $subVersion ? $subVersion - 1 : -4;
+                    $version    = substr($versionLastDB, 1, $subEnd);
                 }
             }
             $this->templateData['version'] = $version;
