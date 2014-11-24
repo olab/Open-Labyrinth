@@ -1,1 +1,0 @@
-RENAME TABLE  `lti_consumer` TO  `lti_consumers` ;
