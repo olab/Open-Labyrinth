@@ -60,6 +60,30 @@
             });
         }
     });
+    tinymce.init({
+        selector: ".mceEditor",
+        theme: "modern",
+        content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
+        entity_encoding: "raw",
+        contextmenu: "link image inserttable | cell row column",
+        menubar : false,
+        closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
+        valid_elements : "+*[*]",
+        plugins: ["compat3x",
+            "advlist autolink lists link image charmap hr anchor pagebreak",
+            "searchreplace wordcount visualblocks visualchars code fullscreen",
+            "insertdatetime nonbreaking save table contextmenu directionality",
+            "template paste textcolor layer advtextcolor rdface"
+        ],
+        toolbar1: "undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+        image_advtab: true,
+        templates: [],
+        setup: function(editor) {
+            editor.on('init', function() {
+                valToTextarea();
+            });
+        }
+    });
 </script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
@@ -277,17 +301,10 @@ $id_node = $templateData['node']->id; ?>
                     if (isset($templateData['node_edit'])) { ?>
                         <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
                             <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
-                            <p><textarea name='mnodetext' cols='60' rows='20'class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
+                            <p><textarea name='mnodetext' cols='60' rows='20' class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
                             <input type='submit' name='Submit' value='Submit'/>
                         </form>
-
-                        <p>
-                        - <a href='<?php echo URL::base().'linkManager/index/'.$id_map; ?>'><?php echo __('links'); ?></a>
-                        - <a href='<?php echo URL::base().'nodeManager/index/'.$id_map; ?>'><?php echo __('nodes'); ?></a>
-                        - <a href='<?php echo URL::base().'fileManager/index/'.$id_map; ?>'><?php echo __('files'); ?></a>
-                        - <a href='<?php echo URL::base().'counterManager/index/'.$id_map; ?>'><?php echo __('counters'); ?></a>
-                        - <a href='<?php echo URL::base().'labyrinthManager/editMap/'.$id_map; ?>'><?php echo __('main editor'); ?></a>
-                        </p><?php
+                        <p></p><?php
                     } else {
                         echo Arr::get($templateData, 'node_text');
                         if (isset($templateData['node_annotation']) && $templateData['node_annotation'] != null) echo '<div class="annotation">' . $templateData['node_annotation'] . '</div>';
@@ -323,7 +340,7 @@ $id_node = $templateData['node']->id; ?>
                     <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                         <h5>
                             <a href="<?php echo URL::base().'renderLabyrinth/go/'.$id_map.'/'.$id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
-                                <?php echo !isset($templateData['node_edit']) ? __('turn editing on') : __('turn editing off'); ?>
+                                <button type="button"><?php echo !isset($templateData['node_edit']) ? __('turn editing on') : __('turn editing off'); ?></button>
                             </a>
                         </h5>
                     <?php } ?>
