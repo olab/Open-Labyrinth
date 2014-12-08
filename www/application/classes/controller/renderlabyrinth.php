@@ -1498,7 +1498,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
-                $cumulative  = ($qTitle == 'Cumulative');
+                $cumulative  = (($qTitle == 'Cumulative') AND self::$scenarioId);
                 $class       = $cumulative ? ' cumulative' : '';
                 $placeholder = $cumulative ? '' : ' placeholder="'.$question->prompt.'"';
                 $content     = '';

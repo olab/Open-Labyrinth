@@ -1,5 +1,6 @@
 .lightning-single,
 .lightning-multi {
+    min-width: 200px;
     margin: 0;
 }
 
