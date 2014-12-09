@@ -215,8 +215,8 @@ if (isset($templateData['session'])) {
                     } ?>
                 </td>
                 <td><?php
-                    if ($question->feedback) echo 'Question feedback: '.$question->feedback.'<br>';
-                    if ($responseFeedback) echo 'Answer feedback: '.html_entity_decode($responseFeedback); ?>
+                    if ($question->feedback) echo $question->feedback.'<br>';
+                    if ($responseFeedback) echo html_entity_decode($responseFeedback); ?>
                 </td>
             </tr><?php
         } ?>
