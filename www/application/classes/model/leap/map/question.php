@@ -251,6 +251,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
     private function updateSliderQuestion($questionId, $values) {
         DB_ORM::update('map_question')
             ->set('stem', Arr::get($values, 'stem', ''))
+            ->set('feedback', Arr::get($values, 'fback', ''))
             ->set('counter_id', (int)Arr::get($values, 'counter', 0))
             ->set('is_private', (int)Arr::get($values, 'is-private', 0) ? 1 : 0)
             ->set('settings', json_encode(array(
@@ -486,6 +487,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
         $newQuestionId = DB_ORM::insert('map_question')
                 ->column('map_id', $mapId)
                 ->column('entry_type_id', $type->id)
+                ->column('feedback', Arr::get($values, 'fback', ''))
                 ->column('stem', Arr::get($values, 'stem', ''))
                 ->column('counter_id', (int)Arr::get($values, 'counter', 0))
                 ->column('settings', json_encode(array(

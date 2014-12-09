@@ -202,9 +202,11 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                 $jsonResponse .= '}';?>
             <div class="panel sortable">
                 <input type="hidden" name="responses[]" value='<?php echo $jsonResponse; ?>'/>
-                <div class="panel-heading" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#responseCollapse_<?php echo $response->id; ?>">
+                <div class="panel-heading response-labels" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#responseCollapse_<?php echo $response->id; ?>">
                     <label for="response_<?php echo $response->id; ?>"><?php echo __('Response'); ?></label>
                     <input type="text" class="response-input" id="response_<?php echo $response->id; ?>" value="<?php echo $response->response; ?>">
+                    Feedback<input type="text" value="<?php echo $response->feedback; ?>" readonly>
+                    Correctness<input type="text" value="<?php if ($response->is_correct == 1) echo 'Correct'; elseif ($response->is_correct == 0) echo 'Incorrect'; else echo 'Neutral'; ?>" readonly>
                     <button type="button" class="btn-remove-response btn btn-danger btn-small"><i class="icon-trash"></i></button>
                 </div>
                 <div id="responseCollapse_<?php echo $response->id; ?>" class="panel-collapse collapse">

@@ -111,40 +111,39 @@ if (isset($templateData['session'])) {
             <td><?php echo $progress; ?></td>
         </tr>
         <?php endif; ?>
-    </table>
-
-    <?php if(isset($templateData['feedbacks']['general'])){ ?>
+    </table><?php
+    if(isset($templateData['feedbacks']['general'])){ ?>
     <table class="table table-striped table-bordered">
         <tr>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
         </tr>
-    <?php }
-    if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
+        <?php }
+        if(isset($templateData['feedbacks']['timeTaken']) and count($templateData['feedbacks']['timeTaken']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for time taken'); ?></td>
             <td><?php foreach($templateData['feedbacks']['timeTaken'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-    <?php }
-    if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
+        <?php }
+        if(isset($templateData['feedbacks']['nodeVisit']) and count($templateData['feedbacks']['nodeVisit']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for nodes visit'); ?></td>
             <td> <?php foreach($templateData['feedbacks']['nodeVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-    <?php }
-    if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
+        <?php }
+        if(isset($templateData['feedbacks']['mustVisit']) and count($templateData['feedbacks']['mustVisit']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for must visit'); ?></td>
             <td><?php foreach($templateData['feedbacks']['mustVisit'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-    <?php }
-    if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
+        <?php }
+        if(isset($templateData['feedbacks']['mustAvoid']) and count($templateData['feedbacks']['mustAvoid']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for must avoid'); ?></td>
             <td><?php foreach($templateData['feedbacks']['mustAvoid'] as $msg) { echo $msg.'<br/>'; } ?></td>
         </tr>
-    <?php }
-    if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
+        <?php }
+        if(isset($templateData['feedbacks']['counters']) and count($templateData['feedbacks']['counters']) > 0) { ?>
         <tr>
             <td><?php echo __('feedback for counters'); ?></td>
             <td><?php foreach($templateData['feedbacks']['counters'] as $msg) { echo $msg.'<br/>'; } ?></td>
@@ -152,13 +151,12 @@ if (isset($templateData['session'])) {
     </table><?php
     }
 
-    if ($templateData['questions'] != NULL) {?>
+    if (count($templateData['responses'])) {?>
     <h3><?php echo __('Questions'); ?></h3>
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
             <td>ID</td>
-            <td>type</td>
             <td>stem</td>
             <td>response</td>
             <td>correct</td>
@@ -166,63 +164,59 @@ if (isset($templateData['session'])) {
         </tr>
         </thead>
         <tbody><?php
-        foreach($templateData['questions'] as $question) {
+        foreach($templateData['responses'] as $response) {
+            $question = $templateData['questions'][$response->question_id];
             $responseMap = array();
-            $user_response = '';
-            if($question->type->value == 'dd' && count($question->responses) > 0) {
+            $user_response = html_entity_decode($response->response);
+            $questionType = $question->type->value;
+
+            if($questionType == 'dd' && count($question->responses) > 0) {
                 foreach($question->responses as $r) {
                     $responseMap[$r->id] = $r;
                 }
             } ?>
             <tr>
                 <td><?php echo $question->id; ?></td>
-                <td><?php echo $question->type->title; ?></td>
                 <td><?php echo $question->stem; ?></td>
                 <td><?php
-                    if (isset($templateData['responses'][$question->id]) AND count($templateData['responses'][$question->id]) > 0) {
-                        foreach ($templateData['responses'][$question->id] as $response) {
-                            if ($question->type->value == 'dd') {
-                                $jsonObj = json_decode($response->response, true);
-                                if (count($jsonObj)) {
-                                    foreach($jsonObj as $o) {
-                                        if (isset($responseMap[$o]))  echo '<p>'.$responseMap[$o]->response.'</p>';
-                                    }
-                                }
-                            } else {
-                                $user_response = html_entity_decode($response->response);
-                                if (isset($templateData['cumulative'][$response->question_id])) {
-                                    foreach ($templateData['cumulative'][$response->question_id] as $cumulativeResponse) {
-                                        $cumulativeResponse = html_entity_decode($cumulativeResponse);
-                                        if (strpos($cumulativeResponse, $user_response) !== false) {
-                                            echo '<div style="background: #ffff00;">';
-                                                echo $user_response;
-                                            echo '</div>';
-                                        } else {
-                                            echo $cumulativeResponse;
-                                        }
-                                    }
-                                } else {
-                                    echo $user_response;
-                                }
+                    if ($questionType == 'dd') {
+                        $jsonObj = json_decode($response->response, true);
+                        if (count($jsonObj)) {
+                            foreach($jsonObj as $o) {
+                                if (isset($responseMap[$o]))  echo '<p>'.$responseMap[$o]->response.'</p>';
                             }
                         }
                     } else {
-                        echo 'no response';
-                    } ?>
+                        if (isset($templateData['cumulative'][$response->question_id])) {
+                            foreach ($templateData['cumulative'][$response->question_id] as $cumulativeResponse) {
+                                $cumulativeResponse = html_entity_decode($cumulativeResponse);
+                                if (strpos($cumulativeResponse, $user_response) !== false) {
+                                    echo '<div style="background: #ffff00;">';
+                                        echo $user_response;
+                                    echo '</div>';
+                                } else {
+                                    echo $cumulativeResponse;
+                                }
+                            }
+                        } else {
+                            echo $user_response;
+                        }
+                    }?>
                 </td>
                 <td><?php
-                    if ($question->type->value != 'text' and $question->type->value != 'area' and $question->type->value != 'dd' AND count($question->responses) > 0) {
+                    $responseFeedback = '';
+                    if (($questionType == 'pcq' OR $questionType == 'mcq') AND count($question->responses)) {
                         foreach($question->responses as $resp) {
-                            if ($user_response == $resp->response) $user_response = $resp->feedback;
-                            if($resp->is_correct == 1) echo '<p>'.$resp->response.'</p>';
+                            if ($user_response == $resp->response) $responseFeedback = $resp->feedback;
+                            if ($resp->is_correct == 1) echo '<p>'.$resp->response.'</p>';
                         }
                     } else {
                         echo 'n/a';
                     } ?>
                 </td>
                 <td><?php
-                    if ($question->feedback) echo 'Question: '.$question->feedback.'<br>';
-                    if ($user_response) echo 'Answer: '.html_entity_decode($user_response); ?>
+                    if ($question->feedback) echo 'Question feedback: '.$question->feedback.'<br>';
+                    if ($responseFeedback) echo 'Answer feedback: '.html_entity_decode($responseFeedback); ?>
                 </td>
             </tr><?php
         } ?>

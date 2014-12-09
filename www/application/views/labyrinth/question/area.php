@@ -73,6 +73,10 @@ if (isset($templateData['map'])) {
                 </div>
             </div>
             <div class="control-group">
+                <label for="feedback" class="control-label">Feedback</label>
+                <div class="controls"><textarea id="feedback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></div>
+            </div>
+            <div class="control-group">
                 <label for="fback" class="control-label">
                     <?php echo __('Prompt text'); ?>
                     <p class="question-info-box"><?php echo __('Text will automatically appear in response area. Use to give learner a hint or further instruction.'); ?></p>

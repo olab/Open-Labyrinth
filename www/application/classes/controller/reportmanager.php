@@ -135,6 +135,28 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
+        $questions = array();
+        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array() as $question) {
+            $questions[$question->id] = $question;
+        }
+        $this->templateData['questions'] = $questions;
+        $this->templateData['responses'] = array();
+
+        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->query()->as_array();
+        foreach ($userResponses as $userResponse) {
+            $questionId = $userResponse->question_id;
+            if ($questions[$questionId]->entry_type_id == 8) {
+                $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
+            }
+            $this->templateData['responses'][] = $userResponse;
+
+            if ( ! isset($this->templateData['cumulative'][$questionId]) AND $session->webinar_id) {
+                $endSession = DB_ORM::model('User_SessionTrace')->getEndSessionTime($session->id);
+                $this->templateData['cumulative'] = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId, $endSession);
+            }
+        }
+
+        /* commented 8/12/2014
         $questions = DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array();
         $this->templateData['questions'] = $questions;
         foreach ($questions as $question) {
@@ -149,7 +171,7 @@ class Controller_ReportManager extends Controller_Base
                 }
                 $this->templateData['responses'][$questionId][] = $responseObj;
             }
-        }
+        }*/
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
         foreach ($allCounters as $counter) {

@@ -60,6 +60,10 @@
             <div class="controls"><textarea id="stem" name="stem"><?php echo (isset($templateData['question']) ? $templateData['question']->stem : ''); ?></textarea></div>
         </div>
         <div class="control-group">
+            <label for="feedback" class="control-label">Feedback</label>
+            <div class="controls"><textarea id="feedback" name="fback"><?php if(isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea></div>
+        </div>
+        <div class="control-group">
             <label class="control-label"><?php echo __('Orientation'); ?></label>
             <div class="controls">
                 <div class="radio_extended btn-group">

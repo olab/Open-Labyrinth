@@ -1511,3 +1511,12 @@ table.dataTable tr.even td[class*='sorting'] {
 #processed-rule{
     margin: 0 0 10px 21px;
 }
+.response-labels {
+    line-height: 20px;
+    color: #333333;
+    font-size: 21px;
+}
+.response-labels input:nth-child(3),
+.response-labels input:nth-child(4){
+    margin-left: 5px;
+}
