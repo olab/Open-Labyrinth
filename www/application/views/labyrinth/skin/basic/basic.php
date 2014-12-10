@@ -37,7 +37,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
 <script language="javascript" type="text/javascript">
     tinymce.init({
-        selector: ".cumulative",
+        selector: ".mceText",
         theme: "modern",
         content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
         entity_encoding: "raw",

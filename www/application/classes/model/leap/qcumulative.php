@@ -90,7 +90,7 @@ class Model_Leap_qCumulative extends DB_ORM_Model {
         }
     }
 
-    public function getAnswers($mapId, $questionId, $endSession)
+    public function getAnswers($mapId, $questionId, $sessionId)
     {
         $responsesSQL = DB_SQL::select('default')
             ->from('user_sessions', 's')
@@ -100,7 +100,7 @@ class Model_Leap_qCumulative extends DB_ORM_Model {
             ->on('s.map_id', '=', 'c.map_id')
             ->on('s.start_time', '>=', 'c.reset')
             ->where('s.map_id', '=', $mapId)
-            ->where('s.start_time', '<', $endSession)
+            ->where('s.id', '<', $sessionId)
             ->where('r.question_id', '=', $questionId)
             ->query()
             ->as_array();

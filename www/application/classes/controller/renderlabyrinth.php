@@ -1441,8 +1441,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
             // ----- previous answer ----- //
             $getPreviousAnswers = function(&$previousAnswers, $mapId, $questionId, $nodeId, $cumulativeType) {
                 $scenarioId     = Controller_RenderLabyrinth::$scenarioId;
-                $responses      = '';
                 $responsesSQL   = array();
+                $responses      = '';
 
                 if ($scenarioId AND Controller_RenderLabyrinth::$isCumulative){
                     $responsesSQL = DB_SQL::select('default')
@@ -1454,29 +1454,33 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         ->where('r.question_id', '=', $questionId)
                         ->where('r.node_id', '=', $nodeId)
                         ->query();
+                    foreach ($responsesSQL as $response) {
+                        if (isset($response['response'])) {
+                            $responses .= $response['response'];
+                        }
+                    }
                 } elseif ($cumulativeType) {
                     $builder = DB_SQL::select('default')
                         ->from('user_sessions', 's')
                         ->join('LEFT', 'user_responses', 'r')
                         ->on('s.id', '=', 'r.session_id')
                         ->where('s.map_id', '=', $mapId)
-                        ->where('r.question_id', '=', $questionId)
-                        ->where('r.node_id', '=', $nodeId);
+                        ->where('r.question_id', '=', $questionId);
                     $resetObj = DB_ORM::select('qCumulative')->where('question_id', '=', $questionId)->where('map_id', '=', $mapId)->query()->fetch();
                     if ($resetObj) {
                         $builder->where('s.start_time', '>=', $resetObj->reset);
                     }
-                    $responsesSQL = $builder->query();
-                }
-
-                foreach ($responsesSQL as $response) {
-                    if (isset($response['response'])) {
-                        $responses .= $response['response'];
+                    $responsesSQL = $builder
+                        ->order_by('r.id', 'DESC')
+                        ->query()
+                        ->fetch(0);
+                    if (isset($responsesSQL['response'])) {
+                        $responses = $responsesSQL['response'];
                     }
                 }
 
-                if ($responses) {
-                    $previousAnswers = 'Previous answer:'.html_entity_decode($responses);
+                if ($responsesSQL) {
+                    $previousAnswers = html_entity_decode($responses);
                 }
             };
             // ----- end previous answer ----- //
@@ -1499,14 +1503,16 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
                 $cumulative  = (($qTitle == 'Cumulative') AND self::$scenarioId);
-                $class       = $cumulative ? ' cumulative' : '';
+                $class       = (($qTitle == 'Cumulative') OR ($qTitle == 'Rich text')) ? ' mceText' : '';
                 $placeholder = $cumulative ? '' : ' placeholder="'.$question->prompt.'"';
                 $content     = '';
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
-                $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
+                if ($cumulative) {
+                    $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
+                }
 
-                if ( ! $previousAnswers AND $cumulative) {
+                if ( ! $previousAnswers) {
                     $content = htmlspecialchars($question->prompt);
                 }
 

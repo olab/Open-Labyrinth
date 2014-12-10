@@ -149,29 +149,7 @@ class Controller_ReportManager extends Controller_Base
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
             $this->templateData['responses'][] = $userResponse;
-
-            if ( ! isset($this->templateData['cumulative'][$questionId]) AND $session->webinar_id) {
-                $endSession = DB_ORM::model('User_SessionTrace')->getEndSessionTime($session->id);
-                $this->templateData['cumulative'] = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId, $endSession);
-            }
         }
-
-        /* commented 8/12/2014
-        $questions = DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array();
-        $this->templateData['questions'] = $questions;
-        foreach ($questions as $question) {
-            $questionId = $question->id;
-            $endSession = DB_ORM::model('User_SessionTrace')->getEndSessionTime($session->id);
-            $this->templateData['cumulative'] = DB_ORM::model('qCumulative')->getAnswers($mapId, $questionId, $endSession);
-            $response = DB_ORM::model('user_response')->getResponse($session->id, $questionId);
-            $responseObj = end($response);
-            if ($responseObj) {
-                if ($question->entry_type_id == 8) {
-                    $responseObj->response = DB_ORM::model('User_Response')->sjtConvertResponse($responseObj->response);
-                }
-                $this->templateData['responses'][$questionId][] = $responseObj;
-            }
-        }*/
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
         foreach ($allCounters as $counter) {

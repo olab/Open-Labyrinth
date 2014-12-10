@@ -26,7 +26,7 @@ if (isset($templateData['map'])) {
     $errorMessage       = $validationObj ? $validationObj->error_message : '';
 
     $type = Arr::get($templateData, 'type');
-    if ($type AND $type->title == 'Cumulative') { ?>
+    if ($type AND ($type->title == 'Cumulative' OR $type->title == 'Rich text')) { ?>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinyMceInit.js'); ?>"></script>
         <script type="text/javascript">
