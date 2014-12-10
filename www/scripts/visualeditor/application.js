@@ -722,6 +722,10 @@ $(function () {
             nodes       = [],
             nodeId      = 0;
 
+        // some times any radio button not checked, so set it to random
+        if (typeof orderBy == 'undefined') orderBy = 'random';
+
+        console.log(orderBy);
         $nodes.each(function(index, value) {
             nodeId = $(this).attr('nodeId');
             nodes.push({
