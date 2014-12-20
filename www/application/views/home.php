@@ -44,7 +44,7 @@ if ($user) {
         <!--[if IE 7]><link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css" /><![endif]-->
         <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
         <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico" />
-
+    <script> var baseURL = '<?php echo URL::base() ?>';</script>
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     </head>
     <body>
@@ -229,6 +229,8 @@ if ($user) {
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
         <script type="text/javascript">
+
+
             var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
                 userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
                 currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>',
