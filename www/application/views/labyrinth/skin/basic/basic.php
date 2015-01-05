@@ -36,7 +36,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.cookie.js'); ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/tinymce/js/tinymce/tinymce.min.js'); ?>"></script>
 <script language="javascript" type="text/javascript">
-    tinymce.init({
+    /*tinymce.init({
         selector: ".mceText",
         theme: "modern",
         content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
@@ -59,9 +59,9 @@
                 valToTextarea();
             });
         }
-    });
+    });*/
     tinymce.init({
-        selector: ".mceEditor",
+        selector: ".mceEditor, .mceText",
         theme: "modern",
         content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
         entity_encoding: "raw",
@@ -302,6 +302,7 @@ $id_node = $templateData['node']->id; ?>
                         <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
                             <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
                             <p><textarea name='mnodetext' cols='60' rows='20' class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
+                            <textarea class="annotation" name="annotation" style="width: 99%;"><?php echo $templateData['node_annotation']; ?></textarea>
                             <input type='submit' name='Submit' value='Submit'/>
                         </form>
                         <p></p><?php

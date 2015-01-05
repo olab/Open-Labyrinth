@@ -481,19 +481,19 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     public function updateNode($nodeId, $values) {
         $this->id = $nodeId;
         $this->load();
-        if($this) {
-            $this->title = Arr::get($values, 'mnodetitle', $this->title);
-            $this->text = Arr::get($values, 'mnodetext', $this->text);
-            $this->info = Arr::get($values, 'mnodeinfo', $this->info);
-            $this->is_private = Arr::get($values, 'is_private', FALSE) ? 1 : 0;
-            $this->probability = Arr::get($values, 'mnodeprobability', $this->probability);
-            $this->link_style_id = Arr::get($values, 'linkstyle', $this->link_style_id);
-            $this->link_type_id = Arr::get($values, 'linktype', $this->link_type_id);
-            $this->priority_id = Arr::get($values, 'priority', $this->priority_id);
-            $this->undo = Arr::get($values, 'mnodeUndo', $this->undo);
-            $this->end = Arr::get($values, 'ender', $this->end);
-            $this->show_info = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
-            $this->annotation = Arr::get($values, 'annotation', null);
+        if ($this) {
+            $this->title            = Arr::get($values, 'mnodetitle', $this->title);
+            $this->text             = Arr::get($values, 'mnodetext', $this->text);
+            $this->info             = Arr::get($values, 'mnodeinfo', $this->info);
+            $this->is_private       = Arr::get($values, 'is_private', FALSE) ? 1 : 0;
+            $this->probability      = Arr::get($values, 'mnodeprobability', $this->probability);
+            $this->link_style_id    = Arr::get($values, 'linkstyle', $this->link_style_id);
+            $this->link_type_id     = Arr::get($values, 'linktype', $this->link_type_id);
+            $this->priority_id      = Arr::get($values, 'priority', $this->priority_id);
+            $this->undo             = Arr::get($values, 'mnodeUndo', $this->undo);
+            $this->end              = Arr::get($values, 'ender', $this->end);
+            $this->show_info        = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
+            $this->annotation       = Arr::get($values, 'annotation', null);
 
             $this->save();
             

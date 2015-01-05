@@ -42,6 +42,7 @@
             content_css: "<?php echo URL::base().'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css'; ?>",
             entity_encoding: "raw",
             contextmenu: "link image inserttable | cell row column",
+            menubar : false,
             closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
             valid_elements : "+*[*]",
             plugins: ["compat3x",
@@ -50,12 +51,11 @@
                 "insertdatetime nonbreaking save table contextmenu directionality",
                 "template paste textcolor layer advtextcolor rdface"
             ],
-            toolbar1: "insertfile undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-            toolbar2: " link image | forecolor backcolor layer restoredraft",
+            toolbar1: "undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
             image_advtab: true,
             templates: [],
             setup: function(editor) {
-                editor.on('init', function(e) {
+                editor.on('init', function() {
                     valToTextarea();
                 });
             }

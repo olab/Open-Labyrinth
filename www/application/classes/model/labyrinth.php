@@ -46,7 +46,9 @@ class Model_Labyrinth extends Model {
 
             $clearAnnotation = strip_tags($node->annotation, '<img>');
 
-            if ($this->checkUser($node->map_id, true) AND (strlen($clearAnnotation) > 0)) $result['node_annotation'] = $node->annotation;
+            if (strlen($clearAnnotation) > 0) {
+                $result['node_annotation'] = $node->annotation;
+            }
 
             $sessionId = NULL;
             if ($bookmark) {
@@ -244,8 +246,7 @@ class Model_Labyrinth extends Model {
     private function checkUser($mapId, $allowReviewers = false)
     {
         $user = Auth::instance()->get_user();
-        if (Auth::instance()->logged_in() AND $user->type->name != 'learner')
-        {
+        if (Auth::instance()->logged_in() AND $user->type->name != 'learner') {
             $map = DB_ORM::model('map', array((int) $mapId));
 
             if ((DB_ORM::model('map_user')->checkUserById($mapId, $user->id)) OR

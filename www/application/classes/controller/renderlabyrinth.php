@@ -143,10 +143,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $data['time'] = DB_ORM::model('Webinar_PollNode')->getTime($nodeId, $scenarioId);
 
         /* ----- patient ----- */
-        $data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
+        /*$data['patients'] = $this->checkPatient($nodeId, $scenarioId, 'go');
         foreach ($data['patients'] as $patient) {
             $data['counters'] .= '<ul class="navigation patient-js">'.$patient.'</ul>';
-        }
+        }*/
         /* ----- end patient ----- */
 
         $gotoNode = Session::instance()->get('goto', NULL);
