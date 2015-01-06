@@ -328,13 +328,27 @@ class Model_Leap_Vocabulary_Vocablet extends DB_ORM_Model
     }
 
     public static function getEnabled(){
-        $result = DB_SQL::select('default')->from(self::table())->where('state', '=', 1)->query()->as_array();
-        $vocablets = array();
-        foreach ($result as $record) {
-            $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
-            $vocablets[$vocablet->name] = DOCROOT."extensions/vocablets/".$vocablet->name;
+        error_reporting(E_ALL ^ E_DEPRECATED);
+        $checktable  = DB::query(null,'SHOW TABLES LIKE "vocablets"')->execute();
+         //$table_exists = mysql_num_rows($checktable) > 0;
+
+        if($checktable==false) return array();
+
+        $builder = DB_SQL::select('default')->from(self::table())->where('state', '=', 1);
+        $result = $builder->query();
+
+        if ($result->is_loaded()) {
+            $vocablets = array();
+
+            foreach ($result as $record) {
+                $vocablet = DB_ORM::model('vocabulary_vocablet', array((int)$record['id']));
+                $vocablets[$vocablet->name] =
+                    DOCROOT . "extensions/vocablets/". $vocablet->name;
+            }
+
+            return $vocablets;
         }
-        return $vocablets;
+        return array();
     }
 
     private static function getEnabledObjects(){
