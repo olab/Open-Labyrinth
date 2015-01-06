@@ -493,7 +493,7 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $this->undo             = Arr::get($values, 'mnodeUndo', $this->undo);
             $this->end              = Arr::get($values, 'ender', $this->end);
             $this->show_info        = Arr::get($values, 'show_info', FALSE) ? 1 : 0;
-            $this->annotation       = Arr::get($values, 'annotation', null);
+            $this->annotation       = Arr::get($values, 'annotation', $this->annotation);
 
             $this->save();
             
