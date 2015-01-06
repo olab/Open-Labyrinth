@@ -87,7 +87,7 @@ class Model_Leap_Map_Node_Section extends DB_ORM_Model {
         return DB_ORM::select('map_node_section')->where('map_id', '=', $mapId)->query()->as_array();
     }
     
-    public function createSection($mapId, $values, $orderBy) {
+    public function createSection($mapId, $values, $orderBy = 'random') {
         $this->map_id = $mapId;
         $this->orderBy = $orderBy;
         $this->name = Arr::get($values, 'sectionname', '');
