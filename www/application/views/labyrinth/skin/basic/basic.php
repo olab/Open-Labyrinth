@@ -302,7 +302,7 @@ $id_node = $templateData['node']->id; ?>
                         <form method='POST' action='<?php echo URL::base(); ?>renderLabyrinth/updateNode/<?php echo $id_map.'/'.$id_node; ?>'>
                             <p><input type='text' name='mnodetitle' value='<?php echo $templateData['node']->title; ?>'/></p>
                             <p><textarea name='mnodetext' cols='60' rows='20' class='mceEditor'><?php echo $templateData['node_text']; ?></textarea></p>
-                            <textarea class="annotation" name="annotation" style="width: 99%;"><?php echo $templateData['node_annotation']; ?></textarea>
+                            <div class="annotation" style="width: 99%;"><?php echo $templateData['node_annotation']; ?></div>
                             <input type='submit' name='Submit' value='Submit'/>
                         </form>
                         <p></p><?php
