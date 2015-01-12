@@ -81,7 +81,7 @@ class Controller_Home extends Controller_Base {
         if (Auth::instance()->logged_in()) Auth::instance()->logout();
 
         $uri = ($this->request->referrer())
-            ? str_replace(URL::base(true),'',$this->request->referrer())
+            ? str_replace(URL::base(true).(strlen(URL::base()) ? substr(URL::base(), 1) : URL::base()),'',$this->request->referrer())
             : '';
 
         Session::instance()->set('redirectURL', $uri);
