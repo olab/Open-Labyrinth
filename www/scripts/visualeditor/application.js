@@ -74,8 +74,7 @@ $(function () {
 
     var autoSaveData     = null,
         body             = $('body'),
-        autoSaveInterval = 50000,
-        urlBase          = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
+        autoSaveInterval = 50000;
 
     var visualEditor = new VisualEditor();
         visualEditor.Init(params);
@@ -260,7 +259,7 @@ $(function () {
             $('#leaveBox').modal('hide');
 
             $.post(
-                urlBase + 'visualManager/updateJSON',
+                baseURL + 'visualManager/updateJSON',
                 { data:data.substring(0, data.length - 1), id:mapId },
                 function (data) {
                 if (data && data.length > 0) {
