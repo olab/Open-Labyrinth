@@ -1,4 +1,4 @@
-var globalDir = "/" + urlBasePhp + "/images/avatar/";
+var globalDir = "/" + urlBasePhp + "images/avatar/";
 var outlineLayerData;
 var fillAreaBody = {data: {}};
 var imageLoaded = 1;
