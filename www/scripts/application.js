@@ -389,20 +389,20 @@ jQuery(document).ready(function(){
 
     var sameLabyrinthUser = null;
 
-    if (typeof historyOfAllUsers == 'undefined') var historyOfAllUsers = [];
-    $.each(historyOfAllUsers, function(key, value) {
+    var $historyOfAllUsers = (typeof historyOfAllUsers == 'undefined') ? [] : historyOfAllUsers;
+    $.each($historyOfAllUsers, function(key, value) {
         sameLabyrinthUser = value;
         if (value['username'] != currentUser && value['readonly'] != 1) {
-            var links = $('a[href="' + value['href'] + '"]');
+            var links = $('a[href*="' + value['href'] + '"]');
             var re = /(grid|visualManager)/i;
             var labyrinthIdRe = /\/\w+\/\w+\/(\d+)/i;
             var labyrinthId = labyrinthIdRe.exec(value['href']);
 
             $.each(links, function() {
                 if (re.test(value['href'])) {
-                    $('a[href="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/counterManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
-                    $('a[href="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/nodeManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
-                    $('a[href="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/visualManager/index/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href*="/counterManager/grid/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/counterManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href*="/nodeManager/grid/' + labyrinthId[1] + '/1"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/nodeManager/grid/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
+                    $('a[href*="/visualManager/index/' + labyrinthId[1] + '"]').attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], '/visualManager/index/' + labyrinthId[1], value.id)).parent().css('position', 'relative');
                 } else {
                     $(this).attr({'href': 'javascript:void(0)'}).addClass('showCustomModalWindow').append(createSpan(value['username'], value['href'], value.id)).parent().css('position', 'relative');
                 }
@@ -445,8 +445,8 @@ jQuery(document).ready(function(){
 
     $(".lock").tooltip({placement: "right"});
 
-    if (typeof historyShowWarningPopup == 'undefined') var historyShowWarningPopup = false;
-    if (historyShowWarningPopup) {
+    var $historyShowWarningPopup = (typeof historyShowWarningPopup == 'undefined') ? false : historyShowWarningPopup;
+    if ($historyShowWarningPopup) {
         $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
         $('.btn').attr('href', 'javascript:void(0)');
         $('.editable-text').attr('contenteditable', 'false');
@@ -461,9 +461,9 @@ jQuery(document).ready(function(){
     var stopList = [],
         usernames = [],
         users = null;
-    if (typeof currentUserReadOnly == 'undefined') var currentUserReadOnly = false;
-    if (typeof userHasBlockedAccess == 'undefined') var userHasBlockedAccess = false;
-    if (!currentUserReadOnly && userHasBlockedAccess) {
+    var $currentUserReadOnly = (typeof currentUserReadOnly == 'undefined') ? false : currentUserReadOnly;
+    var $userHasBlockedAccess = (typeof userHasBlockedAccess == 'undefined') ? false : userHasBlockedAccess;
+    if (!$currentUserReadOnly && $userHasBlockedAccess) {
         setInterval(function() {
             $.get(
                 historyAjaxCollaborationURL,
@@ -502,7 +502,7 @@ jQuery(document).ready(function(){
         return false;
     }
 
-    if (historyShowWarningPopup && currentUserReadOnly) {
+    if ($historyShowWarningPopup && $currentUserReadOnly) {
         utils = new Utils();
         utils.ShowMessage(messageContainer, messageTextContainer, 'info', 'You join edited page in readonly mode', 7000);
     }

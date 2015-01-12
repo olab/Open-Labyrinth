@@ -46,6 +46,17 @@ if ($user) {
         <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico" />
 
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+        <script type="text/javascript">
+            var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
+                userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
+                currentUserReadOnly = <?php echo Arr::get($templateData, 'currentUserReadOnly', 0); ?>,
+                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', '[]'); ?>)'),
+                historyShowWarningPopup = <?php echo Arr::get($templateData, 'historyShowWarningPopup', 0); ?>;
+            <?php
+            if (isset($templateData['username'])) { ?>
+            var currentUser = '<?php echo $templateData['username']; ?>';
+            <?php } ?>
+        </script>
     </head>
     <body>
         <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message" class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
@@ -227,18 +238,7 @@ if ($user) {
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/browser/js/BrowserUpdateWarning_jQuery.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/application.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap/js/bootstrap.min.js'); ?>"></script>
-        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script>
-        <script type="text/javascript">
-            var historyAjaxCollaborationURL = '<?php echo URL::base().'home/historyAjaxCollaboration/'.Arr::get($templateData, 'user_id', 0); ?>',
-                userHasBlockedAccess = <?php echo Arr::get($templateData, 'userHasBlockedAccess', 0); ?>,
-                currentUserReadOnly = '<?php echo Arr::get($templateData, 'currentUserReadOnly', NULL); ?>',
-                historyOfAllUsers = eval('(<?php echo Arr::get($templateData, 'historyOfAllUsers', '[]'); ?>)'),
-                historyShowWarningPopup = <?php echo Arr::get($templateData, 'historyShowWarningPopup', 0); ?>;
-            <?php
-            if (isset($templateData['username'])) { ?>
-                var currentUser = '<?php echo $templateData['username']; ?>';
-            <?php } ?>
-        </script><?php
+        <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/datepicker/js/bootstrap-datepicker.js'); ?>"></script><?php
     } else { ?>
         <div style="margin: 10px 100px;">You must choose chat</div><?php
     }; ?>
