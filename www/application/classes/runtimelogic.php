@@ -377,11 +377,11 @@ class RunTimeLogic {
         if ($posAnswer !== false)
         {
             $mark       = substr($str, $posAnswer);
-            $sessionId  = Arr::get($_SESSION, 'session_id', 0);
             $questionId = preg_replace('/[^0-9]/', '', $mark);
+            $sessionId  = Session::instance()->get('session_id', 0);
             $responses  = DB_ORM::model('User_Response')->getResponse($sessionId, $questionId);
             $response   = array_pop($responses);
-            if ($response)
+            if ($sessionId AND $response)
             {
                 $response = '\''.$response->response.'\'';
                 $response = str_replace('"', '', $response);
