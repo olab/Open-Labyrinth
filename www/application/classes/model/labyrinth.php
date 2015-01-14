@@ -1438,8 +1438,10 @@ class Model_Labyrinth extends Model {
                     $tmp = substr($tmp, 0, $e - 1);
                     $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
                     if ($onlyValue) {
-                        $start = strpos($tmp, 'V=') + 2;
-                        $tmp = substr($tmp, $start);
+                        $start = strpos($tmp, 'V=');
+                        if ($start !== false) {
+                            $tmp = substr($tmp, $start + 2);
+                        }
                     }
                     $result = $tmp;
                 } else {
