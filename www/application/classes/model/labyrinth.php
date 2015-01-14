@@ -1415,7 +1415,7 @@ class Model_Labyrinth extends Model {
         }
     }
 
-    public function getCounterValueByID ($mapId, $id)
+    public function getCounterValueByID ($mapId, $id, $onlyValue = false)
     {
         $result = NULL;
         if ($mapId)
@@ -1437,6 +1437,10 @@ class Model_Labyrinth extends Model {
                     $e = strpos($tmp, ']') + 1;
                     $tmp = substr($tmp, 0, $e - 1);
                     $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+                    if ($onlyValue) {
+                        $start = strpos($tmp, 'V=') + 2;
+                        $tmp = substr($tmp, $start);
+                    }
                     $result = $tmp;
                 } else {
                     $result = $counter->start_value;

@@ -2055,7 +2055,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
     }
 
     private static function getCounterHTML($mapId, $id){
-        $counterValue = Model::factory('labyrinth')->getCounterValueByID($mapId, $id);
+        $counterValue = Model::factory('labyrinth')->getCounterValueByID($mapId, $id, true);
         return $counterValue;
     }
 
