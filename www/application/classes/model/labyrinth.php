@@ -270,7 +270,13 @@ class Model_Labyrinth extends Model {
 
             foreach ($section->nodes as $node) {
                 $nodeObj = DB_ORM::model('map_node', $node->node_id);
-                $coordinate = $nodeObj->$orderBy;
+
+                if($orderBy == 'x') {
+                    $coordinate = $nodeObj->x;
+                } else {
+                    $coordinate = $nodeObj->y;
+                }
+
                 if (isset($result[$coordinate])){
                     $coordinate += 1;
                 }
