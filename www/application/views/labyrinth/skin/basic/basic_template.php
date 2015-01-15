@@ -60,6 +60,9 @@
                 });
             }
         });
+
+        // use in basic.js
+        var urlBase = '<?php echo URL::base(); ?>';
     </script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
