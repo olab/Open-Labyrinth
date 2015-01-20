@@ -249,6 +249,9 @@ class RunTimeLogic {
         $pattern = '\s*ON_NODE\s*\([^\)]*\)';
         $string = preg_replace("/".$pattern."/is", ' AND '.$onNode , $string);
 
+        $pattern = '\[\[|\]\]';
+        $string = preg_replace("/".$pattern."/is", '"', $string);
+
         return array('str' => $string, 'error' => $error);
     }
 
