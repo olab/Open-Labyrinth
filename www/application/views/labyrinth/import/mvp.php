@@ -17,43 +17,39 @@
  *
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
- */
-?>
+ */ ?>
+<h1><?php echo __('MVP to Labyrinth upload'); ?></h1>
 
-            <h1><?php echo __('MVP to Labyrinth upload'); ?></h1>
-
-                <form class="form-horizontal" action="<?php echo URL::base(); ?>exportImportManager/uploadMVP" enctype="multipart/form-data" method="POST">
-                    <?php if(count(Notice::get()) > 0) { ?>
-                    <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <?php $m = Notice::get(); echo $m[0]; ?>
-                    </div>
-                    <?php } ?>
-                    <fieldset class="fieldset">
-                        <div class="control-group">
-                            <label class="control-label"><?php echo __('File to upload'); ?>
-                            </label>
-                            <div class="controls">
-                                <input type="file" name="filename">
-                                <div><span style="font-size: 14px; color: #333333;"><?php echo __('The maximum file upload size is 20.00 MB.'); ?></span></div>
-                            </div>
-                        </div>
-
-
-                    </fieldset>
-                    <div class="form-actions">
-                        <div class="pull-right">
-                            <input class="btn btn-large btn-primary" type="submit" value="<?php echo __('Upload'); ?>" name="Submit">
-                        </div>
-                    </div>
-
-
-
-                </form>
-
-                    <img width="105" height="47" id="Img2" alt="MVP" src="<?php echo URL::base(); ?>images/medbiq_logo.gif">
-              <p><?php echo __('OpenLabyrinth imports and exports to the MedBiquitous virtual patient data specification. For more information see'); ?> <a target="_blank" style="text-decoration: underline;" href="http://www.medbiq.org/working_groups/virtual_patient/index.html"><?php echo __('MedBiquitous VPWG'); ?></a>.
-                </p>
-
-
-
+<form class="form-horizontal" action="<?php echo URL::base(); ?>exportImportManager/upload" enctype="multipart/form-data" method="POST"><?php
+    if(count(Notice::get('success'))) { ?>
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <?php echo Notice::get('success'); ?>
+    </div><?php
+    }
+    if(count(Notice::get('error'))) { ?>
+    <div class="alert alert-error">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <?php echo Notice::get('error'); ?>
+    </div><?php
+    } ?>
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label class="control-label"><?php echo __('File to upload'); ?></label>
+            <div class="controls">
+                <input type="file" name="filename">
+                <div><span style="font-size: 14px; color: #333333;"><?php echo __('The maximum file upload size is 20.00 MB.'); ?></span></div>
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-actions">
+        <div class="pull-right">
+            <input class="btn btn-large btn-primary" type="submit" value="<?php echo __('Upload'); ?>" name="Submit">
+        </div>
+    </div>
+</form>
+<img width="105" height="47" id="Img2" alt="MVP" src="<?php echo URL::base(); ?>images/medbiq_logo.gif">
+<p>
+    <?php echo __('OpenLabyrinth imports and exports to the MedBiquitous virtual patient data specification. For more information see'); ?>
+    <a target="_blank" style="text-decoration: underline;" href="http://www.medbiq.org/working_groups/virtual_patient/index.html"><?php echo __('MedBiquitous VPWG'); ?></a>.
+</p>

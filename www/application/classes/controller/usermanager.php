@@ -23,29 +23,27 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_UserManager extends Controller_Base {
 
-    public function before() {
+    public function before()
+    {
         parent::before();
 
-        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->type->name != 'author' && Auth::instance()->get_user()->type->name != 'learner') {
-            Request::initial()->redirect(URL::base());
-        }
+        $userType = Auth::instance()->get_user()->type->name;
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage Users'))->set_url(URL::base() . 'usermanager'));
+        if ($userType == 'remote service' OR $userType == 'reviewer') Request::initial()->redirect(URL::base());
 
-        unset($this->templateData['right']);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage Users'))->set_url(URL::base().'usermanager'));
+
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_index() {
-        $this->templateData['users'] = DB_ORM::model('user')->getAllUsersAndAuth();
-        $this->templateData['userCount'] = count($this->templateData['users']);
-        $this->templateData['currentUserId'] = Auth::instance()->get_user()->id;
-        $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups();
+    public function action_index()
+    {
+        $this->templateData['users']            = DB_ORM::model('user')->getAllUsersAndAuth();
+        $this->templateData['userCount']        = count($this->templateData['users']);
+        $this->templateData['currentUserId']    = Auth::instance()->get_user()->id;
+        $this->templateData['groups']           = DB_ORM::model('group')->getAllGroups();
+        $this->templateData['center']           = View::factory('usermanager/view')->set('templateData', $this->templateData);
 
-        $view = View::factory('usermanager/view');
-        $view->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $view;
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -69,29 +67,61 @@ class Controller_UserManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
+    private function sendNewUserMail($userData) {
+        $URL = URL::base('http', true);
+        $typeName = DB_ORM::model('user_type', array($userData['usertype']));
+        $langName = DB_ORM::model('language', array($userData['langID']));
+
+        require_once(DOCROOT.'application/classes/class.phpmailer.php');
+        $mail = new PHPMailer;
+
+        $mail->From = 'no.reply@'.$_SERVER['HTTP_HOST'];
+        $mail->FromName = 'OpenLabyrinth';
+
+        $mail->Subject = 'Your account has been created';
+
+        $mail_body = 'Welcome to OpenLabyrinth, '.$userData['uname'].'!'.PHP_EOL.PHP_EOL;
+        $mail_body .= 'Here is information about your account:'.PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
+        $mail_body .= 'Username: ' . $userData['uid']  . PHP_EOL;
+        $mail_body .= 'Password: ' . $userData['upw']  . PHP_EOL;
+        $mail_body .= 'Full name: '. $userData['uname']. PHP_EOL;
+        $mail_body .= 'Language: ' . $langName->name   . PHP_EOL;
+        $mail_body .= 'User type: '. $typeName->name   . PHP_EOL;
+        $mail_body .= '---------------------------------------'.PHP_EOL;
+        $mail_body .=  'URL to the home page: ' . $URL;
+
+        $mail->Body = $mail_body;
+
+        if (!empty($userData['uemail'])){
+            $mail->AddAddress($userData['uemail']);
+            $mail->Send();
+        }
+    }
+
     public function action_saveNewUser() {
-        if (isset($_POST) && !empty($_POST)) {
+        if ( ! empty($_POST)) {
             Session::instance()->set('newUser', $_POST);
             $checkUserName = DB_ORM::model('user')->getUserByName(htmlspecialchars($_POST['uid']));
-            if (!empty($_POST['uemail'])) {
-                $checkUserEmail = DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
-            } else {
-                $checkUserEmail = false;
-            }
+            $checkUserEmail = empty($_POST['uemail'])
+                ? false
+                : DB_ORM::model('user')->getUserByEmail(htmlspecialchars($_POST['uemail']));
 
-            if ((!empty($_POST['uid'])) & (!$checkUserName) & (!$checkUserEmail)) {
+            if (( ! empty($_POST['uid'])) & ( ! $checkUserName) & ( ! $checkUserEmail)) {
                 $userData = $_POST;
-                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID']);
+
+                DB_ORM::model('user')->createUser($userData['uid'], $userData['upw'], $userData['uname'], $userData['uemail'], $userData['usertype'], $userData['langID'], $userData['uiMode']);
+
+                if (isset($userData['sendEmail'])) {
+                    $this->sendNewUserMail($userData);
+                }
+
                 Session::instance()->delete('newUser');
 
                 $this->templateData['newUser'] = $_POST;
                 $this->templateData['newUser']['langID'] = DB_ORM::model('language', array($_POST['langID']))->name;
                 $this->templateData['newUser']['usertype'] = DB_ORM::model('user_type', array($_POST['usertype']))->name;
-
-                $summaryView = View::factory('usermanager/userSummary');
-                $summaryView->set('templateData', $this->templateData);
-
-                $this->templateData['center'] = $summaryView;
+                $this->templateData['center'] = View::factory('usermanager/userSummary')->set('templateData', $this->templateData);
                 $this->template->set('templateData', $this->templateData);
             } else {
                 $error = array();
@@ -109,45 +139,44 @@ class Controller_UserManager extends Controller_Base {
         }
     }
 
-    public function action_viewUser() {
-        $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
-
-        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->id != $this->request->param('id', 0)) {
-            Request::initial()->redirect(URL::base());
-        }
-
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View User').' '. $this->templateData['user']->nickname)->set_url(URL::base() . 'usermanager/ViewUser/' . $this->request->param('id', 0)));
-
-        $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
-        $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
-        Session::instance()->delete('errorMsg');
-
-        $viewUserView = View::factory('usermanager/viewUser');
-        $viewUserView->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $viewUserView;
-        $this->template->set('templateData', $this->templateData);
+    public function action_viewUser()
+    {
+        $this->manageUser('view');
     }
 
-    public function action_editUser() {
+    public function action_editUser()
+    {
+        $this->manageUser('edit');
+    }
 
+    public function manageUser ($action)
+    {
+        $userId         = $this->request->param('id', 0);
+        $user           = DB_ORM::model('User', array($userId));
+        $loggedUser     = Auth::instance()->get_user();
+        $loggedUserType = $loggedUser->type->name;
 
-        $this->templateData['user'] = DB_ORM::model('user', array($this->request->param('id', 0)));
+        if ( ! ($loggedUserType == 'superuser' OR $loggedUserType == 'Director') AND $loggedUser->id != $userId) Request::initial()->redirect(URL::base());
 
-        if (Auth::instance()->get_user()->type->name != 'superuser' && Auth::instance()->get_user()->id != $this->request->param('id', 0)) {
-            Request::initial()->redirect(URL::base());
-        }
-
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit User').' '. $this->templateData['user']->nickname)->set_url(URL::base() . 'usermanager/editUser/' . $this->request->param('id', 0)));
-
-        $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
+        $this->templateData['user']     = $user;
+        $this->templateData['types']    = DB_ORM::select('user_type')->query()->as_array();
         $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
         Session::instance()->delete('errorMsg');
 
-        $editUserView = View::factory('usermanager/editUser');
-        $editUserView->set('templateData', $this->templateData);
+        switch ($action)
+        {
+            case 'edit':
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit User').' '.$user->nickname)->set_url(URL::base().'usermanager/editUser/'.$userId));
+                $this->templateData['userType'] = DB_ORM::model('user_type', array($user->type_id))->name;
+                $this->templateData['center'] = View::factory('usermanager/editUser')->set('templateData', $this->templateData);
+            break;
+            case 'view':
+                Breadcrumbs::add(Breadcrumb::factory()->set_title(__('View User').' '.$user->nickname)->set_url(URL::base().'usermanager/ViewUser/'.$userId));
+                $this->templateData['center']   = View::factory('usermanager/viewUser')->set('templateData', $this->templateData);
+            break;
+            default: Request::initial()->redirect(URL::base());
+        }
 
-        $this->templateData['center'] = $editUserView;
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -206,20 +235,16 @@ class Controller_UserManager extends Controller_Base {
         Request::initial()->redirect(URL::base() . 'usermanager');
     }
 
-    public function action_editGroup() {
+    public function action_editGroup()
+    {
         $groupId = $this->request->param('id', 0);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Group'))->set_url(URL::base() . 'usermanager/editGroup/' . $groupId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Group'))->set_url(URL::base().'usermanager/editGroup/'.$groupId));
 
-        $this->templateData['group'] = DB_ORM::model('group', array($groupId));
-
-        $this->templateData['users'] = DB_ORM::model('group')->getAllUsersOutGroup($groupId);
-        $this->templateData['members'] = DB_ORM::model('group')->getAllUsersInGroup($groupId);
-
-        $view = View::factory('usermanager/editGroup');
-        $view->set('templateData', $this->templateData);
-
-        $this->templateData['center'] = $view;
+        $this->templateData['group']    = DB_ORM::model('group', array($groupId));
+        $this->templateData['users']    = DB_ORM::model('group')->getAllUsersOutGroup($groupId);
+        $this->templateData['members']  = DB_ORM::model('group')->getAllUsersInGroup($groupId);
+        $this->templateData['center']   = View::factory('usermanager/editGroup')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 

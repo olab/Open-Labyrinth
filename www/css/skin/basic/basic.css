@@ -1,0 +1,57 @@
+.lightning-single,
+.lightning-multi {
+    min-width: 200px;
+    margin: 0;
+}
+
+.questions {
+    font-size: 14px;
+    background-color: #eeeeee;
+    padding: 5px;
+}
+
+.questions a {
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.questions p {
+    font-size: inherit;
+}
+
+.previous-answers {
+    display: inline-block;
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.previous-answers p {
+    margin: 0;
+}
+
+.visualDisplayCounterContainer {
+    margin-bottom: 10px;
+    position: relative;
+    text-align: right;
+}
+
+.colored-bl {
+    position: absolute;
+    display: inline-block;
+    margin: 1px 0 0 -19px;
+    width: 15px;
+    height: 10px;
+}
+
+.colored-bl.popup-color {background: #800080;}
+.colored-bl.question-color {background: #0000ff;}
+.colored-bl.counter-color {background: #ff0000;}
+.colored-bl.counter-rule-color {background: orange;}
+.colored-bl.global-rule-color {background: #008000;}
+
+.popup-color {color: #800080;}
+.question-color {color: #0000ff;}
+.counter-color {color: #ff0000;}
+.counter-rule-color {color: orange;}
+.global-rule-color {color: #008000;}

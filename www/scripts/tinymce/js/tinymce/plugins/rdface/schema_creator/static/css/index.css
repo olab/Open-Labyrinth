@@ -1,0 +1,48 @@
+body{
+	margin-top:20px;
+	margin-left:10px;
+}
+#action_area
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#schema_types{
+	overflow-y:scroll;
+	height:600px;
+}
+#schema_types li{
+
+}
+#schema_properties{
+	overflow-y:scroll;
+	height:600px;
+}
+.found_node{
+	background-color: yellow; 
+}
+#schema_search{
+
+}
+#page_header{
+	text-align:center;
+	color:#1F6B75;
+}
+#selection_download{
+	
+}
+.schema_hidden{
+	display:none;
+}
+.subschema-icon{
+	cursor:pointer;
+	margin-left:2px;
+}
+.nav-tabs > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 18px;
+}
+.hand-pointer{
+	cursor:pointer;	
+}

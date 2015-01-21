@@ -1,27 +1,29 @@
-var isPickerOutside = false;
-var isPickerCentre = false;
+var isPickerOutside = false,
+    isPickerCentre = false;
 
-var current_color_outside = "#EEEEEE";
-var current_image_outside = null;
-var current_image_outside_position = null;
-var current_color_centre = "#FFFFFF";
-var current_image_centre = null;
-var current_image_centre_position = null;
-var color_opacity_centre = 1;
-var color_opacity_outside = 1;
+var current_color_outside = "#EEEEEE",
+    current_image_outside = null,
+    current_image_outside_position = null,
+    current_color_centre = "#FFFFFF",
+    current_image_centre = null,
+    current_image_centre_position = null,
+    color_opacity_centre = 1,
+    color_opacity_outside = 1;
 
-var current_image_path_outside = null;
-var current_image_path_centre = null;
+var current_image_path_outside = null,
+    current_image_path_centre = null;
 
-var base_path = null;
-var colorPickerOutside;
-var colorPickerCentre;
-jQuery(document).ready(function() {
+var base_path = null,
+    colorPickerOutside,
+    colorPickerCentre;
+
+$(document).ready(function() {
     var colorPicker = new ColorPicker();
 	colorPickerOutside = colorPicker.createPicker('colorPickerOutside');
     var colorPicker2 = new ColorPicker();
 	colorPickerCentre = colorPicker2.createPicker('colorPickerCentre');
     base_path = jQuery('#base_path').val();
+
     jQuery("#skinEditor .show").click(function() {
         jQuery("#skinEditor").stop().animate({"height": "300px"}, function() {
             if (isPickerOutside){
@@ -34,6 +36,7 @@ jQuery(document).ready(function() {
         $(this).css('display', 'none');
         jQuery("#skinEditor .hide").css('display', 'block');
     });
+
     jQuery("#skinEditor .hide").click(function() {
         colorPickerCentre.hidePicker();
         colorPickerOutside.hidePicker();

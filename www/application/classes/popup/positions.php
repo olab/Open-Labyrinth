@@ -46,7 +46,7 @@ class Popup_Positions {
                 $result = 'bottom left';
                 break;
             case Popup_Positions::BOTTOM_RIGHT:
-                $result = 'botoom right';
+                $result = 'bottom right';
                 break;
         }
 

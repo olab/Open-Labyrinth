@@ -87,43 +87,36 @@ class Model_Leap_DForum extends DB_ORM_Model {
         return $this->getLastAddedForumRecord();
     }
 
-    public function getAllOpenForums() {
-        $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
-
+    public function getAllOpenForums()
+    {
+        $forums = array();
+        $result = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
             ->from($this->table(), 'forum')
             ->join('LEFT', 'users', 'u')
             ->on('forum.author_id', '=', 'u.id')
-            ->where('security_id', '=', 0);
+            ->where('security_id', '=', 0)
+            ->query()
+            ->as_array();
 
-        $result = $builder->query();
+        foreach($result as $key => $record)
+        {
+            $message_count = $this->getMessageCountByForum($record['id']);
 
-        if($result->is_loaded()) {
-            $forums = array();
-
-            foreach($result as $key => $record) {
-                $lastInfo = $this->getInfoAboutLastMessage($record['id']);
-                $message_count = $this->getMessageCountByForum($record['id']);
-
-                $forums[$key] = $record;
-
-                $forums[$key]['lastMessageInfo'] = $lastInfo;
-                $forums[$key]['message_count'] = $message_count['message_count'];
-            }
-
-            return $forums;
+            $forums[$key] = $record;
+            $forums[$key]['lastMessageInfo'] = $this->getInfoAboutLastMessage($record['id']);
+            $forums[$key]['message_count'] = $message_count['message_count'];
         }
-
-        return NULL;
+        return $forums;
     }
 
-    public function getAllForums($sortBy = null, $typeSort = null){
-
-        $where = '';
-        $join = '';
-
-        $type = ($typeSort == 0) ? 'ASC' : 'DESC';
-
-        $columName = '';
+    public function getAllForums($sortBy = null, $typeSort = null)
+    {
+        $where      = '';
+        $join       = '';
+        $type       = ($typeSort == 0) ? 'ASC' : 'DESC';
+        $columName  = '';
+        $user       = Auth::instance()->get_user();
+        $userType   = $user->type->name;
 
         switch($sortBy) {
             case 1 :
@@ -140,10 +133,10 @@ class Model_Leap_DForum extends DB_ORM_Model {
                 break;
         }
 
-        $orderBy = $columName . ' ' . $type;
+        $orderBy = $columName.' '.$type;
 
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
-
+        if ($userType != 'superuser' AND $userType != 'Director')
+        {
             $join = ' LEFT JOIN
                         dforum_users  as dfuu ON dfuu.id_forum = forum.id
                       LEFT JOIN
@@ -152,9 +145,9 @@ class Model_Leap_DForum extends DB_ORM_Model {
                         user_groups as ug  ON ug.group_id  = dfg.id_group ';
 
             $where = ' AND (
-                            (forum.author_id = ' . Auth::instance()->get_user()->id . ')
-                         OR (dfuu.id_user = ' . Auth::instance()->get_user()->id . ' AND forum.status = 1)
-                         OR (ug.user_id = ' . Auth::instance()->get_user()->id .' AND forum.status = 1)
+                            (forum.author_id = ' . $user->id . ')
+                         OR (dfuu.id_user = ' . $user->id . ' AND forum.status = 1)
+                         OR (ug.user_id = ' . $user->id .' AND forum.status = 1)
                          OR forum.security_id = 0
                       )';
         }
@@ -201,23 +194,23 @@ class Model_Leap_DForum extends DB_ORM_Model {
         ");
 
         $res = array();
-
-        if($result != null && $result->is_loaded()) {
-
-            foreach($result as $key => $record) {
-                $topics = DB_ORM::model('dtopic')->getFullAllTopicsByForumId($record['id']);
-                $res[$key] = $record;
-                $res[$key]['topics'] = $topics;
+        if($result != null && $result->is_loaded())
+        {
+            foreach ($result as $key => $record)
+            {
+                $topics                 = DB_ORM::model('dtopic')->getFullAllTopicsByForumId($record['id']);
+                $res[$key]              = $record;
+                $res[$key]['topics']    = $topics;
             }
-
             return $res;
         }
-
         return NULL;
     }
 
-    public function getAllPrivateForums(){
+    public function getAllPrivateForums()
+    {
         $result = null;
+        $forums = array();
 
         if(Auth::instance()->get_user()->type->name == 'superuser') {
             $builder = DB_SQL::select('default', array(DB_SQL::expr('forum.*'), DB_SQL::expr('u.nickname as author_name')))
@@ -239,7 +232,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
         }
 
         if($result != null && $result->is_loaded()) {
-            $forums = array();
+
 
             foreach($result as $key => $record){
                 $lastInfo = $this->getInfoAboutLastMessage($record['id']);
@@ -250,11 +243,8 @@ class Model_Leap_DForum extends DB_ORM_Model {
                 $forums[$key]['lastMessageInfo'] = $lastInfo;
                 $forums[$key]['message_count'] = $message_count['message_count'];
             }
-
-            return $forums;
         }
-
-        return NULL;
+        return $forums;
     }
 
     public function getForumById($forumId) {

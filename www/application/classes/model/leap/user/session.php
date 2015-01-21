@@ -67,6 +67,10 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => TRUE,
                 'savable' => TRUE
+            )),
+            'notCumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
+                'savable' => TRUE
             ))
         );
 
@@ -117,84 +121,49 @@ class Model_Leap_User_Session extends DB_ORM_Model {
     }
 
     public function getAllSessionByMap($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('start_time', 'DESC');
-        $result = $builder->query();
+        $result = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('start_time', 'DESC')->query();
 
         if($result->is_loaded()) {
             $sessions = array();
             foreach($result as $record) {
                 $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
             }
-
             return $sessions;
         }
 
-        return NULL;
+        return array();
     }
 
-    public function getAllSessionByUser($userId, $limit = 0) {
-        $limit = (int) $limit;
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId)
-                ->order_by('start_time', 'DESC');
-        if ($limit) {
-            $builder->limit($limit);
-        }
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
+    public function getAllSessionByUser($userId, $limit = 0)
+    {
+        $result = DB_ORM::select('User_Session')->where('user_id', '=', $userId)->order_by('start_time', 'DESC');
+        if ($limit) $result->limit($limit);
+        return $result->query()->as_array();
     }
 
     public function getStartTimeSessionById($sessionId) {
-        $builder = DB_SQL::select('default')
+        $result = DB_SQL::select('default')
             ->from($this->table())
-            ->where('id', '=', $sessionId);
-        $result = $builder->query();
+            ->where('id', '=', $sessionId)
+            ->query();
 
-        if($result->is_loaded()) {
-            return $result[0]['start_time'];
-        }
+        if($result->is_loaded()) return $result[0]['start_time'];
 
         return NULL;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('user_id', '=', $userId, 'AND')
+    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null)
+    {
+        $builder = DB_ORM::select('User_Session')
+                ->where('user_id', '=', $userId)
                 ->where('map_id', '=', $mapId)
                 ->order_by('start_time', 'DESC');
 
-        if($webinarId != null) {
-            $builder = $builder->where('webinar_id', '=', $webinarId);
-        }
+        if($webinarId != null) $builder = $builder->where('webinar_id', '=', $webinarId);
 
-        if($currentStep != null) {
-            $builder = $builder->where('webinar_step', '<=', $currentStep);
-        }
+        if($currentStep != null) $builder = $builder->where('webinar_step', '<=', $currentStep);
 
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $sessions = array();
-            foreach($result as $record) {
-                $sessions[] = DB_ORM::model('user_session', array((int)$record['id']));
-            }
-
-            return $sessions;
-        }
-
-        return NULL;
+        return $builder->query()->as_array();
     }
 
     const USER_NOT_PLAY_MAP   = 0;
@@ -209,31 +178,34 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      * @param integer $webinarId - Webinar Id
      * @returns integer - 0 - not play, 1 - now playing, 2 - finish
      */
-    public function isUserFinishMap($mapId, $userId, $webinarId = null, $currentStep = null) {
-        $result = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
-        $sessions = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
-        if($sessions == null || count($sessions) <= 0) return $result;
-        $result = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
+    public function isUserFinishMap($id, $userId, $type, $webinarId = null, $currentStep = null)
+    {
+        $result     = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
+        $mapId      = ($type == 'section') ? DB_ORM::model('Map_Node_Section', array($id))->map_id : $id;
+        $sessions   = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
 
-        $endNodes = DB_ORM::model('map_node')->getEndNodesForMap($mapId);
-        if($endNodes != null) {
+        if (count($sessions) <= 0) return $result;
+        $result     = Model_Leap_User_Session::USER_NOT_FINISH_MAP;
+
+        $endNodes = ($type == 'labyrinth')
+            ? DB_ORM::model('map_node')->getEndNodesForMap($mapId)
+            : DB_ORM::model('Map_Node_Section_Node')->getEndNode($id);
+
+        if ($endNodes)
+        {
             $endNodeIDs = array();
-            if(count($endNodes) > 0) {
-                foreach($endNodes as $endNode) {
-                    $endNodeIDs[] = $endNode->id;
-                }
-            } else {
-                $endNodeIDs[] = $endNodes->id;
+            foreach($endNodes as $endNode)
+            {
+                $endNodeIDs[] = ($type == 'labyrinth') ? $endNode->id : $endNode->node_id;
             }
 
             $sessionIDs = array();
-            foreach($sessions as $session) {
+            foreach($sessions as $session)
+            {
                 $sessionIDs[] = $session->id;
             }
 
-            if(DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) {
-                $result = Model_Leap_User_Session::USER_FINISH_MAP;
-            }
+            if (DB_ORM::model('user_sessiontrace')->isExistTrace($userId, $mapId, $sessionIDs, $endNodeIDs)) $result = Model_Leap_User_Session::USER_FINISH_MAP;
         }
 
         return $result;
@@ -248,27 +220,25 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      * @param integer|null $notInUsers - not include sessions of susers
      * @return array|null - session ids or null
      */
-    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null)
+    {
         $builder = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->column('id');
-        if($webinarId != null && $webinarId > 0) {
-            $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
-        }
+           ->from($this->table())
+           ->where('map_id', '=', $mapId, 'AND')
+           ->column('id');
 
-        if($webinarStep != null && $webinarStep > 0) {
-            $builder = $builder->where('webinar_step', '=', $webinarStep, 'AND');
-        }
+        if ($webinarId != null && $webinarId > 0) $builder = $builder->where('webinar_id', '=', $webinarId, 'AND');
 
-        if($notInUsers != null && count($notInUsers) > 0) {
-            $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
-        }
+        if ($webinarStep != null && $webinarStep > 0) $builder = $builder->where('webinar_step', '=', $webinarStep, 'AND');
+
+        if ($notInUsers != null && count($notInUsers) > 0) $builder = $builder->where('user_id', 'NOT IN', $notInUsers);
 
         $records = $builder->query();
-        if($records->is_loaded()) {
+        if($records->is_loaded())
+        {
             $sessions = array();
-            foreach($records as $record) {
+            foreach($records as $record)
+            {
                 $sessions[] = $record['id'];
             }
 
@@ -283,22 +253,23 @@ class Model_Leap_User_Session extends DB_ORM_Model {
      *
      * @param integer $webinarId - webinar ID
      */
-    public function deleteWebinarSessions($webinarId) {
+    public function deleteWebinarSessions($webinarId)
+    {
         if($webinarId == null || $webinarId <= 0) return;
 
         DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('webinar_id', '=', $webinarId)
-                ->execute();
+            ->from($this->table())
+            ->where('webinar_id', '=', $webinarId)
+            ->execute();
     }
 
-    public function getSessionByWebinarId($webinarId , $checkIds) {
+    public function getSessionByWebinarId($webinarId , $checkIds)
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('webinar_id', '=', $webinarId,'AND');
 
-        if (count($checkIds) > 0)
-            $builder->where('id', 'NOT IN', $checkIds);
+        if (count($checkIds) > 0) $builder->where('id', 'NOT IN', $checkIds);
 
         $result = $builder->query();
 
@@ -307,22 +278,308 @@ class Model_Leap_User_Session extends DB_ORM_Model {
             ->where('id', '=', $webinarId)
             ->column('current_step');
         $step = $builder->query();
-        foreach($step as $current) {
+        foreach($step as $current)
+        {
             $current_step = $current['current_step'];
         }
 
         $res = array();
         $ids = array();
-        if($result->is_loaded()) {
-            foreach ($result as $record) {
+        if($result->is_loaded())
+        {
+            foreach ($result as $record)
+            {
                 $record['webinar_step'] = $current_step;
                 $res[] = $record;
                 $ids[] = $record['id'];
             }
-
         }
         return array($res, $ids);
     }
-}
 
-?>
+    public function getCounterPerSession($mapId)
+    {
+        $result = array();
+
+        if (is_numeric($mapId))
+        {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT session_id, counters FROM `user_sessiontraces` WHERE map_id = '.$mapId.' GROUP by session_id');
+            $tmp = array();
+            if ($results->is_loaded())
+            {
+                foreach ($results as $record) {
+                    $tmp[(int) $record['session_id']] = $record['counters'];
+                }
+            }
+            $results->free();
+
+            $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+
+            foreach ($tmp as $key => $value) {
+                $j = 0;
+                if (count($counters) <= 0) continue;
+                foreach ($counters as $counter)
+                {
+                    $s = strpos($value, '[CID=' . $counter->id . ',') + 1;
+                    $tmp = substr($value, $s, strlen($value));
+                    $e = strpos($tmp, ']') + 1;
+                    $tmp = substr($tmp, 0, $e - 1);
+                    $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+
+                    if (is_numeric($tmp))
+                    {
+                        $thisCounter = (int) $tmp;
+                        $result[$counter->id][$key] = $thisCounter;
+                    }
+                    $j++;
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getDashboardData($mapId)
+    {
+        $result = array();
+        if (is_numeric($mapId))
+        {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT user_id FROM `user_sessiontraces` WHERE map_id = ' . $mapId . ' and user_id <> 0 GROUP BY user_id');
+            $results->free();
+
+            $sessions = $connection->query('SELECT * FROM `user_sessions` WHERE map_id = ' . $mapId);
+            $sessionMap = array();
+            if ($sessions->is_loaded())
+            {
+                $result['allAttempts'] = count($sessions);
+                foreach ($sessions as $s) $sessionMap[(int) $s['id']] = (int) $s['start_time'];
+            }
+
+            $des = $this->getNumberOfDecisionsPerSession((int) $mapId);
+            $result['avgDes'] = 0;
+
+            if ($des != null && count($des) > 0)
+            {
+                foreach ($des as $n => $f)
+                {
+                    $result['avgDes'] = $result['avgDes'] + $f;
+                }
+                $result['avgDes'] = round($result['avgDes'] / count($des), 1);
+            }
+
+            $results = $connection->query('SELECT session_id, date_stamp FROM (SELECT * FROM `user_sessiontraces` WHERE map_id = ' . $mapId . ' ORDER BY id DESC) AS T GROUP BY session_id HAVING COUNT(*) > 1');
+            if ($results->is_loaded())
+            {
+                $result['uniqueUsers'] = count($results);
+                $avgTime = 0;
+                $count = 0;
+                foreach ($results as $s) {
+                    if (isset($sessionMap[(int) $s['session_id']]))
+                    {
+                        $avgTime = $avgTime + ((int) $s['date_stamp'] - $sessionMap[(int) $s['session_id']]);
+                        $count++;
+                    }
+                }
+                if ($count > 0) $result['avgTime'] = gmdate("i:s", round($avgTime / $count, 0));
+            }
+            $results->free();
+            $result['graph'] = $this->calculateNodesPerCounters($mapId);
+        }
+        return $result;
+    }
+
+    public function getNumberOfDecisionsPerSession($mapId) {
+        $result = array();
+        if (is_numeric($mapId))
+        {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT node_id, COUNT(*) as count FROM `user_sessiontraces` WHERE map_id = ' . $mapId . ' GROUP BY node_id;');
+            if ($results->is_loaded())
+            {
+                foreach ($results as $record)
+                {
+                    $result[DB_ORM::model('map_node', array((int) $record['node_id']))->title] = (int) $record['count'];
+                }
+            }
+            $results->free();
+        }
+        return $result;
+    }
+
+    private function calculateNodesPerCounters($mapId)
+    {
+        if ($mapId <= 0) return array();
+
+        $nodes      = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $sessions   = $this->getAllSessionByMap($mapId);
+        $counters   = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $result     = array();
+
+        foreach ($nodes as $node)
+        {
+            foreach ($sessions as $session)
+            {
+                if (count($session->traces) > 0)
+                {
+                    foreach ($session->traces as $trace)
+                    {
+                        if ($trace->node_id != $node->id AND count($counters) <= 0) continue;
+                        $j = 0;
+
+                        foreach ($counters as $counter)
+                        {
+                            $s = strpos($trace->counters, '[CID=' . $counter->id . ',') + 1;
+                            $tmp = substr($trace->counters, $s, strlen($trace->counters));
+                            $e = strpos($tmp, ']') + 1;
+                            $tmp = substr($tmp, 0, $e - 1);
+                            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+
+                            if (is_numeric($tmp))
+                            {
+                                $thisCounter = floatval($tmp);
+                                $result[$node->id][$counter->id]['value'] = isset($result[$node->id][$counter->id]['value']) ? ($result[$node->id][$counter->id]['value'] + $thisCounter) : $thisCounter;
+                                $result[$node->id][$counter->id]['count'] = isset($result[$node->id][$counter->id]['count']) ? ($result[$node->id][$counter->id]['count'] + 1) : 1;
+                                $result[$node->id][$counter->id]['name'] = $node->title;
+                                $result[$node->id][$counter->id]['counterName'] = $counter->name;
+                            }
+                            $j++;
+                        }
+                    }
+                }
+            }
+        }
+        foreach ($result as $nodeId => $counters)
+        {
+            foreach ($counters as $counterId => $v)
+            {
+                if (isset($v['value'])) $result[$nodeId][$counterId]['value'] = round($result[$nodeId][$counterId]['value'] / $result[$nodeId][$counterId]['count'], 1);
+            }
+        }
+        return $result;
+    }
+
+    public function getNodesPerUserClick($mapId) {
+        $result = array();
+        if (is_numeric($mapId)) {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT count(user_id) as `userCount`, node_id FROM `user_sessiontraces` where map_id = ' . $mapId . ' and user_id <> 0 GROUP BY node_id');
+
+            if ($results->is_loaded()) {
+                foreach ($results as $record) {
+                    $result[(int) $record['node_id']] = (int) $record['userCount'];
+                }
+            }
+            $results->free();
+        }
+
+        return $result;
+    }
+
+    public function getAverageNodesTime($mapId) {
+        $result = array();
+        if (is_numeric($mapId)) {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT T.node_id AS `node_id`, SUM((T.date_stamp) - (S.start_time)) / COUNT(*) AS `avg_time` FROM `user_sessiontraces` AS T INNER JOIN `user_sessions` AS S ON T.session_id = S.id WHERE T.map_id = ' . $mapId . ' and T.user_id <> 0 GROUP BY T.node_id');
+
+            if ($results->is_loaded()) {
+                foreach ($results as $record) {
+                    $result[(int) $record['node_id']] = (int) $record['avg_time'];
+                }
+            }
+            $results->free();
+        }
+        return $result;
+    }
+
+    public function getAverageCounterValuesForNodes($mapId) {
+        $sessions = $this->getAllSessionByMap($mapId);
+        $nodes = DB_ORM::model('map_node')->getNodesByMap($mapId);
+        $counters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+
+        if ($sessions == null || count($sessions) <= 0
+            || $nodes == null || count($nodes) <= 0
+            || $counters == null || count($counters) <= 0)
+            return array();
+
+        $result = array();
+        $tmp = array();
+        foreach ($nodes as $node) {
+            $tmp[$node->id] = array();
+            foreach ($sessions as $session) {
+                if (count($session->traces) > 0) {
+                    foreach ($session->traces as $trace) {
+                        if ($trace->node_id != $node->id || strlen($trace->counters) <= 0)
+                            continue;
+
+                        $counterValues = $this->parseCountersValuesFromString($counters, $trace->counters);
+
+                        if(count($counterValues) <= 0) continue;
+
+                        foreach($counterValues as $counterId => $value) {
+                            $tmp[$node->id][$counterId]['summ'] = isset($tmp[$node->id][$counterId]['summ']) ? $tmp[$node->id][$counterId]['summ'] + $value : $value;
+                            $tmp[$node->id][$counterId]['count'] = isset($tmp[$node->id][$counterId]['count']) ? $tmp[$node->id][$counterId]['count'] + 1 : 1;
+                        }
+                    }
+                }
+            }
+
+            if(count($tmp[$node->id]) > 0) {
+                foreach($tmp[$node->id] as $counterId => $value) {
+                    $result[$node->id][$counterId]['value'] = round($value['summ'] / $value['count'], 1);
+                    $result[$node->id][$counterId]['counter'] = $this->getCounterById($counters, $counterId);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    private function parseCountersValuesFromString ($counters, $countersValues)
+    {
+        if ($counters == null || count($counters) <= 0 || strlen($countersValues) <= 0) return array();
+
+        $result = array();
+
+        foreach ($counters as $counter) {
+            $s = strpos($countersValues, '[CID=' . $counter->id . ',') + 1;
+            $tmp = substr($countersValues, $s, strlen($countersValues));
+            $e = strpos($tmp, ']') + 1;
+            $tmp = substr($tmp, 0, $e - 1);
+            $tmp = str_replace('CID=' . $counter->id . ',V=', '', $tmp);
+
+            if (is_numeric($tmp)) {
+                $thisCounter = (int) $tmp;
+                $result[$counter->id] = $thisCounter;
+            }
+        }
+
+        return $result;
+    }
+
+    private function getCounterById($couters, $id) {
+        if (count($couters) <= 0) return null;
+
+        foreach($couters as $counter)
+        {
+            if($counter->id == $id) return $counter;
+        }
+    }
+
+    public function getEndNodes($mapId) {
+        $result = array();
+        if (is_numeric($mapId)) {
+            $connection = DB_Connection_Pool::instance()->get_connection('default');
+            $results = $connection->query('SELECT COUNT(*) AS `count`, node_id FROM (SELECT node_id FROM (SELECT * FROM `user_sessiontraces` ORDER BY id DESC) AS T WHERE user_id <> 0 and map_id = ' . $mapId . ' GROUP BY user_id) AS M GROUP BY node_id');
+
+            if ($results->is_loaded()) {
+                foreach ($results as $record) {
+                    $result[(int)$record['node_id']] = (int)$record['count'];
+                }
+            }
+            $results->free();
+        }
+
+        return $result;
+    }
+}

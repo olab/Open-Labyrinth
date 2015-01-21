@@ -18,82 +18,66 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['collection'])) {
-    ?>
+if (isset($templateData['collection'])) { ?>
     <h1><?php echo __('edit Collection'); ?></h1>
 
-    <form method="POST"
-          action="<?php echo URL::base(); ?>collectionManager/updateName/<?php echo $templateData['collection']->id; ?>">
-
-
+    <form method="POST" action="<?php echo URL::base().'collectionManager/updateName/'.$templateData['collection']->id; ?>">
         <fieldset class="fieldset">
 
             <div class="control-group">
                 <label for="colname" class="control-label"><?php echo __('Collection name'); ?></label>
-
                 <div class="controls">
                     <input type="text" name="colname" value="<?php if (isset($templateData['collection'])) echo $templateData['collection']->name; ?>" id="colname">
-
                 </div>
             </div>
 
         </fieldset>
         <input class="btn btn-primary" type="submit" value="<?php echo __('save'); ?>">
     </form>
-    <form method="POST"
-          action="<?php echo URL::base(); ?>collectionManager/addMap/<?php echo $templateData['collection']->id; ?>">
-
-
+    <form method="POST" action="<?php echo URL::base().'collectionManager/addMap/'.$templateData['collection']->id; ?>">
         <fieldset class="fieldset">
-            <legend>Labyrinths in Collection</legend>
-
-            <?php if (count($templateData['collection']->maps) > 0) { ?>
+            <legend>Labyrinths in Collection</legend><?php
+            if (count($templateData['collection']->maps) > 0) { ?>
                 <table class="table table-striped table-bordered">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
-                    <tbody>
-                    <?php foreach ($templateData['collection']->maps as $mp) { ?>
+                    <tbody><?php
+                    foreach ($templateData['collection']->maps as $mp) { ?>
                         <tr>
                             <td>
-                                <a href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map->id; ?>"><?php echo $mp->map->name; ?></a>
+                                <a href="<?php echo URL::base().'labyrinthManager/editMap/'.$mp->map->id; ?>"><?php echo $mp->map->name; ?></a>
                             </td>
-                            <td>
-                                <a class="btn btn-primary"
-                                   href="<?php echo URL::base(); ?>labyrinthManager/editMap/<?php echo $mp->map->id; ?>"><?php echo __('Edit'); ?></a>
-                                <a class="btn btn-primary"
-                                   href="<?php echo URL::base(); ?>collectionManager/deleteMap/<?php echo $templateData['collection']->id; ?>/<?php echo $mp->map->id; ?>"><?php echo __('Delete'); ?></a>
+                            <td><?php
+                                if (in_array($mp->map->id, $templateData['canEdit'])) { ?>
+                                <a class="btn btn-primary" href="<?php echo URL::base().'labyrinthManager/editMap/'.$mp->map->id; ?>"><?php echo __('Edit'); ?></a><?php
+                                } ?>
+                                <a class="btn btn-primary" href="<?php echo URL::base().'collectionManager/deleteMap/'.$templateData['collection']->id.'/'.$mp->map->id; ?>">
+                                    <?php echo __('Delete'); ?>
+                                </a>
                             </td>
-
-                        </tr>
-                    <?php } ?>
+                        </tr><?php
+                    } ?>
                     </tbody>
-                </table>
-
-
-            <?php } ?>
-
-
+                </table><?php
+            } ?>
             <div class="control-group">
                 <label for="mapid" class="control-label"><?php echo __('Add labyrinth to collection'); ?></label>
 
                 <div class="controls">
-                    <select name="mapid" id="mapid">
-                        <?php if (isset($templateData['maps']) and count($templateData['maps']) > 0) { ?>
-                            <?php foreach ($templateData['maps'] as $map) { ?>
-                                <option value="<?php echo $map->id; ?>"><?php echo $map->name; ?></option>
-                            <?php } ?>
-                        <?php } ?>
+                    <select name="mapid" id="mapid"><?php
+                        if (isset($templateData['maps']) and count($templateData['maps']) > 0) {
+                            foreach ($templateData['maps'] as $map) { ?>
+                            <option value="<?php echo $map->id; ?>"><?php echo $map->name; ?></option><?php
+                            }
+                        } ?>
                     </select>
-
                 </div>
             </div>
-
         </fieldset>
         <input class="btn btn-primary" type="submit" value="<?php echo __('add'); ?>">
-    </form>
-
-<?php } ?>
+    </form><?php
+} ?>

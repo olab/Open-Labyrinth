@@ -69,20 +69,21 @@ var Node = function() {
     self.support = '';
     self.supportKeywords = '';
     self.isExit = false;
-    self.linkStyle = 1;
+    self.linkStyle = (typeof mainLinkStyles === 'undefined') ? 5 : mainLinkStyles;
     self.nodePriority = 1;
     self.undo = false;
     self.isEnd = false;
-    self.counters = new Array();
+    self.counters = [];
     self.isSelected = false;
     self.isActive = false;
-    self.sections = new Array();
+    self.sections = [];
     self.showInfo = false;
+    self.isPrivate = false;
     self.annotation = '';
 
-    // Daraw current node
+    // Draw current node
     // context - canvas context
-    // viewport - Transform viewport transfomration
+    // viewport - Transform viewport transformation
     self.Draw = function(context, viewport) {
         if(context == null) return;
 
@@ -115,16 +116,29 @@ var Node = function() {
             var content = self.content.replace(/<(?:.|\n)*?>/gm, '');
             DrawContent(context, content);
         }
+
+        if (self.undo) DrawUndo(context);
         
         context.restore();
-    }
+    };
+
+    var DrawUndo = function (context)
+    {
+        context.strokeStyle = 'rgb(193, 70, 151)';
+        context.moveTo(4, 35);
+        context.lineTo(23, 35);
+        context.lineTo(15, 32);
+        context.lineTo(15, 38);
+        context.lineTo(23, 35);
+        context.stroke();
+    };
     
     // Scale current node by x, y factors
     // sx - number X-scale factor
     // sy - number Y-scale factor
     self.Scale = function(sx, sy) {
         self.transform.Scale(sx, sy);
-    }
+    };
     
     // Mouse move event hadler
     self.MouseMove = function(mouse, viewport, anotherNodes) {
@@ -175,10 +189,10 @@ var Node = function() {
         }
 
         return isRedraw;
-    }
+    };
     
     self.MouseClick = function(mouse, viewport) {
-        var result = new Array();
+        var result = [];
 
         if(self.IsAddButtonCollision(mouse.x, mouse.y, viewport)) {
             result[0] = self.id;
@@ -201,7 +215,7 @@ var Node = function() {
         }
         
         return result;
-    }
+    };
     
     self.IsNodeInRect = function(x, y, width, height, viewport) {
         var tr = new Transform();
@@ -302,9 +316,9 @@ var Node = function() {
         
         var pos = tr.GetPosition();
         var scale = tr.GetScale();
-        
+
         return (x  >= (pos[0] + self.headerHeight * scale[0]) && x <= (pos[0] + self.width * scale[0]) && y  >= (pos[1]) && y <= (pos[1] + (self.height) * scale[1])); 
-    }
+    };
     
     self.TranslateNode = function(dx, dy, viewport) {
         var scale = viewport.GetScale();
@@ -336,7 +350,7 @@ var Node = function() {
     
     var DrawLinkButton = function(context) {
         var grd = context.createLinearGradient(self.headerHeight * 0.5, 5, self.headerHeight * 0.5, self.linkButtonRaius*2 + 5);
-        if(self.isRoot) {
+        if (self.isRoot) {
             grd.addColorStop(0, '#eec46a');
             grd.addColorStop(1, '#dcaa41');
         } else {
@@ -344,24 +358,24 @@ var Node = function() {
             grd.addColorStop(1, '#a6a6a6');
         }
         context.save();
-            context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
+        context.beginPath();
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
 
-            context.clip();
+        context.clip();
 
-            context.beginPath();
-            context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
-            context.fill();
+        context.beginPath();
+        context.fillStyle = grd;
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius, def2PI, false);
+        context.fill();
 
-            context.beginPath();
-            context.lineWidth = 4;
-            context.shadowColor   = (self.isRoot) ? self.linkButtonRootBgShadowColor : self.linkButtonBgShadowColor;
-            context.shadowBlur    = 2;
-            context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
-            context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
-            context.stroke();
+        context.beginPath();
+        context.lineWidth = 4;
+        context.shadowColor   = (self.isRoot) ? self.linkButtonRootBgShadowColor : self.linkButtonBgShadowColor;
+        context.shadowBlur    = 2;
+        context.shadowOffsetX = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? -2 : 2;
+        context.shadowOffsetY = (self.isLinkButtonIsHover || self.isLinkButtonEnabled) ? 1 : -1;
+        context.arc(self.headerHeight * 0.5, self.linkButtonRaius + 5, self.linkButtonRaius + 2, 0, 2 * Math.PI, false);
+        context.stroke();
         context.restore();
         
         context.beginPath();
@@ -376,7 +390,7 @@ var Node = function() {
         context.lineWidth = self.linkButtonLineWidth;
         context.strokeStyle = self.linkButtonStrokeColor;
         context.stroke();
-    }
+    };
     
     var DrawAddButton = function(context) {
         var grd = context.createLinearGradient(self.headerHeight * 0.5, self.height - self.addButtonRadius*2 - 5, self.headerHeight * 0.5, self.height - self.addButtonRadius - 5);
@@ -388,24 +402,24 @@ var Node = function() {
             grd.addColorStop(1, '#a6a6a6');
         }
         context.save();
-            context.beginPath();
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
+        context.beginPath();
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
 
-            context.clip();
-            
-            context.beginPath();
-            context.fillStyle = grd;
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
-            context.fill();
+        context.clip();
 
-            context.beginPath();
-            context.lineWidth = 4;
-            context.shadowColor   = (self.isRoot) ? self.addButtonRootBgShadowColor : self.addButtonBgShadowColor;;
-            context.shadowBlur    = 2;
-            context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
-            context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
-            context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
-            context.stroke();
+        context.beginPath();
+        context.fillStyle = grd;
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius, def2PI, false);
+        context.fill();
+
+        context.beginPath();
+        context.lineWidth = 4;
+        context.shadowColor   = (self.isRoot) ? self.addButtonRootBgShadowColor : self.addButtonBgShadowColor;;
+        context.shadowBlur    = 2;
+        context.shadowOffsetX = (self.addButtonIsHover) ? -2 : 2;
+        context.shadowOffsetY = (self.addButtonIsHover) ? 1 : -1;
+        context.arc(self.headerHeight * 0.5, self.height - self.addButtonRadius - 5, self.addButtonRadius + 2, 0, 2 * Math.PI, false);
+        context.stroke();
         context.restore();
         
         context.beginPath();
@@ -416,25 +430,25 @@ var Node = function() {
         context.lineWidth = self.addButtonLineWidth;
         context.strokeStyle = self.addButtonLineColor;
         context.stroke();
-    }
+    };
     
-    var DrawTitle = function(context, title) {
+    var DrawTitle = function (context, title)
+    {
         context.beginPath();
         context.font = self.titleFontSettings;
         context.fillStyle = self.titleFontColor;
         var line = '';
-        for(var i = 0; i < title.length; i++) {
+        for (var i = 0; i < title.length; i++)
+        {
             var t = line + title[i];
             var m = context.measureText(t);
-            if(m.width > self.contentMaxLineWidth) {
-                break;
-            } else {
-                line = t;
-            }
+
+            if (m.width > self.contentMaxLineWidth) break;
+            else line = t;
         }
         
         context.fillText(line, self.headerHeight + 13, 20);
-    }
+    };
     
     var DrawContent = function(context, content) {
         context.beginPath();
@@ -546,13 +560,11 @@ var Node = function() {
         return null;
     }
     
-    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-        if (typeof stroke == "undefined" ) {
-            stroke = true;
-        }
-        if (typeof radius === "undefined") {
-            radius = 5;
-        }
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke)
+    {
+        if (typeof stroke == "undefined" ) stroke = true;
+        if (typeof radius === "undefined") radius = 5;
+
         ctx.beginPath();
         ctx.moveTo(x + radius, y);
         ctx.lineTo(x + width - radius, y);
@@ -564,12 +576,8 @@ var Node = function() {
         ctx.lineTo(x, y + radius);
         ctx.quadraticCurveTo(x, y, x + radius, y);
         ctx.closePath();
-        if (fill) {
-            ctx.fill();
-        }    
-        if (stroke) {
-            ctx.stroke();
-        }  
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
     }
     
     function roundRectTwo(ctx, x, y, width, height, radius, fill, stroke) {

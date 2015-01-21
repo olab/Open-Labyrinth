@@ -94,33 +94,35 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
         
         return NULL;
     }
-    
-    public function createContributor($mapId) {
-        $this->map_id = $mapId;
-        $this->role_id = 13; // 'Select' role default
+
+    public function createContributorFromValues($values) {
+        if($values == null || !isset($values['map_id'])) { return; }
+
+        $this->map_id  = $values['map_id'];
+        $this->role_id = Arr::get($values, 'role_id', 13);
+        $this->name    = Arr::get($values, 'name', '');
+        $this->order   = Arr::get($values, 'order', 1);
+
         $this->save();
     }
-    
-    public function updateContributors($mapId, $values) {
+
+    public function updateContributors($mapId, $values)
+    {
         $contibutors = $this->getAllContributors($mapId);
-        if(count($contibutors) > 0) {
-            foreach($contibutors as $contributor) {
-                $role = Arr::get($values, 'role_'.$contributor->id, NULL);
-                $name = Arr::get($values, 'cname_'.$contributor->id, '');
-                $organization = Arr::get($values, 'cnorg_'.$contributor->id, '');
-                $order = Arr::get($values, 'corder_'.$contributor->id, 1);
+        if(count($contibutors) > 0)
+        {
+            foreach($contibutors as $contributor)
+            {
+                $role           = Arr::get($values, 'role_'.$contributor->id, NULL);
+                $name           = Arr::get($values, 'cname_'.$contributor->id, '');
+                $organization   = Arr::get($values, 'cnorg_'.$contributor->id, '');
+                $order          = Arr::get($values, 'corder_'.$contributor->id, 1);
 
-                if($role != NULL) {
-                    $contributor->role_id = $role;
-                }
+                if($role != NULL) $contributor->role_id = $role;
 
-                if($name != NULL) {
-                    $contributor->name = $name;
-                }
+                if($name != NULL) $contributor->name = $name;
 
-                if($organization != NULL) {
-                    $contributor->organization = $organization;
-                }
+                if($organization != NULL) $contributor->organization = $organization;
 
                 $contributor->order = $order;
 
@@ -143,22 +145,6 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
 
             $builder->execute();
         }
-    }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $contributors = array();
-            foreach($result as $record) {
-                $contributors[] = $record;
-            }
-
-            return $contributors;
-        }
-
-        return NULL;
     }
 }
 

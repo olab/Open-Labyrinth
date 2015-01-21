@@ -94,6 +94,12 @@ class Report_Impl_PHPExcel extends Report_Impl {
         $activeSheet->setCellValue($this->cursor, $value);
     }
 
+    public function setAutoWidth($index) {
+        if($this->phpExcel == null || $index == null) return;
+
+        $this->phpExcel->getActiveSheet()->getColumnDimension($index)->setAutoSize(true);
+    }
+
     public function setActiveSheet($index) {
         if($this->phpExcel == null || $index == null || $index <= 0) return;
 
@@ -219,6 +225,122 @@ class Report_Impl_PHPExcel extends Report_Impl {
             $phpExcelDataSeriesValues
         );
         $series->setPlotDirection(PHPExcel_Chart_DataSeries::DIRECTION_BAR);
+
+        $plotArea   = new PHPExcel_Chart_PlotArea(NULL, array($series));
+        $legend     = new PHPExcel_Chart_Legend(PHPExcel_Chart_Legend::POSITION_RIGHT, NULL, false);
+        $title      = new PHPExcel_Chart_Title($title);
+        $yAxisLabel = new PHPExcel_Chart_Title($yAxisLabel);
+        $chart      = new PHPExcel_Chart(
+            'chart' . time(),
+            $title,
+            $legend,
+            $plotArea,
+            true,
+            0,
+            NULL,
+            $yAxisLabel
+        );
+
+        $chart->setTopLeftPosition($startPosition);
+        $chart->setBottomRightPosition($endPosition);
+
+        $activeSheet = $this->phpExcel->getActiveSheet();
+        $activeSheet->addChart($chart);
+    }
+
+    public function addColumnBarChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisValue, $dataSeriesValues, $title, $yAxisLabel) {
+        if($this->phpExcel    == null                                  ||
+            $startPosition    == null                                  ||
+            $endPosition      == null                                  ||
+            $xAxisValue       == null || count($xAxisValue)       <= 0 ||
+            $dataSeriesValues == null || count($dataSeriesValues) <= 0) {
+            return;
+        }
+
+        $phpExcelDataSeriesLabels = array();
+        if($dataSeriesLabels != null && count($dataSeriesLabels) > 0) {
+            foreach($dataSeriesLabels as $label) {
+                $phpExcelDataSeriesLabels[] = new PHPExcel_Chart_DataSeriesValues($label['type'], $label['source'], $label['format'], $label['count']);
+            }
+        }
+
+        $phpExcelXAxisTickValue = array();
+        foreach($xAxisValue as $value) {
+            $phpExcelXAxisTickValue[] = new PHPExcel_Chart_DataSeriesValues($value['type'], $value['source'], $value['format'], $value['count']);
+        }
+
+        $phpExcelDataSeriesValues = array();
+        foreach($dataSeriesValues as $value) {
+            $phpExcelDataSeriesValues[] = new PHPExcel_Chart_DataSeriesValues($value['type'], $value['source'], $value['format'], $value['count']);
+        }
+
+        $series = new PHPExcel_Chart_DataSeries(
+            PHPExcel_Chart_DataSeries::TYPE_BARCHART,
+            PHPExcel_Chart_DataSeries::GROUPING_STANDARD,
+            range(0, count($phpExcelDataSeriesValues) - 1),
+            $phpExcelDataSeriesLabels,
+            $phpExcelXAxisTickValue,
+            $phpExcelDataSeriesValues
+        );
+        $series->setPlotDirection(PHPExcel_Chart_DataSeries::DIRECTION_COL);
+
+        $plotArea   = new PHPExcel_Chart_PlotArea(NULL, array($series));
+        $legend     = new PHPExcel_Chart_Legend(PHPExcel_Chart_Legend::POSITION_RIGHT, NULL, false);
+        $title      = new PHPExcel_Chart_Title($title);
+        $yAxisLabel = new PHPExcel_Chart_Title($yAxisLabel);
+        $chart      = new PHPExcel_Chart(
+            'chart' . time(),
+            $title,
+            $legend,
+            $plotArea,
+            true,
+            0,
+            NULL,
+            $yAxisLabel
+        );
+
+        $chart->setTopLeftPosition($startPosition);
+        $chart->setBottomRightPosition($endPosition);
+
+        $activeSheet = $this->phpExcel->getActiveSheet();
+        $activeSheet->addChart($chart);
+    }
+
+    public function addLineChart($startPosition, $endPosition, $dataSeriesLabels, $xAxisValue, $dataSeriesValues, $title, $yAxisLabel) {
+        if($this->phpExcel    == null                                  ||
+            $startPosition    == null                                  ||
+            $endPosition      == null                                  ||
+            $xAxisValue       == null || count($xAxisValue)       <= 0 ||
+            $dataSeriesValues == null || count($dataSeriesValues) <= 0) {
+            return;
+        }
+
+        $phpExcelDataSeriesLabels = array();
+        if($dataSeriesLabels != null && count($dataSeriesLabels) > 0) {
+            foreach($dataSeriesLabels as $label) {
+                $phpExcelDataSeriesLabels[] = new PHPExcel_Chart_DataSeriesValues($label['type'], $label['source'], $label['format'], $label['count']);
+            }
+        }
+
+        $phpExcelXAxisTickValue = array();
+        foreach($xAxisValue as $value) {
+            $phpExcelXAxisTickValue[] = new PHPExcel_Chart_DataSeriesValues($value['type'], $value['source'], $value['format'], $value['count']);
+        }
+
+        $phpExcelDataSeriesValues = array();
+        foreach($dataSeriesValues as $value) {
+            $phpExcelDataSeriesValues[] = new PHPExcel_Chart_DataSeriesValues($value['type'], $value['source'], $value['format'], $value['count']);
+        }
+
+        $series = new PHPExcel_Chart_DataSeries(
+            PHPExcel_Chart_DataSeries::TYPE_LINECHART,
+            PHPExcel_Chart_DataSeries::GROUPING_STACKED,
+            range(0, count($phpExcelDataSeriesValues) - 1),
+            $phpExcelDataSeriesLabels,
+            $phpExcelXAxisTickValue,
+            $phpExcelDataSeriesValues
+        );
+        $series->setPlotDirection(PHPExcel_Chart_DataSeries::DIRECTION_COL);
 
         $plotArea   = new PHPExcel_Chart_PlotArea(NULL, array($series));
         $legend     = new PHPExcel_Chart_Legend(PHPExcel_Chart_Legend::POSITION_RIGHT, NULL, false);

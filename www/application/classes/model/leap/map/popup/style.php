@@ -29,6 +29,10 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
         parent::__construct();
 
         $this->fields = array(
+            'id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE
+            )),
             'map_popup_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE
@@ -68,6 +72,18 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
                 'default' => FALSE,
                 'nullable' => FALSE,
                 'savable' => TRUE
+            )),
+
+            'background_transparent' => new DB_ORM_Field_String($this, array(
+                'max_length' => 4,
+                'nullable' => FALSE,
+                'savable' => TRUE
+            )),
+
+            'border_transparent' => new DB_ORM_Field_String($this, array(
+                'max_length' => 4,
+                'nullable' => FALSE,
+                'savable' => TRUE
             ))
         );
     }
@@ -103,6 +119,8 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
                     ->set('font_color',                  Arr::get($values, 'fontColor',   '#000000'))
                     ->set('border_color',                Arr::get($values, 'borderColor', '#ffffff'))
                     ->set('is_border_transparent',       $isBorderTransparent)
+                    ->set('background_transparent',      Arr::get($values, 'background_transparent',   '0%'))
+                    ->set('border_transparent',          Arr::get($values, 'border_transparent',   '0%'))
                     ->where('map_popup_id', '=', $popupId)
                     ->execute();
         } else {
@@ -115,8 +133,15 @@ class Model_Leap_Map_Popup_Style extends DB_ORM_Model {
                     ->column('font_color',                  Arr::get($values, 'fontColor',   '#000000'))
                     ->column('border_color',                Arr::get($values, 'borderColor', '#ffffff'))
                     ->column('is_border_transparent',       $isBorderTransparent)
+                    ->column('background_transparent',      Arr::get($values, 'background_transparent',   '0%'))
+                    ->column('border_transparent',          Arr::get($values, 'border_transparent',   '0%'))
                     ->execute();
         }
+    }
+
+    public function exportMVP($popupId)
+    {
+        return DB_SQL::select('default')->from($this->table())->where('map_popup_id', '=', $popupId)->query()->as_array();
     }
 }
 

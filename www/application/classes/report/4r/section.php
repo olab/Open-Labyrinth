@@ -20,7 +20,7 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_4R_Section extends Report_4R_Element {
+class Report_4R_Section extends Report_Element {
     private $mapId;
     private $sectionId;
     private $section;
@@ -77,14 +77,19 @@ class Report_4R_Section extends Report_4R_Element {
             $statisticsModel = '';
         }
 
-        $sessions            = DB_ORM::model($statisticsModel.'user_session')->getSessions($this->mapId,
-                                                                          $this->webinarId,
-                                                                          $this->webinarStep,
-                                                                          $this->notInUsers,
-                                                                          $this->dateStatistics);
-        $traces              = ($sessions != null && count($sessions) > 0) ? DB_ORM::model($statisticsModel.'user_sessionTrace')->getUniqueTraceBySessions($sessions)
-                                                                           : null;
-        $tracesData          = $this->calculateSectionData($traces);
+        $sessions   = DB_ORM::model($statisticsModel.'user_session')->getSessions(
+            $this->mapId,
+            $this->webinarId,
+            $this->webinarStep,
+            $this->notInUsers,
+            $this->dateStatistics
+        );
+
+        $traces     = ($sessions != null && count($sessions) > 0)
+            ? DB_ORM::model($statisticsModel.'user_sessionTrace')->getUniqueTraceBySessions($sessions)
+            : null;
+
+        $tracesData = $this->calculateSectionData($traces);
 
         $this->implementation->setCursor('B' . $offset);
         $this->implementation->setValue($countOfSectionNodes);

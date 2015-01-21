@@ -116,10 +116,22 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         $data = array();
 
         foreach ($ids as $id) {
-            $data[] = DB_ORM::model('user_sessionTrace')->getTraceBySessionID($id, 'array');
+            $result = DB_SQL::select('default')
+                ->from($this->table())
+                ->where('session_id', '=', $id)
+                ->order_by('id', 'ASC')
+                ->query();
+
+            $traces = array();
+            foreach($result as $record) {
+                $traces[] = $record;
+            }
+
+        $data[] = $traces;
+
         }
 
-        foreach ($data as $record => $sessionTraces)
+        foreach ($data as $sessionTraces)
         {
             foreach ($sessionTraces as $traces) {
                 $builder = DB_ORM::insert('statistics_user_sessionTrace')
@@ -178,5 +190,3 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         return $result;
     }
 }
-
-?>

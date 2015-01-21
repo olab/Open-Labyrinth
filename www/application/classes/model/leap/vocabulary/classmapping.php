@@ -86,12 +86,15 @@ class Model_Leap_Vocabulary_ClassMapping extends DB_ORM_Model
         return array();
     }
 
-    public function getTriples($offset, $limit){
+    public function getTriples($offset, $limit, $object_id=NULL){
         $tableName = DB_ORM::model($this->class)->table();
         $primary = DB_ORM::model($this->class)->primary_key();
         $builder = DB_SQL::select('default')
             ->from($tableName)
             ->offset($offset);
+        if(!empty($object_id)){
+            $builder->where("id", "=", $object_id);
+        }
         if($limit>0) $builder->limit($limit);
         $result = $builder->query();
         $triples = array();

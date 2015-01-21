@@ -41,24 +41,38 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
                 'unsigned' => TRUE,
             )),
 
-            'map_id' => new DB_ORM_Field_Integer($this, array(
+            'which' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 45,
+                'enum' => array('labyrinth','section'),
+                'nullable' => FALSE,
+            )),
+
+            'reference_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
-                'unsigned' => TRUE,
             )),
 
             'step' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
+            )),
+            'cumulative' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE,
             ))
         );
 
         $this->relations = array(
             'map' => new DB_ORM_Relation_BelongsTo($this, array(
-                'child_key' => array('map_id'),
+                'child_key' => array('reference_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map'
+            )),
+
+            'map_node_section' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('reference_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_node_section'
             ))
         );
     }
@@ -111,23 +125,45 @@ class Model_Leap_Webinar_Map extends DB_ORM_Model {
         DB_SQL::delete('default')
             ->from($this->table())
             ->where('webinar_id', '=', $webinarId, 'AND')
-            ->where('map_id', '=', $mapId)
+            ->where('which', '=', 'labyrinth')
+            ->where('reference_id', '=', $mapId)
             ->execute();
     }
 
-    /**
-     * Add map to webinar
-     *
-     * @param integer $webinarId - webinar ID
-     * @param integer $mapId - map ID
-     * @param integer $step - map step
-     * @return integer - webinar map ID
-     */
-    public function addMap($webinarId, $mapId, $step) {
+    public function addMap($scenarioId, $referenceId, $step, $which, $cumulative = 0)
+    {
         return DB_ORM::insert('webinar_map')
-                       ->column('webinar_id', $webinarId)
-                       ->column('map_id', $mapId)
-                       ->column('step', $step)
-                       ->execute();
+            ->column('webinar_id',      $scenarioId)
+            ->column('reference_id',    $referenceId)
+            ->column('which',           $which)
+            ->column('step',            $step)
+            ->column('cumulative',      $cumulative)
+            ->execute();
+    }
+
+    public function elementsForAjax ($stepId)
+    {
+        $result = array();
+        $dbElements = DB_ORM::select('Webinar_Map')->where('step', '=', $stepId)->query()->as_array();
+
+        foreach ($dbElements as $element){
+            $result[$element->which][$element->reference_id] = $element->id;
+        }
+
+        return $result;
+    }
+
+    public function getMapsId($scenarioId)
+    {
+        $result = array();
+        $records = DB_ORM::select('webinar_map')->where('webinar_id', '=', $scenarioId)->query()->as_array();
+        foreach ($records as $record) {
+            if ($record->which == 'section') {
+                $result[] = DB_ORM::model('map_node_section', array($record->reference_id))->map_id;
+            } else {
+                $result[] = $record->reference_id;
+            }
+        }
+        return $result;
     }
 }

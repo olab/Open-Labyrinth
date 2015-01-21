@@ -146,7 +146,7 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         return $result;
     }
 
-    public function addNodeCounter($nodeId, $counterId, $function, $display = 1) {
+    public function addNodeCounter($nodeId, $counterId, $function, $display = 0) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('node_id', '=', $nodeId, 'AND')
@@ -192,13 +192,12 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
         }
     }
     
-    public function updateNodeCounter($nodeId, $counterId, $function, $display = 1) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('node_id', '=', $nodeId, 'AND')
-                ->where('counter_id', '=', $counterId);
-        
-        $result = $builder->query();
+    public function updateNodeCounter($nodeId, $counterId, $function, $display = 0) {
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('node_id', '=', $nodeId, 'AND')
+            ->where('counter_id', '=', $counterId)
+            ->query();
         
         if($result->is_loaded()){
             $this->id = $result[0]['id'];
@@ -350,22 +349,4 @@ class Model_Leap_Map_Node_Counter extends DB_ORM_Model {
             }
         }
     }
-
-    public function exportMVP($map_id) {
-        $builder = DB_SQL::select('default', array('map_node_counters.id', 'map_node_counters.node_id', 'map_node_counters.counter_id', 'map_node_counters.function', 'map_node_counters.display'))->from('map_counters')->join('RIGHT', 'map_node_counters')->on('map_node_counters.counter_id', '=', 'map_counters.id')->where('map_id', '=', $map_id);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $counters = array();
-            foreach($result as $record) {
-                $counters[] = $record;
-            }
-
-            return $counters;
-        }
-
-        return NULL;
-    }
 }
-
-?>

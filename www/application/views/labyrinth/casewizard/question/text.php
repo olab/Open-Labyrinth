@@ -18,64 +18,56 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['map'])) {
-?>
-
+if (isset($templateData['map'])) {?>
 <h4><?php echo __('Questions for "') . $templateData['map']->name . '"'; ?></h4>
 
-
 <?php if (isset($templateData['question'])) { ?>
-<form method="POST"
-      action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/updateQuestion/' . $templateData['map']->id . '/' . $templateData['questionType'] . '/' . $templateData['question']->id; ?>">
-    <?php } else { ?>
-        <form method="POST" class="form-horizontal"
-              action="<?php echo URL::base() . 'labyrinthManager/caseWizard/4/saveNewQuestion/' . $templateData['map']->id . '/' . $templateData['questionType']; ?>">
+<form method="POST" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/updateQuestion/'.$templateData['map']->id.'/'.$templateData['questionType'].'/'.$templateData['question']->id; ?>">
+<?php } else { ?>
+<form method="POST" class="form-horizontal" action="<?php echo URL::base().'labyrinthManager/caseWizard/5/saveNewQuestion/'.$templateData['map']->id.'/'.$templateData['questionType']; ?>">
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="qstem" class="control-label"><?php echo __('Stem');?></label>
+            <div class="controls">
+                <textarea cols="50" rows="3" id="qstem"
+                          name="qstem"><?php if (isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="qwidth" class="control-label"><?php echo __('Width'); ?></label>
+            <div class="controls">
+                <select id="qwidth" name="qwidth">
+                    <?php for ($i = 10; $i <= 60; $i += 10) { ?>
+                        <option
+                            value="<?php echo $i; ?>" <?php if (isset($templateData['question']) and $templateData['question']->width == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    </fieldset>
 
 
-            <fieldset class="fieldset">
-                <div class="control-group">
-                    <label for="qstem" class="control-label"><?php echo __('Stem');?></label>
-                    <div class="controls">
-                        <textarea cols="50" rows="3" id="qstem"
-                                  name="qstem"><?php if (isset($templateData['question'])) echo $templateData['question']->stem; ?></textarea>
-                    </div>
-                </div>
-            </fieldset>
+    <fieldset class="fieldset">
+        <div class="control-group">
+            <label for="fback" class="control-label"><?php echo __('Feedback'); ?></label>
 
-            <fieldset class="fieldset">
-                <div class="control-group">
-                    <label for="qwidth" class="control-label"><?php echo __('Width'); ?></label>
-                    <div class="controls">
-                        <select id="qwidth" name="qwidth">
-                            <?php for ($i = 10; $i <= 60; $i += 10) { ?>
-                                <option
-                                    value="<?php echo $i; ?>" <?php if (isset($templateData['question']) and $templateData['question']->width == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </div>
-            </fieldset>
-
-
-            <fieldset class="fieldset">
-                <div class="control-group">
-                    <label for="fback" class="control-label"><?php echo __('Feedback'); ?></label>
-
-                    <div class="controls">
-                        <textarea id="fback" cols="60" rows="3"
-                                  name="fback"><?php if (isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
-                    </div>
-                </div>
-            </fieldset>
+            <div class="controls">
+                <textarea id="fback" cols="60" rows="3"
+                          name="fback"><?php if (isset($templateData['question'])) echo $templateData['question']->feedback; ?></textarea>
+            </div>
+        </div>
+    </fieldset>
 
 
 
-              <input class="btn btn-primary" type="submit" name="Submit" value="submit">
+      <input class="btn btn-primary" type="submit" name="Submit" value="submit">
 
-            </table>
-        </form>
-    <?php } ?>
-
-    <?php } ?>
+    </table>
+</form>
+<?php } ?>
+<?php } ?>
 
 

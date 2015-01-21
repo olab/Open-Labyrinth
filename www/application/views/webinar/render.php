@@ -18,42 +18,58 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-?>
-<h1><?php echo __("Scenario"); ?> '<?php echo $templateData['webinar']->title; ?>'</h1>
+$scenario = $templateData['scenario']; ?>
+<h1><?php echo __("Scenario"); ?> '<?php echo $scenario->title; ?>'</h1>
 
-<form class="form-horizontal" id="addManualForm" name="addManualForm" method="post" action="<?php echo URL::base() ?>">
-    <?php if(isset($templateData['webinar']) && $templateData['webinar']->steps != null  && count($templateData['webinar']->steps) > 0) { ?>
-        <?php foreach($templateData['webinar']->steps as $webinarStep) { ?>
-            <fieldset class="fieldset">
-                <legend>
-                    <?php echo $templateData['webinar']->current_step == $webinarStep->id ? ('<b style="color: #0088cc;">' . $webinarStep->name . '</b>') : $webinarStep->name; ?>
-                </legend>
-                <?php if($webinarStep->maps != null && count($webinarStep->maps) > 0) { ?>
-                    <?php $index = 1; foreach($webinarStep->maps as $webinarMap) { ?>
-                        <div class="control-group">
-                            <label class="control-label" for="title"><?php echo '#' . $index; ?></label>
-                            <div style="margin-top:3px;" class="controls">
-                                <span><?php echo $webinarMap->map->name; ?></span>
-                                <?php if($templateData['webinar']->current_step == $webinarStep->id && isset($templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id]) && ($templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 0 || $templateData['mapsMap'][$webinarStep->id][$webinarMap->map_id] == 1)) { ?>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/play/<?php echo $templateData['webinar']->id; ?>/<?php echo $templateData['webinar']->current_step; ?>/<?php echo $webinarMap->map_id; ?>" class="btn btn-success btn-small"><i class="icon-play"></i>Play</a>
-                                <?php } ?>
-                            </div>
-                        </div>
-                    <?php $index++; } ?>
-                <?php } ?>
-            </fieldset>
-        <?php } ?>
-    <?php } ?>
+<form class="form-horizontal" id="addManualForm" name="addManualForm" method="post" action="<?php echo URL::base() ?>"><?php
+    if(count($scenario->steps)) {
+        if(count(Notice::get('error'))) { ?>
+            <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <?php echo Notice::get('error'); ?>
+            </div><?php
+        }
+        foreach($scenario->steps as $scenarioStep) { ?>
+        <fieldset class="fieldset">
+            <legend><?php
+                echo $scenario->current_step == $scenarioStep->id ? ('<b style="color: #0088cc;">'.$scenarioStep->name.'</b>') : $scenarioStep->name; ?>
+            </legend><?php
+            if(count($scenarioStep->maps)) {
+                foreach($scenarioStep->maps as $index => $scenarioMap) { ?>
+                <div class="control-group">
+                    <label class="control-label" for="title"><?php echo '#'.($index + 1); ?></label>
+                    <div style="margin-top: 3px;" class="controls">
+                        <span><?php
+                            $type = 'labyrinth';
+                            if ($scenarioMap->which == 'section') {
+                                $type = 'section';
+                                echo $scenarioMap->map_node_section->name;
+                            } else {
+                                echo $scenarioMap->map->name;
+                            } ?>
+                        </span><?php
+                        if ($scenario->current_step == $scenarioStep->id AND
+                            isset($templateData['mapsMap'][$scenarioStep->id][$scenarioMap->reference_id]) AND
+                            ($templateData['mapsMap'][$scenarioStep->id][$scenarioMap->reference_id] == 0 OR $templateData['mapsMap'][$scenarioStep->id][$scenarioMap->reference_id] == 1)) { ?>
+                            <a href="<?php echo URL::base().'webinarManager/play/'.$scenario->id.'/'.$scenario->current_step.'/'.$scenarioMap->reference_id.'/'.$type; ?>" class="btn btn-success btn-small">
+                                <i class="icon-play"></i>Play
+                            </a><?php
+                        } ?>
+                    </div>
+                </div><?php
+                }
+            } ?>
+        </fieldset><?php
+        }
+    }
 
-    <?php if(isset($templateData['webinar']) && $templateData['webinar']->forum_id > 0) { ?>
-        <div class="form-actions">
-            <div class="pull-right">
-                <a class="btn btn-info" href="<?php echo URL::base(); ?>dforumManager/viewForum/<?php echo $templateData['webinar']->forum_id;?>">
-                    <i class="icon-comment icon-white"></i>
-                    <?php echo __('Go to the Forum Topic'); ?>
-                </a>
-            </div>
+    if($scenario->forum_id) { ?>
+    <div class="form-actions">
+        <div class="pull-right">
+            <a class="btn btn-info" href="<?php echo URL::base().'dforumManager/viewForum/'.$scenario->forum_id;?>">
+                <i class="icon-comment icon-white"></i> <?php echo __('Go to the Forum Topic'); ?>
+            </a>
         </div>
-    <?php } ?>
+    </div><?php
+    } ?>
 </form>
-

@@ -37,7 +37,7 @@
                                 <img src="<?php echo URL::base(); ?>images/vuelogo.gif" alt="VUE" width="26" height="14" align="absmiddle" id="Img1" border="0"></a></p></td>
                 </tr>
                 <tr align="left">
-                    <td nowrap=""> <p><a href="<?php echo URL::base(); ?>exportImportManager/importMVP"><?php echo __('import MedBiquitous Virtual Patient'); ?><img src="<?php echo URL::base(); ?>images/medbiq_logo_wee.gif" alt="MedBiq" width="53" height="24" align="absmiddle" id="Img2" border="0">
+                    <td nowrap=""> <p><a href="<?php echo URL::base(); ?>exportImportManager/import"><?php echo __('import MedBiquitous Virtual Patient'); ?><img src="<?php echo URL::base(); ?>images/medbiq_logo_wee.gif" alt="MedBiq" width="53" height="24" align="absmiddle" id="Img2" border="0">
                             </a></p></td>
                 </tr>
                 <tr align="left">

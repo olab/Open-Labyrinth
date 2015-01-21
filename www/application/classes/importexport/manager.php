@@ -27,17 +27,20 @@ class ImportExport_Manager {
      * @param string $format
      * @return ImportExport_FormatSystem 
      */
-    public static function  getFormatSystem($format) {
+    public static function getFormatSystem($format) {
         $result = null;
         
         switch($format) {
             case 'MVP':
                 $result = new ImportExport_MVPFormatSystem();
                 break;
+            case 'advanced':
+                $result = new ImportExport_AdvancedFormatSystem();
+                break;
+            case 'MVPvpSim':
+                $result = new ImportExport_MVPvpSimFormatSystem();
         }
         
         return $result;
     }
 }
-
-?>

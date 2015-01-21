@@ -1,12 +1,19 @@
 $(function() {
     var $addLabyrinthButtons = $('.add-labyrinth-btn'),
-        mapsOptions          = '<option value="">Select Labyrinth...</option>';
+        mapsOptions          = '<option value="">Select Labyrinth...</option>',
+        urlBase              = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
 
     if('maps' in mapsJSON && mapsJSON.maps.length > 0) {
         var tmpName = '';
-        for(var i = mapsJSON.maps.length; i--;) {
+
+        for (var i = 0; i<mapsJSON.maps.length; i++) {
             tmpName      = mapsJSON.maps[i].name.replace(/\0/g,"");
-            mapsOptions += '<option value="' + mapsJSON.maps[i].id + '">' + B64.decode($.trim(tmpName)) + '</option>';
+            tmpName      = B64.decode($.trim(tmpName));
+
+            var section = mapsJSON.maps[i].section,
+                display = section ? ' style="display:none;"' : '';
+
+            mapsOptions += '<option value="' + section + mapsJSON.maps[i].id + '"' + display + '>' + tmpName + '</option>';
         }
     }
 
@@ -17,8 +24,16 @@ $(function() {
             html          = '<div class="control-group labyrinth-item-%itemId%" itemNumber="%itemNumber%">' +
                                 '<label for="s%containerForId%-labyrinth-%labelId%" class="control-label">Labyrinth #%number%</label>' +
                                 '<div class="controls">' +
-                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6">' + mapsOptions + '</select> ' +
+                                    '<select id="s%containerId%-labyrinth-%id%" name="s%containerName%_labyrinths[]" class="span6" data-section="1">' + mapsOptions + '</select> ' +
                                     '<button class="btn btn-danger remove-map"><i class="icon-trash"></i></button>' +
+                                    '<div class="poll-node-section">'+
+                                        '<label>' +
+                                            '<input type="checkbox" class="cumulative-chb" name="cumulative[%containerId1%-key-%itemId1%]" value="1">Cumulative' +
+                                        '</label>' +
+                                    '</div>' +
+                                    '<div class="poll-node-section">' +
+                                    '<button type="button" class="btn btn-info poll-node-js">Add poll node</button>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>';
 
@@ -36,12 +51,14 @@ $(function() {
         maxItemNumber += 1;
 
         html = html.replace('%itemId%'        , maxItemNumber)
+                   .replace('%itemId1%'        , maxItemNumber)
                    .replace('%itemNumber%'    , maxItemNumber)
                    .replace('%number%'        , maxItemNumber)
                    .replace('%id%'            , maxItemNumber)
                    .replace('%labelId%'       , maxItemNumber)
                    .replace('%containerForId%', containerId)
                    .replace('%containerId%'   , containerId)
+                   .replace('%containerId1%'  , containerId)
                    .replace('%containerName%' , containerId);
 
         $container.append(html);
@@ -63,7 +80,7 @@ $(function() {
                    .last()
                    .children()
                    .first()
-                   .attr('name', 's' + containerId + '-labyrinth-' + (index + 1));
+                   .attr('name', 's' + containerId + '_labyrinths[]');
         });
     });
 
@@ -118,15 +135,127 @@ $(function() {
             $redirectContainer.addClass('hide');
     });
 
-    $('#forum').click(function() {
-        var $s = $forumSelect.val();
-        if($("#topics-" + $s).length) {
+    $forumSelect.click(function() {
+        var $s = $forumSelect.val(),
+            forumTopics = $("#topics-" + $s);
+
+        if (forumTopics.length) {
             $(".topics").addClass('hide');
-            $("#topics-" + $s).removeClass('hide');
+            forumTopics.removeClass('hide');
         }
         else {
             $(".topics").addClass('hide');
         }
     });
 
+    var selectLabyrinths = $('select[name$="labyrinths[]"]');
+
+    selectLabyrinths.each(function(){
+        var mapSelect   = $(this),
+            sectionId   = mapSelect.data('id');
+            section     = mapSelect.data('section');
+
+        if (section) createSectionSelect(mapSelect, sectionId);
+    });
+
+    $(document).on('change' , 'select[name$="labyrinths[]"]', function(){
+        createSectionSelect($(this), false);
+        addIdForNode($(this));
+    });
+
+    function createSectionSelect (mapSelect, sectionId) {
+        var mapId       = mapSelect.val(),
+            URL         = urlBase + '/webinarManager/getSectionAJAX/' + mapId;
+
+        $.get(
+            URL,
+            function(data){
+                mapSelect.next('.section-js').remove();
+                var section = '<select class="section-js"><option>Select section</option>'
+                $.each($.parseJSON(data), function(name,id){
+                    var selected = (sectionId == id) ? ' selected' : '';
+                    section +='<option value="' + id + '"' + selected + '>' + name + '</option>'
+                });
+                section += '</select>';
+
+                if (data.length > 2) mapSelect.after(section);
+            }
+        );
+    }
+
+    $(document).on('change', '.section-js', function(){
+        var section     = $(this),
+            sectionId   = 'section' + section.val();
+
+        section.prev().val(sectionId);
+    });
+
+    $stepsContainer.on('click', '.poll-node-js', function(){
+        var button = $(this),
+            mapId = $(this).data('id');
+
+        button.button('loading');
+        $.get(
+            urlBase + '/webinarManager/getNodesAjax/' + mapId,
+            function(data){
+                if (data.length < 3) return;
+
+                var nodeSelect = '<select class="node-select-js" name="poll_nodes[]"><option value="0">Select poll node</option>';
+                $.each($.parseJSON(data), function(title, id){
+                    nodeSelect += '<option value="' + id + '">' + title + ' (id: ' + id + ')' + '</option>';
+                });
+                nodeSelect +=
+                    '</select>' +
+                    '<input type="text" value="60 sec" class="poll-node-indent" name="poll_nodes[]" required>' +
+                    '<button class="btn btn-danger poll-node-indent delete-node-js"><i class="icon-trash"></i></button>';
+
+                button.before(nodeSelect);
+                button.button('reset');
+            }
+        );
+    });
+
+    $('.poll-node-section').on('click', '.delete-node-js', function (e){
+        e.preventDefault();
+        var nodeId = $(this).data('id');
+        if(nodeId) {
+            $.get(
+                urlBase + '/webinarManager/deleteNodeAjax/' + nodeId,
+                function(data){}
+            );
+        }
+        $(this).prev().prev().remove();
+        $(this).prev().remove();
+        $(this).remove();
+    });
+
+    function addIdForNode (obj){
+        var mapId = obj.val(),
+            button = obj.parent().find('.poll-node-js');
+
+        button.data('id', mapId);
+    }
+
+    $('.cumulative-chb').change(function(){
+        var $this = $(this);
+        if($this.prop('checked')){
+            $this.next().show();
+        } else {
+            $this.next().hide();
+        }
+    });
+
+    $('.cumulative-reset').click(function(){
+        var $button     = $(this),
+            $mapId      = $button.data('map'),
+            $scenarioId = $button.data('scenario');
+
+        $button.button('loading');
+        $.get(
+            urlBase + 'webinarManager/resetCumulative/' + $scenarioId + '/' + $mapId,
+            function(){
+                $button.button('reset');
+            }
+        );
+    });
 });

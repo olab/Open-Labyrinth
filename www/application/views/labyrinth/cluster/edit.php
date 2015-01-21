@@ -40,6 +40,24 @@ if (isset($templateData['map']) and isset($templateData['dam'])) {
                            value='<?php echo $templateData['dam']->name; ?>'/>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="is_private"><?php echo __('Private'); ?>
+                </label>
+                <div class="controls">
+                    <input type="checkbox" name="is_private" <?php if(isset($templateData['dam'])) { echo $templateData['dam']->is_private ? 'checked=""' : '"checked"';} ?>>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><?php echo __('Used'); ?>
+                </label>
+                <div class="controls">
+                    <input type="text" readonly value="<?php if(isset($templateData['used'])) { echo $templateData['used']; }?>"/>
+                </div>
+            </div>
+            <?php if(isset($templateData['warningMessage'])){ ?>
+            <span style ="color:red;"><?php echo $templateData['warningMessage']; ?></span>
+            <?php }?>
         </fieldset>
 <div class="form-actions">
         <input class="btn btn-primary"

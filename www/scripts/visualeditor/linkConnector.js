@@ -157,13 +157,16 @@ var LinkConnector = function() {
         var vec = [posB[0] - posA[0], posB[1] - posA[1]];
         var mVec = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1]);
         vec = [vec[0] / mVec * self.connectorRadius, vec[1] / mVec * self.connectorRadius];
-        
-        context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
+
+        var s = viewport.GetScale();
+
+        //context.setTransform(tr.matrix[0], tr.matrix[1], tr.matrix[2], tr.matrix[3], tr.matrix[4], tr.matrix[5]);
         context.beginPath();
-        context.moveTo(vec[0], vec[1]);
-        context.setTransform(tr2.matrix[0], tr2.matrix[1], tr2.matrix[2], tr2.matrix[3], tr2.matrix[4], tr2.matrix[5]);
-        context.lineTo(0, 0);
-        context.lineWidth = self.linkLineWidth;
+        context.moveTo(tr.matrix[4] + vec[0], tr.matrix[5] + vec[1]);
+        //context.setTransform(tr2.matrix[0], tr2.matrix[1], tr2.matrix[2], tr2.matrix[3], tr2.matrix[4], tr2.matrix[5]);
+        context.lineTo(tr2.matrix[4], tr2.matrix[5]);
+        //context.lineWidth = self.linkLineWidth;
+        context.lineWidth = self.linkLineWidth * (s[0] + s[1]) * 0.5;
         context.strokeStyle = self.linkLineColor;
         context.stroke();
         

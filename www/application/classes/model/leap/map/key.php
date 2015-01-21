@@ -60,20 +60,18 @@ class Model_Leap_Map_Key extends DB_ORM_Model {
         return array('id');
     }
     
-    public function getKeysByMap($mapId) {
+    public function getKeysByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $keys = array();
-            foreach($result as $record) {
-                $keys[] = DB_ORM::model('map_key', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $keys[] = DB_ORM::model('map_key', array((int)$record['id']));
             return $keys;
         }
-        
-        return NULL;
+        return array();
     }
     
     public function updateKeys($mapId, $values) {
@@ -113,35 +111,16 @@ class Model_Leap_Map_Key extends DB_ORM_Model {
         return false;
     }
     
-    public function duplicateKeys($fromMapId, $toMapId) {
-        $keys = $this->getKeysByMap($fromMapId);
+    public function duplicateKeys ($fromMapId, $toMapId)
+    {
+        if ( ! $toMapId) return;
         
-        if($keys == null || $toMapId == null || $toMapId <= 0) return;
-        
-        foreach($keys as $key) {
-            $builder = DB_ORM::insert('map_key')
-                    ->column('map_id', $toMapId)
-                    ->column('key', $key->key);
-            
-            $builder->execute();
+        foreach ($this->getKeysByMap($fromMapId) as $key)
+        {
+            DB_ORM::insert('map_key')
+                ->column('map_id', $toMapId)
+                ->column('key', $key->key)
+                ->execute();
         }
-    }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $keys = array();
-            foreach($result as $record) {
-                $keys[] = $record;
-            }
-
-            return $keys;
-        }
-
-        return NULL;
     }
 }
-
-?>

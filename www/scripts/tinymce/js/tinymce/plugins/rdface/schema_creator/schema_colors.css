@@ -1,0 +1,133 @@
+.r_entity.r_activity{background:#762956; color: white;}
+.r_entity.r_behavior{background:#39EA2A;}
+.r_entity.r_dailyorrecreationalactivity{background:#56178A; color: white;}
+.r_entity.r_event{background:#8AAD26;}
+.r_entity.r_governmentalorregulatoryactivity{background:#DFC152;}
+.r_entity.r_individualbehavior{background:#860999; color: white;}
+.r_entity.r_machineactivity{background:#1B4A3F; color: white;}
+.r_entity.r_occupationalactivity{background:#7A032D; color: white;}
+.r_entity.r_socialbehavior{background:#172376; color: white;}
+.r_entity.r_anatomicalstructure{background:#C96C6C;}
+.r_entity.r_bodylocationorregion{background:#8C7E91;}
+.r_entity.r_bodypart,organ,ororgancomponent{background:#5610FF; color: white;}
+.r_entity.r_bodyspaceorjunction{background:#C5D2E5;}
+.r_entity.r_bodysubstance{background:#1CB9F9;}
+.r_entity.r_bodysystem{background:#E0576C;}
+.r_entity.r_cell{background:#497292; color: white;}
+.r_entity.r_cellcomponent{background:#9C07F7; color: white;}
+.r_entity.r_embryonicstructure{background:#468D10; color: white;}
+.r_entity.r_fullyformedanatomicalstructure{background:#AEDBCF;}
+.r_entity.r_tissue{background:#8DDB1C;}
+.r_entity.r_aminoacid,peptide,orprotein{background:#D66EB7;}
+.r_entity.r_antibiotic{background:#15B419; color: white;}
+.r_entity.r_biologicallyactivesubstance{background:#0EC98A;}
+.r_entity.r_biomedicalordentalmaterial{background:#39D8DA;}
+.r_entity.r_carbohydrate{background:#BDB254;}
+.r_entity.r_chemical{background:#6BBBAF;}
+.r_entity.r_chemicalviewedfunctionally{background:#02BDAA;}
+.r_entity.r_chemicalviewedstructurally{background:#23C8F3;}
+.r_entity.r_clinicaldrug{background:#02ABE4; color: white;}
+.r_entity.r_eicosanoid{background:#BBBCB3;}
+.r_entity.r_element,ion,orisotope{background:#7DC72F;}
+.r_entity.r_enzyme{background:#1F9CCB; color: white;}
+.r_entity.r_hazardousorpoisonoussubstance{background:#2A7838; color: white;}
+.r_entity.r_hormone{background:#2072C2;}
+.r_entity.r_immunologicfactor{background:#6BD8BB;}
+.r_entity.r_indicator,reagent,ordiagnosticaid{background:#32F09C;}
+.r_entity.r_inorganicchemical{background:#4429FA; color: white;}
+.r_entity.r_lipid{background:#22B7E4;}
+.r_entity.r_neuroreactivesubstanceorbiogenicamine{background:#E1DFF7;}
+.r_entity.r_nucleicacid,nucleoside,ornucleotide{background:#BECC5D;}
+.r_entity.r_organicchemical{background:#6EA5A0;}
+.r_entity.r_organophosphoruscompound{background:#344B1F; color: white;}
+.r_entity.r_pharmacologicsubstance{background:#4CA5C0;}
+.r_entity.r_receptor{background:#CF307E; color: white;}
+.r_entity.r_steroid{background:#7526FE; color: white;}
+.r_entity.r_vitamin{background:#CE936C;}
+.r_entity.r_classification{background:#817CA9;}
+.r_entity.r_conceptualentity{background:#D572D8;}
+.r_entity.r_functionalconcept{background:#F12425; color: white;}
+.r_entity.r_groupattribute{background:#27E8BE;}
+.r_entity.r_ideaorconcept{background:#141AB8; color:white;}
+.r_entity.r_intellectualproduct{background:#2F3179; color: white;}
+.r_entity.r_language{background:#44A503; color: white;}
+.r_entity.r_qualitativeconcept{background:#C7DE13;}
+.r_entity.r_quantitativeconcept{background:#664E47; color: white;}
+.r_entity.r_regulationorlaw{background:#459EFE;}
+.r_entity.r_spatialconcept{background:#DD2A3D; color: white;}
+.r_entity.r_temporalconcept{background:#C09CEF;}
+.r_entity.r_drugdeliverydevice{background:#E1A3AD;}
+.r_entity.r_medicaldevice{background:#7CFA80;}
+.r_entity.r_researchdevice{background:#B52403;}
+.r_entity.r_acquiredabnormality{background:#C3AA76;}
+.r_entity.r_anatomicalabnormality{background:#2B0495; color: white;}
+.r_entity.r_cellormoleculardysfunction{background:#479DEC;}
+.r_entity.r_congenitalabnormality{background:#4EAFAB;}
+.r_entity.r_diseaseorsyndrome{background:#8D2735; color: white;}
+.r_entity.r_experimentalmodelofdisease{background:#A4A69E;}
+.r_entity.r_finding{background:#9E8148;}
+.r_entity.r_injuryorpoisoning{background:#6643BB; color: white;}
+.r_entity.r_mentalorbehavioraldysfunction{background:#3CCE53;}
+.r_entity.r_neoplasticprocess{background:#D527F5; color: white;}
+.r_entity.r_pathologicfunction{background:#AA0C80; color: white;}
+.r_entity.r_signorsymptom{background:#A54D55; color: white;}
+.r_entity.r_aminoacidsequence{background:#044936; color: white;}
+.r_entity.r_carbohydratesequence{background:#8E3546; color: white;}
+.r_entity.r_geneorgenome{background:#A626E8; color: white;}
+.r_entity.r_molecularsequence{background:#4F026B; color: white;}
+.r_entity.r_nucleotidesequence{background:#B3BE9C;}
+.r_entity.r_geographicarea{background:#5A30C6; color: white;}
+.r_entity.r_agegroup{background:#AB86F1;}
+.r_entity.r_amphibian{background:#D7B585;}
+.r_entity.r_animal{background:#C462EC;}
+.r_entity.r_archaeon{background:#42AD0E; color: white;}
+.r_entity.r_bacterium{background:#55780A; color: white;}
+.r_entity.r_bird{background:#1E4C54; color: white;}
+.r_entity.r_eukaryote{background:#F2E15A;}
+.r_entity.r_familygroup{background:#06896E; color: white;}
+.r_entity.r_fish{background:#1614F7; color: white;}
+.r_entity.r_fungus{background:#58F680;}
+.r_entity.r_group{background:#EE9764;}
+.r_entity.r_human{background:#B25C9C; color: white;}
+.r_entity.r_mammal{background:#FE5340;}
+.r_entity.r_organism{background:#78EDDD;}
+.r_entity.r_patientordisabledgroup{background:#7F5C75; color: white;}
+.r_entity.r_plant{background:#DFAE1F;}
+.r_entity.r_populationgroup{background:#55E92D;}
+.r_entity.r_professionaloroccupationalgroup{background:#632029; color: white;}
+.r_entity.r_reptile{background:#C401EE; color: white;}
+.r_entity.r_vertebrate{background:#885D1E; color: white;}
+.r_entity.r_virus{background:#BECBD6;}
+.r_entity{background:#3FC0E9;}
+.r_entity.r_food{background:#4F3583; color: white;}
+.r_entity.r_manufacturedobject{background:#BCF751;}
+.r_entity.r_physicalobject{background:#BAAFB8;}
+.r_entity.r_substance{background:#EC0616; color: white;}
+.r_entity.r_biomedicaloccupationordiscipline{background:#56E53B;}
+.r_entity.r_occupationordiscipline{background:#30E89F;}
+.r_entity.r_healthcarerelatedorganization{background:#246DB6; color: white;}
+.r_entity.r_organization{background:#D25A21; color: white;}
+.r_entity.r_professionalsociety{background:#3ABA92;}
+.r_entity.r_self-helporrelieforganization{background:#769AEE;}
+.r_entity.r_biologicfunction{background:#9FFE33;}
+.r_entity.r_environmentaleffectofhumans{background:#48F045;}
+.r_entity.r_human-causedphenomenonorprocess{background:#18C391;}
+.r_entity.r_laboratoryortestresult{background:#9BB9D9;}
+.r_entity.r_naturalphenomenonorprocess{background:#42609E; color: white;}
+.r_entity.r_phenomenonorprocess{background:#F6B5EA;}
+.r_entity.r_cellfunction{background:#995939; color: white;}
+.r_entity.r_clinicalattribute{background:#B633FB; color: white;}
+.r_entity.r_geneticfunction{background:#C97AD5;}
+.r_entity.r_mentalprocess{background:#D290EB;}
+.r_entity.r_molecularfunction{background:#E7CD05;}
+.r_entity.r_organismattribute{background:#830DAA; color: white;}
+.r_entity.r_organismfunction{background:#0BE20B;}
+.r_entity.r_organortissuefunction{background:#A3A542;}
+.r_entity.r_physiologicfunction{background:#AD7297;}
+.r_entity.r_diagnosticprocedure{background:#CB99FD;}
+.r_entity.r_educationalactivity{background:#B1588A; color: white;}
+.r_entity.r_healthcareactivity{background:#238D6F; color: white;}
+.r_entity.r_laboratoryprocedure{background:#54CAD8;}
+.r_entity.r_molecularbiologyresearchtechnique{background:#844361; color: white;}
+.r_entity.r_researchactivity{background:#1EC988;}
+.r_entity.r_therapeuticorpreventiveprocedure{background:#C462B8;}

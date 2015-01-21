@@ -37,13 +37,17 @@
 
         public function action_index()
         {
+
             //$maps = DB_ORM::model('map')->getAllEnabledAndKeyMap();
             //$this->templateData['maps'] = $maps;
             $url_base = URL::base(NULL, TRUE);
             $no_request = empty($_GET) && empty($_POST);
             if ($this->request->query("show_inline") == 1 || $no_request)
                 echo "<a href='$url_base'>&lt;&lt; Back to OpenLabyrinth</a>";
-            $ep = Helper_RDF_Store::getEndpoint();
+            $store = Helper_RDF_Store::getDriver();
+
+            $ep = $store::getEndpoint();
+
             echo $ep->getResult();
 
 
@@ -53,9 +57,16 @@
 
         public function before()
         {
+            $sparql_config = Kohana::$config->load('sparql');
 
 
-            $ep = Helper_RDF_Store::getEndpoint();
+            if(isset($sparql_config["driver"])&&$sparql_config["driver"]!="Helper_RDF_Store_Arc")
+                $this->request->redirect ($sparql_config["endpoint"]);
+
+            $store = Helper_RDF_Store::getDriver();
+
+            $ep = $store::getEndpoint();
+
             $ep->handleRequest();
 
 

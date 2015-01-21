@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Setting</title>
+	<link rel="stylesheet" href="css/rdface.css" type="text/css"/>
+	<link rel="stylesheet" href="schema_creator/schema_colors.css" type="text/css"/>
+	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" media="all" />
+	<link rel="stylesheet" href="libs/slider/css/slider.css" media="all" />
+	<script type="text/javascript" src="js/config.js"></script>
+	<script type="text/javascript" src="libs/jstree/_lib/jquery.min.js"></script>
+	<script type="text/javascript" src="libs/jstree/_lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="libs/slider/js/bootstrap-slider.js"></script>
+	<script type="text/javascript" src="js/functions.js"></script>
+	<script type="text/javascript" src="js/setting.js"></script>
+</head>
+<body style="margin-top:20px;margin-left:10px;margin-right:10px;">
+<div id="button_area" style="text-align:center;">
+	<a class="btn btn-primary" onclick="rdfaSetting.insert();"> Update </a>
+</div>
+		<center><div id="errorMsg"></div></center>
+    <ul class="nav nav-tabs" id="setting">
+	    <li><a href="#general" data-toggle="tab">General</a></li>
+	    <li><a href="#auto" data-toggle="tab">Automatic Annotation</a></li>
+	    <li><a href="#entities" data-toggle="tab">Entities</a></li>
+    </ul>
+<div class="tab-content" style="margin-left:10px;">
+<div class="tab-pane active" id="general">
+		<form id="settingGeneral" action="#">
+		<div class="control-group">
+		<label class="control-label" for="a_format">Annotation Format</label>
+			<div class="controls">
+			<input type="radio" name="a_format" value="RDFa" checked> <a href="http://www.w3.org/TR/rdfa-core/" target="_blank">RDFa</a>
+			<br/><input type="radio" name="a_format" value="Microdata"> <a href="http://www.w3.org/TR/microdata/" target="_blank">Microdata</a> (<a href="http://schema.org" target="_blank">Schema.org</a>)
+			</div>
+		</div>
+		</form>
+</div>
+<div class="tab-pane" id="auto" style="margin-left:10px;margin-rightt:10px;">
+<form id="settingAuto" action="#">
+	<div class="control-group">
+	<label class="control-label" for="confidence">Confidence</label>
+		<div class="controls">
+		&nbsp;&nbsp;&nbsp;<input name="confidence" id="confidence" type="text" class="span2" value="" data-slider-min="0" data-slider-max="1" data-slider-step="0.05" data-slider-orientation="horizontal" data-slider-selection="before" data-slider-tooltip="hide"> &nbsp;<input id="confidence_box" name="confidence_box" type="text" class="span1 input-small" maxlength="5" value="0.20">
+		</div>
+	</div>
+</form>
+</div>
+
+<div class="tab-pane" id="entities" style="margin-left:10px;margin-rightt:10px;">
+<form id="settingEntities" action="#">
+	Entities Recognized by Automatic Annotation<br/><br/>
+	<button id="selectAll0" type="button">check all</button> 
+	<div id="r_main_entities">
+	</div><br/>
+	<div id="r_sub_entities">
+	</div>
+</form>
+</div>
+</div>
+<script>
+$(function () {
+	$('#setting a:first').tab('show');
+	rdfaSetting.init();
+    $('#selectAll0').toggle(function(){
+        $("input[name='selectedEntities[]']").attr('checked','checked');
+        $(this).html('uncheck all');
+    },function(){
+        $("input[name='selectedEntities[]']").removeAttr('checked');
+        $(this).html('check all');        
+    })
+})
+</script>
+</body>
+</html>

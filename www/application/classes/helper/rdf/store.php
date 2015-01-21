@@ -6,67 +6,126 @@
  * Time: 6:36 μμ
  * To change this template use File | Settings | File Templates.
  */
-require_once(Kohana::find_file('vendor', 'arc2/ARC2'));
+
 class Helper_RDF_Store {
 
 
-    private static $endpoint;
-    private static $store;
+    protected  static $endpoint;
+    protected static $store;
 
     public static  function initialize(){
 
-        $db_config = Kohana::$config->load('database')->get('default');
-        $sparql_config = Kohana::$config->load('sparql');
-
-        $config = array(
-            /* db */
-            'db_host' => $db_config['connection']['hostname'], /* optional, default is localhost */
-            'db_name' => $db_config['connection']['database'],
-            'db_user' => $db_config['connection']['username'],
-            'db_pwd' => $db_config['connection']['password'],
-
-            /* store name */
-            'store_name' => 'sparql',
-
-            /* endpoint */
-            'endpoint_features' => array(
-                'select', 'construct', 'ask', 'describe',
-                'load',
-                'dump' /* dump is a special command for streaming SPOG export */
-            ),
-            'endpoint_timeout' => ini_get('max_execution_time'), /* not implemented in ARC2 preview */
-            'time_limit'=>ini_get('max_execution_time') ,
-            'endpoint_read_key' => '', /* optional */
-            'endpoint_max_limit' => $sparql_config["endpoint_max_limit"], /* optional */
-        );
-
-        /* instantiation */
-        self::$endpoint = ARC2::getStoreEndpoint($config);
-
-        self::$store = ARC2::getStore($config);
-
-        if (!self::$store->isSetUp()) {
-            self::$store->setUp();
-        }
-        if (!self::$endpoint->isSetUp()) {
-            self::$endpoint->setUp(); /* create MySQL tables */
-        }
 
     }
 
     public static function getEndpoint(){
 
-        if(!isset(self::$endpoint))
-            self::initialize();
-        return self::$endpoint;
+    }
+
+
+    public static function getDriver(){
+        $sparql_config = Kohana::$config->load('sparql');
+        if(isset($sparql_config["driver"]))
+            $driver = $sparql_config["driver"];
+        if(!isset($driver))$driver = 'Helper_RDF_Store_Arc';
+        return $driver;
     }
 
 
     public static function getStore(){
 
-        if(!isset(self::$store))
-            self::initialize();
-        return self::$store;
+        $driver = self::getDriver();
+
+        if(!isset($driver::$store))
+            $driver::initialize();
+        return $driver::$store;
+    }
+    private  static function  discover_triples($data)
+    {
+
+        $data = '<html>' . $data . '</html>';
+        $parser = ARC2::getSemHTMLParser();
+        $base = URL::base();
+        $parser->parse($base, $data);
+        $parser->extractRDF('rdfa');
+
+        $triples = $parser->getTriples();
+        return $triples;
+    }
+    public static function indexModel($model){
+        $class = get_class($model);
+        $smallName = Model_Leap_Metadata::getSmallModelName($class);
+        $store = Helper_RDF_Store::getStore();
+        $graph_uri = Model_Leap_Vocabulary::getGraphUri();
+
+
+        $metadata = Model_Leap_Metadata::getMetadataByModelName($smallName);
+
+
+        //$triples = array();
+        foreach ($metadata as $field) {
+
+            $field_triples = Model_Leap_Metadata_Record::getAllTriples($field->name,0,0,$model->id);
+            //$triples = array_merge($triples, $field_triples);
+
+            foreach ($field_triples as $triple) {
+
+
+                $arc_triple = $triple->toString();
+
+                if($arc_triple['o_type']=='literal'){
+                    $extra_graph = $arc_triple['s'];
+
+                    $extra_triples  = self::discover_triples(html_entity_decode($arc_triple['o']));
+
+                    foreach ($extra_triples as $extra_triple) {
+                  //      $store->insert(array($extra_triple),$extra_graph);
+                    }
+                }
+
+                $store->insert(array($arc_triple),$graph_uri);
+            }
+        }
+
+         $classMappings = Model_Leap_Vocabulary_ClassMapping::get_mapping_by_class($smallName);
+
+        foreach ($classMappings as $cmapping) {
+
+            $class_triples = $cmapping->getTriples(0,0,$model->id);
+
+            foreach ($class_triples as $triple) {
+                $arc_triple = $triple->toString();
+
+                $store->insert(array($arc_triple),$graph_uri);
+
+            }
+        }
+
+        $propertyMappings = Model_Leap_Vocabulary_LegacyPropertyMapping::get_mappings_by_class($smallName);
+        var_dump($propertyMappings);
+        foreach ($propertyMappings as $pmapping) {
+
+            $property_triples = $pmapping->getTriples(0,0,$model->id);
+
+            foreach ($property_triples as $triple) {
+
+                $arc_triple = $triple->toString();
+                if($arc_triple['o_type']=='literal'){
+                    $extra_graph = $arc_triple['s'];
+
+                    $extra_triples  = self::discover_triples(html_entity_decode($arc_triple['o']));
+
+                    foreach ($extra_triples as $extra_triple) {
+                        $store->insert(array($extra_triple),$extra_graph);
+                    }
+
+                }
+
+                $store->insert(array($arc_triple),$graph_uri);
+            }
+
+        }
+
     }
 
 

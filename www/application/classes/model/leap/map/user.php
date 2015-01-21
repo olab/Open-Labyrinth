@@ -77,8 +77,14 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         
         return FALSE;
     }
+
+    public function getUserMaps($userId)
+    {
+        return DB_ORM::select('Map_User')->where('user_id', '=', $userId)->query()->as_array();
+    }
     
-    public function getAllUsers($mapId, $order = "DESC") {
+    public function getAllUsers ($mapId, $order = "DESC")
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_users.map_id', '=', $mapId)
@@ -86,63 +92,57 @@ class Model_Leap_Map_User extends DB_ORM_Model {
             ->order_by('nickname', $order);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $users = array();
-            foreach($result as $record) {
-                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
-            }
-            
+            foreach($result as $record) $users[] = DB_ORM::model('user', array((int)$record['user_id']));
             return $users;
         }
-        
-        return NULL;
+        return array();
     }
 
-    public function getAllAuthors($mapId, $order = 'DESC'){
-        $builder = DB_SQL::select('default')->
-            from($this->table())
-            ->join('LEFT', 'users')->on('map_users.user_id', '=', 'users.id')
+    public function getAllAuthors($mapId, $order = 'DESC')
+    {
+        $users = array();
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->join('LEFT', 'users')
+            ->on('map_users.user_id', '=', 'users.id')
             ->where('map_users.map_id', '=', $mapId, 'AND')
-            ->where_block('(')->where('users.type_id', '=', '2')
+            ->where_block('(')
+            ->where('users.type_id', '=', '2')
             ->where('users.type_id', '=', '4', 'OR')
             ->where_block(')')
             ->order_by('users.nickname', $order)
-            ->column('map_users.user_id');
-        $result = $builder->query();
+            ->column('map_users.user_id')
+            ->query();
 
         if($result->is_loaded()) {
-            $users = array();
             foreach($result as $record) {
                 $users[] = DB_ORM::model('user', array((int)$record['user_id']));
             }
-
-            return $users;
         }
-
-        return NULL;
+        return $users;
     }
 
-    public function getAllLearners($mapId, $order = "DESC"){
-        $builder = DB_SQL::select('default')
+    public function getAllLearners($mapId, $order = "DESC")
+    {
+        $users = array();
+        $result = DB_SQL::select('default')
             ->from($this->table())
             ->join('LEFT', 'users')
             ->on('map_users.user_id', '=', 'users.id')
             ->where('map_users.map_id', '=', $mapId, 'AND')
             ->where('users.type_id', '=', '1')
             ->order_by('users.nickname', $order)
-            ->column('map_users.user_id');
-        $result = $builder->query();
+            ->column('map_users.user_id')
+            ->query();
 
-        if($result->is_loaded()) {
-            $users = array();
-            foreach($result as $record) {
-                $users[] = DB_ORM::model('user', array((int)$record['user_id']));
-            }
-
-            return $users;
+        if($result->is_loaded())
+        {
+            foreach($result as $record) $users[] = DB_ORM::model('user', array((int)$record['user_id']));
         }
-
-        return NULL;
+        return $users;
     }
 
     public function getAllUsersIds($mapId) {
@@ -193,8 +193,10 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function addUser($mapId, $userId) {
-        if($mapId != NULL and $userId != NULL) {
+    public function addUser ($mapId, $userId)
+    {
+        if ($mapId != NULL and $userId != NULL)
+        {
             DB_ORM::insert('map_user')
                 ->column('map_id', $mapId)
                 ->column('user_id', $userId)
@@ -267,32 +269,39 @@ class Model_Leap_Map_User extends DB_ORM_Model {
             }
         }
     }
-    
-    public function duplicateUsers($fromMapId, $toMapId) {
-        $users = $this->getAllUsers($fromMapId);
-        
-        if($users == null) return;
-        
-        foreach($users as $user) {
-            $this->addUser($toMapId, $user->id);
+
+    public function addAllReviewers($mapId)
+    {
+        if ($mapId == null) return;
+
+        $reviewers = DB_ORM::model('User')->getAllReviewers();
+
+        foreach($reviewers as $reviewer)
+        {
+            $this->addUser($mapId, $reviewer->id);
         }
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
+    public function removeAllReviewers($mapId)
+    {
+        if($mapId == null) return;
 
-        if($result->is_loaded()) {
-            $users = array();
-            foreach($result as $record) {
-                $users[] = $record;
-            }
+        $reviewers = DB_ORM::model('User')->getAllReviewers();
 
-            return $users;
+        foreach($reviewers as $reviewer)
+        {
+                $this->deleteByUserId($mapId, $reviewer->id);
         }
+    }
+    
+    public function duplicateUsers($fromMapId, $toMapId)
+    {
+        foreach($this->getAllUsers($fromMapId) as $user) $this->addUser($toMapId, $user->id);
+    }
 
-        return NULL;
+    public function assignOrNot ($mapId, $userId)
+    {
+        $assignUser = DB_ORM::select('Map_User')->where('user_id', '=', $userId)->where('map_id', '=', $mapId)->query()->fetch(0);
+        return (bool) $assignUser;
     }
 }
-
-?>

@@ -1,12 +1,12 @@
-var VisualDisplay = function() {
-    var PI180 = 180 / Math.PI;
-    
+var VisualDisplay = function()
+{
     var self = this,
-        $container = $('#visualDisplay');
+        $container = $('#visualDisplay'),
+        urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') + '/';
     
     var id = null,
         
-        panels = new Array(),
+        panels = [],
         panelsIDIndex = 1,
         currentActivePanel = null,
         $panelWidthInput = $('#panelWidth'),
@@ -18,13 +18,13 @@ var VisualDisplay = function() {
         $panelBackgroundInput = $('#panelBackgroundColor'),
         $panelAngleInput = $('#panelAngle'),
         
-        images = new Array(),
+        images = [],
         imageIDIndex = 1,
         currentActiveImage = null,
         $imageZIndexInput = $('#panelImageZIndex'),
         $imageAngleInput = $('#panelImageAngle'),
         
-        counters = new Array(),
+        counters = [],
         counterIDIndex = 1,
         currentActiveCounter = null,
         $counterFontLabelFamilySelect = $('#counterFontLabelFamily'),
@@ -44,7 +44,9 @@ var VisualDisplay = function() {
         $counterValueBoldCheck = $('#counterValueBold'),
         $counterValueItalicCheck = $('#counterValueItalic'),
         $counterValueUnderlineCheck = $('#counterValueUnderline'),
-        
+
+        fontInput = $('#fontManage'),
+
         layoutPanel = new LayoutPanel();
         
     this.Init = function(visualDisplayId) {
@@ -79,7 +81,7 @@ var VisualDisplay = function() {
         $counterValueBoldCheck.click(ChangeValueBold);
         $counterValueItalicCheck.click(ChangeValueItalic);
         $counterValueUnderlineCheck.click(ChangeValueUnderline);
-    }
+    };
     
     this.CreatePanel = function() {
         if($container == null) return;
@@ -93,7 +95,7 @@ var VisualDisplay = function() {
         
         panels.push(panel);
         panelsIDIndex += 1;
-    }
+    };
     
     this.CreateImage = function($object) {
         if($container == null || $object == null) return;
@@ -108,7 +110,7 @@ var VisualDisplay = function() {
         
         images.push(image);
         imageIDIndex += 1;
-    }
+    };
 
     this.CreateCounter = function($object) {
         if($container == null || $object == null) return;
@@ -126,13 +128,16 @@ var VisualDisplay = function() {
         
         counters.push(counter);
         counterIDIndex += 1;
-    }
+    };
     
-    this.SelectPanel = function(panel) {
+    this.SelectPanel = function(panel)
+    {
         if(panel == null) return;
-        
+
         currentActivePanel = panel;
-        if(currentActivePanel.$panel != null) {
+
+        if(currentActivePanel.$panel != null)
+        {
             $panelWidthInput.val(currentActivePanel.$panel.css('width').replace('px', ''));
             $panelHeightInput.val(currentActivePanel.$panel.css('height').replace('px', ''));
             $panelBorderInput.val(currentActivePanel.$panel.css('border-top-width').replace('px', ''));
@@ -142,15 +147,12 @@ var VisualDisplay = function() {
             $panelZIndexInput.val(currentActivePanel.$panel.css('z-index'));
             $panelBackgroundInput.val(currentActivePanel.$panel.css('background-color'));
             $panelBackgroundInput.css('background-color', currentActivePanel.$panel.css('background-color'));
-            
+
             var angle = utils.GetRotationAngle(currentActivePanel.$panel);
-            if(angle != null) {
-                $panelAngleInput.val(angle);
-            } else {
-                $panelAngleInput.val(0);
-            }
+            if(angle != null) $panelAngleInput.val(angle);
+            else $panelAngleInput.val(0);
         }
-    }
+    };
     
     this.SelectImage = function(image) {
         if(image == null) return;
@@ -166,50 +168,42 @@ var VisualDisplay = function() {
                 $imageAngleInput.val(0);
             }
         }
-    }
+    };
     
     this.SelectCounter = function(counter) {
-        if(counter == null) return;
+        if (counter == null) return;
         
         currentActiveCounter = counter;
         var angle = 0;
-        if(currentActiveCounter.$label != null) {
+
+        if (currentActiveCounter.$label != null) {
             $counterFontLabelFamilySelect.children('option').removeAttr('selected');
             $counterFontLabelFamilySelect.children('option[value="' + currentActiveCounter.$label.css('font-family').replace(/\'/g, '') + '"]').attr('selected', 'selected');
             
             $counterFontLabelSizeSelect.children('option').removeAttr('selected');
             $counterFontLabelSizeSelect.children('option[value="' + currentActiveCounter.$label.css('font-size') + '"]').attr('selected', 'selected');
-            
-            $counterLabelTextInput.val(currentActiveCounter.$label.text());
+
+            $counterLabelTextInput.val(currentActiveCounter.$label.html().replace(/<.*/, ''));
             $counterFontLabelColorInput.val(currentActiveCounter.$label.css('color'));
             $counterFontLabelColorInput.css('background-color', currentActiveCounter.$label.css('color'));
             $counterLabelZIndexInput.val(currentActiveCounter.$label.css('z-index'));
             
             angle = utils.GetRotationAngle(currentActiveCounter.$label);
-            if(angle != null) {
-                $counterLabelAngleInput.val(angle);
-            } else {
-                $counterLabelAngleInput.val(0);
-            }
+
+            if (angle != null) $counterLabelAngleInput.val(angle);
+            else $counterLabelAngleInput.val(0);
             
-            if(currentActiveCounter.$label.css('font-weight') == 'bold') {
-                $counterLabelBoldCheck.addClass('active');
-            } else {
-                $counterLabelBoldCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$label.css('font-style') == 'italic') {
-                $counterLabelItalicCheck.addClass('active');
-            } else {
-                $counterLabelItalicCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$label.css('text-decoration') == 'underline') {
-                $counterLabelUnderlineCheck.addClass('active');
-            } else {
-                $counterLabelUnderlineCheck.removeClass('active');
-            }
+            if (currentActiveCounter.$label.css('font-weight') == 'bold') $counterLabelBoldCheck.addClass('active');
+            else $counterLabelBoldCheck.removeClass('active');
+
+            if (currentActiveCounter.$label.css('font-style') == 'italic') $counterLabelItalicCheck.addClass('active');
+            else $counterLabelItalicCheck.removeClass('active');
+
+            if (currentActiveCounter.$label.css('text-decoration') == 'underline') $counterLabelUnderlineCheck.addClass('active');
+            else $counterLabelUnderlineCheck.removeClass('active');
         }
         
-        if(currentActiveCounter.$value != null) {
+        if (currentActiveCounter.$value != null) {
             $counterFontValueFamilySelect.children('option').removeAttr('selected');
             $counterFontValueFamilySelect.children('option[value="' + currentActiveCounter.$value.css('font-family').replace(/\'/g, '') + '"]').attr('selected', 'selected');
             
@@ -221,29 +215,20 @@ var VisualDisplay = function() {
             $counterValueZIndexInput.val(currentActiveCounter.$value.css('z-index'));
             
             angle = utils.GetRotationAngle(currentActiveCounter.$value);
-            if(angle != null) {
-                $counterValueAngleInput.val(angle);
-            } else {
-                $counterValueAngleInput.val(0);
-            }
+
+            if(angle != null) $counterValueAngleInput.val(angle);
+            else $counterValueAngleInput.val(0);
             
-            if(currentActiveCounter.$value.css('font-weight') == 'bold') {
-                $counterValueBoldCheck.addClass('active');
-            } else {
-                $counterValueBoldCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$value.css('font-style') == 'italic') {
-                $counterValueItalicCheck.addClass('active');
-            } else {
-                $counterValueItalicCheck.removeClass('active');
-            }
-            if(currentActiveCounter.$value.css('text-decoration') == 'underline') {
-                $counterValueUnderlineCheck.addClass('active');
-            } else {
-                $counterValueUnderlineCheck.removeClass('active');
-            }
+            if(currentActiveCounter.$value.css('font-weight') == 'bold') $counterValueBoldCheck.addClass('active');
+            else $counterValueBoldCheck.removeClass('active');
+
+            if(currentActiveCounter.$value.css('font-style') == 'italic') $counterValueItalicCheck.addClass('active');
+            else $counterValueItalicCheck.removeClass('active');
+
+            if(currentActiveCounter.$value.css('text-decoration') == 'underline') $counterValueUnderlineCheck.addClass('active');
+            else $counterValueUnderlineCheck.removeClass('active');
         }
-    }
+    };
     
     this.HidePanel = function(panelId) {
         if(panelId == null) return;
@@ -252,7 +237,7 @@ var VisualDisplay = function() {
         if(panel != null && panel.$panel != null) {
             panel.$panel.hide();
         }
-    }
+    };
     
     this.ShowPanel = function(panelId) {
         if(panelId == null) return;
@@ -261,7 +246,7 @@ var VisualDisplay = function() {
         if(panel != null && panel.$panel != null) {
             panel.$panel.show();
         }
-    }
+    };
     
     this.HideImage = function(imageId) {
         if(imageId == null) return;
@@ -270,7 +255,7 @@ var VisualDisplay = function() {
         if(image != null && image.$image != null) {
             image.$image.hide();
         }
-    }
+    };
     
     this.ShowImage = function(imageId) {
         if(imageId == null) return;
@@ -279,7 +264,7 @@ var VisualDisplay = function() {
         if(image != null && image.$image != null) {
             image.$image.show();
         }
-    }
+    };
     
     this.HideCounter = function(counterId) {
         if(counterId == null) return;
@@ -294,7 +279,7 @@ var VisualDisplay = function() {
                 counter.$value.hide();
             }
         }
-    }
+    };
     
     this.ShowCounter = function(counterId) {
         if(counterId == null) return;
@@ -309,7 +294,7 @@ var VisualDisplay = function() {
                 counter.$value.show();
             }
         }
-    }
+    };
     
     this.DeletePanel = function(panelId) {
         if(panelId == null) return;
@@ -319,7 +304,7 @@ var VisualDisplay = function() {
             panel.$panel.remove();
             RemoveElementById(panels, panelId);
         }
-    }
+    };
     
     this.DeleteImage = function(imageId) {
         if(imageId == null) return;
@@ -329,7 +314,7 @@ var VisualDisplay = function() {
             image.$image.remove();
             RemoveElementById(images, imageId);
         }
-    }
+    };
     
     this.DeleteCounter = function(counterId) {
         if(counterId == null) return;
@@ -346,14 +331,14 @@ var VisualDisplay = function() {
             
             RemoveElementById(counters, counterId);
         }
-    }
+    };
     
     this.Serialize = function() {
         var result = '',
             panelsString,
             imagesString,
             countersString;
-        
+
         panelsString   = SerializeArray(panels, 'panels');
         imagesString   = SerializeArray(images, 'images');
         countersString = SerializeArray(counters, 'counters');
@@ -385,14 +370,14 @@ var VisualDisplay = function() {
         }
         
         return result;
-    }
+    };
     
     this.Deserialize = function(object) {
         if(object == null) return;
         
-        panels = new Array();
-        images = new Array();
-        counters = new Array();
+        panels = [];
+        images = [];
+        counters = [];
         
         if('id' in object) {
             id = object.id;
@@ -429,23 +414,22 @@ var VisualDisplay = function() {
         }
     }
     
-    var DeserializeCounters = function(objCounters) {
+    var DeserializeCounters = function(objCounters){
         if(objCounters == null || objCounters.length <= 0) return;
-        
+
         var i = objCounters.length,
             counter = null;
+
         for(;i--;) {
             counter = new Counter();
             counter.CreateFromJSON(objCounters[i], $container, counterIDIndex, '0', self);
             
-            if(layoutPanel != null) {
-                layoutPanel.AddCounter(counterIDIndex, utils.Decode64(objCounters[i].labelText));
-            }
+            if (layoutPanel != null) layoutPanel.AddCounter(counterIDIndex, utils.Decode64(objCounters[i].labelText));
 
             counters.push(counter);
             counterIDIndex += 1;
         }
-    }
+    };
     
     var DeserializeImages = function(objImages) {
         if(objImages == null || objImages.length <= 0) return;
@@ -465,21 +449,19 @@ var VisualDisplay = function() {
         }
     }
     
-    var SerializeArray = function(collection, name) {
-        if(collection == null || collection.length <= 0 || name == null) return null;
+    var SerializeArray = function (collection, name) {
+        if (collection == null || collection.length <= 0 || name == null) return null;
         
         var i = collection.length,
             result = '';
+
         for(;i--;) {
             result += collection[i].ToJSON() + ', ';
         }
-        
-        if(result.length > 2) {
-            result = '"' + name + '": [' + result.substring(0, result.length - 2) + ']';
-        }
-        
+        if (result.length > 2) result = '"' + name + '": [' + result.substring(0, result.length - 2) + ']';
+
         return result;
-    }
+    };
     
     var RemoveElementById = function(elements, id) {
         if(elements == null || id == null) return;
@@ -589,10 +571,13 @@ var VisualDisplay = function() {
     
     var ChangeLabelFontFamily = function() {
         var value = $counterFontLabelFamilySelect.children('option:selected').val();
+
+        fontInput.val(value);
+
         if(currentActiveCounter != null && currentActiveCounter.$label != null && value.length > 0) {
             currentActiveCounter.$label.css('font-family', value);
         }
-    }
+    };
     
     var ChangeLabelFontSize = function() {
         var value = $counterFontLabelSizeSelect.children('option:selected').val();
@@ -665,10 +650,13 @@ var VisualDisplay = function() {
     
     var ChangeValueFontFamily = function() {
         var value = $counterFontValueFamilySelect.children('option:selected').val();
+
+        fontInput.val(value);
+
         if(currentActiveCounter != null && currentActiveCounter.$value != null && value.length > 0) {
             currentActiveCounter.$value.css('font-family', value);
         }
-    }
+    };
     
     var ChangeValueFontSize = function() {
         var value = $counterFontValueSizeSelect.children('option:selected').val();
@@ -720,7 +708,7 @@ var VisualDisplay = function() {
                 currentActiveCounter.$value.css('font-style', 'italic');
             }
         }
-    }
+    };
     
     var ChangeValueUnderline = function() {
         if(currentActiveCounter != null && currentActiveCounter.$value != null) {
@@ -730,5 +718,27 @@ var VisualDisplay = function() {
                 currentActiveCounter.$value.css('text-decoration', 'underline');
             }
         }
+    };
+
+    // ------ fonts ----- //
+    $('#fontManageAdd').click(function(){
+        fontManage('Add');
+    });
+
+    $('#fontManageDelete').click(function(){
+        fontManage('Delete');
+
+    });
+
+    function fontManage(action){
+        var fontName = fontInput.val();
+
+        $.get(urlBase + 'visualdisplaymanager/ajax' + action + 'Font/' + fontName,
+            function(){
+                window.location.href += currentTab;
+                location.reload();
+            }
+        );
     }
-}
+    // ------ end fonts ----- //
+};

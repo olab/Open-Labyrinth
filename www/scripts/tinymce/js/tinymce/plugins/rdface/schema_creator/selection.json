@@ -1,0 +1,3048 @@
+﻿{"datatypes": {
+    "Boolean": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Boolean",
+        "instances": ["False", "True"],
+        "label": "Boolean",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/Boolean"
+    },
+    "DataType": {
+        "ancestors": [],
+        "comment": "",
+        "comment_plain": "",
+        "id": "DataType",
+        "label": "Data Type",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": ["Boolean", "Date", "DateTime", "Number", "Text", "Time"],
+        "supertypes": [],
+        "url": "http:\/\/schema.org\/DataType"
+    },
+    "Date": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Date",
+        "label": "Date",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/Date"
+    },
+    "DateTime": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "DateTime",
+        "label": "Date Time",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/DateTime"
+    },
+    "Float": {
+        "ancestors": ["DataType", "Number"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Float",
+        "label": "Float",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Number"],
+        "url": "http:\/\/schema.org\/Float"
+    },
+    "Integer": {
+        "ancestors": ["DataType", "Number"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Integer",
+        "label": "Integer",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Number"],
+        "url": "http:\/\/schema.org\/Integer"
+    },
+    "Number": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Number",
+        "label": "Number",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": ["Float", "Integer"],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/Number"
+    },
+    "Text": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Text",
+        "label": "Text",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": ["URL"],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/Text"
+    },
+    "Time": {
+        "ancestors": ["DataType"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Time",
+        "label": "Time",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["DataType"],
+        "url": "http:\/\/schema.org\/Time"
+    },
+    "URL": {
+        "ancestors": ["DataType", "Text"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "URL",
+        "label": "URL",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Text"],
+        "url": "http:\/\/schema.org\/URL"
+    }
+}, "properties": {
+    "about": {
+        "comment": "The subject matter of the content.",
+        "comment_plain": "The subject matter of the content.",
+        "domains": ["CommunicateAction", "CreativeWork"],
+        "id": "about",
+        "label": "About",
+        "ranges": ["Thing"]
+    },
+    "accessibilityAPI": {
+        "comment": "Indicates that the resource is compatible with the referenced accessibility API (<a href=\"http:\/\/www.w3.org\/wiki\/WebSchemas\/Accessibility\">WebSchemas wiki lists possible values<\/a>).\n     ",
+        "comment_plain": "Indicates that the resource is compatible with the referenced accessibility API (WebSchemas wiki lists possible values).\n     ",
+        "domains": ["CreativeWork"],
+        "id": "accessibilityAPI",
+        "label": "Accessibility API",
+        "ranges": ["Text"]
+    },
+    "accessibilityControl": {
+        "comment": "Identifies input methods that are sufficient to fully control the described resource (<a href=\"http:\/\/www.w3.org\/wiki\/WebSchemas\/Accessibility\">WebSchemas wiki lists possible values<\/a>).",
+        "comment_plain": "Identifies input methods that are sufficient to fully control the described resource (WebSchemas wiki lists possible values).",
+        "domains": ["CreativeWork"],
+        "id": "accessibilityControl",
+        "label": "Accessibility Control",
+        "ranges": ["Text"]
+    },
+    "accessibilityFeature": {
+        "comment": "Content features of the resource, such as accessible media, alternatives and supported enhancements for accessibility (<a href=\"http:\/\/www.w3.org\/wiki\/WebSchemas\/Accessibility\">WebSchemas wiki lists possible values<\/a>).",
+        "comment_plain": "Content features of the resource, such as accessible media, alternatives and supported enhancements for accessibility (WebSchemas wiki lists possible values).",
+        "domains": ["CreativeWork"],
+        "id": "accessibilityFeature",
+        "label": "Accessibility Feature",
+        "ranges": ["Text"]
+    },
+    "accessibilityHazard": {
+        "comment": "A characteristic of the described resource that is physiologically dangerous to some users. Related to WCAG 2.0 guideline 2.3. (<a href=\"http:\/\/www.w3.org\/wiki\/WebSchemas\/Accessibility\">WebSchemas wiki lists possible values<\/a>)",
+        "comment_plain": "A characteristic of the described resource that is physiologically dangerous to some users. Related to WCAG 2.0 guideline 2.3. (WebSchemas wiki lists possible values)",
+        "domains": ["CreativeWork"],
+        "id": "accessibilityHazard",
+        "label": "Accessibility Hazard",
+        "ranges": ["Text"]
+    },
+    "accountablePerson": {
+        "comment": "Specifies the Person that is legally accountable for the CreativeWork.",
+        "comment_plain": "Specifies the Person that is legally accountable for the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "accountablePerson",
+        "label": "Accountable Person",
+        "ranges": ["Person"]
+    },
+    "additionalName": {
+        "comment": "An additional name for a Person, can be used for a middle name.",
+        "comment_plain": "An additional name for a Person, can be used for a middle name.",
+        "domains": ["Person"],
+        "id": "additionalName",
+        "label": "Additional Name",
+        "ranges": ["Text"]
+    },
+    "address": {
+        "comment": "Physical address of the item.",
+        "comment_plain": "Physical address of the item.",
+        "domains": ["Person", "Place", "Organization"],
+        "id": "address",
+        "label": "Address",
+        "ranges": ["PostalAddress"]
+    },
+    "addressCountry": {
+        "comment": "The country. For example, USA. You can also provide the two-letter <a href=\"http:\/\/en.wikipedia.org\/wiki\/ISO_3166-1\">ISO 3166-1 alpha-2 country code<\/a>.",
+        "comment_plain": "The country. For example, USA. You can also provide the two-letter ISO 3166-1 alpha-2 country code.",
+        "domains": ["PostalAddress"],
+        "id": "addressCountry",
+        "label": "Address Country",
+        "ranges": ["Country"]
+    },
+    "addressLocality": {
+        "comment": "The locality. For example, Mountain View.",
+        "comment_plain": "The locality. For example, Mountain View.",
+        "domains": ["PostalAddress"],
+        "id": "addressLocality",
+        "label": "Address Locality",
+        "ranges": ["Text"]
+    },
+    "addressRegion": {
+        "comment": "The region. For example, CA.",
+        "comment_plain": "The region. For example, CA.",
+        "domains": ["PostalAddress"],
+        "id": "addressRegion",
+        "label": "Address Region",
+        "ranges": ["Text"]
+    },
+    "affiliation": {
+        "comment": "An organization that this person is affiliated with. For example, a school\/university, a club, or a team.",
+        "comment_plain": "An organization that this person is affiliated with. For example, a school\/university, a club, or a team.",
+        "domains": ["Person"],
+        "id": "affiliation",
+        "label": "Affiliation",
+        "ranges": ["Organization"]
+    },
+    "aggregateRating": {
+        "comment": "The overall rating, based on a collection of reviews or ratings, of the item.",
+        "comment_plain": "The overall rating, based on a collection of reviews or ratings, of the item.",
+        "domains": ["Organization", "Product", "CreativeWork", "Place", "Offer"],
+        "id": "aggregateRating",
+        "label": "Aggregate Rating",
+        "ranges": ["AggregateRating"]
+    },
+    "alternativeHeadline": {
+        "comment": "A secondary title of the CreativeWork.",
+        "comment_plain": "A secondary title of the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "alternativeHeadline",
+        "label": "Alternative Headline",
+        "ranges": ["Text"]
+    },
+    "alumniOf": {
+        "comment": "An educational organizations that the person is an alumni of.",
+        "comment_plain": "An educational organizations that the person is an alumni of.",
+        "domains": ["Person"],
+        "id": "alumniOf",
+        "label": "Alumni of",
+        "ranges": ["EducationalOrganization"]
+    },
+    "areaServed": {
+        "comment": "The location served by this contact point (e.g., a phone number intended for Europeans vs. North Americans or only within the United States.)",
+        "comment_plain": "The location served by this contact point (e.g., a phone number intended for Europeans vs. North Americans or only within the United States.)",
+        "domains": ["ContactPoint"],
+        "id": "areaServed",
+        "label": "Area Served",
+        "ranges": ["AdministrativeArea"]
+    },
+    "articleBody": {
+        "comment": "The actual body of the article.",
+        "comment_plain": "The actual body of the article.",
+        "domains": ["Article"],
+        "id": "articleBody",
+        "label": "Article Body",
+        "ranges": ["Text"]
+    },
+    "articleSection": {
+        "comment": "Articles may belong to one or more 'sections' in a magazine or newspaper, such as Sports, Lifestyle, etc.",
+        "comment_plain": "Articles may belong to one or more 'sections' in a magazine or newspaper, such as Sports, Lifestyle, etc.",
+        "domains": ["Article"],
+        "id": "articleSection",
+        "label": "Article Section",
+        "ranges": ["Text"]
+    },
+    "associatedMedia": {
+        "comment": "The media objects that encode this creative work. This property is a synonym for encodings.",
+        "comment_plain": "The media objects that encode this creative work. This property is a synonym for encodings.",
+        "domains": ["CreativeWork"],
+        "id": "associatedMedia",
+        "label": "Associated Media",
+        "ranges": ["MediaObject"]
+    },
+    "audience": {
+        "comment": "The intended audience of the item, i.e. the group for whom the item was created.",
+        "comment_plain": "The intended audience of the item, i.e. the group for whom the item was created.",
+        "domains": ["PlayAction", "CreativeWork", "Product"],
+        "id": "audience",
+        "label": "Audience",
+        "ranges": ["Audience"]
+    },
+    "audio": {
+        "comment": "An embedded audio object.",
+        "comment_plain": "An embedded audio object.",
+        "domains": ["CreativeWork"],
+        "id": "audio",
+        "label": "Audio",
+        "ranges": ["AudioObject"]
+    },
+    "author": {
+        "comment": "The author of this content. Please note that author is special in that HTML 5 provides a special mechanism for indicating authorship via the rel tag. That is equivalent to this and may be used interchangeably.",
+        "comment_plain": "The author of this content. Please note that author is special in that HTML 5 provides a special mechanism for indicating authorship via the rel tag. That is equivalent to this and may be used interchangeably.",
+        "domains": ["CreativeWork"],
+        "id": "author",
+        "label": "Author",
+        "ranges": ["Organization", "Person"]
+    },
+    "availableLanguage": {
+        "comment": "A language someone may use with the item.",
+        "comment_plain": "A language someone may use with the item.",
+        "domains": ["ServiceChannel", "ContactPoint"],
+        "id": "availableLanguage",
+        "label": "Available Language",
+        "ranges": ["Language"]
+    },
+    "award": {
+        "comment": "An award won by this person or for this creative work.",
+        "comment_plain": "An award won by this person or for this creative work.",
+        "domains": ["Person", "CreativeWork"],
+        "id": "award",
+        "label": "Award",
+        "ranges": ["Text"]
+    },
+    "awards": {
+        "comment": "Awards won by this person or for this creative work. (legacy spelling; see singular form, award)",
+        "comment_plain": "Awards won by this person or for this creative work. (legacy spelling; see singular form, award)",
+        "domains": ["Person", "CreativeWork"],
+        "id": "awards",
+        "label": "Awards",
+        "ranges": ["Text"]
+    },
+    "birthDate": {
+        "comment": "Date of birth.",
+        "comment_plain": "Date of birth.",
+        "domains": ["Person"],
+        "id": "birthDate",
+        "label": "Birth Date",
+        "ranges": ["Date"]
+    },
+    "brand": {
+        "comment": "The brand(s) associated with a product or service, or the brand(s) maintained by an organization or business person.",
+        "comment_plain": "The brand(s) associated with a product or service, or the brand(s) maintained by an organization or business person.",
+        "domains": ["Person", "Product", "Organization"],
+        "id": "brand",
+        "label": "Brand",
+        "ranges": ["Organization", "Brand"]
+    },
+    "children": {
+        "comment": "A child of the person.",
+        "comment_plain": "A child of the person.",
+        "domains": ["Person"],
+        "id": "children",
+        "label": "Children",
+        "ranges": ["Person"]
+    },
+    "citation": {
+        "comment": "A citation or reference to another creative work, such as another publication, web page, scholarly article, etc.",
+        "comment_plain": "A citation or reference to another creative work, such as another publication, web page, scholarly article, etc.",
+        "domains": ["CreativeWork"],
+        "id": "citation",
+        "label": "Citation",
+        "ranges": ["CreativeWork", "Text"]
+    },
+    "colleague": {
+        "comment": "A colleague of the person.",
+        "comment_plain": "A colleague of the person.",
+        "domains": ["Person"],
+        "id": "colleague",
+        "label": "Colleague",
+        "ranges": ["Person"]
+    },
+    "colleagues": {
+        "comment": "A colleague of the person (legacy spelling; see singular form, colleague).",
+        "comment_plain": "A colleague of the person (legacy spelling; see singular form, colleague).",
+        "domains": ["Person"],
+        "id": "colleagues",
+        "label": "Colleagues",
+        "ranges": ["Person"]
+    },
+    "comment": {
+        "comment": "Comments, typically from users, on this CreativeWork.",
+        "comment_plain": "Comments, typically from users, on this CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "comment",
+        "label": "Comment",
+        "ranges": ["UserComments"]
+    },
+    "contactOption": {
+        "comment": "An option available on this contact point (e.g. a toll-free number or support for hearing-impaired callers.)",
+        "comment_plain": "An option available on this contact point (e.g. a toll-free number or support for hearing-impaired callers.)",
+        "domains": ["ContactPoint"],
+        "id": "contactOption",
+        "label": "Contact Option",
+        "ranges": ["ContactPointOption"]
+    },
+    "contactPoint": {
+        "comment": "A contact point for a person or organization.",
+        "comment_plain": "A contact point for a person or organization.",
+        "domains": ["Person", "Organization"],
+        "id": "contactPoint",
+        "label": "Contact Point",
+        "ranges": ["ContactPoint"]
+    },
+    "contactPoints": {
+        "comment": "A contact point for a person or organization (legacy spelling; see singular form, contactPoint).",
+        "comment_plain": "A contact point for a person or organization (legacy spelling; see singular form, contactPoint).",
+        "domains": ["Person", "Organization"],
+        "id": "contactPoints",
+        "label": "Contact Points",
+        "ranges": ["ContactPoint"]
+    },
+    "contactType": {
+        "comment": "A person or organization can have different contact points, for different purposes. For example, a sales contact point, a PR contact point and so on. This property is used to specify the kind of contact point.",
+        "comment_plain": "A person or organization can have different contact points, for different purposes. For example, a sales contact point, a PR contact point and so on. This property is used to specify the kind of contact point.",
+        "domains": ["ContactPoint"],
+        "id": "contactType",
+        "label": "Contact Type",
+        "ranges": ["Text"]
+    },
+    "containedIn": {
+        "comment": "The basic containment relation between places.",
+        "comment_plain": "The basic containment relation between places.",
+        "domains": ["Place"],
+        "id": "containedIn",
+        "label": "Contained in",
+        "ranges": ["Place"]
+    },
+    "contentLocation": {
+        "comment": "The location of the content.",
+        "comment_plain": "The location of the content.",
+        "domains": ["CreativeWork"],
+        "id": "contentLocation",
+        "label": "Content Location",
+        "ranges": ["Place"]
+    },
+    "contentRating": {
+        "comment": "Official rating of a piece of content\u2014for example,'MPAA PG-13'.",
+        "comment_plain": "Official rating of a piece of content\u2014for example,'MPAA PG-13'.",
+        "domains": ["CreativeWork"],
+        "id": "contentRating",
+        "label": "Content Rating",
+        "ranges": ["Text"]
+    },
+    "contributor": {
+        "comment": "A secondary contributor to the CreativeWork.",
+        "comment_plain": "A secondary contributor to the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "contributor",
+        "label": "Contributor",
+        "ranges": ["Organization", "Person"]
+    },
+    "copyrightHolder": {
+        "comment": "The party holding the legal copyright to the CreativeWork.",
+        "comment_plain": "The party holding the legal copyright to the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "copyrightHolder",
+        "label": "Copyright Holder",
+        "ranges": ["Organization", "Person"]
+    },
+    "copyrightYear": {
+        "comment": "The year during which the claimed copyright for the CreativeWork was first asserted.",
+        "comment_plain": "The year during which the claimed copyright for the CreativeWork was first asserted.",
+        "domains": ["CreativeWork"],
+        "id": "copyrightYear",
+        "label": "Copyright Year",
+        "ranges": ["Number"]
+    },
+    "creator": {
+        "comment": "The creator\/author of this CreativeWork or UserComments. This is the same as the Author property for CreativeWork.",
+        "comment_plain": "The creator\/author of this CreativeWork or UserComments. This is the same as the Author property for CreativeWork.",
+        "domains": ["UserComments", "CreativeWork"],
+        "id": "creator",
+        "label": "Creator",
+        "ranges": ["Organization", "Person"]
+    },
+    "dateCreated": {
+        "comment": "The date on which the CreativeWork was created.",
+        "comment_plain": "The date on which the CreativeWork was created.",
+        "domains": ["CreativeWork"],
+        "id": "dateCreated",
+        "label": "Date Created",
+        "ranges": ["Date"]
+    },
+    "dateModified": {
+        "comment": "The date on which the CreativeWork was most recently modified.",
+        "comment_plain": "The date on which the CreativeWork was most recently modified.",
+        "domains": ["CreativeWork"],
+        "id": "dateModified",
+        "label": "Date Modified",
+        "ranges": ["Date"]
+    },
+    "datePublished": {
+        "comment": "Date of first broadcast\/publication.",
+        "comment_plain": "Date of first broadcast\/publication.",
+        "domains": ["CreativeWork"],
+        "id": "datePublished",
+        "label": "Date Published",
+        "ranges": ["Date"]
+    },
+    "dateline": {
+        "comment": "The location where the NewsArticle was produced.",
+        "comment_plain": "The location where the NewsArticle was produced.",
+        "domains": ["NewsArticle"],
+        "id": "dateline",
+        "label": "Dateline",
+        "ranges": ["Text"]
+    },
+    "deathDate": {
+        "comment": "Date of death.",
+        "comment_plain": "Date of death.",
+        "domains": ["Person"],
+        "id": "deathDate",
+        "label": "Death Date",
+        "ranges": ["Date"]
+    },
+    "department": {
+        "comment": "A relationship between an organization and a department of that organization, also described as an organization (allowing different urls, logos, opening hours). For example: a store with a pharmacy, or a bakery with a cafe.",
+        "comment_plain": "A relationship between an organization and a department of that organization, also described as an organization (allowing different urls, logos, opening hours). For example: a store with a pharmacy, or a bakery with a cafe.",
+        "domains": ["Organization"],
+        "id": "department",
+        "label": "Department",
+        "ranges": ["Organization"]
+    },
+    "description": {
+        "comment": "A short description of the item.",
+        "comment_plain": "A short description of the item.",
+        "domains": ["Thing"],
+        "id": "description",
+        "label": "Description",
+        "ranges": ["Text"]
+    },
+    "discussionUrl": {
+        "comment": "A link to the page containing the comments of the CreativeWork.",
+        "comment_plain": "A link to the page containing the comments of the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "discussionUrl",
+        "label": "Discussion Url",
+        "ranges": ["URL"]
+    },
+    "duns": {
+        "comment": "The Dun & Bradstreet DUNS number for identifying an organization or business person.",
+        "comment_plain": "The Dun & Bradstreet DUNS number for identifying an organization or business person.",
+        "domains": ["Person", "Organization"],
+        "id": "duns",
+        "label": "Duns",
+        "ranges": ["Text"]
+    },
+    "editor": {
+        "comment": "Specifies the Person who edited the CreativeWork.",
+        "comment_plain": "Specifies the Person who edited the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "editor",
+        "label": "Editor",
+        "ranges": ["Person"]
+    },
+    "educationalAlignment": {
+        "comment": "An alignment to an established educational framework.",
+        "comment_plain": "An alignment to an established educational framework.",
+        "domains": ["CreativeWork"],
+        "id": "educationalAlignment",
+        "label": "Educational Alignment",
+        "ranges": ["AlignmentObject"]
+    },
+    "educationalUse": {
+        "comment": "The purpose of a work in the context of education; for example, 'assignment', 'group work'.",
+        "comment_plain": "The purpose of a work in the context of education; for example, 'assignment', 'group work'.",
+        "domains": ["CreativeWork"],
+        "id": "educationalUse",
+        "label": "Educational Use",
+        "ranges": ["Text"]
+    },
+    "email": {
+        "comment": "Email address.",
+        "comment_plain": "Email address.",
+        "domains": ["Person", "ContactPoint", "Organization"],
+        "id": "email",
+        "label": "Email",
+        "ranges": ["Text"]
+    },
+    "employee": {
+        "comment": "Someone working for this organization.",
+        "comment_plain": "Someone working for this organization.",
+        "domains": ["Organization"],
+        "id": "employee",
+        "label": "Employee",
+        "ranges": ["Person"]
+    },
+    "employees": {
+        "comment": "People working for this organization. (legacy spelling; see singular form, employee)",
+        "comment_plain": "People working for this organization. (legacy spelling; see singular form, employee)",
+        "domains": ["Organization"],
+        "id": "employees",
+        "label": "Employees",
+        "ranges": ["Person"]
+    },
+    "encoding": {
+        "comment": "A media object that encode this CreativeWork.",
+        "comment_plain": "A media object that encode this CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "encoding",
+        "label": "Encoding",
+        "ranges": ["MediaObject"]
+    },
+    "encodings": {
+        "comment": "The media objects that encode this creative work (legacy spelling; see singular form, encoding).",
+        "comment_plain": "The media objects that encode this creative work (legacy spelling; see singular form, encoding).",
+        "domains": ["CreativeWork"],
+        "id": "encodings",
+        "label": "Encodings",
+        "ranges": ["MediaObject"]
+    },
+    "event": {
+        "comment": "Upcoming or past event associated with this place or organization.",
+        "comment_plain": "Upcoming or past event associated with this place or organization.",
+        "domains": ["PlayAction", "Place", "JoinAction", "InviteAction", "Organization", "InformAction", "LeaveAction"],
+        "id": "event",
+        "label": "Event",
+        "ranges": ["Event"]
+    },
+    "events": {
+        "comment": "Upcoming or past events associated with this place or organization (legacy spelling; see singular form, event).",
+        "comment_plain": "Upcoming or past events associated with this place or organization (legacy spelling; see singular form, event).",
+        "domains": ["Organization", "Place"],
+        "id": "events",
+        "label": "Events",
+        "ranges": ["Event"]
+    },
+    "familyName": {
+        "comment": "Family name. In the U.S., the last name of an Person. This can be used along with givenName instead of the Name property.",
+        "comment_plain": "Family name. In the U.S., the last name of an Person. This can be used along with givenName instead of the Name property.",
+        "domains": ["Person"],
+        "id": "familyName",
+        "label": "Family Name",
+        "ranges": ["Text"]
+    },
+    "faxNumber": {
+        "comment": "The fax number.",
+        "comment_plain": "The fax number.",
+        "domains": ["Person", "ContactPoint", "Place", "Organization"],
+        "id": "faxNumber",
+        "label": "Fax Number",
+        "ranges": ["Text"]
+    },
+    "follows": {
+        "comment": "The most generic uni-directional social relation.",
+        "comment_plain": "The most generic uni-directional social relation.",
+        "domains": ["Person"],
+        "id": "follows",
+        "label": "Follows",
+        "ranges": ["Person"]
+    },
+    "founder": {
+        "comment": "A person who founded this organization.",
+        "comment_plain": "A person who founded this organization.",
+        "domains": ["Organization"],
+        "id": "founder",
+        "label": "Founder",
+        "ranges": ["Person"]
+    },
+    "founders": {
+        "comment": "A person who founded this organization (legacy spelling; see singular form, founder).",
+        "comment_plain": "A person who founded this organization (legacy spelling; see singular form, founder).",
+        "domains": ["Organization"],
+        "id": "founders",
+        "label": "Founders",
+        "ranges": ["Person"]
+    },
+    "foundingDate": {
+        "comment": "The date that this organization was founded.",
+        "comment_plain": "The date that this organization was founded.",
+        "domains": ["Organization"],
+        "id": "foundingDate",
+        "label": "Founding Date",
+        "ranges": ["Date"]
+    },
+    "gender": {
+        "comment": "Gender of the person.",
+        "comment_plain": "Gender of the person.",
+        "domains": ["Person"],
+        "id": "gender",
+        "label": "Gender",
+        "ranges": ["Text"]
+    },
+    "genre": {
+        "comment": "Genre of the creative work",
+        "comment_plain": "Genre of the creative work",
+        "domains": ["CreativeWork"],
+        "id": "genre",
+        "label": "Genre",
+        "ranges": ["Text"]
+    },
+    "geo": {
+        "comment": "The geo coordinates of the place.",
+        "comment_plain": "The geo coordinates of the place.",
+        "domains": ["Place"],
+        "id": "geo",
+        "label": "Geo",
+        "ranges": ["GeoCoordinates", "GeoShape"]
+    },
+    "givenName": {
+        "comment": "Given name. In the U.S., the first name of a Person. This can be used along with familyName instead of the Name property.",
+        "comment_plain": "Given name. In the U.S., the first name of a Person. This can be used along with familyName instead of the Name property.",
+        "domains": ["Person"],
+        "id": "givenName",
+        "label": "Given Name",
+        "ranges": ["Text"]
+    },
+    "globalLocationNumber": {
+        "comment": "The Global Location Number (GLN, sometimes also referred to as International Location Number or ILN) of the respective organization, person, or place. The GLN is a 13-digit number used to identify parties and physical locations.",
+        "comment_plain": "The Global Location Number (GLN, sometimes also referred to as International Location Number or ILN) of the respective organization, person, or place. The GLN is a 13-digit number used to identify parties and physical locations.",
+        "domains": ["Person", "Place", "Organization"],
+        "id": "globalLocationNumber",
+        "label": "Global Location Number",
+        "ranges": ["Text"]
+    },
+    "hasPOS": {
+        "comment": "Points-of-Sales operated by the organization or person.",
+        "comment_plain": "Points-of-Sales operated by the organization or person.",
+        "domains": ["Person", "Organization"],
+        "id": "hasPOS",
+        "label": "Has POS",
+        "ranges": ["Place"]
+    },
+    "headline": {
+        "comment": "Headline of the article",
+        "comment_plain": "Headline of the article",
+        "domains": ["CreativeWork"],
+        "id": "headline",
+        "label": "Headline",
+        "ranges": ["Text"]
+    },
+    "homeLocation": {
+        "comment": "A contact location for a person's residence.",
+        "comment_plain": "A contact location for a person's residence.",
+        "domains": ["Person"],
+        "id": "homeLocation",
+        "label": "Home Location",
+        "ranges": ["ContactPoint", "Place"]
+    },
+    "honorificPrefix": {
+        "comment": "An honorific prefix preceding a Person's name such as Dr\/Mrs\/Mr.",
+        "comment_plain": "An honorific prefix preceding a Person's name such as Dr\/Mrs\/Mr.",
+        "domains": ["Person"],
+        "id": "honorificPrefix",
+        "label": "Honorific Prefix",
+        "ranges": ["Text"]
+    },
+    "honorificSuffix": {
+        "comment": "An honorific suffix preceding a Person's name such as M.D. \/PhD\/MSCSW.",
+        "comment_plain": "An honorific suffix preceding a Person's name such as M.D. \/PhD\/MSCSW.",
+        "domains": ["Person"],
+        "id": "honorificSuffix",
+        "label": "Honorific Suffix",
+        "ranges": ["Text"]
+    },
+    "hoursAvailable": {
+        "comment": "The hours during which this contact point is available.",
+        "comment_plain": "The hours during which this contact point is available.",
+        "domains": ["ContactPoint"],
+        "id": "hoursAvailable",
+        "label": "Hours Available",
+        "ranges": ["OpeningHoursSpecification"]
+    },
+    "image": {
+        "comment": "URL of an image of the item.",
+        "comment_plain": "URL of an image of the item.",
+        "domains": ["Thing"],
+        "id": "image",
+        "label": "Image",
+        "ranges": ["URL"]
+    },
+    "inLanguage": {
+        "comment": "The language of the content. please use one of the language codes from the <a href=\"http:\/\/tools.ietf.org\/html\/bcp47\">IETF BCP 47 standard.<\/a>",
+        "comment_plain": "The language of the content. please use one of the language codes from the IETF BCP 47 standard.",
+        "domains": ["CreativeWork"],
+        "id": "inLanguage",
+        "label": "In Language",
+        "ranges": ["Text"]
+    },
+    "interactionCount": {
+        "comment": "A count of a specific user interactions with this item\u2014for example, <code>20 UserLikes<\/code>, <code>5 UserComments<\/code>, or <code>300 UserDownloads<\/code>. The user interaction type should be one of the sub types of <a href=\"http:\/\/schema.org\/UserInteraction\">UserInteraction<\/a>.",
+        "comment_plain": "A count of a specific user interactions with this item\u2014for example, 20 UserLikes, 5 UserComments, or 300 UserDownloads. The user interaction type should be one of the sub types of UserInteraction.",
+        "domains": ["Person", "CreativeWork", "Place", "Organization"],
+        "id": "interactionCount",
+        "label": "Interaction Count",
+        "ranges": ["Text"]
+    },
+    "interactivityType": {
+        "comment": "The predominant mode of learning supported by the learning resource. Acceptable values are 'active', 'expositive', or 'mixed'.",
+        "comment_plain": "The predominant mode of learning supported by the learning resource. Acceptable values are 'active', 'expositive', or 'mixed'.",
+        "domains": ["CreativeWork"],
+        "id": "interactivityType",
+        "label": "Interactivity Type",
+        "ranges": ["Text"]
+    },
+    "isBasedOnUrl": {
+        "comment": "A resource that was used in the creation of this resource. This term can be repeated for multiple sources. For example, http:\/\/example.com\/great-multiplication-intro.html",
+        "comment_plain": "A resource that was used in the creation of this resource. This term can be repeated for multiple sources. For example, http:\/\/example.com\/great-multiplication-intro.html",
+        "domains": ["CreativeWork"],
+        "id": "isBasedOnUrl",
+        "label": "Is Based On Url",
+        "ranges": ["URL"]
+    },
+    "isFamilyFriendly": {
+        "comment": "Indicates whether this content is family friendly.",
+        "comment_plain": "Indicates whether this content is family friendly.",
+        "domains": ["CreativeWork"],
+        "id": "isFamilyFriendly",
+        "label": "Is Family Friendly",
+        "ranges": ["Boolean"]
+    },
+    "isicV4": {
+        "comment": "The International Standard of Industrial Classification of All Economic Activities (ISIC), Revision 4 code for a particular organization, business person, or place.",
+        "comment_plain": "The International Standard of Industrial Classification of All Economic Activities (ISIC), Revision 4 code for a particular organization, business person, or place.",
+        "domains": ["Person", "Place", "Organization"],
+        "id": "isicV4",
+        "label": "Isic V4",
+        "ranges": ["Text"]
+    },
+    "jobTitle": {
+        "comment": "The job title of the person (for example, Financial Manager).",
+        "comment_plain": "The job title of the person (for example, Financial Manager).",
+        "domains": ["Person"],
+        "id": "jobTitle",
+        "label": "Job Title",
+        "ranges": ["Text"]
+    },
+    "keywords": {
+        "comment": "The keywords\/tags used to describe this content.",
+        "comment_plain": "The keywords\/tags used to describe this content.",
+        "domains": ["CreativeWork"],
+        "id": "keywords",
+        "label": "Keywords",
+        "ranges": ["Text"]
+    },
+    "knows": {
+        "comment": "The most generic bi-directional social\/work relation.",
+        "comment_plain": "The most generic bi-directional social\/work relation.",
+        "domains": ["Person"],
+        "id": "knows",
+        "label": "Knows",
+        "ranges": ["Person"]
+    },
+    "learningResourceType": {
+        "comment": "The predominant type or kind characterizing the learning resource. For example, 'presentation', 'handout'.",
+        "comment_plain": "The predominant type or kind characterizing the learning resource. For example, 'presentation', 'handout'.",
+        "domains": ["CreativeWork"],
+        "id": "learningResourceType",
+        "label": "Learning Resource Type",
+        "ranges": ["Text"]
+    },
+    "legalName": {
+        "comment": "The official name of the organization, e.g. the registered company name.",
+        "comment_plain": "The official name of the organization, e.g. the registered company name.",
+        "domains": ["Organization"],
+        "id": "legalName",
+        "label": "Legal Name",
+        "ranges": ["Text"]
+    },
+    "location": {
+        "comment": "The location of the event, organization or action.",
+        "comment_plain": "The location of the event, organization or action.",
+        "domains": ["Action", "Organization", "Event"],
+        "id": "location",
+        "label": "Location",
+        "ranges": ["PostalAddress", "Place"]
+    },
+    "logo": {
+        "comment": "A logo associated with an organization.",
+        "comment_plain": "A logo associated with an organization.",
+        "domains": ["Organization", "Brand", "Place", "Product"],
+        "id": "logo",
+        "label": "Logo",
+        "ranges": ["URL", "ImageObject"]
+    },
+    "makesOffer": {
+        "comment": "A pointer to products or services offered by the organization or person.",
+        "comment_plain": "A pointer to products or services offered by the organization or person.",
+        "domains": ["Person", "Organization"],
+        "id": "makesOffer",
+        "label": "Makes Offer",
+        "ranges": ["Offer"]
+    },
+    "map": {
+        "comment": "A URL to a map of the place.",
+        "comment_plain": "A URL to a map of the place.",
+        "domains": ["Place"],
+        "id": "map",
+        "label": "Map",
+        "ranges": ["URL"]
+    },
+    "maps": {
+        "comment": "A URL to a map of the place (legacy spelling; see singular form, map).",
+        "comment_plain": "A URL to a map of the place (legacy spelling; see singular form, map).",
+        "domains": ["Place"],
+        "id": "maps",
+        "label": "Maps",
+        "ranges": ["URL"]
+    },
+    "member": {
+        "comment": "A member of this organization.",
+        "comment_plain": "A member of this organization.",
+        "domains": ["Organization"],
+        "id": "member",
+        "label": "Member",
+        "ranges": ["Organization", "Person"]
+    },
+    "memberOf": {
+        "comment": "An organization to which the person belongs.",
+        "comment_plain": "An organization to which the person belongs.",
+        "domains": ["Person"],
+        "id": "memberOf",
+        "label": "Member of",
+        "ranges": ["Organization"]
+    },
+    "members": {
+        "comment": "A member of this organization (legacy spelling; see singular form, member).",
+        "comment_plain": "A member of this organization (legacy spelling; see singular form, member).",
+        "domains": ["Organization"],
+        "id": "members",
+        "label": "Members",
+        "ranges": ["Organization", "Person"]
+    },
+    "mentions": {
+        "comment": "Indicates that the CreativeWork contains a reference to, but is not necessarily about a concept.",
+        "comment_plain": "Indicates that the CreativeWork contains a reference to, but is not necessarily about a concept.",
+        "domains": ["CreativeWork"],
+        "id": "mentions",
+        "label": "Mentions",
+        "ranges": ["Thing"]
+    },
+    "naics": {
+        "comment": "The North American Industry Classification System (NAICS) code for a particular organization or business person.",
+        "comment_plain": "The North American Industry Classification System (NAICS) code for a particular organization or business person.",
+        "domains": ["Person", "Organization"],
+        "id": "naics",
+        "label": "Naics",
+        "ranges": ["Text"]
+    },
+    "name": {
+        "comment": "The name of the item.",
+        "comment_plain": "The name of the item.",
+        "domains": ["Thing"],
+        "id": "name",
+        "label": "Name",
+        "ranges": ["Text"]
+    },
+    "nationality": {
+        "comment": "Nationality of the person.",
+        "comment_plain": "Nationality of the person.",
+        "domains": ["Person"],
+        "id": "nationality",
+        "label": "Nationality",
+        "ranges": ["Country"]
+    },
+    "offers": {
+        "comment": "An offer to transfer some rights to an item or to provide a service\u2014for example, an offer to sell tickets to an event, to rent the DVD of a movie, to stream a TV show over the internet, to repair a motorcycle, or to loan a book.",
+        "comment_plain": "An offer to transfer some rights to an item or to provide a service\u2014for example, an offer to sell tickets to an event, to rent the DVD of a movie, to stream a TV show over the internet, to repair a motorcycle, or to loan a book.",
+        "domains": ["Product", "CreativeWork", "Event"],
+        "id": "offers",
+        "label": "Offers",
+        "ranges": ["Offer"]
+    },
+    "openingHoursSpecification": {
+        "comment": "The opening hours of a certain place.",
+        "comment_plain": "The opening hours of a certain place.",
+        "domains": ["Place"],
+        "id": "openingHoursSpecification",
+        "label": "Opening Hours Specification",
+        "ranges": ["OpeningHoursSpecification"]
+    },
+    "owns": {
+        "comment": "Products owned by the organization or person.",
+        "comment_plain": "Products owned by the organization or person.",
+        "domains": ["Person", "Organization"],
+        "id": "owns",
+        "label": "Owns",
+        "ranges": ["OwnershipInfo", "Product"]
+    },
+    "parent": {
+        "comment": "A parent of this person.",
+        "comment_plain": "A parent of this person.",
+        "domains": ["Person"],
+        "id": "parent",
+        "label": "Parent",
+        "ranges": ["Person"]
+    },
+    "parents": {
+        "comment": "A parents of the person (legacy spelling; see singular form, parent).",
+        "comment_plain": "A parents of the person (legacy spelling; see singular form, parent).",
+        "domains": ["Person"],
+        "id": "parents",
+        "label": "Parents",
+        "ranges": ["Person"]
+    },
+    "performerIn": {
+        "comment": "Event that this person is a performer or participant in.",
+        "comment_plain": "Event that this person is a performer or participant in.",
+        "domains": ["Person"],
+        "id": "performerIn",
+        "label": "Performer in",
+        "ranges": ["Event"]
+    },
+    "photo": {
+        "comment": "A photograph of this place.",
+        "comment_plain": "A photograph of this place.",
+        "domains": ["Place"],
+        "id": "photo",
+        "label": "Photo",
+        "ranges": ["ImageObject", "Photograph"]
+    },
+    "photos": {
+        "comment": "Photographs of this place (legacy spelling; see singular form, photo).",
+        "comment_plain": "Photographs of this place (legacy spelling; see singular form, photo).",
+        "domains": ["Place"],
+        "id": "photos",
+        "label": "Photos",
+        "ranges": ["ImageObject", "Photograph"]
+    },
+    "postOfficeBoxNumber": {
+        "comment": "The post offce box number for PO box addresses.",
+        "comment_plain": "The post offce box number for PO box addresses.",
+        "domains": ["PostalAddress"],
+        "id": "postOfficeBoxNumber",
+        "label": "Post Office Box Number",
+        "ranges": ["Text"]
+    },
+    "postalCode": {
+        "comment": "The postal code. For example, 94043.",
+        "comment_plain": "The postal code. For example, 94043.",
+        "domains": ["PostalAddress"],
+        "id": "postalCode",
+        "label": "Postal Code",
+        "ranges": ["Text"]
+    },
+    "printColumn": {
+        "comment": "The number of the column in which the NewsArticle appears in the print edition.",
+        "comment_plain": "The number of the column in which the NewsArticle appears in the print edition.",
+        "domains": ["NewsArticle"],
+        "id": "printColumn",
+        "label": "Print Column",
+        "ranges": ["Text"]
+    },
+    "printEdition": {
+        "comment": "The edition of the print product in which the NewsArticle appears.",
+        "comment_plain": "The edition of the print product in which the NewsArticle appears.",
+        "domains": ["NewsArticle"],
+        "id": "printEdition",
+        "label": "Print Edition",
+        "ranges": ["Text"]
+    },
+    "printPage": {
+        "comment": "If this NewsArticle appears in print, this field indicates the name of the page on which the article is found. Please note that this field is intended for the exact page name (e.g. A5, B18).",
+        "comment_plain": "If this NewsArticle appears in print, this field indicates the name of the page on which the article is found. Please note that this field is intended for the exact page name (e.g. A5, B18).",
+        "domains": ["NewsArticle"],
+        "id": "printPage",
+        "label": "Print Page",
+        "ranges": ["Text"]
+    },
+    "printSection": {
+        "comment": "If this NewsArticle appears in print, this field indicates the print section in which the article appeared.",
+        "comment_plain": "If this NewsArticle appears in print, this field indicates the print section in which the article appeared.",
+        "domains": ["NewsArticle"],
+        "id": "printSection",
+        "label": "Print Section",
+        "ranges": ["Text"]
+    },
+    "productSupported": {
+        "comment": "The product or service this support contact point is related to (such as product support for a particular product line). This can be a specific product or product line (e.g. \"iPhone\") or a general category of products or services (e.g. \"smartphones\").",
+        "comment_plain": "The product or service this support contact point is related to (such as product support for a particular product line). This can be a specific product or product line (e.g. \"iPhone\") or a general category of products or services (e.g. \"smartphones\").",
+        "domains": ["ContactPoint"],
+        "id": "productSupported",
+        "label": "Product Supported",
+        "ranges": ["Product", "Text"]
+    },
+    "provider": {
+        "comment": "The organization or agency that is providing the service.",
+        "comment_plain": "The organization or agency that is providing the service.",
+        "domains": ["CreativeWork", "Service"],
+        "id": "provider",
+        "label": "Provider",
+        "ranges": ["Organization", "Person"]
+    },
+    "publisher": {
+        "comment": "The publisher of the creative work.",
+        "comment_plain": "The publisher of the creative work.",
+        "domains": ["CreativeWork"],
+        "id": "publisher",
+        "label": "Publisher",
+        "ranges": ["Organization"]
+    },
+    "publishingPrinciples": {
+        "comment": "Link to page describing the editorial principles of the organization primarily responsible for the creation of the CreativeWork.",
+        "comment_plain": "Link to page describing the editorial principles of the organization primarily responsible for the creation of the CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "publishingPrinciples",
+        "label": "Publishing Principles",
+        "ranges": ["URL"]
+    },
+    "relatedTo": {
+        "comment": "The most generic familial relation.",
+        "comment_plain": "The most generic familial relation.",
+        "domains": ["Person"],
+        "id": "relatedTo",
+        "label": "Related to",
+        "ranges": ["Person"]
+    },
+    "review": {
+        "comment": "A review of the item.",
+        "comment_plain": "A review of the item.",
+        "domains": ["Organization", "Product", "CreativeWork", "Place", "Offer"],
+        "id": "review",
+        "label": "Review",
+        "ranges": ["Review"]
+    },
+    "reviews": {
+        "comment": "Review of the item (legacy spelling; see singular form, review).",
+        "comment_plain": "Review of the item (legacy spelling; see singular form, review).",
+        "domains": ["Organization", "Product", "CreativeWork", "Place", "Offer"],
+        "id": "reviews",
+        "label": "Reviews",
+        "ranges": ["Review"]
+    },
+    "sameAs": {
+        "comment": "URL of a reference Web page that unambiguously indicates the item's identity. E.g. the URL of the item's Wikipedia page, Freebase page, or official website.",
+        "comment_plain": "URL of a reference Web page that unambiguously indicates the item's identity. E.g. the URL of the item's Wikipedia page, Freebase page, or official website.",
+        "domains": ["Thing"],
+        "id": "sameAs",
+        "label": "Same As",
+        "ranges": ["URL"]
+    },
+    "seeks": {
+        "comment": "A pointer to products or services sought by the organization or person (demand).",
+        "comment_plain": "A pointer to products or services sought by the organization or person (demand).",
+        "domains": ["Person", "Organization"],
+        "id": "seeks",
+        "label": "Seeks",
+        "ranges": ["Demand"]
+    },
+    "sibling": {
+        "comment": "A sibling of the person.",
+        "comment_plain": "A sibling of the person.",
+        "domains": ["Person"],
+        "id": "sibling",
+        "label": "Sibling",
+        "ranges": ["Person"]
+    },
+    "siblings": {
+        "comment": "A sibling of the person (legacy spelling; see singular form, sibling).",
+        "comment_plain": "A sibling of the person (legacy spelling; see singular form, sibling).",
+        "domains": ["Person"],
+        "id": "siblings",
+        "label": "Siblings",
+        "ranges": ["Person"]
+    },
+    "sourceOrganization": {
+        "comment": "The Organization on whose behalf the creator was working.",
+        "comment_plain": "The Organization on whose behalf the creator was working.",
+        "domains": ["CreativeWork"],
+        "id": "sourceOrganization",
+        "label": "Source Organization",
+        "ranges": ["Organization"]
+    },
+    "spouse": {
+        "comment": "The person's spouse.",
+        "comment_plain": "The person's spouse.",
+        "domains": ["Person"],
+        "id": "spouse",
+        "label": "Spouse",
+        "ranges": ["Person"]
+    },
+    "streetAddress": {
+        "comment": "The street address. For example, 1600 Amphitheatre Pkwy.",
+        "comment_plain": "The street address. For example, 1600 Amphitheatre Pkwy.",
+        "domains": ["PostalAddress"],
+        "id": "streetAddress",
+        "label": "Street Address",
+        "ranges": ["Text"]
+    },
+    "subOrganization": {
+        "comment": "A relationship between two organizations where the first includes the second, e.g., as a subsidiary. See also: the more specific 'department' property.",
+        "comment_plain": "A relationship between two organizations where the first includes the second, e.g., as a subsidiary. See also: the more specific 'department' property.",
+        "domains": ["Organization"],
+        "id": "subOrganization",
+        "label": "Sub Organization",
+        "ranges": ["Organization"]
+    },
+    "taxID": {
+        "comment": "The Tax \/ Fiscal ID of the organization or person, e.g. the TIN in the US or the CIF\/NIF in Spain.",
+        "comment_plain": "The Tax \/ Fiscal ID of the organization or person, e.g. the TIN in the US or the CIF\/NIF in Spain.",
+        "domains": ["Person", "Organization"],
+        "id": "taxID",
+        "label": "Tax ID",
+        "ranges": ["Text"]
+    },
+    "telephone": {
+        "comment": "The telephone number.",
+        "comment_plain": "The telephone number.",
+        "domains": ["Person", "ContactPoint", "Place", "Organization"],
+        "id": "telephone",
+        "label": "Telephone",
+        "ranges": ["Text"]
+    },
+    "text": {
+        "comment": "The textual content of this CreativeWork.",
+        "comment_plain": "The textual content of this CreativeWork.",
+        "domains": ["CreativeWork"],
+        "id": "text",
+        "label": "Text",
+        "ranges": ["Text"]
+    },
+    "thumbnailUrl": {
+        "comment": "A thumbnail image relevant to the Thing.",
+        "comment_plain": "A thumbnail image relevant to the Thing.",
+        "domains": ["CreativeWork"],
+        "id": "thumbnailUrl",
+        "label": "Thumbnail Url",
+        "ranges": ["URL"]
+    },
+    "timeRequired": {
+        "comment": "Approximate or typical time it takes to work with or through this learning resource for the typical intended target audience, e.g. 'P30M', 'P1H25M'.",
+        "comment_plain": "Approximate or typical time it takes to work with or through this learning resource for the typical intended target audience, e.g. 'P30M', 'P1H25M'.",
+        "domains": ["CreativeWork"],
+        "id": "timeRequired",
+        "label": "Time Required",
+        "ranges": ["Duration"]
+    },
+    "typicalAgeRange": {
+        "comment": "The typical expected age range, e.g. '7-9', '11-'.",
+        "comment_plain": "The typical expected age range, e.g. '7-9', '11-'.",
+        "domains": ["CreativeWork", "Event"],
+        "id": "typicalAgeRange",
+        "label": "Typical Age Range",
+        "ranges": ["Text"]
+    },
+    "url": {
+        "comment": "URL of the item.",
+        "comment_plain": "URL of the item.",
+        "domains": ["Thing"],
+        "id": "url",
+        "label": "URL",
+        "ranges": ["URL"]
+    },
+    "vatID": {
+        "comment": "The Value-added Tax ID of the organisation or person.",
+        "comment_plain": "The Value-added Tax ID of the organisation or person.",
+        "domains": ["Person", "Organization"],
+        "id": "vatID",
+        "label": "Vat ID",
+        "ranges": ["Text"]
+    },
+    "version": {
+        "comment": "The version of the CreativeWork embodied by a specified resource.",
+        "comment_plain": "The version of the CreativeWork embodied by a specified resource.",
+        "domains": ["CreativeWork"],
+        "id": "version",
+        "label": "Version",
+        "ranges": ["Number"]
+    },
+    "video": {
+        "comment": "An embedded video object.",
+        "comment_plain": "An embedded video object.",
+        "domains": ["CreativeWork"],
+        "id": "video",
+        "label": "Video",
+        "ranges": ["VideoObject"]
+    },
+    "wordCount": {
+        "comment": "The number of words in the text of the Article.",
+        "comment_plain": "The number of words in the text of the Article.",
+        "domains": ["Article"],
+        "id": "wordCount",
+        "label": "Word Count",
+        "ranges": ["Integer"]
+    },
+    "workLocation": {
+        "comment": "A contact location for a person's place of work.",
+        "comment_plain": "A contact location for a person's place of work.",
+        "domains": ["Person"],
+        "id": "workLocation",
+        "label": "Work Location",
+        "ranges": ["ContactPoint", "Place"]
+    },
+    "worksFor": {
+        "comment": "Organizations that the person works for.",
+        "comment_plain": "Organizations that the person works for.",
+        "domains": ["Person"],
+        "id": "worksFor",
+        "label": "Works for",
+        "ranges": ["Organization"]
+    },
+    "acceptedPaymentMethod": {
+        "comment": "The payment method(s) accepted by seller for this offer.",
+        "comment_plain": "The payment method(s) accepted by seller for this offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "acceptedPaymentMethod",
+        "label": "Accepted Payment Method",
+        "ranges": ["PaymentMethod"]
+    },
+    "acquiredFrom": {
+        "comment": "The organization or person from which the product was acquired.",
+        "comment_plain": "The organization or person from which the product was acquired.",
+        "domains": ["OwnershipInfo"],
+        "id": "acquiredFrom",
+        "label": "Acquired From",
+        "ranges": ["Organization", "Person"]
+    },
+    "addOn": {
+        "comment": "An additional offer that can only be obtained in combination with the first base offer (e.g. supplements and extensions that are available for a surcharge).",
+        "comment_plain": "An additional offer that can only be obtained in combination with the first base offer (e.g. supplements and extensions that are available for a surcharge).",
+        "domains": ["Offer"],
+        "id": "addOn",
+        "label": "Add On",
+        "ranges": ["Offer"]
+    },
+    "additionalType": {
+        "comment": "An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in. In RDFa syntax, it is better to use the native RDFa syntax - the 'typeof' attribute - for multiple types. Schema.org tools may have only weaker understanding of extra types, in particular those defined externally.",
+        "comment_plain": "An additional type for the item, typically used for adding more specific types from external vocabularies in microdata syntax. This is a relationship between something and a class that the thing is in. In RDFa syntax, it is better to use the native RDFa syntax - the 'typeof' attribute - for multiple types. Schema.org tools may have only weaker understanding of extra types, in particular those defined externally.",
+        "domains": ["Thing"],
+        "id": "additionalType",
+        "label": "Additional Type",
+        "ranges": ["URL"]
+    },
+    "advanceBookingRequirement": {
+        "comment": "The amount of time that is required between accepting the offer and the actual usage of the resource or service.",
+        "comment_plain": "The amount of time that is required between accepting the offer and the actual usage of the resource or service.",
+        "domains": ["Offer", "Demand"],
+        "id": "advanceBookingRequirement",
+        "label": "Advance Booking Requirement",
+        "ranges": ["QuantitativeValue"]
+    },
+    "alignmentType": {
+        "comment": "A category of alignment between the learning resource and the framework node. Recommended values include: 'assesses', 'teaches', 'requires', 'textComplexity', 'readingLevel', 'educationalSubject', and 'educationLevel'.",
+        "comment_plain": "A category of alignment between the learning resource and the framework node. Recommended values include: 'assesses', 'teaches', 'requires', 'textComplexity', 'readingLevel', 'educationalSubject', and 'educationLevel'.",
+        "domains": ["AlignmentObject"],
+        "id": "alignmentType",
+        "label": "Alignment Type",
+        "ranges": ["Text"]
+    },
+    "alternateName": {
+        "comment": "An alias for the item.",
+        "comment_plain": "An alias for the item.",
+        "domains": ["Thing"],
+        "id": "alternateName",
+        "label": "Alternate Name",
+        "ranges": ["Text"]
+    },
+    "alumni": {
+        "comment": "Alumni of educational organization.",
+        "comment_plain": "Alumni of educational organization.",
+        "domains": ["EducationalOrganization"],
+        "id": "alumni",
+        "label": "Alumni",
+        "ranges": ["Person"]
+    },
+    "associatedArticle": {
+        "comment": "A NewsArticle associated with the Media Object.",
+        "comment_plain": "A NewsArticle associated with the Media Object.",
+        "domains": ["MediaObject"],
+        "id": "associatedArticle",
+        "label": "Associated Article",
+        "ranges": ["NewsArticle"]
+    },
+    "attendee": {
+        "comment": "A person or organization attending the event.",
+        "comment_plain": "A person or organization attending the event.",
+        "domains": ["Event"],
+        "id": "attendee",
+        "label": "Attendee",
+        "ranges": ["Organization", "Person"]
+    },
+    "attendees": {
+        "comment": "A person attending the event (legacy spelling; see singular form, attendee).",
+        "comment_plain": "A person attending the event (legacy spelling; see singular form, attendee).",
+        "domains": ["Event"],
+        "id": "attendees",
+        "label": "Attendees",
+        "ranges": ["Organization", "Person"]
+    },
+    "audienceType": {
+        "comment": "The target group associated with a given audience (e.g. veterans, car owners, musicians, etc.)\n      domain: Audience\n      Range: Text\n    ",
+        "comment_plain": "The target group associated with a given audience (e.g. veterans, car owners, musicians, etc.)\n      domain: Audience\n      Range: Text\n    ",
+        "domains": ["Audience"],
+        "id": "audienceType",
+        "label": "Audience Type",
+        "ranges": ["Text"]
+    },
+    "availability": {
+        "comment": "The availability of this item\u2014for example In stock, Out of stock, Pre-order, etc.",
+        "comment_plain": "The availability of this item\u2014for example In stock, Out of stock, Pre-order, etc.",
+        "domains": ["Offer", "Demand"],
+        "id": "availability",
+        "label": "Availability",
+        "ranges": ["ItemAvailability"]
+    },
+    "availabilityEnds": {
+        "comment": "The end of the availability of the product or service included in the offer.",
+        "comment_plain": "The end of the availability of the product or service included in the offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "availabilityEnds",
+        "label": "Availability Ends",
+        "ranges": ["DateTime"]
+    },
+    "availabilityStarts": {
+        "comment": "The beginning of the availability of the product or service included in the offer.",
+        "comment_plain": "The beginning of the availability of the product or service included in the offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "availabilityStarts",
+        "label": "Availability Starts",
+        "ranges": ["DateTime"]
+    },
+    "availableAtOrFrom": {
+        "comment": "The place(s) from which the offer can be obtained (e.g. store locations).",
+        "comment_plain": "The place(s) from which the offer can be obtained (e.g. store locations).",
+        "domains": ["Offer", "Demand"],
+        "id": "availableAtOrFrom",
+        "label": "Available At or From",
+        "ranges": ["Place"]
+    },
+    "availableDeliveryMethod": {
+        "comment": "The delivery method(s) available for this offer.",
+        "comment_plain": "The delivery method(s) available for this offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "availableDeliveryMethod",
+        "label": "Available Delivery Method",
+        "ranges": ["DeliveryMethod"]
+    },
+    "bestRating": {
+        "comment": "The highest value allowed in this rating system. If bestRating is omitted, 5 is assumed.",
+        "comment_plain": "The highest value allowed in this rating system. If bestRating is omitted, 5 is assumed.",
+        "domains": ["Rating"],
+        "id": "bestRating",
+        "label": "Best Rating",
+        "ranges": ["Number", "Text"]
+    },
+    "bitrate": {
+        "comment": "The bitrate of the media object.",
+        "comment_plain": "The bitrate of the media object.",
+        "domains": ["MediaObject"],
+        "id": "bitrate",
+        "label": "Bitrate",
+        "ranges": ["Text"]
+    },
+    "box": {
+        "comment": "A polygon is the area enclosed by a point-to-point path for which the starting and ending points are the same. A polygon is expressed as a series of four or more spacedelimited points where the first and final points are identical.",
+        "comment_plain": "A polygon is the area enclosed by a point-to-point path for which the starting and ending points are the same. A polygon is expressed as a series of four or more spacedelimited points where the first and final points are identical.",
+        "domains": ["GeoShape"],
+        "id": "box",
+        "label": "Box",
+        "ranges": ["Text"]
+    },
+    "businessFunction": {
+        "comment": "The business function (e.g. sell, lease, repair, dispose) of the offer or component of a bundle (TypeAndQuantityNode). The default is http:\/\/purl.org\/goodrelations\/v1#Sell.",
+        "comment_plain": "The business function (e.g. sell, lease, repair, dispose) of the offer or component of a bundle (TypeAndQuantityNode). The default is http:\/\/purl.org\/goodrelations\/v1#Sell.",
+        "domains": ["Offer", "TypeAndQuantityNode", "Demand"],
+        "id": "businessFunction",
+        "label": "Business Function",
+        "ranges": ["BusinessFunction"]
+    },
+    "caption": {
+        "comment": "The caption for this object.",
+        "comment_plain": "The caption for this object.",
+        "domains": ["VideoObject", "ImageObject"],
+        "id": "caption",
+        "label": "Caption",
+        "ranges": ["Text"]
+    },
+    "category": {
+        "comment": "A category for the item. Greater signs or slashes can be used to informally indicate a category hierarchy.",
+        "comment_plain": "A category for the item. Greater signs or slashes can be used to informally indicate a category hierarchy.",
+        "domains": ["PhysicalActivity", "Offer"],
+        "id": "category",
+        "label": "Category",
+        "ranges": ["Text", "PhysicalActivityCategory", "Thing"]
+    },
+    "circle": {
+        "comment": "A circle is the circular region of a specified radius centered at a specified latitude and longitude. A circle is expressed as a pair followed by a radius in meters.",
+        "comment_plain": "A circle is the circular region of a specified radius centered at a specified latitude and longitude. A circle is expressed as a pair followed by a radius in meters.",
+        "domains": ["GeoShape"],
+        "id": "circle",
+        "label": "Circle",
+        "ranges": ["Text"]
+    },
+    "closes": {
+        "comment": "The closing hour of the place or service on the given day(s) of the week.",
+        "comment_plain": "The closing hour of the place or service on the given day(s) of the week.",
+        "domains": ["OpeningHoursSpecification"],
+        "id": "closes",
+        "label": "Closes",
+        "ranges": ["Time"]
+    },
+    "color": {
+        "comment": "The color of the product.",
+        "comment_plain": "The color of the product.",
+        "domains": ["Product"],
+        "id": "color",
+        "label": "Color",
+        "ranges": ["Text"]
+    },
+    "commentText": {
+        "comment": "The text of the UserComment.",
+        "comment_plain": "The text of the UserComment.",
+        "domains": ["UserComments"],
+        "id": "commentText",
+        "label": "Comment Text",
+        "ranges": ["Text"]
+    },
+    "commentTime": {
+        "comment": "The time at which the UserComment was made.",
+        "comment_plain": "The time at which the UserComment was made.",
+        "domains": ["UserComments"],
+        "id": "commentTime",
+        "label": "Comment Time",
+        "ranges": ["Date"]
+    },
+    "contentSize": {
+        "comment": "File size in (mega\/kilo) bytes.",
+        "comment_plain": "File size in (mega\/kilo) bytes.",
+        "domains": ["MediaObject"],
+        "id": "contentSize",
+        "label": "Content Size",
+        "ranges": ["Text"]
+    },
+    "contentUrl": {
+        "comment": "Actual bytes of the media object, for example the image file or video file. (previous spelling: contentURL)",
+        "comment_plain": "Actual bytes of the media object, for example the image file or video file. (previous spelling: contentURL)",
+        "domains": ["MediaObject"],
+        "id": "contentUrl",
+        "label": "Content Url",
+        "ranges": ["URL"]
+    },
+    "dayOfWeek": {
+        "comment": "The day of the week for which these opening hours are valid.",
+        "comment_plain": "The day of the week for which these opening hours are valid.",
+        "domains": ["OpeningHoursSpecification"],
+        "id": "dayOfWeek",
+        "label": "Day of Week",
+        "ranges": ["DayOfWeek"]
+    },
+    "deliveryLeadTime": {
+        "comment": "The typical delay between the receipt of the order and the goods leaving the warehouse.",
+        "comment_plain": "The typical delay between the receipt of the order and the goods leaving the warehouse.",
+        "domains": ["Offer", "Demand"],
+        "id": "deliveryLeadTime",
+        "label": "Delivery Lead Time",
+        "ranges": ["QuantitativeValue"]
+    },
+    "depth": {
+        "comment": "The depth of the product.",
+        "comment_plain": "The depth of the product.",
+        "domains": ["Product"],
+        "id": "depth",
+        "label": "Depth",
+        "ranges": ["Distance", "QuantitativeValue"]
+    },
+    "discusses": {
+        "comment": "Specifies the CreativeWork associated with the UserComment.",
+        "comment_plain": "Specifies the CreativeWork associated with the UserComment.",
+        "domains": ["UserComments"],
+        "id": "discusses",
+        "label": "Discusses",
+        "ranges": ["CreativeWork"]
+    },
+    "doorTime": {
+        "comment": "The time admission will commence.",
+        "comment_plain": "The time admission will commence.",
+        "domains": ["Event"],
+        "id": "doorTime",
+        "label": "Door Time",
+        "ranges": ["DateTime"]
+    },
+    "duration": {
+        "comment": "The duration of the item (movie, audio recording, event, etc.) in <a href=\"http:\/\/en.wikipedia.org\/wiki\/ISO_8601\">ISO 8601 date format<\/a>.",
+        "comment_plain": "The duration of the item (movie, audio recording, event, etc.) in ISO 8601 date format.",
+        "domains": ["Movie", "MediaObject", "MusicRecording", "Event"],
+        "id": "duration",
+        "label": "Duration",
+        "ranges": ["Duration"]
+    },
+    "educationalFramework": {
+        "comment": "The framework to which the resource being described is aligned.",
+        "comment_plain": "The framework to which the resource being described is aligned.",
+        "domains": ["AlignmentObject"],
+        "id": "educationalFramework",
+        "label": "Educational Framework",
+        "ranges": ["Text"]
+    },
+    "elevation": {
+        "comment": "The elevation of a location.",
+        "comment_plain": "The elevation of a location.",
+        "domains": ["GeoShape", "GeoCoordinates"],
+        "id": "elevation",
+        "label": "Elevation",
+        "ranges": ["Text", "Number"]
+    },
+    "eligibleCustomerType": {
+        "comment": "The type(s) of customers for which the given offer is valid.",
+        "comment_plain": "The type(s) of customers for which the given offer is valid.",
+        "domains": ["Offer", "Demand"],
+        "id": "eligibleCustomerType",
+        "label": "Eligible Customer Type",
+        "ranges": ["BusinessEntityType"]
+    },
+    "eligibleDuration": {
+        "comment": "The duration for which the given offer is valid.",
+        "comment_plain": "The duration for which the given offer is valid.",
+        "domains": ["Offer", "Demand"],
+        "id": "eligibleDuration",
+        "label": "Eligible Duration",
+        "ranges": ["QuantitativeValue"]
+    },
+    "eligibleQuantity": {
+        "comment": "The interval and unit of measurement of ordering quantities for which the offer or price specification is valid. This allows e.g. specifying that a certain freight charge is valid only for a certain quantity.",
+        "comment_plain": "The interval and unit of measurement of ordering quantities for which the offer or price specification is valid. This allows e.g. specifying that a certain freight charge is valid only for a certain quantity.",
+        "domains": ["Demand", "PriceSpecification", "Offer"],
+        "id": "eligibleQuantity",
+        "label": "Eligible Quantity",
+        "ranges": ["QuantitativeValue"]
+    },
+    "eligibleRegion": {
+        "comment": "The ISO 3166-1 (ISO 3166-1 alpha-2) or ISO 3166-2 code, or the GeoShape for the geo-political region(s) for which the offer or delivery charge specification is valid.",
+        "comment_plain": "The ISO 3166-1 (ISO 3166-1 alpha-2) or ISO 3166-2 code, or the GeoShape for the geo-political region(s) for which the offer or delivery charge specification is valid.",
+        "domains": ["DeliveryChargeSpecification", "Offer", "Demand"],
+        "id": "eligibleRegion",
+        "label": "Eligible Region",
+        "ranges": ["Text", "GeoShape"]
+    },
+    "eligibleTransactionVolume": {
+        "comment": "The transaction volume, in a monetary unit, for which the offer or price specification is valid, e.g. for indicating a minimal purchasing volume, to express free shipping above a certain order volume, or to limit the acceptance of credit cards to purchases to a certain minimal amount.",
+        "comment_plain": "The transaction volume, in a monetary unit, for which the offer or price specification is valid, e.g. for indicating a minimal purchasing volume, to express free shipping above a certain order volume, or to limit the acceptance of credit cards to purchases to a certain minimal amount.",
+        "domains": ["Demand", "PriceSpecification", "Offer"],
+        "id": "eligibleTransactionVolume",
+        "label": "Eligible Transaction Volume",
+        "ranges": ["PriceSpecification"]
+    },
+    "embedUrl": {
+        "comment": "A URL pointing to a player for a specific video. In general, this is the information in the <code>src<\/code> element of an <code>embed<\/code> tag and should not be the same as the content of the <code>loc<\/code> tag. (previous spelling: embedURL)",
+        "comment_plain": "A URL pointing to a player for a specific video. In general, this is the information in the src element of an embed tag and should not be the same as the content of the loc tag. (previous spelling: embedURL)",
+        "domains": ["MediaObject"],
+        "id": "embedUrl",
+        "label": "Embed Url",
+        "ranges": ["URL"]
+    },
+    "encodesCreativeWork": {
+        "comment": "The creative work encoded by this media object",
+        "comment_plain": "The creative work encoded by this media object",
+        "domains": ["MediaObject"],
+        "id": "encodesCreativeWork",
+        "label": "Encodes Creative Work",
+        "ranges": ["CreativeWork"]
+    },
+    "encodingFormat": {
+        "comment": "mp3, mpeg4, etc.",
+        "comment_plain": "mp3, mpeg4, etc.",
+        "domains": ["MediaObject"],
+        "id": "encodingFormat",
+        "label": "Encoding Format",
+        "ranges": ["Text"]
+    },
+    "endDate": {
+        "comment": "The end date and time of the event or item (in <a href=\"http:\/\/en.wikipedia.org\/wiki\/ISO_8601\">ISO 8601 date format<\/a>).",
+        "comment_plain": "The end date and time of the event or item (in ISO 8601 date format).",
+        "domains": ["Series", "Event", "Season"],
+        "id": "endDate",
+        "label": "End Date",
+        "ranges": ["Date"]
+    },
+    "eventStatus": {
+        "comment": "An eventStatus of an event represents its status; particularly useful when an event is cancelled or rescheduled.",
+        "comment_plain": "An eventStatus of an event represents its status; particularly useful when an event is cancelled or rescheduled.",
+        "domains": ["Event"],
+        "id": "eventStatus",
+        "label": "Event Status",
+        "ranges": ["EventStatusType"]
+    },
+    "exifData": {
+        "comment": "exif data for this object.",
+        "comment_plain": "exif data for this object.",
+        "domains": ["ImageObject"],
+        "id": "exifData",
+        "label": "Exif Data",
+        "ranges": ["Text"]
+    },
+    "expires": {
+        "comment": "Date the content expires and is no longer useful or available. Useful for videos.",
+        "comment_plain": "Date the content expires and is no longer useful or available. Useful for videos.",
+        "domains": ["MediaObject"],
+        "id": "expires",
+        "label": "Expires",
+        "ranges": ["Date"]
+    },
+    "geographicArea": {
+        "comment": "The geographic area associated with the audience.",
+        "comment_plain": "The geographic area associated with the audience.",
+        "domains": ["Audience"],
+        "id": "geographicArea",
+        "label": "Geographic Area",
+        "ranges": ["AdministrativeArea"]
+    },
+    "gtin13": {
+        "comment": "The GTIN-13 code of the product, or the product to which the offer refers. This is equivalent to 13-digit ISBN codes and EAN UCC-13. Former 12-digit UPC codes can be converted into a GTIN-13 code by simply adding a preceeding zero.",
+        "comment_plain": "The GTIN-13 code of the product, or the product to which the offer refers. This is equivalent to 13-digit ISBN codes and EAN UCC-13. Former 12-digit UPC codes can be converted into a GTIN-13 code by simply adding a preceeding zero.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "gtin13",
+        "label": "Gtin13",
+        "ranges": ["Text"]
+    },
+    "gtin14": {
+        "comment": "The GTIN-14 code of the product, or the product to which the offer refers.",
+        "comment_plain": "The GTIN-14 code of the product, or the product to which the offer refers.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "gtin14",
+        "label": "Gtin14",
+        "ranges": ["Text"]
+    },
+    "gtin8": {
+        "comment": "The GTIN-8 code of the product, or the product to which the offer refers. This code is also known as EAN\/UCC-8 or 8-digit EAN.",
+        "comment_plain": "The GTIN-8 code of the product, or the product to which the offer refers. This code is also known as EAN\/UCC-8 or 8-digit EAN.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "gtin8",
+        "label": "Gtin8",
+        "ranges": ["Text"]
+    },
+    "height": {
+        "comment": "The height of the item.",
+        "comment_plain": "The height of the item.",
+        "domains": ["MediaObject", "Product"],
+        "id": "height",
+        "label": "Height",
+        "ranges": ["Distance", "QuantitativeValue"]
+    },
+    "includesObject": {
+        "comment": "This links to a node or nodes indicating the exact quantity of the products included in the offer.",
+        "comment_plain": "This links to a node or nodes indicating the exact quantity of the products included in the offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "includesObject",
+        "label": "Includes Object",
+        "ranges": ["TypeAndQuantityNode"]
+    },
+    "inventoryLevel": {
+        "comment": "The current approximate inventory level for the item or items.",
+        "comment_plain": "The current approximate inventory level for the item or items.",
+        "domains": ["SomeProducts", "Offer", "Demand"],
+        "id": "inventoryLevel",
+        "label": "Inventory Level",
+        "ranges": ["QuantitativeValue"]
+    },
+    "isAccessoryOrSparePartFor": {
+        "comment": "A pointer to another product (or multiple products) for which this product is an accessory or spare part.",
+        "comment_plain": "A pointer to another product (or multiple products) for which this product is an accessory or spare part.",
+        "domains": ["Product"],
+        "id": "isAccessoryOrSparePartFor",
+        "label": "Is Accessory or Spare Part for",
+        "ranges": ["Product"]
+    },
+    "isConsumableFor": {
+        "comment": "A pointer to another product (or multiple products) for which this product is a consumable.",
+        "comment_plain": "A pointer to another product (or multiple products) for which this product is a consumable.",
+        "domains": ["Product"],
+        "id": "isConsumableFor",
+        "label": "Is Consumable for",
+        "ranges": ["Product"]
+    },
+    "isRelatedTo": {
+        "comment": "A pointer to another, somehow related product (or multiple products).",
+        "comment_plain": "A pointer to another, somehow related product (or multiple products).",
+        "domains": ["Product"],
+        "id": "isRelatedTo",
+        "label": "Is Related to",
+        "ranges": ["Product"]
+    },
+    "isSimilarTo": {
+        "comment": "A pointer to another, functionally similar product (or multiple products).",
+        "comment_plain": "A pointer to another, functionally similar product (or multiple products).",
+        "domains": ["Product"],
+        "id": "isSimilarTo",
+        "label": "Is Similar to",
+        "ranges": ["Product"]
+    },
+    "itemCondition": {
+        "comment": "A predefined value from OfferItemCondition or a textual description of the condition of the product or service, or the products or services included in the offer.",
+        "comment_plain": "A predefined value from OfferItemCondition or a textual description of the condition of the product or service, or the products or services included in the offer.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "itemCondition",
+        "label": "Item Condition",
+        "ranges": ["OfferItemCondition"]
+    },
+    "itemOffered": {
+        "comment": "The item being offered.",
+        "comment_plain": "The item being offered.",
+        "domains": ["Offer", "Demand"],
+        "id": "itemOffered",
+        "label": "Item Offered",
+        "ranges": ["Product"]
+    },
+    "itemReviewed": {
+        "comment": "The item that is being reviewed\/rated.",
+        "comment_plain": "The item that is being reviewed\/rated.",
+        "domains": ["AggregateRating", "Review"],
+        "id": "itemReviewed",
+        "label": "Item Reviewed",
+        "ranges": ["Thing"]
+    },
+    "latitude": {
+        "comment": "The latitude of a location. For example <code>37.42242<\/code>.",
+        "comment_plain": "The latitude of a location. For example 37.42242.",
+        "domains": ["GeoCoordinates"],
+        "id": "latitude",
+        "label": "Latitude",
+        "ranges": ["Number", "Text"]
+    },
+    "line": {
+        "comment": "A line is a point-to-point path consisting of two or more points. A line is expressed as a series of two or more point objects separated by space.",
+        "comment_plain": "A line is a point-to-point path consisting of two or more points. A line is expressed as a series of two or more point objects separated by space.",
+        "domains": ["GeoShape"],
+        "id": "line",
+        "label": "Line",
+        "ranges": ["Text"]
+    },
+    "longitude": {
+        "comment": "The longitude of a location. For example <code>-122.08585<\/code>.",
+        "comment_plain": "The longitude of a location. For example -122.08585.",
+        "domains": ["GeoCoordinates"],
+        "id": "longitude",
+        "label": "Longitude",
+        "ranges": ["Number", "Text"]
+    },
+    "manufacturer": {
+        "comment": "The manufacturer of the product.",
+        "comment_plain": "The manufacturer of the product.",
+        "domains": ["Product", "DietarySupplement", "Drug"],
+        "id": "manufacturer",
+        "label": "Manufacturer",
+        "ranges": ["Organization"]
+    },
+    "model": {
+        "comment": "The model of the product. Use with the URL of a ProductModel or a textual representation of the model identifier. The URL of the ProductModel can be from an external source. It is recommended to additionally provide strong product identifiers via the gtin8\/gtin13\/gtin14 and mpn properties.",
+        "comment_plain": "The model of the product. Use with the URL of a ProductModel or a textual representation of the model identifier. The URL of the ProductModel can be from an external source. It is recommended to additionally provide strong product identifiers via the gtin8\/gtin13\/gtin14 and mpn properties.",
+        "domains": ["Product"],
+        "id": "model",
+        "label": "Model",
+        "ranges": ["ProductModel", "Text"]
+    },
+    "mpn": {
+        "comment": "The Manufacturer Part Number (MPN) of the product, or the product to which the offer refers.",
+        "comment_plain": "The Manufacturer Part Number (MPN) of the product, or the product to which the offer refers.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "mpn",
+        "label": "Mpn",
+        "ranges": ["Text"]
+    },
+    "opens": {
+        "comment": "The opening hour of the place or service on the given day(s) of the week.",
+        "comment_plain": "The opening hour of the place or service on the given day(s) of the week.",
+        "domains": ["OpeningHoursSpecification"],
+        "id": "opens",
+        "label": "Opens",
+        "ranges": ["Time"]
+    },
+    "ownedFrom": {
+        "comment": "The date and time of obtaining the product.",
+        "comment_plain": "The date and time of obtaining the product.",
+        "domains": ["OwnershipInfo"],
+        "id": "ownedFrom",
+        "label": "Owned From",
+        "ranges": ["DateTime"]
+    },
+    "ownedThrough": {
+        "comment": "The date and time of giving up ownership on the product.",
+        "comment_plain": "The date and time of giving up ownership on the product.",
+        "domains": ["OwnershipInfo"],
+        "id": "ownedThrough",
+        "label": "Owned Through",
+        "ranges": ["DateTime"]
+    },
+    "performer": {
+        "comment": "A performer at the event\u2014for example, a presenter, musician, musical group or actor.",
+        "comment_plain": "A performer at the event\u2014for example, a presenter, musician, musical group or actor.",
+        "domains": ["Event"],
+        "id": "performer",
+        "label": "Performer",
+        "ranges": ["Organization", "Person"]
+    },
+    "performers": {
+        "comment": "The main performer or performers of the event\u2014for example, a presenter, musician, or actor (legacy spelling; see singular form, performer).",
+        "comment_plain": "The main performer or performers of the event\u2014for example, a presenter, musician, or actor (legacy spelling; see singular form, performer).",
+        "domains": ["Event"],
+        "id": "performers",
+        "label": "Performers",
+        "ranges": ["Organization", "Person"]
+    },
+    "playerType": {
+        "comment": "Player type required\u2014for example, Flash or Silverlight.",
+        "comment_plain": "Player type required\u2014for example, Flash or Silverlight.",
+        "domains": ["MediaObject"],
+        "id": "playerType",
+        "label": "Player Type",
+        "ranges": ["Text"]
+    },
+    "polygon": {
+        "comment": "A polygon is the area enclosed by a point-to-point path for which the starting and ending points are the same. A polygon is expressed as a series of four or more spacedelimited points where the first and final points are identical.",
+        "comment_plain": "A polygon is the area enclosed by a point-to-point path for which the starting and ending points are the same. A polygon is expressed as a series of four or more spacedelimited points where the first and final points are identical.",
+        "domains": ["GeoShape"],
+        "id": "polygon",
+        "label": "Polygon",
+        "ranges": ["Text"]
+    },
+    "previousStartDate": {
+        "comment": "Used in conjunction with eventStatus for rescheduled or cancelled events. This property contains the previously scheduled start date. For rescheduled events, the startDate property should be used for the newly scheduled start date. In the (rare) case of an event that has been postponed and rescheduled multiple times, this field may be repeated.",
+        "comment_plain": "Used in conjunction with eventStatus for rescheduled or cancelled events. This property contains the previously scheduled start date. For rescheduled events, the startDate property should be used for the newly scheduled start date. In the (rare) case of an event that has been postponed and rescheduled multiple times, this field may be repeated.",
+        "domains": ["Event"],
+        "id": "previousStartDate",
+        "label": "Previous Start Date",
+        "ranges": ["Date"]
+    },
+    "price": {
+        "comment": "The offer price of a product, or of a price component when attached to PriceSpecification and its subtypes.",
+        "comment_plain": "The offer price of a product, or of a price component when attached to PriceSpecification and its subtypes.",
+        "domains": ["TradeAction", "PriceSpecification", "Offer"],
+        "id": "price",
+        "label": "Price",
+        "ranges": ["Text", "Number"]
+    },
+    "priceCurrency": {
+        "comment": "The currency (in 3-letter ISO 4217 format) of the offer price or a price component, when attached to PriceSpecification and its subtypes.",
+        "comment_plain": "The currency (in 3-letter ISO 4217 format) of the offer price or a price component, when attached to PriceSpecification and its subtypes.",
+        "domains": ["PriceSpecification", "Offer"],
+        "id": "priceCurrency",
+        "label": "Price Currency",
+        "ranges": ["Text"]
+    },
+    "priceSpecification": {
+        "comment": "One or more detailed price specifications, indicating the unit price and delivery or payment charges.",
+        "comment_plain": "One or more detailed price specifications, indicating the unit price and delivery or payment charges.",
+        "domains": ["Offer", "Demand"],
+        "id": "priceSpecification",
+        "label": "Price Specification",
+        "ranges": ["PriceSpecification"]
+    },
+    "priceValidUntil": {
+        "comment": "The date after which the price is no longer available.",
+        "comment_plain": "The date after which the price is no longer available.",
+        "domains": ["Offer"],
+        "id": "priceValidUntil",
+        "label": "Price Valid Until",
+        "ranges": ["Date"]
+    },
+    "productID": {
+        "comment": "The product identifier, such as ISBN. For example: <code>&lt;meta itemprop='productID' content='isbn:123-456-789'\/&gt;<\/code>.",
+        "comment_plain": "The product identifier, such as ISBN. For example: <meta itemprop='productID' content='isbn:123-456-789'\/>.",
+        "domains": ["Product"],
+        "id": "productID",
+        "label": "Product ID",
+        "ranges": ["Text"]
+    },
+    "productionCompany": {
+        "comment": "The production company or studio that made the movie, tv\/radio series, season, or episode, or media object.",
+        "comment_plain": "The production company or studio that made the movie, tv\/radio series, season, or episode, or media object.",
+        "domains": ["Movie", "MediaObject", "Season", "Episode", "Series"],
+        "id": "productionCompany",
+        "label": "Production Company",
+        "ranges": ["Organization"]
+    },
+    "publication": {
+        "comment": "A publication event associated with the episode, clip or media object.",
+        "comment_plain": "A publication event associated with the episode, clip or media object.",
+        "domains": ["MediaObject", "Episode", "Clip"],
+        "id": "publication",
+        "label": "Publication",
+        "ranges": ["PublicationEvent"]
+    },
+    "ratingCount": {
+        "comment": "The count of total number of ratings.",
+        "comment_plain": "The count of total number of ratings.",
+        "domains": ["AggregateRating"],
+        "id": "ratingCount",
+        "label": "Rating Count",
+        "ranges": ["Number"]
+    },
+    "ratingValue": {
+        "comment": "The rating for the content.",
+        "comment_plain": "The rating for the content.",
+        "domains": ["Rating"],
+        "id": "ratingValue",
+        "label": "Rating Value",
+        "ranges": ["Text"]
+    },
+    "regionsAllowed": {
+        "comment": "The regions where the media is allowed. If not specified, then it's assumed to be allowed everywhere. Specify the countries in <a href=\"http:\/\/en.wikipedia.org\/wiki\/ISO_3166\">ISO 3166 format<\/a>.",
+        "comment_plain": "The regions where the media is allowed. If not specified, then it's assumed to be allowed everywhere. Specify the countries in ISO 3166 format.",
+        "domains": ["MediaObject"],
+        "id": "regionsAllowed",
+        "label": "Regions Allowed",
+        "ranges": ["Place"]
+    },
+    "releaseDate": {
+        "comment": "The release date of a product or product model. This can be used to distinguish the exact variant of a product.",
+        "comment_plain": "The release date of a product or product model. This can be used to distinguish the exact variant of a product.",
+        "domains": ["Product"],
+        "id": "releaseDate",
+        "label": "Release Date",
+        "ranges": ["Date"]
+    },
+    "replyToUrl": {
+        "comment": "The URL at which a reply may be posted to the specified UserComment.",
+        "comment_plain": "The URL at which a reply may be posted to the specified UserComment.",
+        "domains": ["UserComments"],
+        "id": "replyToUrl",
+        "label": "Reply to Url",
+        "ranges": ["URL"]
+    },
+    "representativeOfPage": {
+        "comment": "Indicates whether this image is representative of the content of the page.",
+        "comment_plain": "Indicates whether this image is representative of the content of the page.",
+        "domains": ["ImageObject"],
+        "id": "representativeOfPage",
+        "label": "Representative of Page",
+        "ranges": ["Boolean"]
+    },
+    "requiresSubscription": {
+        "comment": "Indicates if use of the media require a subscription  (either paid or free). Allowed values are <code>true<\/code> or <code>false<\/code> (note that an earlier version had 'yes', 'no').",
+        "comment_plain": "Indicates if use of the media require a subscription  (either paid or free). Allowed values are true or false (note that an earlier version had 'yes', 'no').",
+        "domains": ["MediaObject"],
+        "id": "requiresSubscription",
+        "label": "Requires Subscription",
+        "ranges": ["Boolean"]
+    },
+    "reviewBody": {
+        "comment": "The actual body of the review",
+        "comment_plain": "The actual body of the review",
+        "domains": ["Review"],
+        "id": "reviewBody",
+        "label": "Review Body",
+        "ranges": ["Text"]
+    },
+    "reviewCount": {
+        "comment": "The count of total number of reviews.",
+        "comment_plain": "The count of total number of reviews.",
+        "domains": ["AggregateRating"],
+        "id": "reviewCount",
+        "label": "Review Count",
+        "ranges": ["Number"]
+    },
+    "reviewRating": {
+        "comment": "The rating given in this review. Note that reviews can themselves be rated. The <code>reviewRating<\/code> applies to rating given by the review. The <code>aggregateRating<\/code> property applies to the review itself, as a creative work.",
+        "comment_plain": "The rating given in this review. Note that reviews can themselves be rated. The reviewRating applies to rating given by the review. The aggregateRating property applies to the review itself, as a creative work.",
+        "domains": ["Review"],
+        "id": "reviewRating",
+        "label": "Review Rating",
+        "ranges": ["Rating"]
+    },
+    "seller": {
+        "comment": "The organization or person making the offer.",
+        "comment_plain": "The organization or person making the offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "seller",
+        "label": "Seller",
+        "ranges": ["Organization", "Person"]
+    },
+    "serialNumber": {
+        "comment": "The serial number or any alphanumeric identifier of a particular product. When attached to an offer, it is a shortcut for the serial number of the product included in the offer.",
+        "comment_plain": "The serial number or any alphanumeric identifier of a particular product. When attached to an offer, it is a shortcut for the serial number of the product included in the offer.",
+        "domains": ["Demand", "IndividualProduct", "Offer"],
+        "id": "serialNumber",
+        "label": "Serial Number",
+        "ranges": ["Text"]
+    },
+    "sku": {
+        "comment": "The Stock Keeping Unit (SKU), i.e. a merchant-specific identifier for a product or service, or the product to which the offer refers.",
+        "comment_plain": "The Stock Keeping Unit (SKU), i.e. a merchant-specific identifier for a product or service, or the product to which the offer refers.",
+        "domains": ["Product", "Offer", "Demand"],
+        "id": "sku",
+        "label": "Sku",
+        "ranges": ["Text"]
+    },
+    "startDate": {
+        "comment": "The start date and time of the event or item (in <a href=\"http:\/\/en.wikipedia.org\/wiki\/ISO_8601\">ISO 8601 date format<\/a>).",
+        "comment_plain": "The start date and time of the event or item (in ISO 8601 date format).",
+        "domains": ["Series", "Event", "Season"],
+        "id": "startDate",
+        "label": "Start Date",
+        "ranges": ["Date"]
+    },
+    "subEvent": {
+        "comment": "An Event that is part of this event. For example, a conference event includes many presentations, each are a subEvent of the conference.",
+        "comment_plain": "An Event that is part of this event. For example, a conference event includes many presentations, each are a subEvent of the conference.",
+        "domains": ["Event"],
+        "id": "subEvent",
+        "label": "Sub Event",
+        "ranges": ["Event"]
+    },
+    "subEvents": {
+        "comment": "Events that are a part of this event. For example, a conference event includes many presentations, each are subEvents of the conference (legacy spelling; see singular form, subEvent).",
+        "comment_plain": "Events that are a part of this event. For example, a conference event includes many presentations, each are subEvents of the conference (legacy spelling; see singular form, subEvent).",
+        "domains": ["Event"],
+        "id": "subEvents",
+        "label": "Sub Events",
+        "ranges": ["Event"]
+    },
+    "superEvent": {
+        "comment": "An event that this event is a part of. For example, a collection of individual music performances might each have a music festival as their superEvent.",
+        "comment_plain": "An event that this event is a part of. For example, a collection of individual music performances might each have a music festival as their superEvent.",
+        "domains": ["Event"],
+        "id": "superEvent",
+        "label": "Super Event",
+        "ranges": ["Event"]
+    },
+    "targetDescription": {
+        "comment": "The description of a node in an established educational framework.",
+        "comment_plain": "The description of a node in an established educational framework.",
+        "domains": ["AlignmentObject"],
+        "id": "targetDescription",
+        "label": "Target Description",
+        "ranges": ["Text"]
+    },
+    "targetName": {
+        "comment": "The name of a node in an established educational framework.",
+        "comment_plain": "The name of a node in an established educational framework.",
+        "domains": ["AlignmentObject"],
+        "id": "targetName",
+        "label": "Target Name",
+        "ranges": ["Text"]
+    },
+    "targetUrl": {
+        "comment": "The URL of a node in an established educational framework.",
+        "comment_plain": "The URL of a node in an established educational framework.",
+        "domains": ["AlignmentObject"],
+        "id": "targetUrl",
+        "label": "Target Url",
+        "ranges": ["URL"]
+    },
+    "thumbnail": {
+        "comment": "Thumbnail image for an image or video.",
+        "comment_plain": "Thumbnail image for an image or video.",
+        "domains": ["VideoObject", "ImageObject"],
+        "id": "thumbnail",
+        "label": "Thumbnail",
+        "ranges": ["ImageObject"]
+    },
+    "transcript": {
+        "comment": "If this MediaObject is an AudioObject or VideoObject, the transcript of that object.",
+        "comment_plain": "If this MediaObject is an AudioObject or VideoObject, the transcript of that object.",
+        "domains": ["AudioObject", "VideoObject"],
+        "id": "transcript",
+        "label": "Transcript",
+        "ranges": ["Text"]
+    },
+    "typeOfGood": {
+        "comment": "The product that this structured value is referring to.",
+        "comment_plain": "The product that this structured value is referring to.",
+        "domains": ["OwnershipInfo", "TypeAndQuantityNode"],
+        "id": "typeOfGood",
+        "label": "Type of Good",
+        "ranges": ["Product"]
+    },
+    "uploadDate": {
+        "comment": "Date when this media object was uploaded to this site.",
+        "comment_plain": "Date when this media object was uploaded to this site.",
+        "domains": ["MediaObject"],
+        "id": "uploadDate",
+        "label": "Upload Date",
+        "ranges": ["Date"]
+    },
+    "validFrom": {
+        "comment": "The date when the item becomes valid.",
+        "comment_plain": "The date when the item becomes valid.",
+        "domains": ["OpeningHoursSpecification", "Offer", "Demand", "PriceSpecification", "Permit"],
+        "id": "validFrom",
+        "label": "Valid From",
+        "ranges": ["DateTime"]
+    },
+    "validThrough": {
+        "comment": "The end of the validity of offer, price specification, or opening hours data.",
+        "comment_plain": "The end of the validity of offer, price specification, or opening hours data.",
+        "domains": ["OpeningHoursSpecification", "Demand", "PriceSpecification", "Offer"],
+        "id": "validThrough",
+        "label": "Valid Through",
+        "ranges": ["DateTime"]
+    },
+    "videoFrameSize": {
+        "comment": "The frame size of the video.",
+        "comment_plain": "The frame size of the video.",
+        "domains": ["VideoObject"],
+        "id": "videoFrameSize",
+        "label": "Video Frame Size",
+        "ranges": ["Text"]
+    },
+    "videoQuality": {
+        "comment": "The quality of the video.",
+        "comment_plain": "The quality of the video.",
+        "domains": ["VideoObject"],
+        "id": "videoQuality",
+        "label": "Video Quality",
+        "ranges": ["Text"]
+    },
+    "warranty": {
+        "comment": "The warranty promise(s) included in the offer.",
+        "comment_plain": "The warranty promise(s) included in the offer.",
+        "domains": ["Offer", "Demand"],
+        "id": "warranty",
+        "label": "Warranty",
+        "ranges": ["WarrantyPromise"]
+    },
+    "weight": {
+        "comment": "The weight of the product.",
+        "comment_plain": "The weight of the product.",
+        "domains": ["Product"],
+        "id": "weight",
+        "label": "Weight",
+        "ranges": ["QuantitativeValue"]
+    },
+    "width": {
+        "comment": "The width of the item.",
+        "comment_plain": "The width of the item.",
+        "domains": ["MediaObject", "Product"],
+        "id": "width",
+        "label": "Width",
+        "ranges": ["Distance", "QuantitativeValue"]
+    },
+    "worstRating": {
+        "comment": "The lowest value allowed in this rating system. If worstRating is omitted, 1 is assumed.",
+        "comment_plain": "The lowest value allowed in this rating system. If worstRating is omitted, 1 is assumed.",
+        "domains": ["Rating"],
+        "id": "worstRating",
+        "label": "Worst Rating",
+        "ranges": ["Number", "Text"]
+    },
+    "amountOfThisGood": {
+        "comment": "The quantity of the goods included in the offer.",
+        "comment_plain": "The quantity of the goods included in the offer.",
+        "domains": ["TypeAndQuantityNode"],
+        "id": "amountOfThisGood",
+        "label": "Amount of This Good",
+        "ranges": ["Number"]
+    },
+    "code": {
+        "comment": "A medical code for the entity, taken from a controlled vocabulary or ontology such as ICD-9, DiseasesDB, MeSH, SNOMED-CT, RxNorm, etc.",
+        "comment_plain": "A medical code for the entity, taken from a controlled vocabulary or ontology such as ICD-9, DiseasesDB, MeSH, SNOMED-CT, RxNorm, etc.",
+        "domains": ["MedicalEntity"],
+        "id": "code",
+        "label": "Code",
+        "ranges": ["MedicalCode"]
+    },
+    "durationOfWarranty": {
+        "comment": "The duration of the warranty promise. Common unitCode values are ANN for year, MON for months, or DAY for days.",
+        "comment_plain": "The duration of the warranty promise. Common unitCode values are ANN for year, MON for months, or DAY for days.",
+        "domains": ["WarrantyPromise"],
+        "id": "durationOfWarranty",
+        "label": "Duration of Warranty",
+        "ranges": ["QuantitativeValue"]
+    },
+    "free": {
+        "comment": "A flag to signal that the publication is accessible for free.",
+        "comment_plain": "A flag to signal that the publication is accessible for free.",
+        "domains": ["PublicationEvent"],
+        "id": "free",
+        "label": "Free",
+        "ranges": ["Boolean"]
+    },
+    "guideline": {
+        "comment": "A medical guideline related to this entity.",
+        "comment_plain": "A medical guideline related to this entity.",
+        "domains": ["MedicalEntity"],
+        "id": "guideline",
+        "label": "Guideline",
+        "ranges": ["MedicalGuideline"]
+    },
+    "isVariantOf": {
+        "comment": "A pointer to a base product from which this product is a variant. It is safe to infer that the variant inherits all product features from the base model, unless defined locally. This is not transitive.",
+        "comment_plain": "A pointer to a base product from which this product is a variant. It is safe to infer that the variant inherits all product features from the base model, unless defined locally. This is not transitive.",
+        "domains": ["ProductModel"],
+        "id": "isVariantOf",
+        "label": "Is Variant of",
+        "ranges": ["ProductModel"]
+    },
+    "maxPrice": {
+        "comment": "The highest price if the price is a range.",
+        "comment_plain": "The highest price if the price is a range.",
+        "domains": ["PriceSpecification"],
+        "id": "maxPrice",
+        "label": "Max Price",
+        "ranges": ["Number"]
+    },
+    "maxValue": {
+        "comment": "The upper of the product characteristic.",
+        "comment_plain": "The upper of the product characteristic.",
+        "domains": ["QuantitativeValue"],
+        "id": "maxValue",
+        "label": "Max Value",
+        "ranges": ["Number"]
+    },
+    "medicineSystem": {
+        "comment": "The system of medicine that includes this MedicalEntity, for example 'evidence-based', 'homeopathic', 'chiropractic', etc.",
+        "comment_plain": "The system of medicine that includes this MedicalEntity, for example 'evidence-based', 'homeopathic', 'chiropractic', etc.",
+        "domains": ["MedicalEntity"],
+        "id": "medicineSystem",
+        "label": "Medicine System",
+        "ranges": ["MedicineSystem"]
+    },
+    "minPrice": {
+        "comment": "The lowest price if the price is a range.",
+        "comment_plain": "The lowest price if the price is a range.",
+        "domains": ["PriceSpecification"],
+        "id": "minPrice",
+        "label": "Min Price",
+        "ranges": ["Number"]
+    },
+    "minValue": {
+        "comment": "The lower value of the product characteristic.",
+        "comment_plain": "The lower value of the product characteristic.",
+        "domains": ["QuantitativeValue"],
+        "id": "minValue",
+        "label": "Min Value",
+        "ranges": ["Number"]
+    },
+    "predecessorOf": {
+        "comment": "A pointer from a previous, often discontinued variant of the product to its newer variant.",
+        "comment_plain": "A pointer from a previous, often discontinued variant of the product to its newer variant.",
+        "domains": ["ProductModel"],
+        "id": "predecessorOf",
+        "label": "Predecessor of",
+        "ranges": ["ProductModel"]
+    },
+    "publishedOn": {
+        "comment": "A broadcast service associated with the publication event",
+        "comment_plain": "A broadcast service associated with the publication event",
+        "domains": ["PublicationEvent"],
+        "id": "publishedOn",
+        "label": "Published On",
+        "ranges": ["BroadcastService"]
+    },
+    "recognizingAuthority": {
+        "comment": "If applicable, the organization that officially recognizes this entity as part of its endorsed system of medicine.",
+        "comment_plain": "If applicable, the organization that officially recognizes this entity as part of its endorsed system of medicine.",
+        "domains": ["MedicalEntity"],
+        "id": "recognizingAuthority",
+        "label": "Recognizing Authority",
+        "ranges": ["Organization"]
+    },
+    "relevantSpecialty": {
+        "comment": "If applicable, a medical specialty in which this entity is relevant.",
+        "comment_plain": "If applicable, a medical specialty in which this entity is relevant.",
+        "domains": ["MedicalEntity"],
+        "id": "relevantSpecialty",
+        "label": "Relevant Specialty",
+        "ranges": ["MedicalSpecialty"]
+    },
+    "study": {
+        "comment": "A medical study or trial related to this entity.",
+        "comment_plain": "A medical study or trial related to this entity.",
+        "domains": ["MedicalEntity"],
+        "id": "study",
+        "label": "Study",
+        "ranges": ["MedicalStudy"]
+    },
+    "successorOf": {
+        "comment": "A pointer from a newer variant of a product  to its previous, often discontinued predecessor.",
+        "comment_plain": "A pointer from a newer variant of a product  to its previous, often discontinued predecessor.",
+        "domains": ["ProductModel"],
+        "id": "successorOf",
+        "label": "Successor of",
+        "ranges": ["ProductModel"]
+    },
+    "unitCode": {
+        "comment": "The unit of measurement given using the UN\/CEFACT Common Code (3 characters).",
+        "comment_plain": "The unit of measurement given using the UN\/CEFACT Common Code (3 characters).",
+        "domains": ["TypeAndQuantityNode", "QuantitativeValue", "UnitPriceSpecification"],
+        "id": "unitCode",
+        "label": "Unit Code",
+        "ranges": ["Text"]
+    },
+    "value": {
+        "comment": "The value of the product characteristic.",
+        "comment_plain": "The value of the product characteristic.",
+        "domains": ["QuantitativeValue"],
+        "id": "value",
+        "label": "Value",
+        "ranges": ["Number"]
+    },
+    "valueAddedTaxIncluded": {
+        "comment": "Specifies whether the applicable value-added tax (VAT) is included in the price specification or not.",
+        "comment_plain": "Specifies whether the applicable value-added tax (VAT) is included in the price specification or not.",
+        "domains": ["PriceSpecification"],
+        "id": "valueAddedTaxIncluded",
+        "label": "Value Added Tax Included",
+        "ranges": ["Boolean"]
+    },
+    "valueReference": {
+        "comment": "A pointer to a secondary value that provides additional information on the original value, e.g. a reference temperature.",
+        "comment_plain": "A pointer to a secondary value that provides additional information on the original value, e.g. a reference temperature.",
+        "domains": ["QualitativeValue", "QuantitativeValue"],
+        "id": "valueReference",
+        "label": "Value Reference",
+        "ranges": ["Enumeration", "StructuredValue"]
+    },
+    "warrantyScope": {
+        "comment": "The scope of the warranty promise.",
+        "comment_plain": "The scope of the warranty promise.",
+        "domains": ["WarrantyPromise"],
+        "id": "warrantyScope",
+        "label": "Warranty Scope",
+        "ranges": ["WarrantyScope"]
+    }
+}, "types": {
+    "AdministrativeArea": {
+        "ancestors": ["Thing", "Place"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "AdministrativeArea",
+        "label": "Administrative Area",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "address", "aggregateRating", "containedIn", "event", "events", "faxNumber", "geo", "globalLocationNumber", "interactionCount", "isicV4", "logo", "map", "maps", "openingHoursSpecification", "photo", "photos", "review", "reviews", "telephone"],
+        "specific_properties": [],
+        "subtypes": ["City", "Country", "State"],
+        "supertypes": ["Place"],
+        "url": "http:\/\/schema.org\/AdministrativeArea",
+        "level": 3
+    },
+    "AggregateRating": {
+        "ancestors": ["Thing", "Intangible", "Rating"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "AggregateRating",
+        "label": "Aggregate Rating",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "bestRating", "ratingValue", "worstRating", "itemReviewed", "ratingCount", "reviewCount"],
+        "specific_properties": ["itemReviewed", "ratingCount", "reviewCount"],
+        "subtypes": [],
+        "supertypes": ["Rating"],
+        "url": "http:\/\/schema.org\/AggregateRating",
+        "level": 3
+    },
+    "AlignmentObject": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "AlignmentObject",
+        "label": "Alignment Object",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "alignmentType", "educationalFramework", "targetDescription", "targetName", "targetUrl"],
+        "specific_properties": ["alignmentType", "educationalFramework", "targetDescription", "targetName", "targetUrl"],
+        "subtypes": [],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/AlignmentObject",
+        "level": 3
+    },
+    "Audience": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Audience",
+        "instances": ["Researcher"],
+        "label": "Audience",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "audienceType", "geographicArea"],
+        "specific_properties": ["audienceType", "geographicArea"],
+        "subtypes": ["BusinessAudience", "EducationalAudience", "MedicalAudience", "PeopleAudience"],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Audience",
+        "level": 3
+    },
+    "AudioObject": {
+        "ancestors": ["Thing", "CreativeWork", "MediaObject"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "AudioObject",
+        "label": "Audio Object",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "associatedArticle", "bitrate", "contentSize", "contentUrl", "duration", "embedUrl", "encodesCreativeWork", "encodingFormat", "expires", "height", "playerType", "productionCompany", "publication", "regionsAllowed", "requiresSubscription", "uploadDate", "width", "transcript"],
+        "specific_properties": ["transcript"],
+        "subtypes": [],
+        "supertypes": ["MediaObject"],
+        "url": "http:\/\/schema.org\/AudioObject",
+        "level": 3
+    },
+    "Brand": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Brand",
+        "label": "Brand",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "logo"],
+        "specific_properties": ["logo"],
+        "subtypes": [],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Brand",
+        "level": 3
+    },
+    "ContactPoint": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "ContactPoint",
+        "label": "Contact Point",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "areaServed", "availableLanguage", "contactOption", "contactType", "email", "faxNumber", "hoursAvailable", "productSupported", "telephone"],
+        "specific_properties": ["areaServed", "availableLanguage", "contactOption", "contactType", "email", "faxNumber", "hoursAvailable", "productSupported", "telephone"],
+        "subtypes": ["PostalAddress"],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/ContactPoint",
+        "level": 3
+    },
+    "ContactPointOption": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "ContactPointOption",
+        "instances": ["HearingImpairedSupported", "TollFree"],
+        "label": "Contact Point Option",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/ContactPointOption",
+        "level": 3
+    },
+    "Country": {
+        "ancestors": ["Thing", "Place", "AdministrativeArea"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Country",
+        "label": "Country",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "address", "aggregateRating", "containedIn", "event", "events", "faxNumber", "geo", "globalLocationNumber", "interactionCount", "isicV4", "logo", "map", "maps", "openingHoursSpecification", "photo", "photos", "review", "reviews", "telephone"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["AdministrativeArea"],
+        "url": "http:\/\/schema.org\/Country",
+        "level": 3
+    },
+    "CreativeWork": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "CreativeWork",
+        "label": "Creative Work",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video"],
+        "specific_properties": ["about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video"],
+        "subtypes": ["Article", "Blog", "Book", "Clip", "Code", "Comment", "DataCatalog", "Dataset", "Diet", "Episode", "ExercisePlan", "ItemList", "Map", "MediaObject", "Movie", "MusicPlaylist", "MusicRecording", "Painting", "Photograph", "Recipe", "Review", "Sculpture", "Season", "Series", "SoftwareApplication", "TVSeason", "TVSeries", "WebPage", "WebPageElement"],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/CreativeWork",
+        "level": 3
+    },
+    "Demand": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Demand",
+        "label": "Demand",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "acceptedPaymentMethod", "advanceBookingRequirement", "availability", "availabilityEnds", "availabilityStarts", "availableAtOrFrom", "availableDeliveryMethod", "businessFunction", "deliveryLeadTime", "eligibleCustomerType", "eligibleDuration", "eligibleQuantity", "eligibleRegion", "eligibleTransactionVolume", "gtin13", "gtin14", "gtin8", "includesObject", "inventoryLevel", "itemCondition", "itemOffered", "mpn", "priceSpecification", "seller", "serialNumber", "sku", "validFrom", "validThrough", "warranty"],
+        "specific_properties": ["acceptedPaymentMethod", "advanceBookingRequirement", "availability", "availabilityEnds", "availabilityStarts", "availableAtOrFrom", "availableDeliveryMethod", "businessFunction", "deliveryLeadTime", "eligibleCustomerType", "eligibleDuration", "eligibleQuantity", "eligibleRegion", "eligibleTransactionVolume", "gtin13", "gtin14", "gtin8", "includesObject", "inventoryLevel", "itemCondition", "itemOffered", "mpn", "priceSpecification", "seller", "serialNumber", "sku", "validFrom", "validThrough", "warranty"],
+        "subtypes": [],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Demand",
+        "level": 3
+    },
+    "Duration": {
+        "ancestors": ["Thing", "Intangible", "Quantity"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Duration",
+        "label": "Duration",
+        "properties": [],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Quantity"],
+        "url": "http:\/\/schema.org\/Duration",
+        "level": 3
+    },
+    "EducationalOrganization": {
+        "ancestors": ["Thing", "Organization"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "EducationalOrganization",
+        "label": "Educational Organization",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "address", "aggregateRating", "brand", "contactPoint", "contactPoints", "department", "duns", "email", "employee", "employees", "event", "events", "faxNumber", "founder", "founders", "foundingDate", "globalLocationNumber", "hasPOS", "interactionCount", "isicV4", "legalName", "location", "logo", "makesOffer", "member", "members", "naics", "owns", "review", "reviews", "seeks", "subOrganization", "taxID", "telephone", "vatID", "alumni"],
+        "specific_properties": ["alumni"],
+        "subtypes": ["CollegeOrUniversity", "ElementarySchool", "HighSchool", "MiddleSchool", "Preschool", "School"],
+        "supertypes": ["Organization"],
+        "url": "http:\/\/schema.org\/EducationalOrganization",
+        "level": 3
+    },
+    "Event": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Event",
+        "label": "Event",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "attendee", "attendees", "doorTime", "duration", "endDate", "eventStatus", "location", "offers", "performer", "performers", "previousStartDate", "startDate", "subEvent", "subEvents", "superEvent", "typicalAgeRange"],
+        "specific_properties": ["attendee", "attendees", "doorTime", "duration", "endDate", "eventStatus", "location", "offers", "performer", "performers", "previousStartDate", "startDate", "subEvent", "subEvents", "superEvent", "typicalAgeRange"],
+        "subtypes": ["BusinessEvent", "ChildrensEvent", "ComedyEvent", "DanceEvent", "DeliveryEvent", "EducationEvent", "Festival", "FoodEvent", "LiteraryEvent", "MusicEvent", "PublicationEvent", "SaleEvent", "SocialEvent", "SportsEvent", "TheaterEvent", "UserInteraction", "VisualArtsEvent"],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/Event",
+        "level": 3
+    },
+    "GeoCoordinates": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "GeoCoordinates",
+        "label": "Geo Coordinates",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "elevation", "latitude", "longitude"],
+        "specific_properties": ["elevation", "latitude", "longitude"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/GeoCoordinates",
+        "level": 3
+    },
+    "GeoShape": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "GeoShape",
+        "label": "Geo Shape",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "box", "circle", "elevation", "line", "polygon"],
+        "specific_properties": ["box", "circle", "elevation", "line", "polygon"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/GeoShape",
+        "level": 3
+    },
+    "ImageObject": {
+        "ancestors": ["Thing", "CreativeWork", "MediaObject"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "ImageObject",
+        "label": "Image Object",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "associatedArticle", "bitrate", "contentSize", "contentUrl", "duration", "embedUrl", "encodesCreativeWork", "encodingFormat", "expires", "height", "playerType", "productionCompany", "publication", "regionsAllowed", "requiresSubscription", "uploadDate", "width", "caption", "exifData", "representativeOfPage", "thumbnail"],
+        "specific_properties": ["caption", "exifData", "representativeOfPage", "thumbnail"],
+        "subtypes": [],
+        "supertypes": ["MediaObject"],
+        "url": "http:\/\/schema.org\/ImageObject",
+        "level": 3
+    },
+    "Language": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Language",
+        "label": "Language",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Language",
+        "level": 3
+    },
+    "MediaObject": {
+        "ancestors": ["Thing", "CreativeWork"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "MediaObject",
+        "label": "Media Object",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "associatedArticle", "bitrate", "contentSize", "contentUrl", "duration", "embedUrl", "encodesCreativeWork", "encodingFormat", "expires", "height", "playerType", "productionCompany", "publication", "regionsAllowed", "requiresSubscription", "uploadDate", "width"],
+        "specific_properties": ["associatedArticle", "bitrate", "contentSize", "contentUrl", "duration", "embedUrl", "encodesCreativeWork", "encodingFormat", "expires", "height", "playerType", "productionCompany", "publication", "regionsAllowed", "requiresSubscription", "uploadDate", "width"],
+        "subtypes": ["AudioObject", "DataDownload", "ImageObject", "MusicVideoObject", "VideoObject"],
+        "supertypes": ["CreativeWork"],
+        "url": "http:\/\/schema.org\/MediaObject",
+        "level": 3
+    },
+    "NewsArticle": {
+        "ancestors": ["Thing", "CreativeWork", "Article"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "NewsArticle",
+        "label": "News Article",
+        "properties": ["description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "articleBody", "articleSection", "wordCount", "dateline", "printColumn", "printEdition", "printPage", "printSection"],
+        "subtypes": [],
+        "supertypes": ["Article"],
+        "url": "http:\/\/schema.org\/NewsArticle",
+        "level": 1
+    },
+    "Offer": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Offer",
+        "label": "Offer",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "acceptedPaymentMethod", "addOn", "advanceBookingRequirement", "aggregateRating", "availability", "availabilityEnds", "availabilityStarts", "availableAtOrFrom", "availableDeliveryMethod", "businessFunction", "category", "deliveryLeadTime", "eligibleCustomerType", "eligibleDuration", "eligibleQuantity", "eligibleRegion", "eligibleTransactionVolume", "gtin13", "gtin14", "gtin8", "includesObject", "inventoryLevel", "itemCondition", "itemOffered", "mpn", "price", "priceCurrency", "priceSpecification", "priceValidUntil", "review", "reviews", "seller", "serialNumber", "sku", "validFrom", "validThrough", "warranty"],
+        "specific_properties": ["acceptedPaymentMethod", "addOn", "advanceBookingRequirement", "aggregateRating", "availability", "availabilityEnds", "availabilityStarts", "availableAtOrFrom", "availableDeliveryMethod", "businessFunction", "category", "deliveryLeadTime", "eligibleCustomerType", "eligibleDuration", "eligibleQuantity", "eligibleRegion", "eligibleTransactionVolume", "gtin13", "gtin14", "gtin8", "includesObject", "inventoryLevel", "itemCondition", "itemOffered", "mpn", "price", "priceCurrency", "priceSpecification", "priceValidUntil", "review", "reviews", "seller", "serialNumber", "sku", "validFrom", "validThrough", "warranty"],
+        "subtypes": ["AggregateOffer"],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Offer",
+        "level": 3
+    },
+    "OpeningHoursSpecification": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "OpeningHoursSpecification",
+        "label": "Opening Hours Specification",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "closes", "dayOfWeek", "opens", "validFrom", "validThrough"],
+        "specific_properties": ["closes", "dayOfWeek", "opens", "validFrom", "validThrough"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/OpeningHoursSpecification",
+        "level": 3
+    },
+    "Organization": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Organization",
+        "label": "Organization",
+        "properties": ["description", "image", "name", "sameAs", "url", "address", "aggregateRating", "brand", "contactPoint", "contactPoints", "department", "duns", "email", "employee", "employees", "event", "events", "faxNumber", "founder", "founders", "foundingDate", "globalLocationNumber", "hasPOS", "interactionCount", "isicV4", "legalName", "location", "logo", "makesOffer", "member", "members", "naics", "owns", "review", "reviews", "seeks", "subOrganization", "taxID", "telephone", "vatID"],
+        "subtypes": ["Corporation", "EducationalOrganization", "GovernmentOrganization", "LocalBusiness", "NGO", "PerformingGroup", "SportsTeam"],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/Organization",
+        "level": 1
+    },
+    "OwnershipInfo": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "OwnershipInfo",
+        "label": "Ownership Info",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "acquiredFrom", "ownedFrom", "ownedThrough", "typeOfGood"],
+        "specific_properties": ["acquiredFrom", "ownedFrom", "ownedThrough", "typeOfGood"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/OwnershipInfo",
+        "level": 3
+    },
+    "Person": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Person",
+        "label": "Person",
+        "properties": ["description", "image", "name", "sameAs", "url", "additionalName", "address", "affiliation", "alumniOf", "award", "awards", "birthDate", "brand", "children", "colleague", "colleagues", "contactPoint", "contactPoints", "deathDate", "duns", "email", "familyName", "faxNumber", "follows", "gender", "givenName", "globalLocationNumber", "hasPOS", "homeLocation", "honorificPrefix", "honorificSuffix", "interactionCount", "isicV4", "jobTitle", "knows", "makesOffer", "memberOf", "naics", "nationality", "owns", "parent", "parents", "performerIn", "relatedTo", "seeks", "sibling", "siblings", "spouse", "taxID", "telephone", "vatID", "workLocation", "worksFor"],
+        "subtypes": [],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/Person",
+        "level": 1
+    },
+    "Photograph": {
+        "ancestors": ["Thing", "CreativeWork"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Photograph",
+        "label": "Photograph",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["CreativeWork"],
+        "url": "http:\/\/schema.org\/Photograph",
+        "level": 3
+    },
+    "Place": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Place",
+        "label": "Place",
+        "properties": ["description", "image", "name", "sameAs", "url", "address", "aggregateRating", "containedIn", "event", "events", "faxNumber", "geo", "globalLocationNumber", "interactionCount", "isicV4", "logo", "map", "maps", "openingHoursSpecification", "photo", "photos", "review", "reviews", "telephone"],
+        "subtypes": ["AdministrativeArea", "CivicStructure", "Landform", "LandmarksOrHistoricalBuildings", "LocalBusiness", "Residence", "TouristAttraction"],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/Place",
+        "level": 1
+    },
+    "PostalAddress": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue", "ContactPoint"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "PostalAddress",
+        "label": "Postal Address",
+        "properties": ["description", "image", "name", "sameAs", "url", "areaServed", "availableLanguage", "contactOption", "contactType", "email", "faxNumber", "hoursAvailable", "productSupported", "telephone", "addressCountry", "addressLocality", "addressRegion", "postalCode", "postOfficeBoxNumber", "streetAddress"],
+        "subtypes": [],
+        "supertypes": ["ContactPoint"],
+        "url": "http:\/\/schema.org\/PostalAddress",
+        "level": 1
+    },
+    "Product": {
+        "ancestors": ["Thing"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Product",
+        "label": "Product",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "aggregateRating", "audience", "brand", "color", "depth", "gtin13", "gtin14", "gtin8", "height", "isAccessoryOrSparePartFor", "isConsumableFor", "isRelatedTo", "isSimilarTo", "itemCondition", "logo", "manufacturer", "model", "mpn", "offers", "productID", "releaseDate", "review", "reviews", "sku", "weight", "width"],
+        "specific_properties": ["aggregateRating", "audience", "brand", "color", "depth", "gtin13", "gtin14", "gtin8", "height", "isAccessoryOrSparePartFor", "isConsumableFor", "isRelatedTo", "isSimilarTo", "itemCondition", "logo", "manufacturer", "model", "mpn", "offers", "productID", "releaseDate", "review", "reviews", "sku", "weight", "width"],
+        "subtypes": ["IndividualProduct", "ProductModel", "SomeProducts"],
+        "supertypes": ["Thing"],
+        "url": "http:\/\/schema.org\/Product",
+        "level": 3
+    },
+    "Review": {
+        "ancestors": ["Thing", "CreativeWork"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Review",
+        "label": "Review",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "itemReviewed", "reviewBody", "reviewRating"],
+        "specific_properties": ["itemReviewed", "reviewBody", "reviewRating"],
+        "subtypes": [],
+        "supertypes": ["CreativeWork"],
+        "url": "http:\/\/schema.org\/Review",
+        "level": 3
+    },
+    "Thing": {
+        "ancestors": [],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Thing",
+        "label": "Thing",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": ["additionalType", "alternateName", "description", "image", "name", "sameAs", "url"],
+        "subtypes": ["Action", "BroadcastService", "Class", "CreativeWork", "Event", "Intangible", "MedicalEntity", "Organization", "Person", "Place", "Product", "Property"],
+        "supertypes": [],
+        "url": "http:\/\/schema.org\/Thing",
+        "level": 3
+    },
+    "UserComments": {
+        "ancestors": ["Thing", "Event", "UserInteraction"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "UserComments",
+        "label": "User Comments",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "attendee", "attendees", "doorTime", "duration", "endDate", "eventStatus", "location", "offers", "performer", "performers", "previousStartDate", "startDate", "subEvent", "subEvents", "superEvent", "typicalAgeRange", "commentText", "commentTime", "creator", "discusses", "replyToUrl"],
+        "specific_properties": ["commentText", "commentTime", "creator", "discusses", "replyToUrl"],
+        "subtypes": [],
+        "supertypes": ["UserInteraction"],
+        "url": "http:\/\/schema.org\/UserComments",
+        "level": 3
+    },
+    "VideoObject": {
+        "ancestors": ["Thing", "CreativeWork", "MediaObject"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "VideoObject",
+        "label": "Video Object",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "about", "accessibilityAPI", "accessibilityControl", "accessibilityFeature", "accessibilityHazard", "accountablePerson", "aggregateRating", "alternativeHeadline", "associatedMedia", "audience", "audio", "author", "award", "awards", "citation", "comment", "contentLocation", "contentRating", "contributor", "copyrightHolder", "copyrightYear", "creator", "dateCreated", "dateModified", "datePublished", "discussionUrl", "editor", "educationalAlignment", "educationalUse", "encoding", "encodings", "genre", "headline", "inLanguage", "interactionCount", "interactivityType", "isBasedOnUrl", "isFamilyFriendly", "keywords", "learningResourceType", "mentions", "offers", "provider", "publisher", "publishingPrinciples", "review", "reviews", "sourceOrganization", "text", "thumbnailUrl", "timeRequired", "typicalAgeRange", "version", "video", "associatedArticle", "bitrate", "contentSize", "contentUrl", "duration", "embedUrl", "encodesCreativeWork", "encodingFormat", "expires", "height", "playerType", "productionCompany", "publication", "regionsAllowed", "requiresSubscription", "uploadDate", "width", "caption", "thumbnail", "transcript", "videoFrameSize", "videoQuality"],
+        "specific_properties": ["caption", "thumbnail", "transcript", "videoFrameSize", "videoQuality"],
+        "subtypes": [],
+        "supertypes": ["MediaObject"],
+        "url": "http:\/\/schema.org\/VideoObject",
+        "level": 3
+    },
+    "BusinessEntityType": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "BusinessEntityType",
+        "label": "Business Entity Type",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/BusinessEntityType",
+        "level": 3
+    },
+    "BusinessFunction": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "BusinessFunction",
+        "label": "Business Function",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/BusinessFunction",
+        "level": 3
+    },
+    "DayOfWeek": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "DayOfWeek",
+        "label": "Day of Week",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/DayOfWeek",
+        "level": 3
+    },
+    "DeliveryMethod": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "DeliveryMethod",
+        "label": "Delivery Method",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": ["LockerDelivery", "OnSitePickup", "ParcelService"],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/DeliveryMethod",
+        "level": 3
+    },
+    "Distance": {
+        "ancestors": ["Thing", "Intangible", "Quantity"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Distance",
+        "label": "Distance",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Quantity"],
+        "url": "http:\/\/schema.org\/Distance",
+        "level": 3
+    },
+    "EventStatusType": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "EventStatusType",
+        "instances": ["EventCancelled", "EventPostponed", "EventRescheduled", "EventScheduled"],
+        "label": "Event Status Type",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/EventStatusType",
+        "level": 3
+    },
+    "ItemAvailability": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "ItemAvailability",
+        "instances": ["Discontinued", "InStock", "InStoreOnly", "LimitedAvailability", "OnlineOnly", "OutOfStock", "PreOrder", "SoldOut"],
+        "label": "Item Availability",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/ItemAvailability",
+        "level": 3
+    },
+    "OfferItemCondition": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "OfferItemCondition",
+        "instances": ["DamagedCondition", "NewCondition", "RefurbishedCondition", "UsedCondition"],
+        "label": "Offer Item Condition",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/OfferItemCondition",
+        "level": 3
+    },
+    "PaymentMethod": {
+        "ancestors": ["Thing", "Intangible", "Enumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "PaymentMethod",
+        "label": "Payment Method",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url"],
+        "specific_properties": [],
+        "subtypes": ["CreditCard"],
+        "supertypes": ["Enumeration"],
+        "url": "http:\/\/schema.org\/PaymentMethod",
+        "level": 3
+    },
+    "PhysicalActivityCategory": {
+        "ancestors": ["Thing", "MedicalEntity", "MedicalIntangible", "MedicalEnumeration"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "PhysicalActivityCategory",
+        "instances": ["AerobicActivity", "AnaerobicActivity", "Balance", "Flexibility", "LeisureTimeActivity", "OccupationalActivity", "StrengthTraining"],
+        "label": "Physical Activity Category",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "code", "guideline", "medicineSystem", "recognizingAuthority", "relevantSpecialty", "study"],
+        "specific_properties": [],
+        "subtypes": [],
+        "supertypes": ["MedicalEnumeration"],
+        "url": "http:\/\/schema.org\/PhysicalActivityCategory",
+        "level": 3
+    },
+    "PriceSpecification": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "PriceSpecification",
+        "label": "Price Specification",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "eligibleQuantity", "eligibleTransactionVolume", "maxPrice", "minPrice", "price", "priceCurrency", "validFrom", "validThrough", "valueAddedTaxIncluded"],
+        "specific_properties": ["eligibleQuantity", "eligibleTransactionVolume", "maxPrice", "minPrice", "price", "priceCurrency", "validFrom", "validThrough", "valueAddedTaxIncluded"],
+        "subtypes": ["DeliveryChargeSpecification", "PaymentChargeSpecification", "UnitPriceSpecification"],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/PriceSpecification",
+        "level": 3
+    },
+    "ProductModel": {
+        "ancestors": ["Thing", "Product"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "ProductModel",
+        "label": "Product Model",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "aggregateRating", "audience", "brand", "color", "depth", "gtin13", "gtin14", "gtin8", "height", "isAccessoryOrSparePartFor", "isConsumableFor", "isRelatedTo", "isSimilarTo", "itemCondition", "logo", "manufacturer", "model", "mpn", "offers", "productID", "releaseDate", "review", "reviews", "sku", "weight", "width", "isVariantOf", "predecessorOf", "successorOf"],
+        "specific_properties": ["isVariantOf", "predecessorOf", "successorOf"],
+        "subtypes": [],
+        "supertypes": ["Product"],
+        "url": "http:\/\/schema.org\/ProductModel",
+        "level": 3
+    },
+    "PublicationEvent": {
+        "ancestors": ["Thing", "Event"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "PublicationEvent",
+        "label": "Publication Event",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "attendee", "attendees", "doorTime", "duration", "endDate", "eventStatus", "location", "offers", "performer", "performers", "previousStartDate", "startDate", "subEvent", "subEvents", "superEvent", "typicalAgeRange", "free", "publishedOn"],
+        "specific_properties": ["free", "publishedOn"],
+        "subtypes": ["BroadcastEvent", "OnDemandEvent"],
+        "supertypes": ["Event"],
+        "url": "http:\/\/schema.org\/PublicationEvent",
+        "level": 3
+    },
+    "QuantitativeValue": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "QuantitativeValue",
+        "label": "Quantitative Value",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "maxValue", "minValue", "unitCode", "value", "valueReference"],
+        "specific_properties": ["maxValue", "minValue", "unitCode", "value", "valueReference"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/QuantitativeValue",
+        "level": 3
+    },
+    "Rating": {
+        "ancestors": ["Thing", "Intangible"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "Rating",
+        "label": "Rating",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "bestRating", "ratingValue", "worstRating"],
+        "specific_properties": ["bestRating", "ratingValue", "worstRating"],
+        "subtypes": ["AggregateRating"],
+        "supertypes": ["Intangible"],
+        "url": "http:\/\/schema.org\/Rating",
+        "level": 3
+    },
+    "TypeAndQuantityNode": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "TypeAndQuantityNode",
+        "label": "Type And Quantity Node",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "amountOfThisGood", "businessFunction", "typeOfGood", "unitCode"],
+        "specific_properties": ["amountOfThisGood", "businessFunction", "typeOfGood", "unitCode"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/TypeAndQuantityNode",
+        "level": 3
+    },
+    "WarrantyPromise": {
+        "ancestors": ["Thing", "Intangible", "StructuredValue"],
+        "comment": "",
+        "comment_plain": "",
+        "id": "WarrantyPromise",
+        "label": "Warranty Promise",
+        "properties": ["alternateName", "description", "image", "name", "sameAs", "url", "durationOfWarranty", "warrantyScope"],
+        "specific_properties": ["durationOfWarranty", "warrantyScope"],
+        "subtypes": [],
+        "supertypes": ["StructuredValue"],
+        "url": "http:\/\/schema.org\/WarrantyPromise",
+        "level": 3
+    }
+}}

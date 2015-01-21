@@ -1,0 +1,50 @@
+<html>
+<head>
+	<title>Faceted Viewing</title>
+	<link rel="stylesheet" href="css/rdface.css" type="text/css"/>
+	<link rel="stylesheet" href="schema_creator/schema_colors.css" type="text/css"/>
+	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" media="all" />
+	<script type="text/javascript" src="libs/jstree/_lib/jquery.min.js"></script>
+	<script type="text/javascript" src="libs/jstree/_lib/jquery.cookie.js"></script>
+	<script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/facets.js"></script>
+<style>
+.f_item{
+	font-size:0.72em;
+}
+.small-badge{
+	font-size:0.9em;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	border: 1px outset rgba(0, 0, 0, 0.4);
+	padding: 1px;
+	background-color:rgba(0, 0, 0, 0.69);
+	color:#FFF;
+font-weight:bold;
+}
+.facet-column{
+
+}
+</style>
+</head>
+<body>
+    <div class="row span7" style="margin-left:0px;">
+    <div class="span2 facet-column">
+	    <ul class="nav nav-list" style="text-align:left;" id="facet_types">
+	      <li class="active"><a href="#"><i class="icon-chevron-down icon-white"></i>Types</a></li>
+	    </ul>
+    </div>
+    <div class="span2 facet-column">
+    	    <ul class="nav nav-list" style="text-align:left;" id="facet_properties">
+	      <li class="active"><a href="#"><i class="icon-chevron-down icon-white"></i>Properties</a></li>
+	    </ul>
+    </div>
+    <div class="span2 facet-column">
+    	    <ul class="nav nav-list" style="text-align:left;" id="facet_values">
+	      <li class="active"><a href="#"><i class="icon-chevron-down icon-white"></i>Values</a></li>
+	    </ul>
+    </div>
+    </div>
+<div id="doc_content" style="display:none;"></div>
+</body>
+</html>

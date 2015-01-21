@@ -163,7 +163,7 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
         return $rec->getViewerUI();
     }
 
-    public static function getAllTriples($name, $offset=0, $limit=0)
+    public static function getAllTriples($name, $offset=0, $limit=0, $object_id = NULL)
     {
         $metadata = Model_Leap_Metadata::getMetadataByName($name);
 
@@ -173,6 +173,9 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
             ->from(DB_ORM::model($metadata->getModelname())->table())
             ->where('field_id', '=', $id);
 
+        if(!empty($object_id)){
+            $builder->where("object_id", "=", $object_id);
+        }
 
 
         $result = $builder->query();
@@ -193,7 +196,9 @@ abstract class Model_Leap_Metadata_Record extends DB_ORM_Model
                     ->limit($limit)
                     ->offset($offset)
                     ->where('field_id', '=', $id);
-
+                if(!empty($object_id)){
+                    $builder2->where("object_id", "=", $object_id);
+                }
                 $result2 = $builder2->query();
 
                 if ($result2->is_loaded()) {

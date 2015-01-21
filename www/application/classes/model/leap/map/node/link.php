@@ -155,15 +155,15 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
     }
 
     public function addFullLink($mapId, $values){
-        $this->map_id = $mapId;
-        $this->text = Arr::get($values, 'text', '');
-        $this->node_id_1 = Arr::get($values, 'node_id_1', '');
-        $this->node_id_2 = Arr::get($values, 'node_id_2', '');
-        $this->image_id = Arr::get($values, 'image_id', null);
-        $this->order = Arr::get($values, 'order', 0);
-        $this->probability = Arr::get($values, 'probability', 0);
-
-        $this->save();
+        return DB_ORM::insert('map_node_link')
+                       ->column('map_id', $mapId)
+                       ->column('text', Arr::get($values, 'text', ''))
+                       ->column('node_id_1', Arr::get($values, 'node_id_1', ''))
+                       ->column('node_id_2', Arr::get($values, 'node_id_2', ''))
+                       ->column('image_id', Arr::get($values, 'image_id', null))
+                       ->column('order', Arr::get($values, 'order', 0))
+                       ->column('probability', Arr::get($values, 'probability', 0))
+                       ->execute();
     }
 
     public function addVUELink($mapId, $nodeId1, $nodeId2) {
@@ -238,36 +238,21 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         }
     }
     
-    public function getLinksByMap($mapId) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('map_id', '=', $mapId);
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            $links = array();
-            foreach($result as $record) {
-                $links[] = DB_ORM::model('map_node_link', array((int)$record['id']));
-            }
-            
-            return $links;
-        }
-        
-        return NULL;
+    public function getLinksByMap ($mapId)
+    {
+        return DB_ORM::select('map_node_link')->where('map_id', '=', $mapId)->query()->as_array();
     }
     
-    public function getLinkByNodeIDs($nodeA, $nodeB) {
-        $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('node_id_1', '=', $nodeA, 'AND')
-                ->where('node_id_2', '=', $nodeB);
-        
-        $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            return DB_ORM::model('map_node_link', array((int)$result[0]['id']));
-        }
-        
+    public function getLinkByNodeIDs($nodeA, $nodeB)
+    {
+        $result = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('node_id_1', '=', $nodeA, 'AND')
+            ->where('node_id_2', '=', $nodeB)
+            ->query();
+
+        if ($result->is_loaded()) return DB_ORM::model('map_node_link', array((int)$result[0]['id']));
+
         return NULL;
     }
     
@@ -287,48 +272,21 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         $builder->execute();
     }
     
-    public function duplicateLinks($fromMapId, $toMapId, $nodeMap, $elementMap) {
-        $links = $this->getLinksByMap($fromMapId);
-        
-        if($links == null || $toMapId == null || $toMapId <= 0) return;
-        
-        foreach($links as $link) {
-            $builder = DB_ORM::insert('map_node_link')
-                    ->column('map_id', $toMapId)
-                    ->column('text', $link->text)
-                    ->column('order', $link->order)
-                    ->column('probability', $link->probability);
-                    
-            if(isset($nodeMap[$link->node_id_1]))
-                $builder = $builder->column ('node_id_1', $nodeMap[$link->node_id_1]);
-            
-            if(isset($nodeMap[$link->node_id_2]))
-                $builder = $builder->column ('node_id_2', $nodeMap[$link->node_id_2]);
-   
-            if(isset($elementMap[$link->image_id]))
-                $builder = $builder->column ('image_id', $elementMap[$link->image_id]);
-            
-            $builder->execute();
+    public function duplicateLinks($fromMapId, $toMapId, $nodeMap)
+    {
+        if( ! $toMapId) return;
+
+        foreach ($this->getLinksByMap($fromMapId) as $link)
+        {
+            DB_ORM::insert('map_node_link')
+                ->column('map_id',      $toMapId)
+                ->column('text',        $link->text)
+                ->column('order',       $link->order)
+                ->column('probability', $link->probability)
+                ->column('node_id_1',   Arr::get($nodeMap, $link->node_id_1))
+                ->column('node_id_2',   Arr::get($nodeMap, $link->node_id_2))
+                ->column('image_id',    Arr::get($nodeMap, $link->image_id))
+                ->execute();
         }
-    }
-
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')
-            ->from($this->table())
-            ->where('map_id', '=', $mapId);
-        $result = $builder->query();
-
-        if($result->is_loaded()) {
-            $links = array();
-            foreach($result as $record) {
-                $links[] = $record;
-            }
-
-            return $links;
-        }
-
-        return NULL;
     }
 }
-
-?>

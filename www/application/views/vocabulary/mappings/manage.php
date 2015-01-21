@@ -4,8 +4,6 @@
     var properties =    <?php echo json_encode($templateData["properties"]);?>
 </script>
 <script type="text/javascript" src='<?php echo URL::base(); ?>scripts/jquery/jquery-ui-1.9.1.custom.min.js'></script>
-<script language="javascript" type="text/javascript"
-        src="<?php echo URL::base(); ?>scripts/tinymce4/js/tinymce/tinymce.min.js"></script>
 
 
 <script type="text/javascript" src='<?php echo URL::base(); ?>scripts/olab/inputHandler.js'></script>

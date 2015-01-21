@@ -62,6 +62,10 @@ class Model_Leap_DTopic extends DB_ORM_Model {
             'forum_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE,
+            )),
+            'node_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 1,
+                'nullable' => TRUE
             ))
         );
     }
@@ -78,7 +82,7 @@ class Model_Leap_DTopic extends DB_ORM_Model {
         return array('id');
     }
 
-    public function createTopic($topicName, $security, $status,$forum_id) {
+    public function createTopic($topicName, $security, $status, $forum_id, $nodeId = null) {
         $this->name = $topicName;
         $this->status = $status;
         $this->date = date('Y-m-d h:i:s');
@@ -86,6 +90,7 @@ class Model_Leap_DTopic extends DB_ORM_Model {
         $this->settings = '';
         $this->security_id = $security;
         $this->forum_id = $forum_id;
+        $this->node_id = $nodeId;
 
         $this->save();
 
@@ -161,14 +166,15 @@ class Model_Leap_DTopic extends DB_ORM_Model {
 
     }
 
-    public function getFullAllTopicsByForumId($forumId) {
-
-        $where = '';
-        $join = '';
-        $orderBy = 'message_date DESC';
+    public function getFullAllTopicsByForumId($forumId)
+    {
+        $where      = '';
+        $join       = '';
+        $orderBy    = 'message_date DESC';
+        $userType   = Auth::instance()->get_user()->type->name;
 
         // Get only visible topics
-        if (Auth::instance()->get_user()->type->name != 'superuser') {
+        if ($userType != 'superuser' AND $userType != 'Director') {
             $where = ' AND topic.security_id = 0';
         }
 
@@ -217,15 +223,11 @@ class Model_Leap_DTopic extends DB_ORM_Model {
 
         $res = array();
 
-        if($result != null && $result->is_loaded()) {
-
-            foreach($result as $record) {
-                $res[] = $record;
-            }
-
+        if($result != null && $result->is_loaded())
+        {
+            foreach($result as $record) $res[] = $record;
             return $res;
         }
-
         return NULL;
     }
 
@@ -505,6 +507,9 @@ class Model_Leap_DTopic extends DB_ORM_Model {
         $this->name = $topicName;
         $this->status = $status;
         $this->security_id = $security;
+        if($status != 1) {
+            $this->node_id = null;
+        }
 
         $this->save();
     }

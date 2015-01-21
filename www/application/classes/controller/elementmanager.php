@@ -34,61 +34,60 @@ class Controller_ElementManager extends Controller_Base {
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId != NULL) {
-            $map = DB_ORM::model('map', array((int) $mapId));
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-            $this->templateData['map'] = $map;
-            $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($map->id);
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $this->templateData['vpds'] = DB_ORM::model('map_vpd')->getAllVpdByMap($mapId);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
-
-            $view = View::factory('labyrinth/element/view');
-            $view->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $view;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        $ses = Session::instance();
+        if($ses->get('warningMessage'))
+        {
+            $this->templateData['warningMessage'] = $ses->get('warningMessage');
+            $this->templateData['listOfUsedReferences'] = $ses->get('listOfUsedReferences');
+            $ses->delete('listOfUsedReferences');
+            $ses->delete('warningMessage');
         }
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
+
+        $view = View::factory('labyrinth/element/view');
+        $view->set('templateData', $this->templateData);
+
+        $leftView = View::factory('labyrinth/labyrinthEditorMenu');
+        $leftView->set('templateData', $this->templateData);
+
+        $this->templateData['left'] = $leftView;
+        $this->templateData['center'] = $view;
+        $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_addNewElement() {
+    public function action_addNewElement()
+    {
         $mapId = $this->request->param('id', NULL);
         $type = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL) {
-            $map = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['map'] = $map;
+        if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
-            if ($type != NULL) {
-                $this->templateData['add_type'] = $type;
-                $this->templateData['files'] = DB_ORM::model('map_element')->getAllMediaFiles((int) $mapId);
-            }
+        DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
+        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
 
-            $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
-
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'elementManager/addNewElement/' . $mapId));
-            $view = View::factory('labyrinth/element/add');
-            $view->set('templateData', $this->templateData);
-
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-
-            $this->templateData['left'] = $leftView;
-            $this->templateData['center'] = $view;
-            unset($this->templateData['right']);
-            $this->template->set('templateData', $this->templateData);
-        } else {
-            Request::initial()->redirect(URL::base());
+        if ($type != NULL)
+        {
+            $this->templateData['add_type'] = $type;
+            $this->templateData['files'] = DB_ORM::model('map_element')->getAllMediaFiles((int) $mapId);
         }
+
+        $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'elementManager/addNewElement/' . $mapId));
+
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/element/add')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_saveElement() {
@@ -96,6 +95,12 @@ class Controller_ElementManager extends Controller_Base {
         $type = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $type != NULL) {
+            $private = Arr::get($_POST, 'Private');
+            if($private){
+                $_POST['Private'] = 'On';
+            }else {
+                $_POST['Private'] = 'Off';
+            }
             DB_ORM::model('map_vpd')->createNewElement($mapId, $type, $_POST);
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
@@ -108,6 +113,19 @@ class Controller_ElementManager extends Controller_Base {
         $vpdId = $this->request->param('id2', NULL);
 
         if ($_POST and $mapId != NULL and $vpdId != NULL) {
+            $private = Arr::get($_POST, 'Private');
+            if($private){
+                $_POST['Private'] = 'On';
+            }else {
+                $_POST['Private'] = 'Off';
+            }
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $vpdId, 'VPD');
+            if($private && $references != NULL){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The element wasn\'t set to private. The selected element is used in the following labyrinths:');
+                $_POST['Private'] = 'Off';
+            }
             DB_ORM::model('map_vpd_element')->saveElementValues($vpdId, $_POST);
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
@@ -115,12 +133,23 @@ class Controller_ElementManager extends Controller_Base {
         }
     }
 
-    public function action_deleteVpd() {
+    public function action_deleteVpd()
+    {
         $mapId = $this->request->param('id', NULL);
         $vpdId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $vpdId != NULL) {
-            DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
+        if ($mapId != NULL and $vpdId != NULL)
+        {
+            Request::initial()->redirect(URL::base());
+
+            $references = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
+            if($references != NULL){
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The element wasn\'t deleted. The selected element is used in the following labyrinths:');
+            } else {
+                DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
+            }
             Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
@@ -131,7 +160,10 @@ class Controller_ElementManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $vpdId = $this->request->param('id2', NULL);
 
-        if ($mapId != NULL and $vpdId != NULL) {
+        if ($mapId != NULL and $vpdId != NULL)
+        {
+            Request::initial()->redirect(URL::base());
+
             $map = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['map'] = $map;
 
@@ -139,6 +171,9 @@ class Controller_ElementManager extends Controller_Base {
             $this->templateData['files'] = DB_ORM::model('map_element')->getAllMediaFiles((int) $mapId);
 
             $this->templateData['types'] = DB_ORM::model('map_vpd_type')->getAllTypes();
+
+            $usedElements = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
+            $this->templateData['used'] = count($usedElements);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Elements'))->set_url(URL::base() . 'elementManager/index/' . $mapId));

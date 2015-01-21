@@ -19,7 +19,7 @@
  *
  */
 if (isset($templateData['map'])) { ?>
-<div class="page-header"> <h1><?php echo __('Add Counter'); ?></h1></div>
+<div class="page-header"><h1><?php echo __('Add Counter'); ?></h1></div>
 <form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/saveNewCounter/'.$templateData['map']->id; ?>">
     <fieldset class="fieldset">
         <legend><?php echo __('Counter Content'); ?></legend>
@@ -36,14 +36,21 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
         <div class="control-group">
+            <label class="control-label"><?php echo __('Counter status'); ?></label>
+            <div class="controls">
+                <select name="status">
+                    <option value="0">Regular</option>
+                    <option value="1">Main</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
             <label for="cIconId" class="control-label"><?php echo __('Counter image (optional)'); ?></label>
             <div class="controls">
                 <select id="cIconId" name="cIconId">
                     <option value="" selected="">no image</option>
-                    <?php if(isset($templateData['images']) and count($templateData['images']) > 0) { ?>
-                    <?php foreach($templateData['images'] as $image) { ?>
-                        <option value="<?php echo $image->id; ?>"><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
-                        <?php } ?>
+                    <?php foreach (Arr::get($templateData, 'images', array()) as $image) { ?>
+                    <option value="<?php echo $image->id; ?>"><?php echo $image->name; ?> (ID:<?php echo $image->id; ?>)</option>
                     <?php } ?>
                 </select>
             </div>
@@ -65,9 +72,8 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div>
     </fieldset>
-    <div class="pull-right">
     <div class="form-actions">
         <input class="btn btn-large btn-primary" type="submit" name="Submit" value="Submit" />
-    </div></div>
+    </div>
 </form>
 <?php } ?>

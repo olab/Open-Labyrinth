@@ -43,7 +43,7 @@
         <?php if(isset($templateData['displays']) && count($templateData['displays']) > 0) { ?>
         <?php foreach($templateData['displays'] as $display) { ?>
         <tr>
-            <td><input type="text" value="[[VD:<?php echo $display->id; ?>]]"/></td>
+            <td><input type="text" value="[[CD:<?php echo $display->id; ?>]]"/></td>
             <td>
                 <a class="btn btn-info" href="<?php echo URL::base(); ?>visualdisplaymanager/display/<?php echo $templateData['map']->id; ?>/<?php echo $display->id; ?>">
                     <i class="icon-pencil icon-white"></i>

@@ -32,7 +32,7 @@ class Notice {
 
     static function init() {
         self::$session = Session::instance();
-        self::$notices['current'] = json_decode(self::$session->get_once('flash'));
+        self::$notices['current'] = json_decode(self::$session->get_once('flash'), true);
         if(!is_array(self::$notices['current'])) self::$notices['current'] = array();
         self::$initialized = true;
     }

@@ -153,6 +153,11 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'savable' => TRUE,
             )),
+            'is_private' => new DB_ORM_Field_Boolean($this, array(
+                'savable' => TRUE,
+                'nullable' => FALSE,
+                'default' => FALSE
+            ))
         );
         
         $this->relations = array(
@@ -197,54 +202,52 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         $this->id = $avatarId;
         $this->load();
         
-        if($this->is_loaded()) {
-            $this->sex = Arr::get($values, 'avsex', $this->sex);
-            $this->mouth = Arr::get($values, 'avmouth', $this->mouth);
-            $this->age = Arr::get($values, 'avage', $this->age);
-            $this->eyes = Arr::get($values, 'aveyes', $this->eyes);
-            $this->outfit = Arr::get($values, 'avoutfit', $this->outfit);
-            $this->cloth = Arr::get($values, 'avcloth', $this->cloth);
-            $this->nose = Arr::get($values, 'avnose', $this->nose);
-            $this->hair = Arr::get($values, 'avhair', $this->hair);
-            $this->hair_color = Arr::get($values, 'avhaircolor', $this->hair_color);
-            $this->accessory_1 = Arr::get($values, 'avaccessory1', $this->accessory_1);
-            $this->accessory_2 = Arr::get($values, 'avaccessory2', $this->accessory_2);
-            $this->accessory_3 = Arr::get($values, 'avaccessory3', $this->accessory_3);
-            $this->skin_1 = Arr::get($values, 'avskin1', $this->skin_1);
-            $this->skin_2 = Arr::get($values, 'avskin2', $this->skin_2);
-            $this->bkd = Arr::get($values, 'avbkd', $this->bkd);
-            $this->environment = Arr::get($values, 'avenvironment', $this->environment);
-            $this->bubble = Arr::get($values, 'avbubble', $this->bubble);
-            $this->bubble_text = Arr::get($values, 'avbubbletext', $this->bubble_text);
-            $this->image = Arr::get($values, 'image_data', $this->image);
+        if ($this->is_loaded())
+        {
+            $this->skin_1       = Arr::get($values, 'avskin1', $this->skin_1);
+            $this->skin_2       = Arr::get($values, 'avskin2', $this->skin_2);
+            $this->cloth        = Arr::get($values, 'avcloth', $this->cloth);
+            $this->nose         = Arr::get($values, 'avnose', $this->nose);
+            $this->hair         = Arr::get($values, 'avhair', $this->hair);
+            $this->environment  = Arr::get($values, 'avenvironment', $this->environment);
+            $this->accessory_1  = Arr::get($values, 'avaccessory1', $this->accessory_1);
+            $this->bkd          = Arr::get($values, 'avbkd', $this->bkd);
+            $this->sex          = Arr::get($values, 'avsex', $this->sex);
+            $this->mouth        = Arr::get($values, 'avmouth', $this->mouth);
+            $this->outfit       = Arr::get($values, 'avoutfit', $this->outfit);
+            $this->bubble       = Arr::get($values, 'avbubble', $this->bubble);
+            $this->bubble_text  = Arr::get($values, 'avbubbletext', $this->bubble_text);
+            $this->accessory_2  = Arr::get($values, 'avaccessory2', $this->accessory_2);
+            $this->accessory_3  = Arr::get($values, 'avaccessory3', $this->accessory_3);
+            $this->age          = Arr::get($values, 'avage', $this->age);
+            $this->eyes         = Arr::get($values, 'aveyes', $this->eyes);
+            $this->hair_color   = Arr::get($values, 'avhaircolor', $this->hair_color);
+            $this->image        = Arr::get($values, 'image_data', $this->image);
 
             $this->save();
         }
     }
     
-    public function getAvatarsByMap($mapId) {
+    public function getAvatarsByMap ($mapId)
+    {
         $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
         $result = $builder->query();
         
-        if($result->is_loaded()) {
+        if ($result->is_loaded())
+        {
             $avatars = array();
-            foreach($result as $record) {
-                $avatars[] = DB_ORM::model('map_avatar', array((int)$record['id']));
-            }
-            
+            foreach($result as $record) $avatars[] = DB_ORM::model('map_avatar', array((int)$record['id']));
             return $avatars;
         }
-        
-        return NULL;
+        return array();
     }
 
-    public function getAvatarImage($avatarId){
+    public function getAvatarImage ($avatarId)
+    {
         $builder = DB_SQL::select('default', array('image'))->from($this->table())->where('id', '=', $avatarId);
         $result = $builder->query();
 
-        if($result->is_loaded()) {
-            return $result[0]['image'];
-        }
+        if($result->is_loaded()) return $result[0]['image'];
     }
 
     public function duplicateAvatar($avatarId, $file) {
@@ -273,29 +276,32 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
             $duplicateAvatar->eyes = $this->eyes;
             $duplicateAvatar->hair_color = $this->hair_color;
             $duplicateAvatar->image = $file;
+            $duplicateAvatar->is_private = $this->is_private;
 
             $duplicateAvatar->save();
         }
     }
 
-    public function duplicateAvatars($fromMapId, $toMapId) {
-        $avatars = $this->getAvatarsByMap($fromMapId);
-
-        if($avatars == null || $toMapId == null || $toMapId <= 0) return array();
-
+    public function duplicateAvatars($fromMapId, $toMapId)
+    {
         $avatarMap = array();
-        foreach($avatars as $avatar) {
+
+        if ( ! $toMapId) return $avatarMap;
+
+        foreach ($this->getAvatarsByMap($fromMapId) as $avatar)
+        {
             $avatarImage = $this->getAvatarImage($avatar->id);
-            if (!empty($avatarImage)) {
-                $upload_dir = DOCROOT . 'avatars/';
-                $file = uniqid() . '.png';
-				if(is_dir($upload_dir))
-					copy($upload_dir . $avatarImage, $upload_dir . $file);
-            } else {
-                $file = NULL;
+            $file = NULL;
+
+            if ( ! empty($avatarImage)) {
+                $upload_dir = DOCROOT.'avatars\\';
+                $avatarPath = $upload_dir.$avatarImage;
+				if (is_dir($upload_dir) AND file_exists($avatarPath)) {
+                    copy($avatarPath, $upload_dir.uniqid().'.png');
+                }
             }
 
-            $builder = DB_ORM::insert('map_avatar')
+            $avatarMap[$avatar->id] = DB_ORM::insert('map_avatar')
                     ->column('map_id', $toMapId)
                     ->column('skin_1', $avatar->skin_1)
                     ->column('skin_2', $avatar->skin_2)
@@ -315,22 +321,22 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
                     ->column('age', $avatar->age)
                     ->column('eyes', $avatar->eyes)
                     ->column('hair_color', $avatar->hair_color)
-                    ->column('image', $file);
-
-            $avatarMap[$avatar->id] = $builder->execute();
+                    ->column('image', $file)
+                    ->column('is_private', $avatar->is_private)
+                    ->execute();
         }
-
         return $avatarMap;
     }
 
-    public function exportMVP($mapId) {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
+    public function getAvatarById($id) {
+        $builder = DB_SQL::select('default')->from($this->table())->where('id', '=', $id);
         $result = $builder->query();
 
         if($result->is_loaded()) {
             $avatars = array();
-            foreach($result as $record) {
-                $avatars[] = $record;
+
+            foreach($result as $key => $value){
+                $avatars[$key] = $value;
             }
 
             return $avatars;
@@ -339,5 +345,3 @@ class Model_Leap_Map_Avatar extends DB_ORM_Model {
         return NULL;
     }
 }
-
-?>

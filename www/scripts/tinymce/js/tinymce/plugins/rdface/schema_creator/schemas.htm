@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>
+RDFaCE - Schemas
+</title>
+	<link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.min.css" media="all" />
+	<link rel="stylesheet" href="../libs/bootstrap/plugins/datepicker/css/datepicker.css" media="all" />
+	<link rel="stylesheet" href="../libs/bootstrap/plugins/datetimepicker/css/datetimepicker.css" media="all" />
+	<link rel="stylesheet" href="static/css/index.css" media="all" />
+	<script type="text/javascript" src="../libs/jstree/_lib/jquery.js"></script>
+	<script type="text/javascript" src="../libs/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../libs/bootstrap/plugins/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../libs/bootstrap/plugins/datepicker/js/bootstrap-datepicker.js"></script>
+	<script type="text/javascript" src="../libs/jquery.linkify.min.js"></script>
+	<script type="text/javascript" src="static/js/schemas.js"></script>
+</head>
+<body>
+<div class="page-header" id="page_header">
+	<h3>
+		Select a Schema
+	</h3>
+</div>
+<div id="action_area">
+    <div class="dropdown" id="schema_dropdown">
+    <ul id="schema_menu" class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+
+    </ul>
+    </div>
+</div>
+<script type="text/javascript">
+//a global variable holding the JSON of schemas
+var all_schemas;
+var all_datatypes=new Array();
+$(function () {
+	load_schemas();
+});
+
+</script>
+</body>
+</html>

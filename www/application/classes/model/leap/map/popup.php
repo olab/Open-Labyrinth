@@ -77,11 +77,20 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
             'is_enabled' => new DB_ORM_Field_Boolean($this, array(
                 'nullable' => FALSE,
                 'default' => TRUE
+            )),
+
+            'title_hide' => new DB_ORM_Field_Boolean($this, array(
+                'nullable' => FALSE
+            )),
+
+            'annotation' => new DB_ORM_Field_Text($this, array(
+                'nullable' => FALSE,
+                'savable' => TRUE
             ))
         );
 
         $this->relations = array(
-            'assign' => new DB_ORM_Relation_HasOne($this, array(
+            'assign' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('map_popup_id'),
                 'child_model' => 'map_popup_assign',
                 'parent_key' => array('id')
@@ -91,7 +100,12 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
                 'child_key' => array('map_popup_id'),
                 'child_model' => 'map_popup_style',
                 'parent_key' => array('id')
-            ))
+            )),
+            'counters' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('popup_id'),
+                'child_model' => 'map_popup_counter',
+                'parent_key' => array('id'),
+            )),
         );
     }
 
@@ -138,7 +152,7 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
      * @return null|{integer} - null or popup ID
      */
     public function savePopup($mapId, $values) {
-        if($mapId == null || $values == null || count($values) <= 0) return null;
+        if ( ! $values) return null;
         $popupId = Arr::get($values, 'popupId', null);
 
         return ($popupId != null && $popupId > 0) ? $this->updatePopup($popupId, $mapId, $values)
@@ -151,39 +165,28 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
      * @param {integer} $mapId - map ID
      * @return array - array of enabled map popups
      */
-    public function getEnabledMapPopups($mapId) {
-        $records = DB_SQL::select('default')
-                           ->column('id')
-                           ->from($this->table())
-                           ->where('map_id', '=', $mapId, 'AND')
-                           ->where('is_enabled', '=', 1)
-                           ->query();
-        $result  = array();
-
-        if($records->is_loaded()) {
-            foreach($records as $record) {
-                $result[] = DB_ORM::model('map_popup', array((int) $record['id']));
-            }
-        }
-
-        return $result;
+    public function getEnabledMapPopups ($mapId) {
+        return DB_ORM::select('Map_Popup')->where('map_id', '=', $mapId)->where('is_enabled', '=', 1)->query();
     }
 
     private function createNewPopup($mapId, $values) {
         $newPopupId = DB_ORM::insert('map_popup')
-                              ->column('map_id',        $mapId)
-                              ->column('title',         Arr::get($values, 'title',        ''))
-                              ->column('text',          Arr::get($values, 'text',         ''))
-                              ->column('position_type', Arr::get($values, 'positionType', Popup_Position_Types::OUTSIDE_NODE))
-                              ->column('position_id',   Arr::get($values, 'position',     Popup_Positions::TOP_LEFT))
-                              ->column('time_before',   Arr::get($values, 'timeBefore',   0))
-                              ->column('time_length',   Arr::get($values, 'timeLength',   0))
-                              ->column('is_enabled',    Arr::get($values, 'enabled',      false))
-                              ->execute();
+            ->column('map_id',        $mapId)
+            ->column('title',         Arr::get($values, 'title',        ''))
+            ->column('text',          Arr::get($values, 'text',         ''))
+            ->column('position_type', Arr::get($values, 'positionType', Popup_Position_Types::OUTSIDE_NODE))
+            ->column('position_id',   Arr::get($values, 'position',     Popup_Positions::TOP_LEFT))
+            ->column('time_before',   Arr::get($values, 'timeBefore',   0))
+            ->column('time_length',   Arr::get($values, 'timeLength',   0))
+            ->column('is_enabled',    Arr::get($values, 'enabled',      false))
+            ->column('title_hide',    (int)Arr::get($values, 'title_hide',   0))
+            ->column('annotation',    Arr::get($values, 'annotation',   ''))
+            ->execute();
 
-        if($newPopupId != null && $newPopupId > 0) {
+        if ($newPopupId != null && $newPopupId > 0) {
             DB_ORM::model('map_popup_assign')->assignPopup($newPopupId, $mapId, $values);
             DB_ORM::model('map_popup_style')->saveStyle($newPopupId, $values);
+            if (isset($values['counters'])) DB_ORM::model('map_popup_counter')->saveCounters($newPopupId, $values['counters']);
         }
 
         return $newPopupId;
@@ -191,7 +194,6 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
 
     private function updatePopup($popupId, $mapId, $values) {
         if($popupId == null || $mapId == null || $values == null || count($values) <= 0) return $popupId;
-
         $popup = DB_SQL::select('default')->from($this->table())->where('id', '=', $popupId)->limit(1)->query();
         if($popup->is_loaded()) {
             DB_SQL::update('default')
@@ -203,14 +205,28 @@ class Model_Leap_Map_Popup extends DB_ORM_Model {
                     ->set('time_before',   Arr::get($values, 'timeBefore',   0))
                     ->set('time_length',   Arr::get($values, 'timeLength',   0))
                     ->set('is_enabled',    Arr::get($values, 'enabled',      false))
+                    ->set('title_hide',    (int)Arr::get($values, 'title_hide',   0))
+                    ->set('annotation',    Arr::get($values, 'annotation',   ''))
                     ->where('id', '=', $popupId)
                     ->execute();
-
             DB_ORM::model('map_popup_assign')->assignPopup($popupId, $mapId, $values);
             DB_ORM::model('map_popup_style')->saveStyle($popupId, $values);
+            if (isset($values['counters'])) DB_ORM::model('map_popup_counter')->saveCounters($popupId, $values['counters']);
         }
 
         return $popupId;
+    }
+
+    public function getCounter($counterId) {
+        if( count($this->counters) > 0) {
+            foreach($this->counters as $counter) {
+                if($counter->counter_id == $counterId) {
+                    return $counter;
+                }
+            }
+            return NULL;
+        }
+        return NULL;
     }
 }
 
