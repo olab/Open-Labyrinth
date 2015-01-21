@@ -239,7 +239,10 @@ class Controller_Base extends Controller_Template {
         parent::before();
         Lti_DataConnector::getLtiPost();
 
-        if ($_POST OR $_GET OR $this->request->is_ajax()) {
+        $post = $_POST;
+        unset($post['Submit']);
+
+        if ($post OR $_GET OR $this->request->is_ajax()) {
             return;
         }
 
@@ -268,7 +271,7 @@ class Controller_Base extends Controller_Template {
             }
             // ----- end check access ----- //
 
-            if ($topMenu) return;
+           // if ($topMenu) return;
             
             foreach ($usersHistory as $value) {
                 if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
