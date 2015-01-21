@@ -271,7 +271,7 @@ class Controller_Base extends Controller_Template {
             }
             // ----- end check access ----- //
 
-           // if ($topMenu) return;
+            if ($topMenu) return;
             
             foreach ($usersHistory as $value) {
                 if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
