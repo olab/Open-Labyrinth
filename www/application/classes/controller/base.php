@@ -272,10 +272,14 @@ class Controller_Base extends Controller_Template {
             // ----- end check access ----- //
 
             if ($topMenu) return;
-            
+
             foreach ($usersHistory as $value) {
-                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
-                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                $splitHref = explode('/', $value['href']);
+                $isSameLabyrinth = ($splitHref[count($splitHref) - 1] == $this->request->param('id', 0));
+
+                if ($isSameLabyrinth AND
+                    ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
+                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))) {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;

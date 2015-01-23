@@ -447,7 +447,7 @@ jQuery(document).ready(function(){
 
     var $historyShowWarningPopup = (typeof historyShowWarningPopup == 'undefined') ? false : historyShowWarningPopup;
     if ($historyShowWarningPopup) {
-        $('.row-fluid input, .row-fluid .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
+        $('.row-fluid input, #content .btn, .row-fluid textarea, canvas, button, select').attr('disabled','disabled');
         $('.btn').attr('href', 'javascript:void(0)');
         $('.editable-text').attr('contenteditable', 'false');
         $('.row-fluid form').attr('action','');

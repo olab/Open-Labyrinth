@@ -129,6 +129,7 @@ class Controller_ExportImportManager extends Controller_Base {
         header("Content-length: ".filesize($path));
 
         readfile($path);
+        exit();
     }
 
     public function exportVUE($mapId) {

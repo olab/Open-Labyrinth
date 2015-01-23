@@ -1387,7 +1387,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
     private static function getAvatarHTML($id)
     {
         $avatar = DB_ORM::model('map_avatar', array((int) $id));
-        return ($avatar->image != null AND file_exists(DOCROOT.URL::base().'/avatars/'.$avatar->image))
+
+        return ($avatar->image != null AND file_exists(DOCROOT.'/avatars/'.$avatar->image))
             ? '<img src="'.URL::base().'avatars/'.$avatar->image.'" />'
             : '<img src="'.URL::base().'avatars/default.png" />';
     }
