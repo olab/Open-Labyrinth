@@ -752,8 +752,11 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
             $replaceIndex   = 'renderLabyrinth/index/'.$newMapId.'/'.$newNodeId;
             $searchGo       = 'renderLabyrinth/go/'.$oldMapId.'/'.$oldNodeId;
             $replaceGo      = 'renderLabyrinth/go/'.$newMapId.'/'.$newNodeId;
+            $searchFile     = '/files/'.$oldMapId;
+            $replaceFile    = '/files/'.$newMapId;
             $text           = str_replace($searchIndex, $replaceIndex, $text);
             $text           = str_replace($searchGo, $replaceGo, $text);
+            $text           = str_replace($searchFile, $replaceFile, $text);
         }
         return $text;
     }
