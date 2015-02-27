@@ -391,9 +391,9 @@ $id_node = $templateData['node']->id; ?>
 <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
 <?php
-$assign  = null;
 $section = false;
 foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
+    $assign  = null;
     foreach ($mapPopup->assign as $a){
         foreach (Arr::get($templateData,'sections', array()) as $s){
             if ($a->assign_to_id == $s->id){
@@ -405,7 +405,7 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
             $a->assign_to_id == $id_map OR
             $section) $assign = $a;
     }
-    if (isset($assign)) { ?>
+    if ( ! is_null($assign)) { ?>
     <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
          popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
          time-before="<?php echo $mapPopup->time_before; ?>"
