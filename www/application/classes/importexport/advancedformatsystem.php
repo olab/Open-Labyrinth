@@ -679,7 +679,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
         if ( ! is_dir($this->folderPath) AND count($images) == 0) return;
 
         if( ! is_dir($this->folderPath.'/media/vdImages')) {
-            mkdir($this->folderPath.'/media/vdImages');
+            mkdir($this->folderPath.'/media/vdImages', 0777, TRUE);
         }
         if( ! is_dir($this->folderPath.'/media/vdImages/thumbs')) {
             mkdir($this->folderPath.'/media/vdImages/thumbs');
