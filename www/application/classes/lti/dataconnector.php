@@ -252,12 +252,31 @@ class Lti_DataConnector {
             'updated'               => $now
         );
         $key = $resource_link->getKey();
-        if (is_null($resource_link->created)) {
-            DB_ORM::model('lti_context')->addContext($key, $data);
-            $resource_link->created = $time;
-            $resource_link->updated = $time;
-        } else {
+
+        $ltiContext = DB::select()->from('lti_contexts')->where('consumer_key', '=', $key)->execute();
+        // need to redone if block. Only else must presents
+        if ($ltiContext[0]) {
+            $data = array(
+                'context_id'            => $resource_link->getId(),
+                'lti_context_id'        => $ltiContext[0]['lti_context_id'],
+                'lti_resource_id'       => $ltiContext[0]['lti_resource_id'],
+                'title'                 => $ltiContext[0]['title'],
+                'settings'              => serialize($ltiContext[0]['settings']),
+                'primary_consumer_key'  => $ltiContext[0]['primary_consumer_key'],
+                'primary_context_id'    => '',
+                'share_approved'        => 1,
+                'created'               => $ltiContext[0]['created'],
+                'updated'               => $ltiContext[0]['updated']
+            );
             DB_ORM::model('lti_context')->updateContext($key, $data);
+        } else {
+            if (is_null($resource_link->created)) {
+                DB_ORM::model('lti_context')->addContext($key, $data);
+                $resource_link->created = $time;
+                $resource_link->updated = $time;
+            } else {
+                DB_ORM::model('lti_context')->updateContext($key, $data);
+            }
         }
 
         return true;
