@@ -236,8 +236,23 @@ class Lti_DataConnector {
         } else {
             $approved = 0;
         }
+
         $time = time();
         $now = date('Y-m-d H:i:s', $time);
+        $key = $resource_link->getKey();
+        $ltiContext = DB::select()->from('lti_contexts')->where('consumer_key', '=', $key)->execute();
+
+        // need to redone if block. Only else must presents
+        if ($ltiContext[0]) {
+            $resource_link->lti_context_id = $ltiContext[0]['lti_context_id'];
+            $resource_link->lti_resource_id = $ltiContext[0]['lti_resource_id'];
+            $resource_link->title = $ltiContext[0]['title'];
+            $resource_link->settings = $ltiContext[0]['settings'];
+            $resource_link->primary_consumer_key = $ltiContext[0]['primary_consumer_key'];
+            $resource_link->created = $ltiContext[0]['created'];
+            $resource_link->updated = $now;
+        }
+
         $settingsValue = serialize($resource_link->settings);
         $data = array(
             'context_id'            => $resource_link->getId(),
@@ -251,32 +266,13 @@ class Lti_DataConnector {
             'created'               => $now,
             'updated'               => $now
         );
-        $key = $resource_link->getKey();
 
-        $ltiContext = DB::select()->from('lti_contexts')->where('consumer_key', '=', $key)->execute();
-        // need to redone if block. Only else must presents
-        if ($ltiContext[0]) {
-            $data = array(
-                'context_id'            => $resource_link->getId(),
-                'lti_context_id'        => $ltiContext[0]['lti_context_id'],
-                'lti_resource_id'       => $ltiContext[0]['lti_resource_id'],
-                'title'                 => $ltiContext[0]['title'],
-                'settings'              => serialize($ltiContext[0]['settings']),
-                'primary_consumer_key'  => $ltiContext[0]['primary_consumer_key'],
-                'primary_context_id'    => '',
-                'share_approved'        => 1,
-                'created'               => $ltiContext[0]['created'],
-                'updated'               => $ltiContext[0]['updated']
-            );
-            DB_ORM::model('lti_context')->updateContext($key, $data);
+        if (is_null($resource_link->created)) {
+            DB_ORM::model('lti_context')->addContext($key, $data);
+            $resource_link->created = $time;
+            $resource_link->updated = $time;
         } else {
-            if (is_null($resource_link->created)) {
-                DB_ORM::model('lti_context')->addContext($key, $data);
-                $resource_link->created = $time;
-                $resource_link->updated = $time;
-            } else {
-                DB_ORM::model('lti_context')->updateContext($key, $data);
-            }
+            DB_ORM::model('lti_context')->updateContext($key, $data);
         }
 
         return true;

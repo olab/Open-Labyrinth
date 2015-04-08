@@ -87,7 +87,7 @@ if (isset($templateData['session'])) {
                         }
                     }
                     $t = $max - $templateData['session']->start_time;
-                    echo date('i:s', $t);
+                    echo gmdate('H:i:s', $t);
                 } ?>
             </td>
         </tr>
