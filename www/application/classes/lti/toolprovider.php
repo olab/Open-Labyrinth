@@ -543,6 +543,7 @@ class Lti_ToolProvider {
         ### Set the request context/resource link
         #
       $this->resource_link = new Lti_ResourceLink($this->consumer, trim($_POST['resource_link_id']));
+        print_r($this->resource_link); die;
       if (isset($_POST['context_id'])) {
         $this->resource_link->lti_context_id = trim($_POST['context_id']);
       }
