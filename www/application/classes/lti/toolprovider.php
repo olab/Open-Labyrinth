@@ -317,7 +317,7 @@ class Lti_ToolProvider {
         $admin      = $this->user->isAdmin();
         $author     = $this->user->isStaff();
         $learner    =  $this->user->isLearner();
-        $role       = null;
+        $role       = 1;
         if ($admin) $role = 4;
         elseif ($author) $role = 2;
         elseif ($learner) $role = 1;
