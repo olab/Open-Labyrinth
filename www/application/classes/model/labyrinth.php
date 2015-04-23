@@ -319,29 +319,29 @@ class Model_Labyrinth extends Model {
                     switch ($node->link_type->name) {
                         case 'ordered':
                             $order = $link->order * 10000;
-                            if (isset($withOutPosition[$order])) {
-                                $nextIndex = $this->findNextIndex($withOutPosition, $order + 1);
-                                $withOutPosition[$nextIndex] = $link;
+                            if (isset($withPosition[$order])) {
+                                $nextIndex = $this->findNextIndex($withPosition, $order + 1);
+                                $withPosition[$nextIndex] = $link;
                             } else {
-                                $withOutPosition[$order] = $link;
+                                $withPosition[$order] = $link;
                             }
                             break;
                         case 'random order':
                             $randomIndex = rand(0, 100000);
-                            if (isset($withOutPosition[$randomIndex])) {
-                                $nextIndex = $this->findNextIndex($withOutPosition, $randomIndex + 1);
-                                $withOutPosition[$nextIndex] = $link;
+                            if (isset($withPosition[$randomIndex])) {
+                                $nextIndex = $this->findNextIndex($withPosition, $randomIndex + 1);
+                                $withPosition[$nextIndex] = $link;
                             } else {
-                                $withOutPosition[$randomIndex] = $link;
+                                $withPosition[$randomIndex] = $link;
                             }
                             break;
                         case 'random select one *':
                             $randomIndex = rand(0, 100000) * ($link->probability == 0 ? 1 : $link->probability);
-                            if (isset($withOutPosition[$randomIndex])) {
-                                $nextIndex = $this->findNextIndex($withOutPosition, $randomIndex + 1);
-                                $withOutPosition[$nextIndex] = $link;
+                            if (isset($withPosition[$randomIndex])) {
+                                $nextIndex = $this->findNextIndex($withPosition, $randomIndex + 1);
+                                $withPosition[$nextIndex] = $link;
                             } else {
-                                $withOutPosition[$randomIndex] = $link;
+                                $withPosition[$randomIndex] = $link;
                             }
                             break;
                         default:
