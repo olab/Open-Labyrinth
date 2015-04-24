@@ -1270,7 +1270,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public static function parseText($text, $mapId = NULL, $elementType = '')
     {
-        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR');
+        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
 
         foreach ($codes as $code)
         {
@@ -1324,6 +1324,12 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         break;
                                     case 'CR':
                                         $replaceString = Controller_RenderLabyrinth::getCounterHTML($mapId, $id);
+                                        break;
+                                    case 'NODE':
+                                        $replaceString = Controller_RenderLabyrinth::getLinkHTML($mapId, $id);
+                                        break;
+                                    case 'BUTTON':
+                                        $replaceString = Controller_RenderLabyrinth::getButtonHTML($mapId, $id);
                                         break;
                                 }
 
@@ -1412,6 +1418,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
 
         return $result;
+    }
+
+    private static function getLinkHTML($mapId, $id)
+    {
+        return '/renderLabyrinth/go/'.$mapId.'/'.$id;
+    }
+
+    private static function getButtonHTML($mapId, $id)
+    {
+        $node = DB_ORM::model('map_node')->getNodeById((int) $id);
+        return '<a href="/renderLabyrinth/go/'.$mapId.'/'.$id.'" class="btn">'.$node->title.'</a>';
     }
 
     private static function getQuestionHTML ($id)

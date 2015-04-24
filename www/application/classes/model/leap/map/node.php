@@ -736,8 +736,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         {
             $this->id = $v;
             $this->load();
-            $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
-            $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap);
+            $this->text = $this->parseText($this->text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap, $nodeMap);
+            $this->info = $this->parseText($this->info, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap, $nodeMap);
             $this->text = $this->relativeLink($this->text, $mapId, $newMapId, $nodeMap);
             $this->info = $this->relativeLink($this->info, $mapId, $newMapId, $nodeMap);
             $this->save();
@@ -761,11 +761,11 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
         return $text;
     }
 
-    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap)
+    private function parseText($text, $elemMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damMap, $nodeMap)
     {
         $result = $text;
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
 
         foreach ($codes as $code)
         {
@@ -804,6 +804,16 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
                                             $replaceString = '[[' . $code . ':' . $damMap[(int)$id] . ']]';
                                         break;
                                     case 'INFO':
+                                        break;
+                                    case 'CD':
+                                        break;
+                                    case 'CR':
+                                        break;
+                                    case 'NODE':
+                                        $replaceString = '[[' . $code . ':' . $nodeMap[(int)$id] . ']]';
+                                        break;
+                                    case 'BUTTON':
+                                        $replaceString = '[[' . $code . ':' . $nodeMap[(int)$id] . ']]';
                                         break;
                                 }
                                 $result = str_replace('[['.$code.':'.$id.']]', $replaceString, $result);
