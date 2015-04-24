@@ -369,10 +369,9 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem {
                 $node['text']        = str_replace($searchNodeLinksArray, $replaceNodeLinksArray, $node['text']);
                 $node['text']        = str_replace($searchFilesLinks, $replaceFilesLinks, $node['text']);
                 $node['text']        = str_replace('[[INFO:'.$key.']]', '[[INFO:'.$node['database_id'].']]', $node['text']);
-                preg_match('/\b(?:(?:https?):\/\/|www\.)(.)+(\/renderLabyrinth)/i', $node['text'], $oldDomainLink);
+                preg_match('/\b(?:(?:https?):\/\/|www\.)(.)+(\/renderLabyrinth|\/files\/)/i', $node['text'], $oldDomainLink);
                 if(!empty($oldDomainLink[0])){
                     $oldDomainName = parse_url($oldDomainLink[0], PHP_URL_HOST);
-                    echo $oldDomainName . '<hr>';
                     $node['text'] = str_replace($oldDomainName, $_SERVER['HTTP_HOST'], $node['text']);
                 }
 
