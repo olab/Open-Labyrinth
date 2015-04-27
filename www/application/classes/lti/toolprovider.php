@@ -676,7 +676,13 @@ class Lti_ToolProvider {
       // Persist changes to resource link
       $this->resource_link->save();
       if($saveUser){
-          $this->user->save();
+
+          $consumer_key = $this->consumer->getKey();
+          $alreadyExist = DB_ORM::select('lti_user')->where('consumer_key', '=', $consumer_key)->query()->as_array();
+
+          if(empty($alreadyExist)) {
+              $this->user->save();
+          }
       }
     }
     return $this->isOK;
