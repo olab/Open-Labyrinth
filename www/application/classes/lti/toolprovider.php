@@ -676,6 +676,10 @@ class Lti_ToolProvider {
       // Persist changes to resource link
       $this->resource_link->save();
       if($saveUser){
+
+          $consumer_key = $this->consumer->getKey();
+          DB_ORM::delete('lti_user')->where('consumer_key', '=', $consumer_key)->execute();
+
           $this->user->save();
       }
     }
