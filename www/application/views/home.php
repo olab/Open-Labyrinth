@@ -200,6 +200,17 @@ if ($user) {
                     </div>
                     <div id="content" class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
                         <div><?php Breadcrumbs::render(); ?></div>
+                        <?php
+                        $flash = Session::instance()->get_once('finalSubmit', null);
+                        if(!empty($flash)){
+                        ?>
+                                <div class="alert alert-error">
+                                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                    <?php echo $flash; ?>
+                                </div>
+                        <?php
+                        }
+                        ?>
                         <div class="row-fluid"><?php
                             echo Arr::get($templateData, 'error');
                             echo Arr::get($templateData, 'center'); ?>

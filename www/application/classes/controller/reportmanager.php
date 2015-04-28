@@ -54,8 +54,7 @@ class Controller_ReportManager extends Controller_Base
 
     public function action_finishAndShowReport()
     {
-        Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
-        $sessionId      = $this->request->param('id', NULL);
+        $sessionId      = Session::instance()->get('session_id', null);
         $mapId          = $this->request->param('id2', NULL);
         $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
 
@@ -64,9 +63,22 @@ class Controller_ReportManager extends Controller_Base
         }
 
         Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previewNodeId);
-        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
+        if(!empty($sessionId) && is_numeric($sessionId)) {
+            $session = DB_ORM::model('user_session', (int)$sessionId);
+            $session->end_time = time();
+            $session->save();
+            DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
+        }
+        Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
+        Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
 
-        Request::initial()->redirect(URL::base().'reportManager/showReport/'.$sessionId);
+        if(empty($sessionId) || $sessionId == 'notExist'){
+            $sessionIdUrl = $this->request->param('id', NULL);
+            if(empty($sessionIdUrl)) $sessionIdUrl = 'notExist';
+        }else{
+            $sessionIdUrl = $sessionId;
+        }
+        Request::initial()->redirect(URL::base().'reportManager/showReport/'.$sessionIdUrl);
     }
 
     public function action_exportToExcel() {
@@ -139,16 +151,34 @@ class Controller_ReportManager extends Controller_Base
         foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array() as $question) {
             $questions[$question->id] = $question;
         }
+
         $this->templateData['questions'] = $questions;
         $this->templateData['responses'] = array();
 
-        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->query()->as_array();
+        if($this->templateData['map']->revisable_answers) {
+            $orderBy = 'ASC';
+        }else{
+            $orderBy = 'DESC';
+        }
+        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id', $orderBy)->query()->as_array();
+
+        $multipleResponses = $this->getMultipleResponses($userResponses, $questions, $orderBy);
+
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             if ($questions[$questionId]->entry_type_id == 8) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
-            $this->templateData['responses'][] = $userResponse;
+
+            if(in_array($questions[$questionId]->entry_type_id, array(1,2,4,5,6,7,8,9,10))) {
+                $this->templateData['responses'][$questionId] = $userResponse;
+            }elseif(in_array($questions[$questionId]->entry_type_id, array(3))){
+                if(in_array($userResponse->id, $multipleResponses)) {
+                    $this->templateData['responses'][] = $userResponse;
+                }
+            }else{
+                $this->templateData['responses'][] = $userResponse;
+            }
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
@@ -213,6 +243,38 @@ class Controller_ReportManager extends Controller_Base
         } else {
             Request::initial()->redirect(URL::base());
         }
+    }
+
+    public function getMultipleResponses($userResponses, $questions, $orderBy)
+    {
+        $multipleResponses = array();
+        $result = array();
+
+        foreach ($userResponses as $userResponse) {
+            $questionId = $userResponse->question_id;
+            if(in_array($questions[$questionId]->entry_type_id, array(3))){
+                $multipleResponses[$questionId][] = $userResponse->created_at;
+            }
+        }
+
+        foreach ($userResponses as $userResponse) {
+            $questionId = $userResponse->question_id;
+            if(!isset($multipleResponses[$questionId])) continue;
+
+            if ($orderBy == 'ASC') {
+                //get last response
+                $created_at = max($multipleResponses[$questionId]);
+            } else {
+                //get first response
+                $created_at = min($multipleResponses[$questionId]);
+            }
+
+            if($userResponse->created_at == $created_at) {
+                $result[] = $userResponse->id;
+            }
+        }
+
+        return $result;
     }
 
     private function checkUser()

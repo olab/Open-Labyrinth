@@ -51,6 +51,11 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'nullable' => FALSE,
             )),
 
+            'end_time' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => TRUE,
+            )),
+
             'user_ip' => new DB_ORM_Field_String($this, array(
                 'max_length' => 50,
                 'nullable' => FALSE,

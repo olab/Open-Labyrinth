@@ -158,7 +158,12 @@ class Model_Leap_Map extends DB_ORM_Model
             'author_rights' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
                 'nullable' => FALSE
-            ))
+            )),
+            'revisable_answers' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
         );
 
         $this->relations = array(
@@ -519,6 +524,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->security_id  = Arr::get($values, 'security', 2);
         $this->section_id   = Arr::get($values, 'section', 1);
         $this->language_id  = Arr::get($values, 'language_id', 1);
+        $this->revisable_answers  = Arr::get($values, 'revisable_answers', FALSE);
         $this->save();
 
         $map = $this->getMapByName($this->name);
@@ -561,7 +567,8 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('dev_notes', '')
             ->column('source', '')
             ->column('source_id', 0)
-            ->column('language_id', 1);
+            ->column('language_id', 1)
+            ->column('revisable_answers', FALSE);
 
         return $builder->execute();
     }
@@ -598,6 +605,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->security_id      = Arr::get($values, 'security', 2);
         $this->section_id       = Arr::get($values, 'section', 1);
         $this->verification     = Arr::get($values, 'verification', NULL);
+        $this->revisable_answers= Arr::get($values, 'revisable_answers', FALSE);
 
         $this->save();
     }
@@ -742,6 +750,7 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('source_id',       $this->source_id)
             ->column('verification',    $this->verification)
             ->column('assign_forum_id', $this->assign_forum_id)
+            ->column('revisable_answers', $this->revisable_answers)
             ->execute();
 
         $nodeMap =      DB_ORM::model('map_node')               ->duplicateNodes        ($mapId, $newMapId);

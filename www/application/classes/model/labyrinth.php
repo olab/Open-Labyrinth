@@ -423,21 +423,18 @@ class Model_Labyrinth extends Model {
             unset($questionChoices['counter_ids']);
         }
 
+        $created_at = time();
         foreach ($sctResponses as $idQuestion=>$idResponse) {
-            DB_ORM::insert('User_Response')
-                ->column('question_id', $idQuestion)
-                ->column('response', $idResponse)
-                ->column('session_id', $sessionId)
-                ->column('node_id', $nodeId)
-                ->execute();
+            DB_ORM::model('user_response')->createResponse($sessionId, $idQuestion, $idResponse, $nodeId, $created_at);
         }
 
         $counterString = $this->getCounterString($mapID);
         if (count($questionChoices)) {
             foreach($questionChoices as $qID => $questions) {
                 if (count($questions)) {
+                    $created_at = time();
                     foreach($questions as $q) {
-                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response'], $nodeId);
+                        DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response'], $nodeId, $created_at);
                         if (count($counterIDs)) {
                             $score = trim($q['score']);
                             $value = $this->getCounterValueFromString($counterIDs[$qID], $counterString);
@@ -465,9 +462,10 @@ class Model_Labyrinth extends Model {
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
         if (count($sliderQuestionChoices)) {
             $slidersSum = 0;
+            $created_at = time();
             foreach($sliderQuestionChoices as $qID => $sliderValue) {
                 $slidersSum += $sliderValue;
-                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue, $nodeId);
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue, $nodeId, $created_at);
                 $question = DB_ORM::model('map_question', array((int)$qID));
                 if ($question != null) {
                     if (count($question->responses)) {
@@ -501,12 +499,13 @@ class Model_Labyrinth extends Model {
 
         $draggingQuestionResponses = Session::instance()->get('dragQuestionResponses');
         if(count($draggingQuestionResponses)) {
+            $created_at = time();
             foreach($draggingQuestionResponses as $responseJSON) {
                 $responseObject = json_decode($responseJSON, true);
                 if ($responseObject == null) continue;
 
                 if (isset($responseObject['id']) AND isset($responseObject['responses'])) {
-                    DB_ORM::model('user_response')->createResponse($sessionId, $responseObject['id'], json_encode($responseObject['responses']), $nodeId);
+                    DB_ORM::model('user_response')->createResponse($sessionId, $responseObject['id'], json_encode($responseObject['responses']), $nodeId, $created_at);
                 }
             }
             Session::instance()->delete('dragQuestionResponses');

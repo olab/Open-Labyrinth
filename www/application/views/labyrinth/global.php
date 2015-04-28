@@ -99,6 +99,18 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div><?php
         } ?>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Allow revisable answers'); ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float:left;">
+                    <input autocomplete="off" type="radio" id="revisable-answers0" name="revisable_answers" value="0" <?=!$templateData['map']->revisable_answers ? 'checked' : ''?>/>
+                    <label data-class="btn-danger" data-value="no" class="btn" for="revisable-answers0"><?php echo __('No'); ?></label>
+
+                    <input autocomplete="off" type="radio" id="revisable-answers1" name="revisable_answers" value="1" <?=$templateData['map']->revisable_answers ? 'checked' : ''?>/>
+                    <label data-class="btn-success" data-value="yes" class="btn" for="revisable-answers1"><?php echo __('Yes'); ?></label>
+                </div>
+            </div>
+        </div>
     </fieldset><?php
     $orderIndex=1;
     if ($uiMode == 'advanced') { ?>

@@ -94,6 +94,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $node       = DB_ORM::model('map_node')->getNodeById(Arr::get($result, 'node_id', 0));
             $bookmark   = Arr::get($result, 'id', 0);
         } elseif ($action == 'go') {
+
+            $sessionId = Session::instance()->get('session_id');
+            $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
+            if(empty($sessionId) || !empty($sessionObj->end_time)){
+                Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
+                Request::initial()->redirect(URL::base());
+            }
+
             $nodeId   = $this->request->param('id2', null);
 
             // deprecated if statements 4.08.2014
@@ -1127,7 +1135,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $result             = NULL;
         $result['links']    = '';
         $nextNodeTemplate   = 'This is the end of step.';
-        $endNodeTemplate    = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'">End Session and View Feedback</a></div>';
+        $endNodeTemplate    = '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$node->map_id.'" class="btn">End Session and View Feedback</a></div>';
         $wSectionId         = Session::instance()->get('webinarSectionId', 0);
 
         if ($wSectionId)
@@ -1271,6 +1279,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
     public static function parseText($text, $mapId = NULL, $elementType = '')
     {
         $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
+        $buttons = array('FS');
+        foreach ($buttons as $button)
+        {
+            $replaceString = '';
+            switch ($button) {
+                case 'FS':
+                    $replaceString = Controller_RenderLabyrinth::getFinalSubmissionHTML($mapId);
+                    break;
+            }
+
+            $text = str_replace('[[' . $button . ']]', $replaceString, $text);
+        }
 
         foreach ($codes as $code)
         {
@@ -1431,6 +1451,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return '<a href="/renderLabyrinth/go/'.$mapId.'/'.$id.'" class="btn">'.$node->title.'</a>';
     }
 
+    private static function getFinalSubmissionHTML($mapId)
+    {
+        return '<div><a href="'.URL::base().'reportManager/finishAndShowReport/'.Session::instance()->get('session_id').'/'.$mapId.'" class="btn">Final Submission</a></div>';
+    }
+
     private static function getQuestionHTML ($id)
     {
         $question        = DB_ORM::model('map_question', array((int) $id));
@@ -1438,6 +1463,14 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $q_type          = $question->type->value;
         $qTitle          = $question->type->title;
         $previousAnswers = '';
+        $sessionId = Session::instance()->get('session_id', null);
+        $map = DB_ORM::model('map', array($question->map_id));
+        //for user responses, get first or last response
+        if($map->revisable_answers) {
+            $orderBy = 'DESC';
+        }else{
+            $orderBy = 'ASC';
+        }
 
         if ($question) {
             // ----- get validator data ----- //
@@ -1506,8 +1539,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($q_type == 'text') {
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, false);
+                $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
 
-                $result = '<input autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-single" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" placeholder="'.$question->prompt.'" id="qresponse_'.$question->id.'" ';
+                $result = '<input value="'.$userResponse.'" autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-single" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" placeholder="'.$question->prompt.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
                 if ($question->show_submit == 1) {
                     if ($question->submit_text != null) $submitText = $question->submit_text;
@@ -1520,22 +1554,28 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
+                if($map->revisable_answers) {
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                }
                 $cumulative  = (($qTitle == 'Cumulative') AND self::$scenarioId);
                 $class       = (($qTitle == 'Cumulative') OR ($qTitle == 'Rich text')) ? ' mceText' : '';
                 $placeholder = $cumulative ? '' : ' placeholder="'.$question->prompt.'"';
-                $content     = '';
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 if ($cumulative) {
                     $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
                 }
 
-                if ( ! $previousAnswers) {
+                if(!empty($userResponse) && empty($previousAnswers)){
+                    $content = $userResponse;
+                }elseif(!empty($previousAnswers)) {
+                    $content = $previousAnswers;
+                }else{
                     $content = htmlspecialchars($question->prompt);
                 }
 
                 $result =
-                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$previousAnswers.$content.'</textarea>'.
+                    '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$content.'</textarea>'.
                     '<p>'.
                         '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
                         '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
@@ -1545,6 +1585,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if($q_type == 'mcq') {
                 if (count($question->responses)) {
+                    $userResponse = self::getMultipleResponse($sessionId, $id, $orderBy);
                     $displayType = ($question->type_display == 1) ? ' horizontal' : '';
                     $result = '<div class="questionResponces'.$displayType.'">';
                     $result .= '<ul class="navigation">';
@@ -1552,7 +1593,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     foreach ($question->responses as $response)
                     {
                         $result .= '<li>';
-                        $result .= '<span id="click'.$response->id.'"><input type="checkbox" class="lightning-choice" name="option-'.$id.'" data-question="'.$question->id.'" data-response="'.$response->id.'" data-tries="'.$question->num_tries.'" data-val="'.$response->response.'"/></span>';
+                        $result .= '<span id="click'.$response->id.'"><input type="checkbox" class="lightning-choice" name="option-'.$id.'" data-question="'.$question->id.'" data-response="'.$response->id.'" data-tries="'.$question->num_tries.'" data-val="'.$response->response.'" '.(in_array($response->response, $userResponse) ? 'checked' : '').'/></span>';
                         $result .= '<span class="text">'.$response->response.'</span>';
                         $result .= '<span id="AJAXresponse'.$response->id.'"></span>';
                         $result .= '</li>';
@@ -1568,6 +1609,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             } else if($q_type == 'pcq') {
                 if (count($question->responses)) {
+
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+
                     $displayType = ($question->type_display == 1) ? ' horizontal' : '';
                     $result = '<div class="questionResponces questionForm_'.$question->id.$displayType.'">';
                     $result .= '<ul class="navigation">';
@@ -1575,7 +1619,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                     foreach ($question->responses as $response) {
                         $result .= '<li>';
-                        $result .= '<span id="click'.$response->id.'"><input type="radio" class="lightning-choice" name="option-'.$id.'" data-question="'.$question->id.'" data-response="'.$response->id.'" data-tries="'.$question->num_tries.'" data-val="'.$response->response.'"/></span>';
+                        $result .= '<span id="click'.$response->id.'"><input type="radio" class="lightning-choice" name="option-'.$id.'" data-question="'.$question->id.'" data-response="'.$response->id.'" data-tries="'.$question->num_tries.'" data-val="'.$response->response.'" '.($userResponse==$response->response ? 'checked' : '').'/></span>';
                         $result .= '<span>'.$response->response.'</span>';
                         $result .= '<span id="AJAXresponse' . $response->id . '"></span>';
                         $result .= '</li>';
@@ -1592,6 +1636,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result .= '</div>';
                 }
             } else if ($q_type == 'sct') {
+                $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
                 $disposable = ($question->num_tries == 1) ? ' disposable' : '';
                 $horizontal = ($question->type_display == 1) ? ' horizontal' : '';
                 $result .= '<ul class="navigation'.$horizontal.'">';
@@ -1600,7 +1645,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 {
                     $result .= '<li>';
                     $result .= '<label>';
-                    $result .= '<input class="sct-question'.$disposable.'" data-response="'.$response->id.'" data-question="'.$response->question_id.'" data-val="'.$response->response.'" type="radio" name="option-'.$id.'"/>';
+                    $result .= '<input class="sct-question'.$disposable.'" data-response="'.$response->id.'" data-question="'.$response->question_id.'" data-val="'.$response->response.'" type="radio" name="option-'.$id.'" '.($userResponse==$response->id ? 'checked' : '').'/>';
                     $result .= $response->response;
                     $result .= '</label>';
                     $result .= '</li>';
@@ -1610,10 +1655,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if($q_type == 'slr') {
                 if($question->settings != null)
                 {
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
                     $settings = json_decode($question->settings);
                     $sliderValue = $settings->minValue;
 
-                    if ($question->counter_id > 0) {
+                    if($userResponse !==null){
+                        $sliderValue = $userResponse;
+                    }elseif ($question->counter_id > 0) {
                         $sliderValue = Controller_RenderLabyrinth::getCurrentCounterValue($question->map_id, $question->counter_id);
                     } else if (property_exists($settings, 'defaultValue')) {
                         $sliderValue = $settings->defaultValue;
@@ -1680,9 +1728,26 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             } else if ($q_type == 'dd') {
+                $userResponses = self::getPickResponse($sessionId, $id, $orderBy);
+                $userResponses = json_decode($userResponses);
+
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
-                foreach ($question->responses as $response) {
-                    $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
+                if(!empty($userResponses)) {
+                    foreach ($userResponses as $userResponse) {
+                        $responseKey = null;
+                        foreach ($question->responses as $key => $questionResponse) {
+                            if($questionResponse->id == $userResponse){
+                                $responseKey = $key;
+                            }
+                        }
+                        if($responseKey === null) continue;
+                        $response = $question->responses[$responseKey];
+                        $result .= '<li class="sortable" responseId="' . $response->id . '">' . $response->response . '</li>';
+                    }
+                }else {
+                    foreach ($question->responses as $response) {
+                        $result .= '<li class="sortable" responseId="' . $response->id . '">' . $response->response . '</li>';
+                    }
                 }
                 $result .= '</ul>';
 
@@ -1692,14 +1757,66 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
                 }
             } else if ($q_type == 'sjt') {
+                $userResponses = self::getPickResponse($sessionId, $id, $orderBy);
+                $userResponses = json_decode($userResponses);
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
-                foreach ($question->responses as $response){
-                    $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
+                if(!empty($userResponses)) {
+                    foreach ($userResponses as $userResponse) {
+                        $responseKey = null;
+                        foreach ($question->responses as $key => $questionResponse) {
+                            if($questionResponse->id == $userResponse){
+                                $responseKey = $key;
+                            }
+                        }
+                        if($responseKey === null) continue;
+                        $response = $question->responses[$responseKey];
+                        $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
+                    }
+                }else {
+                    foreach ($question->responses as $response){
+                        $result .= '<li class="sortable" responseId="'.$response->id.'">'.$response->response.'</li>';
+                    }
                 }
+
                 $result .= '</ul>';
             }
             $result = '<div class="questions"><p>'.$question->stem.'</p>'.$result.'</div>';
         }
+        return $result;
+    }
+
+    public function getPickResponse($sessionId, $questionId, $orderBy)
+    {
+        $userResponse = DB_ORM::select('user_response')
+            ->where('session_id', '=', $sessionId)
+            ->where('question_id', '=', $questionId)
+            ->order_by('id', $orderBy)
+            ->limit(1)
+            ->query()
+            ->as_array();
+        if(!empty($userResponse[0])){
+            return $userResponse[0]->response;
+        }else{
+            return null;
+        }
+    }
+
+    public function getMultipleResponse($sessionId, $questionId, $orderBy)
+    {
+        $result = array();
+        $userResponses = DB_ORM::select('user_response')
+            ->where('session_id', '=', $sessionId)
+            ->where('question_id', '=', $questionId)
+            ->order_by('created_at', $orderBy)
+            ->query()
+            ->as_array();
+
+        if(!empty($userResponses)){
+            foreach($userResponses as $userResponse){
+                $result[$userResponse->created_at] = $userResponse->response;
+            }
+        }
+
         return $result;
     }
 

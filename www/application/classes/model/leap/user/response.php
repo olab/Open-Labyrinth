@@ -57,6 +57,10 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
+            'created_at' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => FALSE,
+            )),
         );
     }
 
@@ -72,14 +76,20 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return array('id');
     }
     
-    public function createResponse($sessionId, $questionId, $response, $nodeId = null)
+    public function createResponse($sessionId, $questionId, $response, $nodeId = null, $created_at = null)
     {
-        if ( ! $sessionId) return false;
+        $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
+        $sessionObjId = $sessionObj->id;
+
+        if (empty($sessionId) || empty($sessionObjId) || !empty($sessionObj->end_time)) return false;
+        if(empty($created_at)) $created_at = time();
+
         return DB_ORM::insert('User_Response')
             ->column('question_id', $questionId)
             ->column('session_id', $sessionId)
             ->column('response', $response)
             ->column('node_id', $nodeId)
+            ->column('created_at', $created_at)
             ->execute();
     }
 
