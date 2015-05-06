@@ -1785,7 +1785,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
-    public function getPickResponse($sessionId, $questionId, $orderBy)
+    public static function getPickResponse($sessionId, $questionId, $orderBy)
     {
         $userResponse = DB_ORM::select('user_response')
             ->where('session_id', '=', $sessionId)
@@ -1801,7 +1801,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function getMultipleResponse($sessionId, $questionId, $orderBy)
+    public static function getMultipleResponse($sessionId, $questionId, $orderBy)
     {
         $result = array();
         $userResponses = DB_ORM::select('user_response')
