@@ -156,28 +156,33 @@ class Controller_ReportManager extends Controller_Base
         $this->templateData['responses'] = array();
 
         if($this->templateData['map']->revisable_answers) {
-            $orderBy = 'ASC';
-        }else{
             $orderBy = 'DESC';
+        }else{
+            $orderBy = 'ASC';
         }
         $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id', $orderBy)->query()->as_array();
 
         $multipleResponses = $this->getMultipleResponses($userResponses, $questions, $orderBy);
 
+        $answeredQuestions = array();
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
+            $nodeId = $userResponse->node_id;
             if ($questions[$questionId]->entry_type_id == 8) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
 
-            if(in_array($questions[$questionId]->entry_type_id, array(1,2,4,5,6,7,8,9,10))) {
-                $this->templateData['responses'][$questionId] = $userResponse;
-            }elseif(in_array($questions[$questionId]->entry_type_id, array(3))){
-                if(in_array($userResponse->id, $multipleResponses)) {
+            if(!isset($answeredQuestions[$nodeId]) || !in_array($questionId, $answeredQuestions[$nodeId])) {
+                if (in_array($questions[$questionId]->entry_type_id, array(1, 2, 4, 5, 6, 7, 8, 9, 10))) {
+                    $this->templateData['responses'][] = $userResponse;
+                    $answeredQuestions[$nodeId][] = $questionId;
+                } elseif (in_array($questions[$questionId]->entry_type_id, array(3))) {
+                    if (in_array($userResponse->id, $multipleResponses)) {
+                        $this->templateData['responses'][] = $userResponse;
+                    }
+                } else {
                     $this->templateData['responses'][] = $userResponse;
                 }
-            }else{
-                $this->templateData['responses'][] = $userResponse;
             }
         }
 
