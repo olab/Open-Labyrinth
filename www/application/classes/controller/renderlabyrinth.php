@@ -1807,13 +1807,27 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $userResponses = DB_ORM::select('user_response')
             ->where('session_id', '=', $sessionId)
             ->where('question_id', '=', $questionId)
-            ->order_by('created_at', $orderBy)
             ->query()
             ->as_array();
 
         if(!empty($userResponses)){
+
+            foreach($userResponses as $userResponse) {
+                $responses_time[] = $userResponse->created_at;
+            }
+
             foreach($userResponses as $userResponse){
-                $result[$userResponse->created_at] = $userResponse->response;
+
+                if ($orderBy == 'DESC') {
+                    //get last response
+                    $created_at = max($responses_time);
+                } else {
+                    //get first response
+                    $created_at = min($responses_time);
+                }
+                if($userResponse->created_at == $created_at) {
+                    $result[] = $userResponse->response;
+                }
             }
         }
 
