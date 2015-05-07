@@ -122,7 +122,15 @@ $(document).ready(function(){
     });
 
     $('.lightning-choice').change(function(){
-        lightningChoice($(this));
+        var type = $(this).attr('type');
+        if(typeof type != 'undefined' && type == 'checkbox') {
+            var inputs = $(this).closest('.navigation').find('.lightning-choice');
+            inputs.each(function () {
+                lightningChoice($(this));
+            });
+        }else{
+            lightningChoice($(this));
+        }
     });
 
     $('.drag-question-container').sortable({
