@@ -132,6 +132,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             return DB_ORM::select('user_response')
                 ->where('session_id', '=', $sessionId)
                 ->where('question_id', '=', $questionId)
+                ->order_by('id', 'ASC')
                 ->query()
                 ->as_array();
         }
