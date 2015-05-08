@@ -1278,7 +1278,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     public static function parseText($text, $mapId = NULL, $elementType = '')
     {
-        $codes  = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
         $buttons = array('FS');
         foreach ($buttons as $button)
         {
@@ -1292,6 +1291,37 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $text = str_replace('[[' . $button . ']]', $replaceString, $text);
         }
 
+        $codes = array('NODE');
+        foreach ($codes as $code) {
+            $regExp = '#[href="\[\[NODE:\d\]\]"]+#';
+            if (preg_match_all($regExp, $text, $matches))
+            {
+                foreach ($matches as $match)
+                {
+                    foreach ($match as $value)
+                    {
+                        if (stristr($value, 'href="[[' . $code . ':'))
+                        {
+                            $m = explode(':', $value);
+                            $id = substr($m[1], 0, strlen($m[1]) - 3);
+                            if (is_numeric($id))
+                            {
+                                $replaceString = '';
+                                switch ($code) {
+                                    case 'NODE':
+                                        $replaceString = Controller_RenderLabyrinth::getLinkHTML($mapId, $id);
+                                        break;
+                                }
+
+                                $text = str_replace('href="[[' . $code . ':' . $id . ']]"', $replaceString, $text);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
         foreach ($codes as $code)
         {
             $regExp = '/[\['.$code.':\d\]]+/';
@@ -1346,7 +1376,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                                         $replaceString = Controller_RenderLabyrinth::getCounterHTML($mapId, $id);
                                         break;
                                     case 'NODE':
-                                        $replaceString = Controller_RenderLabyrinth::getLinkHTML($mapId, $id);
+                                        $replaceString = Controller_RenderLabyrinth::getAnchorLinkHTML($mapId, $id);
                                         break;
                                     case 'BUTTON':
                                         $replaceString = Controller_RenderLabyrinth::getButtonHTML($mapId, $id);
@@ -1442,13 +1472,21 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
     private static function getLinkHTML($mapId, $id)
     {
-        return '/renderLabyrinth/go/'.$mapId.'/'.$id;
+        return 'href="/renderLabyrinth/go/'.$mapId.'/'.$id.'"';
+    }
+
+    private static function getAnchorLinkHTML($mapId, $id)
+    {
+        $link = self::getLinkHTML($mapId, $id);
+        $node = DB_ORM::model('map_node')->getNodeById((int) $id);
+        return '<a '.$link.'>'.$node->title.'</a>';
     }
 
     private static function getButtonHTML($mapId, $id)
     {
+        $link = self::getLinkHTML($mapId, $id);
         $node = DB_ORM::model('map_node')->getNodeById((int) $id);
-        return '<a href="/renderLabyrinth/go/'.$mapId.'/'.$id.'" class="btn">'.$node->title.'</a>';
+        return '<a '.$link.' class="btn">'.$node->title.'</a>';
     }
 
     private static function getFinalSubmissionHTML($mapId)
