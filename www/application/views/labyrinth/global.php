@@ -99,18 +99,6 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div><?php
         } ?>
-        <div class="control-group">
-            <label class="control-label"><?php echo __('Allow revisable answers'); ?></label>
-            <div class="controls">
-                <div class="radio_extended btn-group" style="float:left;">
-                    <input autocomplete="off" type="radio" id="revisable-answers0" name="revisable_answers" value="0" <?php echo !$templateData['map']->revisable_answers ? 'checked' : ''?>/>
-                    <label data-class="btn-danger" data-value="no" class="btn" for="revisable-answers0"><?php echo __('No'); ?></label>
-
-                    <input autocomplete="off" type="radio" id="revisable-answers1" name="revisable_answers" value="1" <?php echo $templateData['map']->revisable_answers ? 'checked' : ''?>/>
-                    <label data-class="btn-success" data-value="yes" class="btn" for="revisable-answers1"><?php echo __('Yes'); ?></label>
-                </div>
-            </div>
-        </div>
     </fieldset><?php
     $orderIndex=1;
     if ($uiMode == 'advanced') { ?>
@@ -209,18 +197,33 @@ if (isset($templateData['map'])) { ?>
             </div>
             </div><?php
         }
-        if (isset($templateData['sections'])) { ?>
+        ?>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Allow revisable answers'); ?></label>
+            <div class="controls">
+                <select name="revisable_answers">
+                    <option value="0" <?php echo !$templateData['map']->revisable_answers ? 'selected' : ''?>>No</option>
+                    <option value="1" <?php echo $templateData['map']->revisable_answers ? 'selected' : ''?>>Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <?php if (isset($templateData['sections'])) { ?>
             <div class="control-group">
             <label class="control-label"><?php echo __('Section Browsing'); ?></label>
-            <div class=" controls"><?php
-                foreach ($templateData['sections'] as $section) { ?>
-                    <label class="radio">
-                    <input type="radio" name="section" value="<?php echo $section->id; ?>" <?php if ($section->id == $templateData['map']->section_id) echo 'checked'; ?>/> <?php echo $section->name; ?>
-                    </label><?php
-                } ?>
+            <div class=" controls">
+                <select name="section">
+                    <?php foreach ($templateData['sections'] as $section) { ?>
+                    <option value="<?php echo $section->id; ?>" <?php if ($section->id == $templateData['map']->section_id) echo 'selected'; ?>>
+                        <?php echo $section->name; ?>
+                    </option>
+                    <?php } ?>
+                </select>
             </div>
             </div><?php
         }
+
         if ($uiMode == 'advanced') { ?>
         <div class="control-group" title="Select 'On' and define a delta for your labyrinth if you want your learners to navigate it in a certain time.">
             <label class="control-label"><?php echo __('Timing'); ?></label>
