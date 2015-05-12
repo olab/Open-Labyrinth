@@ -243,7 +243,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return $time;
     }
     
-    public function getTopTraceBySessionId($sessionId) {
+    public function getTopTraceBySessionId($sessionId, $getObject = false) {
         $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('session_id', '=', $sessionId)
@@ -252,7 +252,11 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $result = $builder->query();
         
         if($result->is_loaded()) {
-            return $result[0]['id'];
+            if($getObject){
+                return $result[0];
+            }else {
+                return $result[0]['id'];
+            }
         }
         
         return NULL;

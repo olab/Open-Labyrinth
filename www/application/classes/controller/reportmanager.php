@@ -56,13 +56,14 @@ class Controller_ReportManager extends Controller_Base
     {
         $sessionId      = Session::instance()->get('session_id', null);
         $mapId          = $this->request->param('id2', NULL);
-        $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
+        $previousNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
+        $previousNodeId = $previousNodeId['node_id'];
 
         if ($sessionId == NULL) {
             $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
         }
 
-        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previewNodeId);
+        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previousNodeId);
         if(!empty($sessionId) && is_numeric($sessionId)) {
             $session = DB_ORM::model('user_session', (int)$sessionId);
             $session->end_time = time();
