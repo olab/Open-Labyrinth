@@ -160,9 +160,9 @@ class Controller_ReportManager extends Controller_Base
         }else{
             $orderBy = 'ASC';
         }
-        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id', $orderBy)->query()->as_array();
 
-        $multipleResponses = $this->getMultipleResponses($userResponses, $questions, $orderBy);
+        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id', $orderBy)->query()->as_array();
+        $multipleResponses = $this->mcqConvertResponses($userResponses, $questions, $orderBy);
 
         $answeredQuestions = array();
         foreach ($userResponses as $userResponse) {
@@ -177,13 +177,22 @@ class Controller_ReportManager extends Controller_Base
                     $this->templateData['responses'][] = $userResponse;
                     $answeredQuestions[$nodeId][] = $questionId;
                 } elseif (in_array($questions[$questionId]->entry_type_id, array(3))) {
-                    if (in_array($userResponse->id, $multipleResponses)) {
-                        $this->templateData['responses'][] = $userResponse;
+                    if (isset($multipleResponses[$questionId], $multipleResponses[$questionId][$nodeId])) {
+                        foreach($multipleResponses[$questionId][$nodeId] as $mcqUserResponse){
+                            $this->templateData['responses'][] = $mcqUserResponse;
+                        }
+                        $answeredQuestions[$nodeId][] = $questionId;
                     }
                 } else {
                     $this->templateData['responses'][] = $userResponse;
                 }
             }
+        }
+
+        if(!empty($this->templateData['responses'])) {
+            usort($this->templateData['responses'], function($a, $b){
+                return ($a->id < $b->id) ? -1 : 1;
+            });
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
@@ -250,32 +259,34 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    public function getMultipleResponses($userResponses, $questions, $orderBy)
+    public function mcqConvertResponses($userResponses, $questions, $orderBy)
     {
         $multipleResponses = array();
         $result = array();
 
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
+            $responseNodeId = $userResponse->node_id;
             if(in_array($questions[$questionId]->entry_type_id, array(3))){
-                $multipleResponses[$questionId][] = $userResponse->created_at;
+                $multipleResponses[$questionId][$responseNodeId][] = $userResponse->created_at;
             }
         }
 
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
-            if(!isset($multipleResponses[$questionId])) continue;
+            $responseNodeId = $userResponse->node_id;
+            if(!isset($multipleResponses[$questionId]) || !isset($multipleResponses[$questionId][$responseNodeId])) continue;
 
-            if ($orderBy == 'ASC') {
+            if ($orderBy == 'DESC') {
                 //get last response
-                $created_at = max($multipleResponses[$questionId]);
+                $created_at = max($multipleResponses[$questionId][$responseNodeId]);
             } else {
                 //get first response
-                $created_at = min($multipleResponses[$questionId]);
+                $created_at = min($multipleResponses[$questionId][$responseNodeId]);
             }
 
             if($userResponse->created_at == $created_at) {
-                $result[] = $userResponse->id;
+                $result[$questionId][$responseNodeId][] = $userResponse;
             }
         }
 
