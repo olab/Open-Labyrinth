@@ -1593,7 +1593,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
                 if($map->revisable_answers) {
-                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy, Controller_RenderLabyrinth::$nodeId);
                 }
                 $cumulative  = (($qTitle == 'Cumulative') AND self::$scenarioId);
                 $class       = (($qTitle == 'Cumulative') OR ($qTitle == 'Rich text')) ? ' mceText' : '';
@@ -1604,7 +1604,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
                 }
 
-                if(!empty($userResponse) && empty($previousAnswers)){
+                if(!empty($userResponse)){
                     $content = $userResponse;
                 }elseif(!empty($previousAnswers)) {
                     $content = $previousAnswers;
@@ -1823,15 +1823,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         return $result;
     }
 
-    public static function getPickResponse($sessionId, $questionId, $orderBy)
+    public static function getPickResponse($sessionId, $questionId, $orderBy, $nodeId = null)
     {
-        $userResponse = DB_ORM::select('user_response')
+        $query = DB_ORM::select('user_response')
             ->where('session_id', '=', $sessionId)
-            ->where('question_id', '=', $questionId)
-            ->order_by('id', $orderBy)
-            ->limit(1)
-            ->query()
-            ->as_array();
+            ->where('question_id', '=', $questionId);
+
+        if(!empty($nodeId)){
+            $query->where('node_id', '=', $nodeId);
+        }
+
+        $query->order_by('id', $orderBy)->limit(1);
+
+        $userResponse = $query->query()->as_array();
         if(!empty($userResponse[0])){
             return $userResponse[0]->response;
         }else{
