@@ -509,7 +509,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 //
 //        $this->template = View::factory($skin)->set('templateData', $data);
     }
-    
+
     private function renderExtensions($node){
 
         $renders =  Model_Leap_Vocabulary_Vocablet::getAllRenders();
@@ -527,7 +527,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         return $views;
     }
-    
+
     public function checkPatient($nodeId, $scenarioId, $from)
     {
         $result = array();
@@ -1193,7 +1193,31 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     continue;
                 }
 
-                $title = ($link->text != '' and $link->text != ' ') ? $link->text : $link->node_2->title;
+                $title = '';
+
+                $link->text = trim($link->text);
+                if($link->text != '') {
+                    $title = $link->text;
+                }
+
+                if(empty($title)) {
+                    $node_2_title_parts = explode('|', $link->node_2->title);
+                    $node_2_title_back = isset($node_2_title_parts[1]) ? trim($node_2_title_parts[1]) : null;
+
+                    if(!empty($node_2_title_back)){
+
+                        $isParent = $this->isParentLink($node, $link);
+                        if($isParent){
+                            $title = $node_2_title_back;
+                        }else{
+                            $title = trim($node_2_title_parts[0]);
+                        }
+                    }
+
+                    if(empty($title)) {
+                        $title = $link->node_2->title;
+                    }
+                }
 
                 switch ($node->link_style->name) {
                     case 'hyperlinks':
@@ -1253,6 +1277,34 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($links != '') return $links;
         }
         return NULL;
+    }
+
+    private function isParentLink($current_node, $link)
+    {
+        $session_id = Session::instance()->get('session_id');
+
+        $was_on_node = false;
+        $traces = DB_ORM::model('user_sessiontrace')->getTraceBySessionID($session_id);
+        if(count($traces) > 0) {
+            $traces_nodes_id = array();
+            $i = 0;
+            foreach ($traces as $trace) {
+                $traces_nodes_id[$i] = $trace->node_id;
+                if($link->node_id_2 == $trace->node_id){
+                    $was_on_node = true;
+                    $first_enter = $i;
+                    break;
+                }
+                $i++;
+            }
+        }
+
+        if(!$was_on_node){
+            return false;
+        }else{
+            $traces_slice = array_slice($traces_nodes_id, 0, $first_enter);
+            return !in_array($current_node->id, $traces_slice);
+        }
     }
 
     private function generateNavigation($sections) {
@@ -1615,8 +1667,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $result =
                     '<textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-multi'.$class.'" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'>'.$content.'</textarea>'.
                     '<p>'.
-                        '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
-                        '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
+                    '<span id="questionSubmit'.$question->id.'" style="display:none; font-size:12px">Answer has been sent.</span>'.
+                    '<button onclick="$(this).hide();$(\'#questionSubmit'.$question->id.'\').show();$(\'#qresponse_'.$question->id.'\').attr(\'readonly\', \'readonly\');">Submit</button>
                     </p>';
                 $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
 
@@ -1640,7 +1692,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result .= '</ul></div>';
                     if($question->show_submit == 1 && $question->redirect_node_id) {
                         $result .=
-                           '<div class="questionSubmitButton">
+                            '<div class="questionSubmitButton">
                             <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'"/></a>
                             </div>';
                     }
@@ -1667,7 +1719,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     if ($question->show_submit == 1 && $question->redirect_node_id != null && $question->redirect_node_id > 0)
                     {
                         $result .=
-                           '<div class="questionSubmitButton">
+                            '<div class="questionSubmitButton">
                             <a href="'.URL::base().'renderLabyrinth/go/'.$question->map_id.'/'.$question->redirect_node_id.'"><input type="button" value="'.$question->submit_text.'" /></a>
                             </div>';
                     }
@@ -2012,11 +2064,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                     $result .= "Body part: " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'BodyPart') . "<br />";
                     $result .= "Orientation: - " . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist')
-                            . ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist') .
-                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'RightLeft') .
-                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FrontBack') .
-                            ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'InfSup') .
-                            "</p></td><td valign='top'><p>";
+                        . ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'ProxDist') .
+                        ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'RightLeft') .
+                        ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FrontBack') .
+                        ' - ' . Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'InfSup') .
+                        "</p></td><td valign='top'><p>";
 
                     if (Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FindMedia') != '') {
                         $mId = (int) Controller_RenderLabyrinth::getValueByElementKey($vpd->elements, 'FindMedia');

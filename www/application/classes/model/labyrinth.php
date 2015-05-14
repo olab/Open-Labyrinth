@@ -41,7 +41,8 @@ class Model_Labyrinth extends Model {
             $result['node']         = $node;
             $result['map']          = DB_ORM::model('map', array((int) $node->map_id));
             $result['editor']       = $this->checkUser($node->map_id) ? TRUE : FALSE;
-            $result['node_title']   = $node->title;
+            $result['node_title']   = explode('|', $node->title);
+            $result['node_title']   = trim($result['node_title'][0]);
             $result['node_text']    = $node->text;
 
             $clearAnnotation = strip_tags($node->annotation, '<img>');
