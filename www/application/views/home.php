@@ -98,36 +98,34 @@ if ($user) {
                                         <li><a href="<?php echo URL::base().'exportImportManager/exportMVP'; ?>"><?php echo __('Medbiquitous VP'); ?></a></li>
                                         <li><a href="<?php echo URL::base().'exportImportManager/exportAdvanced'; ?>"><?php echo __('Advanced export'); ?></a></li>
                                     </ul>
-                                </li><?php
-                                    if ($type_name != 'author') { ?>
+                                </li>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Tools'); ?><b class="caret"></b></a>
-                                        <ul class="dropdown-menu"><?php
-                                            if ($modeUI == 'advanced') { ?>
-                                            <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
-                                            <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li>
-                                            <?php
-                                            }
-                                            if ($type_name == 'superuser') { ?>
-                                                <li class="divider"></li>
-                                                <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li><?php
-                                                if ($modeUI == 'advanced') { ?>
-                                                <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
-                                                <li class="divider"></li>
-                                                <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
-                                                <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li>
-                                                <li class="divider"></li>
-                                                <li><a href="<?php echo URL::base(); ?>ltimanager"><?php echo __('LTI'); ?></a></li><?php
-                                                }
-                                            } ?>
+                                        <ul class="dropdown-menu">
+                                            <?php if ($type_name != 'author') { ?>
+                                                <?php if ($modeUI == 'advanced') { ?>
+                                                <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
+                                                <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li>
+                                                <?php } ?>
+                                                <?php if ($type_name == 'superuser') { ?>
+                                                    <li class="divider"></li>
+                                                    <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li><?php
+                                                    if ($modeUI == 'advanced') { ?>
+                                                    <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
+                                                    <li class="divider"></li>
+                                                    <li><a href="<?php echo URL::base(); ?>metadata/manager"><?php echo __('Metadata'); ?></a></li>
+                                                    <li><a href="<?php echo URL::base(); ?>vocabulary/manager"><?php echo __('Semantics'); ?></a></li>
+                                                    <li class="divider"></li>
+                                                    <li><a href="<?php echo URL::base(); ?>ltimanager"><?php echo __('LTI'); ?></a></li>
+                                                    <?php } ?>
+                                                <?php } ?>
+                                            <?php } ?>
                                             <?php if (in_array($type_name, array('superuser', 'author'))) { ?>
-                                                <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a></li>
                                             <?php } ?>
                                         </ul>
-                                    </li><?php
-                                    }
-                                }
+                                    </li>
+                                <?php }
                                 if($type_name == 'author' OR $type_name == 'superuser' OR $type_name == 'Director') { ?>
                                     <li class="dropdown">
                                         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo __('Scenarios'); ?><b class="caret"></b></a>
