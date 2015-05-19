@@ -42,8 +42,6 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'nodeManager/grid/'.$id_map.'/1'; ?>"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
             <?php } ?>
             <li><a href="<?php echo URL::base().'linkManager/index/'.$id_map; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
-            <li class="nav-header">External Tools</li>
-            <li><a href="<?php echo URL::base().'videoservice/video/'.$id_map; ?>"><i class="icon-facetime-video"></i> <?php echo __('Video Service'); ?></a></li>
 
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base().'nodeManager/sections/'.$id_map; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>

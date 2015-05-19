@@ -64,21 +64,13 @@ class Controller_VideoService extends Controller_Base {
             $this->templateData['endpoint'] = $endpoint;
         }
 
-        $mapId = $this->request->param('id', NULL);
-
-        if(!empty($mapId)) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
-            $leftView = View::factory('labyrinth/labyrinthEditorMenu');
-            $leftView->set('templateData', $this->templateData);
-            $this->templateData['left'] = $leftView;
-        }
-
+        $this->templateData['leftHidden'] = true;
         $nodeView = View::factory('videoservice');
         $nodeView->set('templateData', $this->templateData);
         $this->templateData['center'] = $nodeView;
 
         $this->template->set('templateData', $this->templateData);
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('CURIOS video mashup service')));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Video mashup')));
     }
 
     private function signParameters($params, $endpoint, $method, $oauth_consumer_key, $oauth_consumer_secret)

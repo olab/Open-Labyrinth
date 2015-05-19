@@ -106,9 +106,10 @@ if ($user) {
                                             if ($modeUI == 'advanced') { ?>
                                             <li><a href="<?php echo URL::base(); ?>remoteServiceManager"><?php echo __('Remote Services'); ?></a></li>
                                             <li><a href="<?php echo URL::base().'usermanager'; ?>"><?php echo __('Users & Groups'); ?></a></li>
-                                            <li class="divider"></li><?php
+                                            <?php
                                             }
                                             if ($type_name == 'superuser') { ?>
+                                                <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>systemManager"><?php echo __('System Settings'); ?></a></li><?php
                                                 if ($modeUI == 'advanced') { ?>
                                                 <li><a href="<?php echo URL::base(); ?>TodayTipManager/index">Today's tips</a></li>
@@ -119,6 +120,10 @@ if ($user) {
                                                 <li><a href="<?php echo URL::base(); ?>ltimanager"><?php echo __('LTI'); ?></a></li><?php
                                                 }
                                             } ?>
+                                            <?php if (in_array($type_name, array('superuser', 'author'))) { ?>
+                                                <li class="divider"></li>
+                                                <li><a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a></li>
+                                            <?php } ?>
                                         </ul>
                                     </li><?php
                                     }
@@ -176,6 +181,7 @@ if ($user) {
         <div class="container-fluid">
             <div class="row-fluid"><?php
                 if (Auth::instance()->logged_in()) { ?>
+                    <?php if(!isset($templateData['leftHidden'])){ ?>
                     <div id="sidebar" class="span2"><?php
                         if (isset($templateData['labyrinthSearch']) AND isset($templateData['map'])) { ?>
                             <form action="<?php echo URL::base().'labyrinthManager/search/'.(isset($templateData['map']) AND ! is_numeric($templateData['map']) ? $templateData['map']->id : $templateData['map']); ?>" method="get">
@@ -198,7 +204,12 @@ if ($user) {
                             <?php echo Arr::get($templateData, 'left', ''); ?>
                         </div>
                     </div>
-                    <div id="content" class="span<?php echo (isset($templateData['right']) ? 8 : 10); ?>">
+                    <?php } ?>
+                    <?php
+                    $contentWidth = isset($templateData['right']) ? 8 : 10;
+                    if(isset($templateData['leftHidden'])) $contentWidth +=2;
+                    ?>
+                    <div id="content" class="span<?php echo $contentWidth; ?>">
                         <div><?php Breadcrumbs::render(); ?></div>
                         <?php
                         $flash = Session::instance()->get_once('finalSubmit', null);
