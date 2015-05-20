@@ -299,9 +299,19 @@ class Model_Leap_Map_User extends DB_ORM_Model {
         foreach($this->getAllUsers($fromMapId) as $user) $this->addUser($toMapId, $user->id);
     }
 
-    public function assignOrNot ($mapId, $userId)
+    public function assignOrNot($mapId, $user)
     {
-        $assignUser = DB_ORM::select('Map_User')->where('user_id', '=', $userId)->where('map_id', '=', $mapId)->query()->fetch(0);
-        return (bool) $assignUser;
+        $userId = $user->id;
+        $assign = (bool)DB_ORM::select('Map_User')->where('user_id', '=', $userId)->where('map_id', '=', $mapId)->query()->fetch(0);
+        if(!$assign) {
+            $userGroups = $user->groups;
+            $assignGroups = DB_ORM::model('map_group')->getByMapId($mapId);
+            foreach($userGroups as $userGroup){
+                if(in_array($userGroup->id, $assignGroups)){
+                    return true;
+                }
+            }
+        }
+        return $assign;
     }
 }

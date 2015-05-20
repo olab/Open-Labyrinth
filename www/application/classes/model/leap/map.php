@@ -213,6 +213,11 @@ class Model_Leap_Map extends DB_ORM_Model
                 'child_model' => 'map_node',
                 'parent_key' => array('id'),
             )),
+            'groups' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('map_id'),
+                'child_model' => 'map_group',
+                'parent_key' => array('id')
+            )),
         );
         self::initialize_metadata($this);
     }
@@ -330,11 +335,13 @@ class Model_Leap_Map extends DB_ORM_Model
             ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('m.enabled', '=', 1)
             ->where('security_id', '=', 1)
             ->where('mu.user_id', '=', $learnerId, 'OR')
+            ->where('ug.user_id', '=', $learnerId, 'OR')
             ->order_by('m.id', 'DESC');
 
         $result = $builder->query();

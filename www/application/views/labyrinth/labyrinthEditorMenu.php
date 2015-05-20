@@ -67,7 +67,7 @@ if (isset($templateData['map'])) {
             <?php } ?>
             <li><a href="<?php echo URL::base().'fileManager/index/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Files'); ?></a></li>
             <li class="nav-header">Control</li>
-            <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users'); ?></a></li>
+            <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users & Groups'); ?></a></li>
             <li><a href="<?php echo URL::base().'reportManager/index/'.$id_map; ?>"><i class="icon-calendar"></i> <?php echo __('Sessions'); ?></a></li>
             <?php if ($user->modeUI == 'advanced') { ?>
             <li class="nav-header">Global elements</li>

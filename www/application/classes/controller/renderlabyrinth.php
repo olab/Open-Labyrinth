@@ -2401,7 +2401,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $idScenario = Session::instance()->get('webinarId')
                 ? Session::instance()->get('webinarId')
                 : DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
+            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $user);
         }
 
         // save in the session, scenario or not
