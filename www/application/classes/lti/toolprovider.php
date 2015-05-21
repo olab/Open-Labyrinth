@@ -332,19 +332,36 @@ class Lti_ToolProvider {
         $uiMode     = 'easy';
         $password   = $this->consumer->secret;
         $nickname   = $this->user->fullname;
+        $userId = $this->user->getId();
         $key = $this->resource_link->getKey();
-        $user = DB_ORM::model('user')->getUserByName($key);
+        $username = $userId . '_' . $key;
+        $user = DB_ORM::model('user')->getUserByName($username);
         $email      = $this->user->email;
-        if ($user) {
-            // If user exists, simply save the current details
-            $id = $user->id;
-            DB_ORM::model('User')->updateUser($id, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
-        } else {
-            $username = $key;
-            DB_ORM::model('User')->createUser($username, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+
+        $groupName = (isset($this->resource_link->settings['custom__group'])) ? trim($this->resource_link->settings['custom__group'], " \t\n\r\0\x0B\"") : null;
+
+        if(!empty($groupName)) {
+            $group = DB_ORM::model('Group')->getByName($groupName);
+            $groupId = (!empty($group)) ? $group->id : null;
         }
 
-        $status = Auth::instance()->login($key, $this->consumer->secret);
+        if ($user) {
+            $id = $user->id;
+            DB_ORM::model('User')->updateUser($id, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+            if(!empty($groupId)) {
+                $alreadyInGroup = DB_ORM::model('User_Group')->userExist($id, $groupId);
+                if(!$alreadyInGroup){
+                    DB_ORM::model('User_Group')->add($groupId, $id);
+                }
+            }
+        } else {
+            $id = DB_ORM::model('User')->createUser($username, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+            if(!empty($groupId)) {
+                DB_ORM::model('User_Group')->add($groupId, $id);
+            }
+        }
+
+        $status = Auth::instance()->login($username, $this->consumer->secret);
         $redirectURL = URL::site(NULL, TRUE);
         if ($status) {
             $redirectURL .= Arr::get($_SERVER, 'REDIRECT_URL', '');

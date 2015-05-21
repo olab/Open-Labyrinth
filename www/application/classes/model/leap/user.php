@@ -290,7 +290,7 @@ private static function initialize_metadata($object)
     }
 
     public function createUser($username, $password, $nickname, $email, $typeId, $languageId, $uiMode = 'easy', $isLti = false) {
-        DB_ORM::insert('User')
+        return DB_ORM::insert('User')
             ->column('username', $username)
             ->column('password', Auth::instance()->hash($password))
             ->column('email', $email)

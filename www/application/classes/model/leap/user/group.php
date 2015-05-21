@@ -75,6 +75,11 @@ class Model_Leap_User_Group extends DB_ORM_Model {
         
         $this->save();
     }
+
+    public function userExist($userId, $groupId){
+        $result = DB_ORM::select('user_group')->where('user_id', '=', $userId)->where('group_id', '=', $groupId)->limit(1)->query()->fetch(0);
+        return !empty($result);
+    }
     
     public function remove($groupId, $userId) {
         $builder = DB_SQL::select('default')

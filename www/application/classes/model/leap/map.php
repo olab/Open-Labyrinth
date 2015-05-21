@@ -306,8 +306,9 @@ class Model_Leap_Map extends DB_ORM_Model
             ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('m.enabled', '=', 1)
             ->where_block('(')
             ->where('m.security_id', '=', 1)
@@ -315,6 +316,9 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('m.author_id', '=', $user_id, 'OR')
             ->where_block('(', 'OR')
             ->where('mu.user_id', '=', $user_id, 'AND')
+            ->where_block(')')
+            ->where_block('(', 'OR')
+            ->where('ug.user_id', '=', $user_id)
             ->where_block(')')
             ->where_block(')');
 
@@ -360,13 +364,16 @@ class Model_Leap_Map extends DB_ORM_Model
         $alreadyAttendMap = array();
 
         $builder = DB_SQL::select('default')
+            ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $authorId, 'AND')
             ->where('mu.user_id', '=', $authorId, 'OR')
+            ->where('ug.user_id', '=', $authorId, 'OR')
             ->group_by('m.id')
             ->order_by('m.id', 'DESC');
 
@@ -414,14 +421,20 @@ class Model_Leap_Map extends DB_ORM_Model
     {
         $limit = (int)$limit;
         $builder = DB_SQL::select('default')
+            ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $authorId, 'AND');
 
-        if ( ! $webinar) $builder->where('mu.user_id', '=', $authorId, 'OR');
+        if (!$webinar){
+            $builder
+                ->where('mu.user_id', '=', $authorId, 'OR')
+                ->where('ug.user_id', '=', $authorId, 'OR');
+        }
 
         $builder
             ->group_by('m.id')
@@ -452,13 +465,16 @@ class Model_Leap_Map extends DB_ORM_Model
     {
         $limit = (int)$limit;
         $builder = DB_SQL::select('default')
+            ->distinct()
             ->all('m.*')
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $authorId, 'AND')
             ->where('mu.user_id', '=', $authorId, 'OR')
+            ->where('ug.user_id', '=', $authorId, 'OR')
             ->group_by('m.id')
             ->order_by('m.id', 'DESC');
         if ($limit) {
@@ -886,11 +902,13 @@ class Model_Leap_Map extends DB_ORM_Model
     {
         $result = DB_SQL::select('default', array(DB_SQL::expr('m.id')))
             ->from('maps', 'm')
-            ->join('LEFT', 'map_users', 'mu')
-            ->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_users', 'mu')->on('mu.map_id', '=', 'm.id')
+            ->join('LEFT', 'map_groups', 'mg')->on('mg.map_id', '=', 'm.id')
+            ->join('LEFT', 'user_groups', 'ug')->on('ug.group_id', '=', 'mg.group_id')
             ->where('enabled', '=', 1)
             ->where('author_id', '=', $userId, 'AND')
             ->where('mu.user_id', '=', $userId, 'OR')
+            ->where('ug.user_id', '=', $userId, 'OR')
             ->order_by('m.id', 'DESC')
             ->query();
 
@@ -900,6 +918,8 @@ class Model_Leap_Map extends DB_ORM_Model
         {
             $res[] =  $val['id'];
         }
+
+        $res = array_unique($res);
 
         return $res;
     }
