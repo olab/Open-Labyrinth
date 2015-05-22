@@ -130,7 +130,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             Request::initial()->redirect(URL::base());
         }
 
-        Controller_RenderLabyrinth::$nodeId = $nodeObj->id;
+        self::$nodeId = $nodeObj->id;
 
         $editOnId   = ($action == 'go') ? 'id3' : 'id2';
         $editOn     = $this->request->param($editOnId, null);
@@ -1628,8 +1628,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             if ($q_type == 'text') {
                 $getValidator($id, $validator, $errorMsg, $parameter);
-                $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, false);
-                $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, self::$nodeId, false);
+                $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
 
                 $result = '<input value="'.$userResponse.'" autocomplete="off" '.$validator.$errorMsg.$parameter.'class="lightning-single" type="text" size="'.$question->width.'" name="qresponse_'.$question->id.'" placeholder="'.$question->prompt.'" id="qresponse_'.$question->id.'" ';
                 $submitText = 'Submit';
@@ -1645,7 +1645,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if ($q_type == 'area') {
                 if($map->revisable_answers) {
-                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy, Controller_RenderLabyrinth::$nodeId);
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
                 }
                 $cumulative  = (($qTitle == 'Cumulative') AND self::$scenarioId);
                 $class       = (($qTitle == 'Cumulative') OR ($qTitle == 'Rich text')) ? ' mceText' : '';
@@ -1653,7 +1653,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
                 $getValidator($id, $validator, $errorMsg, $parameter);
                 if ($cumulative) {
-                    $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, Controller_RenderLabyrinth::$nodeId, $cumulative);
+                    $getPreviousAnswers($previousAnswers, $question->map_id, $question->id, self::$nodeId, $cumulative);
                 }
 
                 if(!empty($userResponse)){
@@ -1675,7 +1675,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Controller_RenderLabyrinth::addQuestionIdToSession($id);
             } else if($q_type == 'mcq') {
                 if (count($question->responses)) {
-                    $userResponse = self::getMultipleResponse($sessionId, $id, $orderBy);
+                    $userResponse = self::getMultipleResponse($sessionId, $id, $orderBy, self::$nodeId);
                     $displayType = ($question->type_display == 1) ? ' horizontal' : '';
                     $result = '<div class="questionResponces'.$displayType.'">';
                     $result .= '<ul class="navigation">';
@@ -1700,7 +1700,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if($q_type == 'pcq') {
                 if (count($question->responses)) {
 
-                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
 
                     $displayType = ($question->type_display == 1) ? ' horizontal' : '';
                     $result = '<div class="questionResponces questionForm_'.$question->id.$displayType.'">';
@@ -1726,7 +1726,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $result .= '</div>';
                 }
             } else if ($q_type == 'sct') {
-                $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
                 $disposable = ($question->num_tries == 1) ? ' disposable' : '';
                 $horizontal = ($question->type_display == 1) ? ' horizontal' : '';
                 $result .= '<ul class="navigation'.$horizontal.'">';
@@ -1745,7 +1745,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             } else if($q_type == 'slr') {
                 if($question->settings != null)
                 {
-                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy);
+                    $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
                     $settings = json_decode($question->settings);
                     $sliderValue = $settings->minValue;
 
@@ -1818,7 +1818,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     }
                 }
             } else if ($q_type == 'dd') {
-                $userResponses = self::getPickResponse($sessionId, $id, $orderBy);
+                $userResponses = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
                 $userResponses = json_decode($userResponses);
 
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
@@ -1847,7 +1847,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                         <button onclick="ajaxDrag('.$question->id.');$(this).hide();" >'.$submitText.'</button>';
                 }
             } else if ($q_type == 'sjt') {
-                $userResponses = self::getPickResponse($sessionId, $id, $orderBy);
+                $userResponses = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
                 $userResponses = json_decode($userResponses);
                 $result .= '<ul class="drag-question-container" id="qresponse_'.$question->id.'" questionId="'.$question->id.'">';
                 if(!empty($userResponses)) {
@@ -1895,17 +1895,22 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public static function getMultipleResponse($sessionId, $questionId, $orderBy)
+    public static function getMultipleResponse($sessionId, $questionId, $orderBy, $nodeId = null)
     {
         $result = array();
-        $userResponses = DB_ORM::select('user_response')
+        $query = DB_ORM::select('user_response')
             ->where('session_id', '=', $sessionId)
-            ->where('question_id', '=', $questionId)
-            ->query()
-            ->as_array();
+            ->where('question_id', '=', $questionId);
+
+        if(!empty($nodeId)){
+            $query->where('node_id', '=', $nodeId);
+        }
+
+        $userResponses = $query->query()->as_array();
 
         if(!empty($userResponses)){
 
+            $responses_time = array();
             foreach($userResponses as $userResponse) {
                 $responses_time[] = $userResponse->created_at;
             }
