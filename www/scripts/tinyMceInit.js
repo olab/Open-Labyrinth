@@ -6,7 +6,7 @@ function tinyMceInit(selector, readOnly){
         theme: "modern",
         content_css: baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,' + baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css',
         entity_encoding: "raw",
-        contextmenu: "link image inserttable | cell row column rdfaceMain",
+        contextmenu: "link image inserttable | cell row column",
         closed: /^(br|hr|input|meta|img|link|param|area|source)$/,
         valid_elements : "+*[*]",
         plugins: ["compat3x",
