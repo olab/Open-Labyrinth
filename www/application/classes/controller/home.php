@@ -23,7 +23,18 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Home extends Controller_Base {
 
-    public function action_index() {}
+    public function action_index() {
+        if (Auth::instance()->logged_in()) {
+            $user = Auth::instance()->get_user();
+            $isSuperuser = $user->isSuperuser();
+
+            if($isSuperuser && $this->checkUpdater() && $this->checkAvailableUpdates()){
+                $this->templateData['updateAvailable'] = true;
+            }
+
+            $this->template->set('templateData', $this->templateData);
+        }
+    }
 
     public function action_login()
     {
@@ -104,6 +115,16 @@ class Controller_Home extends Controller_Base {
                     $version    = substr($versionLastDB, 1, $subEnd);
                 }
             }
+
+            $user = Auth::instance()->get_user();
+            $isSuperuser = $user->isSuperuser();
+            $this->templateData['isSuperuser'] = $isSuperuser;
+
+            if($isSuperuser) {
+                $this->templateData['updaterIsAvailable'] = $this->checkUpdater();
+                $this->templateData['updaterDir'] = DOCROOT . 'updater';
+            }
+
             $this->templateData['version'] = $version;
             $this->templateData['center'] = View::factory('about')->set('templateData', $this->templateData);
             $this->template->set('templateData', $this->templateData);

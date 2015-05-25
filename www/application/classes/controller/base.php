@@ -271,6 +271,14 @@ class Controller_Base extends Controller_Template {
             }
             // ----- end check access ----- //
 
+            // ----- updater ----- //
+            if($user_type_name == 'superuser'){
+                if($this->checkUpdater() && $this->checkAvailableUpdates(true)) {
+                    $this->templateData['updateAvailable'] = true;
+                }
+            }
+            // ----- end updater ----- //
+
             if ($topMenu) return;
 
             foreach ($usersHistory as $value) {
@@ -396,6 +404,42 @@ class Controller_Base extends Controller_Template {
         }
         $this->templateData['title'] = 'OpenLabyrinth';
         $this->template->set('templateData', $this->templateData);
+    }
+
+    protected function checkUpdater()
+    {
+        $updaterDir = DOCROOT . 'updater';
+        $updaterIndex = $updaterDir . '/' . 'index.php';
+        return (file_exists($updaterDir) && file_exists($updaterIndex));
+    }
+
+    protected function checkAvailableUpdates($fromHistory = false)
+    {
+        $url = URL::base(true).'updater?action=checkState';
+        if($fromHistory){
+            $url .= '&fromHistory=true';
+        }
+        $ch = curl_init();
+        $options = array(CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_AUTOREFERER => true,
+            CURLOPT_CONNECTTIMEOUT => 120,
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_MAXREDIRS => 10,
+        );
+        curl_setopt_array($ch, $options);
+        $result = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+
+        if($info['http_code'] == 200){
+            $result = json_decode($result, true);
+            return (isset($result['status']) && $result['status']);
+        }
+
+        return false;
     }
 
     private function addUserHistory ($user_id, $readonly)

@@ -18,12 +18,21 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if(isset($templateData)) { ?>
+?>
+<?php if(isset($templateData)) { ?>
     <h1><?php echo __('About'); ?></h1>
     <div class="control-group">
         <label class="control-label">Version: <?php echo Arr::get($templateData, 'version'); ?></label>
     </div>
     <div class="control-group">
         <label class="control-label">Main website: <a href="http://openlabyrinth.ca/">openlabyrinth.ca</a></label>
-    </div><?php
-} ?>
+    </div>
+<?php } ?>
+
+<?php if(!empty($templateData['isSuperuser'])) { ?>
+    <?php if(!empty($templateData['updaterIsAvailable'])) { ?>
+    <iframe src="<?php echo URL::base(); ?>updater" width="100%" height="650" scrolling="auto" frameborder="1"></iframe>
+    <?php }else{ ?>
+    <div class="alert alert-warning">Updater package not found in the root directory (<?php echo $templateData['updaterDir']?>).</div>
+    <?php } ?>
+<?php } ?>

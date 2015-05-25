@@ -63,6 +63,11 @@ if ($user) {
                             <span class="icon-bar"></span>
                         </a>
                         <div class="pull-right">
+                            <?php if(!empty($templateData['updateAvailable'])){ ?>
+                            <div class="btn-group">
+                                <a href="<?php echo URL::base(); ?>home/about" class="label label-success">Update available</a>
+                            </div>
+                            <?php } ?>
                             <div class="btn-group">
                                 <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                                     <i class="icon-user"></i><?php echo $user->nickname; ?>
