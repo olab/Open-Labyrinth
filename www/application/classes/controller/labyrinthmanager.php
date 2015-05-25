@@ -626,7 +626,6 @@ class Controller_LabyrinthManager extends Controller_Base {
                 if ($action != NULL){
                     // create map object, which used below, and fill it.
                     $map = DB_ORM::model('map');
-                    print_r($post);
                     $this->templateData['securities'] = DB_ORM::model('map_security')->getAllSecurities();
                     $this->templateData['sections'] = DB_ORM::model('map_section')->getAllSections();
                 }
