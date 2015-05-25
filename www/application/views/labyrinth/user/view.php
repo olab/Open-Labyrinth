@@ -44,7 +44,7 @@ if (isset($templateData['map'])) { ?>
                 <th style="text-align: center">Actions</th>
                 <th>
                     <a href="<?php echo URL::base().'mapUserManager/index/'.$templateData['map']->id.'/'.$templateData['authorOrder'].'/'.$templateData['learnerOrder'].'/'.$templateData['reviewerOrder'].'/'.(1 - $templateData['groupOrder']); ?>">
-                        Users <div class="pull-right"><i class="icon-chevron-<?php if($templateData['groupOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
+                        Groups <div class="pull-right"><i class="icon-chevron-<?php if($templateData['groupOrder'] == 1) echo 'down';  else  echo 'up'; ?> icon-white"></i></div>
                 </th>
             </tr>
             </thead>
