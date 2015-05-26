@@ -67,6 +67,48 @@ class Updates
         return $result;
     }
 
+    public static function rollback($toVersion){
+        $result = 0;
+        $dir = DOCROOT.'updates/roll_back/';
+        if(is_dir($dir)){
+            $files = scandir($dir);
+            array_shift($files);
+            array_shift($files);
+            if (count($files) > 0){
+                $historyPath = DOCROOT.'updates/history.json';
+                if(file_exists($historyPath)){
+                    $history = file_get_contents($historyPath);
+                    $history = json_decode($history, true);
+                }
+                usort($files, array('Updates', 'sortVersionInOrder'));
+                $files = array_reverse($files);
+                foreach($files as $f){
+                    $ext = pathinfo($f, PATHINFO_EXTENSION);
+                    if ($ext == 'sql'){
+                        $pathToFile = $dir.$f;
+                        Updates::populateDatabase($pathToFile);
+                        $result = 1;
+
+                        if(isset($history[$f])) {
+                            unset($history[$f]);
+                        }
+
+                        $version = pathinfo($f, PATHINFO_FILENAME);
+                        if($version == $toVersion) break;
+                    }
+                }
+                if(isset($history)) {
+                    $history = json_encode($history);
+                    file_put_contents($historyPath, $history);
+                }
+            }
+        } else {
+            return 2;
+        }
+
+        return $result;
+    }
+
     public static function sortVersionInOrder($a, $b) {
         $ext = pathinfo($a, PATHINFO_EXTENSION);
         if ($ext != 'sql'){
