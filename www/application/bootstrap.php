@@ -14,13 +14,18 @@ if (is_file(APPPATH . 'classes/kohana' . EXT)) {
     require SYSPATH . 'classes/kohana' . EXT;
 }
 
+$configPath = DOCROOT.'config.json';
+if (!file_exists($configPath)) throw new \ErrorException('File of configuration ('.$configPath.') not found.');
+$config = file_get_contents($configPath);
+$config = json_decode($config, true);
+
 /**
  * Set the default time zone.
  *
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/timezones
  */
-date_default_timezone_set('America/Denver');
+date_default_timezone_set($config['timezone']);
 
 /**
  * Set the default locale.
@@ -28,7 +33,7 @@ date_default_timezone_set('America/Denver');
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/setlocale
  */
-setlocale(LC_ALL, 'en_US.utf-8');
+setlocale(LC_ALL, $config['locale']);
 
 /**
  * Enable the Kohana auto-loader.
@@ -51,7 +56,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the default language
  */
-I18n::lang('en-us');
+I18n::lang($config['lang']);
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
@@ -77,7 +82,7 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
 Kohana::init(array(
-    'base_url' => '/',
+    'base_url' => $config['base_url'],
     'errors' => TRUE
 ));
 

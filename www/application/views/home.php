@@ -128,6 +128,10 @@ if ($user) {
                                             <?php if (in_array($type_name, array('superuser', 'author'))) { ?>
                                                 <li><a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a></li>
                                             <?php } ?>
+                                            <?php if ($type_name == 'superuser') { ?>
+                                                <li class="divider"></li>
+                                                <li><a href="<?php echo URL::base(); ?>backup"><?php echo __('Backup Database'); ?></a></li>
+                                            <?php } ?>
                                         </ul>
                                     </li>
                                 <?php }

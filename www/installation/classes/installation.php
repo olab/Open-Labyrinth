@@ -131,19 +131,38 @@ class Installation {
             if (!$errorFound){
                 $baseUrl = URL::base();
                 if ($baseUrl != '/'){
-                    $content = '';
-                    $handle = fopen(DOCROOT . 'application/bootstrap.php', 'r');
-                    while (($buffer = fgets($handle)) !== false) {
-                        $content .= $buffer;
-                    }
-
-                    $content = str_replace("'base_url' => '/',", "'base_url' => '".$baseUrl."',", $content);
-                    file_put_contents(DOCROOT . 'application/bootstrap.php', $content);
+                    $configPath = DOCROOT.'config.json';
+                    $config = self::getContent($configPath);
+                    $config['base_url'] = $baseUrl;
+                    self::createFile($configPath, $config, true);
                 }
                 Session::set('installationStep', '2');
             }
         }
         Installation::redirect(URL::base() . 'installation/index.php');
+    }
+
+    public static function createFile($filename, $content = '', $toJSON = false, $permission = 0777)
+    {
+        if ($toJSON){
+            $content = json_encode($content);
+        }
+        $result = file_put_contents($filename, $content);
+        chmod($filename, $permission);
+
+        return ($result !== false);
+    }
+
+    public static function getContent($filename, $json = true)
+    {
+        $content = null;
+        if (file_exists($filename)){
+            $content = file_get_contents($filename);
+            if ($json){
+                $content = json_decode($content, true);
+            }
+        }
+        return $content;
     }
 
     public static function action_overview(){
