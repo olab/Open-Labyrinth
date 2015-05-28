@@ -97,7 +97,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $sessionId = Session::instance()->get('session_id');
             $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
-            if(empty($sessionId) || !empty($sessionObj->end_time)){
+            $endTime = $sessionObj->end_time;
+            if(empty($sessionId) || !empty($endTime)){
                 Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
                 Request::initial()->redirect(URL::base());
             }
