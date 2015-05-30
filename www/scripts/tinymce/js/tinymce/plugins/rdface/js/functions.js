@@ -1,7 +1,7 @@
 ﻿function connectEnricherAPI(url,request_data){
 	var dataReceived;
 	$.ajax({
-		type : "GET",
+		type : "POST",
 		async: false,
 		url : url,
 		data : request_data,

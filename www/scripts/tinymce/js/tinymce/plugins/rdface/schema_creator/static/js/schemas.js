@@ -87,9 +87,10 @@ function create_form(schema,property,container){
 	}else{
 		id=schema+'_'+property;
 	}
-	$('#'+container).append('<div id="schema_form_'+id+'"></div>');
-	$('#schema_form_'+id).append('<h4><a href="'+selected.url+'" target="_blank">'+selected.label+'</a></h4><small id="schema_description" class="muted">-- '+selected.comment+'</small>');
-	$('#schema_form_'+id).append('<form class="form-vertical well well-small" id="form_'+id+'"></form>');
+	var esc_id = id.replace(/\s+/g, '_').replace(/\W+/g, '');
+	$('#'+container).append('<div id="schema_form_'+esc_id+'"></div>');
+	$('#schema_form_'+esc_id).append('<h4><a href="'+selected.url+'" target="_blank">'+selected.label+'</a></h4><small id="schema_description" class="muted">-- '+selected.comment+'</small>');
+	$('#schema_form_'+esc_id).append('<form class="form-vertical well well-small" id="form_'+esc_id+'"></form>');
 	// add URI field for entity
 	if(property==''){
 		tmp='<div class="control-group">';
@@ -99,7 +100,7 @@ function create_form(schema,property,container){
 		tmp=tmp+'<span class="add-on subschema-icon" onclick="form_suggestURI()" title="Search for URI"><i class="icon-search"></i></span>';
 		tmp=tmp+'</div>';
 		tmp=tmp+'</div>';
-		$('#form_'+id).append(tmp);
+		$('#form_'+esc_id).append(tmp);
 		$('#entity_uri').mouseover(function() {
 			   $('#entity_uri').tooltip({
 			        placement : 'right',
@@ -110,13 +111,13 @@ function create_form(schema,property,container){
 	// create form fields
 	$.each(selected.properties, function(i,v){
 			if(property==''){
-				build_form_element(selected.id,v,'form_'+id,1);
+				build_form_element(selected.id,v,'form_'+esc_id,1);
 			}else{
-				build_form_element(property,v,'form_'+id,0);
+				build_form_element(property,v,'form_'+esc_id,0);
 			}
 	});
 	// end form
-	$('#schema_form_'+id).linkify();
+	$('#schema_form_'+esc_id).linkify();
 }
 function show_schemas(){
 	$('#second_page_btns').remove();

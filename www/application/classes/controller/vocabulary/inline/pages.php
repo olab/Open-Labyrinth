@@ -47,7 +47,7 @@ class Controller_Vocabulary_Inline_Pages extends Controller_Template
 
     public function action_annotator(){
         //var_dump($this->request->query());die;
-        $text = $this->request->query('text');
+        $text = $this->request->post('text');
 
 
         //$text = "Melanoma is a malignant tumor of melanocytes which are found predominantly in skin but also in the bowel and the eye.";

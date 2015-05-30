@@ -15,7 +15,7 @@ function getPrefixTypeFromList(prefix, types) {
 			c++;
 			output.push(tmp2[1]);
 		}
-	})
+	});
 	if (!c) {
 		// not found
 		output = 0;
@@ -27,11 +27,12 @@ function mapDBpediaOutputToStandard(txt, proxy_url, recEntities,
 
     proxy_url= baseURL + "vocabulary/inline/pages/annotator";
 	var dataReceived;
-	var data = encodeURIComponent(txt);
+/*	var data = encodeURIComponent(txt);
 
     data = "text="
-				+ data;
+				+ data;*/
 
+	var data = {text:txt};
 	dataReceived = connectEnricherAPI(proxy_url, data);
 
 	// terminate if an error occured
@@ -190,7 +191,7 @@ var Annotate = {
 			$.each(schemas['types'], function(i, v) {
 				recEntities.push(i);
 				recEntitiesLevels.push(v['level']);
-			})
+			});
 			setCookie("recEntities", recEntities.join(), 30);
 			setCookie("recEntitiesLevels", recEntitiesLevels.join(), 30);
 		} else {
