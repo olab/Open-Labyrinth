@@ -103,7 +103,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 Request::initial()->redirect(URL::base());
             }
 
-            $nodeId   = $this->request->param('id2', null);
+            $nodeId = $this->request->param('id2', null);
 
             // deprecated if statements 4.08.2014
             if ($nodeId == null) {
@@ -118,6 +118,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
+
+            //automatic save bookmark
+            $this->action_addBookmark(false, $nodeId);
         }
 
         if ($continue) {
@@ -952,17 +955,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_addBookmark()
+    public function action_addBookmark($ajax = true, $nodeId = null)
     {
         $sessionId  = Session::instance()->get('session_id');
-        $nodeId     = $this->request->param('id', NULL);
+        $nodeId     = !empty($nodeId) ? $nodeId : $this->request->param('id', null);
         $user       = Auth::instance()->get_user();
-
-        if ($user AND $sessionId AND $nodeId) {
-            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $user->id);
+        $userId     = (!empty($user)) ? $user->id : null;
+        if (!empty($userId) && !empty($sessionId) && !empty($nodeId)) {
+            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
         }
 
-        exit;
+        if($ajax) {
+            die;
+        }
     }
 
     private function remote_go($nodeId, $mapId) {

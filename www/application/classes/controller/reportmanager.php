@@ -56,8 +56,10 @@ class Controller_ReportManager extends Controller_Base
     {
         $sessionId      = Session::instance()->get('session_id', null);
         $mapId          = $this->request->param('id2', NULL);
-        $previousNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
+        $previousNodeId = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
         $previousNodeId = $previousNodeId['node_id'];
+        $user           = Auth::instance()->get_user();
+        $userId         = (!empty($user)) ? $user->id : null;
 
         if ($sessionId == NULL) {
             $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
@@ -72,6 +74,9 @@ class Controller_ReportManager extends Controller_Base
         }
         Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
         Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
+        if(!empty($mapId) && !empty($userId)) {
+            DB_ORM::model('User_Bookmark')->deleteBookmarksByMapAndUser($mapId, $userId);
+        }
 
         if(empty($sessionId) || $sessionId == 'notExist'){
             $sessionIdUrl = $this->request->param('id', NULL);
