@@ -272,6 +272,7 @@ class Model_Leap_Map extends DB_ORM_Model
             $completeSessions = DB_SQL::select('default')
                 ->from('user_sessiontraces')
                 ->join('INNER', 'map_nodes')->on('map_nodes.id', '=', 'user_sessiontraces.node_id')
+                ->distinct()
                 ->column('session_id')
                 ->where('user_sessiontraces.session_id', 'IN', $session_ids)
                 ->where('user_sessiontraces.map_id', '=', $this->id)
@@ -283,7 +284,7 @@ class Model_Leap_Map extends DB_ORM_Model
             if(!empty($completeSessions)){
                 foreach($completeSessions as $key => $array){
                     $result[] = $array['session_id'];
-                    unset($completeSessions[$key]);
+
                 }
             }
         }

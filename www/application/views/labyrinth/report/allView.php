@@ -67,5 +67,5 @@ if (isset($templateData['map'])) { ?>
     </tbody>
 </table>
 
-<?php }die('cathcccc'); ?>
+<?php } ?>
 
