@@ -1,5 +1,5 @@
 # Kohana License Agreement
-test
+
 This license is a legal agreement between you and the Kohana Team for the use of Kohana Framework (the "Software"). By obtaining the Software you agree to comply with the terms and conditions of this license.
 
 Copyright (c) 2007-2010 Kohana Team
