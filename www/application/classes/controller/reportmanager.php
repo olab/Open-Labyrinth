@@ -208,7 +208,10 @@ class Controller_ReportManager extends Controller_Base
 
         $this->templateData['feedbacks']    = Model::factory('labyrinth')->getMainFeedback($session, $this->templateData['counters'], $session->map_id);
         $this->templateData['center']       = View::factory('labyrinth/report/report')->set('templateData', $this->templateData);
-        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $editorAccess = $this->checkUser();
+        if($editorAccess) {
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        }
         $this->template->set('templateData', $this->templateData);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['session']->map->name)->set_url(URL::base().'labyrinthManager/global/'.$this->templateData['session']->map->id));
@@ -302,7 +305,7 @@ class Controller_ReportManager extends Controller_Base
     private function checkUser()
     {
         $user_type = Auth::instance()->get_user()->type->name;
-        return (bool) ($user_type == 'author' OR $user_type == 'superuser');
+        return (bool) (!empty($user_type) && ($user_type == 'author' || $user_type == 'superuser'));
     }
 
     public function action_pathVisualisation ()
