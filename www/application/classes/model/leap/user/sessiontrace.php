@@ -270,7 +270,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $result = $builder->query();
 
         if($result->is_loaded()) {
-            return $result;
+            return $result[0];
         }
 
         return NULL;

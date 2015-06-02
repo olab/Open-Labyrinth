@@ -172,7 +172,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $sessionId              = (int)$data['traces'][0]->session_id;
             $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
             $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-            $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+            $timeForNode            = $lastNode['date_stamp'] - $startSession;
             $data['timeForNode']    = $timeForNode;
             $data['session']        = $sessionId;
 

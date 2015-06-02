@@ -39,7 +39,8 @@ class Controller_ReportManager extends Controller_Base
         if ($mapId != NULL AND $this->checkUser())
         {
             $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
+            $this->templateData['sessions'] = $this->templateData['map']->sessions;
+            $this->templateData['sessionsComplete'] = $this->templateData['map']->getCompleteSessions($this->templateData['sessions']);
             $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
             $this->templateData['center']   = View::factory('labyrinth/report/allView')->set('templateData', $this->templateData);
             unset($this->templateData['right']);
