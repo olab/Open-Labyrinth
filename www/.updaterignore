@@ -1,0 +1,5 @@
+updater/*
+updater.json
+updater.php
+.updaterignore
+.updaterdeleteignore
