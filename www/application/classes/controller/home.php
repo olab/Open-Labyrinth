@@ -30,6 +30,8 @@ class Controller_Home extends Controller_Base {
 
             if($isSuperuser && $this->checkUpdater() && $this->checkAvailableUpdates()){
                 $this->templateData['updateAvailable'] = true;
+            }else{
+                $this->templateData['updateAvailable'] = false;
             }
 
             $this->template->set('templateData', $this->templateData);

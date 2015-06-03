@@ -272,7 +272,7 @@ class Controller_Base extends Controller_Template {
             // ----- end check access ----- //
 
             // ----- updater ----- //
-            if($user_type_name == 'superuser'){
+            if($user_type_name == 'superuser' && $controllerAction != 'home/index'){
                 if($this->checkUpdater() && $this->checkAvailableUpdates(true)) {
                     $this->templateData['updateAvailable'] = true;
                 }
