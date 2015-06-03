@@ -37,28 +37,58 @@ class Updates
                     }
                     $infoFileHandler = fopen($infoFile, 'w');
                     $skipFiles = array();
+                    $alreadyUpdated = array();
                 } else {
                     $fileString = file_get_contents($infoFile);
                     $skipFiles = json_decode($fileString, true);
-                }
 
-                if (count($files) > 0){
-                    usort($files, array('Updates', 'sortVersionInOrder'));
-                    foreach($files as $f){
-                        $ext = pathinfo($f, PATHINFO_EXTENSION);
-                        if ($ext == 'sql'){
-                            $pathToFile = $dir.$f;
-                            if (!isset($skipFiles[$f])){
-                                Updates::populateDatabase($pathToFile);
-                                $skipFiles[$f] = 1;
-                                $result = 1;
-                            }
-                            //@unlink($pathToFile);
+                    $alreadyUpdated = array();
+                    if(!empty($skipFiles)) {
+                        foreach($skipFiles as $version => $v) {
+                            $alreadyUpdated[] = $version;
                         }
+                        usort($alreadyUpdated, array('Updates', 'sortVersionInOrder'));
                     }
                 }
 
-                file_put_contents($infoFile, json_encode($skipFiles));
+                foreach($files as $k => $f){
+                    $ext = pathinfo($f, PATHINFO_EXTENSION);
+                    if ($ext != 'sql'){
+                        unset($files[$k]);
+                    }
+                }
+
+                if (count($files) > 0) {
+                    usort($files, array('Updates', 'sortVersionInOrder'));
+                    $lastVersion = end($files);
+                    $lastUpdatedVersion = end($alreadyUpdated);
+
+                    if (!empty($lastUpdatedVersion)) {
+                        $resultA = self::sortVersionInOrderPregReplace($lastVersion);
+                        $resultB = self::sortVersionInOrderPregReplace($lastUpdatedVersion);
+
+                        if ($resultB > $resultA){
+                            self::rollback($lastVersion);
+                            $fileString = file_get_contents($infoFile);
+                            $skipFiles = json_decode($fileString, true);
+                        }
+                    }
+
+                    foreach ($files as $f) {
+                        $pathToFile = $dir . $f;
+                        if (!isset($skipFiles[$f])) {
+                            Updates::populateDatabase($pathToFile);
+                            $skipFiles[$f] = 1;
+                            $result = 1;
+                        }
+                    }
+
+                    file_put_contents($infoFile, json_encode($skipFiles));
+                }else{
+                    $rollbackToVersion = reset($alreadyUpdated);
+                    $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4);
+                    self::rollback($rollbackToVersion);
+                }
             }
         } else {
             return 2;
