@@ -30,7 +30,8 @@ class Policy_Access extends Policy {
         array('controller' => 'dForumManager', 'action' => 'updateForum'),
         array('controller' => 'dForumManager', 'action' => 'deleteForum'),
         array('controller' => 'dForumManager', 'action' => 'saveNewForum'),
-        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true)
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
     );
 
     private $authorRules = array(
@@ -52,7 +53,8 @@ class Policy_Access extends Policy {
     private $reviewerRules = array(
         array('controller' => 'collectionManager', 'action' => 'editCollection'),
         array('controller' => 'collectionManager', 'action' => 'addCollection'),
-        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true)
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
     );
 
     private $mapActions = array(
