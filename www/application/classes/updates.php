@@ -26,68 +26,84 @@ class Updates
         $result = 0;
         $dir = DOCROOT.'updates/';
         if(is_dir($dir)){
+
+            $infoFile = $dir.'history.json';
+            if (!file_exists($infoFile)){
+                if (!is_writable($dir)){
+                    return 3;
+                }
+                $infoFileHandler = fopen($infoFile, 'w');
+                $skipFiles = array();
+                $alreadyUpdated = array();
+            } else {
+                $fileString = file_get_contents($infoFile);
+                $skipFiles = json_decode($fileString, true);
+
+                $alreadyUpdated = array();
+                if(!empty($skipFiles)) {
+                    foreach($skipFiles as $version => $v) {
+                        $alreadyUpdated[] = $version;
+                    }
+                    usort($alreadyUpdated, array('Updates', 'sortVersionInOrder'));
+                }
+            }
+
             $files = scandir($dir);
             array_shift($files);
             array_shift($files);
-            if (count($files) > 0){
-                $infoFile = $dir.'history.json';
-                if (!file_exists($infoFile)){
-                    if (!is_writable($dir)){
-                        return 3;
-                    }
-                    $infoFileHandler = fopen($infoFile, 'w');
-                    $skipFiles = array();
-                    $alreadyUpdated = array();
-                } else {
-                    $fileString = file_get_contents($infoFile);
-                    $skipFiles = json_decode($fileString, true);
 
-                    $alreadyUpdated = array();
-                    if(!empty($skipFiles)) {
-                        foreach($skipFiles as $version => $v) {
-                            $alreadyUpdated[] = $version;
-                        }
-                        usort($alreadyUpdated, array('Updates', 'sortVersionInOrder'));
-                    }
-                }
-
-                foreach($files as $k => $f){
+            if (count($files) > 0) {
+                foreach ($files as $k => $f) {
                     $ext = pathinfo($f, PATHINFO_EXTENSION);
-                    if ($ext != 'sql'){
+                    if ($ext != 'sql') {
                         unset($files[$k]);
                     }
                 }
+            }
 
-                if (count($files) > 0) {
-                    usort($files, array('Updates', 'sortVersionInOrder'));
-                    $lastVersion = end($files);
-                    $lastUpdatedVersion = end($alreadyUpdated);
+            if (count($files) > 0) {
+                usort($files, array('Updates', 'sortVersionInOrder'));
+                $lastVersion = end($files);
+                $lastUpdatedVersion = end($alreadyUpdated);
 
-                    if (!empty($lastUpdatedVersion)) {
-                        $resultA = self::sortVersionInOrderPregReplace($lastVersion);
-                        $resultB = self::sortVersionInOrderPregReplace($lastUpdatedVersion);
+                if (!empty($lastUpdatedVersion)) {
+                    $resultA = self::sortVersionInOrderPregReplace($lastVersion);
+                    $resultB = self::sortVersionInOrderPregReplace($lastUpdatedVersion);
 
-                        if ($resultB > $resultA){
-                            self::rollback($lastVersion);
-                            $fileString = file_get_contents($infoFile);
-                            $skipFiles = json_decode($fileString, true);
-                        }
+                    if ($resultB > $resultA){
+                        $rollbackResult = self::rollback($lastVersion);
+                        $fileString = file_get_contents($infoFile);
+                        $skipFiles = json_decode($fileString, true);
                     }
+                }
 
-                    foreach ($files as $f) {
-                        $pathToFile = $dir . $f;
-                        if (!isset($skipFiles[$f])) {
-                            Updates::populateDatabase($pathToFile);
-                            $skipFiles[$f] = 1;
-                            $result = 1;
-                        }
+                foreach ($files as $f) {
+                    $pathToFile = $dir . $f;
+                    if (!isset($skipFiles[$f])) {
+                        Updates::populateDatabase($pathToFile);
+                        $skipFiles[$f] = 1;
+                        $result = 1;
                     }
+                }
 
-                    file_put_contents($infoFile, json_encode($skipFiles));
-                }else{
-                    $rollbackToVersion = reset($alreadyUpdated);
-                    $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4);
-                    self::rollback($rollbackToVersion);
+                file_put_contents($infoFile, json_encode($skipFiles));
+            }else{
+                $rollbackToVersion = reset($alreadyUpdated);
+                $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4);
+                $rollbackResult = self::rollback($rollbackToVersion);
+            }
+
+            if(isset($rollbackResult)){
+                switch($rollbackResult){
+                    case 0:
+                        $result = 4;
+                        break;
+                    case 1:
+                        $result = 5;
+                        break;
+                    case 2:
+                        $result = 6;
+                        break;
                 }
             }
         } else {

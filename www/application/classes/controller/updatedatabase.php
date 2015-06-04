@@ -38,11 +38,20 @@ class Controller_UpdateDatabase extends Controller_Base {
                 break;
 
             case 2:
-                $center = '<div class="alert alert-error"><span class="lead">Update directory "'.URL::base().'updates" was not found.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
+                $center = '<div class="alert alert-danger"><span class="lead">Update directory "'.URL::base().'updates" was not found.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
                 break;
 
             case 3:
-                $center = '<div class="alert alert-error"><span class="lead">Update directory "'.URL::base().'updates" is not writable. Please check permissions to folder in your server.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
+                $center = '<div class="alert alert-danger"><span class="lead">Update directory "'.URL::base().'updates" is not writable. Please check permissions to folder in your server.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
+                break;
+            case 4:
+                $center = '<div class="alert alert-danger"><span class="lead">Roll back instructions was not found.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
+                break;
+            case 5:
+                $center = '<div class="alert alert-success"><span class="lead">Database has been successfully Rolling Back.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
+                break;
+            case 6:
+                $center = '<div class="alert alert-danger"><span class="lead">Update directory "' . URL::base() . 'updates/roll_back" was not found.</span></div><div><a class="btn" href="'.URL::base().'">Go to the home page</a></div>';
                 break;
         }
 
