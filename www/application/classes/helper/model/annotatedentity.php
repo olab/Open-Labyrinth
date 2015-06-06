@@ -247,8 +247,6 @@ class Helper_Model_AnnotatedEntity extends Kohana_Object{
             //var_dump($class);die;
             if(isset($class->semanticType)){
 
-                    var_dump($class)
-
 
                 $found[$position]['semanticType'] = $class->semanticType[0];
                 if(isset(self::$semanticTypes[$class->semanticType[0]])){
