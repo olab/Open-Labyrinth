@@ -143,6 +143,8 @@ function enrichText(entities, editor) {
 			var entity_type = val['type'].split(':')[1];
 			//var entity_type = val['type'];
 
+			if(typeof (entity_type)=='undefined')return;
+
 			var entity_type_cl = 'r_' + entity_type.toLowerCase();
 			if ($.cookie("annotationF") == "RDFa") {
 				// replacement for RDFa
