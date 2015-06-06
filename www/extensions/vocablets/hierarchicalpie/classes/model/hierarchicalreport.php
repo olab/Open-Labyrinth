@@ -22,6 +22,7 @@ class Model_HierarchicalReport
     {
         $self = get_called_class();
         $sparql_config = Kohana::$config->load('sparql');
+        $graph_uri = Model_Leap_Vocabulary::getGraphUri();
 $predicateUri = $self::$predicate;
 
 $labelUri = $self::$label;
@@ -40,7 +41,7 @@ $broaderUri = $self::$broader;
 where
 
 {
-
+graph<$graph_uri>{
 ?labyrinth <$predicateUri> ?term.
 ?term <$labelUri> ?termlabel.
 OPTIONAL {
@@ -61,6 +62,7 @@ OPTIONAL {
 
 }.
 }
+}
 
 
 
@@ -79,7 +81,7 @@ group by ?term ?termparent ?termgrandpa1 ?termgrandpa2
    where
 
    {
-
+graph <$graph_uri>{
    ?labyrinth <$predicateUri> ?term.
    ?term <$labelUri> ?termlabel.
    OPTIONAL {
@@ -99,6 +101,7 @@ group by ?term ?termparent ?termgrandpa1 ?termgrandpa2
 
 
    }.
+   }
    }
 
 
