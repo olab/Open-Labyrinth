@@ -14,6 +14,7 @@ class Controller_Sharcfm extends Controller_Hierarchicalpie
     public $title = "SHARC-FM Classification Report";
     public $view = "sharcfm/report";
     public function action_api(){
+      //  var_dump(Kohana::list_files('classes/model'));die;
 
         $this->response->body(json_encode(Model_SharcfmReport::buildObject()));
     }
