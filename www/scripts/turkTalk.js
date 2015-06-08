@@ -19,7 +19,9 @@ function loadMessages(chat_id)
             url: urlBase + 'webinarManager/getChatMessages/'+session_id+'/'+question_id+'/'+chat_session_id,
             async: true,
             success: function (response) {
-                chat_window.html(response).show();
+                if(!empty(response)) {
+                    chat_window.html(response).show();
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);

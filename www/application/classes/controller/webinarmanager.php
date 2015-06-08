@@ -64,11 +64,18 @@ class Controller_WebinarManager extends Controller_Base {
 
         $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
 
-        $result = array();
         if(!empty($responses)){
-            $result = json_encode($responses);
+            foreach($responses as $response){
+                $isLearner = $response['role'] == 'learner' ? true : false;
+                ?>
+                <div class="message" style="padding:10px;border-bottom: 1px solid #ccc;">
+                    <div class="name"><b><?php echo $isLearner ? 'You' : 'Turker'?>:</b></div>
+                    <div class="text"><?php echo $response['text'] ?></div>
+                </div>
+                <?php
+            }
         }
-        die($result);
+        die;
     }
 
     public function action_getCurrentNode()

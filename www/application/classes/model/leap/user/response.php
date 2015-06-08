@@ -109,7 +109,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             }
         }
 
-        $json_response[$chat_session_id] = array($role => array('response'=>$response));
+        $json_response[$chat_session_id] = array('role'=>$role, 'text'=>$response);
         $json_response = json_encode($json_response);
 
         $this->createResponse($sessionId, $questionId, $json_response, $nodeId, $created_at);
