@@ -98,8 +98,6 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $json_response = array();
         $role = ($isLearner) ? 'learner' : 'turker';
         if($isLearner) {
-            $chat_session_id = Session::instance()->get('chat_session_id', null);
-
             $responses = $this->getTurkTalkResponse($questionId, $sessionId, $chat_session_id);
 
             if (empty($responses)) {
@@ -135,6 +133,22 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             if(isset($responses[$chat_session_id])) {
                 $result = $responses[$chat_session_id];
             }
+        }
+        return $result;
+    }
+
+    public function getTurkTalkLastChatId($question_id, $session_id)
+    {
+        $result = null;
+        $obj_responses = $this->getResponses($question_id, array($session_id));
+        if(!empty($obj_responses)){
+            $responses = array();
+            foreach($obj_responses as $obj_response){
+                $response = json_decode($obj_response->response, true);
+                $responses[] = key($response);
+            }
+
+            $result = max($responses);
         }
         return $result;
     }

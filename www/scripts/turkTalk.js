@@ -58,3 +58,43 @@ function loadMessages(chat_id)
         });
     }
 }
+
+function addChatMessage(context, isLearner) {
+
+    var ttalkDiv = context.closest('.ttalk'),
+        textarea = ttalkDiv.find('.ttalk-textarea'),
+        response = $.trim(textarea.val());
+
+    if(!empty(isLearner)){
+        var questionId = parseInt(textarea.prop('id').replace('qresponse_', ''));
+    }else{
+        var chat = ttalkDiv,
+            questionId = chat.find('.question_id').attr('value'),
+            idNode = chat.find('.node_id').text(),
+            sessionId = chat.find('.session_id').attr('value');
+        //TODO: send chat_session_id
+    }
+
+
+    console.log(response);
+    console.log(questionId);
+    console.log(idNode);
+    if(response != '' && !empty(questionId) && !empty(idNode)) {
+        var data = {response: response, questionId: questionId, nodeId: idNode, isLearner: isLearner, sessionId: sessionId};
+        $.ajax({
+            url: urlBase + 'renderLabyrinth/saveTurkTalkResponse',
+            type: 'post',
+            data: data,
+            async: true,
+            success: function (response) {
+                textarea.val('');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                $('body').append(jqXHR.responseText);
+            }
+        });
+    }
+}

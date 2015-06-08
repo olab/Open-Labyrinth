@@ -80,7 +80,7 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_getCurrentNode()
     {
-        $result = null;
+        $result = '';
         $user_id = (int)$this->request->param('id', null);
         $webinar_id = (int)$this->request->param('id2', null);
 
@@ -109,8 +109,9 @@ class Controller_WebinarManager extends Controller_Base {
             //end get $question_id
 
             $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'question_id' => $question_id);
+            $result = json_encode($result);
         }
-        die(json_encode($result));
+        die($result);
     }
 
     public function action_my()

@@ -33,6 +33,11 @@ $webinar_id = $templateData['webinar_id'];
             connectWith: "#chats",
             handle: ".icon-move"
         });
+
+        var ttalkButton = $('.ttalkButton');
+        ttalkButton.on('click', function () {
+            addChatMessage($(this), 0);
+        });
     });
 </script>
 <input type="hidden" value="<?php echo $webinar_id ?>" id="webinar_id">
@@ -42,7 +47,7 @@ $webinar_id = $templateData['webinar_id'];
             $chat_id = 'chat'.$i;
         ?>
 
-    <div class="panel panel-default chat" id="<?php echo $chat_id ?>">
+    <div class="panel panel-default chat ttalk" id="<?php echo $chat_id ?>">
         <div class="panel-heading">
             <div class="row">
                     <i class="icon icon-move" style="width:10%;"></i>
@@ -58,7 +63,8 @@ $webinar_id = $templateData['webinar_id'];
         </div>
         <div class="panel-body">
             <div class="chat-window" style="height:500px;"></div>
-            <textarea class="chat-textarea" placeholder="Put your response..."></textarea>
+            <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..."></textarea>
+            <button class="ttalkButton">Submit</button>
             <div class="">
                 <select>
 
@@ -67,6 +73,8 @@ $webinar_id = $templateData['webinar_id'];
             <div class="">
                 <div>NodeId: <b class="node_id"></b></div>
                 <div>Node Title: <b class="node_title"></b></div>
+                <input type="hidden" class="session_id" value="">
+                <input type="hidden" class="question_id" value="">
             </div>
         </div>
     </div>
