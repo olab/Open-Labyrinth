@@ -50,8 +50,8 @@ class Controller_Sparql_API_cron extends RESTful_Controller
         $parser->extractRDF('rdfa');
 
         $triples = $parser->getTriples();
-        Log::instance()->add(Log::NOTICE, print_r($data, true));
-        Log::instance()->write();
+       /* Log::instance()->add(Log::NOTICE, print_r($data, true));
+        Log::instance()->write();*/
         return $triples;
     }
 
@@ -78,6 +78,8 @@ class Controller_Sparql_API_cron extends RESTful_Controller
 
                 $extra_triples = $this->discover_triples(html_entity_decode($arc_triple['o']));
                 $store->insert($extra_triples, $extra_graph);
+                Log::instance()->add(Log::NOTICE, print_r($extra_graph, true));
+                Log::instance()->write();
             }
             $arc_triples [] = $arc_triple;
         }
