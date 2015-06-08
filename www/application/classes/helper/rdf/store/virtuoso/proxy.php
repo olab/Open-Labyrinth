@@ -38,6 +38,7 @@ class Helper_RDF_Store_Virtuoso_Proxy {
                 $query .= "<$s> <$p> <$o>. ";
             }
             else{
+                $o = addslashes($o);
                 $query .= "<$s> <$p> '$o'. ";
             }
 
