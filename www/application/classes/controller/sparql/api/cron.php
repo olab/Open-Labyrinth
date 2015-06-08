@@ -50,7 +50,7 @@ class Controller_Sparql_API_cron extends RESTful_Controller
         $parser->extractRDF('rdfa');
 
         $triples = $parser->getTriples();
-        Log::instance()->add(Log::NOTICE, print_r($triples, true));
+        Log::instance()->add(Log::NOTICE, print_r($data, true));
         Log::instance()->write();
         return $triples;
     }
