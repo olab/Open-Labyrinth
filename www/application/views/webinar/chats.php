@@ -22,12 +22,12 @@ $users = Arr::get($templateData, 'users', array());
 $webinar_id = $templateData['webinar_id'];
 ?>
 <style>
-    .chat{width:12%;margin:0 2px;display: inline-block;float:left;height: 600px;}
+    .chat{width:12%;margin:0 2px;display: inline-block;float:left;}
     .user_id,.chat-textarea{max-width:100%;width:100%}
     .row{margin-left:0!important;}
 </style>
 <script>
-    var urlBase = <?php echo URL::base(true)?>;
+    var urlBase = '<?php echo URL::base(true)?>';
     $(document).ready(function(){
         $( "#chats" ).sortable({
             connectWith: "#chats",
@@ -57,16 +57,27 @@ $webinar_id = $templateData['webinar_id'];
             </div>
         </div>
         <div class="panel-body">
-            <div class="chat-window">
+            <div class="chat-window" style="height:500px;"></div>
+            <textarea class="chat-textarea" placeholder="Put your response..."></textarea>
+            <div class="">
+                <select>
 
+                </select>
             </div>
-            <textarea class="chat-textarea" placeholder="Put your message..."></textarea>
+            <div class="">
+                <div>NodeId: <b class="node_id"></b></div>
+                <div>Node Title: <b class="node_title"></b></div>
+            </div>
         </div>
     </div>
         <script>
             $(document).ready(function(){
                 setInterval(function() {
                     loadMessages('<?php echo $chat_id ?>');
+                }, 1500);
+
+                setInterval(function() {
+                    getLastNode('<?php echo $chat_id ?>');
                 }, 1500);
             });
         </script>

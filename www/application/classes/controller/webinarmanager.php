@@ -91,7 +91,7 @@ class Controller_WebinarManager extends Controller_Base {
         if(!empty($last_trace)) {
             $session_id = (int)$last_trace->session_id;
             $node_id = (int)$last_trace->node_id;
-            $node = DB_ORM::model('user', array($node_id));
+            $node = DB_ORM::model('Map_Node', array($node_id));
             $node_title = $node->getNodeTitle();
 
             //get $question_id
@@ -108,7 +108,7 @@ class Controller_WebinarManager extends Controller_Base {
             }
             //end get $question_id
 
-            $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'queston_id' => $question_id);
+            $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'question_id' => $question_id);
         }
         die(json_encode($result));
     }
