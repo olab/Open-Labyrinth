@@ -42,6 +42,70 @@ class Controller_WebinarManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
+    public function action_chats()
+    {
+        $webinar_id = (int)$this->request->param('id', null);
+        $webinar = DB_ORM::model('webinar', array($webinar_id));
+        $users = $webinar->users;
+
+        $this->templateData['users'] = $users;
+        $this->templateData['webinar_id'] = $webinar_id;
+
+        $this->templateData['center'] = View::factory('webinar/chats')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    //ajax
+    public function action_getChatMessages()
+    {
+        $session_id = (int)$this->request->param('id', null);
+        $question_id = (int)$this->request->param('id2', null);
+        $chat_session_id = (int)$this->request->param('id3', null);
+
+        $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
+
+        $result = array();
+        if(!empty($responses)){
+            $result = json_encode($responses);
+        }
+        die($result);
+    }
+
+    public function action_getCurrentNode()
+    {
+        $result = null;
+        $user_id = (int)$this->request->param('id', null);
+        $webinar_id = (int)$this->request->param('id2', null);
+
+        if(empty($user_id) || empty($webinar_id)) return false;
+
+        $last_trace = DB_ORM::model('user')->getLastSessionTrace($user_id, $webinar_id);
+
+        if(!empty($last_trace)) {
+            $session_id = (int)$last_trace->session_id;
+            $node_id = (int)$last_trace->node_id;
+            $node = DB_ORM::model('user', array($node_id));
+            $node_title = $node->getNodeTitle();
+
+            //get $question_id
+            $question_id = null;
+            $responses = DB_ORM::model('User_Response')->getResponsesBySessionAndNode($session_id, $node_id);
+            if(!empty($responses) && count($responses) > 0){
+                foreach($responses as $response){
+                    $question = DB_ORM::model('Map_Question', array((int)$response->question_id));
+                    if($question->entry_type_id == 11){
+                        $question_id = $question->id;
+                        break;
+                    }
+                }
+            }
+            //end get $question_id
+
+            $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'queston_id' => $question_id);
+        }
+        die(json_encode($result));
+    }
+
     public function action_my()
     {
         $this->templateData['scenarios'] = DB_ORM::model('webinar')->getScenariosByUser(Auth::instance()->get_user()->id);

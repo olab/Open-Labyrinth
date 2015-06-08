@@ -904,6 +904,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    public function action_saveTurkTalkResponse()
+    {
+        $post = $this->request->post();
+        $sessionId = Session::instance()->get('session_id');
+        $questionId = Arr::get($post, 'questionId', 0);
+        $response = Arr::get($post, 'response', '');
+        $chat_session_id = Arr::get($post, 'chat_session_id', 0);
+        $isLearner = Arr::get($post, 'isLearner', false);
+        $nodeId = Arr::get($post, 'nodeId', false);
+        DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner, $nodeId);
+        die;
+    }
+
     public function action_saveSliderQuestionResponse()
     {
         $this->auto_render = false;
@@ -1875,6 +1888,40 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 $result .= '</ul>';
+            } else if ($q_type == 'ttalk') {
+                $chat_session_id = time();
+                Session::instance()->set('chat_session_id', $chat_session_id);
+                $chat_id = 'turkTalk'.$id;
+                $placeholder = ' placeholder="'.$question->prompt.'"';
+
+                $getValidator($id, $validator, $errorMsg, $parameter);
+
+                $result =
+                    '
+<script>
+    $(document).ready(function(){
+        setInterval(function() {
+            loadMessages(\''.$chat_id.'\');
+        }, 1500);
+    });
+</script>
+
+<div id="'.$chat_id.'">
+<input type="hidden" class="question_id" value="'.$id.'">
+<input type="hidden" class="session_id" value="'.$sessionId.'">
+<input type="hidden" class="chat_session_id" value="'.$chat_session_id.'">
+<div class="chat-window" style="width:300px;height:300px;display:none;"></div>
+
+<div class="ttalk">
+                    <textarea autocomplete="off" '.$validator.$errorMsg.$parameter.'class="ttalk-textarea" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'></textarea>'.
+                    '<p>
+                        <button class="ttalkButton">Submit</button>
+                    </p>';
+                $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
+                $result .= '</div>';
+                $result .= '</div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
             $result = '<div class="questions"><p>'.$question->stem.'</p>'.$result.'</div>';
         }

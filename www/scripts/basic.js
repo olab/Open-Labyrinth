@@ -144,6 +144,11 @@ $(document).ready(function(){
         lightningSct($(this));
     });
 
+    var ttalkButton = $('.ttalkButton');
+    ttalkButton.on('click', function () {
+        addChatMessage($(this));
+    });
+
     function validationAndLightningText($this){
         lightningNotSaved = true;
 
@@ -323,6 +328,33 @@ function sendSliderValue(qid, value) {
         {value: value},
         function(){}
     );
+}
+
+function addChatMessage(context) {
+
+    var ttalkDiv = context.closest('.ttalk'),
+        textarea = ttalkDiv.find('.ttalk-textarea'),
+        response = $.trim(textarea.val()),
+        questionId = parseInt(textarea.prop('id').replace('qresponse_', '')),
+        data = {response: response, questionId: questionId, nodeId: idNode, isLearner : 1};
+
+    if(response != '') {
+        $.ajax({
+            url: urlBase + 'renderLabyrinth/saveTurkTalkResponse',
+            type: 'post',
+            data: data,
+            async: true,
+            success: function (response) {
+                textarea.val('');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+                $('body').append(jqXHR.responseText);
+            }
+        });
+    }
 }
 // ----- end different type of questions ----- //
 
