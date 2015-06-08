@@ -115,11 +115,7 @@ class Controller_Sparql_API_cron extends RESTful_Controller
 
                 $extra_triples = $this->discover_triples(html_entity_decode($arc_triple['o']));
                 $store->insert($extra_triples, $extra_graph);
-                if($extra_graph == "http://olabdev.tk/resource/map_node/959" ){
-                    Log::instance()->add(Log::NOTICE, print_r($extra_graph, true));
-                    Log::instance()->add(Log::NOTICE, print_r($extra_triples, true));
-                    Log::instance()->write();
-                }
+
 
             }
             $arc_triples[] = $arc_triple;

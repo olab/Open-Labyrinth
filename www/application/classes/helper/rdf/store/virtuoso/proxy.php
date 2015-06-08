@@ -46,8 +46,13 @@ class Helper_RDF_Store_Virtuoso_Proxy {
 
         $query .= " } ";
 
-        $this->authenticateExecute($url, $username,$pass, array("query"=>$query));
-
+        $result = $this->authenticateExecute($url, $username,$pass, array("query"=>$query));
+        if($graph == "http://olabdev.tk/resource/map_node/959" ){
+            Log::instance()->add(Log::NOTICE, print_r($graph, true));
+            Log::instance()->add(Log::NOTICE, print_r($triples, true));
+            Log::instance()->add(Log::NOTICE, print_r($result, true));
+            Log::instance()->write();
+        }
 
 
     }
