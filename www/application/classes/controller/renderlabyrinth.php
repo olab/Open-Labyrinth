@@ -1220,7 +1220,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['remote_links'] = '';
             $result['links']        = '';
             foreach ($links as $link) {
-                if (isset($undoNodes[$link->node_2->id])) {
+                if (isset($undoNodes[$link->node_2->id]) || $link->hidden) {
                     continue;
                 }
 

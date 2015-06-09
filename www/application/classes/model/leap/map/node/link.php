@@ -71,6 +71,12 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                 'max_length' => 11,
                 'nullable' => FALSE,
             )),
+
+            'hidden' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
         );
         
         $this->relations = array(
@@ -127,6 +133,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
             $this->node_id_2 = $addNodeId;
 
             $this->image_id = Arr::get($values, 'linkImage', NULL);
+            $this->hidden = Arr::get($values, 'hidden', 0);
             $this->text = Arr::get($values, 'linkLabel', '');
             
             $this->save();
@@ -146,6 +153,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                         $links->node_id_1 = $this->node_id_2;
                         $links->node_id_2 = $this->node_id_1;
                         $links->image_id = $this->image_id;
+                        $links->hidden = $this->hidden;
 
                         $links->save();
                     }
@@ -161,6 +169,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                        ->column('node_id_1', Arr::get($values, 'node_id_1', ''))
                        ->column('node_id_2', Arr::get($values, 'node_id_2', ''))
                        ->column('image_id', Arr::get($values, 'image_id', null))
+                       ->column('hidden', Arr::get($values, 'hidden', 0))
                        ->column('order', Arr::get($values, 'order', 0))
                        ->column('probability', Arr::get($values, 'probability', 0))
                        ->execute();
@@ -180,7 +189,8 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
         if($this) { 
             $this->image_id = Arr::get($values, 'linkImage', '');
             $this->text = Arr::get($values, 'linkLabel', '');
-            
+            $this->hidden = Arr::get($values, 'hidden', 0);
+
             $this->save();
             
             $linkDirection = Arr::get($values, 'linkDirection', 1);
@@ -198,6 +208,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                         $links->node_id_1 = $this->node_id_2;
                         $links->node_id_2 = $this->node_id_1;
                         $links->image_id = $this->image_id;
+                        $links->hidden = $this->hidden;
 
                         $links->save();
                     } 
@@ -286,6 +297,7 @@ class Model_Leap_Map_Node_Link extends DB_ORM_Model {
                 ->column('node_id_1',   Arr::get($nodeMap, $link->node_id_1))
                 ->column('node_id_2',   Arr::get($nodeMap, $link->node_id_2))
                 ->column('image_id',    Arr::get($nodeMap, $link->image_id))
+                ->column('hidden',    Arr::get($nodeMap, $link->hidden))
                 ->execute();
         }
     }
