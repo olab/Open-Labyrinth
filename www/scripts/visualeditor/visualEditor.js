@@ -570,6 +570,7 @@ var VisualEditor = function() {
                 link.label = decode64(object.links[i].label);
                 link.imageId = object.links[i].imageId;
                 link.linkHidden = object.links[i].linkHidden;
+                link.lineColor = link.linkHidden == 1 ? '#969595': '#ffffff';
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 
                 self.links.push(link);

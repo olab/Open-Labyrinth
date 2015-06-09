@@ -96,6 +96,7 @@ var LinkModal = function() {
                 self.link.label = $linkLabel.val();
                 self.link.imageId = $linkImages.val();
                 self.link.linkHidden = $linkHidden.val();
+                self.link.lineColor = self.link.linkHidden == 1 ? '#969595': '#ffffff';
             } else {
                 visualEditor.DeleteLinkById(self.link.id);
                 self.link = null;
