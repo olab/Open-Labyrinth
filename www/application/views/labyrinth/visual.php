@@ -522,8 +522,8 @@ if (isset($templateData['map'])) { ?>
                             <label class="control-label" for="linkHidden"><?php echo __('Hidden'); ?></label>
                             <div class="controls block">
                                 <select id="linkHidden">
-                                    <option value="0" <?php echo (!isset($templateData['editLink']) || !$templateData['editLink']) ? 'selected' : ''?>>No</option>
-                                    <option value="1" <?php echo (isset($templateData['editLink']) && $templateData['editLink']) ? 'selected' : ''?>>Yes</option>
+                                    <option value="0" <?php echo (!isset($templateData['editLink']) || !$templateData['editLink']->hidden) ? 'selected' : ''?>>No</option>
+                                    <option value="1" <?php echo (isset($templateData['editLink']) && $templateData['editLink']->hidden) ? 'selected' : ''?>>Yes</option>
                                 </select>
                             </div>
                         </div>
