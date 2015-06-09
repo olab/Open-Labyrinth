@@ -1,3 +1,31 @@
+var previousNodeLinks = '';
+
+function getNodeLinks(chat_id)
+{
+    var chat = $('#'+chat_id),
+        redirect_node_id = chat.find('.redirect_node_id'),
+        node_id_obj = chat.find('.node_id'),
+        node_id = node_id_obj.text();
+
+    if(!empty(node_id)){
+        $.ajax({
+            url: urlBase + 'webinarManager/getNodeLinks/'+node_id,
+            async: true,
+            success: function (response) {
+                if(empty(redirect_node_id.html()) || previousNodeLinks != response) { //todo: check that new node
+                    redirect_node_id.html(response);
+                    previousNodeLinks = response;
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    }
+}
+
 function getLastNode(chat_id)
 {
     var chat = $('#'+chat_id),
@@ -30,24 +58,33 @@ function getLastNode(chat_id)
     }
 }
 
-function loadMessages(chat_id)
+function loadMessages(chat_id, isLearner)
 {
     var chat = $('#'+chat_id),
         session_id = chat.find('.session_id').attr('value'),
         question_id = chat.find('.question_id').attr('value'),
         chat_session_id = chat.find('.chat_session_id'),
-        chat_window = chat.find('.chat-window');
+        chat_window = chat.find('.chat-window'),
+        isLearner = isLearner === 0 ? 0 : 1;
 
     if(!empty(session_id) && !empty(question_id)) {
 
         chat_session_id = !empty(chat_session_id) ? chat_session_id.attr('value') : 0;
 
         $.ajax({
-            url: urlBase + 'webinarManager/getChatMessages/'+session_id+'/'+question_id+'/'+chat_session_id,
+            url: urlBase + 'webinarManager/getChatMessages/'+session_id+'/'+question_id+'/'+chat_session_id+'/'+isLearner,
             async: true,
             success: function (response) {
+
                 if(!empty(response)) {
-                    chat_window.html(response).show();
+                    response = JSON.parse(response);
+                    var responseText = response.response_text;
+                    if(isLearner == 1){
+                        if(response.response_type == 'redirect'){
+                            window.location.replace(responseText);
+                        }
+                    }
+                    chat_window.html(responseText).show();
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -59,28 +96,27 @@ function loadMessages(chat_id)
     }
 }
 
-function addChatMessage(context, isLearner) {
+function addChatMessage(context, isLearner, isRedirect) {
 
     var ttalkDiv = context.closest('.ttalk'),
         textarea = ttalkDiv.find('.ttalk-textarea'),
         response = $.trim(textarea.val());
 
     if(!empty(isLearner)){
-        var questionId = parseInt(textarea.prop('id').replace('qresponse_', ''));
+        var questionId = parseInt(textarea.prop('id').replace('qresponse_', '')),
+            type = 'text';
     }else{
         var chat = ttalkDiv,
             questionId = chat.find('.question_id').attr('value'),
-            idNode = chat.find('.node_id').text(),
-            sessionId = chat.find('.session_id').attr('value');
-        //TODO: send chat_session_id
+            sessionId = chat.find('.session_id').attr('value'),
+            isRedirect = isRedirect || 0,
+            type = isRedirect ? 'redirect' : 'text',
+            response = isRedirect ? $('.redirect_node_id').val() : response;
+        idNode = chat.find('.node_id').text();
     }
 
-
-    console.log(response);
-    console.log(questionId);
-    console.log(idNode);
     if(response != '' && !empty(questionId) && !empty(idNode)) {
-        var data = {response: response, questionId: questionId, nodeId: idNode, isLearner: isLearner, sessionId: sessionId};
+        var data = {response: response, questionId: questionId, nodeId: idNode, isLearner: isLearner, sessionId: sessionId, type: type};
         $.ajax({
             url: urlBase + 'renderLabyrinth/saveTurkTalkResponse',
             type: 'post',

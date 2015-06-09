@@ -22,8 +22,9 @@ $users = Arr::get($templateData, 'users', array());
 $webinar_id = $templateData['webinar_id'];
 ?>
 <style>
-    .chat{width:12%;margin:0 2px;display: inline-block;float:left;}
-    .user_id,.chat-textarea{max-width:100%;width:100%}
+    .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
+    .user_id,.redirect_node_id{max-width:100%;width:100%}
+    .chat-textarea{max-width: 90%;}
     .row{margin-left:0!important;}
 </style>
 <script>
@@ -38,6 +39,11 @@ $webinar_id = $templateData['webinar_id'];
         ttalkButton.on('click', function () {
             addChatMessage($(this), 0);
         });
+
+        var ttalkRedirectButton = $('.ttalkRedirectButton');
+        ttalkRedirectButton.on('click', function () {
+            addChatMessage($(this), 0, 1);
+        });
     });
 </script>
 <input type="hidden" value="<?php echo $webinar_id ?>" id="webinar_id">
@@ -47,7 +53,7 @@ $webinar_id = $templateData['webinar_id'];
             $chat_id = 'chat'.$i;
         ?>
 
-    <div class="panel panel-default chat ttalk" id="<?php echo $chat_id ?>">
+    <div class="panel chat ttalk" id="<?php echo $chat_id ?>">
         <div class="panel-heading">
             <div class="row">
                     <i class="icon icon-move" style="width:10%;"></i>
@@ -62,13 +68,14 @@ $webinar_id = $templateData['webinar_id'];
             </div>
         </div>
         <div class="panel-body">
-            <div class="chat-window" style="height:500px;"></div>
-            <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..."></textarea>
-            <button class="ttalkButton">Submit</button>
+            <div class="chat-window" style="height:450px;"></div>
+            <div>
+                <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..."></textarea>
+                <button class="ttalkButton">Submit</button>
+            </div>
             <div class="">
-                <select>
-
-                </select>
+                <select class="redirect_node_id"></select>
+                <button class="ttalkRedirectButton">Redirect!</button>
             </div>
             <div class="">
                 <div>NodeId: <b class="node_id"></b></div>
@@ -81,11 +88,15 @@ $webinar_id = $templateData['webinar_id'];
         <script>
             $(document).ready(function(){
                 setInterval(function() {
-                    loadMessages('<?php echo $chat_id ?>');
+                    loadMessages('<?php echo $chat_id ?>', 0);
                 }, 1500);
 
                 setInterval(function() {
                     getLastNode('<?php echo $chat_id ?>');
+                }, 1500);
+
+                setInterval(function() {
+                    getNodeLinks('<?php echo $chat_id ?>');
                 }, 1500);
             });
         </script>

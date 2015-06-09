@@ -61,21 +61,36 @@ class Controller_WebinarManager extends Controller_Base {
         $session_id = (int)$this->request->param('id', null);
         $question_id = (int)$this->request->param('id2', null);
         $chat_session_id = (int)$this->request->param('id3', null);
+        $from_labyrinth = (int)$this->request->param('id4', null);
 
         $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
-
+        $result = '';
         if(!empty($responses)){
+            $result['response_type'] = 'text';
+            $result['response_text'] = '';
             foreach($responses as $response){
                 $isLearner = $response['role'] == 'learner' ? true : false;
+                if($from_labyrinth == 1){
+                    if($response['type'] == 'redirect'){
+                        $result['response_type'] = 'redirect';
+                        $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
+                        $result['response_text'] = $url;
+                        die(json_encode($result));
+                    }
+                }
+                ob_start();
                 ?>
                 <div class="message" style="padding:10px;border-bottom: 1px solid #ccc;">
                     <div class="name"><b><?php echo $isLearner ? 'You' : 'Turker'?>:</b></div>
-                    <div class="text"><?php echo $response['text'] ?></div>
+                    <div class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
                 </div>
                 <?php
+                $result['response_text'] .= ob_get_clean();
             }
+
+            $result = json_encode($result);
         }
-        die;
+        die($result);
     }
 
     public function action_getCurrentNode()
@@ -110,6 +125,28 @@ class Controller_WebinarManager extends Controller_Base {
 
             $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'question_id' => $question_id);
             $result = json_encode($result);
+        }
+        die($result);
+    }
+
+    public function action_getNodeLinks()
+    {
+        $result = '';
+        $node_id = (int)$this->request->param('id', null);
+        if(empty($node_id)) die($result);
+        $node = DB_ORM::model('Map_Node', array($node_id));
+        if(!empty($node)){
+            $links = $node->links;
+            if(!empty($links) && count($links) > 0) {
+                $result = '<option>- Redirect to... -</option>';
+                foreach ($links as $link) {
+                    $value = array('map_id' => $link->map_id, 'node_id' => $link->node_id_2);
+                    $value = json_encode($value);
+                    $node_title = trim($link->node_2->title);
+                    $result .= '<option value=\''.$value.'\'>'.$node_title.'</option>';
+                }
+            }
+
         }
         die($result);
     }

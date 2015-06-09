@@ -915,11 +915,17 @@ class Controller_RenderLabyrinth extends Controller_Template {
         if($isLearner){
             $sessionId = Session::instance()->get('session_id');
             $chat_session_id = Session::instance()->get('chat_session_id', null);
+            $type = 'text';
         }else{
+            $type = Arr::get($post, 'type');
             $sessionId = Arr::get($post, 'sessionId', 0);
             $chat_session_id = DB_ORM::model('User_Response')->getTurkTalkLastChatId($questionId, $sessionId);
+
+            if($type == 'redirect'){
+                $response = json_decode($response, true);
+            }
         }
-        DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner, $nodeId);
+        DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner, $type, $nodeId);
         die;
     }
 
