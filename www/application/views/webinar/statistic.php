@@ -170,16 +170,17 @@ if(!empty($userType) && $userType != 'learner') {
             {
                 foreach($step as $mapId => $map)
                 {
+                    $node_info = !empty($map['node_id']) ? $map['node_title'] . ' ('.$map['node_id'].')' : '';
                     switch($map['status'])
                     {
                         case 0:
-                            echo '<td style="text-align: center;"><i class="icon-remove"></i></td>';
+                            echo '<td style="text-align: center;"><i class="icon-remove"></i> '.$node_info.'</td>';
                             break;
                         case 1:
-                            echo '<td style="text-align: center; background:#FCF8E3"><i class="icon-time"></i></td>';
+                            echo '<td style="text-align: center; background:#FCF8E3"><i class="icon-time"></i> '.$node_info.'</td>';
                             break;
                         case 2:
-                            echo '<td style="text-align: center; background: #DFF0D8"><i style="color:green;" class="icon-ok"></i></td>';
+                            echo '<td style="text-align: center; background: #DFF0D8"><i style="color:green;" class="icon-ok"></i> '.$node_info.'</td>';
                             break;
                         default:
                             echo '<td></td>';

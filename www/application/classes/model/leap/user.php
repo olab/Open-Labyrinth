@@ -449,7 +449,7 @@ private static function initialize_metadata($object)
         return $return;
     }
 
-    public static function getLastSessionTrace($user_id, $webinar_id = null)
+    public static function getLastSessionTrace($user_id, $webinar_id = null, $map_id = null)
     {
         $builder = DB_ORM::select('User_SessionTrace');
 
@@ -458,6 +458,10 @@ private static function initialize_metadata($object)
         }
 
         $builder->where('user_sessiontraces.user_id', '=', $user_id);
+
+        if(!empty($map_id)){
+            $builder->where('user_sessiontraces.map_id', '=', $map_id);
+        }
 
         if(!empty($webinar_id)){
             $builder->where('user_sessions.webinar_id', '=', $webinar_id);

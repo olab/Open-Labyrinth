@@ -313,6 +313,16 @@ class Controller_WebinarManager extends Controller_Base {
                     $wData[$wUserId][$wStep][$prefix.$id]['status'] = ($wStep <= $wCurrentStep)
                         ? DB_ORM::model('user_session')->isUserFinishMap($id, $wUserId, $wMapObj->which, $webinar->id, $wCurrentStep)
                         : 0;
+                    $last_trace = DB_ORM::model('User')->getLastSessionTrace($wUserId, $webinar->id, $id);
+                    if(!empty($last_trace)){
+                        $last_node_id = $last_trace->node_id;
+                        $last_node_title = $last_trace->node->title;
+                    }else{
+                        $last_node_id = null;
+                        $last_node_title = null;
+                    }
+                    $wData[$wUserId][$wStep][$prefix.$id]['node_id'] = $last_node_id;
+                    $wData[$wUserId][$wStep][$prefix.$id]['node_title'] = $last_node_title ;
                     $wData[$wUserId][$wStep][$prefix.$id]['user']   = $wUser->user;
                 }
             }
