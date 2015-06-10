@@ -18,6 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+echo View::factory('webinar/_topMenu')->set('scenario', $templateData['scenario'])->set('webinars', $templateData['webinars']);
 $users = Arr::get($templateData, 'users', array());
 $webinar_id = $templateData['webinar_id'];
 $chats = $templateData['chats'];

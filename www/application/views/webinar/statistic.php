@@ -20,6 +20,9 @@
  */
 $webinarId  = $templateData['webinar']->id;
 $userType   = Auth::instance()->get_user()->type->name;
+if(!empty($userType) && $userType != 'learner') {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+}
 ?>
 <div class="page-header">
     <h1><?php echo __('Scenario Progress').' - "'.$templateData['webinar']->title; ?>"</h1>

@@ -24,20 +24,27 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_WebinarManager extends Controller_Base {
     public static $chat_id_template = 'chat-';
 
-    public function before() {
+    public function before()
+    {
         parent::before();
-
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Scenario Management'))->set_url(URL::base().'webinarManager'));
     }
 
     public function action_index()
     {
-        $user       = Auth::instance()->get_user();
-        $userType   = $user->type->name;
+        Breadcrumbs::clear();
 
-        $this->templateData['webinars'] = ($userType == 'superuser' OR $userType == 'Director')
-            ? DB_ORM::model('webinar')->getAllWebinars()
-            : DB_ORM::model('webinar')->getAllWebinars($user->id);
+        $webinar_id = (int)$this->request->param('id', 0);
+        $webinar_id = !empty($webinar_id) ? $webinar_id : Session::instance()->get('webinar_id', 0);
+        $webinar = $this->getWebinar($webinar_id);
+
+        if(!empty($webinar)){
+            Session::instance()->set('webinar_id', $webinar->id);
+            Request::initial()->redirect(URL::base().'webinarmanager/progress/'.$webinar->id);
+        }
+        $this->templateData['scenario'] = $webinar;
+
+        $this->templateData['webinars'] = $this->getWebinars();
         $this->templateData['center'] = View::factory('webinar/view')->set('templateData', $this->templateData);
 
         $this->template->set('templateData', $this->templateData);
@@ -45,8 +52,9 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_chats()
     {
+        Breadcrumbs::clear();
         $webinar_id = (int)$this->request->param('id', null);
-        $webinar = DB_ORM::model('webinar', array($webinar_id));
+        $webinar = $this->getWebinar($webinar_id);
         $users = $webinar->users;
 
         $this->templateData['users'] = $users;
@@ -71,139 +79,10 @@ class Controller_WebinarManager extends Controller_Base {
         }
 
         $this->templateData['chats'] = $chats;
-
+        $this->templateData['scenario'] = $webinar;
+        $this->templateData['webinars'] = $this->getWebinars();
         $this->templateData['center'] = View::factory('webinar/chats')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
-    }
-
-    //save settings\\
-    public function action_saveChatsOrder()
-    {
-        $user = Auth::instance()->get_user();
-        $webinar_id = (int)$this->request->param('id', null);
-
-        if(!empty($_POST['chat']) && count($_POST['chat']) > 0 && !empty($webinar_id)) {
-            $settings = $user->getSettings();
-            $chats_order = $_POST['chat'];
-            foreach($chats_order as $order => $chat_id) {
-                $chat_id = self::$chat_id_template . $chat_id;
-                $settings['webinars'][$webinar_id]['chats'][$chat_id]['order'] = $order;
-            }
-            $user->saveSettings($settings);
-        }
-        die;
-    }
-
-    public function action_saveChosenUser()
-    {
-        $user = Auth::instance()->get_user();
-        $webinar_id = (int)$this->request->param('id', null);
-        $chat_id = $this->request->param('id2', null);
-        $user_id = (int)$this->request->param('id3', null);
-
-        if(!empty($webinar_id) && !empty($chat_id) && !empty($user_id)) {
-            $settings = $user->getSettings();
-            $settings['webinars'][$webinar_id]['chats'][$chat_id]['user_id'] = $user_id;
-            $user->saveSettings($settings);
-        }
-        die;
-    }
-    //end save settings\\
-
-    //ajax
-    public function action_getChatMessages()
-    {
-        $session_id = (int)$this->request->param('id', null);
-        $question_id = (int)$this->request->param('id2', null);
-        $chat_session_id = (int)$this->request->param('id3', null);
-        $from_labyrinth = (int)$this->request->param('id4', null);
-
-        $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
-        $result = '';
-        if(!empty($responses)){
-            $result['response_type'] = 'text';
-            $result['response_text'] = '';
-            foreach($responses as $response){
-                $isLearner = $response['role'] == 'learner' ? true : false;
-                if($from_labyrinth == 1){
-                    if($response['type'] == 'redirect'){
-                        $result['response_type'] = 'redirect';
-                        $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
-                        $result['response_text'] = $url;
-                        die(json_encode($result));
-                    }
-                }
-                ob_start();
-                ?>
-                <div class="message" style="padding:10px;border-bottom: 1px solid #ccc;">
-                    <div class="name"><b><?php echo $isLearner ? 'You' : 'Turker'?>:</b></div>
-                    <div class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
-                </div>
-                <?php
-                $result['response_text'] .= ob_get_clean();
-            }
-
-            $result = json_encode($result);
-        }
-        die($result);
-    }
-
-    public function action_getCurrentNode()
-    {
-        $result = '';
-        $user_id = (int)$this->request->param('id', null);
-        $webinar_id = (int)$this->request->param('id2', null);
-
-        if(empty($user_id) || empty($webinar_id)) return false;
-
-        $last_trace = DB_ORM::model('user')->getLastSessionTrace($user_id, $webinar_id);
-
-        if(!empty($last_trace)) {
-            $session_id = (int)$last_trace->session_id;
-            $node_id = (int)$last_trace->node_id;
-            $node = DB_ORM::model('Map_Node', array($node_id));
-            $node_title = $node->getNodeTitle();
-
-            //get $question_id
-            $question_id = null;
-            $responses = DB_ORM::model('User_Response')->getResponsesBySessionAndNode($session_id, $node_id);
-            if(!empty($responses) && count($responses) > 0){
-                foreach($responses as $response){
-                    $question = DB_ORM::model('Map_Question', array((int)$response->question_id));
-                    if($question->entry_type_id == 11){
-                        $question_id = $question->id;
-                        break;
-                    }
-                }
-            }
-            //end get $question_id
-
-            $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'question_id' => $question_id);
-            $result = json_encode($result);
-        }
-        die($result);
-    }
-
-    public function action_getNodeLinks()
-    {
-        $result = '';
-        $node_id = (int)$this->request->param('id', null);
-        if(empty($node_id)) die($result);
-        $node = DB_ORM::model('Map_Node', array($node_id));
-        if(!empty($node)){
-            $links = $node->links;
-            if(!empty($links) && count($links) > 0) {
-                $result = '<option>- Redirect to... -</option>';
-                foreach ($links as $link) {
-                    $value = array('map_id' => $link->map_id, 'node_id' => $link->node_id_2);
-                    $value = json_encode($value);
-                    $node_title = trim($link->node_2->title);
-                    $result .= '<option value=\''.$value.'\'>'.$node_title.'</option>';
-                }
-            }
-
-        }
-        die($result);
     }
 
     public function action_my()
@@ -239,8 +118,7 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_edit()
     {
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Scenario'))->set_url(URL::base().'webinarManager/edit'));
-
+        Breadcrumbs::clear();
         $webinarId = $this->request->param('id', null);
 
         $MapsObj = (Auth::instance()->get_user()->type->name == 'superuser')
@@ -278,7 +156,9 @@ class Controller_WebinarManager extends Controller_Base {
         }
         // ------ End add poll node ------- //
 
-        $this->templateData['webinar'] = DB_ORM::model('webinar', array($webinarId));
+        $webinar = $this->getWebinar($webinarId);
+        $this->templateData['webinar'] = $webinar;
+        $this->templateData['webinars'] = $this->getWebinars();
 
         $this->templateData['experts']  = array();
         foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $webinarId)->query()->as_array() as $wUserObj)
@@ -316,6 +196,7 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_showStats()
     {
+        Breadcrumbs::clear();
         $scenarioId = $this->request->param('id', null);
         $step       = $this->request->param('id2', null);
         $dateId     = $this->request->param('id3', null);
@@ -325,7 +206,7 @@ class Controller_WebinarManager extends Controller_Base {
         $scenarioStepMap = array();
         $scenarioData    = array();
         $usersMap        = array();
-        $scenario        = DB_ORM::model('webinar', array((int)$scenarioId));
+        $scenario        = $this->getWebinar($scenarioId);
 
         if (count($scenario->users) AND count($scenario->maps))
         {
@@ -358,7 +239,8 @@ class Controller_WebinarManager extends Controller_Base {
             }
         }
 
-        $this->templateData['webinar']        = $scenario;
+        $this->templateData['webinar']  = $scenario;
+        $this->templateData['webinars'] = $this->getWebinars();
         $this->templateData['webinarStepMap'] = $scenarioStepMap;
 
         foreach ($this->templateData['webinar']->users as $user)
@@ -389,15 +271,14 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_progress()
     {
+        Breadcrumbs::clear();
         $webinarId = $this->request->param('id', null);
 
         if ($webinarId == null) Request::initial()->redirect(URL::base().'webinarmanager/index');
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Scenario Progress'))->set_url(URL::base().'webinarManager/progress'));
-
         $wData          = array();
         $usersMap       = array();
-        $webinar        = DB_ORM::model('webinar', array((int)$webinarId));
+        $webinar        = $this->getWebinar($webinarId);
         $webinarStepMap = array();
 
         if($webinar != null && count($webinar->users) && count($webinar->maps) > 0)
@@ -447,6 +328,7 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['scenario']       = DB_ORM::select('Webinar')->query()->as_array();
         $this->templateData['webinarStepMap'] = $webinarStepMap;
         $this->templateData['webinar']        = $webinar;
+        $this->templateData['webinars']       = $this->getWebinars();
         $this->templateData['usersMap']       = $usersMap;
         $this->templateData['webinarData']    = $wData;
 
@@ -475,9 +357,10 @@ class Controller_WebinarManager extends Controller_Base {
         } else {
             $this->templateData['history'] = DB_ORM::model('statistics_user_session')->getDateSaveByWebinarId($webinarId);
 
-            $webinar = DB_ORM::model('webinar', array((int)$webinarId));
+            $webinar = $this->getWebinar($webinarId);
 
             $this->templateData['webinar']     = $webinar;
+            $this->templateData['webinars']    = $this->getWebinars();
             Breadcrumbs::add(Breadcrumb::factory()->set_title('Statistics for ' . $webinar->title)->set_url(URL::base() . 'webinarManager/statistics'));
 
             $this->templateData['center'] = View::factory('webinar/all');
@@ -551,7 +434,7 @@ class Controller_WebinarManager extends Controller_Base {
         DB_ORM::model('webinar')->changeWebinarStep($scenarioId, $step);
 
         if ($redirect == null){
-            Request::initial()->redirect(URL::base().'webinarmanager/index');
+            Request::initial()->redirect(URL::base().'webinarmanager/index/'.$scenarioId);
         } else {
             Request::initial()->redirect(URL::base().'webinarmanager/progress/'.$scenarioId);
         }
@@ -1131,5 +1014,159 @@ class Controller_WebinarManager extends Controller_Base {
         DB_ORM::model('Conditions_Assign')->resetValue($assignId, $value);
 
         Request::initial()->redirect($this->request->referrer());
+    }
+
+    //save settings\\
+    //ajax
+    public function action_saveChatsOrder()
+    {
+        $user = Auth::instance()->get_user();
+        $webinar_id = (int)$this->request->param('id', null);
+
+        if(!empty($_POST['chat']) && count($_POST['chat']) > 0 && !empty($webinar_id)) {
+            $settings = $user->getSettings();
+            $chats_order = $_POST['chat'];
+            foreach($chats_order as $order => $chat_id) {
+                $chat_id = self::$chat_id_template . $chat_id;
+                $settings['webinars'][$webinar_id]['chats'][$chat_id]['order'] = $order;
+            }
+            $user->saveSettings($settings);
+        }
+        die;
+    }
+
+    //ajax
+    public function action_saveChosenUser()
+    {
+        $user = Auth::instance()->get_user();
+        $webinar_id = (int)$this->request->param('id', null);
+        $chat_id = $this->request->param('id2', null);
+        $user_id = (int)$this->request->param('id3', null);
+
+        if(!empty($webinar_id) && !empty($chat_id) && !empty($user_id)) {
+            $settings = $user->getSettings();
+            $settings['webinars'][$webinar_id]['chats'][$chat_id]['user_id'] = $user_id;
+            $user->saveSettings($settings);
+        }
+        die;
+    }
+    //end save settings\\
+
+    //ajax
+    public function action_getChatMessages()
+    {
+        $session_id = (int)$this->request->param('id', null);
+        $question_id = (int)$this->request->param('id2', null);
+        $chat_session_id = (int)$this->request->param('id3', null);
+        $from_labyrinth = (int)$this->request->param('id4', null);
+
+        $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
+        $result = '';
+        if(!empty($responses)){
+            $result['response_type'] = 'text';
+            $result['response_text'] = '';
+            foreach($responses as $response){
+                $isLearner = $response['role'] == 'learner' ? true : false;
+                if($from_labyrinth == 1){
+                    if($response['type'] == 'redirect'){
+                        $result['response_type'] = 'redirect';
+                        $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
+                        $result['response_text'] = $url;
+                        die(json_encode($result));
+                    }
+                }
+                ob_start();
+                ?>
+                <div class="message" style="padding:10px;border-bottom: 1px solid #ccc;">
+                    <div class="name"><b><?php echo $isLearner ? 'You' : 'Turker'?>:</b></div>
+                    <div class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
+                </div>
+                <?php
+                $result['response_text'] .= ob_get_clean();
+            }
+
+            $result = json_encode($result);
+        }
+        die($result);
+    }
+
+    //ajax
+    public function action_getCurrentNode()
+    {
+        $result = '';
+        $user_id = (int)$this->request->param('id', null);
+        $webinar_id = (int)$this->request->param('id2', null);
+
+        if(empty($user_id) || empty($webinar_id)) return false;
+
+        $last_trace = DB_ORM::model('user')->getLastSessionTrace($user_id, $webinar_id);
+
+        if(!empty($last_trace)) {
+            $session_id = (int)$last_trace->session_id;
+            $node_id = (int)$last_trace->node_id;
+            $node = DB_ORM::model('Map_Node', array($node_id));
+            $node_title = $node->getNodeTitle();
+
+            //get $question_id
+            $question_id = null;
+            $responses = DB_ORM::model('User_Response')->getResponsesBySessionAndNode($session_id, $node_id);
+            if(!empty($responses) && count($responses) > 0){
+                foreach($responses as $response){
+                    $question = DB_ORM::model('Map_Question', array((int)$response->question_id));
+                    if($question->entry_type_id == 11){
+                        $question_id = $question->id;
+                        break;
+                    }
+                }
+            }
+            //end get $question_id
+
+            $result = array('session_id' => $session_id, 'node_id' => $node_id, 'node_title' => $node_title, 'question_id' => $question_id);
+            $result = json_encode($result);
+        }
+        die($result);
+    }
+
+    //ajax
+    public function action_getNodeLinks()
+    {
+        $result = '';
+        $node_id = (int)$this->request->param('id', null);
+        if(empty($node_id)) die($result);
+        $node = DB_ORM::model('Map_Node', array($node_id));
+        if(!empty($node)){
+            $links = $node->links;
+            if(!empty($links) && count($links) > 0) {
+                $result = '<option>- Redirect to... -</option>';
+                foreach ($links as $link) {
+                    $value = array('map_id' => $link->map_id, 'node_id' => $link->node_id_2);
+                    $value = json_encode($value);
+                    $node_title = trim($link->node_2->title);
+                    $result .= '<option value=\''.$value.'\'>'.$node_title.'</option>';
+                }
+            }
+
+        }
+        die($result);
+    }
+
+    private function getWebinars()
+    {
+        $user       = Auth::instance()->get_user();
+        $userType   = $user->type->name;
+
+        return ($userType == 'superuser' || $userType == 'Director')
+            ? DB_ORM::model('webinar')->getAllWebinars()
+            : DB_ORM::model('webinar')->getAllWebinars($user->id);
+    }
+
+    private function getWebinar($webinar_id)
+    {
+        if(!empty($webinar_id)) {
+            $scenario = DB_ORM::model('Webinar', array($webinar_id));
+            $scenario_id = $scenario->id;
+        }
+
+        return !empty($scenario_id) ? $scenario : null;
     }
 }
