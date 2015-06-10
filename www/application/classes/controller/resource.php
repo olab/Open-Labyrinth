@@ -56,6 +56,13 @@ class Controller_Resource extends Controller_Base
                 }
 
             }
+            case "map_node":{
+                $node = DB_ORM::model('map_node', array($id));
+
+                return URL::base() . 'renderlabyrinth/go/'.$node->map_id.'/' . $id;
+
+
+            }
 
 
             case "user":
