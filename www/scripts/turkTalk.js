@@ -1,4 +1,4 @@
-var previousNodeLinks = '';
+var previousNodeLinks = [];
 
 function saveChatsOrder(context)
 {
@@ -59,9 +59,9 @@ function getNodeLinks(chat_id)
             url: urlBase + 'webinarManager/getNodeLinks/'+node_id,
             async: true,
             success: function (response) {
-                if(empty(redirect_node_id.html()) || previousNodeLinks != response) { //todo: check that new node
+                if(previousNodeLinks[chat_id] != response) {
                     redirect_node_id.html(response);
-                    previousNodeLinks = response;
+                    previousNodeLinks[chat_id] = response;
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
