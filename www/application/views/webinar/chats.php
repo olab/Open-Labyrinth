@@ -20,6 +20,7 @@
  */
 $users = Arr::get($templateData, 'users', array());
 $webinar_id = $templateData['webinar_id'];
+$chats = $templateData['chats'];
 ?>
 <style>
     .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
@@ -32,7 +33,15 @@ $webinar_id = $templateData['webinar_id'];
     $(document).ready(function(){
         $( "#chats" ).sortable({
             connectWith: "#chats",
-            handle: ".icon-move"
+            handle: ".icon-move",
+            update: function (event, ui) {
+                saveChatsOrder($(this));
+            }
+        });
+
+        var userLists = $('.user_id');
+        userLists.on('change', function(){
+            saveChosenUser($(this));
         });
 
         var ttalkButton = $('.ttalkButton');
@@ -48,10 +57,7 @@ $webinar_id = $templateData['webinar_id'];
 </script>
 <input type="hidden" value="<?php echo $webinar_id ?>" id="webinar_id">
 <div id="chats" class="row">
-    <?php for($i = 1; $i < 9; ++$i){ ?>
-        <?php
-            $chat_id = 'chat'.$i;
-        ?>
+    <?php foreach($chats as $chat_id => $v){ ?>
 
     <div class="panel chat ttalk" id="<?php echo $chat_id ?>">
         <div class="panel-heading">
@@ -61,7 +67,7 @@ $webinar_id = $templateData['webinar_id'];
                         <select class="user_id" style="display: inline-block;width:85%;">
                             <option value="">- choose User -</option>
                             <?php foreach($users as $user){ ?>
-                                <option value="<?php echo $user->user->id ?>"><?php echo $user->user->nickname ?></option>
+                                <option value="<?php echo $user->user->id ?>" <?php if(!empty($v['user_id']) && $user->user->id == $v['user_id']) echo 'selected'; ?>><?php echo $user->user->nickname ?></option>
                             <?php } ?>
                         </select>
                 <?php } ?>

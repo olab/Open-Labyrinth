@@ -112,6 +112,10 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'nullable' => TRUE,
                 'default' => false,
             )),
+            'settings' => new DB_ORM_Field_Text($this, array(
+                'nullable' => TRUE,
+            )),
+
         );
 
         $this->relations = array(
@@ -511,6 +515,23 @@ private static function initialize_metadata($object)
     {
         $this->modeUI = $mode;
         $this->save();
+    }
+
+    /**
+     * @param array $settings
+     * @throws Kohana_Marshalling_Exception
+     */
+    public function saveSettings($settings)
+    {
+        $settings = json_encode($settings);
+        $this->settings = $settings;
+        $this->save();
+    }
+
+    public function getSettings()
+    {
+        $settings = json_decode($this->settings, true);
+        return !empty($settings) ? $settings : array();
     }
 }
 

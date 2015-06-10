@@ -1,5 +1,52 @@
 var previousNodeLinks = '';
 
+function saveChatsOrder(context)
+{
+    var order = context.sortable('serialize'),
+        data = order,
+        webinar_id = $('#webinar_id').attr('value');
+
+    console.log(data);
+    if(!empty(webinar_id)) {
+        $.ajax({
+            data: data,
+            type: 'post',
+            async: true,
+            url: urlBase + 'webinarManager/saveChatsOrder/' + webinar_id,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    }
+}
+
+function saveChosenUser(context)
+{
+    var chat_id = context.closest('.ttalk').prop('id'),
+        user_id = context.val(),
+        webinar_id = $('#webinar_id').attr('value');
+
+    if(!empty(chat_id) && !empty(user_id) && !empty(webinar_id)){
+        $.ajax({
+            url: urlBase + 'webinarManager/saveChosenUser/'+webinar_id+'/'+chat_id+'/'+user_id,
+            async: true,
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            }
+        });
+    }
+}
+
 function getNodeLinks(chat_id)
 {
     var chat = $('#'+chat_id),
@@ -129,7 +176,7 @@ function addChatMessage(context, isLearner, isRedirect) {
                 console.log(jqXHR);
                 console.log(textStatus);
                 console.log(errorThrown);
-                $('body').append(jqXHR.responseText);
+                //$('body').append(jqXHR.responseText);
             }
         });
     }

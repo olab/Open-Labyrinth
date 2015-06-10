@@ -22,6 +22,7 @@
 defined('SYSPATH') or die('No direct script access.');
 
 class Controller_WebinarManager extends Controller_Base {
+    public static $chat_id_template = 'chat-';
 
     public function before() {
         parent::before();
@@ -51,9 +52,63 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['users'] = $users;
         $this->templateData['webinar_id'] = $webinar_id;
 
+        $settings = Auth::instance()->get_user()->getSettings();
+
+        if(!empty($settings['webinars'][$webinar_id]['chats'])){
+            $chats = $settings['webinars'][$webinar_id]['chats'];
+            uasort($chats, function($a, $b){
+                if ($a['order'] == $b['order']) {
+                    return 0;
+                }
+                return ($a['order'] < $b['order']) ? -1 : 1;
+            });
+        }else{
+            $chats = array();
+            for($i = 1; $i < 9; ++$i){
+                $chat_id = self::$chat_id_template.$i;
+                $chats[$chat_id]['order'] = $i;
+            }
+        }
+
+        $this->templateData['chats'] = $chats;
+
         $this->templateData['center'] = View::factory('webinar/chats')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
+
+    //save settings\\
+    public function action_saveChatsOrder()
+    {
+        $user = Auth::instance()->get_user();
+        $webinar_id = (int)$this->request->param('id', null);
+
+        if(!empty($_POST['chat']) && count($_POST['chat']) > 0 && !empty($webinar_id)) {
+            $settings = $user->getSettings();
+            $chats_order = $_POST['chat'];
+            foreach($chats_order as $order => $chat_id) {
+                $chat_id = self::$chat_id_template . $chat_id;
+                $settings['webinars'][$webinar_id]['chats'][$chat_id]['order'] = $order;
+            }
+            $user->saveSettings($settings);
+        }
+        die;
+    }
+
+    public function action_saveChosenUser()
+    {
+        $user = Auth::instance()->get_user();
+        $webinar_id = (int)$this->request->param('id', null);
+        $chat_id = $this->request->param('id2', null);
+        $user_id = (int)$this->request->param('id3', null);
+
+        if(!empty($webinar_id) && !empty($chat_id) && !empty($user_id)) {
+            $settings = $user->getSettings();
+            $settings['webinars'][$webinar_id]['chats'][$chat_id]['user_id'] = $user_id;
+            $user->saveSettings($settings);
+        }
+        die;
+    }
+    //end save settings\\
 
     //ajax
     public function action_getChatMessages()
