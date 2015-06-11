@@ -25,7 +25,7 @@ $chats = $templateData['chats'];
 ?>
 <style>
     .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
-    .user_id,.redirect_node_id{max-width:100%;width:100%}
+    .user_id,.redirect_node_id{max-width:100%;width:auto;}
     .chat-textarea{max-width: 90%;}
     .row{margin-left:0!important;}
 </style>
@@ -57,7 +57,7 @@ $chats = $templateData['chats'];
     });
 </script>
 <input type="hidden" value="<?php echo $webinar_id ?>" id="webinar_id">
-<div id="chats" class="row">
+<div id="chats">
     <?php foreach($chats as $chat_id => $v){ ?>
 
     <div class="panel chat ttalk" id="<?php echo $chat_id ?>">
@@ -75,16 +75,18 @@ $chats = $templateData['chats'];
             </div>
         </div>
         <div class="panel-body">
-            <div class="chat-window" style="height:450px;"></div>
+            <div class="chat-window" style="height:390px;"></div>
             <div>
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..."></textarea>
-                <button class="ttalkButton">Submit</button>
+                <button class="ttalkButton btn btn-success" style="width:100%">Submit</button>
             </div>
-            <div class="">
+            <hr>
+            <div class="form-inline">
                 <select class="redirect_node_id"></select>
-                <button class="ttalkRedirectButton">Redirect!</button>
+                <i class="ttalkRedirectButton icon icon-arrow-right btn btn-success" title="Redirect !"></i>
             </div>
-            <div class="">
+            <hr>
+            <div>
                 <div>NodeId: <b class="node_id"></b></div>
                 <div>Node Title: <b class="node_title"></b></div>
                 <input type="hidden" class="session_id" value="">
