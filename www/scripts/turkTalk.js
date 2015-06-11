@@ -3,7 +3,7 @@
  *
  */
 
-var previousNodeLinks = [];
+var previousNodesId = [];
 
 function saveChatsOrder(context)
 {
@@ -60,24 +60,26 @@ function getNodeLinks(chat_id)
         node_id = node_id_obj.text(),
         question_id = chat.find('.question_id').attr('value');
 
+    //don't send request if there is no TurkTalk question on the current node
     if(!empty(node_id) && !empty(question_id)){
-        $.ajax({
-            url: urlBase + 'webinarManager/getNodeLinks/'+node_id,
-            async: true,
-            success: function (response) {
-                if(previousNodeLinks[chat_id] != response) {
-                    if(!empty(response)) {
+        //don't send request if this the same node
+        if(previousNodesId[chat_id] != node_id) {
+            $.ajax({
+                url: urlBase + 'webinarManager/getNodeLinks/' + node_id,
+                async: true,
+                success: function (response) {
+                    if (!empty(response)) {
                         redirect_node_id.html(response).prop('disabled', false);
                     }
-                    previousNodeLinks[chat_id] = response;
+                    previousNodesId[chat_id] = node_id;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
                 }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR);
-                console.log(textStatus);
-                console.log(errorThrown);
-            }
-        });
+            });
+        }
     }else{
         redirect_node_id.html('<option value="">- Redirect to... -</option>').prop('disabled', 'disabled');
     }
