@@ -62,7 +62,7 @@ function getNodeLinks(chat_id)
 
     //don't send request if there is no TurkTalk question on the current node
     if(!empty(node_id) && !empty(question_id)){
-        //don't send request if this the same node
+        //don't send request if this is the same node
         if(previousNodesId[chat_id] != node_id) {
             $.ajax({
                 url: urlBase + 'webinarManager/getNodeLinks/' + node_id,
