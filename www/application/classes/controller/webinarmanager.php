@@ -1082,11 +1082,19 @@ class Controller_WebinarManager extends Controller_Base {
             $result['waiting_for_response'] = false;
             foreach($responses as $response){
                 $isLearner = $response['role'] == 'learner' ? true : false;
+
                 if($isLearner){
                     $result['waiting_for_response'] = true;
                 }else{
                     $result['waiting_for_response'] = false;
                 }
+
+                if($from_labyrinth){
+                    $name = $isLearner  ? 'You' : 'Turker';
+                }else{
+                    $name = !$isLearner  ? 'You' : 'User';
+                }
+
                 if($from_labyrinth == 1){
                     if($response['type'] == 'redirect'){
                         $result['response_type'] = 'redirect';
@@ -1098,7 +1106,7 @@ class Controller_WebinarManager extends Controller_Base {
                 ob_start();
                 ?>
                 <div class="message" style="padding:10px;border-bottom: 1px solid #ccc;">
-                    <div class="name"><b><?php echo $isLearner ? 'You' : 'Turker'?>:</b></div>
+                    <div class="name"><b><?php echo $name ?>:</b></div>
                     <div class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
                 </div>
                 <?php
