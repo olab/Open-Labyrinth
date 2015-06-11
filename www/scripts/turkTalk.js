@@ -33,8 +33,9 @@ function saveChosenUser(context)
     var chat_id = context.closest('.ttalk').prop('id'),
         user_id = context.val(),
         webinar_id = $('#webinar_id').attr('value');
+    user_id = !empty(user_id) ? user_id : 0;
 
-    if(!empty(chat_id) && !empty(user_id) && !empty(webinar_id)){
+    if(!empty(chat_id) && !empty(webinar_id)){
         $.ajax({
             url: urlBase + 'webinarManager/saveChosenUser/'+webinar_id+'/'+chat_id+'/'+user_id,
             async: true,

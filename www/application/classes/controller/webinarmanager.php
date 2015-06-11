@@ -1053,7 +1053,7 @@ class Controller_WebinarManager extends Controller_Base {
         $chat_id = $this->request->param('id2', null);
         $user_id = (int)$this->request->param('id3', null);
 
-        if(!empty($webinar_id) && !empty($chat_id) && !empty($user_id)) {
+        if(!empty($webinar_id) && !empty($chat_id)) {
             $settings = $user->getSettings();
             $settings['webinars'][$webinar_id]['chats'][$chat_id]['user_id'] = $user_id;
             $user->saveSettings($settings);
