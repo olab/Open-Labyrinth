@@ -8,13 +8,11 @@ var previousNodesId = [];
 function saveChatsOrder(context)
 {
     var order = context.sortable('serialize'),
-        data = order,
         webinar_id = $('#webinar_id').attr('value');
 
-    console.log(data);
     if(!empty(webinar_id)) {
         $.ajax({
-            data: data,
+            data: order,
             type: 'post',
             async: true,
             url: urlBase + 'webinarManager/saveChatsOrder/' + webinar_id,
