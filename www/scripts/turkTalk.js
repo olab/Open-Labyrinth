@@ -1,3 +1,8 @@
+/**
+ * question_id  - TurkTalk question id, if exists
+ *
+ */
+
 var previousNodeLinks = [];
 
 function saveChatsOrder(context)
@@ -52,15 +57,18 @@ function getNodeLinks(chat_id)
     var chat = $('#'+chat_id),
         redirect_node_id = chat.find('.redirect_node_id'),
         node_id_obj = chat.find('.node_id'),
-        node_id = node_id_obj.text();
+        node_id = node_id_obj.text(),
+        question_id = chat.find('.question_id').attr('value');
 
-    if(!empty(node_id)){
+    if(!empty(node_id) && !empty(question_id)){
         $.ajax({
             url: urlBase + 'webinarManager/getNodeLinks/'+node_id,
             async: true,
             success: function (response) {
                 if(previousNodeLinks[chat_id] != response) {
-                    redirect_node_id.html(response);
+                    if(!empty(response)) {
+                        redirect_node_id.html(response).prop('disabled', false);
+                    }
                     previousNodeLinks[chat_id] = response;
                 }
             },
@@ -70,6 +78,8 @@ function getNodeLinks(chat_id)
                 console.log(errorThrown);
             }
         });
+    }else{
+        redirect_node_id.html('<option value="">- Redirect to... -</option>').prop('disabled', 'disabled');
     }
 }
 
