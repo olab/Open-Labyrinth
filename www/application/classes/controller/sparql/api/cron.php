@@ -134,7 +134,7 @@ class Controller_Sparql_API_cron extends RESTful_Controller
                 return array("status" => "class","total"=>$total, "extras" => $extras_count, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,);
             }
         } else {
-            return array("status" => "class","total"=>$total, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,);
+            return array("status" => "class","total"=>$total, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,"all"=>$propertyMappings);
         }
 
 
