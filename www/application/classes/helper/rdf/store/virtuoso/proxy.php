@@ -39,6 +39,7 @@ class Helper_RDF_Store_Virtuoso_Proxy {
             }
             else{
                 $o = addslashes($o);
+                $o = preg_replace('/\s+/', ' ', trim($o));
                 $query .= "<$s> <$p> '$o'. ";
             }
 
