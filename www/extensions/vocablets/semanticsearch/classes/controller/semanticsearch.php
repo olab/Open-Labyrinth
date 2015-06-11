@@ -36,11 +36,13 @@ class Controller_SemanticSearch extends Controller_Base {
         $session = Session::instance();
 
         $searchResults = $session->get_once('searchResults');
+        $searchTerm = $session->get_once('searchTerm');
 
         if(isset($searchResults)){
             $this->templateData["searchResults"] = $searchResults;
+            $this->templateData["searchTerm"] = $searchTerm;
 
-            //var_dump($this->templateData["searchResults"][0]);die;
+           //var_dump($this->templateData["searchResults"][0]);die;
         }
 
 
@@ -124,7 +126,7 @@ class Controller_SemanticSearch extends Controller_Base {
             "
             # Here you define what variables you want in the output from the combinations that you get inside the where clause{}
             # Graph is the node (because in inline annotation each node has its own graph), subject is the term found anf object is the term's label
-            select  ?object ?subject ?graph
+            select  ?object ?subject ?graph ?text
             #?graph ?subject ?map
             where {
             #you need to also select the containing graph - see the filter expression below...
@@ -138,10 +140,11 @@ class Controller_SemanticSearch extends Controller_Base {
             # This filter achieves two things: 1)it will only get things under olabdev.tk graph 2) it will only get things under a map_node graph, that is inline annotation stuff
               FILTER(STRSTARTS(STR(?graph), '$baseURL')).
             # This filter throws away empty stuff that should not be there (under investigation)
-              FILTER (!isBlank(?subject))
+              FILTER (!isBlank(?subject)).
+
+              ?graph <http://purl.org/dc/elements/1.1/description> ?text.
 
 
-            #?graph <http://purl.org/dc/terms/isPartOf> <http://olabdev.tk/resource/map/4>
             }
             ";
 
@@ -154,6 +157,7 @@ class Controller_SemanticSearch extends Controller_Base {
 
 
         $session->set('searchResults',$sparqlResults);
+        $session->set('searchTerm',$term);
 
         Request::initial()->redirect(URL::base() . 'semanticsearch/index/' );
 

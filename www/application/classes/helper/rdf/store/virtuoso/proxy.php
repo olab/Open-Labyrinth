@@ -49,12 +49,12 @@ class Helper_RDF_Store_Virtuoso_Proxy {
         $query .= " } ";
 
         $result = $this->authenticateExecute($url, $username,$pass, array("query"=>$query));
-        if($graph == "http://olabdev.tk/" ){
+       /* if($graph == "http://olabdev.tk/" ){
             Log::instance()->add(Log::NOTICE, print_r($graph, true));
             Log::instance()->add(Log::NOTICE, print_r($triples, true));
             Log::instance()->add(Log::NOTICE, print_r($result, true));
             Log::instance()->write();
-        }
+        }*/
 
 
     }
