@@ -113,6 +113,7 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'default' => false,
             )),
             'settings' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 65535,
                 'nullable' => TRUE,
             )),
 
