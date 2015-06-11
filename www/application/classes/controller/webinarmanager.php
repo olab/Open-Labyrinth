@@ -81,7 +81,9 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['chats'] = $chats;
         $this->templateData['scenario'] = $webinar;
         $this->templateData['webinars'] = $this->getWebinars();
+        $this->templateData['macros_list'] = $webinar->macros;
         $this->templateData['center'] = View::factory('webinar/chats')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('webinar/chat_macros')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -157,6 +159,7 @@ class Controller_WebinarManager extends Controller_Base {
         // ------ End add poll node ------- //
 
         $webinar = $this->getWebinar($webinarId);
+        $this->templateData['macros_list'] = $webinar->macros;
         $this->templateData['webinar'] = $webinar;
         $this->templateData['webinars'] = $this->getWebinars();
 

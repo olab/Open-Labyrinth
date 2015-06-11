@@ -5,6 +5,32 @@
 
 var previousNodesId = [];
 
+$(document).ready(function(){
+    var mousedownHappened = false;
+    var macrosText = '';
+    var textarea = $('textarea.ttalk-textarea');
+
+    $('.ttalk-macros').on('mousedown', function(){
+        mousedownHappened = true;
+        macrosText = $(this).html();
+    });
+
+    textarea.on('blur', function(){
+        if(mousedownHappened) {
+            var thistextarea = $(this);
+            macros(thistextarea, macrosText);
+            thistextarea.focus();
+            mousedownHappened = false;
+        }
+    });
+});
+
+function macros(context, text)
+{
+    var val = context.val();
+    context.val(val+text);
+}
+
 function saveChatsOrder(context)
 {
     var order = context.sortable('serialize'),

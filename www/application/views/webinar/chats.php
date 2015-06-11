@@ -113,3 +113,4 @@ $chats = $templateData['chats'];
 </div>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/helper.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/turkTalk.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery.hotkeys.js'); ?>"></script>
