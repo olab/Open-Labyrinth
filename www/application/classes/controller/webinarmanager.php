@@ -1069,14 +1069,21 @@ class Controller_WebinarManager extends Controller_Base {
         $question_id = (int)$this->request->param('id2', null);
         $chat_session_id = (int)$this->request->param('id3', null);
         $from_labyrinth = (int)$this->request->param('id4', null);
+        $node_id = (int)$this->request->param('id5', null);
 
-        $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id);
+        $responses = DB_ORM::model('User_Response')->getTurkTalkResponse($question_id, $session_id, $chat_session_id, $node_id);
         $result = '';
         if(!empty($responses)){
             $result['response_type'] = 'text';
             $result['response_text'] = '';
+            $result['waiting_for_response'] = false;
             foreach($responses as $response){
                 $isLearner = $response['role'] == 'learner' ? true : false;
+                if($isLearner){
+                    $result['waiting_for_response'] = true;
+                }else{
+                    $result['waiting_for_response'] = false;
+                }
                 if($from_labyrinth == 1){
                     if($response['type'] == 'redirect'){
                         $result['response_type'] = 'redirect';

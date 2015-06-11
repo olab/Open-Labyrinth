@@ -113,10 +113,10 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $this->createResponse($sessionId, $questionId, $json_response, $nodeId, $created_at);
     }
 
-    public function getTurkTalkResponse($question_id, $session_id, $chat_session_id = null)
+    public function getTurkTalkResponse($question_id, $session_id, $chat_session_id = null, $node_id = null)
     {
         $result = array();
-        $obj_responses = $this->getResponses($question_id, array($session_id));
+        $obj_responses = $this->getResponses($question_id, array($session_id), 'ASC', $node_id);
         if(!empty($obj_responses)){
             $responses = array();
             foreach($obj_responses as $obj_response){
@@ -221,18 +221,24 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             ->as_array();
     }
 
-    public function getResponses($questionId, $sessions, $orderBy = 'ASC')
+    public function getResponses($questionId, $sessions, $orderBy = 'ASC', $nodeId = null)
     {
         if (!count($sessions)) $sessions = array('');
 
-        $result = DB_SQL::select('default')
+        $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('question_id', '=', $questionId)
-            ->where('session_id', 'IN', $sessions)
-            ->order_by('id', $orderBy)
-            ->query();
+            ->where('session_id', 'IN', $sessions);
 
-        if($result->is_loaded()) {
+            if(!empty($nodeId)){
+                $builder->where('node_id', '=', $nodeId);
+            }
+
+        $result = $builder
+                        ->order_by('id', $orderBy)
+                        ->query();
+
+        if($result->is_loaded() && count($result) > 0) {
             $responses = array();
             foreach($result as $record){
                 $responses[] = DB_ORM::model('user_response', array((int)$record['id']));

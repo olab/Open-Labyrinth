@@ -25,12 +25,18 @@ body {
 .chat-window{
     overflow-y: auto;
     background: white;
+    margin-bottom: 10px;
 }
 
 .panel{
     border: 1px solid #dddddd;
     border-radius: 4px;
     background-color: white;
+}
+
+.new-message{
+    background-color: #f2dede;
+    border-color: #eed3d7;
 }
 
 .panel-heading{

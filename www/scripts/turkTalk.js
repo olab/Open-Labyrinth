@@ -14,7 +14,7 @@ function saveChatsOrder(context)
             async: true,
             url: urlBase + 'webinarManager/saveChatsOrder/' + webinar_id,
             success: function (response) {
-                console.log(response);
+                //console.log(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);
@@ -36,7 +36,7 @@ function saveChosenUser(context)
             url: urlBase + 'webinarManager/saveChosenUser/'+webinar_id+'/'+chat_id+'/'+user_id,
             async: true,
             success: function (response) {
-                console.log(response);
+                //console.log(response);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);
@@ -112,26 +112,37 @@ function loadMessages(chat_id, isLearner)
         question_id = chat.find('.question_id').attr('value'),
         chat_session_id = chat.find('.chat_session_id'),
         chat_window = chat.find('.chat-window'),
-        isLearner = isLearner === 0 ? 0 : 1;
+        isLearner = isLearner === 0 ? 0 : 1,
+        nodeId = isLearner === 0 ? chat.find('.node_id').text() : 0;
 
+    //console.log(question_id);
     if(!empty(session_id) && !empty(question_id)) {
 
         chat_session_id = !empty(chat_session_id) ? chat_session_id.attr('value') : 0;
 
         $.ajax({
-            url: urlBase + 'webinarManager/getChatMessages/'+session_id+'/'+question_id+'/'+chat_session_id+'/'+isLearner,
+            url: urlBase + 'webinarManager/getChatMessages/'+session_id+'/'+question_id+'/'+chat_session_id+'/'+isLearner+'/'+nodeId,
             async: true,
             success: function (response) {
 
                 if(!empty(response)) {
+                    //console.log(response);
                     response = JSON.parse(response);
                     var responseText = response.response_text;
                     if(isLearner == 1){
                         if(response.response_type == 'redirect'){
                             window.location.replace(responseText);
                         }
+                    }else{
+                        if(response.waiting_for_response){
+                            chat_window.addClass('new-message');
+                        }else{
+                            chat_window.removeClass('new-message');
+                        }
                     }
                     chat_window.html(responseText).show();
+                }else{
+                    chat_window.removeClass('new-message');
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -140,6 +151,8 @@ function loadMessages(chat_id, isLearner)
                 console.log(errorThrown);
             }
         });
+    }else{
+        chat_window.html('').removeClass('new-message');
     }
 }
 
