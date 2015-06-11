@@ -129,9 +129,9 @@ class Controller_Sparql_API_cron extends RESTful_Controller
         if ($res_count > 0) {
             $store->insert($arc_triples, $graph_uri);
             if ($res_count >= $limit)
-                return array("status" => "pending","total"=>$total, "extras" => $extras_count, "count" => $res_count, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name);
+                return array("status" => "pending","total"=>$total, "extras" => $extras_count, "count" => $res_count, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name,"all"=>$propertyMappings);
             else {
-                return array("status" => "class","total"=>$total, "extras" => $extras_count, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,);
+                return array("status" => "class","total"=>$total, "extras" => $extras_count, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,"all"=>$propertyMappings);
             }
         } else {
             return array("status" => "class","total"=>$total, "class" => $propertyMappings[$classOffset]->property . "-" . $propertyMappings[$classOffset]->term->name, "count" => $res_count,"all"=>$propertyMappings);
