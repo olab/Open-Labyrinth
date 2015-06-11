@@ -18,6 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+$action = Request::initial()->action();
 ?>
 <style>
     .navbar select{margin-top:10px;}
@@ -56,8 +57,8 @@
                 <li>
                     <select id="choose_view">
                         <option value="">- Choose View -</option>
-                        <option value="<?php echo URL::base().'webinarManager/progress/'.$scenario->id; ?>">View progress</option>
-                        <option value="<?php echo URL::base().'webinarManager/chats/'.$scenario->id; ?>">View scenario monitor chat</option>
+                        <option value="<?php echo URL::base().'webinarManager/progress/'.$scenario->id; ?>" <?php if(!empty($action) && $action == 'progress') echo 'selected'; ?>>Progress</option>
+                        <option value="<?php echo URL::base().'webinarManager/chats/'.$scenario->id; ?>" <?php if(!empty($action) && $action == 'chats') echo 'selected'; ?>>Chat</option>
                     </select>
                 </li>
                 <?php if($scenario->forum_id) { ?>
