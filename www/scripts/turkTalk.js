@@ -177,7 +177,7 @@ function loadMessages(chat_id, isLearner)
                             chat_window.removeClass('new-message');
                         }
                     }
-                    chat_window.html(responseText).show();
+                    chat_window.html(responseText);
                 }else{
                     chat_window.removeClass('new-message');
                 }
