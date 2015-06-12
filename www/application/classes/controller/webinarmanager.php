@@ -800,6 +800,7 @@ class Controller_WebinarManager extends Controller_Base {
 
     public function action_visualEditor ()
     {
+        Breadcrumbs::clear();
         $scenarioId = $this->request->param('id');
 
         $this->templateData['enabledMaps']  = DB_ORM::model('map')->getAllEnabledMap(0, 'name', 'ASC');
@@ -809,8 +810,6 @@ class Controller_WebinarManager extends Controller_Base {
         $this->templateData['scenarioJSON'] = DB_ORM::model('Webinar')->generateJSON($scenarioId);
         $this->templateData['center']       = View::factory('webinar/canvas')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
-
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Visual Editor')));
     }
 
     public function action_ajaxStepUpdate()
