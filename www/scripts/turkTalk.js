@@ -63,12 +63,13 @@ function getNodeLinks(chat_id)
         redirect_node_id = chat.find('.redirect_node_id'),
         node_id_obj = chat.find('.node_id'),
         node_id = node_id_obj.text(),
-        question_id = chat.find('.question_id').attr('value');
+        question_id = chat.find('.question_id').attr('value'),
+        int_chat_id = parseInt(chat_id.replace('chat-', ''));
 
     //don't send request if there is no TurkTalk question on the current node
     if(!empty(node_id) && !empty(question_id)){
         //don't send request if this is the same node
-        if(previousNodesId[chat_id] != node_id) {
+        if(previousNodesId[int_chat_id] != node_id) {
             $.ajax({
                 url: urlBase + 'webinarManager/getNodeLinks/' + node_id,
                 async: true,
@@ -88,7 +89,7 @@ function getNodeLinks(chat_id)
         redirect_node_id.html('<option value="">- Redirect to... -</option>').prop('disabled', 'disabled');
     }
 
-    previousNodesId[chat_id] = node_id;
+    previousNodesId[int_chat_id] = node_id;
 }
 
 function getLastNode(chat_id)
