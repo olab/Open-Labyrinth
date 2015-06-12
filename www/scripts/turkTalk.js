@@ -201,7 +201,7 @@ function addChatMessage(context, isLearner, isRedirect) {
         response = $.trim(textarea.val());
 
     if(!empty(isLearner)){
-        var questionId = parseInt(textarea.prop('id').replace('qresponse_', '')),
+        var questionId = textarea.data('questionId'),
             type = 'text';
     }else{
         var chat = ttalkDiv,

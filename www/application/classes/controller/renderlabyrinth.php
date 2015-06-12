@@ -1925,11 +1925,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
 <div class="chat-window" style="width:404px;height:300px;overflow-y:auto;background:white;border:1px solid #eee"></div>
 
 <div class="ttalk">
-                    <textarea style="width:400px;height:50px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" cols="'.$question->width.'" rows="'.$question->height.'" name="qresponse_'.$question->id.'" id="qresponse_'.$question->id .'"'.$placeholder.'></textarea>'.
+                    <textarea style="width:400px;height:50px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" cols="'.$question->width.'" rows="'.$question->height.'" data-question-id="'.$question->id.'" '.$placeholder.'></textarea>'.
                     '<p>
                         <button class="ttalkButton">Submit</button>
                     </p>';
-                $result .= '<div id="AJAXresponse'.$question->id.'"></div>';
                 $result .= '</div>';
                 $result .= '</div>';
 
