@@ -72,17 +72,17 @@ $chats = $templateData['chats'];
             <?php } ?>
         </div>
         <div class="panel-body">
-            <div class="chat-window" style="height:390px;"></div>
-            <div>
-                <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..."></textarea>
+            <div class="chat-window" style="height:400px;"></div>
+            <div style="border-bottom:1px solid #eee;padding:10px 0">
+                <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..." style="height:60px;"></textarea>
                 <button class="ttalkButton btn btn-success" style="width:100%">Submit</button>
             </div>
-            <hr>
-            <div class="form-inline">
+
+            <div class="form-inline" style="border-bottom:1px solid #eee;padding:10px 0">
                 <select class="redirect_node_id" disabled><option value="">- Redirect to... -</option></select>
                 <i class="ttalkRedirectButton icon icon-arrow-right btn btn-small btn-success" title="Redirect !"></i>
             </div>
-            <hr>
+
             <div>
                 <div>NodeId: <b class="node_id"></b></div>
                 <div>Node Title: <b class="node_title"></b></div>
