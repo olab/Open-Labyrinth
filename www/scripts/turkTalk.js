@@ -96,7 +96,6 @@ function getNodeLinks(chat_id)
                     if (!empty(response)) {
                         redirect_node_id.html(response).prop('disabled', false);
                     }
-                    previousNodesId[chat_id] = node_id;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR);
@@ -108,6 +107,8 @@ function getNodeLinks(chat_id)
     }else{
         redirect_node_id.html('<option value="">- Redirect to... -</option>').prop('disabled', 'disabled');
     }
+
+    previousNodesId[chat_id] = node_id;
 }
 
 function getLastNode(chat_id)
