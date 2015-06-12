@@ -188,7 +188,7 @@ function addChatMessage(context, isLearner, isRedirect) {
             sessionId = chat.find('.session_id').attr('value'),
             isRedirect = isRedirect || 0,
             type = isRedirect ? 'redirect' : 'text',
-            response = isRedirect ? $('.redirect_node_id').val() : response;
+            response = isRedirect ? chat.find('.redirect_node_id').val() : response;
         idNode = chat.find('.node_id').text();
     }
 
