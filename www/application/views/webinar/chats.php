@@ -79,7 +79,7 @@ $chats = $templateData['chats'];
             </div>
             <hr>
             <div class="form-inline">
-                <select class="redirect_node_id"></select>
+                <select class="redirect_node_id" disabled><option value="">- Redirect to... -</option></select>
                 <i class="ttalkRedirectButton icon icon-arrow-right btn btn-small btn-success" title="Redirect !"></i>
             </div>
             <hr>
