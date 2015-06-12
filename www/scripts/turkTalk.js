@@ -5,26 +5,6 @@
 
 var previousNodesId = [];
 
-$(document).ready(function(){
-    var mousedownHappened = false;
-    var macrosText = '';
-    var textarea = $('textarea.ttalk-textarea');
-
-    $('.ttalk-macros').on('mousedown', function(){
-        mousedownHappened = true;
-        macrosText = $(this).html();
-    });
-
-    textarea.on('blur', function(){
-        if(mousedownHappened) {
-            var thistextarea = $(this);
-            macros(thistextarea, macrosText);
-            thistextarea.focus();
-            mousedownHappened = false;
-        }
-    });
-});
-
 function macros(context, text)
 {
     var val = context.val();
@@ -153,7 +133,6 @@ function loadMessages(chat_id, isLearner)
         isLearner = isLearner === 0 ? 0 : 1,
         nodeId = isLearner === 0 ? chat.find('.node_id').text() : 0;
 
-    //console.log(question_id);
     if(!empty(session_id) && !empty(question_id)) {
 
         chat_session_id = !empty(chat_session_id) ? chat_session_id.attr('value') : 0;
@@ -164,7 +143,7 @@ function loadMessages(chat_id, isLearner)
             success: function (response) {
 
                 if(!empty(response)) {
-                    //console.log(response);
+
                     response = JSON.parse(response);
                     var responseText = response.response_text;
                     if(isLearner == 1){
@@ -227,7 +206,6 @@ function addChatMessage(context, isLearner, isRedirect) {
                 console.log(jqXHR);
                 console.log(textStatus);
                 console.log(errorThrown);
-                //$('body').append(jqXHR.responseText);
             }
         });
     }

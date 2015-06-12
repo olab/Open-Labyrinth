@@ -20,6 +20,27 @@
  */
 ?>
 <script>
+
+    $(document).ready(function(){
+        var mousedownHappened = false;
+        var macrosText = '';
+        var textarea = $('textarea.ttalk-textarea');
+
+        $('.ttalk-macros').on('mousedown', function(){
+            mousedownHappened = true;
+            macrosText = $(this).html();
+        });
+
+        textarea.on('blur', function(){
+            if(mousedownHappened) {
+                var thistextarea = $(this);
+                macros(thistextarea, macrosText);
+                thistextarea.focus();
+                mousedownHappened = false;
+            }
+        });
+    });
+
     $(window).keydown(function(event) {
         if(event.ctrlKey || event.metaKey) {
             event.preventDefault();
