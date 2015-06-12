@@ -804,7 +804,8 @@ class Controller_WebinarManager extends Controller_Base {
 
         $this->templateData['enabledMaps']  = DB_ORM::model('map')->getAllEnabledMap(0, 'name', 'ASC');
         $this->templateData['steps']        = DB_ORM::model('Webinar_Step')->getScenarioSteps($scenarioId);
-        $this->templateData['scenario']     = DB_ORM::model('Webinar', array($scenarioId));
+        $this->templateData['scenario']     = $this->getWebinar($scenarioId);
+        $this->templateData['webinars']     = $this->getWebinars();
         $this->templateData['scenarioJSON'] = DB_ORM::model('Webinar')->generateJSON($scenarioId);
         $this->templateData['center']       = View::factory('webinar/canvas')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);

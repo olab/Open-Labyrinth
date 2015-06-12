@@ -19,6 +19,7 @@
  *
  */
 if (isset($templateData['scenario'])) {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['scenario'])->set('webinars', $templateData['webinars']);
     $enabledMaps = Arr::get($templateData, 'enabledMaps', array());
     $steps = Arr::get($templateData, 'steps', array()); ?>
 
@@ -26,8 +27,7 @@ if (isset($templateData['scenario'])) {
     var scenarioId = <?php echo $templateData['scenario']->id; ?>;
     var scenarioJSON = '<?php echo Arr::get($templateData,'scenarioJSON', null); ?>';
 </script>
-
-<div class="page-header"><h1 class="clear-margin-bottom"><?php echo $templateData['scenario']->title; ?></h1></div>
+    
 <div class="block">
     <div class="block" style="position: relative;" id="canvasContainer">
         <!-- left menu -->
