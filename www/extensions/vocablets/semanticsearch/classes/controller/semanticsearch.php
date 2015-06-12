@@ -27,12 +27,7 @@ class Controller_SemanticSearch extends Controller_Base {
 
     public function action_index()
     {
-
-            $data = array();
-
         $openView = View::factory('semanticsearch');
-
-
         $session = Session::instance();
 
         $searchResults = $session->get_once('searchResults');
@@ -41,23 +36,15 @@ class Controller_SemanticSearch extends Controller_Base {
         if(isset($searchResults)){
             $this->templateData["searchResults"] = $searchResults;
             $this->templateData["searchTerm"] = $searchTerm;
-
-           //var_dump($this->templateData["searchResults"][0]);die;
         }
-
-
         $openView->set('templateData', $this->templateData);
 
         $this->templateData['center'] = $openView;
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
-
-
     }
 
     private function bioportalSearch($term, $limit = 50){
-
-
         $requestFields = array(
             "q"=>$term,
             "pagesize"=>$limit,
@@ -73,11 +60,8 @@ class Controller_SemanticSearch extends Controller_Base {
     public function action_doSearch(){
 
         $term = $this->request->post('term', NULL);
-
         $first_wave = $this->bioportalSearch($term);
-
         $newTerms = array();
-
         $first_wave_count = count($first_wave["collection"]);
 
         for($i = 0 ; $i<min(5, $first_wave_count); $i++){
@@ -89,31 +73,18 @@ class Controller_SemanticSearch extends Controller_Base {
                     $newTerms[ucwords($synonym)]= ucwords($synonym);
                 }
             }
-
             $newTerms[ucwords($res["prefLabel"])] = ucwords($res["prefLabel"]);
-
-
         }
-
-
-
 
         $results = $first_wave["collection"];
 
         foreach($newTerms as $newTerm){
             $newWave = $this->bioportalSearch($newTerm,25);
             $newResults = $newWave["collection"];
-           var_dump($newTerm);
-            var_dump($newResults);
 
             $results = array_merge($results, $newResults);
         }
-
-      //  var_dump($results);
-
-
         $uris = array();
-
         foreach($results as $result){
             $uris[$result["@id"]]= "<".$result["@id"].">";
         }
@@ -121,7 +92,6 @@ class Controller_SemanticSearch extends Controller_Base {
         $baseURL = "http://olabdev.tk/resource/map_node";// URL::base().'resource/map_node';
         $inExpression = implode(",",$uris);
 
-     //  var_dump($results);die;
         $sparql =
             "
             # Here you define what variables you want in the output from the combinations that you get inside the where clause{}
@@ -148,22 +118,15 @@ class Controller_SemanticSearch extends Controller_Base {
             }
             ";
 
-       // var_dump($sparql);
-
         $session = Session::instance();
 
         $sparqlResults  = $this->doSparql($sparql);
-
-
 
         $session->set('searchResults',$sparqlResults);
         $session->set('searchTerm',$term);
 
         Request::initial()->redirect(URL::base() . 'semanticsearch/index/' );
-
     }
-
-
 
 
     protected function execute($url, $values){
@@ -189,22 +152,93 @@ class Controller_SemanticSearch extends Controller_Base {
     public function action_wheel()
     {
 
+        $allMapsQuery = "select ?map ?name{graph<http://olabdev.tk/>{?map a <http://xmlns.com/foaf/0.1/Document>.?map <http://purl.org/dc/terms/title> ?name}}";
+        $allMaps = $this->doSparql($allMapsQuery);
 
+
+        $map = ($this->request->query("map", null));
+        $query = "
+            select  count(?object) as ?count ?graph ?graph2 ?title1 ?title2
+            where {
+            graph ?graph
+            {
+               ?subject <http://schema.org/name> ?object.
+            }.
+            graph ?graph2
+            {
+               ?subject2 <http://schema.org/name> ?object.
+            }.
+              FILTER(STRSTARTS(STR(?graph), 'http://olabdev.tk/resource/map_node')).
+              FILTER (!isBlank(?subject))
+              FILTER (?graph!=?graph2)
+            ?graph2 <http://purl.org/dc/terms/isPartOf> <$map>.
+            ?graph <http://purl.org/dc/terms/isPartOf> <$map>.
+            ?graph <http://purl.org/dc/terms/title> ?title1.
+            ?graph2 <http://purl.org/dc/terms/title> ?title2.
+            }
+            Group by ?graph ?graph2  ?title1 ?title2
+            having count(?object)>0
+        ";
+
+        $sparqlResults = $this->doSparql($query);
+        if(count($sparqlResults)<1) {
+            $matrix = array();
+            $labels = array();
+        }
+        else{
+            $index = array();
+            $labels = array();
+            foreach($sparqlResults as $result2){
+                if(intval($result2["count"]>0)){
+                    if(!array_search($result2["graph"],$index)){
+                        $index[] = $result2["graph"];
+                        $labels[$result2["graph"]] = $result2["title1"]." ";
+
+                    }
+                    if(!array_search($result2["graph2"],$index)){
+                        $index[] = $result2["graph2"];
+                        $labels[$result2["graph2"]] = $result2["title2"]." ";
+
+                    }
+                }
+
+            }
+            $index = array_unique($index);
+            $index = array_values($index);
+
+
+
+            $matrix= array_fill(0, count($index), array_fill(0, count($index), 0));;
+            $inverse_index = array_flip($index);
+
+            $labels = array_values(array_intersect_key($labels, $inverse_index));
+
+            foreach ($sparqlResults as $result) {
+
+                $x = $inverse_index[$result{"graph"}];
+                $y = $inverse_index[$result{"graph2"}];
+                $matrix[$x][$y] = intval($result["count"]);
+                $matrix[$y][$x] = intval($result["count"]);
+            }
+        }
+
+
+        $this->templateData["map"] =  $map;
+        $this->templateData["labels"] =  $labels;
+        $this->templateData["data"] =  $matrix;
+        $this->templateData["allMaps"] =  $allMaps;
         $openView = View::factory('wheel');
         $openView->set('templateData', $this->templateData);
 
         $this->templateData['center'] = $openView;
         unset($this->templateData['right']);
+
         $this->template->set('templateData', $this->templateData);
-
-
     }
 
 
     private function doSparql($query){
-        $self = get_called_class();
         $sparql_config = Kohana::$config->load('sparql');
-        $graph_uri = Model_Leap_Vocabulary::getGraphUri();
 
         $db = sparql_connect($sparql_config["endpoint"]);
 
@@ -213,21 +247,14 @@ class Controller_SemanticSearch extends Controller_Base {
             exit;
         }
 
-
-        // var_dump($sparql);
         $result = $db->query($query);
         if (!$result) {
             print $db->errno() . ": " . $db->error() . "\n";
             exit;
         }
 
-
         return $result->fetch_all();
-
-
-
     }
-
 
 }
 
