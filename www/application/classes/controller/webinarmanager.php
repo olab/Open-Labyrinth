@@ -1211,8 +1211,13 @@ class Controller_WebinarManager extends Controller_Base {
             if(!array_key_exists($chat_id, $chats)) {
                 $chats[$chat_id]['order'] = $i;
                 $chats[$chat_id]['user_id'] = 0;
+            }else{
+                if(!isset($chats[$chat_id]['order'])){
+                    $chats[$chat_id]['order'] = $i;
+                }
             }
         }
+
         return $chats;
     }
 }
