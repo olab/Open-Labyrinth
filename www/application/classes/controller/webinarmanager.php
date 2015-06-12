@@ -429,6 +429,7 @@ class Controller_WebinarManager extends Controller_Base {
     public function action_delete()
     {
         DB_ORM::model('webinar')->deleteWebinar($this->request->param('id', null));
+        Session::instance()->delete('webinar_id');
         Request::initial()->redirect(URL::base().'webinarmanager/index');
     }
 
