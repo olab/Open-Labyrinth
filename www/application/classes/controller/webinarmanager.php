@@ -1081,6 +1081,18 @@ class Controller_WebinarManager extends Controller_Base {
             $result['response_text'] = '';
             $result['waiting_for_response'] = false;
             foreach($responses as $response){
+
+                if($response['type'] == 'init') continue; // first (init) response for history and to start new chat session
+
+                if($from_labyrinth == 1){
+                    if($response['type'] == 'redirect'){
+                        $result['response_type'] = 'redirect';
+                        $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
+                        $result['response_text'] = $url;
+                        die(json_encode($result));
+                    }
+                }
+
                 $isLearner = $response['role'] == 'learner' ? true : false;
 
                 if($isLearner){
@@ -1095,14 +1107,6 @@ class Controller_WebinarManager extends Controller_Base {
                     $name = !$isLearner  ? 'You' : 'User';
                 }
 
-                if($from_labyrinth == 1){
-                    if($response['type'] == 'redirect'){
-                        $result['response_type'] = 'redirect';
-                        $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
-                        $result['response_text'] = $url;
-                        die(json_encode($result));
-                    }
-                }
                 ob_start();
                 ?>
                 <div class="message" style="padding:10px;border-bottom:1px solid #eee;">

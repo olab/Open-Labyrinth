@@ -1906,6 +1906,8 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 $chat_id = 'turkTalk'.$id;
                 $placeholder = ' placeholder="'.$question->prompt.'"';
 
+                DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $id, $question->stem, $chat_session_id, true, 'init', self::$nodeId);
+
                 $result =
                     '
 <script>

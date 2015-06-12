@@ -96,15 +96,10 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     public function createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner = false, $type = 'text', $nodeId = null, $created_at = null)
     {
         $json_response = array();
-        $role = ($isLearner) ? 'learner' : 'turker';
-        if($isLearner) {
-            $responses = $this->getTurkTalkResponse($questionId, $sessionId, $chat_session_id);
-
-            if (empty($responses)) {
-                //TODO: save initial question
-                //$initial_question = '';
-                //$this->createResponse($sessionId, $questionId, $initial_question, $nodeId, $created_at);
-            }
+        if($type == 'init'){
+            $role = 'turker';
+        }else {
+            $role = ($isLearner) ? 'learner' : 'turker';
         }
 
         $json_response[$chat_session_id] = array('role'=>$role, 'text'=>$response, 'type' => $type);

@@ -195,6 +195,9 @@ class Controller_ReportManager extends Controller_Base
                     $responseArray = json_decode($userResponse->response, true);
                     if(!empty($responseArray)) {
                         $responseArray = end($responseArray);
+
+                        if($responseArray['type'] == 'init') continue;
+
                         if ($responseArray['type'] == 'text') {
                             $userResponse->response = $responseArray['role'] . ': ' . $responseArray['text'];
                         } else {
