@@ -120,6 +120,11 @@ function getLastNode(chat_id)
                 console.log(errorThrown);
             }
         });
+    }else{
+        session_id.attr('value', '');
+        question_id.attr('value', '');
+        node_title.text('');
+        node_id.text('');
     }
 }
 
