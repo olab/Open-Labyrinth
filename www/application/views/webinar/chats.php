@@ -72,7 +72,7 @@ $chats = $templateData['chats'];
             <?php } ?>
         </div>
         <div class="panel-body">
-            <div class="chat-window" style="height:400px;"></div>
+            <div class="chat-window" style="height:430px;"></div>
             <div style="border-bottom:1px solid #eee;padding:0 0 10px">
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..." style="height:60px;"></textarea>
                 <button class="ttalkButton btn btn-success" style="width:100%">Submit</button>
