@@ -27,7 +27,6 @@ $chats = $templateData['chats'];
     .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
     .user_id,.redirect_node_id{max-width:100%;width:auto;}
     .chat-textarea{max-width: 90%;}
-    .row{margin-left:0!important;}
 </style>
 <script>
     var urlBase = '<?php echo URL::base(true)?>';
@@ -62,17 +61,15 @@ $chats = $templateData['chats'];
 
     <div class="panel chat ttalk" id="<?php echo $chat_id ?>">
         <div class="panel-heading">
-            <div class="row">
-                    <i class="icon icon-move" style="width:10%;"></i>
-                <?php if(count($users) > 0){ ?>
-                        <select class="user_id" style="display: inline-block;width:85%;">
-                            <option value="">- choose User -</option>
-                            <?php foreach($users as $user){ ?>
-                                <option value="<?php echo $user->user->id ?>" <?php if(!empty($v['user_id']) && $user->user->id == $v['user_id']) echo 'selected'; ?>><?php echo $user->user->nickname ?></option>
-                            <?php } ?>
-                        </select>
-                <?php } ?>
-            </div>
+                <i class="icon icon-move" style="width:10%;"></i>
+            <?php if(count($users) > 0){ ?>
+                    <select class="user_id" style="display: inline-block;width:85%;margin-bottom:0">
+                        <option value="">- choose User -</option>
+                        <?php foreach($users as $user){ ?>
+                            <option value="<?php echo $user->user->id ?>" <?php if(!empty($v['user_id']) && $user->user->id == $v['user_id']) echo 'selected'; ?>><?php echo $user->user->nickname ?></option>
+                        <?php } ?>
+                    </select>
+            <?php } ?>
         </div>
         <div class="panel-body">
             <div class="chat-window" style="height:390px;"></div>
@@ -83,7 +80,7 @@ $chats = $templateData['chats'];
             <hr>
             <div class="form-inline">
                 <select class="redirect_node_id"></select>
-                <i class="ttalkRedirectButton icon icon-arrow-right btn btn-success" title="Redirect !"></i>
+                <i class="ttalkRedirectButton icon icon-arrow-right btn btn-small btn-success" title="Redirect !"></i>
             </div>
             <hr>
             <div>
