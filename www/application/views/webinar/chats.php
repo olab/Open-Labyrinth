@@ -24,9 +24,9 @@ $webinar_id = $templateData['webinar_id'];
 $chats = $templateData['chats'];
 ?>
 <style>
-    .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
+    .chat{width:12.1%;margin:0 2px;display:inline-block;float:left;}
     .user_id,.redirect_node_id{max-width:100%;width:auto;}
-    .chat-textarea{max-width: 100%;}
+    .chat-textarea{max-width:100%;}
 </style>
 <script>
     var urlBase = '<?php echo URL::base(true)?>';
