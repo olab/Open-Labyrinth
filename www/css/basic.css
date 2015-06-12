@@ -22,6 +22,8 @@ body {
     padding: 60px 0 40px 0;
 }
 
+textarea{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;}
+
 .chat-window{
     overflow-y: auto;
     background: white;

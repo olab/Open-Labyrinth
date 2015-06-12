@@ -26,7 +26,7 @@ $chats = $templateData['chats'];
 <style>
     .chat{width:12.1%;margin:0 2px;display: inline-block;float:left;}
     .user_id,.redirect_node_id{max-width:100%;width:auto;}
-    .chat-textarea{max-width: 90%;}
+    .chat-textarea{max-width: 100%;}
 </style>
 <script>
     var urlBase = '<?php echo URL::base(true)?>';
@@ -73,7 +73,7 @@ $chats = $templateData['chats'];
         </div>
         <div class="panel-body">
             <div class="chat-window" style="height:400px;"></div>
-            <div style="border-bottom:1px solid #eee;padding:10px 0">
+            <div style="border-bottom:1px solid #eee;padding:0 0 10px">
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Put your response..." style="height:60px;"></textarea>
                 <button class="ttalkButton btn btn-success" style="width:100%">Submit</button>
             </div>
