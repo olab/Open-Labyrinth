@@ -18,7 +18,9 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+if(isset($templateData['webinar']) && isset($templateData['webinars'])) {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+}
 $sectionIds = Arr::get($templateData, 'sections', array());
 $isScenario = isset($templateData['webinar']);
 $scenario   = Arr::get($templateData, 'webinar', false);
@@ -205,7 +207,7 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
         </thead>
         <tbody>
         <?php
-        $macros_list = $templateData['macros_list'];
+        $macros_list = isset($templateData['macros_list']) ? $templateData['macros_list'] : array();
         if(!empty($macros_list) && count($macros_list) > 0){
             foreach($macros_list as $macros) {
                 ?>
