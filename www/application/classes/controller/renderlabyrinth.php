@@ -910,6 +910,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $post = $this->request->post();
         $questionId = Arr::get($post, 'questionId', 0);
         $response = Arr::get($post, 'response', '');
+        $response = nl2br($response);
         $isLearner = Arr::get($post, 'isLearner', false);
         $nodeId = Arr::get($post, 'nodeId', false);
         if($isLearner){
