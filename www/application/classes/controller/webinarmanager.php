@@ -23,6 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_WebinarManager extends Controller_Base {
     public static $chat_id_template = 'chat-';
+    public static $chat_quantity = 8;
 
     public function before()
     {
@@ -64,6 +65,9 @@ class Controller_WebinarManager extends Controller_Base {
 
         if(!empty($settings['webinars'][$webinar_id]['chats'])){
             $chats = $settings['webinars'][$webinar_id]['chats'];
+            if(count($chats) < self::$chat_quantity){
+                $chats = $this->addChats($chats);
+            }
             uasort($chats, function($a, $b){
                 if (!isset($a['order'], $b['order']) || ($a['order'] == $b['order'])) {
                     return 0;
@@ -71,11 +75,7 @@ class Controller_WebinarManager extends Controller_Base {
                 return ($a['order'] < $b['order']) ? -1 : 1;
             });
         }else{
-            $chats = array();
-            for($i = 1; $i < 9; ++$i){
-                $chat_id = self::$chat_id_template.$i;
-                $chats[$chat_id]['order'] = $i;
-            }
+            $chats = $this->addChats();
         }
 
         $this->templateData['chats'] = $chats;
@@ -1200,5 +1200,19 @@ class Controller_WebinarManager extends Controller_Base {
         }
 
         return !empty($scenario_id) ? $scenario : null;
+    }
+
+    private function addChats($chats = array(), $chat_quantity = null)
+    {
+        if(empty($chat_quantity)) $chat_quantity = self::$chat_quantity;
+
+        for($i = 1; $i <= $chat_quantity; ++$i){
+            $chat_id = self::$chat_id_template . $i;
+            if(!array_key_exists($chat_id, $chats)) {
+                $chats[$chat_id]['order'] = $i;
+                $chats[$chat_id]['user_id'] = 0;
+            }
+        }
+        return $chats;
     }
 }
