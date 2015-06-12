@@ -65,7 +65,7 @@ class Controller_WebinarManager extends Controller_Base {
         if(!empty($settings['webinars'][$webinar_id]['chats'])){
             $chats = $settings['webinars'][$webinar_id]['chats'];
             uasort($chats, function($a, $b){
-                if ($a['order'] == $b['order']) {
+                if (!isset($a['order'], $b['order']) || ($a['order'] == $b['order'])) {
                     return 0;
                 }
                 return ($a['order'] < $b['order']) ? -1 : 1;
