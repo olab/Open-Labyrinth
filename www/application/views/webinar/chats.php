@@ -93,12 +93,15 @@ $chats = $templateData['chats'];
     </div>
         <script>
             $(document).ready(function(){
-                setInterval(function() {
-                    loadMessages('<?php echo $chat_id ?>', 0);
-                }, 1500);
+
+                getLastNode('<?php echo $chat_id ?>');
 
                 setInterval(function() {
                     getLastNode('<?php echo $chat_id ?>');
+                }, 1500);
+
+                setInterval(function() {
+                    loadMessages('<?php echo $chat_id ?>', 0);
                 }, 1500);
 
                 setInterval(function() {
