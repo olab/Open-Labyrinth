@@ -14,15 +14,16 @@
 <div class="row">
     <form action="" method="get" class="form" style="text-align: center">
         <select name="map" id="map">
-            <?php foreach($templateData["allMaps"] as $map):?>
-                <option <?php if($templateData["map"]==$map["map"]) echo "selected";?> value="<?php echo $map['map']?>"><?php echo $map["name"] ?></option>
-            <?php endforeach;?>
+            <?php foreach ($templateData["allMaps"] as $map): ?>
+                <option <?php if ($templateData["map"] == $map["map"]) echo "selected"; ?>
+                    value="<?php echo $map['map'] ?>"><?php echo $map["name"] ?></option>
+            <?php endforeach; ?>
         </select>
 
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-<div class="row" id="chart_placeholder">
+<div class="row" id="chart_placeholder"></div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://www.redotheweb.com/DependencyWheel/js/d3.dependencyWheel.js"></script>
 <script>
