@@ -240,7 +240,8 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
                 macros_list = $('#macros_list').find('tbody'),
                 macrosTemplate = '<tr><td></td><td><input type="text" name="macros_text[]"></td><td><input type="text" name="macros_hot_keys[]"></td><td><button class="btn btn-danger remove-macros"><i class="icon-trash"></i></button></td></tr>';
 
-            addMacros.on('click', function(){
+            addMacros.on('click', function(e){
+                e.preventDefault();
                 macros_list.append(macrosTemplate);
             });
 
