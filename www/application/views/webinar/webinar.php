@@ -244,7 +244,8 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
                 macros_list.append(macrosTemplate);
             });
 
-            remove_macros.on('click', function(){
+            remove_macros.on('click', function(e){
+                e.preventDefault();
                 $(this).closest('tr').remove();
             });
         });
