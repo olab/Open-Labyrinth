@@ -208,6 +208,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case "text":
                 return $this->saveTextQuestion($mapId, $type, $values);
                 break;
+            case "ttalk":
             case "area":
                 return $this->saveAreaQuestion($mapId, $type, $values);
                 break;
