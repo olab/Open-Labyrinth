@@ -160,6 +160,7 @@ var VisualEditor = function() {
             linkTypes: '#linkTypes', 
             linkImages: '#mimage',
             linkLabel: '#labelText',
+            linkHidden: '#linkHidden',
             visualEditor: self
         });
 
@@ -431,7 +432,7 @@ var VisualEditor = function() {
         if(links.length > 0) {
             var linksStr = '';
             for(var i = 0; i < links.length; i++) {
-                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + encode64(links[i].label) + '", "imageId": "' + links[i].imageId + '"}, ';
+                linksStr += '{"id": "' + links[i].id + '", "nodeA": "' + links[i].nodeA.id + '", "nodeB": "' + links[i].nodeB.id + '", "type": "' + links[i].type + '", "isNew": "' + links[i].isNew + '", "label": "' + encode64(links[i].label) + '", "imageId": "' + links[i].imageId + '", "linkHidden": "' + links[i].linkHidden + '"}, ';
             }
             
             if(linksStr.length > 2) {
@@ -568,6 +569,8 @@ var VisualEditor = function() {
                 link.nodeB = nodeB;
                 link.label = decode64(object.links[i].label);
                 link.imageId = object.links[i].imageId;
+                link.linkHidden = object.links[i].linkHidden;
+                link.lineColor = link.linkHidden == 1 ? '#969595': '#ffffff';
                 link.type = (object.links[i].type.length > 0) ? object.links[i].type : 'direct';
                 
                 self.links.push(link);

@@ -20,6 +20,9 @@
  */
 $webinarId  = $templateData['webinar']->id;
 $userType   = Auth::instance()->get_user()->type->name;
+if(!empty($userType) && $userType != 'learner') {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+}
 ?>
 <div class="page-header">
     <h1><?php echo __('Scenario Progress').' - "'.$templateData['webinar']->title; ?>"</h1>
@@ -167,16 +170,17 @@ $userType   = Auth::instance()->get_user()->type->name;
             {
                 foreach($step as $mapId => $map)
                 {
+                    $node_info = !empty($map['node_id']) ? $map['node_title'] . ' ('.$map['node_id'].')' : '';
                     switch($map['status'])
                     {
                         case 0:
-                            echo '<td style="text-align: center;"><i class="icon-remove"></i></td>';
+                            echo '<td style="text-align: center;"><i class="icon-remove"></i> '.$node_info.'</td>';
                             break;
                         case 1:
-                            echo '<td style="text-align: center; background:#FCF8E3"><i class="icon-time"></i></td>';
+                            echo '<td style="text-align: center; background:#FCF8E3"><i class="icon-time"></i> '.$node_info.'</td>';
                             break;
                         case 2:
-                            echo '<td style="text-align: center; background: #DFF0D8"><i style="color:green;" class="icon-ok"></i></td>';
+                            echo '<td style="text-align: center; background: #DFF0D8"><i style="color:green;" class="icon-ok"></i> '.$node_info.'</td>';
                             break;
                         default:
                             echo '<td></td>';

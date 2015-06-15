@@ -25,6 +25,7 @@ class Policy_Access extends Policy {
         array('controller' => 'webinarManager', 'action' => 'delete'),
         array('controller' => 'webinarManager', 'action' => 'save'),
         array('controller' => 'webinarManager', 'action' => 'changeStep'),
+        array('controller' => 'webinarManager', 'action' => 'chats'),
         array('controller' => 'dForumManager', 'action' => 'addForum'),
         array('controller' => 'dForumManager', 'action' => 'editForum'),
         array('controller' => 'dForumManager', 'action' => 'updateForum'),

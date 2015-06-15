@@ -22,7 +22,8 @@ var Link = function() {
     self.selectPadding = 5;
     self.label = '';
     self.imageId = 0;
-    
+    self.linkHidden = 0;
+
     self.Draw = function(context, viewport) {
         DrawByType(context, viewport);
     }

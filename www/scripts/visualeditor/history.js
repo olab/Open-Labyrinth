@@ -195,6 +195,7 @@ var HistoryLink = function(ve) {
             if(visualEditor.links[i].id == self.link.id) {
                 visualEditor.links[i].label = self.link.label;
                 visualEditor.links[i].imageId = self.link.imageId;
+                visualEditor.links[i].linkHidden = self.link.linkHidden;
                 visualEditor.links[i].type = self.link.type;
                 
                 return;
@@ -279,6 +280,7 @@ var HistoryNode = function(ve) {
                             visualEditor.links[k].id = self.links[j].id;
                             visualEditor.links[k].label = self.links[j].label;
                             visualEditor.links[k].imageId = self.links[j].imageId;
+                            visualEditor.links[k].linkHidden = self.links[j].linkHidden;
                             visualEditor.links[k].type = self.links[j].type;
                             
                             break;
@@ -307,6 +309,7 @@ var HistoryNode = function(ve) {
                     visualEditor.links[k].id = self.links[j].id;
                     visualEditor.links[k].label = self.links[j].label;
                     visualEditor.links[k].imageId = self.links[j].imageId;
+                    visualEditor.links[k].linkHidden = self.links[j].linkHidden;
                     visualEditor.links[k].type = self.links[j].type;
                             
                     break;
@@ -388,6 +391,7 @@ function cloneLink(obj) {
     temp.id = obj.id;
     temp.label = obj.label;
     temp.imageId = obj.imageId;
+    temp.linkHidden = obj.linkHidden;
     temp.type = obj.type;
     
     return temp;

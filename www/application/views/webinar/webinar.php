@@ -18,6 +18,9 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+if(isset($templateData['webinar']) && isset($templateData['webinars'])) {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+}
 $sectionIds = Arr::get($templateData, 'sections', array());
 $isScenario = isset($templateData['webinar']);
 $scenario   = Arr::get($templateData, 'webinar', false);
@@ -188,6 +191,68 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
         } ?>
     </div>
     <div><button class="btn btn-info add-step-btn" type="button"><i class="icon-plus-sign"></i>Add Step</button></div>
+
+    <hr>
+
+    <h3>List of text macros</h3>
+    <div><button class="btn btn-info add-macros-btn" type="button"><i class="icon-plus-sign"></i>Add Macros</button></div><br>
+    <table id="macros_list" class="table table-bordered table-striped table-condensed">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Text</th>
+                <th>Hot Keys</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        $macros_list = isset($templateData['macros_list']) ? $templateData['macros_list'] : array();
+        if(!empty($macros_list) && count($macros_list) > 0){
+            foreach($macros_list as $macros) {
+                ?>
+                <tr>
+                    <td>
+                        <?php echo isset($macros_counter) ? ++$macros_counter : $macros_counter = 1; ?>
+                    </td>
+                    <td>
+                        <input type="text" name="macros_text[]" value="<?php echo htmlspecialchars($macros->text) ?>">
+                    </td>
+                    <td>
+                        <input type="text" name="macros_hot_keys[]" value="<?php echo htmlspecialchars($macros->hot_keys) ?>">
+                    </td>
+                    <td>
+                        <button class="btn btn-danger remove-macros"><i class="icon-trash"></i></button>
+                    </td>
+                </tr>
+            <?php
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+    <div><button class="btn btn-info add-macros-btn" type="button"><i class="icon-plus-sign"></i>Add Macros</button></div>
+
+    <script>
+        $(document).ready(function(){
+            var addMacros = $('.add-macros-btn'),
+                remove_macros = $('.remove-macros');
+                macros_list = $('#macros_list').find('tbody'),
+                macrosTemplate = '<tr><td></td><td><input type="text" name="macros_text[]"></td><td><input type="text" name="macros_hot_keys[]"></td><td><button class="btn btn-danger remove-macros"><i class="icon-trash"></i></button></td></tr>';
+
+            addMacros.on('click', function(e){
+                e.preventDefault();
+                macros_list.append(macrosTemplate);
+            });
+
+            remove_macros.on('click', function(e){
+                e.preventDefault();
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+
+    <hr>
 
     <h3>Assign the users</h3>
     <table id="assign-users" class="table table-bordered table-striped">

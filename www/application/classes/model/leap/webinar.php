@@ -106,7 +106,14 @@ class Model_Leap_Webinar extends DB_ORM_Model {
                 'child_key' => array('webinar_id'),
                 'child_model' => 'webinar_step',
                 'parent_key' => array('id')
-            ))
+            )),
+
+            'macros' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('webinar_id'),
+                'child_model' => 'webinar_macros',
+                'parent_key' => array('id'),
+                'options' => array(array('order_by', array('webinar_macros.id', 'ASC'))),
+            )),
         );
     }
 
@@ -273,6 +280,15 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
         DB_ORM::model('webinar_group')->removeAllGroups($scenarioId);
         DB_ORM::model('webinar_user')->removeUsers($scenarioId);
+        DB_ORM::model('webinar_macros')->removeMacros($scenarioId);
+
+        $macros_text_array = Arr::get($values, 'macros_text', array());
+        $macros_hot_keys_array = Arr::get($values, 'macros_hot_keys', array());
+        if(count($macros_text_array) > 0) {
+            foreach ($macros_text_array as $key => $macros_text) {
+                DB_ORM::model('webinar_macros')->addMacros($scenarioId, $macros_text, $macros_hot_keys_array[$key]);
+            }
+        }
 
         foreach($users as $userId) {
             $expert = (in_array($userId, $experts)) ? 1 : 0;

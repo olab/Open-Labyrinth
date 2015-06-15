@@ -236,6 +236,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
             case "text":
                 $this->updateTextQuestion($values);
                 break;
+            case "ttalk":
             case "area":
                 $this->updateAreaQuestion($values);
                 break;

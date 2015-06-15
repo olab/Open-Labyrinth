@@ -112,6 +112,11 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'nullable' => TRUE,
                 'default' => false,
             )),
+            'settings' => new DB_ORM_Field_Text($this, array(
+                'max_length' => 65535,
+                'nullable' => TRUE,
+            )),
+
         );
 
         $this->relations = array(
@@ -445,6 +450,31 @@ private static function initialize_metadata($object)
         return $return;
     }
 
+    public static function getLastSessionTrace($user_id, $webinar_id = null, $map_id = null)
+    {
+        $builder = DB_ORM::select('User_SessionTrace');
+
+        if(!empty($webinar_id)){
+            $builder->join('INNER', 'user_sessions')->on('user_sessions.id', '=', 'user_sessiontraces.session_id');
+        }
+
+        $builder->where('user_sessiontraces.user_id', '=', $user_id);
+
+        if(!empty($map_id)){
+            $builder->where('user_sessiontraces.map_id', '=', $map_id);
+        }
+
+        if(!empty($webinar_id)){
+            $builder->where('user_sessions.webinar_id', '=', $webinar_id);
+        }
+
+        return $builder
+            ->order_by('user_sessiontraces.date_stamp', 'DESC')
+            ->limit(1)
+            ->query()
+            ->fetch(0);
+    }
+
     public function can($policy_name, $args = array())
     {
         $status = FALSE;
@@ -490,6 +520,23 @@ private static function initialize_metadata($object)
     {
         $this->modeUI = $mode;
         $this->save();
+    }
+
+    /**
+     * @param array $settings
+     * @throws Kohana_Marshalling_Exception
+     */
+    public function saveSettings($settings)
+    {
+        $settings = json_encode($settings);
+        $this->settings = $settings;
+        $this->save();
+    }
+
+    public function getSettings()
+    {
+        $settings = json_decode($this->settings, true);
+        return !empty($settings) ? $settings : array();
     }
 }
 

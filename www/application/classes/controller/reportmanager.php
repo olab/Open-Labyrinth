@@ -190,6 +190,22 @@ class Controller_ReportManager extends Controller_Base
                         }
                         $answeredQuestions[$nodeId][] = $questionId;
                     }
+                } elseif(in_array($questions[$questionId]->entry_type_id, array(11))) {
+
+                    $responseArray = json_decode($userResponse->response, true);
+                    if(!empty($responseArray)) {
+                        $responseArray = end($responseArray);
+
+                        if($responseArray['type'] == 'init') continue;
+
+                        if ($responseArray['type'] == 'text') {
+                            $userResponse->response = $responseArray['role'] . ': ' . $responseArray['text'];
+                        } else {
+                            $userResponse->response = 'Redirect to the Node ID: ' . $responseArray['text']['node_id'];
+                        }
+                        $this->templateData['responses'][] = $userResponse;
+                    }
+
                 } else {
                     $this->templateData['responses'][] = $userResponse;
                 }

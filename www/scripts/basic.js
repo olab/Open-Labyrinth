@@ -143,6 +143,13 @@ $(document).ready(function(){
         lightningSct($(this));
     });
 
+    $(document).ready(function(){
+        var ttalkButton = $('.ttalkButton');
+        ttalkButton.on('click', function () {
+            addChatMessage($(this), 1);
+        });
+    });
+
     function validationAndLightningText($this){
         lightningNotSaved = true;
 
@@ -325,6 +332,7 @@ function sendSliderValue(qid, value) {
         function(){}
     );
 }
+
 // ----- end different type of questions ----- //
 
 window.dhx_globalImgPath = urlBase + "scripts/dhtmlxSlider/codebase/imgs/";

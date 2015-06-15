@@ -904,6 +904,32 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    //ajax
+    public function action_saveTurkTalkResponse()
+    {
+        $post = $this->request->post();
+        $questionId = Arr::get($post, 'questionId', 0);
+        $response = Arr::get($post, 'response', '');
+        $response = nl2br($response);
+        $isLearner = Arr::get($post, 'isLearner', false);
+        $nodeId = Arr::get($post, 'nodeId', false);
+        if($isLearner){
+            $sessionId = Session::instance()->get('session_id');
+            $chat_session_id = Session::instance()->get('chat_session_id', null);
+            $type = 'text';
+        }else{
+            $type = Arr::get($post, 'type');
+            $sessionId = Arr::get($post, 'sessionId', 0);
+            $chat_session_id = DB_ORM::model('User_Response')->getTurkTalkLastChatId($questionId, $sessionId);
+
+            if($type == 'redirect'){
+                $response = json_decode($response, true);
+            }
+        }
+        DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner, $type, $nodeId);
+        die;
+    }
+
     public function action_saveSliderQuestionResponse()
     {
         $this->auto_render = false;
@@ -1195,7 +1221,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['remote_links'] = '';
             $result['links']        = '';
             foreach ($links as $link) {
-                if (isset($undoNodes[$link->node_2->id])) {
+                if (isset($undoNodes[$link->node_2->id]) || $link->hidden) {
                     continue;
                 }
 
@@ -1875,6 +1901,39 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 $result .= '</ul>';
+            } else if ($q_type == 'ttalk') {
+                $chat_session_id = time();
+                Session::instance()->set('chat_session_id', $chat_session_id);
+                $chat_id = 'turkTalk'.$id;
+                $placeholder = ' placeholder="'.$question->prompt.'"';
+
+                DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $id, $question->stem, $chat_session_id, true, 'init', self::$nodeId);
+
+                $result =
+                    '
+<script>
+    $(document).ready(function(){
+        setInterval(function() {
+            loadMessages(\''.$chat_id.'\');
+        }, 1500);
+    });
+</script>
+
+<div id="'.$chat_id.'">
+<input type="hidden" class="question_id" value="'.$id.'">
+<input type="hidden" class="session_id" value="'.$sessionId.'">
+<input type="hidden" class="chat_session_id" value="'.$chat_session_id.'">
+<div class="chat-window" style="width:404px;height:300px;overflow-y:auto;background:white;border:1px solid #eee"></div>
+
+<div class="ttalk">
+                    <textarea style="width:400px;height:50px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" cols="'.$question->width.'" rows="'.$question->height.'" data-question-id="'.$question->id.'" '.$placeholder.'></textarea>'.
+                    '<p>
+                        <button class="ttalkButton">Submit</button>
+                    </p>';
+                $result .= '</div>';
+                $result .= '</div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
             $result = '<div class="questions"><p>'.$question->stem.'</p>'.$result.'</div>';
         }

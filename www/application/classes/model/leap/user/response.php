@@ -93,6 +93,61 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             ->execute();
     }
 
+    public function createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner = false, $type = 'text', $nodeId = null, $created_at = null)
+    {
+        $json_response = array();
+        if($type == 'init'){
+            $role = 'turker';
+        }else {
+            $role = ($isLearner) ? 'learner' : 'turker';
+        }
+
+        $json_response[$chat_session_id] = array('role'=>$role, 'text'=>$response, 'type' => $type);
+        $json_response = json_encode($json_response);
+
+        $this->createResponse($sessionId, $questionId, $json_response, $nodeId, $created_at);
+    }
+
+    public function getTurkTalkResponse($question_id, $session_id, $chat_session_id = null, $node_id = null)
+    {
+        $result = array();
+        $obj_responses = $this->getResponses($question_id, array($session_id), 'ASC', $node_id);
+        if(!empty($obj_responses)){
+            $responses = array();
+            foreach($obj_responses as $obj_response){
+                $response = json_decode($obj_response->response, true);
+                $key = key($response);
+                $responses[$key][] = array_pop($response);
+            }
+
+            if(empty($chat_session_id)) {
+                $last_chat_session_id = array_keys($responses);
+                $last_chat_session_id = max($last_chat_session_id);
+                $chat_session_id = $last_chat_session_id;
+            }
+            if(isset($responses[$chat_session_id])) {
+                $result = $responses[$chat_session_id];
+            }
+        }
+        return $result;
+    }
+
+    public function getTurkTalkLastChatId($question_id, $session_id)
+    {
+        $result = null;
+        $obj_responses = $this->getResponses($question_id, array($session_id));
+        if(!empty($obj_responses)){
+            $responses = array();
+            foreach($obj_responses as $obj_response){
+                $response = json_decode($obj_response->response, true);
+                $responses[] = key($response);
+            }
+
+            $result = max($responses);
+        }
+        return $result;
+    }
+
     public function updateById($id, $response)
     {
         DB_ORM::update('User_Response')->set('response', $response)->where('id', '=', $id)->execute();
@@ -109,30 +164,27 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $result->save();
     }
     
-    public function getResponse ($sessionId, $questionId, $nodesId = array())
+    public function getResponse ($sessionId, $questionId, $nodesId = array(), $orderBy = 'ASC')
     {
-        if ($nodesId)
-        {
+        if (count($nodesId) > 0) {
             $result = array();
-            foreach ($nodesId as $nodeId)
-            {
+            foreach ($nodesId as $nodeId) {
                 $response = DB_ORM::select('user_response')
                     ->where('session_id', '=', $sessionId)
                     ->where('question_id', '=', $questionId)
                     ->where('node_id', '=', $nodeId)
+                    ->order_by('id', $orderBy)
                     ->query()
                     ->fetch(0);
 
                 if ($response) $result[] = $response;
             }
             return $result;
-        }
-        else
-        {
+        } else {
             return DB_ORM::select('user_response')
                 ->where('session_id', '=', $sessionId)
                 ->where('question_id', '=', $questionId)
-                ->order_by('id', 'ASC')
+                ->order_by('id', $orderBy)
                 ->query()
                 ->as_array();
         }
@@ -156,22 +208,37 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getResponses($questionId, $sessions)
+    public function getResponsesBySessionAndNode($session_id, $node_id){
+        return DB_ORM::select('user_response')
+            ->where('session_id', '=', $session_id)
+            ->where('node_id', '=', $node_id)
+            ->query()
+            ->as_array();
+    }
+
+    public function getResponses($questionId, $sessions, $orderBy = 'ASC', $nodeId = null)
     {
-        if ( ! count($sessions)) $sessions = array('');
+        if (!count($sessions)) $sessions = array('');
 
-        $result = DB_SQL::select('default')
+        $builder = DB_SQL::select('default')
             ->from($this->table())
-            ->where('question_id', '=', $questionId, 'AND')
-            ->where('session_id', 'IN', $sessions)
-            ->query();
+            ->where('question_id', '=', $questionId)
+            ->where('session_id', 'IN', $sessions);
 
-        if($result->is_loaded()) {
-            $responces = array();
-            foreach($result as $record){
-                $responces[] = DB_ORM::model('user_response', array((int)$record['id']));
+            if(!empty($nodeId)){
+                $builder->where('node_id', '=', $nodeId);
             }
-            return $responces;
+
+        $result = $builder
+                        ->order_by('id', $orderBy)
+                        ->query();
+
+        if($result->is_loaded() && count($result) > 0) {
+            $responses = array();
+            foreach($result as $record){
+                $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
+            }
+            return $responses;
         }
 
         return NULL;
