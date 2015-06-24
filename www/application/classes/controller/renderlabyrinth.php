@@ -77,7 +77,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $reset = $this->request->query('reset');
-            if ( ! $reset) {
+            if (!$reset) {
                 $cumulative = DB_ORM::select('Webinar_Map')
                     ->where('webinar_id', '=', $scenarioId)
                     ->where('reference_id', '=', $mapId)
@@ -140,7 +140,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn     = $this->request->param($editOnId, null);
         $nodeId     = $nodeObj->id;
         $mapId      = $nodeObj->map_id;
-        $isRoot     = ($nodeObj->type_id == 1) ? true : false;
+        $isRoot     = ($nodeObj->type_id == 1 && $action == 'index') ? true : false;
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
         $data       = ($action == 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)

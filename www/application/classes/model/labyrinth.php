@@ -68,9 +68,14 @@ class Model_Labyrinth extends Model {
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL'])
-                    ? $_COOKIE['OL']
-                    : $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
+                if ($sessionId == NULL) {
+                    if(isset($_COOKIE['OL'])) {
+                        $sessionId = $_COOKIE['OL'];
+                    }else {
+                        $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
+                        Session::instance()->set('session_id', $sessionId);
+                    }
+                }
             }
 
             $scenarioSession = DB_ORM::model('user_session', array((int)$sessionId));
