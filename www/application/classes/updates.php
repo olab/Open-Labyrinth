@@ -139,7 +139,8 @@ class Updates
         if ($c=preg_match_all ($regExp, $str, $matches)) {
             if (isset($matches[0][0])) {
                 $found = 0;
-                $result = self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
+                //TODO: preg_replace(): The /e modifier is deprecated, use preg_replace_callback instead
+                $result = @self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
             }
         }
 
