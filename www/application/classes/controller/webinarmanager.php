@@ -1170,7 +1170,7 @@ class Controller_WebinarManager extends Controller_Base {
         if(!empty($node)){
             $links = $node->links;
             if(!empty($links) && count($links) > 0) {
-                $result = '<option>- Redirect to... -</option>';
+                $result = '<option value="">- Redirect to... -</option>';
                 foreach ($links as $link) {
                     $value = array('map_id' => $link->map_id, 'node_id' => $link->node_id_2);
                     $value = json_encode($value);
