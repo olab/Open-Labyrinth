@@ -195,7 +195,6 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
     <hr>
 
     <h3>List of text macros</h3>
-    <div><button class="btn btn-info add-macros-btn" type="button"><i class="icon-plus-sign"></i>Add Macros</button></div><br>
     <table id="macros_list" class="table table-bordered table-striped table-condensed">
         <thead>
             <tr>
