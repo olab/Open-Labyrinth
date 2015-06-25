@@ -53,10 +53,23 @@
 </script>
 <?php
 if(!empty($templateData['macros_list']) && count($templateData['macros_list']) > 0){
+    ?>
+    <table class="">
+        <!--<thead>
+        <tr>
+            <th style="width:1%">Key</th>
+            <th>Text</th>
+        </tr>
+        </thead>-->
+        <tbody>
+    <?php
     foreach($templateData['macros_list'] as $macros){
         $hot_keys = $macros->hot_keys;
 ?>
-        <span class="btn btn-default ttalk-macros" id="macros-<?php echo $macros->id ?>"><?php echo $macros->text ?></span>
+        <tr>
+            <td><?php echo $hot_keys ?></td>
+            <td><span class="btn btn-default ttalk-macros" id="macros-<?php echo $macros->id ?>"><?php echo $macros->text ?></span></td>
+        </tr>
         <?php if(!empty($hot_keys)){ ?>
         <script>
             $(document).ready(function(){
@@ -68,5 +81,9 @@ if(!empty($templateData['macros_list']) && count($templateData['macros_list']) >
         <?php } ?>
     <?php
     }
+    ?>
+        </tbody>
+    </table>
+        <?php
 }
 ?>

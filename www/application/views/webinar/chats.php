@@ -75,7 +75,7 @@ $chats = $templateData['chats'];
             <div class="chat-window" style="height:430px;"></div>
             <div style="border-bottom:1px solid #eee;padding:0 0 10px">
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Type your response..." style="height:60px;"></textarea>
-                <button class="ttalkButton btn btn-success" style="width:100%">Submit</button>
+                <button class="ttalkButton btn btn-primary" style="width:100%">Submit</button>
             </div>
 
             <div class="form-inline" style="border-bottom:1px solid #eee;padding:10px 0">
