@@ -469,7 +469,7 @@ private static function initialize_metadata($object)
         }
 
         return $builder
-            ->order_by('user_sessiontraces.date_stamp', 'DESC')
+            ->order_by('user_sessiontraces.id', 'DESC')
             ->limit(1)
             ->query()
             ->fetch(0);
