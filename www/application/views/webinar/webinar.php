@@ -221,7 +221,7 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
                         <input type="text" name="macros_hot_keys[]" value="<?php echo htmlspecialchars($macros->hot_keys) ?>">
                     </td>
                     <td>
-                        <button class="btn btn-danger remove-macros"><i class="icon-trash"></i></button>
+                        <span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span>
                     </td>
                 </tr>
             <?php
@@ -230,21 +230,19 @@ $changeStep = $scenario ? $scenario->changeSteps : "manually"; ?>
         ?>
         </tbody>
     </table>
-    <div><button class="btn btn-info add-macros-btn" type="button"><i class="icon-plus-sign"></i>Add Macros</button></div>
+    <div><span class="btn btn-info add-macros-btn"><i class="icon-plus-sign"></i>Add Macros</span></div>
 
     <script>
         $(document).ready(function(){
-            var addMacros = $('.add-macros-btn'),
-                remove_macros = $('.remove-macros');
-                macros_list = $('#macros_list').find('tbody'),
-                macrosTemplate = '<tr><td></td><td><input type="text" name="macros_text[]"></td><td><input type="text" name="macros_hot_keys[]"></td><td><button class="btn btn-danger remove-macros"><i class="icon-trash"></i></button></td></tr>';
+            var macros_list = $('#macros_list').find('tbody'),
+                macrosTemplate = '<tr><td></td><td><input type="text" name="macros_text[]"></td><td><input type="text" name="macros_hot_keys[]"></td><td><span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span></td></tr>';
 
-            addMacros.on('click', function(e){
+            $(document).on( 'click', '.add-macros-btn', function(e) {
                 e.preventDefault();
                 macros_list.append(macrosTemplate);
             });
 
-            remove_macros.on('click', function(e){
+            $(document).on( 'click', '.remove-macros', function(e) {
                 e.preventDefault();
                 $(this).closest('tr').remove();
             });
