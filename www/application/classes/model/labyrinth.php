@@ -45,10 +45,16 @@ class Model_Labyrinth extends Model {
             $result['node_title']   = trim($result['node_title'][0]);
             $result['node_text']    = $node->text;
 
-            $clearAnnotation = strip_tags($node->annotation, '<img>');
+            $user = Auth::instance()->get_user();
+            if(!empty($user)){
+                //should only be visible to registered authors and reviewers for that map
+                if(in_array($user->type_id, array(2,3,4))) {
+                    $clearAnnotation = strip_tags($node->annotation, '<img>');
 
-            if (strlen($clearAnnotation) > 0) {
-                $result['node_annotation'] = $node->annotation;
+                    if (strlen($clearAnnotation) > 0) {
+                        $result['node_annotation'] = $node->annotation;
+                    }
+                }
             }
 
             $sessionId = NULL;
