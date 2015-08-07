@@ -225,12 +225,34 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
         $counters = $trace['counters'];
         if(empty($counters)) return null;
 
-        $result = preg_match('#(\[MCID=)+(?<id>[0-9]+)+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('status', '=', '1', 'AND')
+            ->where('map_id', '=', (int)$trace['map_id'])
+            ->limit(1);
+        $result = $builder->query();
+
+        if($result->is_loaded()) {
+            if(!empty($result[0])) {
+                $main_counter = $result[0];
+            }else{
+                return NULL;
+            }
+        }
+
+        $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
+        if(!empty($result) && isset($matches['value'])){
+            return array('id' => $main_counter['id'], 'value' => $matches['value']);
+        }else{
+            return null;
+        }
+
+        /*$result = preg_match('#(\[MCID=)+(?<id>[0-9]+)+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
         if(!empty($result) && isset($matches['value'], $matches['id'])){
             return array('id' => $matches['id'], 'value' => $matches['value']);
         }else{
             return null;
-        }
+        }*/
     }
 
     /**
