@@ -103,6 +103,9 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         }
 
         $json_response[$chat_session_id] = array('role'=>$role, 'text'=>$response, 'type' => $type);
+        if($isLearner){
+            $json_response[$chat_session_id]['ping'] = time();
+        }
         $json_response = json_encode($json_response);
 
         $this->createResponse($sessionId, $questionId, $json_response, $nodeId, $created_at);
@@ -117,7 +120,9 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             foreach($obj_responses as $obj_response){
                 $response = json_decode($obj_response->response, true);
                 $key = key($response);
-                $responses[$key][] = array_pop($response);
+                $response = array_pop($response);
+                $response['id'] = $obj_response->id;
+                $responses[$key][] = $response;
             }
 
             if(empty($chat_session_id)) {

@@ -1094,9 +1094,10 @@ class Controller_WebinarManager extends Controller_Base {
                     }
                 }
 
-                $isLearner = $response['role'] == 'learner' ? true : false;
+                $isLearner = $response['role'] === 'learner' ? true : false;
+                $online = (isset($response['ping']) && $response['ping'] >= (time() - 4));
 
-                if($isLearner){
+                if($isLearner && $online){
                     $result['waiting_for_response'] = true;
                 }else{
                     $result['waiting_for_response'] = false;
@@ -1116,6 +1117,19 @@ class Controller_WebinarManager extends Controller_Base {
                 </div>
                 <?php
                 $result['response_text'] .= ob_get_clean();
+            }
+
+            //if the last one response has role 'learner' and current user is learner, then save time of last view
+            $last_response = end($responses);
+            if($last_response['role'] === 'learner' && $from_labyrinth){
+                $last_response_obj = DB_ORM::model('user_response', array((int)$last_response['id']));
+                $response_arr = json_decode($last_response_obj->response, true);
+                $key = key($response_arr);
+                $response_arr[$key]['ping'] = time();
+                DB_ORM::update('User_Response')
+                    ->set('response', json_encode($response_arr))
+                    ->where('id', '=', (int)$last_response['id'])
+                    ->execute();
             }
 
             $result = json_encode($result);
