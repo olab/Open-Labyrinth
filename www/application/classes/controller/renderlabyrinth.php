@@ -1237,13 +1237,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $node_2_title_back = isset($node_2_title_parts[1]) ? trim($node_2_title_parts[1]) : null;
 
                     if(!empty($node_2_title_back)){
-
-                        $isParent = $this->isParentLink($node, $link);
-                        if($isParent){
-                            $title = $node_2_title_back;
-                        }else{
-                            $title = trim($node_2_title_parts[0]);
-                        }
+                        $title = $node_2_title_back;
                     }
 
                     if(empty($title)) {
@@ -1309,34 +1303,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($links != '') return $links;
         }
         return NULL;
-    }
-
-    private function isParentLink($current_node, $link)
-    {
-        $session_id = Session::instance()->get('session_id');
-
-        $was_on_node = false;
-        $traces = DB_ORM::model('user_sessiontrace')->getTraceBySessionID($session_id);
-        if(count($traces) > 0) {
-            $traces_nodes_id = array();
-            $i = 0;
-            foreach ($traces as $trace) {
-                $traces_nodes_id[$i] = $trace->node_id;
-                if($link->node_id_2 == $trace->node_id){
-                    $was_on_node = true;
-                    $first_enter = $i;
-                    break;
-                }
-                $i++;
-            }
-        }
-
-        if(!$was_on_node){
-            return false;
-        }else{
-            $traces_slice = array_slice($traces_nodes_id, 0, $first_enter);
-            return !in_array($current_node->id, $traces_slice);
-        }
     }
 
     private function generateNavigation($sections) {
