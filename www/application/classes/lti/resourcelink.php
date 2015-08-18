@@ -917,6 +917,7 @@ EOF;
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             $resp = curl_exec($ch);
             $ok = $resp !== FALSE;
+            $info = curl_getinfo($ch);
             curl_close($ch);
         }
 // Try using fopen if curl was not available or did not work (could have been an SSL certificate issue)
@@ -935,7 +936,7 @@ EOF;
             }
         }
 
-        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile2.txt', var_export($resp, true), FILE_APPEND);
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile2.txt', var_export($info, true));
 
         if ($ok) {
             $response = $resp;
