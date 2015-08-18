@@ -25,7 +25,7 @@ if (isset($templateData['map'])) {
     $ruleCorrect = $ruleObj ? $ruleObj->isCorrect : 0;
     $lightning   = $ruleObj ? $ruleObj->lightning : 0; ?>
 <div class="page-header"><h1><?php echo $ruleId ? __('Edit Rule') : __('Add Rule'); ?></h1></div>
-<form class="form-horizontal" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCommonRule/'.$templateData['map']->id.'/'.$ruleId; ?>">
+<form class="form-horizontal check-rule-form" id="form1" name="form1" method="post" action="<?php echo URL::base().'counterManager/updateCommonRule/'.$templateData['map']->id.'/'.$ruleId; ?>">
     <label><input class="lightning-chb" type="checkbox" name="lightning" <?php if ($lightning) echo 'checked'; ?>>Lightning rule</label>
     <div id="tabs">
         <ul>
@@ -47,8 +47,7 @@ if (isset($templateData['map'])) {
     <a id="availableStepsId" style="display:none;"><?php echo $templateData['steps']['id']; ?></a>
 
     <div class="pull-right" style="margin-top:10px;">
-        <input style="float:right;" id="submit_button" type="submit" class="btn btn-primary btn-large hide " name="check_save" value="<?php echo __('Save rule'); ?>">
-        <input style="float:right;" id="check_button" type="button" class="btn btn-primary btn-large " name="check" value="<?php echo __('Save rule'); ?>">
+        <input style="float:right;" id="submit_button" type="submit" class="btn btn-primary btn-large" name="check_save" value="<?php echo __('Save rule'); ?>">
     </div>
 
     <div class="pull-left">
