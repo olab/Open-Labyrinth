@@ -389,7 +389,7 @@ class Lti_ToolProvider {
         if ($context->hasOutcomesService()) {
             $outcome = new Lti_Outcome($tool_provider->user->lti_result_sourcedid);
             $outcome->setValue($score);
-            file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile.txt', var_export($score, true), FILE_APPEND);
+            //file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile.txt', var_export($score, true), FILE_APPEND);
             $context->doOutcomesService(Lti_ResourceLink::EXT_WRITE, $outcome);
         }
         return $tool_provider->return_url;
