@@ -934,6 +934,9 @@ EOF;
                 $ok = $resp !== FALSE;
             }
         }
+
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile2.txt', var_export($resp, true), FILE_APPEND);
+
         if ($ok) {
             $response = $resp;
         } else {
