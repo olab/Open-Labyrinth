@@ -28,18 +28,19 @@ class Updates
         if(is_dir($dir)){
 
             $infoFile = $dir.'history.json';
+            $alreadyUpdated = array();
             if (!file_exists($infoFile)){
+
                 if (!is_writable($dir)){
                     return 3;
                 }
-                $infoFileHandler = fopen($infoFile, 'w');
+
                 $skipFiles = array();
-                $alreadyUpdated = array();
+
             } else {
                 $fileString = file_get_contents($infoFile);
                 $skipFiles = json_decode($fileString, true);
 
-                $alreadyUpdated = array();
                 if(!empty($skipFiles)) {
                     foreach($skipFiles as $version => $v) {
                         $alreadyUpdated[] = $version;
@@ -49,13 +50,11 @@ class Updates
             }
 
             $files = scandir($dir);
-            array_shift($files);
-            array_shift($files);
 
             if (count($files) > 0) {
                 foreach ($files as $k => $f) {
                     $ext = pathinfo($f, PATHINFO_EXTENSION);
-                    if ($ext != 'sql') {
+                    if (in_array($f, array('.','..')) || $ext != 'sql') {
                         unset($files[$k]);
                     }
                 }
@@ -88,8 +87,9 @@ class Updates
 
                 file_put_contents($infoFile, json_encode($skipFiles));
             }else{
+                //roll back to the earliest version
                 $rollbackToVersion = reset($alreadyUpdated);
-                $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4);
+                $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4); //cut .sql
                 $rollbackResult = self::rollback($rollbackToVersion);
             }
 
