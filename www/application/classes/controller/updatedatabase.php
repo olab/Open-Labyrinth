@@ -57,7 +57,7 @@ class Controller_UpdateDatabase extends Controller_Base {
 
         $result = $this->request->param('id');
 
-        $message = '';
+        $message = '<div class="alert alert-warning"><b>Attention!</b> This action could permanently delete some of your data.</div>';
         if($result !== null) {
             switch ($result) {
                 case 0:
