@@ -39,7 +39,8 @@ class Controller_ReportManager extends Controller_Base
         if ($mapId != NULL AND $this->checkUser())
         {
             $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
+            $this->templateData['sessions'] = $this->templateData['map']->sessions;
+            $this->templateData['sessionsComplete'] = $this->templateData['map']->getCompleteSessions($this->templateData['sessions']);
             $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
             $this->templateData['center']   = View::factory('labyrinth/report/allView')->set('templateData', $this->templateData);
             unset($this->templateData['right']);
@@ -56,8 +57,10 @@ class Controller_ReportManager extends Controller_Base
     {
         $sessionId      = Session::instance()->get('session_id', null);
         $mapId          = $this->request->param('id2', NULL);
-        $previousNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
+        $previousNodeId = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
         $previousNodeId = $previousNodeId['node_id'];
+        $user           = Auth::instance()->get_user();
+        $userId         = (!empty($user)) ? $user->id : null;
 
         if ($sessionId == NULL) {
             $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
@@ -72,6 +75,19 @@ class Controller_ReportManager extends Controller_Base
         }
         Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
         Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
+        if(!empty($mapId) && !empty($userId)) {
+            DB_ORM::model('User_Bookmark')->deleteBookmarksByMapAndUser($mapId, $userId);
+        }
+
+        $toolProvider = Session::instance()->get('lti_tool_provider');
+        if(!empty($toolProvider)){
+            $last_trace = DB_ORM::model('User_SessionTrace')->getLastTraceBySessionId($sessionId);
+            if(!empty($last_trace)) {
+                $score = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($last_trace);
+                $score = isset($score['value']) ? $score['value'] : 0;
+                $this->setScore($score);
+            }
+        }
 
         if(empty($sessionId) || $sessionId == 'notExist'){
             $sessionIdUrl = $this->request->param('id', NULL);
@@ -96,7 +112,6 @@ class Controller_ReportManager extends Controller_Base
     public function action_showReport()
     {
         $reportId = $this->request->param('id', NULL);
-        $isFromLabyrinth = $this->request->param('id2', 0);
 
         if ($reportId == NULL) {
             Request::initial()->redirect(URL::base());
@@ -109,11 +124,6 @@ class Controller_ReportManager extends Controller_Base
         $this->templateData['map']          = $session->map;
         $this->templateData['counters']     = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
         $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($mapId);
-
-        if($isFromLabyrinth){
-            $progress = DB_ORM::model('Map_Counter')->progress($this->templateData['session']->traces['0']->counters, $this->templateData['session']->map->id);
-            $this->setScore($progress);
-        }
 
         if ($session->webinar_id AND $session->webinar_step) {
             $scenario = DB_ORM::model('webinar', array($session->webinar_id));
@@ -184,6 +194,22 @@ class Controller_ReportManager extends Controller_Base
                         }
                         $answeredQuestions[$nodeId][] = $questionId;
                     }
+                } elseif(in_array($questions[$questionId]->entry_type_id, array(11))) {
+
+                    $responseArray = json_decode($userResponse->response, true);
+                    if(!empty($responseArray)) {
+                        $responseArray = end($responseArray);
+
+                        if($responseArray['type'] == 'init') continue;
+
+                        if ($responseArray['type'] == 'text') {
+                            $userResponse->response = $responseArray['role'] . ': ' . $responseArray['text'];
+                        } else {
+                            $userResponse->response = 'Redirect to the Node ID: ' . $responseArray['text']['node_id'];
+                        }
+                        $this->templateData['responses'][] = $userResponse;
+                    }
+
                 } else {
                     $this->templateData['responses'][] = $userResponse;
                 }
@@ -203,7 +229,10 @@ class Controller_ReportManager extends Controller_Base
 
         $this->templateData['feedbacks']    = Model::factory('labyrinth')->getMainFeedback($session, $this->templateData['counters'], $session->map_id);
         $this->templateData['center']       = View::factory('labyrinth/report/report')->set('templateData', $this->templateData);
-        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $editorAccess = $this->checkUser();
+        if($editorAccess) {
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        }
         $this->template->set('templateData', $this->templateData);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['session']->map->name)->set_url(URL::base().'labyrinthManager/global/'.$this->templateData['session']->map->id));
@@ -297,7 +326,7 @@ class Controller_ReportManager extends Controller_Base
     private function checkUser()
     {
         $user_type = Auth::instance()->get_user()->type->name;
-        return (bool) ($user_type == 'author' OR $user_type == 'superuser');
+        return (bool) (!empty($user_type) && ($user_type == 'author' || $user_type == 'superuser'));
     }
 
     public function action_pathVisualisation ()
@@ -334,16 +363,16 @@ class Controller_ReportManager extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$id_map));
     }
 
-    private function setScore($progress){
-        $ses = Session::instance();
-        $toolProvider = $ses->get('lti_tool_provider');
-        if( ! is_null($toolProvider)){
-            $progress = explode(' of ',$progress);
-            $score = ($progress[1] != 0) ? round((($progress[0]*100/$progress[1])/100),3) : 0;
-            $returnUrl = Lti_ToolProvider::sendScore($score);
-            Auth::instance()->logout();
-            Request::initial()->redirect( ! is_null($returnUrl) ? $returnUrl : URL::base());
+    private function setScore($score)
+    {
+        $score = (float)$score;
+        if(!empty($score)) {
+            $score = $score / 100;
+            $score = round((float)$score, 2);
         }
-        return;
+
+        $returnUrl = Lti_ToolProvider::sendScore($score);
+        Auth::instance()->logout();
+        Request::initial()->redirect(!empty($returnUrl) ? $returnUrl : URL::base());
     }
 }

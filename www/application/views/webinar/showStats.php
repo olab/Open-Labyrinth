@@ -18,6 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
 ?>
 <div class="page-header">
     <h1><?php echo __('Progress for').' '.$templateData['webinar']->title; ?></h1>

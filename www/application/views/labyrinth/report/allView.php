@@ -18,6 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+
 if (isset($templateData['map'])) { ?>
 <div class="page-header">
     <div class="pull-right"><?php echo
@@ -28,6 +29,20 @@ if (isset($templateData['map'])) { ?>
     </div>
     <h1><?php echo __('Labyrinth Report for "').$templateData['map']->name.'"'; ?></h1>
 </div>
+        <div style="width:250px">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>Attempted</th>
+                    <td><?php echo count($templateData['sessions']) ?></td>
+                </tr>
+                <tr>
+                    <th>Done</th>
+                    <td><?php echo count($templateData['sessionsComplete']); ?></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 <p><?php echo __('Click to view performance by session'); ?></p>
 <table class="table table-striped table-bordered">
     <thead>

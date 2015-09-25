@@ -69,10 +69,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
         // check for existing bookmark
         $nodeObj = DB_ORM::model('Map_Node', array($nodeId));
         if ($nodeObj) {
-            $result = $this->getBookmarkByMapAndUser($nodeObj->map_id, $userId);
-            if ($result) {
-                DB_ORM::delete('User_Bookmark')->where('id', '=', $result['id'])->execute();
-            }
+            $this->deleteBookmarksByMapAndUser($nodeObj->map_id, $userId);
         }
 
         $this->user_id = $userId;
@@ -80,6 +77,14 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 		$this->session_id = $sessionId;
 		$this->save();
 	}
+
+    public function deleteBookmarksByMapAndUser($mapId, $userId)
+    {
+        $result = $this->getBookmarkByMapAndUser($mapId, $userId);
+        if ($result) {
+            DB_ORM::delete('User_Bookmark')->where('id', '=', $result['id'])->execute();
+        }
+    }
 	
 	public function getBookmark($sessionId)
     {

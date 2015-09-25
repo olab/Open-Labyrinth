@@ -22,6 +22,7 @@
 <div class="page-header">
     <h1>Add new user</h1>
 </div>
+<?php if ($templateData['errorMsg'] != NULL){ echo '<div class="alert alert-danger">' . $templateData['errorMsg'] . '</div>'; } ?>
 <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveNewUser'; ?>" method="post">
     <fieldset class="fieldset">
         <legend>User details</legend>
@@ -92,8 +93,7 @@
                 </div>
             </div>
         </div>
-    </fieldset><?php
-    if ($templateData['errorMsg'] != NULL){ echo $templateData['errorMsg']; } ?>
+    </fieldset>
 
     <div class="form-actions">
         <div class="pull-right">

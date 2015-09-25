@@ -45,10 +45,16 @@ class Model_Labyrinth extends Model {
             $result['node_title']   = trim($result['node_title'][0]);
             $result['node_text']    = $node->text;
 
-            $clearAnnotation = strip_tags($node->annotation, '<img>');
+            $user = Auth::instance()->get_user();
+            if(!empty($user)){
+                //should only be visible to registered authors and reviewers for that map
+                if(in_array($user->type_id, array(2,3,4))) {
+                    $clearAnnotation = strip_tags($node->annotation, '<img>');
 
-            if (strlen($clearAnnotation) > 0) {
-                $result['node_annotation'] = $node->annotation;
+                    if (strlen($clearAnnotation) > 0) {
+                        $result['node_annotation'] = $node->annotation;
+                    }
+                }
             }
 
             $sessionId = NULL;
@@ -68,9 +74,14 @@ class Model_Labyrinth extends Model {
                 setcookie('OL', $sessionId);
             } else {
                 $sessionId = Session::instance()->get('session_id', NULL);
-                if ($sessionId == NULL) $sessionId = isset($_COOKIE['OL'])
-                    ? $_COOKIE['OL']
-                    : $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
+                if ($sessionId == NULL) {
+                    if(isset($_COOKIE['OL'])) {
+                        $sessionId = $_COOKIE['OL'];
+                    }else {
+                        $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'));
+                        Session::instance()->set('session_id', $sessionId);
+                    }
+                }
             }
 
             $scenarioSession = DB_ORM::model('user_session', array((int)$sessionId));

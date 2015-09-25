@@ -518,6 +518,15 @@ if (isset($templateData['map'])) { ?>
                                 } ?>
                             </div>
                         </div>
+                        <div class="control-group block">
+                            <label class="control-label" for="linkHidden"><?php echo __('Hidden'); ?></label>
+                            <div class="controls block">
+                                <select id="linkHidden">
+                                    <option value="0" <?php echo (!isset($templateData['editLink']) || !$templateData['editLink']->hidden) ? 'selected' : ''?>>No</option>
+                                    <option value="1" <?php echo (isset($templateData['editLink']) && $templateData['editLink']->hidden) ? 'selected' : ''?>>Yes</option>
+                                </select>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

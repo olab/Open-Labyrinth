@@ -77,7 +77,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $reset = $this->request->query('reset');
-            if ( ! $reset) {
+            if (!$reset) {
                 $cumulative = DB_ORM::select('Webinar_Map')
                     ->where('webinar_id', '=', $scenarioId)
                     ->where('reference_id', '=', $mapId)
@@ -97,12 +97,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
             $sessionId = Session::instance()->get('session_id');
             $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
-            if(empty($sessionId) || !empty($sessionObj->end_time)){
+            $endTime = $sessionObj->end_time;
+            if(empty($sessionId) || !empty($endTime)){
                 Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
                 Request::initial()->redirect(URL::base());
             }
 
-            $nodeId   = $this->request->param('id2', null);
+            $nodeId = $this->request->param('id2', null);
 
             // deprecated if statements 4.08.2014
             if ($nodeId == null) {
@@ -117,6 +118,9 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
 
             $node = DB_ORM::model('map_node')->getNodeById((int) $nodeId);
+
+            //automatic save bookmark
+            $this->action_addBookmark(false, $nodeId);
         }
 
         if ($continue) {
@@ -136,7 +140,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $editOn     = $this->request->param($editOnId, null);
         $nodeId     = $nodeObj->id;
         $mapId      = $nodeObj->map_id;
-        $isRoot     = ($nodeObj->type_id == 1) ? true : false;
+        $isRoot     = ($nodeObj->type_id == 1 && $action == 'index') ? true : false;
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
         $data       = ($action == 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
@@ -168,7 +172,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $sessionId              = (int)$data['traces'][0]->session_id;
             $lastNode               = DB_ORM::model('user_sessiontrace')->getLastTraceBySessionId($sessionId);
             $startSession           = DB_ORM::model('user_session')->getStartTimeSessionById($sessionId);
-            $timeForNode            = $lastNode[0]['date_stamp'] - $startSession;
+            $timeForNode            = $lastNode['date_stamp'] - $startSession;
             $data['timeForNode']    = $timeForNode;
             $data['session']        = $sessionId;
 
@@ -900,6 +904,32 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
+    //ajax
+    public function action_saveTurkTalkResponse()
+    {
+        $post = $this->request->post();
+        $questionId = Arr::get($post, 'questionId', 0);
+        $response = Arr::get($post, 'response', '');
+        $response = nl2br($response);
+        $isLearner = Arr::get($post, 'isLearner', false);
+        $nodeId = Arr::get($post, 'nodeId', false);
+        if($isLearner){
+            $sessionId = Session::instance()->get('session_id');
+            $chat_session_id = Session::instance()->get('chat_session_id', null);
+            $type = 'text';
+        }else{
+            $type = Arr::get($post, 'type');
+            $sessionId = Arr::get($post, 'sessionId', 0);
+            $chat_session_id = DB_ORM::model('User_Response')->getTurkTalkLastChatId($questionId, $sessionId);
+
+            if($type == 'redirect'){
+                $response = json_decode($response, true);
+            }
+        }
+        DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner, $type, $nodeId);
+        die;
+    }
+
     public function action_saveSliderQuestionResponse()
     {
         $this->auto_render = false;
@@ -951,17 +981,19 @@ class Controller_RenderLabyrinth extends Controller_Template {
         }
     }
 
-    public function action_addBookmark()
+    public function action_addBookmark($ajax = true, $nodeId = null)
     {
         $sessionId  = Session::instance()->get('session_id');
-        $nodeId     = $this->request->param('id', NULL);
+        $nodeId     = !empty($nodeId) ? $nodeId : $this->request->param('id', null);
         $user       = Auth::instance()->get_user();
-
-        if ($user AND $sessionId AND $nodeId) {
-            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $user->id);
+        $userId     = (!empty($user)) ? $user->id : null;
+        if (!empty($userId) && !empty($sessionId) && !empty($nodeId)) {
+            DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
         }
 
-        exit;
+        if($ajax) {
+            die;
+        }
     }
 
     private function remote_go($nodeId, $mapId) {
@@ -1189,7 +1221,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $result['remote_links'] = '';
             $result['links']        = '';
             foreach ($links as $link) {
-                if (isset($undoNodes[$link->node_2->id])) {
+                if (isset($undoNodes[$link->node_2->id]) || $link->hidden) {
                     continue;
                 }
 
@@ -1205,13 +1237,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                     $node_2_title_back = isset($node_2_title_parts[1]) ? trim($node_2_title_parts[1]) : null;
 
                     if(!empty($node_2_title_back)){
-
-                        $isParent = $this->isParentLink($node, $link);
-                        if($isParent){
-                            $title = $node_2_title_back;
-                        }else{
-                            $title = trim($node_2_title_parts[0]);
-                        }
+                        $title = $node_2_title_back;
                     }
 
                     if(empty($title)) {
@@ -1277,34 +1303,6 @@ class Controller_RenderLabyrinth extends Controller_Template {
             if ($links != '') return $links;
         }
         return NULL;
-    }
-
-    private function isParentLink($current_node, $link)
-    {
-        $session_id = Session::instance()->get('session_id');
-
-        $was_on_node = false;
-        $traces = DB_ORM::model('user_sessiontrace')->getTraceBySessionID($session_id);
-        if(count($traces) > 0) {
-            $traces_nodes_id = array();
-            $i = 0;
-            foreach ($traces as $trace) {
-                $traces_nodes_id[$i] = $trace->node_id;
-                if($link->node_id_2 == $trace->node_id){
-                    $was_on_node = true;
-                    $first_enter = $i;
-                    break;
-                }
-                $i++;
-            }
-        }
-
-        if(!$was_on_node){
-            return false;
-        }else{
-            $traces_slice = array_slice($traces_nodes_id, 0, $first_enter);
-            return !in_array($current_node->id, $traces_slice);
-        }
     }
 
     private function generateNavigation($sections) {
@@ -1869,6 +1867,39 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
 
                 $result .= '</ul>';
+            } else if ($q_type == 'ttalk') {
+                $chat_session_id = time();
+                Session::instance()->set('chat_session_id', $chat_session_id);
+                $chat_id = 'turkTalk'.$id;
+                $placeholder = ' placeholder="'.$question->prompt.'"';
+
+                DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $id, $question->stem, $chat_session_id, true, 'init', self::$nodeId);
+
+                $result =
+                    '
+<script>
+    $(document).ready(function(){
+        setInterval(function() {
+            loadMessages(\''.$chat_id.'\');
+        }, 1500);
+    });
+</script>
+
+<div id="'.$chat_id.'">
+<input type="hidden" class="question_id" value="'.$id.'">
+<input type="hidden" class="session_id" value="'.$sessionId.'">
+<input type="hidden" class="chat_session_id" value="'.$chat_session_id.'">
+<div class="chat-window" style="width:404px;height:300px;overflow-y:auto;background:white;border:1px solid #eee"></div>
+
+<div class="ttalk">
+                    <textarea style="width:400px;height:50px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" cols="'.$question->width.'" rows="'.$question->height.'" data-question-id="'.$question->id.'" '.$placeholder.'></textarea>'.
+                    '<p>
+                        <button class="ttalkButton">Submit</button>
+                    </p>';
+                $result .= '</div>';
+                $result .= '</div>';
+
+                Controller_RenderLabyrinth::addQuestionIdToSession($id);
             }
             $result = '<div class="questions"><p>'.$question->stem.'</p>'.$result.'</div>';
         }

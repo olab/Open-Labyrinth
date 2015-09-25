@@ -491,11 +491,5 @@ private static function initialize_metadata($object)
         $this->modeUI = $mode;
         $this->save();
     }
-
-    public function isSuperuser()
-    {
-        $type_id = $this->type_id;
-        return (!empty($type_id) && $type_id == 4);
-    }
 }
 

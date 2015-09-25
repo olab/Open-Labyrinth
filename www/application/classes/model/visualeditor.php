@@ -115,7 +115,7 @@ class Model_VisualEditor extends Model {
         if (count($clearLinks)) {
             $linksJSON = '';
             foreach ($clearLinks as $id => $value) {
-                $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '", label: "' . base64_encode(str_replace('&#43;', '+', $value['link']->text)) . '", imageId: ' . $value['link']->image_id . '}, ';
+                $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '", label: "' . base64_encode(str_replace('&#43;', '+', $value['link']->text)) . '", imageId: ' . $value['link']->image_id . ', linkHidden: ' . (int)$value['link']->hidden . '}, ';
             }
 
             if (strlen($linksJSON) > 2) {
@@ -464,6 +464,7 @@ class Model_VisualEditor extends Model {
                 $v              = array();
                 $v['text']      = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
                 $v['image_id']  = $link['imageId'];
+                $v['linkHidden']  = $link['linkHidden'];
 
                 if ($link['type'] == 'direct') {
                     $v['node_id_1'] = $link['nodeA'];
@@ -495,6 +496,7 @@ class Model_VisualEditor extends Model {
                 if ($l != null) {
                     $l->text = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
                     $l->image_id = $link['imageId'];
+                    $l->hidden = $link['linkHidden'];
                     $l->save();
 
                     if ($link['type'] == 'direct') {
@@ -523,10 +525,12 @@ class Model_VisualEditor extends Model {
                                 $v['node_id_2'] = $l->node_id_1;
                                 $v['text'] = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
                                 $v['image_id'] = $link['imageId'];
+                                $v['hidden'] = $link['linkHidden'];
                                 DB_ORM::model('map_node_link')->addFullLink($mapId, $v);
                             } else {
                                 $b->text = urldecode(str_replace('+', '&#43;', base64_decode($link['label'])));
                                 $b->image_id = $link['imageId'];
+                                $b->hidden = $link['linkHidden'];
                                 $b->save();
                             }
                         }

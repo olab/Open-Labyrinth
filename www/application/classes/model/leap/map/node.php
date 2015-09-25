@@ -225,6 +225,11 @@ class Model_Leap_Map_Node extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
+
+    public function getNodeTitle(){
+        $node_title = explode('|', $this->title);
+        return trim($node_title[0]);
+    }
     
     public function getNodesByMap ($mapId, $orderBy = null, $logicSort = null, $lengthSort = false)
     {

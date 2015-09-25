@@ -25,12 +25,16 @@ class Policy_Access extends Policy {
         array('controller' => 'webinarManager', 'action' => 'delete'),
         array('controller' => 'webinarManager', 'action' => 'save'),
         array('controller' => 'webinarManager', 'action' => 'changeStep'),
+        array('controller' => 'webinarManager', 'action' => 'chats'),
         array('controller' => 'dForumManager', 'action' => 'addForum'),
         array('controller' => 'dForumManager', 'action' => 'editForum'),
         array('controller' => 'dForumManager', 'action' => 'updateForum'),
         array('controller' => 'dForumManager', 'action' => 'deleteForum'),
         array('controller' => 'dForumManager', 'action' => 'saveNewForum'),
-        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true)
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $authorRules = array(
@@ -46,13 +50,18 @@ class Policy_Access extends Policy {
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
         array('controller' => 'userManager', 'action' => 'removeMember'),
-        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true)
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $reviewerRules = array(
         array('controller' => 'collectionManager', 'action' => 'editCollection'),
         array('controller' => 'collectionManager', 'action' => 'addCollection'),
-        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true)
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $mapActions = array(

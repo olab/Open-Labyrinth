@@ -218,6 +218,12 @@ class Model_Leap_Map extends DB_ORM_Model
                 'child_model' => 'map_group',
                 'parent_key' => array('id')
             )),
+            'sessions' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('map_id'),
+                'child_model' => 'user_session',
+                'parent_key' => array('id'),
+                'options' => array(array('order_by', array('user_sessions.start_time', 'DESC')))
+            )),
         );
         self::initialize_metadata($this);
     }
@@ -236,6 +242,55 @@ class Model_Leap_Map extends DB_ORM_Model
     public static function primary_key()
     {
         return array('id');
+    }
+
+    public function getCompleteSessions($sessions = null)
+    {
+        $result = array();
+        $session_ids = array();
+
+        if(empty($sessions) || count($sessions) == 0){
+            $sessions = $this->sessions;
+        }
+
+        if(!empty($sessions) && count($sessions) > 0) {
+            foreach ($sessions as $session) {
+
+                //check Final Submission and View feedback
+                $endTime = $session->end_time;
+                if(!empty($endTime)) {
+                    $result[] = $session->id;
+
+                }else{
+                    $session_ids[] = $session->id;
+                }
+            }
+        }
+
+        if(!empty($session_ids)) {
+            $session_ids = array_unique($session_ids);
+            $completeSessions = DB_SQL::select('default')
+                ->from('user_sessiontraces')
+                ->join('INNER', 'map_nodes')->on('map_nodes.id', '=', 'user_sessiontraces.node_id')
+                ->distinct()
+                ->column('session_id')
+                ->where('user_sessiontraces.session_id', 'IN', $session_ids)
+                ->where('user_sessiontraces.map_id', '=', $this->id)
+                ->where('map_nodes.end', '=', '1')
+                ->query()
+                ->as_array();
+
+            unset($session_ids);
+            if(!empty($completeSessions)){
+                foreach($completeSessions as $key => $array){
+                    $result[] = $array['session_id'];
+
+                }
+            }
+        }
+
+        $result = array_unique($result);
+        return $result;
     }
 
     public function getAllMap()

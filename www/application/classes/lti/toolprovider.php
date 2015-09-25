@@ -338,7 +338,15 @@ class Lti_ToolProvider {
         $user = DB_ORM::model('user')->getUserByName($username);
         $email      = $this->user->email;
 
-        $groupName = (isset($this->resource_link->settings['custom__group'])) ? trim($this->resource_link->settings['custom__group'], " \t\n\r\0\x0B\"") : null;
+        $trimPattern = " \t\n\r\0\x0B\"";
+
+        if(isset($this->resource_link->settings['custom__group'])){
+            $groupName = trim($this->resource_link->settings['custom__group'], $trimPattern);
+        }elseif(isset($this->resource_link->settings['custom_group'])){
+            $groupName = trim($this->resource_link->settings['custom_group'], $trimPattern);
+        }else{
+            $groupName = null;
+        }
 
         if(!empty($groupName)) {
             $group = DB_ORM::model('Group')->getByName($groupName);
@@ -381,6 +389,7 @@ class Lti_ToolProvider {
         if ($context->hasOutcomesService()) {
             $outcome = new Lti_Outcome($tool_provider->user->lti_result_sourcedid);
             $outcome->setValue($score);
+            //file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile.txt', var_export($score, true), FILE_APPEND);
             $context->doOutcomesService(Lti_ResourceLink::EXT_WRITE, $outcome);
         }
         return $tool_provider->return_url;
