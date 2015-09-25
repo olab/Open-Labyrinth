@@ -88,8 +88,12 @@ class Updates
                 file_put_contents($infoFile, json_encode($skipFiles));
             }else{
                 //roll back to the earliest version
-                $rollbackToVersion = reset($alreadyUpdated);
-                $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4); //cut .sql
+                if(!empty($alreadyUpdated)) {
+                    $rollbackToVersion = reset($alreadyUpdated);
+                    $rollbackToVersion = substr($rollbackToVersion, 0, strlen($rollbackToVersion) - 4); //cut .sql
+                }else{
+                    $rollbackToVersion = 'v3.0.0';
+                }
                 $rollbackResult = self::rollback($rollbackToVersion);
             }
 
