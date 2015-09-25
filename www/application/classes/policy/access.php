@@ -34,6 +34,7 @@ class Policy_Access extends Policy {
         array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $authorRules = array(
@@ -51,6 +52,7 @@ class Policy_Access extends Policy {
         array('controller' => 'userManager', 'action' => 'removeMember'),
         array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $reviewerRules = array(
@@ -59,6 +61,7 @@ class Policy_Access extends Policy {
         array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $mapActions = array(
