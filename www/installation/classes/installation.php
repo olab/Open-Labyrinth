@@ -730,7 +730,7 @@ class Installation {
                                 $skipFiles[$f] = 1;
                                 $result = 1;
                             }
-                            @unlink($pathToFile);
+                            //@unlink($pathToFile);
                         }
                     }
                 }
