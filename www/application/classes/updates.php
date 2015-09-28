@@ -49,8 +49,8 @@ class Updates
                 $lastUpdatedVersion = end($alreadyUpdated);
 
                 if (!empty($lastUpdatedVersion)) {
-                    $resultA = self::sortVersionInOrderPregReplace($lastVersion);
-                    $resultB = self::sortVersionInOrderPregReplace($lastUpdatedVersion);
+                    $resultA = (float)self::sortVersionInOrderPregReplace($lastVersion);
+                    $resultB = (float)self::sortVersionInOrderPregReplace($lastUpdatedVersion);
 
                     if ($resultB > $resultA){
                         $rollbackResult = self::rollback($lastVersion);
