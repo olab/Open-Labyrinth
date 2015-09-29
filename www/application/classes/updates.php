@@ -85,6 +85,10 @@ class Updates
                 foreach($files as $f){
                     $ext = pathinfo($f, PATHINFO_EXTENSION);
                     if ($ext == 'sql'){
+
+                        $version = pathinfo($f, PATHINFO_FILENAME);
+                        if($version == $toVersion) break;
+
                         $pathToFile = $dir.$f;
                         Updates::populateDatabase($pathToFile);
                         $result = 1;
@@ -92,9 +96,6 @@ class Updates
                         if(isset($history[$f])) {
                             unset($history[$f]);
                         }
-
-                        $version = pathinfo($f, PATHINFO_FILENAME);
-                        if($version == $toVersion) break;
                     }
                 }
                 if(isset($history)) {

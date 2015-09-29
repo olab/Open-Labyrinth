@@ -89,6 +89,11 @@ class Controller_UpdateDatabase extends Controller_Base {
                         $versions[] = pathinfo($file, PATHINFO_FILENAME);
                     }
                 }
+
+                if(count($versions) > 0){
+                    array_shift($versions);
+                }
+
                 $this->templateData['versions'] = $versions;
             }
         }
