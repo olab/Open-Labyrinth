@@ -23,7 +23,7 @@
 <?php echo $templateData['message'] ?>
 
 <?php if(!empty($templateData['versions'])){ ?>
-    <form action="<?php echo URL::base(true) ?>updatedatabase/doRollback" method="post" class="form-inline">
+    <form action="<?php echo URL::base(true) ?>updatedatabase/doRollback" method="post" id="rollback-form" class="form-inline">
         <label for="toVersion">Please, choose version to roll back:</label>
         <select name="toVersion">
             <?php foreach($templateData['versions'] as $version){ ?>
@@ -32,6 +32,15 @@
         </select>
         <button type="submit" class="btn btn-danger">Roll Back!</button>
     </form>
+    <script>
+        $(document).ready(function(){
+            $('#rollback-form').on('submit', function(e){
+                if(!confirm('Are you sure that you want to rollback this DataBase?')){
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 <?php }else{ ?>
     <div class="alert alert-info">Roll back instructions was not found.</div>
 <?php } ?>
