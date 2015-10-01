@@ -620,8 +620,8 @@ class Installation {
         } else {
             $host = $olab['db_host'];
         }
-
-        $link = mysql_connect($host, $olab['db_user'], $olab['db_pass']);
+        //TODO: The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead
+        $link = @mysql_connect($host, $olab['db_user'], $olab['db_pass']);
 
         $db_selected = mysql_select_db($olab['db_name']);
         if ($db_selected) {
