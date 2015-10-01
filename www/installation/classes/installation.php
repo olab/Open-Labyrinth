@@ -774,7 +774,8 @@ class Installation {
         if ($c=preg_match_all ($regExp, $str, $matches)) {
             if (isset($matches[0][0])) {
                 $found = 0;
-                $result = self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
+                //TODO: replace preg_replace by preg_replace_callback
+                $result = @self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
             }
         }
 
