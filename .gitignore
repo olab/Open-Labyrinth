@@ -1,7 +1,32 @@
-nbproject/
+# phpstorm project files
+.idea
+
+# netbeans project files
+nbproject
+
+# zend studio for eclipse project files
+.buildpath
+.project
+.settings
+
+# windows thumbnail cache
+Thumbs.db
+
+# composer itself is not needed
+composer.phar
+
+# Mac DS_Store Files
+.DS_Store
+
+# phpunit itself is not needed
+phpunit.phar
+# local phpunit config
+/phpunit.xml
+
+
+www/updates/history.json
 www/application/cache/*
 www/application/logs/*
 www/files/*
 www/export/visual_editor/*.xml
 www/application/config/database.php
-.idea
