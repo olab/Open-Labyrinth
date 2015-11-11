@@ -682,7 +682,7 @@ class Model_Labyrinth extends Model {
 
                             // get current max counter value
                             if ($if_main) {
-                                preg_match('/(MCID=)(?<id>\d+),V=(?<value>\d+)/', $currentCountersState, $matches);
+                                preg_match('/(MCID=)(?<id>\d+),V=(?<value>\+?\-?\d+)/', $currentCountersState, $matches);
                                 $main_counter['value'] = Arr::get($matches, 'value', 0);
                             }
                         }
@@ -1493,7 +1493,7 @@ class Model_Labyrinth extends Model {
 
     public function getCounterValueFromString($cid, $string){
         $return = NULL;
-        $pattern = '\\[CID='.$cid.',V=(\d+)\\]';
+        $pattern = '\\[CID='.$cid.',V=(\+?\-?\d+)\\]';
         if ($c=preg_match_all ("/".$pattern."/is", $string, $matches)){
             if (count($matches[0]) > 0){
                 $return = $matches[1][0];
@@ -1503,7 +1503,7 @@ class Model_Labyrinth extends Model {
     }
 
     public function setCounterValueToString($cid, $string, $value){
-        $pattern = '\\[CID='.$cid.',V=\d+\\]';
+        $pattern = '\\[CID='.$cid.',V=(\+?\-?\d+)\\]';
         $string = preg_replace("/".$pattern."/is", '[CID='.$cid.',V='.$value.']', $string);
         return $string;
     }
