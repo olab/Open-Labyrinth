@@ -1664,7 +1664,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }elseif(!empty($previousAnswers)) {
                     $content = $previousAnswers;
                 }else{
-                    $content = htmlspecialchars($question->prompt);
+                    $content = '';//htmlspecialchars($question->prompt)
                 }
 
                 $result =
@@ -1886,6 +1886,10 @@ class Controller_RenderLabyrinth extends Controller_Template {
     $(document).ready(function(){
         setInterval(function() {
             loadMessages(\''.$chat_id.'\');
+        }, 1500);
+
+        setInterval(function() {
+            doBell();
         }, 1500);
     });
 </script>

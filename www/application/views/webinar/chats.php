@@ -56,8 +56,15 @@ $chats = $templateData['chats'];
         });
 
         var ttalkRedirectButton = $('.ttalkRedirectButton');
-        ttalkRedirectButton.on('click', function () {
+        ttalkRedirectButton.on('click', function (e) {
+            e.preventDefault();
             addChatMessage($(this), 0, 1);
+        });
+
+        var ttalkBell = $('.ttalkBell');
+        ttalkBell.on('click', function (e) {
+            e.preventDefault();
+            addChatMessage($(this), 0, 2);
         });
     });
 </script>
@@ -82,6 +89,12 @@ $chats = $templateData['chats'];
             <div style="border-bottom:1px solid #eee;padding:0 0 10px">
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Type your response..." style="height:60px;"></textarea>
                 <button class="ttalkButton btn btn-primary" style="width:100%">Submit</button>
+            </div>
+
+            <div style="border-bottom:1px solid #eee;padding:0 0 10px">
+                <button class="ttalkBell btn btn-block btn-warning" title="Bell">
+                    <i class="icon icon-bell"></i>
+                </button>
             </div>
 
             <div class="form-inline" style="border-bottom:1px solid #eee;padding:10px 0">

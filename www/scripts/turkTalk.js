@@ -5,6 +5,26 @@
 
 var previousNodesId = [];
 
+
+function doBell()
+{
+    $.ajax({
+        async: true,
+        url: urlBase + 'webinarManager/checkBell',
+        success: function (response) {
+            response = JSON.parse(response);
+            if(response.need_bell){
+                $('body').append('<audio autoplay style="display:none;"><source src="' + urlBase + 'media/bell.mp3" type="audio/mpeg"></audio>');
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+        }
+    });
+}
+
 function macros(context, text)
 {
     var val = context.val();
@@ -187,7 +207,7 @@ function loadMessages(chat_id, isLearner)
     }
 }
 
-function addChatMessage(context, isLearner, isRedirect) {
+function addChatMessage(context, isLearner, messageType) {
 
     var ttalkDiv = context.closest('.ttalk'),
         textarea = ttalkDiv.find('.ttalk-textarea'),
@@ -200,13 +220,27 @@ function addChatMessage(context, isLearner, isRedirect) {
         var chat = ttalkDiv,
             questionId = chat.find('.question_id').attr('value'),
             sessionId = chat.find('.session_id').attr('value'),
-            isRedirect = isRedirect || 0,
-            type = isRedirect ? 'redirect' : 'text',
-            response = isRedirect ? chat.find('.redirect_node_id').val() : response;
+            messageType = messageType || 0,
+            type,
+            response;
+            switch(messageType){
+                case 1:
+                    type = 'redirect';
+                    response = chat.find('.redirect_node_id').val();
+                    break;
+                case 2:
+                    type = 'bell';
+                    response = '';
+                    break;
+                default :
+                    type = 'text';
+                    break;
+            }
+
         idNode = chat.find('.node_id').text();
     }
 
-    if(response != '' && !empty(questionId) && !empty(idNode)) {
+    if((response != '' || type === 'bell') && !empty(questionId) && !empty(idNode)) {
         var data = {response: response, questionId: questionId, nodeId: idNode, isLearner: isLearner, sessionId: sessionId, type: type};
         $.ajax({
             url: urlBase + 'renderLabyrinth/saveTurkTalkResponse',

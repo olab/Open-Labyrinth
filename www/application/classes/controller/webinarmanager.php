@@ -1081,12 +1081,19 @@ class Controller_WebinarManager extends Controller_Base {
             $result['response_type'] = 'text';
             $result['response_text'] = '';
             $result['waiting_for_response'] = false;
+            $bell_counter = 0;
             foreach($responses as $response){
 
-                if($response['type'] == 'init') continue; // first (init) response for history and to start new chat session
+                // first (init) response for history and to start new chat session
+                if(in_array($response['type'], array('init'))) continue;
+
+                if($response['type'] === 'bell'){
+                    $bell_counter++;
+                    continue;
+                }
 
                 if($from_labyrinth == 1){
-                    if($response['type'] == 'redirect'){
+                    if($response['type'] === 'redirect'){
                         $result['response_type'] = 'redirect';
                         $url = URL::base(true).'renderLabyrinth/go/'.$response['text']['map_id'].'/'.$response['text']['node_id'];
                         $result['response_text'] = $url;
@@ -1121,6 +1128,10 @@ class Controller_WebinarManager extends Controller_Base {
                 $result['last_response_text_md5'] = md5($response_text);
             }
 
+            if($from_labyrinth == 1) {
+                Session::instance()->set('bell_counter', $bell_counter);
+            }
+
             //if the last one response has role 'learner' and current user is learner, then save time of last view
             $last_response = end($responses);
             if($last_response['role'] === 'learner' && $from_labyrinth){
@@ -1137,6 +1148,22 @@ class Controller_WebinarManager extends Controller_Base {
             $result = json_encode($result);
         }
         die($result);
+    }
+
+    //ajax
+    public function action_checkBell()
+    {
+        $result = array('need_bell' => false);
+        $current_bell_counter = Session::instance()->get('current_bell_counter', 0);
+        $bell_counter = Session::instance()->get('bell_counter', 0);
+
+        if($bell_counter > $current_bell_counter){
+            $result['need_bell'] = true;
+        }
+
+        Session::instance()->set('current_bell_counter', $bell_counter);
+
+        die(json_encode($result));
     }
 
     //ajax
