@@ -148,6 +148,12 @@ $(document).ready(function(){
         ttalkButton.on('click', function () {
             addChatMessage($(this), 1);
         });
+
+        $('textarea.ttalk-textarea').on('keyup', function(e){
+            if(!e.shiftKey && e.keyCode == 13) {
+                ttalkButton.trigger('click');
+            }
+        });
     });
 
     function validationAndLightningText($this){

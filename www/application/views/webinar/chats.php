@@ -49,6 +49,12 @@ $chats = $templateData['chats'];
             addChatMessage($(this), 0);
         });
 
+        $('textarea.ttalk-textarea').on('keyup', function(e){
+            if(!e.shiftKey && e.keyCode == 13) {
+                ttalkButton.trigger('click');
+            }
+        });
+
         var ttalkRedirectButton = $('.ttalkRedirectButton');
         ttalkRedirectButton.on('click', function () {
             addChatMessage($(this), 0, 1);
