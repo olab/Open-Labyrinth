@@ -297,6 +297,16 @@ $id_map  = $templateData['map']->id;
 $id_node = $templateData['node']->id; ?>
 </head>
 <body>
+<?php if(!empty($templateData['wasRedirected'])) { ?>
+    <div style="position: fixed; left: 50%;top:20px; z-index: 1500; margin-left: -89px;" id="wasRedirected" class="alert alert-success">
+        <span>You have been redirected.</span>
+    </div>
+    <script>
+        setTimeout(function(){
+            $('#wasRedirected').hide();
+        }, 8000);
+    </script>
+<?php } ?>
 <div align="center" class="popup-outside-container">
     <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
         <tr>

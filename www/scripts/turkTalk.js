@@ -157,6 +157,7 @@ function loadMessages(chat_id, isLearner)
                     var responseText = response.response_text;
                     if(isLearner == 1){
                         if(response.response_type == 'redirect'){
+                            setJSCookie('wasRedirected', 'yes');
                             window.location.replace(responseText);
                         }
                     }else{

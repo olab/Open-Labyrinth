@@ -241,6 +241,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
             $data['session'] = (int) $data['traces'][0]->session_id;
         }
 
+        if(!empty($_COOKIE['wasRedirected'])){
+            $data['wasRedirected'] = true;
+            setcookie('wasRedirected', '', time() - 3600, '/');
+        }
+
         $this->template = View::factory($skin)->set('templateData', $data);
     }
 
