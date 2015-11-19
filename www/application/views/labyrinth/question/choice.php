@@ -166,7 +166,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
         </div>
 
         <div class="control-group">
-            <label for="feedback" class="control-label"><?php echo __('Feedback'); ?></label>
+            <label for="feedback" class="control-label"><?php echo __('General feedback'); ?></label>
             <div class="controls"><textarea id="feedback" name="feedback"><?php echo $q ? $templateData['question']->feedback : ''; ?></textarea></div>
         </div>
         <div class="control-group">
