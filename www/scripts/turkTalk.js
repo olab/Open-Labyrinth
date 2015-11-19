@@ -248,7 +248,9 @@ function addChatMessage(context, isLearner, messageType) {
             data: data,
             async: true,
             success: function (response) {
-                textarea.val('');
+                if(type !== 'bell') {
+                    textarea.val('');
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR);
