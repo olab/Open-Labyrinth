@@ -1111,12 +1111,14 @@ class Controller_WebinarManager extends Controller_Base {
 
                 ob_start();
                 ?>
-                <div class="message" style="padding:10px;border-bottom:1px solid #eee;">
+                <div class="message" style="padding:10px;border-bottom:1px solid #eee;" data-timestamp="<?php echo time(); ?>">
                     <div class="name"><b><?php echo $name ?>:</b></div>
                     <div class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
                 </div>
                 <?php
-                $result['response_text'] .= ob_get_clean();
+                $response_text = ob_get_clean();
+                $result['response_text'] .= $response_text;
+                $result['last_response_text_md5'] = md5($response_text);
             }
 
             //if the last one response has role 'learner' and current user is learner, then save time of last view

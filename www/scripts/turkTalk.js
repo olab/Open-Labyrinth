@@ -168,6 +168,10 @@ function loadMessages(chat_id, isLearner)
                         }
                     }
                     chat_window.html(responseText);
+                    if(chat_window.data('hash') !== response.last_response_text_md5) {
+                        chat_window.animate({scrollTop: chat_window.prop("scrollHeight")}, 1000);
+                    }
+                    chat_window.data('hash', response.last_response_text_md5);
                 }else{
                     chat_window.removeClass('new-message');
                 }
