@@ -200,7 +200,7 @@ class Controller_ReportManager extends Controller_Base
                     if(!empty($responseArray)) {
                         $responseArray = end($responseArray);
 
-                        if($responseArray['type'] == 'init') continue;
+                        if($responseArray['type'] == 'init' || $responseArray['type'] == 'bell') continue;
 
                         if ($responseArray['type'] == 'text') {
                             $userResponse->response = $responseArray['role'] . ': ' . $responseArray['text'];
