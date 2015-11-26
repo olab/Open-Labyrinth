@@ -63,6 +63,7 @@ function clearChat(context, chat)
         node_id = chat.find('.node_id'),
         question_id = chat.find('.question_id');
 
+    chat.attr('data-waiting-time', '0');
     chat_window.attr('data-responses-counter', '0');
     chat_window.removeClass('new-message');
     chat_window.html('');
@@ -200,8 +201,10 @@ function loadMessages(chat_id, isLearner)
                     }else{
                         if(response.waiting_for_response){
                             chat_window.addClass('new-message');
+                            chat.attr('data-waiting-time', response.waiting_time);
                         }else{
                             chat_window.removeClass('new-message');
+                            chat.attr('data-waiting-time', '0');
                         }
                     }
                     chat_window.html(responseText);
@@ -276,4 +279,50 @@ function addChatMessage(context, isLearner, messageType) {
             }
         });
     }
+}
+
+function showWaitingTime()
+{
+    var chats = $('#chats').find('.chat');
+
+    chats.sort(function(a, b) {
+        return (parseInt($(a).attr('data-waiting-time')) - parseInt($(b).attr('data-waiting-time')))*(-1);
+    });
+
+    chats.each(function(index, chat) {
+        var chat = $(chat),
+            progressBar = chat.find('.progress');
+
+        progressBar.removeClass(function (ind, css) {
+            return (css.match (/(^|\s)progress-\S+/g) || []).join(' ');
+        });
+
+        if(!empty(chat.attr('data-waiting-time'))){
+            console.log(index);
+            switch(index){
+                case 0:
+                    progressBar.addClass('progress-danger').find('.bar').css({width: '90%'});
+                    break;
+                case 1:
+                    progressBar.addClass('progress-warning').find('.bar').css({width: '80%'});
+                    break;
+                case 2:
+                    progressBar.addClass('progress-yellow').find('.bar').css({width: '70%'});
+                    break;
+                case 3:
+                    progressBar.addClass('progress-success').find('.bar').css({width: '60%'});
+                    break;
+                case 4:
+                    progressBar.addClass('progress-info').find('.bar').css({width: '50%'});
+                    break;
+                default:
+                    progressBar.addClass('progress-info').find('.bar').css({width: '40%'});
+                    break;
+            }
+            progressBar.removeClass('hide');
+        }else{
+            progressBar.addClass('hide');
+        }
+    });
+
 }

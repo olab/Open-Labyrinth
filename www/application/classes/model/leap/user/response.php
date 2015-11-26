@@ -122,6 +122,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 $key = key($response);
                 $response = array_pop($response);
                 $response['id'] = $obj_response->id;
+                $response['created_at'] = $obj_response->created_at;
                 $responses[$key][] = $response;
             }
 

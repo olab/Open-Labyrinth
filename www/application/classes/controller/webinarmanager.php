@@ -1106,6 +1106,7 @@ class Controller_WebinarManager extends Controller_Base {
 
                 if($isLearner && $online){
                     $result['waiting_for_response'] = true;
+                    $result['waiting_time'] = time() - $response['created_at'];
                 }else{
                     $result['waiting_for_response'] = false;
                 }
