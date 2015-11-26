@@ -54,6 +54,24 @@ function saveChatsOrder(context)
     }
 }
 
+function clearChat(context, chat)
+{
+    var chat = chat || context.closest('.ttalk'),
+        chat_window = chat.find('.chat-window'),
+        session_id = chat.find('.session_id'),
+        node_title = chat.find('.node_title'),
+        node_id = chat.find('.node_id'),
+        question_id = chat.find('.question_id');
+
+    chat_window.data('responsesCounter', '0');
+    chat_window.removeClass('new-message');
+    chat_window.html('');
+    session_id.attr('value', '');
+    question_id.attr('value', '');
+    node_title.text('');
+    node_id.text('');
+}
+
 function saveChosenUser(context)
 {
     var chat_id = context.closest('.ttalk').prop('id'),
@@ -136,6 +154,8 @@ function getLastNode(chat_id)
                     question_id.attr('value', response.question_id);
                     node_title.text(response.node_title);
                     node_id.text(response.node_id);
+                }else{
+                    clearChat(null, chat);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -145,10 +165,7 @@ function getLastNode(chat_id)
             }
         });
     }else{
-        session_id.attr('value', '');
-        question_id.attr('value', '');
-        node_title.text('');
-        node_id.text('');
+        clearChat(null, chat);
     }
 }
 
@@ -188,12 +205,12 @@ function loadMessages(chat_id, isLearner)
                         }
                     }
                     chat_window.html(responseText);
-                    if(chat_window.data('hash') !== response.last_response_text_md5) {
+                    if(chat_window.attr('data-responses-counter') !== response.responses_counter) {
                         chat_window.animate({scrollTop: chat_window.prop("scrollHeight")}, 1000);
                     }
-                    chat_window.data('hash', response.last_response_text_md5);
+                    chat_window.attr('data-responses-counter', response.responses_counter);
                 }else{
-                    chat_window.removeClass('new-message');
+                    clearChat(null, chat);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -203,7 +220,7 @@ function loadMessages(chat_id, isLearner)
             }
         });
     }else{
-        chat_window.html('').removeClass('new-message');
+        clearChat(null, chat);
     }
 }
 

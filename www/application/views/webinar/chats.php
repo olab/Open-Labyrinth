@@ -41,6 +41,7 @@ $chats = $templateData['chats'];
 
         var userLists = $('.user_id');
         userLists.on('change', function(){
+            clearChat($(this));
             saveChosenUser($(this));
         });
 
@@ -85,7 +86,7 @@ $chats = $templateData['chats'];
             <?php } ?>
         </div>
         <div class="panel-body">
-            <div class="chat-window" style="height:430px;"></div>
+            <div class="chat-window" style="height:430px;" data-responses-counter="0"></div>
             <div style="border-bottom:1px solid #eee;padding:0 0 10px">
                 <textarea class="chat-textarea ttalk-textarea" placeholder="Type your response..." style="height:60px;"></textarea>
                 <button class="ttalkButton btn btn-primary" style="width:100%">Submit</button>
