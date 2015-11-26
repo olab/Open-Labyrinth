@@ -213,7 +213,9 @@ function loadMessages(chat_id, isLearner)
                     }
                     chat_window.attr('data-responses-counter', response.responses_counter);
                 }else{
-                    clearChat(null, chat);
+                    if(isLearner === 0) {
+                        clearChat(null, chat);
+                    }
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -223,7 +225,9 @@ function loadMessages(chat_id, isLearner)
             }
         });
     }else{
-        clearChat(null, chat);
+        if(isLearner === 0) {
+            clearChat(null, chat);
+        }
     }
 }
 
@@ -298,7 +302,6 @@ function showWaitingTime()
         });
 
         if(!empty(chat.attr('data-waiting-time'))){
-            console.log(index);
             switch(index){
                 case 0:
                     progressBar.addClass('progress-danger').find('.bar').css({width: '90%'});
