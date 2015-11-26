@@ -63,7 +63,7 @@ function clearChat(context, chat)
         node_id = chat.find('.node_id'),
         question_id = chat.find('.question_id');
 
-    chat_window.data('responsesCounter', '0');
+    chat_window.attr('data-responses-counter', '0');
     chat_window.removeClass('new-message');
     chat_window.html('');
     session_id.attr('value', '');
