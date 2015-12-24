@@ -318,8 +318,8 @@ if (isset($templateData['map'])) { ?>
 <input type="hidden" id="redirect_url" name="redirect_url" value="<?php echo URL::base().'fileManager/index/'.$templateData['map']->id; ?>" />
 
 <script src="<?php echo URL::base(); ?>scripts/fileupload/js/vendor/jquery.ui.widget.js"></script>
-<script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-<script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+<script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+<script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.iframe-transport.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/fileupload/js/newfile/jquery.fileupload.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/fileupload/js/jquery.fileupload-process.js"></script>
