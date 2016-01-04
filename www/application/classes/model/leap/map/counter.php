@@ -238,6 +238,8 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             }else{
                 return NULL;
             }
+        }else{
+            return NULL;
         }
 
         $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
