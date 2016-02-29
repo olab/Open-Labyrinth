@@ -126,6 +126,7 @@ if ($user) {
                                             <?php if ($type_name == 'superuser') { ?>
                                                 <li class="divider"></li>
                                                 <li><a href="<?php echo URL::base(); ?>backup"><?php echo __('Backup Database'); ?></a></li>
+                                                <li><a href="<?php echo URL::base(); ?>lrs"><?php echo __('LRS'); ?></a></li>
                                             <?php } ?>
                                         </ul>
                                     </li>
