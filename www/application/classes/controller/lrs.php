@@ -70,6 +70,17 @@ class Controller_LRS extends Controller_Base
 
         $model->load($post);
         $model->save();
-        //TODO: return to the index page with success message
+
+        Request::initial()->redirect(URL::base().'lrs');
+    }
+
+    public function action_delete()
+    {
+        $id = $this->request->param('id');
+        $model = DB_ORM::model('LRS', array($id));
+
+        $model->delete();
+
+        Request::initial()->redirect(URL::base().'lrs');
     }
 }
