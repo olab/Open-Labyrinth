@@ -23,3 +23,81 @@ ALTER TABLE `lrs`
 --
 ALTER TABLE `lrs`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `lrs_statement`
+--
+
+CREATE TABLE `lrs_statement` (
+  `id` int(10) unsigned NOT NULL,
+  `lrs_id` int(10) unsigned NOT NULL,
+  `statement_id` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statements`
+--
+
+CREATE TABLE `statements` (
+  `id` int(10) unsigned NOT NULL,
+  `session_id` int(10) unsigned DEFAULT NULL,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `statement` text NOT NULL,
+  `timestamp` decimal(20,4) NOT NULL,
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `lrs_statement`
+--
+ALTER TABLE `lrs_statement`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `lrs_id` (`lrs_id`),
+  ADD KEY `statement_id` (`statement_id`);
+
+--
+-- Indexes for table `statements`
+--
+ALTER TABLE `statements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `session_id` (`session_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `lrs_statement`
+--
+ALTER TABLE `lrs_statement`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `statements`
+--
+ALTER TABLE `statements`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `lrs_statement`
+--
+ALTER TABLE `lrs_statement`
+  ADD CONSTRAINT `lrs_statement_ibfk_1` FOREIGN KEY (`lrs_id`) REFERENCES `lrs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `lrs_statement_ibfk_2` FOREIGN KEY (`statement_id`) REFERENCES `statements` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `statements`
+--
+ALTER TABLE `statements`
+  ADD CONSTRAINT `statements_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `user_sessions` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
