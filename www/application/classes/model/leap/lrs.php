@@ -47,39 +47,39 @@ class Model_Leap_LRS extends DB_ORM_Model
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
             'is_enabled' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
             'name' => new DB_ORM_Field_String($this, array(
                 'max_length' => 255,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'url' => new DB_ORM_Field_String($this, array(
                 'max_length' => 255,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'username' => new DB_ORM_Field_String($this, array(
                 'max_length' => 255,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'password' => new DB_ORM_Field_String($this, array(
                 'max_length' => 255,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'api_version' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 3,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
+                'savable' => true,
             )),
         );
     }
@@ -89,8 +89,8 @@ class Model_Leap_LRS extends DB_ORM_Model
         return 'default';
     }
 
-
-    public static function table() {
+    public static function table()
+    {
         return 'lrs';
     }
 
