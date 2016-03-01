@@ -32,6 +32,7 @@ class Controller_LRS extends Controller_Base
 
     public function action_index()
     {
+
         $this->templateData['lrs_list'] = DB_ORM::select('LRS')->order_by('name')->query();
         $this->templateData['center'] = View::factory('lrs/index')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);

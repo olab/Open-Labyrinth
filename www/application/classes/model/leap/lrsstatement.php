@@ -24,17 +24,24 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * @property int $id
  * @property int $session_id
+ * @property int $lrs_id
  * @property int $status
- * @property string $statement
- * @property float $timestamp
  * @property int $created_at
- * @property \TinCan\LRSResponse $response
- * @property Model_Leap_LRS[]|DB_ResultSet $lrs_list
+ * @property int $updated_at
+ * @property Model_Leap_LRS $lrs
+ * @property Model_Leap_Statement $statement
  */
-class Model_Leap_Statement extends DB_ORM_Model
+class Model_Leap_LRSStatement extends DB_ORM_Model
 {
+    const STATUS_NEW = 0;
+    const STATUS_SUCCESS = 1;
+    const STATUS_FAIL = 2;
 
-    public $response;
+    public static $statuses = array(
+        self::STATUS_NEW => 'New',
+        self::STATUS_SUCCESS => 'Successfully sent to LRS',
+        self::STATUS_FAIL => 'Failed',
+    );
 
     public function __construct()
     {
@@ -48,16 +55,20 @@ class Model_Leap_Statement extends DB_ORM_Model
             )),
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => true,
+                'nullable' => false,
                 'unsigned' => true,
                 'savable' => true,
             )),
-            'statement' => new DB_ORM_Field_Text($this, array(
+            'lrs_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
                 'nullable' => false,
+                'unsigned' => true,
                 'savable' => true,
             )),
-            'timestamp' => new DB_ORM_Field_Decimal($this, array(
+            'status' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 3,
                 'nullable' => false,
+                'unsigned' => true,
                 'savable' => true,
             )),
             'created_at' => new DB_ORM_Field_Integer($this, array(
@@ -66,18 +77,25 @@ class Model_Leap_Statement extends DB_ORM_Model
                 'unsigned' => true,
                 'savable' => true,
             )),
+            'updated_at' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => false,
+                'unsigned' => true,
+                'savable' => true,
+            )),
         );
 
         $this->relations = array(
-            'lrs_list' => new DB_ORM_Relation_HasMany($this, array(
-                'child_key' => array('id'),
+            'lrs' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('lrs_id'),
                 'child_model' => 'LRS',
                 'parent_key' => array('id'),
-                'through_keys' => array(
-                    array('statement_id'), // [0] matches with parent
-                    array('lrs_id'), // [1] matches with child
-                ),
-                'through_model' => 'LRS_Statement',
+            )),
+
+            'statement' => new DB_ORM_Relation_HasOne($this, array(
+                'child_key' => array('statement_id'),
+                'child_model' => 'Statement',
+                'parent_key' => array('id'),
             )),
         );
     }
@@ -89,7 +107,7 @@ class Model_Leap_Statement extends DB_ORM_Model
 
     public static function table()
     {
-        return 'statements';
+        return 'lrs_statement';
     }
 
     public static function primary_key()
@@ -97,31 +115,31 @@ class Model_Leap_Statement extends DB_ORM_Model
         return array('id');
     }
 
-
     //-----------------------------------------------------
     // Additional helper methods
     //-----------------------------------------------------
 
-    public static function xApiInit()
+    public function send()
     {
-        require_once MODPATH . 'TinCanPHP/autoload.php';
+        $statement = $this->statement;
+        $lrs = $this->lrs;
+
+        return $statement->send($lrs);
     }
 
-    public function send(Model_Leap_LRS $lrs_obj)
+    public function sendAndSave()
     {
-        static::xApiInit();
+        $result = $this->send();
 
-        $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->api_version, $lrs_obj->username, $lrs_obj->password);
+        $this->status = $result ? self::STATUS_SUCCESS : self::STATUS_FAIL;
+        $this->save();
 
-        /** @var \TinCan\LRSResponse $response */
-        $response = $lrs->saveStatement(json_decode($this->statement));
+        return $result;
+    }
 
-        if ($response->success) {
-            return true;
-        } else {
-            $this->response = $response;
-            return false;
-        }
+    public function getStatusName()
+    {
+        return isset(static::$statuses[$this->status]) ? static::$statuses[$this->status] : 'unknown';
     }
 
     public function save($reload = FALSE)
@@ -131,6 +149,8 @@ class Model_Leap_Statement extends DB_ORM_Model
         if($id <= 0) {
             $this->created_at = time();
         }
+
+        $this->updated_at = time();
 
         parent::save($reload);
     }

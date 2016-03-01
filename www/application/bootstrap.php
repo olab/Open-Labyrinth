@@ -117,6 +117,7 @@ $modules = array(
     'oauth' => MODPATH . 'oauth', // OAuth module
     'phpexcel' => MODPATH . 'phpexcel',
     'kohana-media' => MODPATH . 'kohana-media',
+    'TinCanPHP' => MODPATH . 'TinCanPHP', // https://github.com/RusticiSoftware/TinCanPHP
 );
 
 Kohana::modules($modules);

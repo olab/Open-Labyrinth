@@ -24,8 +24,6 @@ ALTER TABLE `lrs`
 ALTER TABLE `lrs`
   MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT;
 
--- --------------------------------------------------------
-
 --
 -- Table structure for table `lrs_statement`
 --
@@ -33,7 +31,10 @@ ALTER TABLE `lrs`
 CREATE TABLE `lrs_statement` (
   `id` int(10) unsigned NOT NULL,
   `lrs_id` int(10) unsigned NOT NULL,
-  `statement_id` int(10) unsigned NOT NULL
+  `statement_id` int(10) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL,
+  `created_at` int(11) unsigned NOT NULL,
+  `updated_at` int(11) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -45,7 +46,6 @@ CREATE TABLE `lrs_statement` (
 CREATE TABLE `statements` (
   `id` int(10) unsigned NOT NULL,
   `session_id` int(10) unsigned DEFAULT NULL,
-  `status` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `statement` text NOT NULL,
   `timestamp` decimal(20,4) NOT NULL,
   `created_at` int(11) NOT NULL,
