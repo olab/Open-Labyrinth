@@ -21,7 +21,19 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_sessions table in database
+ * @property int $id
+ * @property int $user_id
+ * @property int $map_id
+ * @property int $start_time
+ * @property int $end_time
+ * @property int $webinar_id
+ * @property int $webinar_step
+ * @property bool $notCumulative
+ * @property string $user_ip
+ * @property Model_Leap_User $user
+ * @property Model_Leap_User_SessionTrace $traces
+ * @property Model_Leap_Map $map
+ * @property Model_Leap_User_Response $responses
  */
 class Model_Leap_User_Session extends DB_ORM_Model {
 
@@ -97,6 +109,12 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'child_key' => array('map_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map',
+            )),
+
+            'responses' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('session_id'),
+                'child_model' => 'user_response',
+                'parent_key' => array('id'),
             )),
         );
     }
