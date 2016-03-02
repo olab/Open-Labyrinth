@@ -21,7 +21,12 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_responses table in database 
+ * @property int $id
+ * @property int $question_id
+ * @property int $session_id
+ * @property int $node_id
+ * @property int $created_at
+ * @property string $response
  */
 class Model_Leap_User_Response extends DB_ORM_Model {
 
@@ -75,7 +80,13 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public function createXAPIStatement()
+    {
+        //TODO: implement method
+        $timestamp = $this->created_at;
+    }
+
     public function createResponse($sessionId, $questionId, $response, $nodeId = null, $created_at = null)
     {
         $sessionObj = DB_ORM::model('user_session', (int)$sessionId);

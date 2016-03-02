@@ -33,7 +33,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_User $user
  * @property Model_Leap_User_SessionTrace $traces
  * @property Model_Leap_Map $map
- * @property Model_Leap_User_Response $responses
+ * @property Model_Leap_User_Response[] $responses
  */
 class Model_Leap_User_Session extends DB_ORM_Model {
 

@@ -63,16 +63,16 @@ class Controller_LRS extends Controller_Base
         $post = $this->request->post();
         $id = Arr::get($post, 'id', null);
 
-        if(!empty($id)){
+        if (!empty($id)) {
             $model = DB_ORM::model('LRS', array($id));
-        }else{
+        } else {
             $model = new Model_Leap_LRS();
         }
 
         $model->load($post);
         $model->save();
 
-        Request::initial()->redirect(URL::base().'lrs');
+        Request::initial()->redirect(URL::base() . 'lrs');
     }
 
     public function action_delete()
@@ -82,7 +82,7 @@ class Controller_LRS extends Controller_Base
 
         $model->delete();
 
-        Request::initial()->redirect(URL::base().'lrs');
+        Request::initial()->redirect(URL::base() . 'lrs');
     }
 
     public function action_sendReportSubmit()
@@ -91,23 +91,35 @@ class Controller_LRS extends Controller_Base
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
 
-        if(empty($date_from) || empty($date_to)){
+        if (empty($date_from) || empty($date_to)) {
             die('Dates cannot be blank');
         }
 
         $date_from_obj = DateTime::createFromFormat('Y-m-d', $date_from);
         $date_to_obj = DateTime::createFromFormat('Y-m-d', $date_to);
 
+        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
         $sessions = DB_ORM::select('User_Session')
             ->where('start_time', '>=', $date_from_obj->getTimestamp())
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
             ->query();
 
-        foreach($sessions as $session){
-
+        foreach ($sessions as $session) {
+            $this->createSessionStatements($session);
         }
 
         die;
 
+    }
+
+    private function createSessionStatements(Model_Leap_User_Session $session)
+    {
+        //create responses statements
+        $verb = 'http://adlnet.gov/expapi/verbs/responded';
+        $responses = $session->responses;
+        foreach($responses as $response){
+            $response->createXAPIStatement();
+        }
+        //end create responses statements
     }
 }

@@ -23,8 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * @property int $id
- * @property int $session_id
- * @property int $status
+ * @property int|null $session_id
  * @property string $statement
  * @property float $timestamp
  * @property int $created_at
@@ -101,6 +100,29 @@ class Model_Leap_Statement extends DB_ORM_Model
     //-----------------------------------------------------
     // Additional helper methods
     //-----------------------------------------------------
+
+    public static function create($session_id = null, $timestamp = null)
+    {
+        $model = new static;
+
+        $model->session_id = $session_id;
+
+        if($timestamp === null){
+            $timestamp = microtime(true);
+        }
+
+        $model->timestamp = $timestamp;
+
+        $statement = array();
+        $statement['timestamp'] = DateTime::createFromFormat('U', round((float)$model->timestamp))
+            ->format(DateTime::ISO8601);
+
+        //TODO: implement statement
+
+        $model->statement = json_encode($statement);
+
+        return $model->save();
+    }
 
     public static function xApiInit()
     {
