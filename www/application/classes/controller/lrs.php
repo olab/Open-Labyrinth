@@ -84,4 +84,30 @@ class Controller_LRS extends Controller_Base
 
         Request::initial()->redirect(URL::base().'lrs');
     }
+
+    public function action_sendReportSubmit()
+    {
+        $post = $this->request->post();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+
+        if(empty($date_from) || empty($date_to)){
+            die('Dates cannot be blank');
+        }
+
+        $date_from_obj = DateTime::createFromFormat('Y-m-d', $date_from);
+        $date_to_obj = DateTime::createFromFormat('Y-m-d', $date_to);
+
+        $sessions = DB_ORM::select('User_Session')
+            ->where('start_time', '>=', $date_from_obj->getTimestamp())
+            ->where('start_time', '<=', $date_to_obj->getTimestamp())
+            ->query();
+
+        foreach($sessions as $session){
+
+        }
+
+        die;
+
+    }
 }
