@@ -101,12 +101,25 @@ class Model_Leap_Statement extends DB_ORM_Model
     // Additional helper methods
     //-----------------------------------------------------
 
-    public static function create($session_id = null, $timestamp = null)
+    /**
+     * @param $result
+     * @param $object
+     * @param $verb
+     * @param Model_Leap_User_Session|int $session
+     * @param null|float $timestamp
+     * @return Model_Leap_Statement|static
+     */
+    public static function create($result, $object, $verb, $session, $timestamp = null)
     {
+        /** @var self|static $model */
         $model = new static;
+        if(is_numeric($session)){
+            /** @var Model_Leap_User_Session $session */
+            $session = DB_ORM::model('User_Session', array($session));
+        }
+        $model->session_id = $session->id;
 
-        $model->session_id = $session_id;
-
+        //timestamp
         if($timestamp === null){
             $timestamp = microtime(true);
         }
@@ -116,12 +129,59 @@ class Model_Leap_Statement extends DB_ORM_Model
         $statement = array();
         $statement['timestamp'] = DateTime::createFromFormat('U', round((float)$model->timestamp))
             ->format(DateTime::ISO8601);
+        //end timestamp
 
-        //TODO: implement statement
+        //actor
+        $user = $session->user;
+        $statement['actor'] = array(
+            'objectType' => 'Agent',
+            'name' => trim($user->nickname),
+            'mbox' => 'mailto:' . trim($user->email),
+            'account' => array(
+                'homePage' => URL::base(TRUE),
+                'name' => $user->id,
+            ),
+        );
+        //end actor
+
+        //verb
+        $statement['verb'] = array(
+            'id' => $verb,
+        );
+        //end verb
+
+        //object
+        $statement['object']['objectType'] = 'Activity';
+        $statement['object'] = $object;
+        //end object
+
+        //result
+        $statement['result'] = $result;
+        //end result
+
+        //context
+        $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+        $statement['context'] = array(
+            'registration' => $session->id,
+            'contextActivities' => array(
+                'parent' => array(
+                    'id' => $map_url,
+                ),
+            )
+        );
+
+        $webinar_id = $session->webinar_id;
+        if(!empty($webinar_id)){
+            $webinar_url = URL::base(TRUE) . 'webinarManager/render/' . $webinar_id;
+            $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+        }
+        //end context
 
         $model->statement = json_encode($statement);
 
-        return $model->save();
+        $model->save();
+
+        return $model;
     }
 
     public static function xApiInit()

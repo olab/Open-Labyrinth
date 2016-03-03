@@ -27,6 +27,8 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $node_id
  * @property int $created_at
  * @property string $response
+ * @property Model_Leap_User_Session $session
+ * @property Model_Leap_Map_Question $question
  */
 class Model_Leap_User_Response extends DB_ORM_Model {
 
@@ -67,6 +69,20 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 'nullable' => FALSE,
             )),
         );
+
+        $this->relations = array(
+            'session' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('session_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'user_session',
+            )),
+            'question' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('question_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map_question',
+            )),
+        );
+
     }
 
     public static function data_source() {
@@ -85,6 +101,29 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         //TODO: implement method
         $timestamp = $this->created_at;
+        $verb = 'http://adlnet.gov/expapi/verbs/responded';
+        $question = $this->question;
+        $url = URL::base(TRUE) . 'questionManager/question/'. $question->map_id .'/'.$question->entry_type_id.'/'.$question->id;
+        $object = array(
+            'id' => $url,
+
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'Responded to a question.'
+                ),
+                'description' => array(
+                    'en-US' => 'Question stem: ' . $question->stem
+                ),
+                'moreInfo' => $url,
+            ),
+
+        );
+
+        $result = array(
+            'response' => $this->response,
+        );
+
+
     }
 
     public function createResponse($sessionId, $questionId, $response, $nodeId = null, $created_at = null)

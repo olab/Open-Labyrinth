@@ -115,7 +115,6 @@ class Controller_LRS extends Controller_Base
     private function createSessionStatements(Model_Leap_User_Session $session)
     {
         //create responses statements
-        $verb = 'http://adlnet.gov/expapi/verbs/responded';
         $responses = $session->responses;
         foreach($responses as $response){
             $response->createXAPIStatement();
