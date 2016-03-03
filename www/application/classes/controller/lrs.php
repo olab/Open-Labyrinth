@@ -108,6 +108,10 @@ class Controller_LRS extends Controller_Base
             $this->createSessionStatements($session);
         }
 
+        foreach ($sessions as $session) {
+            $this->sendSessionStatements($session);
+        }
+
         die;
 
     }
@@ -120,5 +124,10 @@ class Controller_LRS extends Controller_Base
             $response->createXAPIStatement();
         }
         //end create responses statements
+    }
+
+    private function sendSessionStatements(Model_Leap_User_Session $session)
+    {
+        $session->sendXAPIStatements();
     }
 }

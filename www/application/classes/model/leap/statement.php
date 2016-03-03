@@ -109,7 +109,7 @@ class Model_Leap_Statement extends DB_ORM_Model
      * @param null|float $timestamp
      * @return Model_Leap_Statement|static
      */
-    public static function create($result, $object, $verb, $session, $timestamp = null)
+    public static function create($session, $verb, $object, $result, $timestamp = null)
     {
         /** @var self|static $model */
         $model = new static;

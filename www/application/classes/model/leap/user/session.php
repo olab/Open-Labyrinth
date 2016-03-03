@@ -34,6 +34,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_User_SessionTrace $traces
  * @property Model_Leap_Map $map
  * @property Model_Leap_User_Response[] $responses
+ * @property Model_Leap_Statement[] $statements
  */
 class Model_Leap_User_Session extends DB_ORM_Model {
 
@@ -116,6 +117,12 @@ class Model_Leap_User_Session extends DB_ORM_Model {
                 'child_model' => 'user_response',
                 'parent_key' => array('id'),
             )),
+
+            'statements' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('session_id'),
+                'child_model' => 'statement',
+                'parent_key' => array('id'),
+            )),
         );
     }
 
@@ -129,6 +136,19 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
     public static function primary_key() {
         return array('id');
+    }
+
+    public function sendXAPIStatements()
+    {
+        $lrs_statements = DB_ORM::select('lrs_statement')
+            ->join('INNER', 'statements')->on('lrs_statements.statement_id', '=', 'statements.id')
+            ->where('statements.session_id', '=', $this->id)
+            ->where('lrs_statements.status', '=', Model_Leap_LRSStatement::STATUS_NEW)
+            ->query();
+
+        foreach($lrs_statements as $lrs_statement){
+            $lrs_statement->sendAndSave();
+        }
     }
 
     public function createSession($userId, $mapId, $startTime, $userIp, $webinarId = null, $webinarStep = null) {

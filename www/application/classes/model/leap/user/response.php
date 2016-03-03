@@ -123,6 +123,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             'response' => $this->response,
         );
 
+        Model_Leap_Statement::create($this->session_id, $verb, $object, $result, $timestamp);
 
     }
 
