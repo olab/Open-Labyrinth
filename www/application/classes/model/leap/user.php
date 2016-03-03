@@ -21,7 +21,25 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for users table in database
+ * @property int $id
+ * @property int $language_id
+ * @property int $type_id
+ * @property int $visualEditorAutosaveTime
+ * @property int $resetAttempt
+ * @property int $oauth_provider_id
+ * @property int $oauth_id
+ * @property int $history_readonly
+ * @property int $history_timestamp
+ * @property int|bool $is_lti
+ * @property string $username
+ * @property string $password
+ * @property string $email
+ * @property string $nickname
+ * @property string $resetTimestamp
+ * @property string $resetHashKey
+ * @property string $history
+ * @property string $modeUI
+ * @property string $settings
  */
 class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
 
