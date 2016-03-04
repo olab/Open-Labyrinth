@@ -109,7 +109,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
             'definition' => array(
                 'name' => array(
-                    'en-US' => 'Responded to a question.'
+                    'en-US' => 'Question'
                 ),
                 'description' => array(
                     'en-US' => 'Question stem: ' . $question->stem
@@ -123,7 +123,17 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             'response' => $this->response,
         );
 
-        Model_Leap_Statement::create($this->session_id, $verb, $object, $result, $timestamp);
+        //context
+        $context = [];
+        $session = $this->session;
+        $node_url = URL::base(TRUE) . 'renderLabyrinth/go/' . $session->map_id . '/' . $this->node_id;
+        $context['contextActivities']['parent']['id'] = $node_url;
+
+        $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
 
     }
 
