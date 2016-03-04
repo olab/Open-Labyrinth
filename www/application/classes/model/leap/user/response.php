@@ -40,19 +40,19 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 'max_length' => 10,
                 'nullable' => FALSE,
             )),
-            
+
             'question_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-            
+
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => FALSE,
                 'unsigned' => TRUE,
             )),
-            
+
             'response' => new DB_ORM_Field_String($this, array(
                 'max_length' => 1000,
                 'nullable' => FALSE,
@@ -109,7 +109,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
             'definition' => array(
                 'name' => array(
-                    'en-US' => 'Responded to a question.'
+                    'en-US' => 'Question'
                 ),
                 'description' => array(
                     'en-US' => 'Question stem: ' . $question->stem
@@ -123,7 +123,17 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             'response' => $this->response,
         );
 
-        Model_Leap_Statement::create($this->session_id, $verb, $object, $result, $timestamp);
+        //context
+        $context = [];
+        $session = $this->session;
+        $node_url = URL::base(TRUE) . 'renderLabyrinth/go/' . $session->map_id . '/' . $this->node_id;
+        $context['contextActivities']['parent']['id'] = $node_url;
+
+        $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
 
     }
 
@@ -209,7 +219,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         DB_ORM::update('User_Response')->set('response', $response)->where('id', '=', $id)->execute();
     }
-    
+
     public function updateResponse($sessionId, $questionId, $response, $nodeId)
     {
         $result = DB_ORM::select('User_Response')->where('session_id', '=', $sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
@@ -220,7 +230,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $result->node_id = $nodeId;
         $result->save();
     }
-    
+
     public function getResponse ($sessionId, $questionId, $nodesId = array(), $orderBy = 'ASC')
     {
         if (count($nodesId) > 0) {
@@ -282,13 +292,13 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             ->where('question_id', '=', $questionId)
             ->where('session_id', 'IN', $sessions);
 
-            if(!empty($nodeId)){
-                $builder->where('node_id', '=', $nodeId);
-            }
+        if(!empty($nodeId)){
+            $builder->where('node_id', '=', $nodeId);
+        }
 
         $result = $builder
-                        ->order_by('id', $orderBy)
-                        ->query();
+            ->order_by('id', $orderBy)
+            ->query();
 
         if($result->is_loaded() && count($result) > 0) {
             $responses = array();

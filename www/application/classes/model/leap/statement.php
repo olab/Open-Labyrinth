@@ -109,7 +109,7 @@ class Model_Leap_Statement extends DB_ORM_Model
      * @param null|float $timestamp
      * @return Model_Leap_Statement|static
      */
-    public static function create($session, $verb, $object, $result, $timestamp = null)
+    public static function create($session, $verb, $object, $result, $context = null, $timestamp = null)
     {
         /** @var self|static $model */
         $model = new static;
@@ -160,20 +160,21 @@ class Model_Leap_Statement extends DB_ORM_Model
         //end result
 
         //context
-        $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
         $statement['context'] = array(
-            'registration' => $session->id,
-            'contextActivities' => array(
-                'parent' => array(
-                    'id' => $map_url,
-                ),
-            )
+            'registration' => URL::base(TRUE) . 'sessions/' . $session->id,
         );
 
-        $webinar_id = $session->webinar_id;
-        if(!empty($webinar_id)){
-            $webinar_url = URL::base(TRUE) . 'webinarManager/render/' . $webinar_id;
-            $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+        if($context === null){
+            $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+            $statement['context']['contextActivities']['parent']['id'] = $map_url;
+
+            $webinar_id = $session->webinar_id;
+            if(!empty($webinar_id)){
+                $webinar_url = URL::base(TRUE) . 'webinarManager/render/' . $webinar_id;
+                $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+            }
+        }else{
+            $statement['context'] = array_merge($statement['context'], $context);
         }
         //end context
 
