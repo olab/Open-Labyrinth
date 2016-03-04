@@ -99,7 +99,6 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
     public function createXAPIStatement()
     {
-        //TODO: implement method
         $timestamp = $this->created_at;
         $verb = 'http://adlnet.gov/expapi/verbs/responded';
         $question = $this->question;

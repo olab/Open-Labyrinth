@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * @property int $id
- * @property int $session_id
+ * @property int $statement_id
  * @property int $lrs_id
  * @property int $status
  * @property int $created_at
@@ -53,7 +53,7 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
                 'nullable' => false,
                 'unsigned' => true,
             )),
-            'session_id' => new DB_ORM_Field_Integer($this, array(
+            'statement_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => false,
                 'unsigned' => true,
@@ -86,15 +86,15 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
         );
 
         $this->relations = array(
-            'lrs' => new DB_ORM_Relation_HasOne($this, array(
+            'lrs' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('lrs_id'),
-                'child_model' => 'LRS',
+                'parent_model' => 'LRS',
                 'parent_key' => array('id'),
             )),
 
-            'statement' => new DB_ORM_Relation_HasOne($this, array(
+            'statement' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('statement_id'),
-                'child_model' => 'Statement',
+                'parent_model' => 'Statement',
                 'parent_key' => array('id'),
             )),
         );

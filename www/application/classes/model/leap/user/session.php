@@ -140,10 +140,11 @@ class Model_Leap_User_Session extends DB_ORM_Model {
 
     public function sendXAPIStatements()
     {
-        $lrs_statements = DB_ORM::select('lrs_statement')
-            ->join('INNER', 'statements')->on('lrs_statements.statement_id', '=', 'statements.id')
+        /** @var Model_Leap_LRSStatement[] $lrs_statements */
+        $lrs_statements = DB_ORM::select('LRSStatement')
+            ->join('INNER', 'statements')->on('lrs_statement.statement_id', '=', 'statements.id')
             ->where('statements.session_id', '=', $this->id)
-            ->where('lrs_statements.status', '=', Model_Leap_LRSStatement::STATUS_NEW)
+            ->where('lrs_statement.status', '=', Model_Leap_LRSStatement::STATUS_NEW)
             ->query();
 
         foreach($lrs_statements as $lrs_statement){
