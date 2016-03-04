@@ -81,11 +81,11 @@ if(!empty($model)){
         </div>
 
         <div class="control-group">
-            <label class="control-label" for="name"><?php echo __('API Version'); ?></label>
+            <label class="control-label" for="api_version"><?php echo __('API Version'); ?></label>
             <div class="controls">
-                <select name="name" id="name" class="span6" required>
+                <select name="api_version" id="api_version" class="span6" required>
                     <?php foreach(Model_Leap_LRS::$api_versions as $key => $version){ ?>
-                        <option value="<?php echo $key ?>" <?php if($version === $api_version){?>selected<?php } ?>>
+                        <option value="<?php echo $key ?>" <?php if($key === $api_version){?>selected<?php } ?>>
                             <?php echo $version ?>
                         </option>
                     <?php } ?>
@@ -96,7 +96,7 @@ if(!empty($model)){
         <div class="control-group">
             <label class="control-label" for="is_enabled"><?php echo __('Enable'); ?></label>
             <div class="controls">
-                <input name="is_enabled" type="checkbox" id="is_enabled" class="span6" value="1" <?php if($is_enabled){?>checked<?php } ?>>
+                <input name="is_enabled" type="checkbox" id="is_enabled" value="1" <?php if($is_enabled){?>checked<?php } ?>>
             </div>
         </div>
 
