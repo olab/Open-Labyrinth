@@ -103,7 +103,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
         $verb = array(
             'id' => 'http://adlnet.gov/expapi/verbs/responded',
-            'name' => array(
+            'display' => array(
                 'en-US' => 'responded'
             ),
         );
