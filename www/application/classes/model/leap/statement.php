@@ -135,8 +135,9 @@ class Model_Leap_Statement extends Model_Leap_Base
         $model->timestamp = (float)$timestamp;
 
         $statement = array();
+        // Use format('c') instead of format(\DateTime::ISO8601) due to bug in format(\DateTime::ISO8601) that generates an invalid timestamp.
         $statement['timestamp'] = DateTime::createFromFormat('U', round($model->timestamp))
-            ->format(DateTime::ISO8601);
+            ->format('c');
         //end timestamp
 
         //actor
@@ -216,11 +217,13 @@ class Model_Leap_Statement extends Model_Leap_Base
         $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->getAPIVersionName(), $lrs_obj->username, $lrs_obj->password);
 
         /** @var \TinCan\LRSResponse $response */
-        $response = $lrs->saveStatement(json_decode($this->statement, true));
-
+        $data = json_decode($this->statement, true);
+        unset($data['timestamp']);
+        $response = $lrs->saveStatement($data, true);
         if ($response->success) {
             return true;
         } else {
+            var_dump($response);die;
             $this->response = $response;
             return false;
         }
