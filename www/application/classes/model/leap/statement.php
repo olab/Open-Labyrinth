@@ -218,12 +218,11 @@ class Model_Leap_Statement extends Model_Leap_Base
 
         /** @var \TinCan\LRSResponse $response */
         $data = json_decode($this->statement, true);
-        unset($data['timestamp']);
         $response = $lrs->saveStatement($data, true);
+
         if ($response->success) {
             return true;
         } else {
-            var_dump($response);die;
             $this->response = $response;
             return false;
         }
