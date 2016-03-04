@@ -100,7 +100,14 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     public function createXAPIStatement()
     {
         $timestamp = $this->created_at;
-        $verb = 'http://adlnet.gov/expapi/verbs/responded';
+
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/responded',
+            'name' => array(
+                'en-US' => 'responded'
+            ),
+        );
+
         $question = $this->question;
         $url = URL::base(TRUE) . 'questionManager/question/'. $question->map_id .'/'.$question->entry_type_id.'/'.$question->id;
         $object = array(
@@ -113,6 +120,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 'description' => array(
                     'en-US' => 'Question stem: ' . $question->stem
                 ),
+                'type' => 'http://adlnet.gov/expapi/activities/cmi.interaction',
                 'moreInfo' => $url,
             ),
 

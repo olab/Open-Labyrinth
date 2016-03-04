@@ -145,7 +145,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         $statement['actor'] = array(
             'objectType' => 'Agent',
             'name' => trim($user->nickname),
-            'mbox' => 'mailto:' . trim($user->email),
+            //'mbox' => 'mailto:' . trim($user->email), Agent MUST NOT include more than one Inverse Functional Identifier
             'account' => array(
                 'homePage' => URL::base(TRUE),
                 'name' => $user->id,
@@ -154,9 +154,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end actor
 
         //verb
-        $statement['verb'] = array(
-            'id' => $verb,
-        );
+        $statement['verb'] = $verb;
         //end verb
 
         //object
