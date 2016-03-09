@@ -131,7 +131,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         );
 
         //context
-        $context = [];
+        $context = array();
         $session = $this->session;
         $node_url = URL::base(TRUE) . 'renderLabyrinth/go/' . $session->map_id . '/' . $this->node_id;
         $context['contextActivities']['parent']['id'] = $node_url;

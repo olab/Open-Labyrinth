@@ -113,6 +113,7 @@ class Model_Leap_Statement extends Model_Leap_Base
      * @param $result
      * @param $object
      * @param $verb
+     * @param $context
      * @param Model_Leap_User_Session|int $session
      * @param null|float $timestamp
      * @return Model_Leap_Statement|static
@@ -167,7 +168,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end result
 
         //context
-        $statement['context']['contextActivities']['category']['id'] = URL::base(TRUE) . 'sessions/' . $session->id;
+        $statement['context']['contextActivities']['category']['id'] = URL::base(TRUE) . 'reportManager/showReport/' . $session->id;
 
         if ($context === null) {
             $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
