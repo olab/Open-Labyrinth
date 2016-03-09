@@ -22,7 +22,10 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for maps table in database
+ * @property int $id
+ * @property int $author_id
+ * @property string $name
+ * @property string $abstract
  */
 class Model_Leap_Map extends DB_ORM_Model
 {

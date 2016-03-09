@@ -31,7 +31,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property bool $notCumulative
  * @property string $user_ip
  * @property Model_Leap_User $user
- * @property Model_Leap_User_SessionTrace $traces
+ * @property Model_Leap_User_SessionTrace[] $traces
  * @property Model_Leap_Map $map
  * @property Model_Leap_User_Response[] $responses
  * @property Model_Leap_Statement[] $statements

@@ -171,12 +171,12 @@ class Model_Leap_Statement extends Model_Leap_Base
         $statement['context']['contextActivities']['category']['id'] = URL::base(TRUE) . 'reportManager/showReport/' . $session->id;
 
         if ($context === null) {
-            $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+            $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
             $statement['context']['contextActivities']['parent']['id'] = $map_url;
 
             $webinar_id = $session->webinar_id;
             if (!empty($webinar_id)) {
-                $webinar_url = URL::base(TRUE) . 'webinarManager/render/' . $webinar_id;
+                $webinar_url = URL::base(TRUE) . 'webinarManager/edit/' . $webinar_id;
                 $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
             }
         } else {

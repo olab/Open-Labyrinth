@@ -124,6 +124,16 @@ class Controller_LRS extends Controller_Base
             $response->createXAPIStatement();
         }
         //end create responses statements
+
+        //create 'initialized', 'arrived', 'launched', 'completed' statements
+        $session_traces = $session->traces;
+        foreach($session_traces as $session_trace){
+            $session_trace->createXAPIStatementInitialized();
+            $session_trace->createXAPIStatementArrived();
+            $session_trace->createXAPIStatementLaunched();
+            $session_trace->createXAPIStatementCompleted();
+        }
+        //end create 'initialized', 'arrived', 'launched', 'completed' statements
     }
 
     private function sendSessionStatements(Model_Leap_User_Session $session)

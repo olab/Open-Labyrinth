@@ -115,7 +115,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
             'definition' => array(
                 'name' => array(
-                    'en-US' => 'Question'
+                    'en-US' => 'question'
                 ),
                 'description' => array(
                     'en-US' => 'Question stem: ' . $question->stem
@@ -133,10 +133,10 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         //context
         $context = array();
         $session = $this->session;
-        $node_url = URL::base(TRUE) . 'renderLabyrinth/go/' . $session->map_id . '/' . $this->node_id;
+        $node_url = URL::base(TRUE) . 'nodeManager/editNode/' . $this->node_id;
         $context['contextActivities']['parent']['id'] = $node_url;
 
-        $map_url = URL::base(TRUE) . 'renderLabyrinth/index/' . $session->map_id;
+        $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 

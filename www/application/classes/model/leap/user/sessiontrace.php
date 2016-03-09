@@ -21,7 +21,20 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_sessiontraces table in database 
+ * @property int $id
+ * @property int $user_id
+ * @property int $session_id
+ * @property int $node_id
+ * @property int $map_id
+ * @property int $date_stamp
+ * @property int $end_date_stamp
+ * @property int $confidence
+ * @property int $bookmark_made
+ * @property int $bookmark_used
+ * @property string $counters
+ * @property string $dams
+ * @property Model_Leap_Map_Node $node
+ * @property Model_Leap_Map $map
  */
 class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
@@ -102,6 +115,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 'parent_key' => array('id'),
                 'parent_model' => 'map_node',
             )),
+
+            'map' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('map_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'map',
+            )),
         );
     }
 
@@ -115,6 +134,110 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
     public static function primary_key() {
         return array('id');
+    }
+
+    public function createXAPIStatementArrived()
+    {
+        $node = $this->node;
+
+        $timestamp = $this->date_stamp;
+
+        //verb
+        $verb = array(
+            'id' => 'http://w3id.org/xapi/medbiq/verbs/arrived',
+            'display' => array(
+                'en-US' => 'arrived'
+            ),
+        );
+        //end verb
+
+        //object
+        $url = URL::base(TRUE) . 'nodeManager/editNode/' . $node->id;
+        $object = array(
+            'id' => $url,
+
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+        //end result
+
+        //context
+        $context = array();
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
+    public function createXAPIStatementCompleted()
+    {
+        $node = $this->node;
+        if( ! $node->end ) {
+            return false;
+        }
+
+        $timestamp = $this->date_stamp;
+
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/completed',
+            'display' => array(
+                'en-US' => 'completed'
+            ),
+        );
+
+        //object
+        $url = URL::base(TRUE) . 'labyrinthManager/global/' . $this->map_id;
+        $map = $this->map;
+        $object = array(
+            'id' => $url,
+
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Map description: ' . $map->abstract
+                ),
+                //'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $counters = $this->counters;
+        $result = array(
+            'completion' => true,
+            'score' => $counters,
+        );
+        //end result
+
+        //context
+        $context = null; //default
+        //end context
+        $session = $this->session;
+
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function getUniqueTraceByMapId($mapId) {
