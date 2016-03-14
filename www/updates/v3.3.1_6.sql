@@ -101,3 +101,8 @@ ALTER TABLE `lrs_statement`
 --
 ALTER TABLE `statements`
   ADD CONSTRAINT `statements_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `user_sessions` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+
+
+
+ALTER TABLE `user_sessiontraces` ADD `is_redirected` BOOLEAN NOT NULL DEFAULT FALSE AFTER `node_id`;

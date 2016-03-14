@@ -31,91 +31,87 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $confidence
  * @property int $bookmark_made
  * @property int $bookmark_used
+ * @property bool $is_redirected
  * @property string $counters
  * @property string $dams
  * @property Model_Leap_Map_Node $node
  * @property Model_Leap_Map $map
  */
-class Model_Leap_User_SessionTrace extends DB_ORM_Model {
+class Model_Leap_User_SessionTrace extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'user_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
+            'is_redirected' => new DB_ORM_Field_Boolean($this, array(
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
+            )),
             'counters' => new DB_ORM_Field_String($this, array(
                 'max_length' => 700,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-            
             'date_stamp' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 20,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'end_date_stamp' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 20,
-                'nullable' => TRUE,
+                'nullable' => true,
             )),
-            
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'dams' => new DB_ORM_Field_String($this, array(
                 'max_length' => 700,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-            
             'bookmark_made' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'bookmark_used' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
         );
-        
+
         $this->relations = array(
             'node' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('node_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map_node',
             )),
-
             'map' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('map_id'),
                 'parent_key' => array('id'),
@@ -124,38 +120,44 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         );
     }
 
-    public static function data_source() {
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'user_sessiontraces';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
 
-    public function createXAPIStatementArrived()
+    public function createXAPIStatementLaunched()
     {
+        if (!$this->is_redirected) {
+            return false;
+        }
+
         $node = $this->node;
 
         $timestamp = $this->date_stamp;
 
         //verb
         $verb = array(
-            'id' => 'http://w3id.org/xapi/medbiq/verbs/arrived',
+            'id' => 'http://adlnet.gov/expapi/verbs/launched',
             'display' => array(
-                'en-US' => 'arrived'
+                'en-US' => 'launched'
             ),
         );
         //end verb
 
         //object
-        $url = URL::base(TRUE) . 'nodeManager/editNode/' . $node->id;
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
         $object = array(
             'id' => $url,
-
             'definition' => array(
                 'name' => array(
                     'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
@@ -181,7 +183,109 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $session = $this->session;
         $context['contextActivities']['parent']['id'] = $url;
 
-        $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
+    public function createXAPIStatementInitialized()
+    {
+        $node = $this->node;
+
+        $timestamp = $this->date_stamp;
+
+        //verb
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/initialized',
+            'display' => array(
+                'en-US' => 'initialized'
+            ),
+        );
+        //end verb
+
+        //object
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+        //end result
+
+        //context
+        $context = array();
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
+    public function createXAPIStatementArrived()
+    {
+        $node = $this->node;
+
+        $timestamp = $this->date_stamp;
+
+        //verb
+        $verb = array(
+            'id' => 'http://w3id.org/xapi/medbiq/verbs/arrived',
+            'display' => array(
+                'en-US' => 'arrived'
+            ),
+        );
+        //end verb
+
+        //object
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+        //end result
+
+        //context
+        $context = array();
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
@@ -191,7 +295,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
     public function createXAPIStatementCompleted()
     {
         $node = $this->node;
-        if( ! $node->end ) {
+        if (!$node->end) {
             return false;
         }
 
@@ -205,11 +309,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         );
 
         //object
-        $url = URL::base(TRUE) . 'labyrinthManager/global/' . $this->map_id;
+        $url = URL::base(true) . 'labyrinthManager/global/' . $this->map_id;
         $map = $this->map;
         $object = array(
             'id' => $url,
-
             'definition' => array(
                 'name' => array(
                     'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
@@ -240,30 +343,32 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function getUniqueTraceByMapId($mapId) {
+    public function getUniqueTraceByMapId($mapId)
+    {
         $records = DB_SQL::select('default')
-           ->from($this->table())
-           ->where('map_id', '=', $mapId)
-           ->group_by('node_id')
-           ->group_by('session_id')
-           ->order_by('id')
-           ->column('id')
-           ->column('session_id')
-           ->column('user_id')
-           ->column('node_id')
-           ->query();
+            ->from($this->table())
+            ->where('map_id', '=', $mapId)
+            ->group_by('node_id')
+            ->group_by('session_id')
+            ->order_by('id')
+            ->column('id')
+            ->column('session_id')
+            ->column('user_id')
+            ->column('node_id')
+            ->query();
 
         $result = array();
-        if($records->is_loaded())
-        {
-            foreach($records as $record)
-            {
-                $result[] = array('id'         => $record['id'],
-                                  'session_id' => $record['session_id'],
-                                  'user_id'    => $record['user_id'],
-                                  'node_id'    => $record['node_id']);
+        if ($records->is_loaded()) {
+            foreach ($records as $record) {
+                $result[] = array(
+                    'id' => $record['id'],
+                    'session_id' => $record['session_id'],
+                    'user_id' => $record['user_id'],
+                    'node_id' => $record['node_id']
+                );
             }
         }
+
         return $result;
     }
 
@@ -283,38 +388,38 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
 
         $result = array();
 
-        foreach ($records as $record)
-        {
+        foreach ($records as $record) {
             $undoNode = $undo ? DB_ORM::model('Map_Node', array($record['node_id']))->undo : true;
 
-            if ($undoNode AND $idNode != $record['node_id'])
-            {
+            if ($undoNode AND $idNode != $record['node_id']) {
                 $result[] = array(
-                    'id'         => $record['id'],
+                    'id' => $record['id'],
                     'session_id' => $record['session_id'],
-                    'user_id'    => $record['user_id'],
-                    'node_id'    => $record['node_id']
+                    'user_id' => $record['user_id'],
+                    'node_id' => $record['node_id']
                 );
             }
         }
+
         return $result;
     }
 
-    public function undoTrace($sessionId, $mapId, $nodeId) {
+    public function undoTrace($sessionId, $mapId, $nodeId)
+    {
         $records = DB_SQL::select('default')
-                           ->from($this->table())
-                           ->where('session_id', '=', $sessionId, 'AND')
-                           ->where('map_id', '=', $mapId)
-                           ->order_by('id', 'DESC')
-                           ->column('id')
-                           ->column('node_id')
-                           ->query();
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('map_id', '=', $mapId)
+            ->order_by('id', 'DESC')
+            ->column('id')
+            ->column('node_id')
+            ->query();
 
-        if($records->is_loaded()) {
+        if ($records->is_loaded()) {
             $removeTraceIDs = array();
             $undoTraceId = null;
-            foreach($records as $record) {
-                if($record['node_id'] == $nodeId) {
+            foreach ($records as $record) {
+                if ($record['node_id'] == $nodeId) {
                     $undoTraceId = $record['id'];
                     break;
                 } else {
@@ -322,7 +427,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 }
             }
 
-            if($undoTraceId != null && $undoTraceId > 0) {
+            if ($undoTraceId != null && $undoTraceId > 0) {
                 $trace = DB_ORM::model('user_sessionTrace', array((int)$undoTraceId));
                 $rootNode = DB_ORM::model('map_node')->getRootNodeByMap($mapId);
                 $this->updateCounter($sessionId, $mapId, $rootNode->id, $trace->counters);
@@ -333,58 +438,67 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         }
     }
 
-    public function deleteTracesByIDs($tracesIDs) {
-        if($tracesIDs == null && count($tracesIDs) <= 0) return;
+    public function deleteTracesByIDs($tracesIDs)
+    {
+        if ($tracesIDs == null && count($tracesIDs) <= 0) {
+            return;
+        }
 
         DB_SQL::delete('default')
-                ->from($this->table())
-                ->where('id', 'IN', $tracesIDs)
-                ->execute();
+            ->from($this->table())
+            ->where('id', 'IN', $tracesIDs)
+            ->execute();
     }
 
-    public function createTrace($sessionId, $userId, $mapId, $nodeId) {
+    public function createTrace($sessionId, $userId, $mapId, $nodeId)
+    {
         $time = $this->setElapsedTime($sessionId);
+
         return DB_ORM::insert('user_sessionTrace')
-                ->column('session_id', $sessionId)
-                ->column('user_id', $userId)
-                ->column('map_id', $mapId)
-                ->column('node_id', $nodeId)
-                ->column('date_stamp', $time)
-                ->execute();
+            ->column('session_id', $sessionId)
+            ->column('user_id', $userId)
+            ->column('map_id', $mapId)
+            ->column('node_id', $nodeId)
+            ->column('date_stamp', $time)
+            ->execute();
     }
 
-    public function setElapsedTime($sessionId) {
+    public function setElapsedTime($sessionId)
+    {
         $traceId = $this->getTopTraceBySessionId($sessionId);
-        $time    = time();
-        if($traceId != null) {
+        $time = time();
+        if ($traceId != null) {
             DB_ORM::update('user_sessionTrace')
-                    ->set('end_date_stamp', $time)
-                    ->where('id', '=', $traceId)
-                    ->execute();
+                ->set('end_date_stamp', $time)
+                ->where('id', '=', $traceId)
+                ->execute();
         }
 
         return $time;
     }
-    
-    public function getTopTraceBySessionId($sessionId, $getObject = false) {
+
+    public function getTopTraceBySessionId($sessionId, $getObject = false)
+    {
         $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId)
-                ->order_by('id', 'DESC')
-                ->limit(1);
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId)
+            ->order_by('id', 'DESC')
+            ->limit(1);
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            if($getObject){
+
+        if ($result->is_loaded()) {
+            if ($getObject) {
                 return $result[0];
-            }else {
+            } else {
                 return $result[0]['id'];
             }
         }
-        
-        return NULL;
+
+        return null;
     }
-    public function getLastTraceBySessionId($sessionId) {
+
+    public function getLastTraceBySessionId($sessionId)
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('session_id', '=', $sessionId)
@@ -392,58 +506,62 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             ->limit(1);
         $result = $builder->query();
 
-        if($result->is_loaded()) {
+        if ($result->is_loaded()) {
             return $result[0];
         }
 
-        return NULL;
+        return null;
     }
-    public function isExistBySessionAndNodeIDs($sessionId, $nodeId) {
+
+    public function isExistBySessionAndNodeIDs($sessionId, $nodeId)
+    {
         $builder = DB_SQL::select('default')
-                ->from($this->table())
-                ->where('session_id', '=', $sessionId, 'AND')
-                ->where('node_id', '=', $nodeId);
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('node_id', '=', $nodeId);
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
-            return TRUE;
+
+        if ($result->is_loaded()) {
+            return true;
         }
-        
-        return FALSE;
+
+        return false;
     }
-    
-    public function getCountTracks($sessionId, $nodeIDs) {
-        if(count($nodeIDs) > 0) {
-			$builder = DB_SQL::select('default')
-					->from($this->table())
-					->where('session_id', '=', $sessionId, 'AND')
-					->where('node_id', 'IN', $nodeIDs);
-			$result = $builder->query();
-			
-			if($result->is_loaded()) {
-				return count($result);
-			}
-		}
-        
-        return NULL;
-    }
-    
-    public function getCounterByIDs($sessionId, $mapId, $nodeId) {
-        $builder = DB_SQL::select('default')
+
+    public function getCountTracks($sessionId, $nodeIDs)
+    {
+        if (count($nodeIDs) > 0) {
+            $builder = DB_SQL::select('default')
                 ->from($this->table())
                 ->where('session_id', '=', $sessionId, 'AND')
-                ->where('map_id', '=', $mapId, 'AND')
-                ->where('node_id', '=', $nodeId)
-                ->limit(1);
+                ->where('node_id', 'IN', $nodeIDs);
+            $result = $builder->query();
+
+            if ($result->is_loaded()) {
+                return count($result);
+            }
+        }
+
+        return null;
+    }
+
+    public function getCounterByIDs($sessionId, $mapId, $nodeId)
+    {
+        $builder = DB_SQL::select('default')
+            ->from($this->table())
+            ->where('session_id', '=', $sessionId, 'AND')
+            ->where('map_id', '=', $mapId, 'AND')
+            ->where('node_id', '=', $nodeId)
+            ->limit(1);
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
+
+        if ($result->is_loaded()) {
             return $result[0]['counters'];
         }
-        
-        return NULL;
+
+        return null;
     }
-    
+
     public function updateCounter($sessionId, $mapId, $nodeId, $newCounters, $traceId = null)
     {
         $builder = DB_ORM::update('user_sessionTrace')
@@ -461,23 +579,26 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             ->limit(1)
             ->execute();
     }
-    
-    public function getTraceBySessionID($sessionId) {
-        return DB_ORM::select('user_sessiontrace')->where('session_id', '=', $sessionId)->order_by('id', 'ASC')->query()->as_array();
+
+    public function getTraceBySessionID($sessionId)
+    {
+        return DB_ORM::select('user_sessiontrace')->where('session_id', '=', $sessionId)->order_by('id',
+            'ASC')->query()->as_array();
     }
-    
-    public function getCountersValues($sessionId) {
+
+    public function getCountersValues($sessionId)
+    {
         $traces = $this->getTraceBySessionID($sessionId);
-        if(count($traces)) {
+        if (count($traces)) {
             $result = array();
             $i = 0;
-            foreach($traces as $trace) {
-                if($trace->counters != '') {
+            foreach ($traces as $trace) {
+                if ($trace->counters != '') {
                     $counters = DB_ORM::model('map_counter')->getCountersByMap($trace->map_id);
-                    if($counters != NULL and count($counters) > 0) {
+                    if ($counters != null and count($counters) > 0) {
                         $currentCountersState = $trace->counters;
                         $j = 0;
-                        foreach($counters as $counter) {
+                        foreach ($counters as $counter) {
                             $s = strpos($currentCountersState, '[CID=' . $counter->id . ',') + 1;
                             $tmp = substr($currentCountersState, $s, strlen($currentCountersState));
                             $e = strpos($tmp, ']') + 1;
@@ -495,25 +616,29 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
                 }
                 $i++;
             }
+
             return $result;
         }
-        return NULL;
+
+        return null;
     }
 
-    public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs) {
+    public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs)
+    {
         $records = DB_SQL::select('default')
-           ->from($this->table())
-           ->column('id')
-           ->where('user_id', '=', $userId)
-           ->where('map_id', '=', $mapId)
-           ->where('session_id', 'IN', $sessionIDs)
-           ->where('node_id', 'IN', $nodeIDs)
-           ->query();
+            ->from($this->table())
+            ->column('id')
+            ->where('user_id', '=', $userId)
+            ->where('map_id', '=', $mapId)
+            ->where('session_id', 'IN', $sessionIDs)
+            ->where('node_id', 'IN', $nodeIDs)
+            ->query();
 
         return $records->is_loaded();
     }
 
-    public function getDateStampBySessionAndNodeId($sessionId, $nodeId){
+    public function getDateStampBySessionAndNodeId($sessionId, $nodeId)
+    {
         $res = array();
         $result = DB_SQL::select('default')
             ->from($this->table())
@@ -524,7 +649,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
             ->query();
 
         if ($result->is_loaded()) {
-            foreach($result as $record) {
+            foreach ($result as $record) {
                 $res[] = $record['date_stamp'];
             }
         }
@@ -532,7 +657,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         return $res;
     }
 
-    public function updateSession($sessionId, $nodeId, $mapId, $dateStamp) {
+    public function updateSession($sessionId, $nodeId, $mapId, $dateStamp)
+    {
         $builder = DB_ORM::delete('user_sessiontrace')
             ->where('session_id', '=', $sessionId)
             ->where('node_id', '=', $nodeId)
@@ -541,19 +667,22 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model {
         $builder->execute();
     }
 
-    public function getPreviousTrace ($sessionId)
+    public function getPreviousTrace($sessionId)
     {
         $sessionTraces = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->query()->as_array();
-        return (count($sessionTraces) == 1) ? $sessionTraces[0] : $sessionTraces[count($sessionTraces)-2];
+
+        return (count($sessionTraces) == 1) ? $sessionTraces[0] : $sessionTraces[count($sessionTraces) - 2];
     }
 
     public function getEndSessionTime($sessionId)
     {
         $result = 0;
-        $record = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->order_by('end_date_stamp', 'DESC')->query()->fetch(0);
+        $record = DB_ORM::select('User_SessionTrace')->where('session_id', '=', $sessionId)->order_by('end_date_stamp',
+            'DESC')->query()->fetch(0);
         if ($record !== false) {
             $result = $record->end_date_stamp;
         }
+
         return $result;
     }
 }

@@ -120,18 +120,33 @@ class Controller_LRS extends Controller_Base
     {
         //create responses statements
         $responses = $session->responses;
-        foreach($responses as $response){
+        foreach ($responses as $response) {
             $response->createXAPIStatement();
         }
         //end create responses statements
 
         //create 'initialized', 'arrived', 'launched', 'completed' statements
         $session_traces = $session->traces;
-        foreach($session_traces as $session_trace){
-            $session_trace->createXAPIStatementInitialized();
-            $session_trace->createXAPIStatementArrived();
-            $session_trace->createXAPIStatementLaunched();
-            $session_trace->createXAPIStatementCompleted();
+
+        if (!empty($session_traces)) {
+
+            usort($session_traces, function ($a, $b) {
+                $al = (int)$a->id;
+                $bl = (int)$b->id;
+                if ($al == $bl) {
+                    return 0;
+                }
+
+                return ($al > $bl) ? +1 : -1;
+            });
+
+            $session_traces[0]->createXAPIStatementInitialized();
+
+            foreach ($session_traces as $session_trace) {
+                $session_trace->createXAPIStatementArrived();
+                $session_trace->createXAPIStatementLaunched();
+                $session_trace->createXAPIStatementCompleted();
+            }
         }
         //end create 'initialized', 'arrived', 'launched', 'completed' statements
     }
