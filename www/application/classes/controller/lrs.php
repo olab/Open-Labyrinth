@@ -125,7 +125,6 @@ class Controller_LRS extends Controller_Base
         }
         //end create responses statements
 
-        //create 'initialized', 'arrived', 'launched', 'completed' statements
         $session_traces = $session->traces;
 
         if (!empty($session_traces)) {
@@ -142,13 +141,29 @@ class Controller_LRS extends Controller_Base
 
             $session_traces[0]->createXAPIStatementInitialized();
 
-            foreach ($session_traces as $session_trace) {
+            foreach ($session_traces as $key => $session_trace) {
                 $session_trace->createXAPIStatementArrived();
                 $session_trace->createXAPIStatementLaunched();
                 $session_trace->createXAPIStatementCompleted();
+
+                if(isset($session_traces[$key - 1])) {
+                    $this->handleUpdatedStatement($session_trace, $session_traces[$key - 1]);
+                }else{
+                    $session_trace->createXAPIStatementUpdated();
+                }
             }
         }
-        //end create 'initialized', 'arrived', 'launched', 'completed' statements
+    }
+
+    /**
+     * @param Model_Leap_User_SessionTrace $session_trace
+     * @param Model_Leap_User_SessionTrace $previous_session_trace
+     */
+    private function handleUpdatedStatement($session_trace, $previous_session_trace)
+    {
+        if($session_trace->counters !== $previous_session_trace->counters){
+            $session_trace->createXAPIStatementUpdated();
+        }
     }
 
     private function sendSessionStatements(Model_Leap_User_Session $session)

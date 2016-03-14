@@ -135,6 +135,57 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return array('id');
     }
 
+    public function createXAPIStatementUpdated()
+    {
+        $node = $this->node;
+
+        $timestamp = $this->date_stamp;
+
+        //verb
+        $verb = array(
+            'id' => 'http://w3id.org/xapi/medbiq/verbs/updated',
+            'display' => array(
+                'en-US' => 'updated'
+            ),
+        );
+        //end verb
+
+        //object
+//        $url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/1' . $counter_id; //object should be a counter
+//        $object = array(
+//            'id' => $url,
+//            'definition' => array(
+//                'name' => array(
+//                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+//                ),
+//                'description' => array(
+//                    'en-US' => 'Node content: ' . $node->text
+//                ),
+//                'type' => 'http://activitystrea.ms/schema/1.0/node',
+//                'moreInfo' => $url,
+//            ),
+//
+//        );
+//        //end object
+//
+//        //result
+//        $result = array(
+//            'completion' => true,
+//        );
+//        //end result
+//
+//        //context
+//        $context = array();
+//        $session = $this->session;
+//        $context['contextActivities']['parent']['id'] = $url;
+//
+//        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+//        $context['contextActivities']['grouping']['id'] = $map_url;
+//        //end context
+//
+//        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
     public function createXAPIStatementLaunched()
     {
         if (!$this->is_redirected) {
