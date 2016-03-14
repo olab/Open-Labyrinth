@@ -121,8 +121,10 @@ class Model_Labyrinth extends Model
                         $sessionId)->query()->fetch(0);
                     $traceId = $traceObj ? $traceObj->id : 'notExist';
                 } elseif ($sessionId) {
+                    $is_redirected = Session::instance()->get('is_redirected', false);
+                    Session::instance()->set('is_redirected', false);
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'],
-                        $node->map_id, $node->id);
+                        $node->map_id, $node->id, $is_redirected);
                 } else {
                     $traceId = 'notExist';
                 }
@@ -950,6 +952,7 @@ class Model_Labyrinth extends Model
 
                     Session::instance()->delete('questionChoices');
                     if ($redirect != null && $redirect != $node->id) {
+                        Session::instance()->set('is_redirected', true);
                         Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $redirect);
                     }
                 }

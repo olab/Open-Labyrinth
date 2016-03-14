@@ -450,7 +450,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             ->execute();
     }
 
-    public function createTrace($sessionId, $userId, $mapId, $nodeId)
+    public function createTrace($sessionId, $userId, $mapId, $nodeId, $is_redirected = false)
     {
         $time = $this->setElapsedTime($sessionId);
 
@@ -460,6 +460,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             ->column('map_id', $mapId)
             ->column('node_id', $nodeId)
             ->column('date_stamp', $time)
+            ->column('is_redirected', $is_redirected)
             ->execute();
     }
 
