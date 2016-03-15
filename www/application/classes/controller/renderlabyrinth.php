@@ -122,7 +122,7 @@ class Controller_RenderLabyrinth extends Controller_Template
             $node = DB_ORM::model('map_node')->getNodeById((int)$nodeId);
 
             //automatic save bookmark
-            $this->action_addBookmark(false, $nodeId);
+            //$this->action_addBookmark(false, $nodeId);
         }
 
         if ($continue) {
@@ -1002,6 +1002,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         $userId = (!empty($user)) ? $user->id : null;
         if (!empty($userId) && !empty($sessionId) && !empty($nodeId)) {
             DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
+            Session::instance()->set('map_suspended', true);
         }
 
         if ($ajax) {

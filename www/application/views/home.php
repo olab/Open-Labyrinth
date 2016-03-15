@@ -48,6 +48,19 @@ if ($user) {
         <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
     </head>
     <body>
+    <?php
+        $templateData['map_suspended'] = Session::instance()->get_once('map_suspended');
+    ?>
+    <?php if(!empty($templateData['map_suspended'])) { ?>
+        <div style="position: fixed; left: 50%;top:70px; z-index: 1500; margin-left: -89px;padding:40px 80px" id="map_suspended" class="alert alert-success">
+            <span><b>Suspended.</b></span>
+        </div>
+        <script>
+            setTimeout(function(){
+                $('#map_suspended').hide();
+            }, 8000);
+        </script>
+    <?php } ?>
         <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message" class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">

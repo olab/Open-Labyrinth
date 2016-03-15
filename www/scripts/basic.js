@@ -352,7 +352,7 @@ function ajaxBookmark() {
     $.get(
         urlBase + 'renderLabyrinth/addBookmark/' + idNode,
         function(){
-            $("input[name='bookmark']").val('saved');
+            window.location.href = urlBase;
         }
     )
 }
