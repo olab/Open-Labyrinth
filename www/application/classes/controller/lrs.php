@@ -95,8 +95,8 @@ class Controller_LRS extends Controller_Base
             die('Dates cannot be blank');
         }
 
-        $date_from_obj = DateTime::createFromFormat('Y-m-d', $date_from);
-        $date_to_obj = DateTime::createFromFormat('Y-m-d', $date_to);
+        $date_from_obj = DateTime::createFromFormat('m/d/Y', $date_from);
+        $date_to_obj = DateTime::createFromFormat('m/d/Y', $date_to);
 
         /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
         $sessions = DB_ORM::select('User_Session')
