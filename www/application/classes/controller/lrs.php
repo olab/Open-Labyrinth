@@ -32,7 +32,6 @@ class Controller_LRS extends Controller_Base
 
     public function action_index()
     {
-
         $this->templateData['lrs_list'] = DB_ORM::select('LRS')->order_by('name')->query();
         $this->templateData['center'] = View::factory('lrs/index')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
@@ -83,6 +82,43 @@ class Controller_LRS extends Controller_Base
         $model->delete();
 
         Request::initial()->redirect(URL::base() . 'lrs');
+    }
+
+    public function action_deleteLRSStatement()
+    {
+        $id = $this->request->param('id');
+        $model = DB_ORM::model('LRSStatement', array($id));
+
+        $model->delete();
+
+        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+    }
+
+    public function action_sendFailedLRSStatements()
+    {
+        /** @var Model_Leap_LRSStatement[] $lrs_statements */
+        $lrs_statements = DB_ORM::select('LRSStatement')
+            ->where('status', '=', Model_Leap_LRSStatement::STATUS_FAIL)
+            ->order_by('id', 'DESC')
+            ->query();
+
+        foreach ($lrs_statements as $lrs_statement) {
+            $lrs_statement->sendAndSave();
+        }
+
+        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+    }
+
+    public function action_failedStatements()
+    {
+        $lrs_statements = DB_ORM::select('LRSStatement')
+            ->where('status', '=', Model_Leap_LRSStatement::STATUS_FAIL)
+            ->order_by('id', 'DESC')
+            ->query();
+
+        $this->templateData['lrs_statements'] = $lrs_statements;
+        $this->templateData['center'] = View::factory('lrs/failedStatements')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
     }
 
     public function action_sendReportSubmit()

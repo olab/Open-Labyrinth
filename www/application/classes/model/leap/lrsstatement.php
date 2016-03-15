@@ -91,7 +91,6 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
                 'parent_model' => 'LRS',
                 'parent_key' => array('id'),
             )),
-
             'statement' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('statement_id'),
                 'parent_model' => 'Statement',
@@ -119,6 +118,20 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
     // Additional helper methods
     //-----------------------------------------------------
 
+    /**
+     * @return int
+     */
+    public static function count()
+    {
+        $result = DB_SQL::select()
+            ->from(static::table())
+            ->where('status', '=', Model_Leap_LRSStatement::STATUS_FAIL)
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->query();
+
+        return (int)$result[0]['counter'];
+    }
+
     public function send()
     {
         $statement = $this->statement;
@@ -142,11 +155,11 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
         return isset(static::$statuses[$this->status]) ? static::$statuses[$this->status] : 'unknown';
     }
 
-    public function save($reload = FALSE)
+    public function save($reload = false)
     {
         $id = $this->id;
 
-        if($id <= 0) {
+        if ($id <= 0) {
             $this->created_at = time();
         }
 
