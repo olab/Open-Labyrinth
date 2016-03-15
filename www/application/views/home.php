@@ -60,6 +60,7 @@ if ($user) {
 <body>
 <?php
 $templateData['map_suspended'] = Session::instance()->get_once('map_suspended');
+$templateData['info_message'] = Session::instance()->get_once('info_message');
 ?>
 <?php if (!empty($templateData['map_suspended'])) { ?>
     <div style="position: fixed; left: 50%;top:70px; z-index: 1500; margin-left: -89px;padding:40px 80px"
@@ -335,9 +336,18 @@ if (isset($templateData)) { ?>
                 <?php
                 }
                 ?>
-                <div class="row-fluid"><?php
+                <div class="row-fluid">
+                    <?php if (!empty($templateData['info_message'])) { ?>
+                        <div class="alert alert-info">
+                            <b><?php echo $templateData['info_message'] ?></b>
+                        </div>
+                    <?php } ?>
+
+
+                    <?php
                     echo Arr::get($templateData, 'error');
-                    echo Arr::get($templateData, 'center'); ?>
+                    echo Arr::get($templateData, 'center');
+                    ?>
                 </div>
                 </div><?php
                 if (isset($templateData['left'])) { ?>
