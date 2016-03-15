@@ -29,6 +29,33 @@
     </a>
 </h1>
 
+<h4>Post-hoc reports</h4>
+<form action="/lrs/sendReportSubmit" class="form-horizontal left" method="post">
+    <fieldset>
+        <div class="control-group">
+            <label for="date_from" class="control-label">Start date</label>
+            <div class="controls">
+                <input class="datepicker" type="text" name="date_from" id="date_from" value="<?php echo date('m/d/Y', time() - 60*60*24) ?>"/>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="date_to" class="control-label">End date</label>
+            <div class="controls">
+                <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button type="submit" class="btn btn-primary">Send to all enabled LRS</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
+
+<hr>
+
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
