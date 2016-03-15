@@ -66,6 +66,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 	
 	public function addBookmark($nodeId, $sessionId, $userId)
     {
+        $current_time = time();
         // check for existing bookmark
         $nodeObj = DB_ORM::model('Map_Node', array($nodeId));
         if ($nodeObj) {
@@ -76,6 +77,12 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 		$this->node_id = $nodeId;
 		$this->session_id = $sessionId;
 		$this->save();
+
+        /** @var Model_Leap_User_SessionTrace $session_trace */
+        $session_trace = DB_ORM::select('user_sessionTrace')->where('session_id', '=',
+            $sessionId)->order_by('id', 'DESC')->query()->fetch(0);
+        $session_trace->bookmark_made = $current_time;
+        $session_trace->save();
 	}
 
     public function deleteBookmarksByMapAndUser($mapId, $userId)

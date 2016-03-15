@@ -89,20 +89,24 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             )),
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
-                'nullable' => false,
+                'nullable' => true,
+                'default' => null,
             )),
             'dams' => new DB_ORM_Field_String($this, array(
                 'max_length' => 700,
-                'nullable' => false,
+                'nullable' => true,
+                'default' => null,
                 'savable' => true,
             )),
             'bookmark_made' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => false,
+                'nullable' => true,
+                'default' => null,
             )),
             'bookmark_used' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => false,
+                'nullable' => true,
+                'default' => null,
             )),
         );
 
@@ -627,6 +631,16 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         }
 
         return null;
+    }
+
+    /**
+     * @param int $sessionId
+     * @return Model_Leap_User_SessionTrace
+     */
+    public static function getLatestBySession($sessionId)
+    {
+        return DB_ORM::select('user_sessionTrace')->where('session_id', '=',
+            $sessionId)->order_by('id', 'DESC')->query()->fetch(0);
     }
 
     public function isExistBySessionAndNodeIDs($sessionId, $nodeId)

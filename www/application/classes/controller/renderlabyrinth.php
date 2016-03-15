@@ -132,6 +132,8 @@ class Controller_RenderLabyrinth extends Controller_Template
 
     private function renderNode($nodeObj, $action, $bookmark)
     {
+        $current_time = time();
+
         if ($nodeObj == null) {
             Request::initial()->redirect(URL::base());
         }
@@ -144,9 +146,19 @@ class Controller_RenderLabyrinth extends Controller_Template
         $mapId = $nodeObj->map_id;
         $isRoot = ($nodeObj->type_id == 1 && $action == 'index') ? true : false;
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-        $data = ($action == 'resume')
+        $data = ($action === 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
             : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, Controller_RenderLabyrinth::$isCumulative);
+
+        if ($action === 'resume' && !empty($bookmark)) {
+            $session_trace = Model_Leap_User_SessionTrace::getLatestBySession(DB_ORM::model('user_bookmark',
+                array((int)$bookmark))->session_id);
+
+            if ($session_trace->is_loaded()) {
+                $session_trace->bookmark_used = $current_time;
+                $session_trace->save();
+            }
+        }
 
         // delete $bookmark after use it
         DB_ORM::delete('User_Bookmark')->where('id', '=', $bookmark)->execute();

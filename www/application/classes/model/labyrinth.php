@@ -117,8 +117,7 @@ class Model_Labyrinth extends Model
 
             if ($conditional == null) {
                 if ($sessionId AND $bookmark) {
-                    $traceObj = DB_ORM::select('user_sessionTrace')->where('session_id', '=',
-                        $sessionId)->query()->fetch(0);
+                    $traceObj = Model_Leap_User_SessionTrace::getLatestBySession($sessionId);
                     $traceId = $traceObj ? $traceObj->id : 'notExist';
                 } elseif ($sessionId) {
                     $is_redirected = Session::instance()->get('is_redirected', false);
