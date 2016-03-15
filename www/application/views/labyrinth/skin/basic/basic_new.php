@@ -370,7 +370,7 @@ if ($templateData['skin_path'] != NULL) {
                                 <a href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"
                                    class="btn row-fluid"><i class="icon-info-sign"></i>information</a></div>
                             <button class="btn row-fluid" onclick='ajaxBookmark();'
-                                    name="bookmark"><i class="icon-edit"></i>bookmark
+                                    name="bookmark"><i class="icon-edit"></i>suspend
                             </button>
 
 

@@ -354,7 +354,7 @@ $id_node = $templateData['node']->id; ?>
                         <br/><strong>Score:</strong>
                     </h5>
 
-                    <input type="button" onclick='ajaxBookmark();' name="bookmark" value="bookmark"/>
+                    <input type="button" onclick='ajaxBookmark();' name="bookmark" value="suspend"/>
                     <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                         <h5>
                             <a href="<?php echo URL::base().'renderLabyrinth/go/'.$id_map.'/'.$id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
