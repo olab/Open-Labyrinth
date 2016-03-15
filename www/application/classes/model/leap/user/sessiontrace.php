@@ -36,6 +36,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $dams
  * @property Model_Leap_Map_Node $node
  * @property Model_Leap_Map $map
+ * @property Model_Leap_User_Session $session
  */
 class Model_Leap_User_SessionTrace extends DB_ORM_Model
 {
@@ -120,6 +121,11 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
                 'child_key' => array('map_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map',
+            )),
+            'session' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('session_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'User_Session',
             )),
         );
     }
