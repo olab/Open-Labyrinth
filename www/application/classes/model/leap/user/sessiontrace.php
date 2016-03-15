@@ -152,7 +152,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $float_or_string = '(' . $float_pattern . '|' . $string_pattern . ')';
         preg_match_all('#(\[CID=(?<id>\d+)+)+(,V=)+(?<value>' . $float_or_string . '?)?(\])+#', $counters, $matches);
 
-        if (isset($matches['id'])) {
+        if (!empty($matches['id'])) {
             $result = array_combine($matches['id'], $matches['value']);
         }
 
