@@ -148,8 +148,10 @@ class Controller_LRS extends Controller_Base
                 $session_trace->createXAPIStatementArrived();
                 $session_trace->createXAPIStatementLaunched();
                 $session_trace->createXAPIStatementCompleted();
+                $session_trace->createXAPIStatementSuspended();
+                $session_trace->createXAPIStatementResumed();
 
-                if(isset($session_traces[$key - 1])) {
+                if (isset($session_traces[$key - 1])) {
                     $this->handleUpdatedStatement($session_trace, $session_traces[$key - 1]);
                 }
             }
@@ -162,7 +164,7 @@ class Controller_LRS extends Controller_Base
      */
     private function handleUpdatedStatement($session_trace, $previous_session_trace)
     {
-        if($session_trace->counters !== $previous_session_trace->counters){
+        if ($session_trace->counters !== $previous_session_trace->counters) {
             $session_trace->createXAPIStatementUpdated($previous_session_trace);
         }
     }

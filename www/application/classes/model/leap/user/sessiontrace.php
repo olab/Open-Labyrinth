@@ -163,6 +163,116 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return $result;
     }
 
+    public function createXAPIStatementResumed()
+    {
+
+        if (!($this->bookmark_used > 0)) {
+            return;
+        }
+
+        $timestamp = $this->bookmark_used;
+
+        //verb
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/resumed',
+            'display' => array(
+                'en-US' => 'resumed'
+            ),
+        );
+        //end verb
+
+        //object
+        $node = $this->node;
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+        //end result
+
+        //context
+        $context = array();
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
+    public function createXAPIStatementSuspended()
+    {
+
+        if (!($this->bookmark_made > 0)) {
+            return;
+        }
+
+        $timestamp = $this->bookmark_made;
+
+        //verb
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/suspended',
+            'display' => array(
+                'en-US' => 'suspended'
+            ),
+        );
+        //end verb
+
+        //object
+        $node = $this->node;
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+        //end result
+
+        //context
+        $context = array();
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
     public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace)
     {
         if ($previous_session_trace instanceof Model_Leap_User_SessionTrace) {
