@@ -145,7 +145,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         }
 
         //test string
-        //$counters = '[CID=1,V=0.6][CID=8,V=1321][MCID=8,V=0][CID=9,V=-9][CID=10,V=][CID=,V=12][CID=2,V=reseted]';
+        //$counters = '[CID=1,V=0.6][CID=8,V=1321][MCID=8,V=0][CID=9,V=-9][CID=10,V=][CID=,V=12][CID=2,V=reset]';
 
         $float_pattern = '(\+|\-)?[0-9]+(\.[0-9]+)?';
         $string_pattern = '[a-zA-Z]+';
