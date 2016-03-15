@@ -135,9 +135,55 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return array('id');
     }
 
-    public function createXAPIStatementUpdated()
+    public function getCountersAsArray()
     {
-        $node = $this->node;
+        $result = array();
+
+        $counters = $this->counters;
+        if (empty($counters)) {
+            return $result;
+        }
+
+        //test string
+        //$counters = '[CID=1,V=0.6][CID=8,V=1321][MCID=8,V=0][CID=9,V=-9][CID=10,V=][CID=,V=12][CID=2,V=reseted]';
+
+        $float_pattern = '(\+|\-)?[0-9]+(\.[0-9]+)?';
+        $string_pattern = '[a-zA-Z]+';
+        $float_or_string = '(' . $float_pattern . '|' . $string_pattern . ')';
+        preg_match_all('#(\[CID=(?<id>\d+)+)+(,V=)+(?<value>' . $float_or_string . '?)?(\])+#', $counters, $matches);
+
+        if (isset($matches['id'])) {
+            $result = array_combine($matches['id'], $matches['value']);
+        }
+
+        return $result;
+    }
+
+    public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace)
+    {
+        if ($previous_session_trace instanceof Model_Leap_User_SessionTrace) {
+            if ($previous_session_trace->counters === $this->counters) {
+                return;
+            }
+        }
+
+        $current_counters = $this->getCountersAsArray();
+        $previous_counters = $previous_session_trace->getCountersAsArray();
+
+        $changed_counters = array();
+        foreach ($current_counters as $id => $current_counter) {
+            if (isset($previous_counters[$id])) {
+                if ($previous_counters[$id] !== $current_counter) {
+                    $changed_counters[$id] = $current_counter;
+                }
+            } else {
+                $changed_counters[$id] = $current_counter;
+            }
+        }
+
+        if (empty($changed_counters)) {
+            return;
+        }
 
         $timestamp = $this->date_stamp;
 
@@ -150,46 +196,63 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         );
         //end verb
 
-        //object
-//        $url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/1' . $counter_id; //object should be a counter
-//        $object = array(
-//            'id' => $url,
-//            'definition' => array(
-//                'name' => array(
-//                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-//                ),
-//                'description' => array(
-//                    'en-US' => 'Node content: ' . $node->text
-//                ),
-//                'type' => 'http://activitystrea.ms/schema/1.0/node',
-//                'moreInfo' => $url,
-//            ),
-//
-//        );
-//        //end object
-//
-//        //result
-//        $result = array(
-//            'completion' => true,
-//        );
-//        //end result
-//
-//        //context
-//        $context = array();
-//        $session = $this->session;
-//        $context['contextActivities']['parent']['id'] = $url;
-//
-//        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-//        $context['contextActivities']['grouping']['id'] = $map_url;
-//        //end context
-//
-//        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        //result
+        $result = null;
+        //end result
+
+        //context
+        $context = array();
+
+        $node = $this->node;
+        $node_url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $context['contextActivities']['parent']['id'] = $node_url;
+
+        $session = $this->session;
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
+        //end context
+
+        foreach ($changed_counters as $counter_id => $changed_counter) {
+
+            /** @var Model_Leap_Map_Counter $counter */
+            $counter = DB_ORM::model('Map_Counter', array($counter_id));
+
+            $counter_exists = $counter->is_loaded();
+
+            //object
+            $url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $counter_id;
+            $object = array(
+                'id' => $url,
+                'definition' => array(
+                    'name' => array(
+                        'en-US' => $counter_exists ? 'counter "' . $counter->name . '" (#' . $counter_id . ')' : 'counter'
+                    ),
+                    'description' => array(
+                        'en-US' => $counter_exists ? 'Counter description: ' . $counter->description : ''
+                    ),
+                    //'type' => 'http://activitystrea.ms/schema/1.0/node',
+                    'moreInfo' => $url,
+                ),
+
+            );
+            //end object
+
+            //result
+            $result = array(
+                'score' => array(
+                    'raw' => $changed_counter,
+                ),
+            );
+            //end result
+
+            Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        }
     }
 
     public function createXAPIStatementLaunched()
     {
         if (!$this->is_redirected) {
-            return false;
+            return;
         }
 
         $node = $this->node;
@@ -379,10 +442,11 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end object
 
         //result
-        $counters = $this->counters;
         $result = array(
             'completion' => true,
-            'score' => $counters,
+            //'score' => array(
+            //
+            //),
         );
         //end result
 

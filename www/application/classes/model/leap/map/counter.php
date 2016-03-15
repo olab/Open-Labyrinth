@@ -21,7 +21,12 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for map_counters table in database 
+ * @property int $id
+ * @property int $map_id
+ * @property int $icon_id
+ * @property string $name
+ * @property string $description
+ * @property Model_Leap_Map $map
  */
 class Model_Leap_Map_Counter extends DB_ORM_Model {
 

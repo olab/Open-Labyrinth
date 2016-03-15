@@ -129,7 +129,10 @@ class Controller_LRS extends Controller_Base
 
         if (!empty($session_traces)) {
 
-            usort($session_traces, function ($a, $b) {
+            /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
+            $session_traces_array = $session_traces->as_array();
+
+            usort($session_traces_array, function ($a, $b) {
                 $al = (int)$a->id;
                 $bl = (int)$b->id;
                 if ($al == $bl) {
@@ -139,17 +142,15 @@ class Controller_LRS extends Controller_Base
                 return ($al > $bl) ? +1 : -1;
             });
 
-            $session_traces[0]->createXAPIStatementInitialized();
+            $session_traces_array[0]->createXAPIStatementInitialized();
 
-            foreach ($session_traces as $key => $session_trace) {
+            foreach ($session_traces_array as $key => $session_trace) {
                 $session_trace->createXAPIStatementArrived();
                 $session_trace->createXAPIStatementLaunched();
                 $session_trace->createXAPIStatementCompleted();
 
                 if(isset($session_traces[$key - 1])) {
                     $this->handleUpdatedStatement($session_trace, $session_traces[$key - 1]);
-                }else{
-                    $session_trace->createXAPIStatementUpdated();
                 }
             }
         }
@@ -162,7 +163,7 @@ class Controller_LRS extends Controller_Base
     private function handleUpdatedStatement($session_trace, $previous_session_trace)
     {
         if($session_trace->counters !== $previous_session_trace->counters){
-            $session_trace->createXAPIStatementUpdated();
+            $session_trace->createXAPIStatementUpdated($previous_session_trace);
         }
     }
 
