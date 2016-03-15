@@ -633,6 +633,46 @@ class Controller_WebinarManager extends Controller_Base
         }
     }
 
+    public function action_stepReportxAPI()
+    {
+        $webinarId = $this->request->param('id', null);
+        $stepKey = $this->request->param('id2', null);
+
+        if ($webinarId == null AND $stepKey != null) {
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        }
+
+        $webinar = DB_ORM::model('webinar', array((int)$webinarId));
+        $isExistAccess = false;
+
+        if (Auth::instance()->get_user()->id == $webinar->author_id OR Auth::instance()->get_user()->type->name == 'superuser') {
+            $isExistAccess = true;
+        }
+
+        if (!$isExistAccess AND $webinar->publish != null) {
+            $jsonObject = json_decode($webinar->publish);
+            $isExistAccess = in_array($webinarId . '-' . $stepKey, $jsonObject);
+        }
+
+        if (!$isExistAccess) {
+            die('Access denied.');
+        }
+
+//        $report = new Report_Poll(new Report_Impl_PHPExcel(), $webinar->title);
+//        if (count($webinar->maps) > 0) {
+//            foreach ($webinar->maps as $webinarMap) {
+//                if ($webinarMap->step == $stepKey) {
+//                    $mapId = ($webinarMap->which == 'labyrinth')
+//                        ? $webinarMap->reference_id
+//                        : DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
+//                    $report->add($mapId, $webinarId);
+//                }
+//            }
+//        }
+//        $report->generate();
+//        $report->get();
+    }
+
     public function action_mapReport4R()
     {
         $this->createReport('4R');

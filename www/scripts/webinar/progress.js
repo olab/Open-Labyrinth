@@ -22,11 +22,14 @@ jQuery(document).ready(function()
     $('#SJT').change(function() {
         clickOnButton($(this));
     });
+    $('#xAPI').change(function() {
+        clickOnButton($(this));
+    });
 
     function clickOnButton (button){
         var typeId = button.attr('id');
 
-        if (typeId == '4R' || typeId == 'Poll') {
+        if (typeId == '4R' || typeId == 'Poll' || typeId == 'xAPI') {
             th.hide();
             td.hide();
             webinar.hide();

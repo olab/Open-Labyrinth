@@ -39,6 +39,8 @@ if(!empty($userType) && $userType != 'learner') {
         <label class="btn" for="Poll" data-class="btn-info"><?php echo __('Poll'); ?></label>
         <input type="radio" name="typeReport" id="SJT"/>
         <label class="btn" for="SJT" data-class="btn-info"><?php echo __('SJT'); ?></label>
+        <input type="radio" name="typeReport" id="xAPI"/>
+        <label class="btn" for="xAPI" data-class="btn-info"><?php echo __('xAPI'); ?></label>
     </div>
     <select id="sct-webinars" style="display: none;"><?php
         foreach ($templateData['scenario'] as $scenarioObj) { ?>

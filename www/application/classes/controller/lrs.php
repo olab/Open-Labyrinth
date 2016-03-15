@@ -129,6 +129,8 @@ class Controller_LRS extends Controller_Base
             die('webinar_id cannot be blank');
         }
 
+        //TODO: handle selected users, which should be included in the report
+
         /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
         $sessions = DB_ORM::select('User_Session')
             ->where('webinar_id', '=', $webinar_id)
