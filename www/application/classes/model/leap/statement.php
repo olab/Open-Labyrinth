@@ -196,7 +196,6 @@ class Model_Leap_Statement extends Model_Leap_Base
     {
         $lrs_list = DB_ORM::select('LRS')
             ->where('is_enabled', '=', 1)
-            ->order_by('name')
             ->query();
 
         foreach ($lrs_list as $lrs) {
