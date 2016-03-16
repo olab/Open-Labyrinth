@@ -170,74 +170,10 @@ class Controller_LRS extends Controller_Base
      */
     private function sendSessions($sessions)
     {
-        foreach ($sessions as $session) {
-            $this->createSessionStatements($session);
-        }
-
-        foreach ($sessions as $session) {
-            $this->sendSessionStatements($session);
-        }
+        Model_Leap_User_Session::sendSessionsToLRS($sessions);
 
         die;
 
         Session::instance()->set('info_message', 'Statements sent to LRS');
-    }
-
-    private function createSessionStatements(Model_Leap_User_Session $session)
-    {
-        //create responses statements
-        $responses = $session->responses;
-        foreach ($responses as $response) {
-            $response->createXAPIStatement();
-        }
-        //end create responses statements
-
-        $session_traces = $session->traces;
-
-        if (!empty($session_traces)) {
-
-            /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
-            $session_traces_array = $session_traces->as_array();
-
-            usort($session_traces_array, function ($a, $b) {
-                $al = (int)$a->id;
-                $bl = (int)$b->id;
-                if ($al == $bl) {
-                    return 0;
-                }
-
-                return ($al > $bl) ? +1 : -1;
-            });
-
-            $session_traces_array[0]->createXAPIStatementInitialized();
-
-            foreach ($session_traces_array as $key => $session_trace) {
-                $session_trace->createXAPIStatementArrived();
-                $session_trace->createXAPIStatementLaunched();
-                $session_trace->createXAPIStatementCompleted();
-                $session_trace->createXAPIStatementSuspended();
-                $session_trace->createXAPIStatementResumed();
-
-                if (isset($session_traces[$key - 1])) {
-                    $this->handleUpdatedStatement($session_trace, $session_traces[$key - 1]);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param Model_Leap_User_SessionTrace $session_trace
-     * @param Model_Leap_User_SessionTrace $previous_session_trace
-     */
-    private function handleUpdatedStatement($session_trace, $previous_session_trace)
-    {
-        if ($session_trace->counters !== $previous_session_trace->counters) {
-            $session_trace->createXAPIStatementUpdated($previous_session_trace);
-        }
-    }
-
-    private function sendSessionStatements(Model_Leap_User_Session $session)
-    {
-        $session->sendXAPIStatements();
     }
 }
