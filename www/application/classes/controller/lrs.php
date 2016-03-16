@@ -121,25 +121,23 @@ class Controller_LRS extends Controller_Base
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_sendReportScenarioBasedSubmit()
-    {
-        $webinar_id = $this->request->param('id');
-
-        if (empty($webinar_id)) {
-            die('webinar_id cannot be blank');
-        }
-
-        //TODO: handle selected users, which should be included in the report
-
-        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-        $sessions = DB_ORM::select('User_Session')
-            ->where('webinar_id', '=', $webinar_id)
-            ->query();
-
-        $this->sendSessions($sessions);
-
-        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinar_id);
-    }
+//    public function action_sendReportScenarioBasedSubmit()
+//    {
+//        $webinar_id = $this->request->param('id');
+//
+//        if (empty($webinar_id)) {
+//            die('webinar_id cannot be blank');
+//        }
+//
+//        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
+//        $sessions = DB_ORM::select('User_Session')
+//            ->where('webinar_id', '=', $webinar_id)
+//            ->query();
+//
+//        $this->sendSessions($sessions);
+//
+//        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinar_id);
+//    }
 
     public function action_sendReportSubmit()
     {
