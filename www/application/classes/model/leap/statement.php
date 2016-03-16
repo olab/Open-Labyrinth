@@ -215,9 +215,12 @@ class Model_Leap_Statement extends Model_Leap_Base
 
         $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->getAPIVersionName(), $lrs_obj->username, $lrs_obj->password);
 
-        /** @var \TinCan\LRSResponse $response */
+
         $data = json_decode($this->statement, true);
-        $response = $lrs->saveStatement($data, true);
+        $statement = new CustomStatement($data);
+
+        /** @var \TinCan\LRSResponse $response */
+        $response = $lrs->saveStatement($statement);
 
         if ($response->success) {
             return true;
