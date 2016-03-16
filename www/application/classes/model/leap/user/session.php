@@ -133,6 +133,20 @@ class Model_Leap_User_Session extends DB_ORM_Model
     }
 
     /**
+     * @return int
+     */
+    public static function countTraces($session_id)
+    {
+        $result = DB_SQL::select()
+            ->from(Model_Leap_User_SessionTrace::table())
+            ->where('session_id', '=', $session_id)
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->query();
+
+        return (int)$result[0]['counter'];
+    }
+
+    /**
      * @param Model_Leap_User_Session[]|DB_ResultSet $sessions
      */
     public static function sendSessionsToLRS($sessions)

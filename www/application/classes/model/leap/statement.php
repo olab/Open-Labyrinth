@@ -30,6 +30,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $updated_at
  * @property \TinCan\LRSResponse $response
  * @property Model_Leap_LRS[]|DB_ResultSet $lrs_list
+ * @property Model_Leap_LRSStatement[]|DB_ResultSet $lrs_statements
  */
 class Model_Leap_Statement extends Model_Leap_Base
 {
@@ -84,7 +85,12 @@ class Model_Leap_Statement extends Model_Leap_Base
                     array('statement_id'), // [0] matches with parent
                     array('lrs_id'), // [1] matches with child
                 ),
-                'through_model' => 'LRS_Statement',
+                'through_model' => 'LRSStatement',
+            )),
+            'lrs_statements' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('statement_id'),
+                'child_model' => 'LRSStatement',
+                'parent_key' => array('id'),
             )),
         );
     }

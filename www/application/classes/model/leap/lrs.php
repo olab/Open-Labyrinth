@@ -104,6 +104,32 @@ class Model_Leap_LRS extends DB_ORM_Model
     // Additional helper methods
     //-----------------------------------------------------
 
+    /**
+     * @return int
+     */
+    public static function countEnabled()
+    {
+        return static::count(true);
+    }
+
+    /**
+     * @return int
+     */
+    public static function count($active = null)
+    {
+        $query = DB_SQL::select()
+            ->from(static::table())
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter');
+
+        if ($active !== null) {
+            $query->where('is_enabled', '=', $active);
+        }
+
+        $result = $query->query();
+
+        return (int)$result[0]['counter'];
+    }
+
     public function getAPIVersionName()
     {
         return isset(static::$api_versions[$this->api_version]) ? static::$api_versions[$this->api_version] : 'unknown';

@@ -173,7 +173,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
     {
 
         if (!($this->bookmark_used > 0)) {
-            return;
+            return false;
         }
 
         $timestamp = $this->bookmark_used;
@@ -219,16 +219,17 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createXAPIStatementSuspended()
     {
 
         if (!($this->bookmark_made > 0)) {
-            return;
+            return false;
         }
 
         $timestamp = $this->bookmark_made;
@@ -274,9 +275,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace)
@@ -372,7 +374,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
     public function createXAPIStatementLaunched()
     {
         if (!$this->is_redirected) {
-            return;
+            return false;
         }
 
         $node = $this->node;
@@ -419,9 +421,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createXAPIStatementInitialized()
@@ -470,9 +473,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createXAPIStatementArrived()
@@ -521,9 +525,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createXAPIStatementCompleted()

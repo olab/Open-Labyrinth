@@ -119,6 +119,16 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
     //-----------------------------------------------------
 
     /**
+     * @param Model_Leap_LRSStatement[]|DB_ResultSet $lrs_statements
+     */
+    public static function sendStatementsToLRS($lrs_statements)
+    {
+        foreach ($lrs_statements as $lrs_statement) {
+            $lrs_statement->sendAndSave();
+        }
+    }
+
+    /**
      * @return int
      */
     public static function count()

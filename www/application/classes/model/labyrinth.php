@@ -124,14 +124,22 @@ class Model_Labyrinth extends Model
                     Session::instance()->set('is_redirected', false);
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'],
                         $node->map_id, $node->id, $is_redirected);
+
+                    if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
+                        if(Model_Leap_LRS::countEnabled() > 0) {
+                            /** @var Model_Leap_User_SessionTrace $session_trace */
+                            $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
+                            /** @var Model_Leap_Statement $statement */
+                            $statement = $session_trace->createXAPIStatementInitialized();
+                            $lrs_statements = $statement->lrs_statements;
+                            Model_Leap_LRSStatement::sendStatementsToLRS($lrs_statements);
+                        }
+                    }
+
                 } else {
                     $traceId = 'notExist';
                 }
 
-                //                comment 27.08.2014
-                //                if (substr($result['node_text'], 0, 3) != '<p>') {
-                //                    $result['node_text'] = '<p>'.$result['node_text'].'</p>';
-                //                }
 
                 $c = $this->counters($traceId, $sessionId, $node, $isRoot, $cumulative);
                 if ($c != null) {
