@@ -148,7 +148,7 @@ class Model_Leap_Statement extends Model_Leap_Base
             'name' => trim($user->nickname),
             //'mbox' => 'mailto:' . trim($user->email), Agent MUST NOT include more than one Inverse Functional Identifier
             'account' => array(
-                'homePage' => URL::base(TRUE),
+                'homePage' => URL::base(true),
                 'name' => $user->id,
             ),
         );
@@ -168,15 +168,15 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end result
 
         //context
-        $statement['context']['contextActivities']['category']['id'] = URL::base(TRUE) . 'reportManager/showReport/' . $session->id;
+        $statement['context']['contextActivities']['category']['id'] = URL::base(true) . 'reportManager/showReport/' . $session->id;
 
         if ($context === null) {
-            $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
+            $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
             $statement['context']['contextActivities']['parent']['id'] = $map_url;
 
             $webinar_id = $session->webinar_id;
             if (!empty($webinar_id)) {
-                $webinar_url = URL::base(TRUE) . 'webinarManager/edit/' . $webinar_id;
+                $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
                 $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
             }
         } else {
@@ -194,7 +194,11 @@ class Model_Leap_Statement extends Model_Leap_Base
 
     public function bindLRS()
     {
-        $lrs_list = DB_ORM::select('LRS')->order_by('name')->query();
+        $lrs_list = DB_ORM::select('LRS')
+            ->where('is_enabled', '=', 1)
+            ->order_by('name')
+            ->query();
+
         foreach ($lrs_list as $lrs) {
             $lrs_statement = new Model_Leap_LRSStatement();
             $lrs_statement->lrs_id = $lrs->id;
@@ -213,7 +217,8 @@ class Model_Leap_Statement extends Model_Leap_Base
     {
         static::xApiInit();
 
-        $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->getAPIVersionName(), $lrs_obj->username, $lrs_obj->password);
+        $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->getAPIVersionName(), $lrs_obj->username,
+            $lrs_obj->password);
 
 
         $data = json_decode($this->statement, true);
@@ -226,11 +231,12 @@ class Model_Leap_Statement extends Model_Leap_Base
             return true;
         } else {
             $this->response = $response;
+
             return false;
         }
     }
 
-    public function save($reload = FALSE)
+    public function save($reload = false)
     {
         $id = $this->id;
 
@@ -243,7 +249,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         parent::save($reload);
     }
 
-    public function insert($reload = FALSE)
+    public function insert($reload = false)
     {
         $id = $this->id;
 
