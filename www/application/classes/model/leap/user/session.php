@@ -182,7 +182,7 @@ class Model_Leap_User_Session extends DB_ORM_Model
 
         $session_traces = $session->traces;
 
-        if (!empty($session_traces)) {
+        if ($session_traces->count() > 0) {
 
             /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
             $session_traces_array = $session_traces->as_array();
