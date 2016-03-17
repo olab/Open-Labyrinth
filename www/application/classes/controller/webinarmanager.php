@@ -631,12 +631,133 @@ class Controller_WebinarManager extends Controller_Base
         $report->get();
     }
 
+    public function action_stepReportxAPI()
+    {
+        $webinarId = $this->request->param('id', null);
+        $stepKey = $this->request->param('id2', null);
+
+        if (empty($webinarId) AND $stepKey != null) {
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        }
+
+        $webinar = DB_ORM::model('webinar', array((int)$webinarId));
+        $isExistAccess = false;
+
+        if (Auth::instance()->get_user()->id == $webinar->author_id OR Auth::instance()->get_user()->type->name == 'superuser') {
+            $isExistAccess = true;
+        }
+
+        if (!$isExistAccess AND $webinar->publish != null) {
+            $jsonObject = json_decode($webinar->publish);
+            $isExistAccess = in_array($webinarId . '-' . $stepKey, $jsonObject);
+        }
+
+        if (!$isExistAccess) {
+            die('Access denied.');
+        }
+
+        $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
+
+        $query = DB_ORM::select('User_Session')
+            ->where('webinar_id', '=', $webinarId)
+            ->where('webinar_step', '=', $stepKey);
+
+        if (!empty($not_included_user_ids)) {
+            $query->where('user_id', 'NOT IN', $not_included_user_ids);
+        }
+
+        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
+        $sessions = $query->query();
+
+        Model_Leap_User_Session::sendSessionsToLRS($sessions);
+
+        Session::instance()->set('info_message', 'Statements sent to LRS');
+        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinarId);
+    }
+
+    public function action_report4RTimeBased()
+    {
+
+        $dateId = $this->request->param('id3', null);
+
+        $webinars = $this->getWebinarsForTimeBasedReport();
+
+        $report = new Report_4R(new Report_Impl_PHPExcel(), 'report ' . time());
+        //$notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
+        $notIncludUsers = null;
+        foreach ($webinars as $webinar) {
+            if ($webinar != null && count($webinar->maps) > 0) {
+                foreach ($webinar->maps as $webinarMap) {
+                    $mapId = ($webinarMap->which == 'labyrinth')
+                        ? $webinarMap->reference_id
+                        : DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
+                    $report->add($mapId, $webinar->id, null, $notIncludUsers, $dateId);
+                }
+            }
+        }
+        $report->generate();
+        $report->get();
+    }
+
+    public function action_reportSCTTimeBased()
+    {
+
+        $expertWebinarId = $this->request->param('id3', null);
+
+        $webinars = $this->getWebinarsForTimeBasedReport();
+
+        $report = new Report_SCT(new Report_Impl_PHPExcel(), 'report ' . time());
+        foreach ($webinars as $webinar) {
+            if ($webinar != null && count($webinar->maps) > 0) {
+                foreach ($webinar->maps as $webinarMap) {
+                    // if labyrinth, else section
+                    if ($webinarMap->which == 'labyrinth') {
+                        $mapId = $webinarMap->reference_id;
+                        $sectionId = false;
+                    } else {
+                        $mapId = DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
+                        $sectionId = $webinarMap->reference_id;
+                    }
+                    $report->add($mapId, $webinar->id, $expertWebinarId, $sectionId);
+                }
+            }
+        }
+        $report->generate();
+        $report->get();
+    }
+
+    public function action_reportSJTTimeBased()
+    {
+        $expertScenarioId = $this->request->param('id3', null);
+
+        $webinars = $this->getWebinarsForTimeBasedReport();
+
+        $report = new Report_SJT(new Report_Impl_PHPExcel(), 'report ' . time());
+        foreach ($webinars as $scenario) {
+            if (count($scenario->maps)) {
+                foreach ($scenario->maps as $scenarioMap) {
+                    // if labyrinth, else section
+                    if ($scenarioMap->which == 'labyrinth') {
+                        $mapId = $scenarioMap->reference_id;
+                        $sectionId = false;
+                    } else {
+                        $mapId = DB_ORM::model('Map_Node_Section', array($scenarioMap->reference_id))->map_id;
+                        $sectionId = $scenarioMap->reference_id;
+                    }
+                    $report->add($mapId, $scenario->id, $expertScenarioId, $sectionId);
+                }
+            }
+        }
+        $report->generate();
+        $report->get();
+    }
+
     public function action_reportPollTimeBased()
     {
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Report title');
+        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'report ' . time());
         foreach ($webinars as $webinar) {
             if (count($webinar->maps) > 0) {
                 foreach ($webinar->maps as $webinarMap) {
@@ -683,50 +804,6 @@ class Controller_WebinarManager extends Controller_Base
             ->query();
 
         return $webinars;
-    }
-
-    public function action_stepReportxAPI()
-    {
-        $webinarId = $this->request->param('id', null);
-        $stepKey = $this->request->param('id2', null);
-
-        if (empty($webinarId) AND $stepKey != null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
-        }
-
-        $webinar = DB_ORM::model('webinar', array((int)$webinarId));
-        $isExistAccess = false;
-
-        if (Auth::instance()->get_user()->id == $webinar->author_id OR Auth::instance()->get_user()->type->name == 'superuser') {
-            $isExistAccess = true;
-        }
-
-        if (!$isExistAccess AND $webinar->publish != null) {
-            $jsonObject = json_decode($webinar->publish);
-            $isExistAccess = in_array($webinarId . '-' . $stepKey, $jsonObject);
-        }
-
-        if (!$isExistAccess) {
-            die('Access denied.');
-        }
-
-        $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
-
-        $query = DB_ORM::select('User_Session')
-            ->where('webinar_id', '=', $webinarId)
-            ->where('webinar_step', '=', $stepKey);
-
-        if (!empty($not_included_user_ids)) {
-            $query->where('user_id', 'NOT IN', $not_included_user_ids);
-        }
-
-        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-        $sessions = $query->query();
-
-        Model_Leap_User_Session::sendSessionsToLRS($sessions);
-
-        Session::instance()->set('info_message', 'Statements sent to LRS');
-        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinarId);
     }
 
     public function action_mapReport4R()
