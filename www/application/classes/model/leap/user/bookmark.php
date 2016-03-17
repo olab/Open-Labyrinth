@@ -79,10 +79,16 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
 		$this->save();
 
         /** @var Model_Leap_User_SessionTrace $session_trace */
-        $session_trace = DB_ORM::select('user_sessionTrace')->where('session_id', '=',
-            $sessionId)->order_by('id', 'DESC')->query()->fetch(0);
+        $session_trace = Model_Leap_User_SessionTrace::getLatestBySession($sessionId);
         $session_trace->bookmark_made = $current_time;
         $session_trace->save();
+
+        //send xAPI statement
+        if (Model_Leap_LRS::isLRSEnabled()) {
+            $statement = $session_trace->createXAPIStatementSuspended();
+            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+        }
+        //end send xAPI statement
 	}
 
     public function deleteBookmarksByMapAndUser($mapId, $userId)
