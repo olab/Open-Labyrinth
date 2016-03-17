@@ -479,9 +479,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function createXAPIStatementArrived()
+    public function createXAPIStatementArrived($node = null)
     {
-        $node = $this->node;
+        $node = ($node === null) ? $this->node : $node;
 
         $timestamp = $this->date_stamp;
 

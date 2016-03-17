@@ -132,8 +132,14 @@ class Model_Labyrinth extends Model
                         if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
                             /** @var Model_Leap_User_SessionTrace $session_trace */
                             $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
-                            /** @var Model_Leap_Statement $statement */
                             $statement = $session_trace->createXAPIStatementInitialized($node);
+                            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+                        }
+
+                        if ($node->isMustAvoid() || $node->isMustVisit()) {
+                            /** @var Model_Leap_User_SessionTrace $session_trace */
+                            $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
+                            $statement = $session_trace->createXAPIStatementArrived($node);
                             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
                         }
 
