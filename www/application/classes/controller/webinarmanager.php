@@ -631,6 +631,60 @@ class Controller_WebinarManager extends Controller_Base
         $report->get();
     }
 
+    public function action_reportPollTimeBased()
+    {
+
+        $webinars = $this->getWebinarsForTimeBasedReport();
+
+        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Report title');
+        foreach ($webinars as $webinar) {
+            if (count($webinar->maps) > 0) {
+                foreach ($webinar->maps as $webinarMap) {
+                    $mapId = ($webinarMap->which == 'labyrinth')
+                        ? $webinarMap->reference_id
+                        : DB_ORM::model('Map_Node_Section', array($webinarMap->reference_id))->map_id;
+                    $report->add($mapId, $webinar->id);
+                }
+            }
+        }
+
+        $report->generate();
+        $report->get();
+    }
+
+    private function getWebinarsForTimeBasedReport()
+    {
+        $post = $this->request->post();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+
+        if (empty($date_from) || empty($date_to)) {
+            die('Dates cannot be blank');
+        }
+
+        $date_from_obj = DateTime::createFromFormat('m/d/Y', $date_from);
+        $date_to_obj = DateTime::createFromFormat('m/d/Y', $date_to);
+
+        $webinar_ids = DB_SQL::select()
+            ->from(Model_Leap_User_Session::table())
+            ->where('start_time', '>=', $date_from_obj->getTimestamp())
+            ->where('start_time', '<=', $date_to_obj->getTimestamp())
+            ->column('webinar_id')
+            ->query()
+            ->as_array();
+
+        if (empty($webinar_ids)) {
+            Session::instance()->set('info_message', 'Scenarios sessions not found for this date range.');
+            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        }
+
+        $webinars = DB_ORM::select('webinar')
+            ->where('id', 'IN', $webinar_ids)
+            ->query();
+
+        return $webinars;
+    }
+
     public function action_stepReportxAPI()
     {
         $webinarId = $this->request->param('id', null);
