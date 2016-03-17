@@ -105,6 +105,14 @@ class Model_Leap_LRS extends DB_ORM_Model
     //-----------------------------------------------------
 
     /**
+     * @return bool
+     */
+    public static function isLRSEnabled()
+    {
+        return (static::countEnabled() > 0);
+    }
+
+    /**
      * @return int
      */
     public static function countEnabled()

@@ -127,9 +127,7 @@ class Model_Labyrinth extends Model
                         $node->map_id, $node->id, $is_redirected);
 
                     //send xAPI statements in real-time
-                    $lrs_counter = Model_Leap_LRS::countEnabled();
-
-                    if ($lrs_counter > 0) {
+                    if (Model_Leap_LRS::isLRSEnabled()) {
 
                         if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
                             /** @var Model_Leap_User_SessionTrace $session_trace */
