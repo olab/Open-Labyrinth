@@ -144,13 +144,19 @@ class Controller_LRS extends Controller_Base
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
-
-        if (empty($date_from) || empty($date_to)) {
-            die('Dates cannot be blank');
+        $referrer_url = Arr::get($post, 'referrer');
+        $redirect_url = $referrer_url;
+        if (empty($redirect_url)) {
+            $redirect_url = URL::base() . 'lrs';
         }
 
-        $date_from_obj = DateTime::createFromFormat('m/d/Y', $date_from);
-        $date_to_obj = DateTime::createFromFormat('m/d/Y', $date_to);
+        if (empty($date_from) || empty($date_to)) {
+            Session::instance()->set('error_message', 'Dates cannot be blank');
+            Request::initial()->redirect($redirect_url);
+        }
+
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
         $sessions = DB_ORM::select('User_Session')
@@ -158,9 +164,14 @@ class Controller_LRS extends Controller_Base
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
             ->query();
 
-        $this->sendSessions($sessions);
+        if($sessions->count() > 0) {
+            $this->sendSessions($sessions);
+        }else{
+            Session::instance()
+                ->set('error_message', 'Sessions not found for date range: ' . $date_from .' - '. $date_to);
+        }
 
-        Request::initial()->redirect(URL::base() . 'lrs');
+        Request::initial()->redirect($redirect_url);
     }
 
     /**
@@ -169,9 +180,6 @@ class Controller_LRS extends Controller_Base
     private function sendSessions($sessions)
     {
         Model_Leap_User_Session::sendSessionsToLRS($sessions);
-
-        die;
-
         Session::instance()->set('info_message', 'Statements sent to LRS');
     }
 }

@@ -61,6 +61,7 @@ if ($user) {
 <?php
 $templateData['map_suspended'] = Session::instance()->get_once('map_suspended');
 $templateData['info_message'] = Session::instance()->get_once('info_message');
+$templateData['error_message'] = Session::instance()->get_once('error_message');
 ?>
 <?php if (!empty($templateData['map_suspended'])) { ?>
     <div style="position: fixed; left: 50%;top:70px; z-index: 1500; margin-left: -89px;padding:40px 80px"
@@ -228,13 +229,21 @@ $templateData['info_message'] = Session::instance()->get_once('info_message');
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="<?php echo URL::base(); ?>webinarManager/my"><?php echo __('My Scenarios'); ?></a>
-                            </li><?php
-                            if ($modeUI == 'advanced') { ?>
+                            </li>
+                            <?php if ($modeUI == 'advanced') { ?>
                                 <li class="divider"></li>
-                                <li><a
-                                    href="<?php echo URL::base(); ?>webinarManager/index"><?php echo __('Manage Scenarios'); ?></a>
-                                </li><?php
-                            } ?>
+                                <li>
+                                    <a href="<?php echo URL::base(); ?>webinarManager/timeBasedReports">
+                                        <?php echo __('Time-Based Reports'); ?>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="<?php echo URL::base(); ?>webinarManager/index">
+                                        <?php echo __('Manage Scenarios'); ?>
+                                    </a>
+                                </li>
+                            <?php } ?>
                         </ul>
                         </li><?php
                         if ($modeUI == 'advanced') { ?>
@@ -350,6 +359,12 @@ if (isset($templateData)) { ?>
                     <?php if (!empty($templateData['info_message'])) { ?>
                         <div class="alert alert-info">
                             <b><?php echo $templateData['info_message'] ?></b>
+                        </div>
+                    <?php } ?>
+
+                    <?php if (!empty($templateData['error_message'])) { ?>
+                        <div class="alert alert-danger">
+                            <b><?php echo $templateData['error_message'] ?></b>
                         </div>
                     <?php } ?>
 

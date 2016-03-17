@@ -365,6 +365,13 @@ class Controller_WebinarManager extends Controller_Base
         Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $this->request->param('id', null));
     }
 
+    public function action_timeBasedReports()
+    {
+        $this->templateData['center'] = View::factory('webinar/timeBasedReports')->set('templateData',
+            $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
     public function action_statistics()
     {
         $webinarId = $this->request->param('id', null);
@@ -466,6 +473,7 @@ class Controller_WebinarManager extends Controller_Base
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $dateId = $this->request->param('id3', null);
+        $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
 
         if (!($webinarId != null && $webinarId > 0 && $stepKey != null && $stepKey > 0)) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -485,7 +493,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         if (!$isExistAccess) {
-            Request::initial()->redirect(URL::base() . 'home/index');
+            Session::instance()->set('error_message', 'Access denied.');
+            Request::initial()->redirect($redirect_url);
         }
 
         $report = new Report_4R(new Report_Impl_PHPExcel(), $webinar->title);
@@ -510,6 +519,7 @@ class Controller_WebinarManager extends Controller_Base
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertWebinarId = $this->request->param('id3', null);
+        $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
 
         if ($webinarId == null AND $stepKey) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -528,7 +538,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         if (!$isExistAccess) {
-            Request::initial()->redirect(URL::base() . 'home/index');
+            Session::instance()->set('error_message', 'Access denied.');
+            Request::initial()->redirect($redirect_url);
         }
 
         $report = new Report_SCT(new Report_Impl_PHPExcel(), $webinar->title);
@@ -556,6 +567,7 @@ class Controller_WebinarManager extends Controller_Base
         $scenarioId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertScenarioId = $this->request->param('id3', null);
+        $redirect_url = URL::base() . 'webinarManager/progress/' . $scenarioId;
 
         if ($scenarioId == null AND $stepKey) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -570,7 +582,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         if (!$isExistAccess) {
-            Request::initial()->redirect(URL::base() . 'home/index');
+            Session::instance()->set('error_message', 'Access denied.');
+            Request::initial()->redirect($redirect_url);
         }
         $report = new Report_SJT(new Report_Impl_PHPExcel(), $scenario->title);
         if (count($scenario->maps)) {
@@ -596,6 +609,7 @@ class Controller_WebinarManager extends Controller_Base
     {
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
+        $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
 
         if ($webinarId == null AND $stepKey != null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -614,7 +628,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         if (!$isExistAccess) {
-            Request::initial()->redirect(URL::base() . 'home/index');
+            Session::instance()->set('error_message', 'Access denied.');
+            Request::initial()->redirect($redirect_url);
         }
         $report = new Report_Poll(new Report_Impl_PHPExcel(), $webinar->title);
         if (count($webinar->maps) > 0) {
@@ -635,6 +650,7 @@ class Controller_WebinarManager extends Controller_Base
     {
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
+        $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
 
         if (empty($webinarId) AND $stepKey != null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -653,7 +669,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         if (!$isExistAccess) {
-            die('Access denied.');
+            Session::instance()->set('error_message', 'Access denied.');
+            Request::initial()->redirect($redirect_url);
         }
 
         $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
@@ -672,7 +689,7 @@ class Controller_WebinarManager extends Controller_Base
         Model_Leap_User_Session::sendSessionsToLRS($sessions);
 
         Session::instance()->set('info_message', 'Statements sent to LRS');
-        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinarId);
+        Request::initial()->redirect($redirect_url);
     }
 
     public function action_report4RTimeBased()
@@ -778,13 +795,15 @@ class Controller_WebinarManager extends Controller_Base
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
+        $redirect_url = URL::base() . 'webinarmanager/timeBasedReports';
 
         if (empty($date_from) || empty($date_to)) {
-            die('Dates cannot be blank');
+            Session::instance()->set('error_message', 'Dates cannot be blank');
+            Request::initial()->redirect($redirect_url);
         }
 
-        $date_from_obj = DateTime::createFromFormat('m/d/Y', $date_from);
-        $date_to_obj = DateTime::createFromFormat('m/d/Y', $date_to);
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         $webinar_ids = DB_SQL::select()
             ->from(Model_Leap_User_Session::table())
@@ -795,8 +814,9 @@ class Controller_WebinarManager extends Controller_Base
             ->as_array();
 
         if (empty($webinar_ids)) {
-            Session::instance()->set('info_message', 'Scenarios sessions not found for this date range.');
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Session::instance()
+                ->set('error_message', 'Scenarios sessions not found for date range: ' . $date_from .' - '. $date_to);
+            Request::initial()->redirect($redirect_url);
         }
 
         $webinars = DB_ORM::select('webinar')
