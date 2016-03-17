@@ -57,7 +57,7 @@ class Report_SCT extends Report {
         $this->maps[] = array(
             'mapId'             => $mapId,
             'webinarId'         => $webinarId,
-            'expertWebinarId'   => $expertWebinarId,
+            'expertWebinarId'   => !empty($expertWebinarId) ? $expertWebinarId : $webinarId,
             'sectionId'         => $sectionId
         );
     }

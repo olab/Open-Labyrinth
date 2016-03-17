@@ -59,7 +59,7 @@ class Report_SJT extends Report
         $this->maps[] = array(
             'mapId'             => $mapId,
             'webinarId'         => $webinarId,
-            'expertsScenarioId' => $expertsScenarioId,
+            'expertsScenarioId' => !empty($expertsScenarioId) ? $expertsScenarioId : $webinarId,
             'sectionId'         => $sectionId
         );
     }
