@@ -34,6 +34,7 @@
         <th>ID</th>
         <th>Statement ID</th>
         <th>LRS name</th>
+        <th>Created At</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -46,6 +47,7 @@
                 <td><?php echo $lrs_statement->id; ?></td>
                 <td><?php echo $lrs_statement->statement_id; ?></td>
                 <td><?php echo $lrs_statement->lrs->name; ?></td>
+                <td><?php echo DateTime::createFromFormat('U', $lrs_statement->created_at)->format('m/d/Y H:i:s') ?></td>
                 <td>
                     <div class="btn-group">
                         <a data-toggle="modal" href="javascript:void(0)"
