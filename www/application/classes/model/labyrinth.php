@@ -32,6 +32,7 @@ class Model_Labyrinth extends Model
         $this->nodeId = $nodeId;
         $result = array();
         $result['userId'] = (Auth::instance()->logged_in()) ? Auth::instance()->get_user()->id : 0;
+        /** @var Model_Leap_Map_Node $node */
         $node = DB_ORM::model('map_node', array((int)$nodeId));
         $scenarioSectionId = Session::instance()->get('webinarSectionId', false);
 
@@ -125,16 +126,29 @@ class Model_Labyrinth extends Model
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'],
                         $node->map_id, $node->id, $is_redirected);
 
-                    if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
-                        if(Model_Leap_LRS::countEnabled() > 0) {
+                    //send xAPI statements in real-time
+                    $lrs_counter = Model_Leap_LRS::countEnabled();
+
+                    if ($lrs_counter > 0) {
+
+                        if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
                             /** @var Model_Leap_User_SessionTrace $session_trace */
                             $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
                             /** @var Model_Leap_Statement $statement */
-                            $statement = $session_trace->createXAPIStatementInitialized();
-                            $lrs_statements = $statement->lrs_statements;
-                            Model_Leap_LRSStatement::sendStatementsToLRS($lrs_statements);
+                            $statement = $session_trace->createXAPIStatementInitialized($node);
+                            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+                        }
+
+                        if ($node->end) {
+                            /** @var Model_Leap_User_SessionTrace $session_trace */
+                            $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
+                            /** @var Model_Leap_Statement $statement */
+                            $statement = $session_trace->createXAPIStatementCompleted($node);
+                            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
                         }
                     }
+
+                    //end send xAPI statements in real-time
 
                 } else {
                     $traceId = 'notExist';

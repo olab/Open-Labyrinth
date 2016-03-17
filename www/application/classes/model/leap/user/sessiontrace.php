@@ -427,9 +427,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function createXAPIStatementInitialized()
+    public function createXAPIStatementInitialized($node = null)
     {
-        $node = $this->node;
+        $node = ($node === null) ? $this->node : $node;
 
         $timestamp = $this->date_stamp;
 
@@ -531,9 +531,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function createXAPIStatementCompleted()
+    public function createXAPIStatementCompleted($node = null)
     {
-        $node = $this->node;
+        $node = ($node === null) ? $this->node : $node;
         if (!$node->end) {
             return false;
         }
