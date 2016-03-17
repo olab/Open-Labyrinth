@@ -1,21 +1,11 @@
-<form action="#" class="form-horizontal left" method="post">
-    <input type="hidden" name="referrer" value="<?php echo URL::base() . 'webinarmanager/timeBasedReports' ?>">
+<form action="#" class="form-inline left" method="post">
+    <input type="hidden" name="referrer" value="<?php echo Request::current()->url(true) . URL::query() ?>">
     <fieldset>
         <div class="control-group">
-            <label for="date_from" class="control-label">Start date</label>
-
-            <div class="controls">
-                <input class="datepicker" type="text" name="date_from" id="date_from"
-                       value="<?php echo date('m/d/Y', time() - 60 * 60 * 24) ?>"/>
-            </div>
-        </div>
-
-        <div class="control-group">
-            <label for="date_to" class="control-label">End date</label>
-
-            <div class="controls">
-                <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
-            </div>
+            <input class="datepicker" type="text" name="date_from" id="date_from"
+                   value="<?php echo date('m/d/Y', time() - 60 * 60 * 24) ?>"/>
+            -
+            <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
         </div>
 
         <div class="control-group">

@@ -28,6 +28,15 @@ if(!empty($userType) && $userType != 'learner') {
     <h1><?php echo __('Scenario Progress').' - "'.$templateData['webinar']->title; ?>"</h1>
 </div>
 
+<div>
+    <h4>Time-Based Reports</h4>
+    <?php
+        echo View::factory('webinar/timeBasedReports')->set('templateData', $templateData);
+    ?>
+</div>
+
+<hr>
+
 <div class="report-type">
     <span class="report-type-title"><?php echo __('Report type') ?></span>
     <div class="radio_extended btn-group">

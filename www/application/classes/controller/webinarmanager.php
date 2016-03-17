@@ -365,12 +365,12 @@ class Controller_WebinarManager extends Controller_Base
         Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $this->request->param('id', null));
     }
 
-    public function action_timeBasedReports()
+    /*public function action_timeBasedReports()
     {
         $this->templateData['center'] = View::factory('webinar/timeBasedReports')->set('templateData',
             $this->templateData);
         $this->template->set('templateData', $this->templateData);
-    }
+    }*/
 
     public function action_statistics()
     {
@@ -699,7 +699,7 @@ class Controller_WebinarManager extends Controller_Base
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_4R(new Report_Impl_PHPExcel(), 'report ' . time());
+        $report = new Report_4R(new Report_Impl_PHPExcel(), '4R report ' . time());
         //$notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
         $notIncludUsers = null;
         foreach ($webinars as $webinar) {
@@ -723,7 +723,7 @@ class Controller_WebinarManager extends Controller_Base
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_SCT(new Report_Impl_PHPExcel(), 'report ' . time());
+        $report = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT report ' . time());
         foreach ($webinars as $webinar) {
             if ($webinar != null && count($webinar->maps) > 0) {
                 foreach ($webinar->maps as $webinarMap) {
@@ -749,7 +749,7 @@ class Controller_WebinarManager extends Controller_Base
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_SJT(new Report_Impl_PHPExcel(), 'report ' . time());
+        $report = new Report_SJT(new Report_Impl_PHPExcel(), 'SJT report ' . time());
         foreach ($webinars as $scenario) {
             if (count($scenario->maps)) {
                 foreach ($scenario->maps as $scenarioMap) {
@@ -774,7 +774,7 @@ class Controller_WebinarManager extends Controller_Base
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'report ' . time());
+        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Poll report ' . time());
         foreach ($webinars as $webinar) {
             if (count($webinar->maps) > 0) {
                 foreach ($webinar->maps as $webinarMap) {

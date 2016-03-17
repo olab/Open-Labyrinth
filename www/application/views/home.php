@@ -232,11 +232,11 @@ $templateData['error_message'] = Session::instance()->get_once('error_message');
                             </li>
                             <?php if ($modeUI == 'advanced') { ?>
                                 <li class="divider"></li>
-                                <li>
-                                    <a href="<?php echo URL::base(); ?>webinarManager/timeBasedReports">
-                                        <?php echo __('Time-Based Reports'); ?>
+                                <!--<li>
+                                    <a href="<?php /*echo URL::base(); */ ?>webinarManager/timeBasedReports">
+                                        <?php /*echo __('Time-Based Reports'); */ ?>
                                     </a>
-                                </li>
+                                </li>-->
 
                                 <li>
                                     <a href="<?php echo URL::base(); ?>webinarManager/index">
