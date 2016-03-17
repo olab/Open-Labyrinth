@@ -133,6 +133,14 @@ class Model_Leap_User_Session extends DB_ORM_Model
     }
 
     /**
+     * @return Model_Leap_User_SessionTrace
+     */
+    public function getLatestTrace()
+    {
+        return Model_Leap_User_SessionTrace::getLatestBySession($this->id);
+    }
+
+    /**
      * @return int
      */
     public static function countTraces($session_id)
@@ -194,12 +202,16 @@ class Model_Leap_User_Session extends DB_ORM_Model
             foreach ($session_traces_array as $key => $session_trace) {
                 $session_trace->createXAPIStatementArrived();
                 $session_trace->createXAPIStatementLaunched();
-                $session_trace->createXAPIStatementCompleted();
+                //$session_trace->createXAPIStatementCompleted();
                 $session_trace->createXAPIStatementSuspended();
                 $session_trace->createXAPIStatementResumed();
 
                 if (isset($session_traces[$key - 1])) {
                     $session_trace->createXAPIStatementUpdated($session_traces[$key - 1]);
+                }
+
+                if (!isset($session_traces[$key + 1])) {
+                    $session_trace->createXAPIStatementCompleted();
                 }
             }
         }

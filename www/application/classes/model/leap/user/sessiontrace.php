@@ -534,9 +534,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
     public function createXAPIStatementCompleted($node = null)
     {
         $node = ($node === null) ? $this->node : $node;
-        if (!$node->end) {
-            return false;
-        }
+        //if (!$node->end) {
+        //    return false;
+        //}
 
         $timestamp = $this->date_stamp;
 
@@ -760,8 +760,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
      */
     public static function getLatestBySession($sessionId)
     {
-        return DB_ORM::select('user_sessionTrace')->where('session_id', '=',
-            $sessionId)->order_by('id', 'DESC')->query()->fetch(0);
+        return DB_ORM::select('user_sessionTrace')
+            ->where('session_id', '=', $sessionId)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->query()
+            ->fetch(0);
     }
 
     public function isExistBySessionAndNodeIDs($sessionId, $nodeId)

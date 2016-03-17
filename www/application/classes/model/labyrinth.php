@@ -139,13 +139,13 @@ class Model_Labyrinth extends Model
                             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
                         }
 
-                        if ($node->end) {
-                            /** @var Model_Leap_User_SessionTrace $session_trace */
-                            $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
-                            /** @var Model_Leap_Statement $statement */
-                            $statement = $session_trace->createXAPIStatementCompleted($node);
-                            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
-                        }
+                        //if ($node->end) {
+                        //    /** @var Model_Leap_User_SessionTrace $session_trace */
+                        //    $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
+                        //    /** @var Model_Leap_Statement $statement */
+                        //    $statement = $session_trace->createXAPIStatementCompleted($node);
+                        //    Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+                        //}
                     }
 
                     //end send xAPI statements in real-time
