@@ -191,19 +191,29 @@ $templateData['info_message'] = Session::instance()->get_once('info_message');
                                         <a href="<?php echo URL::base(); ?>backup"><?php echo __('Backup Database'); ?></a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="<?php echo URL::base(); ?>lrs"><?php echo __('LRS'); ?></a></li>
+                                    <?php
+                                    $failed_statements_counter = Model_Leap_LRSStatement::count();
+                                    $lrs_counter = Model_Leap_LRS::countEnabled();
+                                    ?>
                                     <li>
-                                        <?php
-                                        $failed_statements_counter = Model_Leap_LRSStatement::count();
-                                        ?>
+                                        <a href="<?php echo URL::base(); ?>lrs">
+                                            <?php echo __('LRS'); ?>
 
+                                            <?php if (!empty($lrs_counter)) { ?>
+                                                <span class="badge badge-success">
+                                                    <?php echo $lrs_counter ?>
+                                                </span>
+                                            <?php } ?>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href="<?php echo URL::base(); ?>lrs/failedStatements">
                                             <?php echo __('Failed xAPI statements'); ?>
 
                                             <?php if (!empty($failed_statements_counter)) { ?>
                                                 <span class="badge badge-important">
-                                                                <?php echo $failed_statements_counter ?>
-                                                            </span>
+                                                    <?php echo $failed_statements_counter ?>
+                                                </span>
                                             <?php } ?>
                                         </a>
                                     </li>
