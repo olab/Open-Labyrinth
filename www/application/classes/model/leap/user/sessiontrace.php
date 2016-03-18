@@ -497,6 +497,10 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
+    /**
+     * @param Model_Leap_Map_Node|null $node
+     * @return Model_Leap_Statement|static
+     */
     public function createXAPIStatementArrived($node = null)
     {
         $node = ($node === null) ? $this->node : $node;
@@ -513,7 +517,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $node_base_url = URL::base(true) . 'nodeManager/editNode/';
+        $url = $node_base_url . $node->id;
         $object = array(
             'id' => $url,
             'definition' => array(
@@ -527,6 +532,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
                 'moreInfo' => $url,
             ),
         );
+
+        $object['definition']['extensions'][$node_base_url] = $node->toxAPIExtensionObject();
         //end object
 
         //result
@@ -568,7 +575,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
+        $node_base_url = URL::base(true) . 'nodeManager/editNode/';
+        $url = $node_base_url . $node->id;
         $object = array(
             'id' => $url,
             'definition' => array(
@@ -582,6 +590,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
                 'moreInfo' => $url,
             ),
         );
+
+        $result['definition']['extensions'][$node_base_url] = $node->toxAPIExtensionObject();
         //end object
 
         //result

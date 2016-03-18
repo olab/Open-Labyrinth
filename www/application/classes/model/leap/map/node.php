@@ -28,6 +28,8 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int|bool $end
  * @property string $title
  * @property string $text
+ * @property float $x
+ * @property float $y
  */
 class Model_Leap_Map_Node extends DB_ORM_Model
 {
@@ -207,6 +209,16 @@ class Model_Leap_Map_Node extends DB_ORM_Model
     public static function primary_key()
     {
         return array('id');
+    }
+
+    public function toxAPIExtensionObject()
+    {
+        return array(
+            'id' => URL::base(true) . 'nodeManager/editNode/' . $this->id,
+            'internal_id' => $this->id,
+            'x' => $this->x,
+            'y' => $this->y,
+        );
     }
 
     /**
