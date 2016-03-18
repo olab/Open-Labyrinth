@@ -26,6 +26,7 @@ class Policy_Access extends Policy {
         array('controller' => 'webinarManager', 'action' => 'save'),
         array('controller' => 'webinarManager', 'action' => 'changeStep'),
         array('controller' => 'webinarManager', 'action' => 'chats'),
+        array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
         array('controller' => 'dForumManager', 'action' => 'addForum'),
         array('controller' => 'dForumManager', 'action' => 'editForum'),
         array('controller' => 'dForumManager', 'action' => 'updateForum'),
@@ -35,6 +36,7 @@ class Policy_Access extends Policy {
         array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
     );
 
     private $authorRules = array(
@@ -62,6 +64,8 @@ class Policy_Access extends Policy {
         array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
     );
 
     private $mapActions = array(
