@@ -247,25 +247,18 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             return NULL;
         }
 
-        $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
+        $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>(\+|\-)?[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
         if(!empty($result) && isset($matches['value'])){
             return array('id' => $main_counter['id'], 'value' => $matches['value']);
         }else{
             return null;
         }
-
-        /*$result = preg_match('#(\[MCID=)+(?<id>[0-9]+)+(,V=)+(?<value>[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
-        if(!empty($result) && isset($matches['value'], $matches['id'])){
-            return array('id' => $matches['id'], 'value' => $matches['value']);
-        }else{
-            return null;
-        }*/
     }
 
     /**
      * @param $points string with value of all counters and main counter max_value
      * @param $map_id
-     * @return info about progress in fraction and percentage
+     * @return mixed info about progress in fraction and percentage
      */
     public function progress ($points, $map_id)
     {
