@@ -466,6 +466,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
 
         $result['score']['raw'] = $score_value;
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_url] = array('value' => $counter_value);
+        }
         //end result
 
         //context

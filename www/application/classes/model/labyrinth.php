@@ -125,7 +125,14 @@ class Model_Labyrinth extends Model
                     Session::instance()->set('is_redirected', false);
                     $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'],
                         $node->map_id, $node->id, $is_redirected);
+                    $send_statements = true;
+                } else {
+                    $traceId = 'notExist';
+                }
 
+                $c = $this->counters($traceId, $sessionId, $node, $isRoot, $cumulative);
+
+                if(!empty($send_statements)){
                     //send xAPI statements in real-time
                     if (Model_Leap_LRS::isLRSEnabled()) {
 
@@ -153,13 +160,13 @@ class Model_Labyrinth extends Model
                     }
 
                     //end send xAPI statements in real-time
-
-                } else {
-                    $traceId = 'notExist';
                 }
 
+                if(!empty($c['redirect_url'])){
+                    Session::instance()->set('is_redirected', true);
+                    Request::initial()->redirect($c['redirect_url']);
+                }
 
-                $c = $this->counters($traceId, $sessionId, $node, $isRoot, $cumulative);
                 if ($c != null) {
                     if (isset($c['no-entry'])) {
                         $result['node_text'] = '<p>' . $c['message'] . '</p>';
@@ -977,8 +984,7 @@ class Model_Labyrinth extends Model
 
                     Session::instance()->delete('questionChoices');
                     if ($redirect != null && $redirect != $node->id) {
-                        Session::instance()->set('is_redirected', true);
-                        Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $redirect);
+                        $redirect_url = URL::base() . 'renderLabyrinth/go/' . $node->map_id . '/' . $redirect;
                     }
                 }
 
@@ -987,7 +993,8 @@ class Model_Labyrinth extends Model
                     'counterString' => $counterString,
                     'redirect' => $redirect,
                     'remote' => $remoteCounterString,
-                    'jsonRule' => json_encode($jsonRule)
+                    'jsonRule' => json_encode($jsonRule),
+                    'redirect_url' => !empty($redirect_url) ? $redirect_url : null,
                 );
             }
 
