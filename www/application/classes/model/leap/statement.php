@@ -229,13 +229,21 @@ class Model_Leap_Statement extends Model_Leap_Base
         $data = json_decode($this->statement, true);
         $statement = new CustomStatement($data);
 
-        /** @var \TinCan\LRSResponse $response */
-        $response = $lrs->saveStatement($statement);
+        try {
+            /** @var \TinCan\LRSResponse $response */
+            $response = $lrs->saveStatement($statement);
 
-        if ($response->success) {
-            return true;
-        } else {
-            $this->response = $response;
+            if ($response->success) {
+                return true;
+            } else {
+                $this->response = $response;
+
+                throw new \Exception($response);
+            }
+        } catch (\Exception $ex) {
+
+            Log::instance()->add(Log::DEBUG, 'Unexpected error: on ' . $ex->getFile() . ' at ' . $ex->getLine() .
+                ' with msg: ' . $ex->getMessage());
 
             return false;
         }
