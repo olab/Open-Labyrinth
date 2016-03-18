@@ -369,61 +369,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         }
     }
 
-    public function createXAPIStatementLaunched()
-    {
-        if (!$this->is_redirected) {
-            return false;
-        }
-
-        $node = $this->node;
-
-        $timestamp = $this->date_stamp;
-
-        //verb
-        $verb = array(
-            'id' => 'http://adlnet.gov/expapi/verbs/launched',
-            'display' => array(
-                'en-US' => 'launched'
-            ),
-        );
-        //end verb
-
-        //object
-        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
-                ),
-                'type' => 'http://activitystrea.ms/schema/1.0/node',
-                'moreInfo' => $url,
-            ),
-        );
-        //end object
-
-        //result
-        $result = array(
-            'completion' => true,
-        );
-        //end result
-
-        //context
-        $context = array();
-        $session = $this->session;
-        $context['contextActivities']['parent']['id'] = $url;
-
-        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
-
-        //end context
-
-        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
-    }
-
     public function createXAPIStatementInitialized($node = null)
     {
         //$node = ($node === null) ? $this->node : $node;
@@ -472,6 +417,65 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             $counter_url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $counter_id;
             $result['extensions'][$counter_url] = array('value' => $counter_value);
         }
+        //end result
+
+        //context
+        $session = $this->session;
+        $context = array();
+        $webinar_id = $session->webinar_id;
+        if (!empty($webinar_id)) {
+            $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
+            $context['contextActivities']['parent']['id'] = $webinar_url;
+        }
+
+        //end context
+
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+    }
+
+    public function createXAPIStatementCompleted($node = null)
+    {
+        //$node = ($node === null) ? $this->node : $node;
+        //if (!$node->end) {
+        //    return false;
+        //}
+
+        $timestamp = $this->date_stamp;
+
+        $verb = array(
+            'id' => 'http://adlnet.gov/expapi/verbs/completed',
+            'display' => array(
+                'en-US' => 'completed'
+            ),
+        );
+
+        //object
+        $url = URL::base(true) . 'labyrinthManager/global/' . $this->map_id;
+        $map = $this->map;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Map description: ' . $map->abstract
+                ),
+                'type' => 'http://adlnet.gov/expapi/activities/module',
+                'moreInfo' => $url,
+            ),
+        );
+        //end object
+
+        //result
+        $result = array(
+            'completion' => true,
+        );
+
+        $score_value = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($this->as_array());
+        $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
+
+        $result['score']['raw'] = $score_value;
         //end result
 
         //context
@@ -539,35 +543,37 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function createXAPIStatementCompleted($node = null)
+    public function createXAPIStatementLaunched()
     {
-        //$node = ($node === null) ? $this->node : $node;
-        //if (!$node->end) {
-        //    return false;
-        //}
+        if (!$this->is_redirected) {
+            return false;
+        }
+
+        $node = $this->node;
 
         $timestamp = $this->date_stamp;
 
+        //verb
         $verb = array(
-            'id' => 'http://adlnet.gov/expapi/verbs/completed',
+            'id' => 'http://adlnet.gov/expapi/verbs/launched',
             'display' => array(
-                'en-US' => 'completed'
+                'en-US' => 'launched'
             ),
         );
+        //end verb
 
         //object
-        $url = URL::base(true) . 'labyrinthManager/global/' . $this->map_id;
-        $map = $this->map;
+        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
         $object = array(
             'id' => $url,
             'definition' => array(
                 'name' => array(
-                    'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
                 ),
                 'description' => array(
-                    'en-US' => 'Map description: ' . $map->abstract
+                    'en-US' => 'Node content: ' . $node->text
                 ),
-                'type' => 'http://adlnet.gov/expapi/activities/module',
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
                 'moreInfo' => $url,
             ),
         );
@@ -577,21 +583,15 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $result = array(
             'completion' => true,
         );
-
-        $score_value = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($this->as_array());
-        $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
-
-        $result['score']['raw'] = $score_value;
         //end result
 
         //context
-        $session = $this->session;
         $context = array();
-        $webinar_id = $session->webinar_id;
-        if (!empty($webinar_id)) {
-            $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
-            $context['contextActivities']['parent']['id'] = $webinar_url;
-        }
+        $session = $this->session;
+        $context['contextActivities']['parent']['id'] = $url;
+
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
+        $context['contextActivities']['grouping']['id'] = $map_url;
 
         //end context
 
