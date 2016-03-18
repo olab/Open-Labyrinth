@@ -414,8 +414,13 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $counters = $this->getCountersAsArray();
         foreach ($counters as $counter_id => $counter_value) {
-            $counter_url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $counter_id;
-            $result['extensions'][$counter_url] = array('value' => $counter_value);
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url] = array(
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            );
         }
         //end result
 
