@@ -188,21 +188,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $node = $this->node;
-        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
-                ),
-                'type' => 'http://activitystrea.ms/schema/1.0/node',
-                'moreInfo' => $url,
-            ),
-        );
+        $map = $this->map;
+        $object = $map->toxAPIObject();
         //end object
 
         //result
@@ -213,11 +200,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         //context
         $context = array();
+        $node = $this->node;
+        $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $session = $this->session;
-        $context['contextActivities']['parent']['id'] = $url;
-
-        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -242,22 +227,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $node = $this->node;
-        $url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
-                ),
-                'type' => 'http://activitystrea.ms/schema/1.0/node',
-                'moreInfo' => $url,
-            ),
-
-        );
+        $map = $this->map;
+        $object = $map->toxAPIObject();
         //end object
 
         //result
@@ -268,11 +239,9 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         //context
         $context = array();
+        $node = $this->node;
+        $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $session = $this->session;
-        $context['contextActivities']['parent']['id'] = $url;
-
-        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -321,6 +290,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $context = array();
 
         $node = $this->node;
+        $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
+
         $node_url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
         $context['contextActivities']['parent']['id'] = $node_url;
 
@@ -367,7 +338,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
     public function createXAPIStatementInitialized($node = null)
     {
-        //$node = ($node === null) ? $this->node : $node;
+        $node = ($node === null) ? $this->node : $node;
 
         $timestamp = $this->date_stamp;
 
@@ -381,21 +352,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $url = URL::base(true) . 'labyrinthManager/global/' . $this->map_id;
         $map = $this->map;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Map description: ' . $map->abstract
-                ),
-                'type' => 'http://adlnet.gov/expapi/activities/module',
-                'moreInfo' => $url,
-            ),
-        );
+        $object = $map->toxAPIObject();
         //end object
 
         //result
@@ -423,6 +381,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //context
         $session = $this->session;
         $context = array();
+        $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
@@ -435,7 +394,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
     public function createXAPIStatementCompleted($node = null)
     {
-        //$node = ($node === null) ? $this->node : $node;
+        $node = ($node === null) ? $this->node : $node;
         //if (!$node->end) {
         //    return false;
         //}
@@ -456,21 +415,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         );
 
         //object
-        $url = URL::base(true) . 'labyrinthManager/global/' . $this->map_id;
         $map = $this->map;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Map description: ' . $map->abstract
-                ),
-                'type' => 'http://adlnet.gov/expapi/activities/module',
-                'moreInfo' => $url,
-            ),
-        );
+        $object = $map->toxAPIObject();
         //end object
 
         //result
@@ -486,6 +432,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         //context
         $context = array();
+        $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
@@ -516,23 +463,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $node_base_url = URL::base(true) . 'nodeManager/editNode/';
-        $url = $node_base_url . $node->id;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
-                ),
-                'type' => 'http://activitystrea.ms/schema/1.0/node',
-                'moreInfo' => $url,
-            ),
-        );
-
-        $object['definition']['extensions'][$node_base_url] = $node->toxAPIExtensionObject();
+        $object = $node->toxAPIObject();
         //end object
 
         //result
@@ -542,12 +473,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end result
 
         //context
-        $context = array();
+        $context = null;
         $session = $this->session;
-        $context['contextActivities']['parent']['id'] = $url;
-
-        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -573,23 +500,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $node_base_url = URL::base(true) . 'nodeManager/editNode/';
-        $url = $node_base_url . $node->id;
-        $object = array(
-            'id' => $url,
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
-                ),
-                'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
-                ),
-                'type' => 'http://activitystrea.ms/schema/1.0/node',
-                'moreInfo' => $url,
-            ),
-        );
-
-        $result['definition']['extensions'][$node_base_url] = $node->toxAPIExtensionObject();
+        $object = $node->toxAPIObject();
         //end object
 
         //result
@@ -599,12 +510,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end result
 
         //context
-        $context = array();
+        $context = null;
         $session = $this->session;
-        $context['contextActivities']['parent']['id'] = $url;
-
-        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);

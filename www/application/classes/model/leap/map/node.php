@@ -211,14 +211,41 @@ class Model_Leap_Map_Node extends DB_ORM_Model
         return array('id');
     }
 
+    public static function getAdminBaseUrl()
+    {
+        return URL::base(true) . 'nodeManager/editNode/';
+    }
+
     public function toxAPIExtensionObject()
     {
-        return array(
-            'id' => URL::base(true) . 'nodeManager/editNode/' . $this->id,
-            'internal_id' => $this->id,
-            'x' => $this->x,
-            'y' => $this->y,
+        $result = $this->as_array();
+        $result['id'] = static::getAdminBaseUrl() . $this->id;
+        $result['internal_id'] = $this->id;
+
+        return $result;
+    }
+
+    public function toxAPIObject()
+    {
+        $node = $this;
+        $url = static::getAdminBaseUrl() . $node->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Node content: ' . $node->text
+                ),
+                'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
         );
+
+        $object['definition']['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
+
+        return $object;
     }
 
     /**
@@ -801,7 +828,8 @@ class Model_Leap_Map_Node extends DB_ORM_Model
         $damMap,
         $mapId,
         $newMapId
-    ) {
+    )
+    {
         foreach ($nodeMap as $v) {
             $this->id = $v;
             $this->load();

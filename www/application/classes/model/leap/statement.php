@@ -34,7 +34,6 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Statement extends Model_Leap_Base
 {
-
     public $response;
 
     public function __construct()
@@ -116,6 +115,30 @@ class Model_Leap_Statement extends Model_Leap_Base
     //-----------------------------------------------------
 
     /**
+     * @return string
+     */
+    public static function getExtensionSessionKey()
+    {
+        return Model_Leap_User_Session::getAdminBaseUrl();
+    }
+
+    /**
+     * @return string
+     */
+    public static function getExtensionNodeKey()
+    {
+        return Model_Leap_Map_Node::getAdminBaseUrl();
+    }
+
+    /**
+     * @return string
+     */
+    public static function getExtensionMapKey()
+    {
+        return Model_Leap_Map::getAdminBaseUrl();
+    }
+
+    /**
      * @param $result
      * @param $object
      * @param $verb
@@ -174,19 +197,23 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end result
 
         //context
-        $statement['context']['contextActivities']['category']['id'] = URL::base(true) . 'reportManager/showReport/' . $session->id;
+        $statement['context']['contextActivities']['category']['id'] = Model_Leap_User_Session::getAdminBaseUrl() . $session->id;
 
-        if ($context === null) {
-            $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-            $statement['context']['contextActivities']['parent']['id'] = $map_url;
+        $map_url = Model_Leap_Map::getAdminBaseUrl() . $session->map_id;
+        $statement['context']['contextActivities']['parent']['id'] = $map_url;
 
-            $webinar_id = $session->webinar_id;
-            if (!empty($webinar_id)) {
-                $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
-                $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+        $webinar_id = $session->webinar_id;
+        if (!empty($webinar_id)) {
+            $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
+            $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+        }
+
+        $statement['context']['extensions'][static::getExtensionSessionKey()] = $session->toxAPIExtensionObject();
+
+        if (is_array($context)) {
+            foreach ($context as $key => $value) {
+                $statement['context'][$key] = array_merge($statement['context'][$key], $context[$key]);
             }
-        } else {
-            $statement['context'] = array_merge($statement['context'], $context);
         }
         //end context
 

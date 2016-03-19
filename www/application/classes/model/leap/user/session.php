@@ -132,6 +132,23 @@ class Model_Leap_User_Session extends DB_ORM_Model
         return array('id');
     }
 
+
+    public static function getAdminBaseUrl()
+    {
+        return URL::base(true) . 'reportManager/showReport/';
+    }
+
+
+    public function toxAPIExtensionObject()
+    {
+        $result = $this->as_array();
+        $result['id'] = static::getAdminBaseUrl() . $this->id;
+        $result['internal_id'] = $this->id;
+        unset($result['user_ip']);
+
+        return $result;
+    }
+
     /**
      * @return Model_Leap_User_SessionTrace
      */
@@ -364,7 +381,8 @@ class Model_Leap_User_Session extends DB_ORM_Model
         $webinarStep = null,
         $notInUsers = null,
         $dateStatistics = null
-    ) {
+    )
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
