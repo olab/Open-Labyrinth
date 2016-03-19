@@ -166,8 +166,51 @@ class Model_Leap_Map_Question extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
-    
+
+
+    public static function getAdminBaseUrl()
+    {
+        return URL::base(true) . 'questionManager/question/';
+    }
+
+    public function getAdminUrl()
+    {
+        return static::getAdminBaseUrl() . $this->map_id . '/' . $this->entry_type_id . '/' . $this->id;
+    }
+
+    public function toxAPIExtensionObject()
+    {
+        $result = $this->as_array();
+        $result['id'] = $this->getAdminUrl();
+        $result['internal_id'] = $this->id;
+
+        return $result;
+    }
+
+    public function toxAPIObject()
+    {
+        $url = $this->getAdminUrl();
+        $object = array(
+            'id' => $url,
+
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'question (#' . $this->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Question stem: ' . $this->stem
+                ),
+                'type' => 'http://adlnet.gov/expapi/activities/cmi.interaction',
+                'moreInfo' => $url,
+            ),
+
+        );
+
+        $object['definition']['extensions'][Model_Leap_Statement::getExtensionQuestionKey()] = $this->toxAPIExtensionObject();
+
+        return $object;
+    }
+
     public function getQuestionsByMap ($mapId)
     {
         $builder = DB_SQL::select('default')

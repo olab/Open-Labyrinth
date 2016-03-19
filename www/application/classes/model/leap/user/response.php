@@ -114,22 +114,7 @@ class Model_Leap_User_Response extends DB_ORM_Model
         );
 
         $question = $this->question;
-        $url = URL::base(TRUE) . 'questionManager/question/' . $question->map_id . '/' . $question->entry_type_id . '/' . $question->id;
-        $object = array(
-            'id' => $url,
-
-            'definition' => array(
-                'name' => array(
-                    'en-US' => 'question'
-                ),
-                'description' => array(
-                    'en-US' => 'Question stem: ' . $question->stem
-                ),
-                'type' => 'http://adlnet.gov/expapi/activities/cmi.interaction',
-                'moreInfo' => $url,
-            ),
-
-        );
+        $object = $question->toxAPIObject();
 
         $result = array(
             'response' => $this->response,
