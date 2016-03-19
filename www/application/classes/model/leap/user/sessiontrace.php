@@ -218,7 +218,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -274,7 +273,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -282,10 +280,8 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
     public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace)
     {
-        if ($previous_session_trace instanceof Model_Leap_User_SessionTrace) {
-            if ($previous_session_trace->counters === $this->counters) {
-                return;
-            }
+        if ($previous_session_trace->counters === $this->counters) {
+            return;
         }
 
         $current_counters = $this->getCountersAsArray();
@@ -432,7 +428,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
             $context['contextActivities']['parent']['id'] = $webinar_url;
         }
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -491,7 +486,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
             $context['contextActivities']['parent']['id'] = $webinar_url;
         }
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);

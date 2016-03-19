@@ -30,9 +30,11 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_User_Session $session
  * @property Model_Leap_Map_Question $question
  */
-class Model_Leap_User_Response extends DB_ORM_Model {
+class Model_Leap_User_Response extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
@@ -85,15 +87,18 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
     }
 
-    public static function data_source() {
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'user_responses';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
 
@@ -109,7 +114,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         );
 
         $question = $this->question;
-        $url = URL::base(TRUE) . 'questionManager/question/'. $question->map_id .'/'.$question->entry_type_id.'/'.$question->id;
+        $url = URL::base(TRUE) . 'questionManager/question/' . $question->map_id . '/' . $question->entry_type_id . '/' . $question->id;
         $object = array(
             'id' => $url,
 
@@ -140,8 +145,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
-        Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
-
+        return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
     public function createResponse($sessionId, $questionId, $response, $nodeId = null, $created_at = null)
@@ -150,7 +154,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         $sessionObjId = $sessionObj->id;
 
         if (empty($sessionId) || empty($sessionObjId) || !empty($sessionObj->end_time)) return false;
-        if(empty($created_at)) $created_at = time();
+        if (empty($created_at)) $created_at = time();
 
         return DB_ORM::insert('User_Response')
             ->column('question_id', $questionId)
@@ -164,14 +168,14 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     public function createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner = false, $type = 'text', $nodeId = null, $created_at = null)
     {
         $json_response = array();
-        if($type == 'init'){
+        if ($type == 'init') {
             $role = 'turker';
-        }else {
+        } else {
             $role = ($isLearner) ? 'learner' : 'turker';
         }
 
-        $json_response[$chat_session_id] = array('role'=>$role, 'text'=>$response, 'type' => $type);
-        if($isLearner){
+        $json_response[$chat_session_id] = array('role' => $role, 'text' => $response, 'type' => $type);
+        if ($isLearner) {
             $json_response[$chat_session_id]['ping'] = time();
         }
         $json_response = json_encode($json_response);
@@ -183,9 +187,9 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         $result = array();
         $obj_responses = $this->getResponses($question_id, array($session_id), 'ASC', $node_id);
-        if(!empty($obj_responses)){
+        if (!empty($obj_responses)) {
             $responses = array();
-            foreach($obj_responses as $obj_response){
+            foreach ($obj_responses as $obj_response) {
                 $response = json_decode($obj_response->response, true);
                 $key = key($response);
                 $response = array_pop($response);
@@ -194,12 +198,12 @@ class Model_Leap_User_Response extends DB_ORM_Model {
                 $responses[$key][] = $response;
             }
 
-            if(empty($chat_session_id)) {
+            if (empty($chat_session_id)) {
                 $last_chat_session_id = array_keys($responses);
                 $last_chat_session_id = max($last_chat_session_id);
                 $chat_session_id = $last_chat_session_id;
             }
-            if(isset($responses[$chat_session_id])) {
+            if (isset($responses[$chat_session_id])) {
                 $result = $responses[$chat_session_id];
             }
         }
@@ -210,9 +214,9 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         $result = null;
         $obj_responses = $this->getResponses($question_id, array($session_id));
-        if(!empty($obj_responses)){
+        if (!empty($obj_responses)) {
             $responses = array();
-            foreach($obj_responses as $obj_response){
+            foreach ($obj_responses as $obj_response) {
                 $response = json_decode($obj_response->response, true);
                 $responses[] = key($response);
             }
@@ -231,14 +235,14 @@ class Model_Leap_User_Response extends DB_ORM_Model {
     {
         $result = DB_ORM::select('User_Response')->where('session_id', '=', $sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
 
-        if( ! $result) $this->createResponse($sessionId, $questionId, $response, $nodeId);
+        if (!$result) $this->createResponse($sessionId, $questionId, $response, $nodeId);
 
         $result->response = $response;
         $result->node_id = $nodeId;
         $result->save();
     }
 
-    public function getResponse ($sessionId, $questionId, $nodesId = array(), $orderBy = 'ASC')
+    public function getResponse($sessionId, $questionId, $nodesId = array(), $orderBy = 'ASC')
     {
         if (count($nodesId) > 0) {
             $result = array();
@@ -264,15 +268,16 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         }
     }
 
-    public function getResponsesByQuestion($questionId) {
+    public function getResponsesByQuestion($questionId)
+    {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('question_id', '=', $questionId);
         $result = $builder->query();
 
-        if($result->is_loaded()) {
+        if ($result->is_loaded()) {
             $responses = array();
-            foreach($result as $record){
+            foreach ($result as $record) {
                 $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
             }
 
@@ -282,7 +287,8 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return NULL;
     }
 
-    public function getResponsesBySessionAndNode($session_id, $node_id){
+    public function getResponsesBySessionAndNode($session_id, $node_id)
+    {
         return DB_ORM::select('user_response')
             ->where('session_id', '=', $session_id)
             ->where('node_id', '=', $node_id)
@@ -299,7 +305,7 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             ->where('question_id', '=', $questionId)
             ->where('session_id', 'IN', $sessions);
 
-        if(!empty($nodeId)){
+        if (!empty($nodeId)) {
             $builder->where('node_id', '=', $nodeId);
         }
 
@@ -307,9 +313,9 @@ class Model_Leap_User_Response extends DB_ORM_Model {
             ->order_by('id', $orderBy)
             ->query();
 
-        if($result->is_loaded() && count($result) > 0) {
+        if ($result->is_loaded() && count($result) > 0) {
             $responses = array();
-            foreach($result as $record){
+            foreach ($result as $record) {
                 $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
             }
             return $responses;
@@ -320,11 +326,11 @@ class Model_Leap_User_Response extends DB_ORM_Model {
 
     public function getResponsesBySessionID($sessionId)
     {
-        $result    = DB_SQL::select('default')->from($this->table())->where('session_id', '=', $sessionId)->query();
+        $result = DB_SQL::select('default')->from($this->table())->where('session_id', '=', $sessionId)->query();
         $responses = array();
 
         if ($result->is_loaded()) {
-            foreach($result as $record){
+            foreach ($result as $record) {
                 $responses[] = $record;
             }
         }
@@ -332,10 +338,11 @@ class Model_Leap_User_Response extends DB_ORM_Model {
         return $responses;
     }
 
-    public function sjtConvertResponse ($response) {
+    public function sjtConvertResponse($response)
+    {
         $result = '';
-        foreach(json_decode($response) as $responseId){
-            $result .= DB_ORM::model('Map_Question_Response', array($responseId))->response.',';
+        foreach (json_decode($response) as $responseId) {
+            $result .= DB_ORM::model('Map_Question_Response', array($responseId))->response . ',';
         }
         return trim($result, ',');
     }
