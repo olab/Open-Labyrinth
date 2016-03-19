@@ -439,8 +439,14 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //if (!$node->end) {
         //    return false;
         //}
+        $session = $this->session;
+        $end_time = $session->end_time;
 
-        $timestamp = $this->date_stamp;
+        if (empty($end_time)) {
+            return false;
+        }
+
+        $timestamp = $end_time;
 
         $verb = array(
             'id' => 'http://adlnet.gov/expapi/verbs/completed',
@@ -479,7 +485,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end result
 
         //context
-        $session = $this->session;
         $context = array();
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
@@ -543,7 +548,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -601,7 +605,6 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
-
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
