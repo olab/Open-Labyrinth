@@ -59,21 +59,10 @@ if ($user) {
 </head>
 <body>
 <?php
-$templateData['map_suspended'] = Session::instance()->get_once('map_suspended');
+$templateData['success_message'] = Session::instance()->get_once('success_message');
 $templateData['info_message'] = Session::instance()->get_once('info_message');
 $templateData['error_message'] = Session::instance()->get_once('error_message');
 ?>
-<?php if (!empty($templateData['map_suspended'])) { ?>
-    <div style="position: fixed; left: 50%;top:70px; z-index: 1500; margin-left: -89px;padding:40px 80px"
-         id="map_suspended" class="alert alert-success">
-        <span><b>Suspended.</b></span>
-    </div>
-    <script>
-        setTimeout(function () {
-            $('#map_suspended').hide();
-        }, 8000);
-    </script>
-<?php } ?>
 <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message"
      class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
 <div class="navbar navbar-fixed-top">
@@ -356,14 +345,23 @@ if (isset($templateData)) { ?>
                 }
                 ?>
                 <div class="row-fluid">
+                    <?php if (!empty($templateData['success_message'])) { ?>
+                        <div class="alert alert-success">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <b><?php echo $templateData['success_message'] ?></b>
+                        </div>
+                    <?php } ?>
+
                     <?php if (!empty($templateData['info_message'])) { ?>
                         <div class="alert alert-info">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
                             <b><?php echo $templateData['info_message'] ?></b>
                         </div>
                     <?php } ?>
 
                     <?php if (!empty($templateData['error_message'])) { ?>
                         <div class="alert alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
                             <b><?php echo $templateData['error_message'] ?></b>
                         </div>
                     <?php } ?>

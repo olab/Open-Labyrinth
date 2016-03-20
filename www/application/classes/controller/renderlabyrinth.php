@@ -1014,7 +1014,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         $userId = (!empty($user)) ? $user->id : null;
         if (!empty($userId) && !empty($sessionId) && !empty($nodeId)) {
             DB_ORM::model('User_Bookmark')->addBookmark($nodeId, $sessionId, $userId);
-            Session::instance()->set('map_suspended', true);
+            Session::instance()->set('info_message', 'Suspended.');
         }
 
         if ($ajax) {
