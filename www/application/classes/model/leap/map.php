@@ -264,11 +264,15 @@ class Model_Leap_Map extends DB_ORM_Model
             $map = DB_ORM::model('map', array((int)$map));
         }
 
+        if (!$map->send_xapi_statements) {
+            return false;
+        }
+
         if ($lrs_enabled === null) {
             $lrs_enabled = Model_Leap_LRS::isLRSEnabled();
         }
 
-        return ($map->send_xapi_statements && $lrs_enabled);
+        return $lrs_enabled;
     }
 
     public static function getAdminBaseUrl()
