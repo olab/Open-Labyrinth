@@ -134,7 +134,7 @@ class Model_Labyrinth extends Model
 
                 if(!empty($send_statements)){
                     //send xAPI statements in real-time
-                    if (Model_Leap_LRS::isLRSEnabled()) {
+                    if (Model_Leap_Map::isXAPIStatementsEnabled($result['map'])) {
 
                         if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
                             /** @var Model_Leap_User_SessionTrace $session_trace */

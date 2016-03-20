@@ -77,7 +77,7 @@ class Controller_ReportManager extends Controller_Base
             DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
 
             //send xAPI statement
-            if (Model_Leap_LRS::isLRSEnabled()) {
+            if (Model_Leap_Map::isXAPIStatementsEnabled($mapId)) {
                 $session_trace = $session->getLatestTrace();
                 /** @var Model_Leap_Statement $statement */
                 $statement = $session_trace->createXAPIStatementCompleted();

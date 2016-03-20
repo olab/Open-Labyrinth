@@ -99,6 +99,26 @@ if (isset($templateData['map'])) { ?>
             </div>
         </div><?php
         } ?>
+
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Send xAPI statements in real-time') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group" style="float:left;">
+                    <input autocomplete="off" type="radio" id="send_xapi_statements0" name="send_xapi_statements"
+                           value="0" <?php if(!$templateData['map']->send_xapi_statements){ ?> checked <?php } ?> />
+                    <label data-class="btn-danger" data-value="no" class="btn" for="send_xapi_statements0">
+                        <?php echo __('No'); ?>
+                    </label>
+
+                    <input autocomplete="off" type="radio" id="send_xapi_statements1" name="send_xapi_statements"
+                           value="1" <?php if($templateData['map']->send_xapi_statements){ ?> checked <?php } ?> />
+                    <label data-class="btn-success" data-value="yes" class="btn" for="send_xapi_statements1">
+                        <?php echo __('Yes'); ?>
+                    </label>
+                </div>
+            </div>
+        </div>
+
     </fieldset><?php
     $orderIndex=1;
     if ($uiMode == 'advanced') { ?>

@@ -26,6 +26,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $author_id
  * @property string $name
  * @property string $abstract
+ * @property bool $send_xapi_statements
  */
 class Model_Leap_Map extends DB_ORM_Model
 {
@@ -86,6 +87,11 @@ class Model_Leap_Map extends DB_ORM_Model
                 'savable' => TRUE,
             )),
             'timing' => new DB_ORM_Field_Boolean($this, array(
+                'default' => FALSE,
+                'nullable' => FALSE,
+                'savable' => TRUE,
+            )),
+            'send_xapi_statements' => new DB_ORM_Field_Boolean($this, array(
                 'default' => FALSE,
                 'nullable' => FALSE,
                 'savable' => TRUE,
@@ -245,6 +251,24 @@ class Model_Leap_Map extends DB_ORM_Model
     public static function primary_key()
     {
         return array('id');
+    }
+
+    /**
+     * @param Model_Leap_Map|int $map
+     * @param null|bool $lrs_enabled
+     * @return bool
+     */
+    public static function isXAPIStatementsEnabled($map, $lrs_enabled = null)
+    {
+        if (!($map instanceof self)) {
+            $map = DB_ORM::model('map', array((int)$map));
+        }
+
+        if ($lrs_enabled === null) {
+            $lrs_enabled = Model_Leap_LRS::isLRSEnabled();
+        }
+
+        return ($map->send_xapi_statements && $lrs_enabled);
     }
 
     public static function getAdminBaseUrl()
@@ -633,6 +657,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->section_id = Arr::get($values, 'section', 1);
         $this->language_id = Arr::get($values, 'language_id', 1);
         $this->revisable_answers = Arr::get($values, 'revisable_answers', FALSE);
+        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', FALSE);
         $this->save();
 
         $map = $this->getMapByName($this->name);
@@ -677,7 +702,9 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('source', '')
             ->column('source_id', 0)
             ->column('language_id', 1)
-            ->column('revisable_answers', FALSE);
+            ->column('revisable_answers', FALSE)
+            ->column('send_xapi_statements', FALSE)
+        ;
 
         return $builder->execute();
     }
@@ -716,6 +743,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->section_id = Arr::get($values, 'section', 1);
         $this->verification = Arr::get($values, 'verification', NULL);
         $this->revisable_answers = Arr::get($values, 'revisable_answers', FALSE);
+        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', FALSE);
 
         $this->save();
     }
@@ -862,6 +890,7 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('verification', $this->verification)
             ->column('assign_forum_id', $this->assign_forum_id)
             ->column('revisable_answers', $this->revisable_answers)
+            ->column('send_xapi_statements', $this->send_xapi_statements)
             ->execute();
 
         $nodeMap = DB_ORM::model('map_node')->duplicateNodes($mapId, $newMapId);

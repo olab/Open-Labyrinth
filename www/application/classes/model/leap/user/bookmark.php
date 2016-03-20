@@ -84,7 +84,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
         $session_trace->save();
 
         //send xAPI statement
-        if (Model_Leap_LRS::isLRSEnabled()) {
+        if (Model_Leap_Map::isXAPIStatementsEnabled($nodeObj->map_id)) {
             $statement = $session_trace->createXAPIStatementSuspended();
             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
         }

@@ -108,3 +108,5 @@ ALTER TABLE `statements`
 ALTER TABLE `user_sessiontraces` ADD `is_redirected` BOOLEAN NOT NULL DEFAULT FALSE AFTER `node_id`;
 
 ALTER TABLE `statements` CHANGE `timestamp` `timestamp` DECIMAL(18,6) NOT NULL;
+
+ALTER TABLE `maps` ADD `send_xapi_statements` BOOLEAN NOT NULL DEFAULT FALSE;
