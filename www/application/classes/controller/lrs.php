@@ -71,6 +71,7 @@ class Controller_LRS extends Controller_Base
         $model->load($post);
         $model->save();
 
+        Session::instance()->set('success_message', 'Saved.');
         Request::initial()->redirect(URL::base() . 'lrs');
     }
 
@@ -81,6 +82,7 @@ class Controller_LRS extends Controller_Base
 
         $model->delete();
 
+        Session::instance()->set('success_message', 'Deleted.');
         Request::initial()->redirect(URL::base() . 'lrs');
     }
 
@@ -91,6 +93,7 @@ class Controller_LRS extends Controller_Base
 
         $model->delete();
 
+        Session::instance()->set('success_message', 'Deleted.');
         Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
     }
 
@@ -106,6 +109,7 @@ class Controller_LRS extends Controller_Base
             $lrs_statement->sendAndSave();
         }
 
+        Session::instance()->set('info_message', 'Statements sent to LRS');
         Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
     }
 
@@ -164,11 +168,11 @@ class Controller_LRS extends Controller_Base
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
             ->query();
 
-        if($sessions->count() > 0) {
+        if ($sessions->count() > 0) {
             $this->sendSessions($sessions);
-        }else{
+        } else {
             Session::instance()
-                ->set('error_message', 'Sessions not found for date range: ' . $date_from .' - '. $date_to);
+                ->set('error_message', 'Sessions not found for date range: ' . $date_from . ' - ' . $date_to);
         }
 
         Request::initial()->redirect($redirect_url);

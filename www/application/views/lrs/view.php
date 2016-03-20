@@ -94,9 +94,21 @@ if(!empty($model)){
         </div>
 
         <div class="control-group">
-            <label class="control-label" for="is_enabled"><?php echo __('Enable'); ?></label>
+            <label class="control-label"><?php echo __('Enable') ?></label>
             <div class="controls">
-                <input name="is_enabled" type="checkbox" id="is_enabled" value="1" <?php if($is_enabled){?>checked<?php } ?>>
+                <div class="radio_extended btn-group" style="float:left;">
+                    <input autocomplete="off" type="radio" id="is_enabled0" name="is_enabled"
+                           value="0" <?php if(!$is_enabled){?>checked<?php } ?> />
+                    <label data-class="btn-danger" data-value="no" class="btn" for="is_enabled0">
+                        <?php echo __('No'); ?>
+                    </label>
+
+                    <input autocomplete="off" type="radio" id="is_enabled1" name="is_enabled"
+                           value="1" <?php if($is_enabled){?>checked<?php } ?> />
+                    <label data-class="btn-success" data-value="yes" class="btn" for="is_enabled1">
+                        <?php echo __('Yes'); ?>
+                    </label>
+                </div>
             </div>
         </div>
 
