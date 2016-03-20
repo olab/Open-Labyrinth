@@ -38,140 +38,140 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
             'name' => new DB_ORM_Field_String($this, array(
                 'max_length' => 200,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'author_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'abstract' => new DB_ORM_Field_String($this, array(
                 'max_length' => 2000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'startScore' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'threshold' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'keywords' => new DB_ORM_Field_String($this, array(
                 'max_length' => 500,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'units' => new DB_ORM_Field_String($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'security_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'guid' => new DB_ORM_Field_String($this, array(
                 'max_length' => 50,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'timing' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
             'send_xapi_statements' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
             'delta_time' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'reminder_msg' => new DB_ORM_Field_String($this, array(
                 'max_length' => 255,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'reminder_time' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'show_bar' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
             'show_score' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
             'skin_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'enabled' => new DB_ORM_Field_Boolean($this, array(
-                'default' => TRUE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => true,
+                'nullable' => false,
+                'savable' => true,
             )),
             'section_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'language_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'feedback' => new DB_ORM_Field_String($this, array(
                 'max_length' => 2000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'dev_notes' => new DB_ORM_Field_String($this, array(
                 'max_length' => 1000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'source' => new DB_ORM_Field_String($this, array(
                 'max_length' => 50,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
             'source_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'verification' => new DB_ORM_Field_Text($this, array(
-                'savable' => TRUE,
-                'nullable' => TRUE,
+                'savable' => true,
+                'nullable' => true,
             )),
             'assign_forum_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => TRUE,
-                'savable' => TRUE
+                'nullable' => true,
+                'savable' => true
             )),
             'author_rights' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE
+                'nullable' => false
             )),
             'revisable_answers' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
         );
 
@@ -354,6 +354,7 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         $result = array_unique($result);
+
         return $result;
     }
 
@@ -366,9 +367,11 @@ class Model_Leap_Map extends DB_ORM_Model
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
+
             return $maps;
         }
-        return NULL;
+
+        return null;
     }
 
     public function getAllEnabledAndOpenMap()
@@ -393,7 +396,10 @@ class Model_Leap_Map extends DB_ORM_Model
     public function getAllEnabledMap($limit = 0, $sortColumn = 'id', $sortType = 'DESC')
     {
         $builder = DB_ORM::select('Map')->where('enabled', '=', 1)->order_by($sortColumn, $sortType);
-        if ($limit) $builder->limit($limit);
+        if ($limit) {
+            $builder->limit($limit);
+        }
+
         return $builder->query()->as_array();
     }
 
@@ -406,11 +412,14 @@ class Model_Leap_Map extends DB_ORM_Model
             ->where('enabled', '=', 1, 'AND')
             ->where('security_id', '=', 1);
 
-        if ($type == 'reviewer') $builder->where('security_id', '=', 2, 'OR');
+        if ($type == 'reviewer') {
+            $builder->where('security_id', '=', 2, 'OR');
+        }
 
         foreach ($builder->query()->as_array() as $record) {
             $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
+
         return $maps;
     }
 
@@ -448,6 +457,7 @@ class Model_Leap_Map extends DB_ORM_Model
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
         }
+
         return $maps;
     }
 
@@ -472,6 +482,7 @@ class Model_Leap_Map extends DB_ORM_Model
         foreach ($result as $record) {
             $maps[] = DB_ORM::model('map', array((int)$record['id']));
         }
+
         return $maps;
     }
 
@@ -494,7 +505,9 @@ class Model_Leap_Map extends DB_ORM_Model
             ->group_by('m.id')
             ->order_by('m.id', 'DESC');
 
-        if ($limit) $builder->limit($limit);
+        if ($limit) {
+            $builder->limit($limit);
+        }
 
         $result = $builder->query();
 
@@ -505,7 +518,8 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         // add labyrinth with open security
-        foreach (DB_ORM::select('Map')->where('security_id', '=', 1)->where('enabled', '=', 1)->query()->as_array() as $openMap) {
+        foreach (DB_ORM::select('Map')->where('security_id', '=', 1)->where('enabled', '=',
+            1)->query()->as_array() as $openMap) {
             if (!in_array($openMap->id, $alreadyAttendMap)) {
                 $maps[] = $openMap;
                 $alreadyAttendMap[] = $openMap->id;
@@ -513,7 +527,8 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         // add labyrinth with close security
-        foreach (DB_ORM::select('Map')->where('security_id', '=', 2)->where('enabled', '=', 1)->query()->as_array() as $closeMap) {
+        foreach (DB_ORM::select('Map')->where('security_id', '=', 2)->where('enabled', '=',
+            1)->query()->as_array() as $closeMap) {
             if (!in_array($closeMap->id, $alreadyAttendMap)) {
                 $maps[] = $closeMap;
                 $alreadyAttendMap [] = $closeMap->id;
@@ -522,7 +537,9 @@ class Model_Leap_Map extends DB_ORM_Model
 
         foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj) {
             $mapId = $authorRightObj->map_id;
-            if (!in_array($mapId, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($mapId));
+            if (!in_array($mapId, $alreadyAttendMap)) {
+                $maps[] = DB_ORM::model('map', array($mapId));
+            }
         }
 
         return $maps;
@@ -551,7 +568,9 @@ class Model_Leap_Map extends DB_ORM_Model
             ->group_by('m.id')
             ->order_by('m.id', 'DESC');
 
-        if ($limit) $builder->limit($limit);
+        if ($limit) {
+            $builder->limit($limit);
+        }
 
         $result = $builder->query();
 
@@ -564,7 +583,9 @@ class Model_Leap_Map extends DB_ORM_Model
         }
 
         foreach (DB_ORM::select('Map_User')->where('user_id', '=', $authorId)->query()->as_array() as $authorRightObj) {
-            if (!in_array($authorRightObj->map_id, $alreadyAttendMap)) $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
+            if (!in_array($authorRightObj->map_id, $alreadyAttendMap)) {
+                $maps[] = DB_ORM::model('map', array($authorRightObj->map_id));
+            }
         }
 
         return $maps;
@@ -592,7 +613,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
         $result = $builder->query();
         if ($result->is_loaded()) {
-            $map = NULL;
+            $map = null;
             foreach ($result as $record) {
                 $map = $record['id'];
             }
@@ -600,7 +621,7 @@ class Model_Leap_Map extends DB_ORM_Model
             return $map;
         }
 
-        return NULL;
+        return null;
     }
 
     public function getAllEnabledAndCloseMap()
@@ -620,7 +641,7 @@ class Model_Leap_Map extends DB_ORM_Model
             return $maps;
         }
 
-        return NULL;
+        return null;
     }
 
     public function getAllEnabledAndKeyMap()
@@ -640,7 +661,7 @@ class Model_Leap_Map extends DB_ORM_Model
             return $maps;
         }
 
-        return NULL;
+        return null;
     }
 
     public function createMap($values, $isCreateRoot = true)
@@ -651,13 +672,13 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->keywords = Arr::get($values, 'keywords', 'empty_keywords');
         $this->type_id = 2;
         $this->skin_id = Arr::get($values, 'skin', 1);
-        $this->timing = Arr::get($values, 'timing', FALSE);
+        $this->timing = Arr::get($values, 'timing', false);
         $this->delta_time = Arr::get($values, 'delta_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
         $this->language_id = Arr::get($values, 'language_id', 1);
-        $this->revisable_answers = Arr::get($values, 'revisable_answers', FALSE);
-        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', FALSE);
+        $this->revisable_answers = Arr::get($values, 'revisable_answers', false);
+        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', false);
         $this->save();
 
         $map = $this->getMapByName($this->name);
@@ -665,6 +686,7 @@ class Model_Leap_Map extends DB_ORM_Model
         if ($isCreateRoot) {
             DB_ORM::model('map_node')->createDefaultRootNode($map->id);
         }
+
         return $map;
     }
 
@@ -689,22 +711,21 @@ class Model_Leap_Map extends DB_ORM_Model
             ->column('skin_id', 1)
             ->column('section_id', 2)
             ->column('keywords', '')
-            ->column('timing', FALSE)
+            ->column('timing', false)
             ->column('delta_time', 0)
             ->column('startScore', 0)
             ->column('threshold', 0)
             ->column('units', '')
             ->column('guid', '')
-            ->column('show_bar', FALSE)
-            ->column('show_score', FALSE)
+            ->column('show_bar', false)
+            ->column('show_score', false)
             ->column('feedback', '')
             ->column('dev_notes', '')
             ->column('source', '')
             ->column('source_id', 0)
             ->column('language_id', 1)
-            ->column('revisable_answers', FALSE)
-            ->column('send_xapi_statements', FALSE)
-        ;
+            ->column('revisable_answers', false)
+            ->column('send_xapi_statements', false);
 
         return $builder->execute();
     }
@@ -714,7 +735,7 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->id = $id;
         $this->load();
 
-        $this->enabled = FALSE;
+        $this->enabled = false;
         $this->save();
     }
 
@@ -735,15 +756,15 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->keywords = Arr::get($values, 'keywords', 'empty_keywords');
         $this->type_id = 2;
         $this->skin_id = Arr::get($values, 'skin', 1);
-        $this->timing = Arr::get($values, 'timing', FALSE);
+        $this->timing = Arr::get($values, 'timing', false);
         $this->delta_time = Arr::get($values, 'delta_time', 0);
         $this->reminder_msg = Arr::get($values, 'reminder_msg', 'empty_reminder_msg');
         $this->reminder_time = Arr::get($values, 'reminder_time', 0);
         $this->security_id = Arr::get($values, 'security', 2);
         $this->section_id = Arr::get($values, 'section', 1);
-        $this->verification = Arr::get($values, 'verification', NULL);
-        $this->revisable_answers = Arr::get($values, 'revisable_answers', FALSE);
-        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', FALSE);
+        $this->verification = Arr::get($values, 'verification', null);
+        $this->revisable_answers = Arr::get($values, 'revisable_answers', false);
+        $this->send_xapi_statements = Arr::get($values, 'send_xapi_statements', false);
 
         $this->save();
     }
@@ -770,7 +791,7 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function updateFeedback($mapId, $feedback)
     {
-        if ($feedback != NULL) {
+        if ($feedback != null) {
             $this->id = $mapId;
             $this->load();
 
@@ -800,9 +821,11 @@ class Model_Leap_Map extends DB_ORM_Model
             foreach ($result as $record) {
                 $maps[] = DB_ORM::model('map', array((int)$record['id']));
             }
+
             return $maps;
         }
-        return NULL;
+
+        return null;
     }
 
     public function getMapsIn($mapIDs)
@@ -821,11 +844,11 @@ class Model_Leap_Map extends DB_ORM_Model
         }
     }
 
-    public function getSearchMap($key, $onlyTitle = TRUE)
+    public function getSearchMap($key, $onlyTitle = true)
     {
         $maps = array();
         $user = Auth::instance()->get_user();
-        if ($user !== NULL) {
+        if ($user !== null) {
             $userMapsObj = ($user->type_id == 4)
                 ? DB_ORM::model('map')->getAllEnabledMap()
                 : DB_ORM::model('map')->getAllEnabledAndAuthoredMap($user->id);
@@ -852,6 +875,7 @@ class Model_Leap_Map extends DB_ORM_Model
                 }
             }
         }
+
         return $maps;
     }
 
@@ -860,7 +884,9 @@ class Model_Leap_Map extends DB_ORM_Model
         $this->id = $mapId;
         $this->load();
 
-        if (strlen($this->name) <= 0) return;
+        if (strlen($this->name) <= 0) {
+            return;
+        }
 
         $newMapId = DB_ORM::insert('map')
             ->column('name', $this->getMapName($this->name))
@@ -907,7 +933,8 @@ class Model_Leap_Map extends DB_ORM_Model
         DB_ORM::model('map_feedback_rule')->duplicateRules($mapId, $newMapId);
         DB_ORM::model('map_user')->duplicateUsers($mapId, $newMapId);
         DB_ORM::model('map_key')->duplicateKeys($mapId, $newMapId);
-        DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap, $questionMap, $damsMap, $mapId, $newMapId);
+        DB_ORM::model('map_node')->replaceDuplcateNodeContenxt($nodeMap, $elementMap, $vpdMap, $avatarMap, $chatMap,
+            $questionMap, $damsMap, $mapId, $newMapId);
     }
 
     public function getMapName($mapName, $mapId = 0)
@@ -946,6 +973,7 @@ class Model_Leap_Map extends DB_ORM_Model
             }
             $result .= '_' . $addNumber;
         }
+
         return $result;
     }
 
@@ -956,65 +984,88 @@ class Model_Leap_Map extends DB_ORM_Model
 
     public function createLinearMap($mapId, $values)
     {
-        if ($mapId <= 0) return;
+        if ($mapId <= 0) {
+            return;
+        }
 
         $count = Arr::get($values, 'nodesCount', 0);
 
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+        $node = DB_ORM::model('map_node')->createNode(array(
+            'map_id' => $mapId,
             'mnodetitle' => Arr::get($values, 'rootTitle', ''),
             'mnodetext' => Arr::get($values, 'rootContent', ''),
-            'type_id' => 1));
+            'type_id' => 1
+        ));
         $oldNode = $node;
         for ($i = 1; $i <= $count; $i++) {
-            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+            $node = DB_ORM::model('map_node')->createNode(array(
+                'map_id' => $mapId,
                 'mnodetitle' => Arr::get($values, 'nodeTitle' . $i, ''),
-                'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')));
+                'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')
+            ));
             if ($oldNode != null && $node != null) {
-                DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
+                DB_ORM::model('map_node_link')->addFullLink($mapId,
+                    array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
                 $oldNode = $node;
             }
         }
 
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+        $node = DB_ORM::model('map_node')->createNode(array(
+            'map_id' => $mapId,
             'mnodetitle' => Arr::get($values, 'endTitle', ''),
-            'mnodetext' => Arr::get($values, 'endContent', '')));
+            'mnodetext' => Arr::get($values, 'endContent', '')
+        ));
 
         if ($oldNode != null && $node != null) {
-            DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
+            DB_ORM::model('map_node_link')->addFullLink($mapId,
+                array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
         }
     }
 
     public function createBranchedMap($mapId, $values)
     {
-        if ($mapId <= 0) return;
+        if ($mapId <= 0) {
+            return;
+        }
 
         $count = Arr::get($values, 'nodesCount', 0);
 
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+        $node = DB_ORM::model('map_node')->createNode(array(
+            'map_id' => $mapId,
             'mnodetitle' => Arr::get($values, 'rootTitle', ''),
             'mnodetext' => Arr::get($values, 'rootContent', ''),
-            'type_id' => 1));
+            'type_id' => 1
+        ));
         $oldNode = $node;
         $nodes = array();
         for ($i = 1; $i <= $count; $i++) {
-            $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+            $node = DB_ORM::model('map_node')->createNode(array(
+                'map_id' => $mapId,
                 'mnodetitle' => Arr::get($values, 'nodeTitle' . $i, ''),
-                'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')));
+                'mnodetext' => Arr::get($values, 'nodeContent' . $i, '')
+            ));
             $nodes[] = $node;
             if ($oldNode != null && $node != null) {
-                DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
+                DB_ORM::model('map_node_link')->addFullLink($mapId,
+                    array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
             }
         }
 
-        $node = DB_ORM::model('map_node')->createNode(array('map_id' => $mapId,
+        $node = DB_ORM::model('map_node')->createNode(array(
+            'map_id' => $mapId,
             'mnodetitle' => Arr::get($values, 'endTitle', ''),
-            'mnodetext' => Arr::get($values, 'endContent', '')));
+            'mnodetext' => Arr::get($values, 'endContent', '')
+        ));
         if (count($nodes) > 0) {
             foreach ($nodes as $n) {
-                DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $n->id, 'node_id_2' => $node->id));
+                DB_ORM::model('map_node_link')->addFullLink($mapId,
+                    array('node_id_1' => $n->id, 'node_id_2' => $node->id));
             }
-        } else if ($oldNode != null && $node != null) {
-            DB_ORM::model('map_node_link')->addFullLink($mapId, array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
+        } else {
+            if ($oldNode != null && $node != null) {
+                DB_ORM::model('map_node_link')->addFullLink($mapId,
+                    array('node_id_1' => $oldNode->id, 'node_id_2' => $node->id));
+            }
         }
     }
 

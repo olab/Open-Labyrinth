@@ -40,35 +40,31 @@ class Model_Leap_User_Response extends DB_ORM_Model
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'question_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-
             'response' => new DB_ORM_Field_String($this, array(
                 'max_length' => 1000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
             'created_at' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
         );
 
@@ -123,10 +119,10 @@ class Model_Leap_User_Response extends DB_ORM_Model
         //context
         $context = array();
         $session = $this->session;
-        $node_url = URL::base(TRUE) . 'nodeManager/editNode/' . $this->node_id;
+        $node_url = URL::base(true) . 'nodeManager/editNode/' . $this->node_id;
         $context['contextActivities']['parent']['id'] = $node_url;
 
-        $map_url = URL::base(TRUE) . 'labyrinthManager/global/' . $session->map_id;
+        $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
         //end context
 
@@ -138,8 +134,12 @@ class Model_Leap_User_Response extends DB_ORM_Model
         $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
         $sessionObjId = $sessionObj->id;
 
-        if (empty($sessionId) || empty($sessionObjId) || !empty($sessionObj->end_time)) return false;
-        if (empty($created_at)) $created_at = time();
+        if (empty($sessionId) || empty($sessionObjId) || !empty($sessionObj->end_time)) {
+            return false;
+        }
+        if (empty($created_at)) {
+            $created_at = time();
+        }
 
         return DB_ORM::insert('User_Response')
             ->column('question_id', $questionId)
@@ -150,8 +150,16 @@ class Model_Leap_User_Response extends DB_ORM_Model
             ->execute();
     }
 
-    public function createTurkTalkResponse($sessionId, $questionId, $response, $chat_session_id, $isLearner = false, $type = 'text', $nodeId = null, $created_at = null)
-    {
+    public function createTurkTalkResponse(
+        $sessionId,
+        $questionId,
+        $response,
+        $chat_session_id,
+        $isLearner = false,
+        $type = 'text',
+        $nodeId = null,
+        $created_at = null
+    ) {
         $json_response = array();
         if ($type == 'init') {
             $role = 'turker';
@@ -192,6 +200,7 @@ class Model_Leap_User_Response extends DB_ORM_Model
                 $result = $responses[$chat_session_id];
             }
         }
+
         return $result;
     }
 
@@ -208,6 +217,7 @@ class Model_Leap_User_Response extends DB_ORM_Model
 
             $result = max($responses);
         }
+
         return $result;
     }
 
@@ -218,9 +228,12 @@ class Model_Leap_User_Response extends DB_ORM_Model
 
     public function updateResponse($sessionId, $questionId, $response, $nodeId)
     {
-        $result = DB_ORM::select('User_Response')->where('session_id', '=', $sessionId)->where('question_id', '=', $questionId)->query()->fetch(0);
+        $result = DB_ORM::select('User_Response')->where('session_id', '=', $sessionId)->where('question_id', '=',
+            $questionId)->query()->fetch(0);
 
-        if (!$result) $this->createResponse($sessionId, $questionId, $response, $nodeId);
+        if (!$result) {
+            $this->createResponse($sessionId, $questionId, $response, $nodeId);
+        }
 
         $result->response = $response;
         $result->node_id = $nodeId;
@@ -240,8 +253,11 @@ class Model_Leap_User_Response extends DB_ORM_Model
                     ->query()
                     ->fetch(0);
 
-                if ($response) $result[] = $response;
+                if ($response) {
+                    $result[] = $response;
+                }
             }
+
             return $result;
         } else {
             return DB_ORM::select('user_response')
@@ -269,7 +285,7 @@ class Model_Leap_User_Response extends DB_ORM_Model
             return $responses;
         }
 
-        return NULL;
+        return null;
     }
 
     public function getResponsesBySessionAndNode($session_id, $node_id)
@@ -283,7 +299,9 @@ class Model_Leap_User_Response extends DB_ORM_Model
 
     public function getResponses($questionId, $sessions, $orderBy = 'ASC', $nodeId = null)
     {
-        if (!count($sessions)) $sessions = array('');
+        if (!count($sessions)) {
+            $sessions = array('');
+        }
 
         $builder = DB_SQL::select('default')
             ->from($this->table())
@@ -303,10 +321,11 @@ class Model_Leap_User_Response extends DB_ORM_Model
             foreach ($result as $record) {
                 $responses[] = DB_ORM::model('user_response', array((int)$record['id']));
             }
+
             return $responses;
         }
 
-        return NULL;
+        return null;
     }
 
     public function getResponsesBySessionID($sessionId)
@@ -329,6 +348,7 @@ class Model_Leap_User_Response extends DB_ORM_Model
         foreach (json_decode($response) as $responseId) {
             $result .= DB_ORM::model('Map_Question_Response', array($responseId))->response . ',';
         }
+
         return trim($result, ',');
     }
 }

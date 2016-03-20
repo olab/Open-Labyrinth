@@ -132,7 +132,7 @@ class Model_Labyrinth extends Model
 
                 $c = $this->counters($traceId, $sessionId, $node, $isRoot, $cumulative);
 
-                if(!empty($send_statements)){
+                if (!empty($send_statements)) {
                     //send xAPI statements in real-time
                     if (Model_Leap_Map::isXAPIStatementsEnabled($result['map'])) {
 
@@ -162,7 +162,7 @@ class Model_Labyrinth extends Model
                     //end send xAPI statements in real-time
                 }
 
-                if(!empty($c['redirect_url'])){
+                if (!empty($c['redirect_url'])) {
                     Session::instance()->set('is_redirected', true);
                     Request::initial()->redirect($c['redirect_url']);
                 }

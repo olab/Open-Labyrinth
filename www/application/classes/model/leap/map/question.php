@@ -33,93 +33,79 @@ class Model_Leap_Map_Question extends DB_ORM_Model
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'stem' => new DB_ORM_Field_String($this, array(
                 'max_length' => 500,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'entry_type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'width' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'height' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'feedback' => new DB_ORM_Field_String($this, array(
                 'max_length' => 1000,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'prompt' => new DB_ORM_Field_Text($this, array(
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'show_answer' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'counter_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => TRUE,
+                'nullable' => true,
             )),
-
             'num_tries' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-
             'show_submit' => new DB_ORM_Field_Boolean($this, array(
-                'default' => FALSE,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'default' => false,
+                'nullable' => false,
+                'savable' => true,
             )),
-
             'redirect_node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => TRUE,
-                'unsigned' => TRUE,
+                'nullable' => true,
+                'unsigned' => true,
             )),
-
             'submit_text' => new DB_ORM_Field_String($this, array(
                 'max_length' => 200,
-                'nullable' => TRUE,
-                'savable' => TRUE,
+                'nullable' => true,
+                'savable' => true,
             )),
-
             'type_display' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
             'settings' => new DB_ORM_Field_Text($this, array(
-                'nullable' => TRUE,
-                'savable' => TRUE,
+                'nullable' => true,
+                'savable' => true,
             )),
             'is_private' => new DB_ORM_Field_Boolean($this, array(
-                'savable' => TRUE,
-                'nullable' => FALSE,
-                'default' => FALSE
+                'savable' => true,
+                'nullable' => false,
+                'default' => false
             ))
         );
 
@@ -129,26 +115,22 @@ class Model_Leap_Map_Question extends DB_ORM_Model
                 'parent_key' => array('id'),
                 'parent_model' => 'map_counter',
             )),
-
             'map' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('map_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map',
             )),
-
             'type' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('entry_type_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map_question_type',
             )),
-
             'responses' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('question_id'),
                 'child_model' => 'map_question_response',
                 'parent_key' => array('id'),
                 'options' => array(array('order_by', array('map_question_responses.order', 'ASC')))
             )),
-
             'user_responses' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('question_id'),
                 'child_model' => 'user_response',
@@ -197,7 +179,6 @@ class Model_Leap_Map_Question extends DB_ORM_Model
         $url = $this->getAdminUrl();
         $object = array(
             'id' => $url,
-
             'definition' => array(
                 'name' => array(
                     'en-US' => 'question (#' . $this->id . ')'
@@ -226,9 +207,13 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
         if ($result->is_loaded()) {
             $questions = array();
-            foreach ($result as $record) $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
+            foreach ($result as $record) {
+                $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
+            }
+
             return $questions;
         }
+
         return array();
     }
 
@@ -245,6 +230,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model
         foreach ($result as $record) {
             $questions[] = DB_ORM::model('map_question', array((int)$record['id']));
         }
+
         return $questions;
     }
 
@@ -318,7 +304,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
         $responses = DB_ORM::model('map_question_response')->getResponsesByQuestion($questionId);
 
-        if ($responses != NULL && count($responses) > 0) {
+        if ($responses != null && count($responses) > 0) {
             foreach ($responses as $response) {
                 if (isset($values['response_' . $response->id])) {
                     $response->from = Arr::get($values, 'from_' . $response->id, '');
@@ -335,18 +321,32 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
         $newResponses = array();
         foreach ($values as $key => $value) {
-            if (!(strpos($key, 'interval_from_') === FALSE)) {
+            if (!(strpos($key, 'interval_from_') === false)) {
                 $id = str_replace('interval_from_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $newResponses[$id]['from'] = $value;
-            } else if (!(strpos($key, 'interval_to_') === FALSE)) {
-                $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $newResponses[$id]['to'] = $value;
-            } else if (!(strpos($key, 'correctness_') === FALSE)) {
-                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $newResponses[$id]['correctness'] = $value;
-            } else if (!(strpos($key, 'score_') === FALSE)) {
-                $id = str_replace('score_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $newResponses[$id]['score'] = $value;
+                if (strlen($id) > 0) {
+                    $newResponses[$id]['from'] = $value;
+                }
+            } else {
+                if (!(strpos($key, 'interval_to_') === false)) {
+                    $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
+                    if (strlen($id) > 0) {
+                        $newResponses[$id]['to'] = $value;
+                    }
+                } else {
+                    if (!(strpos($key, 'correctness_') === false)) {
+                        $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                        if (strlen($id) > 0) {
+                            $newResponses[$id]['correctness'] = $value;
+                        }
+                    } else {
+                        if (!(strpos($key, 'score_') === false)) {
+                            $id = str_replace('score_', '', str_replace('_n', '', $key));
+                            if (strlen($id) > 0) {
+                                $newResponses[$id]['score'] = $value;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -452,24 +452,28 @@ class Model_Leap_Map_Question extends DB_ORM_Model
         $this->counter_id = Arr::get($values, 'counter_id', 0);
 
         $this->save();
+
         return $this->getLastAddedQuestion($mapId);
     }
 
     public function getLastAddedQuestion($mapId)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id', 'DESC')->limit(1);
+        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId)->order_by('id',
+            'DESC')->limit(1);
         $result = $builder->query();
 
         if ($result->is_loaded()) {
             return DB_ORM::model('map_question', array($result[0]['id']));
         }
 
-        return NULL;
+        return null;
     }
 
     public function duplicateQuestions($fromMapId, $toMapId, $counterMap)
     {
-        if (!$toMapId) return array();
+        if (!$toMapId) {
+            return array();
+        }
 
         $questionMap = array();
 
@@ -492,15 +496,20 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
             DB_ORM::model('map_question_response')->duplicateResponses($question->id, $questionMap[$question->id]);
         }
+
         return $questionMap;
     }
 
     public function duplicateQuestion($questionId)
     {
-        if ($questionId == null || $questionId <= 0) return;
+        if ($questionId == null || $questionId <= 0) {
+            return;
+        }
 
         $question = DB_ORM::model('map_question', array((int)$questionId));
-        if ($question == null) return;
+        if ($question == null) {
+            return;
+        }
 
         $builder = DB_ORM::insert('map_question')
             ->column('map_id', $question->map_id)
@@ -559,18 +568,32 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
         $responses = array();
         foreach ($values as $key => $value) {
-            if (!(strpos($key, 'interval_from_') === FALSE)) {
+            if (!(strpos($key, 'interval_from_') === false)) {
                 $id = str_replace('interval_from_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $responses[$id]['from'] = $value;
-            } else if (!(strpos($key, 'interval_to_') === FALSE)) {
-                $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $responses[$id]['to'] = $value;
-            } else if (!(strpos($key, 'correctness_') === FALSE)) {
-                $id = str_replace('correctness_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $responses[$id]['correctness'] = $value;
-            } else if (!(strpos($key, 'score_') === FALSE)) {
-                $id = str_replace('score_', '', str_replace('_n', '', $key));
-                if (strlen($id) > 0) $responses[$id]['score'] = $value;
+                if (strlen($id) > 0) {
+                    $responses[$id]['from'] = $value;
+                }
+            } else {
+                if (!(strpos($key, 'interval_to_') === false)) {
+                    $id = str_replace('interval_to_', '', str_replace('_n', '', $key));
+                    if (strlen($id) > 0) {
+                        $responses[$id]['to'] = $value;
+                    }
+                } else {
+                    if (!(strpos($key, 'correctness_') === false)) {
+                        $id = str_replace('correctness_', '', str_replace('_n', '', $key));
+                        if (strlen($id) > 0) {
+                            $responses[$id]['correctness'] = $value;
+                        }
+                    } else {
+                        if (!(strpos($key, 'score_') === false)) {
+                            $id = str_replace('score_', '', str_replace('_n', '', $key));
+                            if (strlen($id) > 0) {
+                                $responses[$id]['score'] = $value;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -616,10 +639,12 @@ class Model_Leap_Map_Question extends DB_ORM_Model
                 }
 
                 if (isset($object['response'])) {
-                    $responses[$responseIndex]['response'] = urldecode(str_replace('+', '&#43;', base64_decode($object['response'])));
+                    $responses[$responseIndex]['response'] = urldecode(str_replace('+', '&#43;',
+                        base64_decode($object['response'])));
                 }
                 if (isset($object['feedback'])) {
-                    $responses[$responseIndex]['feedback'] = urldecode(str_replace('+', '&#43;', base64_decode($object['feedback'])));
+                    $responses[$responseIndex]['feedback'] = urldecode(str_replace('+', '&#43;',
+                        base64_decode($object['feedback'])));
                 }
                 if (isset($object['correctness'])) {
                     $responses[$responseIndex]['correctness'] = $object['correctness'];
@@ -651,11 +676,15 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
     public function addPickQuestion($mapId, $values)
     {
-        if ($mapId == null || $mapId <= 0) return;
+        if ($mapId == null || $mapId <= 0) {
+            return;
+        }
 
         if ($values != null && count($values) > 0) {
             $questionIDs = Arr::get($values, 'questionsIDs', null);
-            if ($questionIDs == null) return;
+            if ($questionIDs == null) {
+                return;
+            }
 
             $ids = explode(' ', $questionIDs);
 
@@ -676,7 +705,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model
 
             if ($ids != null && count($ids) > 0 && $newQuestionId > 0) {
                 foreach ($ids as $id) {
-                    if ($id == null) continue;
+                    if ($id == null) {
+                        continue;
+                    }
 
                     $builder = DB_ORM::insert('map_question_response')
                         ->column('question_id', $newQuestionId)
@@ -699,7 +730,9 @@ class Model_Leap_Map_Question extends DB_ORM_Model
         if ($questionID != null && is_numeric($questionID) && $questionID > 0) {
             $question = DB_ORM::model('map_question', array((int)$questionID));
             if ($question != null) {
-                if ($counterID == '') $counterID = NULL;
+                if ($counterID == '') {
+                    $counterID = null;
+                }
                 $newQuestionID = DB_ORM::insert('map_question')
                     ->column('map_id', $mapId)
                     ->column('stem', $question->stem)
@@ -748,7 +781,7 @@ class Model_Leap_Map_Question extends DB_ORM_Model
             return $questions;
         }
 
-        return NULL;
+        return null;
     }
 
     public function importQuestion($question, $responses)

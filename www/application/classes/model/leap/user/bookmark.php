@@ -21,50 +21,55 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for user_bookmarks table in database 
+ * Model for user_bookmarks table in database
  */
-class Model_Leap_User_Bookmark extends DB_ORM_Model {
+class Model_Leap_User_Bookmark extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-			'session_id' => new DB_ORM_Field_Integer($this, array(
+            'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-			'node_id' => new DB_ORM_Field_Integer($this, array(
+            'node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
             'user_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
         );
     }
-    
-    public static function data_source() {
+
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'user_bookmarks';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
-	
-	public function addBookmark($nodeId, $sessionId, $userId)
+
+    public function addBookmark($nodeId, $sessionId, $userId)
     {
         $current_time = time();
         // check for existing bookmark
@@ -74,9 +79,9 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
         }
 
         $this->user_id = $userId;
-		$this->node_id = $nodeId;
-		$this->session_id = $sessionId;
-		$this->save();
+        $this->node_id = $nodeId;
+        $this->session_id = $sessionId;
+        $this->save();
 
         /** @var Model_Leap_User_SessionTrace $session_trace */
         $session_trace = Model_Leap_User_SessionTrace::getLatestBySession($sessionId);
@@ -89,7 +94,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
         }
         //end send xAPI statement
-	}
+    }
 
     public function deleteBookmarksByMapAndUser($mapId, $userId)
     {
@@ -98,24 +103,25 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model {
             DB_ORM::delete('User_Bookmark')->where('id', '=', $result['id'])->execute();
         }
     }
-	
-	public function getBookmark($sessionId)
+
+    public function getBookmark($sessionId)
     {
-        $result = DB_SQL::select('default')->from($this->table())->where('session_id', '=', $sessionId)->order_by('time_stamp', 'DESC')->limit(1)->query();
+        $result = DB_SQL::select('default')->from($this->table())->where('session_id', '=',
+            $sessionId)->order_by('time_stamp', 'DESC')->limit(1)->query();
 
-		if($result->is_loaded()) {
-			return DB_ORM::model('user_bookmark', array((int)$result[0]['id']));
-		}
+        if ($result->is_loaded()) {
+            return DB_ORM::model('user_bookmark', array((int)$result[0]['id']));
+        }
 
-		return NULL;
-	}
+        return null;
+    }
 
     public function  getBookmarkByMapAndUser($mapId, $userId)
     {
         return DB_SQL::select('default')
             ->from('map_nodes', 'n')
-            ->join('LEFT', 'user_bookmarks','b')
-            ->on('n.id','=','b.node_id')
+            ->join('LEFT', 'user_bookmarks', 'b')
+            ->on('n.id', '=', 'b.node_id')
             ->where('b.user_id', '=', $userId)
             ->where('n.map_id', '=', $mapId)
             ->query()
