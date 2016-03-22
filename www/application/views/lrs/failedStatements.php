@@ -81,7 +81,7 @@
         }
     } else { ?>
         <tr class="info">
-        <td colspan="4"><?php echo __('There are no failed statements!'); ?></td>
+        <td colspan="5"><?php echo __('There are no failed statements!'); ?></td>
         </tr><?php
     } ?>
     </tbody>
