@@ -203,6 +203,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $node = $this->node;
         $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $session = $this->session;
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -242,19 +243,39 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         $node = $this->node;
         $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
         $session = $this->session;
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
     }
 
-    public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace)
+    public function createXAPIStatementUpdatedMainCounter(Model_Leap_User_SessionTrace $previous_session_trace)
+    {
+        return $this->createXAPIStatementUpdated($previous_session_trace, true);
+    }
+
+    public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace, $only_main = false)
     {
         if ($previous_session_trace->counters === $this->counters) {
-            return;
+            return false;
         }
 
-        $current_counters = $this->getCountersAsArray();
-        $previous_counters = $previous_session_trace->getCountersAsArray();
+        $current_counters = array();
+        $previous_counters = array();
+        if (!$only_main) {
+            $current_counters = $this->getCountersAsArray();
+            $previous_counters = $previous_session_trace->getCountersAsArray();
+        } else {
+            $main_counter = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($this->as_array());
+            if (isset($main_counter['id']) && isset($main_counter['value'])) {
+                $current_counters[$main_counter['id']] = $main_counter['value'];
+            }
+
+            $main_counter = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($previous_session_trace->as_array());
+            if (isset($main_counter['id'], $main_counter['value'])) {
+                $previous_counters[$main_counter['id']] = $main_counter['value'];
+            }
+        }
 
         $changed_counters = array();
         foreach ($current_counters as $id => $current_counter) {
@@ -268,7 +289,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         }
 
         if (empty($changed_counters)) {
-            return;
+            return false;
         }
 
         $timestamp = $this->date_stamp;
@@ -305,23 +326,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             /** @var Model_Leap_Map_Counter $counter */
             $counter = DB_ORM::model('Map_Counter', array($counter_id));
 
-            $counter_exists = $counter->is_loaded();
+            if (!$counter->is_loaded()) {
+                continue;
+            }
 
             //object
-            $url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $counter_id;
-            $object = array(
-                'id' => $url,
-                'definition' => array(
-                    'name' => array(
-                        'en-US' => $counter_exists ? 'counter "' . $counter->name . '" (#' . $counter_id . ')' : 'counter'
-                    ),
-                    'description' => array(
-                        'en-US' => $counter_exists ? 'Counter description: ' . $counter->description : ''
-                    ),
-                    //'type' => 'http://activitystrea.ms/schema/1.0/node',
-                    'moreInfo' => $url,
-                ),
-            );
+            $object = $counter->toxAPIObject();
             //end object
 
             //result
@@ -332,8 +342,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             );
             //end result
 
-            Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+            if ($only_main) {
+                return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+            }
         }
+
+        return true;
     }
 
     public function createXAPIStatementInitialized($node = null)
@@ -370,7 +384,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         foreach ($counters as $counter_id => $counter_value) {
             $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
             $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
-            $result['extensions'][$counter_base_url] = array(
+            $result['extensions'][$counter_base_url][] = array(
                 'id' => $counter_url,
                 'internal_id' => $counter_id,
                 'value' => $counter_value,
@@ -387,6 +401,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
             $context['contextActivities']['parent']['id'] = $webinar_url;
         }
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -438,6 +453,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
             $context['contextActivities']['parent']['id'] = $webinar_url;
         }
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -475,6 +491,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //context
         $context = null;
         $session = $this->session;
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -512,6 +529,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //context
         $context = null;
         $session = $this->session;
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
@@ -692,11 +710,12 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
      * @param int $sessionId
      * @return Model_Leap_User_SessionTrace
      */
-    public static function getLatestBySession($sessionId)
+    public static function getLatestBySession($sessionId, $offset = 0)
     {
         return DB_ORM::select('user_sessionTrace')
             ->where('session_id', '=', $sessionId)
             ->order_by('id', 'DESC')
+            ->offset($offset)
             ->limit(1)
             ->query()
             ->fetch(0);

@@ -117,6 +117,14 @@ class Model_Leap_Statement extends Model_Leap_Base
     /**
      * @return string
      */
+    public static function getExtensionCounterKey()
+    {
+        return Model_Leap_Map_Counter::getAdminBaseUrl();
+    }
+
+    /**
+     * @return string
+     */
     public static function getExtensionQuestionKey()
     {
         return Model_Leap_Map_Question::getAdminBaseUrl();

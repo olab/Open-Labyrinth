@@ -38,8 +38,8 @@ class Model_Labyrinth extends Model
 
         if ($node) {
             if ($node->kfp) {
-                $matches = null;
-            } // if delete matches, program throw exception 6.6.2014
+                $matches = null; // if delete matches, program throw exception 6.6.2014
+            }
 
             $result['node'] = $node;
             $result['map'] = DB_ORM::model('map', array((int)$node->map_id));
@@ -136,11 +136,20 @@ class Model_Labyrinth extends Model
                     //send xAPI statements in real-time
                     if (Model_Leap_Map::isXAPIStatementsEnabled($result['map'])) {
 
-                        if (Model_Leap_User_Session::countTraces($sessionId) === 1) {
+                        $traces_counter = Model_Leap_User_Session::countTraces($sessionId);
+                        if ($traces_counter === 1) {
                             /** @var Model_Leap_User_SessionTrace $session_trace */
                             $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
                             $statement = $session_trace->createXAPIStatementInitialized($node);
                             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+                        } elseif ($traces_counter > 1) {
+                            /** @var Model_Leap_User_SessionTrace $session_trace */
+                            $session_trace = DB_ORM::model('user_sessionTrace', array($traceId));
+                            $previous_session_trace = Model_Leap_User_SessionTrace::getLatestBySession($sessionId, 1);
+                            $statement = $session_trace->createXAPIStatementUpdatedMainCounter($previous_session_trace);
+                            if ($statement instanceof Model_Leap_Statement) {
+                                Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+                            }
                         }
 
                         if ($node->isMustAvoid() || $node->isMustVisit()) {
@@ -972,7 +981,9 @@ class Model_Labyrinth extends Model
                     }
                     $updateCounter .= '[MCID=' . $main_counter['id'] . ',V=' . $main_counter['value'] . ']';
 
-                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id, $oldCounter,
+                    //was $oldCounter instead of $updateCounter
+                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id,
+                        $updateCounter,
                         $traceId);
                     DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id,
                         $updateCounter);

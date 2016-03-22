@@ -122,7 +122,43 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
+
+    public static function getAdminBaseUrl()
+    {
+        return URL::base(true) . 'counterManager/editCounter/';
+    }
+
+    public function toxAPIExtensionObject()
+    {
+        $result = $this->as_array();
+        $result['id'] = static::getAdminBaseUrl() . $this->map_id . '/' . $this->id;
+        $result['internal_id'] = $this->id;
+
+        return $result;
+    }
+
+    public function toxAPIObject()
+    {
+        $url = URL::base(true) . 'counterManager/editCounter/' . $this->map_id . '/' . $this->id;
+        $object = array(
+            'id' => $url,
+            'definition' => array(
+                'name' => array(
+                    'en-US' => 'counter "' . $this->name . '" (#' . $this->id . ')'
+                ),
+                'description' => array(
+                    'en-US' => 'Counter description: ' . $this->description
+                ),
+                //'type' => 'http://activitystrea.ms/schema/1.0/node',
+                'moreInfo' => $url,
+            ),
+        );
+
+        $object['definition']['extensions'][Model_Leap_Statement::getExtensionCounterKey()] = $this->toxAPIExtensionObject();
+
+        return $object;
+    }
+
     public function getCountersByMap ($mapId, $lengthSort = false)
     {
         $counters = DB_ORM::select('Map_Counter')->where('map_id', '=', $mapId)->query()->as_array();
@@ -247,7 +283,11 @@ class Model_Leap_Map_Counter extends DB_ORM_Model {
             return NULL;
         }
 
-        $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>(\+|\-)?[0-9]+(\.[0-9]+)?)+(\])+#', $counters, $matches);
+        $float_pattern = '(\+|\-)?[0-9]+(\.[0-9]+)?';
+        $string_pattern = '[a-zA-Z]+';
+        $float_or_string = '(' . $float_pattern . '|' . $string_pattern . ')';
+
+        $result = preg_match('#(\[CID='.$main_counter['id'].')+(,V=)+(?<value>' . $float_or_string . '?)?(\])+#', $counters, $matches);
         if(!empty($result) && isset($matches['value'])){
             return array('id' => $main_counter['id'], 'value' => $matches['value']);
         }else{
