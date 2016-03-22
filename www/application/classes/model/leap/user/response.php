@@ -124,6 +124,7 @@ class Model_Leap_User_Response extends Model_Leap_Base
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
         $context['contextActivities']['grouping']['id'] = $map_url;
+
         //end context
 
         return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);

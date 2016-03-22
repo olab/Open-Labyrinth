@@ -828,8 +828,7 @@ class Model_Leap_Map_Node extends Model_Leap_Base
         $damMap,
         $mapId,
         $newMapId
-    )
-    {
+    ) {
         foreach ($nodeMap as $v) {
             $this->id = $v;
             $this->load();

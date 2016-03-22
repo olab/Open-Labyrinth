@@ -383,8 +383,7 @@ class Model_Leap_User_Session extends Model_Leap_Base
         $webinarStep = null,
         $notInUsers = null,
         $dateStatistics = null
-    )
-    {
+    ) {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
