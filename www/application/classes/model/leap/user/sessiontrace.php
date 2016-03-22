@@ -38,7 +38,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_Map $map
  * @property Model_Leap_User_Session $session
  */
-class Model_Leap_User_SessionTrace extends DB_ORM_Model
+class Model_Leap_User_SessionTrace extends Model_Leap_Base
 {
 
     public function __construct()
@@ -188,8 +188,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $map = $this->map;
-        $object = $map->toxAPIObject();
+        $object = $this->map->toxAPIObject();
         //end object
 
         //result
@@ -228,8 +227,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $map = $this->map;
-        $object = $map->toxAPIObject();
+        $object = $this->map->toxAPIObject();
         //end object
 
         //result
@@ -366,8 +364,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         //end verb
 
         //object
-        $map = $this->map;
-        $object = $map->toxAPIObject();
+        $object = $this->map->toxAPIObject();
         //end object
 
         //result
@@ -430,8 +427,7 @@ class Model_Leap_User_SessionTrace extends DB_ORM_Model
         );
 
         //object
-        $map = $this->map;
-        $object = $map->toxAPIObject();
+        $object = $this->map->toxAPIObject();
         //end object
 
         //result

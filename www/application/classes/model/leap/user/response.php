@@ -30,7 +30,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_User_Session $session
  * @property Model_Leap_Map_Question $question
  */
-class Model_Leap_User_Response extends DB_ORM_Model
+class Model_Leap_User_Response extends Model_Leap_Base
 {
 
     public function __construct()

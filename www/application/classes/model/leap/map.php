@@ -26,9 +26,10 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $author_id
  * @property string $name
  * @property string $abstract
+ * @property string $keywords
  * @property bool $send_xapi_statements
  */
-class Model_Leap_Map extends DB_ORM_Model
+class Model_Leap_Map extends Model_Leap_Base
 {
 
     public function __construct()

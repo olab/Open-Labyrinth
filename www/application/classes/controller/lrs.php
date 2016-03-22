@@ -162,28 +162,35 @@ class Controller_LRS extends Controller_Base
         $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
         $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
-        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-        $sessions = DB_ORM::select('User_Session')
-            ->where('start_time', '>=', $date_from_obj->getTimestamp())
-            ->where('start_time', '<=', $date_to_obj->getTimestamp())
-            ->query();
+        $i = 0;
+        $offset = 0;
+        $limit = 5;
+        do {
+            /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
+            $sessions = DB_ORM::select('User_Session')
+                ->where('start_time', '>=', $date_from_obj->getTimestamp())
+                ->where('start_time', '<=', $date_to_obj->getTimestamp())
+                ->offset($offset)
+                ->limit($limit)
+                ->query();
 
-        if ($sessions->count() > 0) {
-            $this->sendSessions($sessions);
-        } else {
+            if ($sessions->count() > 0) {
+                Model_Leap_User_Session::sendSessionsToLRS($sessions);
+            }
+
+            $offset += 5;
+            $limit += 5;
+            $i++;
+
+        } while ($sessions->count() > 0);
+
+        if ($i < 2) {
             Session::instance()
                 ->set('error_message', 'Sessions not found for date range: ' . $date_from . ' - ' . $date_to);
+        } else {
+            Session::instance()->set('info_message', 'Statements sent to LRS');
         }
 
         Request::initial()->redirect($redirect_url);
-    }
-
-    /**
-     * @param Model_Leap_User_Session[]|DB_ResultSet $sessions
-     */
-    private function sendSessions($sessions)
-    {
-        Model_Leap_User_Session::sendSessionsToLRS($sessions);
-        Session::instance()->set('info_message', 'Statements sent to LRS');
     }
 }

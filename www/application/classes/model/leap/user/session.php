@@ -36,7 +36,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_User_Response[]|DB_ResultSet $responses
  * @property Model_Leap_Statement[]|DB_ResultSet $statements
  */
-class Model_Leap_User_Session extends DB_ORM_Model
+class Model_Leap_User_Session extends Model_Leap_Base
 {
 
     public function __construct()
@@ -176,11 +176,12 @@ class Model_Leap_User_Session extends DB_ORM_Model
      */
     public static function sendSessionsToLRS($sessions)
     {
-        foreach ($sessions as $session) {
+        /** @var Model_Leap_User_Session[] $sessions_array */
+        $sessions_array = $sessions->as_array();
+        unset($sessions);
+        foreach ($sessions_array as $key => $session) {
+            unset($sessions_array[$key]);
             static::createSessionStatements($session);
-        }
-
-        foreach ($sessions as $session) {
             $session->sendXAPIStatements();
         }
     }
@@ -195,14 +196,14 @@ class Model_Leap_User_Session extends DB_ORM_Model
         foreach ($responses as $response) {
             $response->createXAPIStatement();
         }
+        unset($responses, $session->responses);
         //end create responses statements
 
-        $session_traces = $session->traces;
+        /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
+        $session_traces_array = $session->traces->as_array();
+        unset($session);
 
-        if ($session_traces->count() > 0) {
-
-            /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
-            $session_traces_array = $session_traces->as_array();
+        if (count($session_traces_array) > 0) {
 
             usort($session_traces_array, function ($a, $b) {
                 $al = (int)$a->id;
@@ -219,7 +220,6 @@ class Model_Leap_User_Session extends DB_ORM_Model
             foreach ($session_traces_array as $key => $session_trace) {
                 $session_trace->createXAPIStatementArrived();
                 $session_trace->createXAPIStatementLaunched();
-                //$session_trace->createXAPIStatementCompleted();
                 $session_trace->createXAPIStatementSuspended();
                 $session_trace->createXAPIStatementResumed();
 
@@ -230,6 +230,8 @@ class Model_Leap_User_Session extends DB_ORM_Model
                 if (!isset($session_traces[$key + 1])) {
                     $session_trace->createXAPIStatementCompleted();
                 }
+
+                unset($session_trace, $session_traces_array[$key]);
             }
         }
     }

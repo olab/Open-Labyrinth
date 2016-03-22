@@ -31,7 +31,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property float $x
  * @property float $y
  */
-class Model_Leap_Map_Node extends DB_ORM_Model
+class Model_Leap_Map_Node extends Model_Leap_Base
 {
 
     public function __construct()

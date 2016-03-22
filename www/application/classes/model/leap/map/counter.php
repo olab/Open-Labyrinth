@@ -28,7 +28,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $description
  * @property Model_Leap_Map $map
  */
-class Model_Leap_Map_Counter extends DB_ORM_Model {
+class Model_Leap_Map_Counter extends Model_Leap_Base {
 
     public function __construct() {
         parent::__construct();

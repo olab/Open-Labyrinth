@@ -23,7 +23,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Model for map_questions table in database
  */
-class Model_Leap_Map_Question extends DB_ORM_Model
+class Model_Leap_Map_Question extends Model_Leap_Base
 {
 
     public function __construct()
