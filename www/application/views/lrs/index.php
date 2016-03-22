@@ -29,12 +29,12 @@
     </a>
 </h1>
 
-<h4>Post-hoc reports</h4>
+<h4>Post-hoc report</h4>
 <form action="/lrs/sendReportSubmit" class="form-inline left" method="post">
     <fieldset>
         <div class="control-group">
             <input class="datepicker" type="text" name="date_from" id="date_from"
-                   value="<?php echo date('m/d/Y', time() - 60 * 60 * 24) ?>"/>
+                   value="<?php echo date('m/d/Y') ?>"/>
             -
             <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
             <button type="submit" class="btn btn-primary">Send to all enabled LRS</button>
