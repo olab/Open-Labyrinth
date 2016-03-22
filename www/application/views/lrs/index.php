@@ -37,10 +37,13 @@
                    value="<?php echo date('m/d/Y') ?>"/>
             -
             <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
-            <button type="submit" class="btn btn-primary">Send to all enabled LRS</button>
+            <button type="submit" class="btn btn-primary _xapi-report">Send to all enabled LRS</button>
         </div>
     </fieldset>
 </form>
+<script>
+    showWaitPopup('._xapi-report');
+</script>
 
 <hr>
 

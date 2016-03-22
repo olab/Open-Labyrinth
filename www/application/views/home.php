@@ -56,6 +56,7 @@ if ($user) {
     <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico"/>
     <script> var baseURL = '<?php echo URL::base() ?>';</script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base() . 'scripts/helper.js'); ?>'"></script>
 </head>
 <body>
 <?php
@@ -63,6 +64,16 @@ $templateData['success_message'] = Session::instance()->get_once('success_messag
 $templateData['info_message'] = Session::instance()->get_once('info_message');
 $templateData['error_message'] = Session::instance()->get_once('error_message');
 ?>
+
+<div class="modal hide alert alert-block alert-success fade in" id="please_wait">
+    <div class="modal-header">
+        <h4 class="alert-heading"><?php echo __('Processing...'); ?></h4>
+    </div>
+    <div class="modal-body">
+        <p><?php echo __('Please wait. Page will be reloaded automatically.'); ?></p>
+    </div>
+</div>
+
 <div style="position: fixed;top:50%;left:50%;z-index: 1500;" id="collaboration_message"
      class="alert alert-success hide"><span id="collaboration_message_text">Message</span></div>
 <div class="navbar navbar-fixed-top">

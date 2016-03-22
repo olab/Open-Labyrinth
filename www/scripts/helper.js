@@ -28,3 +28,15 @@ function deleteJSCookie(cname)
 {
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
 }
+
+function showWaitPopup(selector)
+{
+    $(document).ready(function(){
+        $(selector).on('click', function(){
+            $(this).hide();
+            setTimeout(function(){
+                $('#please_wait').removeClass('hide');
+            }, 2000);
+        });
+    });
+}
