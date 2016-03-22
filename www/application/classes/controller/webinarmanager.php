@@ -792,10 +792,11 @@ class Controller_WebinarManager extends Controller_Base
 
     private function getWebinarsForTimeBasedReport()
     {
+        set_time_limit(60*3);
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
-        $redirect_url = URL::base() . 'webinarmanager/timeBasedReports';
+        $redirect_url = URL::base() . 'webinarmanager/progress';
 
         if (empty($date_from) || empty($date_to)) {
             Session::instance()->set('error_message', 'Dates cannot be blank');

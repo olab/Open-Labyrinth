@@ -99,6 +99,7 @@ class Controller_LRS extends Controller_Base
 
     public function action_sendFailedLRSStatements()
     {
+        $this->increaseMaxExecutionTime();
         /** @var Model_Leap_LRSStatement[] $lrs_statements */
         $lrs_statements = DB_ORM::select('LRSStatement')
             ->where('status', '=', Model_Leap_LRSStatement::STATUS_FAIL)
@@ -145,6 +146,7 @@ class Controller_LRS extends Controller_Base
 
     public function action_sendReportSubmit()
     {
+        $this->increaseMaxExecutionTime();
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
@@ -193,5 +195,10 @@ class Controller_LRS extends Controller_Base
         }
 
         Request::initial()->redirect($redirect_url);
+    }
+
+    private function increaseMaxExecutionTime()
+    {
+        set_time_limit(60*3);
     }
 }
