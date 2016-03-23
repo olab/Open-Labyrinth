@@ -23,14 +23,87 @@
 ?>
 <h1 class="page-header">
     <?php echo __('Failed xAPI Statements by LRS'); ?>
-    <a class="btn btn-primary pull-right" href="<?php echo URL::base() . 'lrs/sendFailedLRSStatements'; ?>">
-        <?php echo __('Send all again'); ?>
-    </a>
 </h1>
+
+<div style="margin-bottom: 10px">
+    <div class="btn-group">
+        <a class="btn btn-primary" href="<?php echo URL::base() . 'lrs/sendFailedLRSStatements'; ?>">
+            <?php echo __('Send all'); ?>
+        </a>
+
+        <a data-toggle="modal" href="javascript:void(0)"
+           data-target="#deleteFailedLRSStatements" class="btn btn-danger">
+            <i class="icon-trash icon-white"></i>
+            <?php echo __('Delete All'); ?>
+        </a>
+    </div>
+
+    <div class="btn-group">
+        <span class="btn btn-primary" id="sendSelectedFailedLRSStatements">
+            <?php echo __('Send selected'); ?>
+        </span>
+
+        <a data-toggle="modal" href="javascript:void(0)"
+           data-target="#deleteSelectedFailedLRSStatementsPopup" class="btn btn-danger">
+            <i class="icon-trash icon-white"></i>
+            <?php echo __('Delete selected'); ?>
+        </a>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#sendSelectedFailedLRSStatements').on('click', function(){
+            var lrs_statement_ids = getCheckboxesValues();
+            if (lrs_statement_ids.length) {
+                $.post('/lrs/sendSelectedFailedLRSStatements', {'lrs_statement_ids': lrs_statement_ids})
+                    .done(function () {
+                        window.location.reload();
+                    })
+                    .fail(function (jqXHR) {
+                        loading.stop('body');
+                        var response = JSON.parse(jqXHR.responseText),
+                            message = 'Unexpected error. Please, try again';
+
+                        if (response.hasOwnProperty('message')) {
+                            message = response.message;
+                        }
+
+                        alert(message);
+                    });
+            } else {
+                alert('Please select at least one item.');
+            }
+        });
+
+        $('#deleteSelectedFailedLRSStatements').on('click', function() {
+            var lrs_statement_ids = getCheckboxesValues();
+            if (lrs_statement_ids.length) {
+                $.post('/lrs/deleteSelectedFailedLRSStatements', {'lrs_statement_ids': lrs_statement_ids})
+                    .done(function () {
+                        window.location.reload();
+                    })
+                    .fail(function (jqXHR) {
+                        loading.stop('body');
+                        var response = JSON.parse(jqXHR.responseText),
+                            message = 'Unexpected error. Please, try again';
+
+                        if (response.hasOwnProperty('message')) {
+                            message = response.message;
+                        }
+
+                        alert(message);
+                    });
+            } else {
+                alert('Please select at least one item.');
+            }
+        });
+    });
+</script>
 
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
+        <th></th>
         <th>ID</th>
         <th>Statement ID</th>
         <th>Verb</th>
@@ -45,6 +118,9 @@
         foreach ($templateData['lrs_statements'] as $lrs_statement) {
             ?>
             <tr>
+                <td>
+                    <input name="lrs_statements[]" class="_checkbox" type="checkbox" value="<?php echo $lrs_statement->id; ?>">
+                </td>
                 <td><?php echo $lrs_statement->id; ?></td>
                 <td><?php echo $lrs_statement->statement_id; ?></td>
                 <td>
@@ -85,8 +161,45 @@
         }
     } else { ?>
         <tr class="info">
-        <td colspan="6"><?php echo __('There are no failed statements!'); ?></td>
+        <td colspan="7"><?php echo __('There are no failed statements!'); ?></td>
         </tr><?php
     } ?>
     </tbody>
 </table>
+
+<div class="modal hide alert alert-block alert-error fade in"
+     id="deleteFailedLRSStatements">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+    </div>
+    <div class="modal-body">
+        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting ?'); ?></p>
+
+        <p>
+            <a class="btn btn-danger"
+               href="<?php echo URL::base() . 'lrs/deleteFailedLRSStatements'; ?>">
+                <?php echo __('Delete'); ?>
+            </a>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </p>
+    </div>
+</div>
+
+<div class="modal hide alert alert-block alert-error fade in"
+     id="deleteSelectedFailedLRSStatementsPopup">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
+    </div>
+    <div class="modal-body">
+        <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting ?'); ?></p>
+
+        <p>
+            <span class="btn btn-danger" id="deleteSelectedFailedLRSStatements">
+                <?php echo __('Delete'); ?>
+            </span>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </p>
+    </div>
+</div>

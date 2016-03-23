@@ -114,6 +114,56 @@ class Controller_LRS extends Controller_Base
         Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
     }
 
+    public function action_deleteFailedLRSStatements()
+    {
+        DB_ORM::delete('LRSStatement')
+            ->where('status', '=', Model_Leap_LRSStatement::STATUS_FAIL)
+            ->execute();
+
+        Session::instance()->set('info_message', 'Statements deleted.');
+        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+    }
+
+    public function action_sendSelectedFailedLRSStatements()
+    {
+        $this->increaseMaxExecutionTime();
+        $post = $this->request->post();
+        $lrs_statement_ids = Arr::get($post, 'lrs_statement_ids');
+
+        if (empty($lrs_statement_ids)) {
+            Session::instance()->set('error_message', 'Statements not selected.');
+            die;
+        }
+        /** @var Model_Leap_LRSStatement[] $lrs_statements */
+        $lrs_statements = DB_ORM::select('LRSStatement')
+            ->where('id', 'IN', $lrs_statement_ids)
+            ->query();
+
+        foreach ($lrs_statements as $lrs_statement) {
+            $lrs_statement->sendAndSave();
+        }
+
+        Session::instance()->set('info_message', 'Statements sent to LRS');
+        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+    }
+
+    public function action_deleteSelectedFailedLRSStatements()
+    {
+        $post = $this->request->post();
+        $lrs_statement_ids = Arr::get($post, 'lrs_statement_ids');
+
+        if (empty($lrs_statement_ids)) {
+            Session::instance()->set('error_message', 'Statements not selected.');
+            die;
+        }
+        DB_ORM::delete('LRSStatement')
+            ->where('id', 'IN', $lrs_statement_ids)
+            ->execute();
+
+        Session::instance()->set('info_message', 'Statements deleted.');
+        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+    }
+
     public function action_failedStatements()
     {
         $lrs_statements = DB_ORM::select('LRSStatement')
@@ -199,6 +249,6 @@ class Controller_LRS extends Controller_Base
 
     private function increaseMaxExecutionTime()
     {
-        set_time_limit(60*3);
+        set_time_limit(60 * 3);
     }
 }

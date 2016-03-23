@@ -40,3 +40,10 @@ function showWaitPopup(selector)
         });
     });
 }
+
+function getCheckboxesValues()
+{
+    return $('._checkbox:checked').map(function() {
+        return this.value;
+    }).get();
+}
