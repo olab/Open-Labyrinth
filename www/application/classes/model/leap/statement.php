@@ -281,7 +281,7 @@ class Model_Leap_Statement extends Model_Leap_Base
             } else {
                 $this->response = $response;
 
-                throw new \Exception($response);
+                throw new \Exception($response->content);
             }
         } catch (\Exception $ex) {
 
