@@ -810,6 +810,7 @@ class Controller_WebinarManager extends Controller_Base
             ->from(Model_Leap_User_Session::table())
             ->where('start_time', '>=', $date_from_obj->getTimestamp())
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
+            ->where('webinar_id', '>', 0)
             ->column('webinar_id')
             ->query()
             ->as_array();
