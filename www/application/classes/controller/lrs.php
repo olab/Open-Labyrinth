@@ -68,7 +68,12 @@ class Controller_LRS extends Controller_Base
             $model = new Model_Leap_LRS();
         }
 
-        $model->load($post);
+        $data = array();
+        foreach ($post as $key => $value) {
+            $data[$key] = trim($value);
+        }
+
+        $model->load($data);
         $model->save();
 
         Session::instance()->set('success_message', 'Saved.');
