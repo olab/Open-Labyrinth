@@ -113,8 +113,11 @@ class Model_Labyrinth extends Model
             $result['redirect'] = null;
             $result['remoteCounters'] = '';
             $previewSessionTrace = DB_ORM::model('user_sessionTrace', array((int)$result['previewNodeId']));
-            $result['c_debug'] = $this->addQuestionResponsesAndChangeCounterValues($node->map_id, $sessionId,
-                $previewSessionTrace->node_id);
+            $result['c_debug'] = $this->addQuestionResponsesAndChangeCounterValues(
+                $node->map_id,
+                $sessionId,
+                $previewSessionTrace->node_id
+            );
 
             if ($conditional == null) {
                 if ($sessionId AND $bookmark) {
@@ -123,8 +126,14 @@ class Model_Labyrinth extends Model
                 } elseif ($sessionId) {
                     $is_redirected = Session::instance()->get('is_redirected', false);
                     Session::instance()->set('is_redirected', false);
-                    $traceId = DB_ORM::model('user_sessionTrace')->createTrace($sessionId, $result['userId'],
-                        $node->map_id, $node->id, $is_redirected);
+                    $traceId = DB_ORM::model('user_sessionTrace')->createTrace(
+                        $sessionId,
+                        $result['userId'],
+                        $node->map_id,
+                        $node->id,
+                        $is_redirected
+                    );
+
                     $send_statements = true;
                 } else {
                     $traceId = 'notExist';
@@ -982,11 +991,19 @@ class Model_Labyrinth extends Model
                     $updateCounter .= '[MCID=' . $main_counter['id'] . ',V=' . $main_counter['value'] . ']';
 
                     //was $oldCounter instead of $updateCounter
-                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $node->map_id, $node->id,
+                    DB_ORM::model('user_sessionTrace')->updateCounter(
+                        $sessionId,
+                        $node->map_id,
+                        $node->id,
                         $updateCounter,
-                        $traceId);
-                    DB_ORM::model('user_sessionTrace')->updateCounter($sessionId, $rootNode->map_id, $rootNode->id,
-                        $updateCounter);
+                        $traceId
+                    );
+                    DB_ORM::model('user_sessionTrace')->updateCounter(
+                        $sessionId,
+                        $rootNode->map_id,
+                        $rootNode->id,
+                        $updateCounter
+                    );
 
                     // Cron must execute after user_sessionTrace update
                     DB_ORM::model('Cron')->parseRule($node->map_id);
