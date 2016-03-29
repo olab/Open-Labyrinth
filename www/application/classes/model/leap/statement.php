@@ -181,9 +181,9 @@ class Model_Leap_Statement extends Model_Leap_Base
         $model->timestamp = (float)$timestamp;
 
         $statement = array();
-        // Use format('c') instead of format(\DateTime::ISO8601) due to bug in format(\DateTime::ISO8601) that generates an invalid timestamp.
-        $statement['timestamp'] = DateTime::createFromFormat('U', round($model->timestamp))
-            ->format('c');
+
+        $statement['timestamp'] = DateTime::createFromFormat('U.u', number_format($model->timestamp, 6, '.', ''))
+            ->format('Y-m-d\TH:i:s.u') . 'Z';
         //end timestamp
 
         //actor
