@@ -194,7 +194,7 @@ class Model_Leap_Statement extends Model_Leap_Base
             //'mbox' => 'mailto:' . trim($user->email), Agent MUST NOT include more than one Inverse Functional Identifier
             'account' => array(
                 'homePage' => URL::base(true),
-                'name' => $user->id,
+                'name' => (string)$user->id,
             ),
         );
         //end actor
