@@ -1450,15 +1450,23 @@ class Controller_WebinarManager extends Controller_Base
     {
         $result = '';
         $node_id = (int)$this->request->param('id', null);
-        if (empty($node_id)) {
+        $session_id = (int)$this->request->param('id2', null);
+        if (empty($node_id) || empty($session_id)) {
             die($result);
         }
+
+        /** @var Model_Leap_Map_Node $node */
         $node = DB_ORM::model('Map_Node', array($node_id));
         if (!empty($node)) {
             $links = $node->links;
-            if (!empty($links) && count($links) > 0) {
+            if ($links->count() > 0) {
                 $result = '<option value="">- Redirect to... -</option>';
                 foreach ($links as $link) {
+
+                    if ($link->node_2->undo && $link->node_2->isVisitedDuringSession($session_id)) {
+                        continue;
+                    }
+
                     $value = array('map_id' => $link->map_id, 'node_id' => $link->node_id_2);
                     $value = json_encode($value);
                     $node_title = trim($link->node_2->title);

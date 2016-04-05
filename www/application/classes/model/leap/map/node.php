@@ -26,10 +26,12 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $map_id
  * @property int $priority_id
  * @property int|bool $end
+ * @property int|bool $undo
  * @property string $title
  * @property string $text
  * @property float $x
  * @property float $y
+ * @property Model_Leap_Map_Node_Link[]|DB_ResultSet $links
  */
 class Model_Leap_Map_Node extends Model_Leap_Base
 {
@@ -246,6 +248,22 @@ class Model_Leap_Map_Node extends Model_Leap_Base
         $object['definition']['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
 
         return $object;
+    }
+
+    /**
+     * @param int $session_id
+     * @return bool
+     */
+    public function isVisitedDuringSession($session_id)
+    {
+        $counter = DB_SQL::select()
+            ->from(Model_Leap_User_SessionTrace::table())
+            ->where('session_id', '=', $session_id)
+            ->where('node_id', '=', $this->id)
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->query();
+
+        return ($counter[0]['counter'] > 0);
     }
 
     /**

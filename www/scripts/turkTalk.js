@@ -103,14 +103,15 @@ function getNodeLinks(chat_id)
         node_id_obj = chat.find('.node_id'),
         node_id = node_id_obj.text(),
         question_id = chat.find('.question_id').attr('value'),
+        session_id = chat.find('.session_id').attr('value'),
         int_chat_id = parseInt(chat_id.replace('chat-', ''));
 
     //don't send request if there is no TurkTalk question on the current node
-    if(!empty(node_id) && !empty(question_id)){
+    if(!empty(node_id) && !empty(question_id) && !empty(session_id)){
         //don't send request if this is the same node
         if(previousNodesId[int_chat_id] != node_id) {
             $.ajax({
-                url: urlBase + 'webinarManager/getNodeLinks/' + node_id,
+                url: urlBase + 'webinarManager/getNodeLinks/' + node_id + '/' + session_id,
                 async: true,
                 success: function (response) {
                     if (!empty(response)) {
