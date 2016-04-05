@@ -1368,7 +1368,11 @@ class Controller_WebinarManager extends Controller_Base
             }
 
             //if the last one response has role 'learner' and current user is learner, then save time of last view
-            $last_response = end($responses);
+
+            do {
+                $last_response = array_pop($responses);
+            } while ($last_response['type'] === 'bell' && !empty($responses));
+
             if ($last_response['role'] === 'learner' && $from_labyrinth) {
                 $last_response_obj = DB_ORM::model('user_response', array((int)$last_response['id']));
                 $response_arr = json_decode($last_response_obj->response, true);
