@@ -1974,6 +1974,22 @@ class Controller_RenderLabyrinth extends Controller_Template
                                                 DB_ORM::model('User_Response')->createTurkTalkResponse($sessionId, $id,
                                                     $question->stem, $chat_session_id, true, 'init', self::$nodeId);
 
+                                                $ttulk_width = $question->width * 8;
+                                                $ttulk_height = $question->height * 150;
+                                                if ($question->height >= 8) {
+                                                    $ttulk_textarea_height = 8 * 6.25;
+                                                } else {
+                                                    $ttulk_textarea_height = $question->height * 6.25;
+                                                }
+
+                                                $ttulk_width = round((float)$ttulk_width);
+                                                $ttulk_height = round((float)$ttulk_height);
+                                                $ttulk_textarea_height = round((float)$ttulk_textarea_height);
+
+                                                if ($ttulk_width < 200) {
+                                                    $ttulk_width = 200;
+                                                }
+
                                                 $result =
                                                     '
 <script>
@@ -1992,10 +2008,10 @@ class Controller_RenderLabyrinth extends Controller_Template
 <input type="hidden" class="question_id" value="' . $id . '">
 <input type="hidden" class="session_id" value="' . $sessionId . '">
 <input type="hidden" class="chat_session_id" value="' . $chat_session_id . '">
-<div class="chat-window" style="width:404px;height:300px;overflow-y:auto;background:white;border:1px solid #eee"></div>
+<div class="chat-window" style="width:'.($ttulk_width + 4).'px;height:'.$ttulk_height.'px;overflow-y:auto;background:white;border:1px solid #eee"></div>
 
 <div class="ttalk">
-                    <textarea style="width:400px;height:50px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" cols="' . $question->width . '" rows="' . $question->height . '" data-question-id="' . $question->id . '" ' . $placeholder . '></textarea>' .
+                    <textarea style="width:'.$ttulk_width.'px;height:'.$ttulk_textarea_height.'px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" data-question-id="' . $question->id . '" ' . $placeholder . '></textarea>' .
                                                     '<p>
                         <button class="ttalkButton">Submit</button>
                     </p>';
