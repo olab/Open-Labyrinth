@@ -256,21 +256,17 @@ class Model_Leap_User_Session extends Model_Leap_Base
     public function getUserNote()
     {
         if ($this->isWebinar()) {
-            $user_note = DB_ORM::select('user_note')
+            $query = DB_ORM::select('user_note')
                 ->where('webinar_id', '=', $this->webinar_id)
-                ->where('user_id', '=', $this->user_id)
-                ->limit(1)
-                ->query()
-                ->fetch(0);
+                ->where('user_id', '=', $this->user_id);
         } else {
-            $user_note = DB_ORM::select('user_note')
-                ->where('session_id', '=', $this->id)
-                ->limit(1)
-                ->query()
-                ->fetch(0);
+            $query = DB_ORM::select('user_note')
+                ->where('session_id', '=', $this->id);
         }
 
-        return $user_note;
+        $query->where('deleted_at', '=', null);
+
+        return $query->limit(1)->query()->fetch(0);
     }
 
     public function getUserNoteOrCreateNew()

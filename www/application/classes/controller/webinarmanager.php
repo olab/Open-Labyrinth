@@ -943,6 +943,10 @@ class Controller_WebinarManager extends Controller_Base
         DB_ORM::model('qCumulative')->setResetByScenario($scenarioId);
         DB_ORM::model('webinar')->resetWebinar($scenarioId);
 
+        if (!empty($scenarioId)) {
+            Model_Leap_User_Note::deleteByWebinarId($scenarioId);
+        }
+
         Request::initial()->redirect(URL::base() . 'webinarmanager/index');
     }
 

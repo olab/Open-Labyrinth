@@ -115,6 +115,22 @@ class Model_Leap_User_Note extends Model_Leap_Base
     // Additional helper methods
     //-----------------------------------------------------
 
+    /**
+     * @param $webinar_id
+     * @throws Exception
+     */
+    public static function deleteByWebinarId($webinar_id)
+    {
+        if (empty($webinar_id) || !is_numeric($webinar_id)) {
+            throw new Exception('webinar_id must be an integer > 0');
+        }
+
+        DB_ORM::update('User_Note')
+            ->where('webinar_id', '=', $webinar_id)
+            ->set('deleted_at', microtime(true))
+            ->execute();
+    }
+
     public function save($reload = false)
     {
         $id = $this->id;
