@@ -171,7 +171,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         }
 
         $user_note = $sessionObj->getUserNote();
-        if(!empty($user_note)){
+        if (!empty($user_note)) {
             $data['user_notepad_text'] = $user_note->text;
         }
 
