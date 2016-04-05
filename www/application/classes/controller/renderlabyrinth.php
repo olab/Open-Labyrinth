@@ -145,10 +145,13 @@ class Controller_RenderLabyrinth extends Controller_Template
         $nodeId = $nodeObj->id;
         $mapId = $nodeObj->map_id;
         $isRoot = ($nodeObj->type_id == 1 && $action == 'index') ? true : false;
-        $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
         $data = ($action === 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
             : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, Controller_RenderLabyrinth::$isCumulative);
+
+        /** @var Model_Leap_User_Session $sessionObj */
+        $sessionObj = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')));
+        $scenarioId = $sessionObj->webinar_id;
 
         if ($action === 'resume' && !empty($bookmark)) {
             $session_trace = Model_Leap_User_SessionTrace::getLatestBySession(DB_ORM::model('user_bookmark',
@@ -165,6 +168,11 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         if (!$data) {
             Request::initial()->redirect(URL::base());
+        }
+
+        $user_note = $sessionObj->getUserNote();
+        if(!empty($user_note)){
+            $data['user_notepad_text'] = $user_note->text;
         }
 
         /* if exist poll node save its time */
@@ -268,6 +276,21 @@ class Controller_RenderLabyrinth extends Controller_Template
         }
 
         $this->template = View::factory($skin)->set('templateData', $data);
+    }
+
+    public function action_saveUserNote()
+    {
+        $text = trim($this->request->post('text'));
+
+        $sessionId = Session::instance()->get('session_id');
+        /** @var Model_Leap_User_Session $sessionObj */
+        $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
+
+        $user_note = $sessionObj->getUserNoteOrCreateNew();
+        $user_note->text = $text;
+        $user_note->save();
+
+        die(json_encode(array('result' => 'success')));
     }
 
     public function action_resume()

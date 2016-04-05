@@ -366,6 +366,13 @@ $id_node = $templateData['node']->id; ?>
                         <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $id_map; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
                     </p>
 
+                    <p>
+                        <label for="user_notepad"></label>
+                        <textarea class="user_notepad" id="user_notepad">
+                            <?php if(!empty($templateData['user_notepad_text'])) echo $templateData['user_notepad_text']; ?>
+                        </textarea>
+                    </p>
+
                     <a href="<?php echo URL::base(); ?>">
                         <img src="<?php echo URL::base(); ?>images/openlabyrinth-powerlogo-wee.jpg" height="20" width="118" alt="OpenLabyrinth" border="0"/>
                     </a>
@@ -490,5 +497,6 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                                      } ?>];
 </script>
 <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/user-notepad.js'); ?>"></script>
 </body>
 </html>

@@ -25,9 +25,9 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $user_id
  * @property int $map_id
  * @property int $start_time
- * @property int $end_time
- * @property int $webinar_id
- * @property int $webinar_step
+ * @property int|null $end_time
+ * @property int|null $webinar_id
+ * @property int|null $webinar_step
  * @property bool $notCumulative
  * @property string $user_ip
  * @property Model_Leap_User $user
@@ -248,6 +248,56 @@ class Model_Leap_User_Session extends Model_Leap_Base
         foreach ($lrs_statements as $lrs_statement) {
             $lrs_statement->sendAndSave();
         }
+    }
+
+    /**
+     * @return Model_Leap_User_Note|bool
+     */
+    public function getUserNote()
+    {
+        if ($this->isWebinar()) {
+            $user_note = DB_ORM::select('user_note')
+                ->where('webinar_id', '=', $this->webinar_id)
+                ->where('user_id', '=', $this->user_id)
+                ->limit(1)
+                ->query()
+                ->fetch(0);
+        } else {
+            $user_note = DB_ORM::select('user_note')
+                ->where('session_id', '=', $this->id)
+                ->limit(1)
+                ->query()
+                ->fetch(0);
+        }
+
+        return $user_note;
+    }
+
+    public function getUserNoteOrCreateNew()
+    {
+        $user_note = $this->getUserNote();
+
+        if (!($user_note instanceof Model_Leap_User_Note)) {
+            $user_note = new Model_Leap_User_Note;
+            if ($this->isWebinar()) {
+                $user_note->user_id = $this->user_id;
+                $user_note->webinar_id = $this->webinar_id;
+            } else {
+                $user_note->session_id = $this->id;
+            }
+
+            $user_note->user_id = $this->user_id;
+        }
+
+        return $user_note;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWebinar()
+    {
+        return ($this->webinar_id > 0);
     }
 
     public function createSession($userId, $mapId, $startTime, $userIp, $webinarId = null, $webinarStep = null)
