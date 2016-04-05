@@ -792,7 +792,7 @@ class Controller_WebinarManager extends Controller_Base
 
     private function getWebinarsForTimeBasedReport()
     {
-        set_time_limit(60*3);
+        set_time_limit(60 * 5);
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
@@ -817,7 +817,7 @@ class Controller_WebinarManager extends Controller_Base
 
         if (empty($webinar_ids)) {
             Session::instance()
-                ->set('error_message', 'Scenarios sessions not found for date range: ' . $date_from .' - '. $date_to);
+                ->set('error_message', 'Scenarios sessions not found for date range: ' . $date_from . ' - ' . $date_to);
             Request::initial()->redirect($redirect_url);
         }
 
