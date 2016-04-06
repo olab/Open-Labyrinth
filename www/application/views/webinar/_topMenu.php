@@ -139,10 +139,17 @@ $action = Request::initial()->action();
         </div>
         <div class="modal-body">
             <p>
-                <?php echo __('Warning! Do you really want to reset scenario? If you reset webinar all user sessions which created on playing this scenarion will be delete.'); ?>
+                <?php echo __('Warning! Do you really want to reset scenario?'); ?>
             </p>
             <div>
-                <a class="btn btn-danger" href="<?php echo URL::base().'webinarManager/reset/'.$scenario->id; ?>"><?php echo __('Reset'); ?></a>
+                <a class="btn btn-warning" href="<?php echo URL::base().'webinarManager/reset/'.$scenario->id; ?>">
+                    <?php echo __('Reset'); ?>
+                </a>
+
+                <a class="btn btn-danger" href="<?php echo URL::base().'webinarManager/reset/'.$scenario->id.'/1'; ?>">
+                    <?php echo __('Reset and delete all user sessions'); ?>
+                </a>
+
                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </div>
         </div>

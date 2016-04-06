@@ -25,6 +25,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $user_id
  * @property int $map_id
  * @property int $start_time
+ * @property float|null $reset_at
  * @property int|null $end_time
  * @property int|null $webinar_id
  * @property int|null $webinar_step
@@ -84,7 +85,12 @@ class Model_Leap_User_Session extends Model_Leap_Base
             'notCumulative' => new DB_ORM_Field_Boolean($this, array(
                 'nullable' => false,
                 'savable' => true
-            ))
+            )),
+            'reset_at' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => true,
+                'savable' => true,
+            )),
         );
 
         $this->relations = array(
@@ -350,7 +356,7 @@ class Model_Leap_User_Session extends Model_Leap_Base
         return null;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null)
+    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null, $includeReset = true)
     {
         $builder = DB_ORM::select('User_Session')
             ->where('user_id', '=', $userId)
@@ -363,6 +369,10 @@ class Model_Leap_User_Session extends Model_Leap_Base
 
         if ($currentStep != null) {
             $builder = $builder->where('webinar_step', '<=', $currentStep);
+        }
+
+        if (!$includeReset) {
+            $builder = $builder->where('reset_at', '=', null);
         }
 
         return $builder->query()->as_array();
@@ -384,7 +394,7 @@ class Model_Leap_User_Session extends Model_Leap_Base
     {
         $result = Model_Leap_User_Session::USER_NOT_PLAY_MAP;
         $mapId = ($type == 'section') ? DB_ORM::model('Map_Node_Section', array($id))->map_id : $id;
-        $sessions = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep);
+        $sessions = $this->getSessionByUserMapIDs($userId, $mapId, $webinarId, $currentStep, false);
 
         if (count($sessions) <= 0) {
             return $result;
@@ -460,6 +470,18 @@ class Model_Leap_User_Session extends Model_Leap_Base
         return null;
     }
 
+    public static function resetWebinarSessions($webinarId)
+    {
+        if ($webinarId == null || $webinarId <= 0) {
+            return;
+        }
+
+        DB_ORM::update('User_Session')
+            ->where('webinar_id', '=', $webinarId)
+            ->set('reset_at', microtime(true))
+            ->execute();
+    }
+
     /**
      * Delete webinar sessions
      *
@@ -472,19 +494,19 @@ class Model_Leap_User_Session extends Model_Leap_Base
         }
 
         DB_SQL::delete('default')
-            ->from($this->table())
+            ->from(static::table())
             ->where('webinar_id', '=', $webinarId)
             ->execute();
     }
 
-    public function getSessionByWebinarId($webinarId, $checkIds)
+    public function getSessionByWebinarId($webinarId, $exceptIds)
     {
         $builder = DB_SQL::select('default')
-            ->from($this->table())
+            ->from(static::table())
             ->where('webinar_id', '=', $webinarId, 'AND');
 
-        if (count($checkIds) > 0) {
-            $builder->where('id', 'NOT IN', $checkIds);
+        if (count($exceptIds) > 0) {
+            $builder->where('id', 'NOT IN', $exceptIds);
         }
 
         $result = $builder->query();

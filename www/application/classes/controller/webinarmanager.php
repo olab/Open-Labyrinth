@@ -929,8 +929,10 @@ class Controller_WebinarManager extends Controller_Base
     public function action_reset()
     {
         $scenarioId = $this->request->param('id', null);
+        $deleteSessions = (bool)$this->request->param('id2', false);
 
         $dataStatisticsIds = DB_ORM::model('statistics_user_session')->getSessionByWebinarId($scenarioId);
+        //doesn't include user_sessions that already saved to the statistics
         list($data, $ids) = DB_ORM::model('user_session')->getSessionByWebinarId($scenarioId, $dataStatisticsIds);
 
         if (count($data)) {
@@ -941,9 +943,9 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         DB_ORM::model('qCumulative')->setResetByScenario($scenarioId);
-        DB_ORM::model('webinar')->resetWebinar($scenarioId);
+        DB_ORM::model('webinar')->resetWebinar($scenarioId, $deleteSessions);
 
-        if (!empty($scenarioId)) {
+        if (!empty($scenarioId) && $deleteSessions) {
             Model_Leap_User_Note::deleteByWebinarId($scenarioId);
         }
 

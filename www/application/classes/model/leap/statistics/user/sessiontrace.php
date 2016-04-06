@@ -140,12 +140,14 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
                     ->column('user_id', $traces['user_id'])
                     ->column('map_id', $traces['map_id'])
                     ->column('node_id', $traces['node_id'])
+                    ->column('is_redirected', $traces['is_redirected'])
                     ->column('counters', $traces['counters'])
                     ->column('date_stamp', $traces['date_stamp'])
                     ->column('confidence', $traces['confidence'])
                     ->column('dams', $traces['dams'])
                     ->column('bookmark_made', $traces['bookmark_made'])
-                    ->column('bookmark_used', $traces['bookmark_used']);
+                    ->column('bookmark_used', $traces['bookmark_used'])
+                    ->column('end_date_stamp', $traces['end_date_stamp']);
                 $builder->execute();
             }
         }

@@ -402,12 +402,7 @@ class Model_Leap_Webinar extends DB_ORM_Model {
         return $result;
     }
 
-    /**
-     * Reset webinar
-     *
-     * @param integer $webinarId - webinar ID
-     */
-    public function resetWebinar($webinarId) {
+    public function resetWebinar($webinarId, $deleteSessions = true) {
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
         if($webinar != null && $webinar->steps != null && count($webinar->steps) > 0) {
             $min = $webinar->steps[0]->id;
@@ -419,7 +414,11 @@ class Model_Leap_Webinar extends DB_ORM_Model {
 
             $this->changeWebinarStep($webinarId, $min);
 
-            DB_ORM::model('user_session')->deleteWebinarSessions($webinarId);
+            if ($deleteSessions) {
+                DB_ORM::model('user_session')->deleteWebinarSessions($webinarId);
+            } else {
+                Model_Leap_User_Session::resetWebinarSessions($webinarId);
+            }
         }
     }
 
