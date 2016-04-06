@@ -20,77 +20,66 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-/**
- * Model for user_sessiontraces table in database 
- */
-class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
+class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'user_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'node_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'counters' => new DB_ORM_Field_String($this, array(
                 'max_length' => 700,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-            
             'date_stamp' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 20,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'dams' => new DB_ORM_Field_String($this, array(
                 'max_length' => 700,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-            
             'bookmark_made' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
             'bookmark_used' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
         );
-        
+
         $this->relations = array(
             'node' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('node_id'),
@@ -100,19 +89,23 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         );
     }
 
-    public static function data_source() {
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'statistics_user_sessiontraces';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
 
-    public function saveWebInarSessionTraces(array $ids) {
+    public function saveWebInarSessionTraces(array $ids)
+    {
         $data = array();
 
         foreach ($ids as $id) {
@@ -123,16 +116,15 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
                 ->query();
 
             $traces = array();
-            foreach($result as $record) {
+            foreach ($result as $record) {
                 $traces[] = $record;
             }
 
-        $data[] = $traces;
+            $data[] = $traces;
 
         }
 
-        foreach ($data as $sessionTraces)
-        {
+        foreach ($data as $sessionTraces) {
             foreach ($sessionTraces as $traces) {
                 $builder = DB_ORM::insert('statistics_user_sessionTrace')
                     ->column('id', $traces['id'])
@@ -153,7 +145,8 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         }
     }
 
-    public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs) {
+    public function isExistTrace($userId, $mapId, $sessionIDs, $nodeIDs)
+    {
         $records = DB_SQL::select('default')
             ->from($this->table())
             ->column('id')
@@ -166,7 +159,8 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
         return $records->is_loaded();
     }
 
-    public function getUniqueTraceBySessions($sessions) {
+    public function getUniqueTraceBySessions($sessions)
+    {
         $records = DB_SQL::select('default')
             ->from($this->table())
             ->where('session_id', 'IN', $sessions)
@@ -180,12 +174,14 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model {
             ->query();
 
         $result = array();
-        if($records->is_loaded()) {
-            foreach($records as $record) {
-                $result[] = array('id'         => $record['id'],
+        if ($records->is_loaded()) {
+            foreach ($records as $record) {
+                $result[] = array(
+                    'id' => $record['id'],
                     'session_id' => $record['session_id'],
-                    'user_id'    => $record['user_id'],
-                    'node_id'    => $record['node_id']);
+                    'user_id' => $record['user_id'],
+                    'node_id' => $record['node_id']
+                );
             }
         }
 

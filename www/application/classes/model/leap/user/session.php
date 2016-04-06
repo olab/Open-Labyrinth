@@ -356,8 +356,13 @@ class Model_Leap_User_Session extends Model_Leap_Base
         return null;
     }
 
-    public function getSessionByUserMapIDs($userId, $mapId, $webinarId = null, $currentStep = null, $includeReset = true)
-    {
+    public function getSessionByUserMapIDs(
+        $userId,
+        $mapId,
+        $webinarId = null,
+        $currentStep = null,
+        $includeReset = true
+    ) {
         $builder = DB_ORM::select('User_Session')
             ->where('user_id', '=', $userId)
             ->where('map_id', '=', $mapId)
