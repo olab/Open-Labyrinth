@@ -29,8 +29,9 @@ class Report_Poll_Map extends Report_Element {
     private $webinarId;
     private $webinarStep;
     private $dateStatistics;
+    private $latest;
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $dateStatistics = null) {
+    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $dateStatistics = null, $latest = true) {
         parent::__construct($impl);
 
         if($mapId == null || $mapId <= 0) return;
@@ -40,6 +41,7 @@ class Report_Poll_Map extends Report_Element {
         $this->webinarId      = $webinarId;
         $this->webinarStep    = $webinarStep;
         $this->dateStatistics = $dateStatistics;
+        $this->latest      = $latest;
 
         $this->elements       = array();
         $this->sections       = array();
@@ -71,14 +73,16 @@ class Report_Poll_Map extends Report_Element {
                 ->where('user_id', '=', $wUser->user_id)
                 ->where('map_id', '=', $this->map->id)
                 ->where('webinar_id', '=', $this->webinarId)
+                ->order_by('id', $this->latest ? 'DESC' : 'ASC')
+                ->limit(1)
                 ->query()
                 ->as_array();
 
             if ( ! $userSession) continue;
 
             // get last session id
-            $sessionId  = $userSession[count($userSession)-1]->id;
-            $userNick   = DB_ORM::model('user', array($userSession[count($userSession)-1]->user_id))->nickname;
+            $sessionId  = $userSession[0]->id;
+            $userNick   = DB_ORM::model('user', array($userSession[0]->user_id))->nickname;
             $column     = 0;
 
             $this->fillCell($column, $row, $userNick);

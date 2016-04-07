@@ -20,6 +20,7 @@
  */
 $webinarId  = $templateData['webinar']->id;
 $userType   = Auth::instance()->get_user()->type->name;
+$reportByLatest = Session::instance()->get('report_by_latest_session', true);
 if(!empty($userType) && $userType != 'learner') {
     echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
 }
@@ -50,6 +51,12 @@ if(!empty($userType) && $userType != 'learner') {
         <label class="btn" for="SJT" data-class="btn-info"><?php echo __('SJT'); ?></label>
         <input type="radio" name="typeReport" id="xAPI"/>
         <label class="btn" for="xAPI" data-class="btn-info"><?php echo __('xAPI'); ?></label>
+    </div>
+    <div class="radio_extended btn-group">
+        <input type="radio" name="sortReport" id="reportByLatest" value="1" <?php if($reportByLatest) echo 'checked'; ?> />
+        <label class="btn" for="reportByLatest" data-class="btn-info"><?php echo __('Last attempt'); ?></label>
+        <input type="radio" name="sortReport" id="reportByFirst" value="0" <?php if(!$reportByLatest) echo 'checked'; ?> />
+        <label class="btn" for="reportByFirst" data-class="btn-info"><?php echo __('First attempt'); ?></label>
     </div>
     <select id="sct-webinars" style="display: none;"><?php
         foreach ($templateData['scenario'] as $scenarioObj) { ?>

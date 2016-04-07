@@ -520,6 +520,7 @@ class Controller_WebinarManager extends Controller_Base
         $stepKey = $this->request->param('id2', null);
         $expertWebinarId = $this->request->param('id3', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($webinarId == null AND $stepKey) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -558,7 +559,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
@@ -568,6 +569,7 @@ class Controller_WebinarManager extends Controller_Base
         $stepKey = $this->request->param('id2', null);
         $expertScenarioId = $this->request->param('id3', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $scenarioId;
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($scenarioId == null AND $stepKey) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -601,7 +603,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
@@ -610,6 +612,7 @@ class Controller_WebinarManager extends Controller_Base
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($webinarId == null AND $stepKey != null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -642,7 +645,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
@@ -720,6 +723,7 @@ class Controller_WebinarManager extends Controller_Base
     {
 
         $expertWebinarId = $this->request->param('id3', null);
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
@@ -739,13 +743,14 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
     public function action_reportSJTTimeBased()
     {
         $expertScenarioId = $this->request->param('id3', null);
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
@@ -765,14 +770,14 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
     public function action_reportPollTimeBased()
     {
-
         $webinars = $this->getWebinarsForTimeBasedReport();
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Poll report ' . time());
         foreach ($webinars as $webinar) {
@@ -786,7 +791,7 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
 
-        $report->generate();
+        $report->generate($latest);
         $report->get();
     }
 
@@ -848,12 +853,19 @@ class Controller_WebinarManager extends Controller_Base
         $this->createReport('SJT');
     }
 
+    public function action_reportByLatestSession()
+    {
+        $value = $this->request->param('id', '0') === '0' ? false : true;
+        Session::instance()->set('report_by_latest_session', $value);
+    }
+
     private function createReport($type)
     {
         $scenarioId = $this->request->param('id', null);
         $mapId = $this->request->param('id2', null);
         $sectionId = $this->request->param('id3', null);
         $expertScenarioId = $this->request->param('id4', null);
+        $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($scenarioId == null AND $mapId == null) {
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
@@ -864,21 +876,21 @@ class Controller_WebinarManager extends Controller_Base
                 $report = new Report_SCT(new Report_Impl_PHPExcel(),
                     'SCT Report ' . DB_ORM::model('map', array((int)$mapId))->name);
                 $report->add($mapId, $scenarioId, $expertScenarioId, $sectionId);
-                $report->generate();
+                $report->generate($latest);
                 $report->get();
                 break;
             case 'Poll':
                 $report = new Report_Poll(new Report_Impl_PHPExcel(),
                     'Poll ' . DB_ORM::model('map', array((int)$mapId))->name);
                 $report->add($mapId, $scenarioId, '');
-                $report->generate();
+                $report->generate($latest);
                 $report->get();
                 break;
             case 'SJT':
                 $report = new Report_SJT(new Report_Impl_PHPExcel(),
                     'SJT ' . DB_ORM::model('map', array((int)$mapId))->name);
                 $report->add($mapId, $scenarioId, $expertScenarioId, '');
-                $report->generate();
+                $report->generate($latest);
                 $report->get();
                 break;
             case '4R':

@@ -68,7 +68,7 @@ class Report_Poll extends Report {
      *
      * @return mixed
      */
-    public function generate()
+    public function generate($latest = true)
     {
         if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
 
@@ -89,7 +89,8 @@ class Report_Poll extends Report {
                 $this->countOfChoices,
                 $mapData['webinarId'],
                 $mapData['webinarStep'],
-                $mapData['dateStatistics']
+                $mapData['dateStatistics'],
+                $latest
             );
         }
     }

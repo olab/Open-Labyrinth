@@ -69,7 +69,7 @@ class Report_SJT extends Report
      *
      * @return mixed
      */
-    public function generate()
+    public function generate($latest = true)
     {
         if($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
 
@@ -89,7 +89,8 @@ class Report_SJT extends Report
                 $mapData['mapId'],
                 $mapData['webinarId'],
                 $mapData['expertsScenarioId'],
-                $mapData['sectionId']
+                $mapData['sectionId'],
+                $latest
             );
         }
     }

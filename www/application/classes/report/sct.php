@@ -67,7 +67,7 @@ class Report_SCT extends Report {
      *
      * @return mixed
      */
-    public function generate()
+    public function generate($latest = true)
     {
         if($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
 
@@ -87,7 +87,8 @@ class Report_SCT extends Report {
                 $mapData['mapId'],
                 $mapData['webinarId'],
                 $mapData['expertWebinarId'],
-                $mapData['sectionId']
+                $mapData['sectionId'],
+                $latest
             );
         }
     }

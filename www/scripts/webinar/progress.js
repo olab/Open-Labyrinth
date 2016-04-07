@@ -26,6 +26,19 @@ jQuery(document).ready(function()
         clickOnButton($(this));
     });
 
+    $('#reportByLatest').change(function() {
+        changeSort($(this));
+    });
+    $('#reportByFirst').change(function() {
+        changeSort($(this));
+    });
+
+    function changeSort(button)
+    {
+        var value = button.attr('value');
+        $.get(urlBase + 'webinarManager/reportByLatestSession/' + value);
+    }
+
     function clickOnButton (button){
         var typeId = button.attr('id');
 

@@ -28,8 +28,9 @@ class Report_SCT_Map extends Report_Element {
     private $questions;
     private $experts;
     private $includeUsers;
+    private $latest;
 
-    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertWebinarId, $sectionId)
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertWebinarId, $sectionId, $latest = true)
     {
         parent::__construct($impl);
 
@@ -42,6 +43,7 @@ class Report_SCT_Map extends Report_Element {
         $this->experts        = array();
         $this->includeUsers   = array();
         $this->sectionId      = $sectionId;
+        $this->latest      = $latest;
 
         $this->loadElements();
     }
@@ -109,9 +111,12 @@ class Report_SCT_Map extends Report_Element {
                         ->where('user_id', '=', $userId)
                         ->where('map_id', '=', $this->map->id)
                         ->where('webinar_id', '=', $this->webinarId)
+                        ->order_by('id', $this->latest ? 'DESC' : 'ASC')
+                        ->limit(1)
                         ->query()
                         ->as_array();
-                    $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+                    $sessionObj = Arr::get($sessionObj, 0, false);
 
                     $userResponse = 'no response';
                     if ($sessionObj)
@@ -240,9 +245,12 @@ class Report_SCT_Map extends Report_Element {
                 ->where('user_id', '=', $expertId)
                 ->where('map_id', '=', $this->map->id)
                 ->where('webinar_id', '=', $this->expertWebinarId)
+                ->order_by('id', $this->latest ? 'DESC' : 'ASC')
+                ->limit(1)
                 ->query()
                 ->as_array();
-            $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+            $sessionObj = Arr::get($sessionObj, 0, false);
 
             if ($sessionObj)
             {

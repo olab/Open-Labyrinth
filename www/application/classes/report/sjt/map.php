@@ -28,8 +28,9 @@ class Report_SJT_Map extends Report_Element {
     private $experts = array();
     private $expertsScenarioId;
     private $includeUsers = array();
+    private $latest;
 
-    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId, $sectionId)
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId, $sectionId, $latest = true)
     {
         parent::__construct($impl);
 
@@ -40,6 +41,7 @@ class Report_SJT_Map extends Report_Element {
         $this->questions         = array();
         $this->expertsScenarioId = $expertsScenarioId;
         $this->sectionId         = $sectionId;
+        $this->latest      = $latest;
 
         $this->loadElements();
     }
@@ -117,9 +119,12 @@ class Report_SJT_Map extends Report_Element {
                         ->where('user_id', '=', $userId)
                         ->where('map_id', '=', $this->map->id)
                         ->where('webinar_id', '=', $this->webinarId)
+                        ->order_by('id', $this->latest ? 'DESC' : 'ASC')
+                        ->limit(1)
                         ->query()
                         ->as_array();
-                    $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+                    $sessionObj = Arr::get($sessionObj, 0, false);
 
                     $userResponse = 'no response';
                     if ($sessionObj) {
@@ -267,9 +272,12 @@ class Report_SJT_Map extends Report_Element {
                 ->where('user_id', '=', $expertId)
                 ->where('map_id', '=', $this->map->id)
                 ->where('webinar_id', '=', $this->expertsScenarioId)
+                ->order_by('id', $this->latest ? 'DESC' : 'ASC')
+                ->limit(1)
                 ->query()
                 ->as_array();
-            $sessionObj = Arr::get($sessionObj, count($sessionObj) - 1, false);
+
+            $sessionObj = Arr::get($sessionObj, 0, false);
 
             if ($sessionObj) {
                 $userResponse = DB_ORM::select('User_Response')
