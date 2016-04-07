@@ -137,6 +137,7 @@ class Report_SJT_Map extends Report_Element
                             ->where('question_id', '=', $question->id)
                             ->where('node_id', '=', $nodeId)
                             ->where('session_id', '=', $sessionObj->id)
+                            ->limit(1)
                             ->query()
                             ->fetch(0);
                         if ($userResponseObj) {
@@ -295,6 +296,7 @@ class Report_SJT_Map extends Report_Element
                     ->where('question_id', '=', $questionId)
                     ->where('node_id', '=', $nodeId)
                     ->where('session_id', '=', $sessionObj->id)
+                    ->limit(1)
                     ->query()
                     ->fetch(0);
 
