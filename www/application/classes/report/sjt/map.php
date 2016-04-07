@@ -20,7 +20,8 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_SJT_Map extends Report_Element {
+class Report_SJT_Map extends Report_Element
+{
 
     private $map;
     private $webinarId;
@@ -34,14 +35,16 @@ class Report_SJT_Map extends Report_Element {
     {
         parent::__construct($impl);
 
-        if($mapId <= 0) return;
+        if ($mapId <= 0) {
+            return;
+        }
 
-        $this->map               = DB_ORM::model('map', array((int)$mapId));
-        $this->webinarId         = $webinarId;
-        $this->questions         = array();
+        $this->map = DB_ORM::model('map', array((int)$mapId));
+        $this->webinarId = $webinarId;
+        $this->questions = array();
         $this->expertsScenarioId = $expertsScenarioId;
-        $this->sectionId         = $sectionId;
-        $this->latest      = $latest;
+        $this->sectionId = $sectionId;
+        $this->latest = $latest;
 
         $this->loadElements();
     }
@@ -53,19 +56,22 @@ class Report_SJT_Map extends Report_Element {
      */
     public function insert($offset)
     {
-        $localRow           = $offset;
-        $column             = 0;
+        $localRow = $offset;
+        $column = 0;
         $firstColumnCounter = 0;
 
-        if ($this->map == null) return $localRow;
+        if ($this->map == null) {
+            return $localRow;
+        }
 
         // scenario title
         $this->fillCell($column, $localRow, $this->map->name, 16);
         $localRow++;
 
         // displayed scenario from where taken  experts
-        $this->fillCell($column, $localRow, 'Experts from \''.DB_ORM::model('Webinar', array($this->expertsScenarioId))->title.'\' scenario.');
-        $localRow+=2;
+        $this->fillCell($column, $localRow,
+            'Experts from \'' . DB_ORM::model('Webinar', array($this->expertsScenarioId))->title . '\' scenario.');
+        $localRow += 2;
 
         // get all nodes
         $nodesObj = $this->sectionId
@@ -75,12 +81,11 @@ class Report_SJT_Map extends Report_Element {
         // get all SJT question by map id
         $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, array(8));
 
-        foreach ($nodesObj as $nodeObj)
-        {
+        foreach ($nodesObj as $nodeObj) {
             $nodeName = $this->sectionId
                 ? DB_ORM::model('Map_Node', array($nodeObj->node_id))->title
                 : $nodeObj->title;
-            $nodeId   = $this->sectionId
+            $nodeId = $this->sectionId
                 ? $nodeObj->node_id
                 : $nodeObj->id;
 
@@ -88,21 +93,22 @@ class Report_SJT_Map extends Report_Element {
                 $this->fillCell(0, $localRow, 'Users don\'t respond on any SJT questions yet.');
             }
 
-            foreach ($questions as $question)
-            {
+            foreach ($questions as $question) {
                 $firstColumnCounter++;
                 $localTablesRow = $localRow + 8;
                 $lastUserResponse = 0;
                 $atLeastOneResponse = 0;
 
-                $getPoints      = $this->getPoints($question->id, $nodeId);
+                $getPoints = $this->getPoints($question->id, $nodeId);
                 $responsePoints = Arr::get($getPoints, 'score');
-                $responseVotes  = Arr::get($getPoints, 'votes');
+                $responseVotes = Arr::get($getPoints, 'votes');
 
                 // ----- create second table ----- //
                 $this->fillCell(0, $localTablesRow, 'Player points');
 
-                if ($firstColumnCounter == 1) $column++;
+                if ($firstColumnCounter == 1) {
+                    $column++;
+                }
                 $column++;
                 $localTablesRow++;
 
@@ -111,8 +117,7 @@ class Report_SJT_Map extends Report_Element {
                 //                    $questionResponse[$responseObj->id] = $responseObj->response;
                 //                }
 
-                foreach ($this->includeUsers as $userId)
-                {
+                foreach ($this->includeUsers as $userId) {
                     $lastUserResponse++;
 
                     $sessionObj = DB_ORM::select('User_Session')
@@ -147,8 +152,10 @@ class Report_SJT_Map extends Report_Element {
 
                     if ($userResponse != 'no response') {
                         $userResponseScore = 0;
-                        foreach (json_decode($userResponse, true) as $position=>$responseId) {
-                            if (isset($responsePoints[$responseId][$position])) $userResponseScore += $responsePoints[$responseId][$position];
+                        foreach (json_decode($userResponse, true) as $position => $responseId) {
+                            if (isset($responsePoints[$responseId][$position])) {
+                                $userResponseScore += $responsePoints[$responseId][$position];
+                            }
                         }
                         $userResponse = $userResponseScore;
                     }
@@ -166,15 +173,14 @@ class Report_SJT_Map extends Report_Element {
                 $localTablesRow++;
 
                 for ($i = 0; $i < 5; $i++) {
-                //                    $questionResponse = array_values($questionResponse);
-                //                    $response = isset($questionResponse[$i]) ? $questionResponse[$i] : '';
-                    $this->fillCell(0, $localTablesRow + $i, 'Response: '.($i + 1));
+                    //                    $questionResponse = array_values($questionResponse);
+                    //                    $response = isset($questionResponse[$i]) ? $questionResponse[$i] : '';
+                    $this->fillCell(0, $localTablesRow + $i, 'Response: ' . ($i + 1));
                 }
 
-                foreach ($responseVotes as $votes)
-                {
-                    $this->fillCell($column, $headerRow - 1, $nodeName.': (ID -'.$nodeId.')');
-                    $this->fillCell($column, $headerRow, $question->stem.': (ID -'.$question->id.')');
+                foreach ($responseVotes as $votes) {
+                    $this->fillCell($column, $headerRow - 1, $nodeName . ': (ID -' . $nodeId . ')');
+                    $this->fillCell($column, $headerRow, $question->stem . ': (ID -' . $question->id . ')');
                     $this->fillCell($column, $localTablesRow, $votes);
                     $localTablesRow++;
                 }
@@ -185,21 +191,25 @@ class Report_SJT_Map extends Report_Element {
         }
 
         // clear last column
-        for ($i = $offset; $i<$offset+count($this->includeUsers); $i++) {
-            $this->fillCell($column+1, $i, '');
+        for ($i = $offset; $i < $offset + count($this->includeUsers); $i++) {
+            $this->fillCell($column + 1, $i, '');
         }
 
         return $offset + 4;
     }
 
-    private function loadElements ()
+    private function loadElements()
     {
-        if($this->map == null OR count($this->map->nodes) <= 0) return;
+        if ($this->map == null OR count($this->map->nodes) <= 0) {
+            return;
+        }
 
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertsScenarioId)->where('expert', '=', 1)->query()->as_array() as $wUserObj) {
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->expertsScenarioId)->where('expert',
+            '=', 1)->query()->as_array() as $wUserObj) {
             $this->experts[] = $wUserObj->user_id;
         }
-        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=', 1)->query()->as_array() as $wUserObj) {
+        foreach (DB_ORM::select('Webinar_User')->where('webinar_id', '=', $this->webinarId)->where('include_4r', '=',
+            1)->query()->as_array() as $wUserObj) {
             $this->includeUsers[] = $wUserObj->user_id;
         }
     }
@@ -209,15 +219,16 @@ class Report_SJT_Map extends Report_Element {
      *
      * @return mixed
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->map->id;
     }
 
-    public function getPoints ($questionId, $nodeId)
+    public function getPoints($questionId, $nodeId)
     {
-        $poll                = array();
-        $result              = array();
-        $scoreByPosition     = array(
+        $poll = array();
+        $result = array();
+        $scoreByPosition = array(
             '0' => array(
                 '0' => 4,
                 '1' => 3,
@@ -256,7 +267,8 @@ class Report_SJT_Map extends Report_Element {
         );
 
         // get all response in correct order by question id
-        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=', $questionId)->order_by('order')->query()->as_array() as $responseObj) {
+        foreach (DB_ORM::select('Map_Question_Response')->where('question_id', '=',
+            $questionId)->order_by('order')->query()->as_array() as $responseObj) {
             $poll[$responseObj->id] = 0;
         }
 
@@ -266,8 +278,7 @@ class Report_SJT_Map extends Report_Element {
         }
 
         // get experts response
-        foreach ($this->experts as $expertId)
-        {
+        foreach ($this->experts as $expertId) {
             $sessionObj = DB_ORM::select('User_Session')
                 ->where('user_id', '=', $expertId)
                 ->where('map_id', '=', $this->map->id)
@@ -292,9 +303,9 @@ class Report_SJT_Map extends Report_Element {
                     $response = array_reverse($response);
 
                     foreach ($response as $value => $responseId) {
-                         if (isset($poll[$responseId])) {
-                             $poll[$responseId] += $value;
-                         }
+                        if (isset($poll[$responseId])) {
+                            $poll[$responseId] += $value;
+                        }
                     }
                 }
             }

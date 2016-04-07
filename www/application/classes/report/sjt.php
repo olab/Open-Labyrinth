@@ -40,9 +40,9 @@ class Report_SJT extends Report
     {
         parent::__construct($impl);
 
-        $this->maps           = array();
-        $this->name           = $name;
-        $this->mapElements    = array();
+        $this->maps = array();
+        $this->name = $name;
+        $this->mapElements = array();
     }
 
     /**
@@ -54,13 +54,15 @@ class Report_SJT extends Report
      */
     public function add($mapId, $webinarId, $expertsScenarioId, $sectionId)
     {
-        if($mapId == null || $mapId <= 0) return;
+        if ($mapId == null || $mapId <= 0) {
+            return;
+        }
 
         $this->maps[] = array(
-            'mapId'             => $mapId,
-            'webinarId'         => $webinarId,
+            'mapId' => $mapId,
+            'webinarId' => $webinarId,
             'expertsScenarioId' => !empty($expertsScenarioId) ? $expertsScenarioId : $webinarId,
-            'sectionId'         => $sectionId
+            'sectionId' => $sectionId
         );
     }
 
@@ -71,7 +73,9 @@ class Report_SJT extends Report
      */
     public function generate($latest = true)
     {
-        if($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
+        if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) {
+            return;
+        }
 
         $this->implementation->setCreator('OpenLabyrinth System');
         $this->implementation->setLastModifiedBy('OpenLabyrinth System');
@@ -82,8 +86,7 @@ class Report_SJT extends Report
         $this->implementation->setCategory('Report');
         $this->implementation->setActiveSheet(0);
 
-        foreach($this->maps as $mapData)
-        {
+        foreach ($this->maps as $mapData) {
             $this->mapElements[] = new Report_SJT_Map(
                 $this->implementation,
                 $mapData['mapId'],
@@ -102,11 +105,13 @@ class Report_SJT extends Report
      */
     public function get()
     {
-        if ($this->implementation == null) return;
+        if ($this->implementation == null) {
+            return;
+        }
 
         if (count($this->mapElements)) {
             $currentOffset = 1;
-            foreach($this->mapElements as $mapElement) {
+            foreach ($this->mapElements as $mapElement) {
                 $currentOffset += $mapElement->insert($currentOffset);
             }
         }

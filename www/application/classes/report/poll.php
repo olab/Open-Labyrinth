@@ -23,7 +23,8 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Class 4R Report
  */
-class Report_Poll extends Report {
+class Report_Poll extends Report
+{
     private $maps;
     private $name;
     private $countOfChoices;
@@ -35,13 +36,14 @@ class Report_Poll extends Report {
      * @param Report_Impl $impl - report class implementation
      * @param string $name - report name
      */
-    public function __construct(Report_Impl $impl, $name) {
+    public function __construct(Report_Impl $impl, $name)
+    {
         parent::__construct($impl);
 
-        $this->maps           = array();
+        $this->maps = array();
         $this->countOfChoices = 4;
-        $this->name           = $name;
-        $this->mapElements    = array();
+        $this->name = $name;
+        $this->mapElements = array();
     }
 
     /**
@@ -53,13 +55,15 @@ class Report_Poll extends Report {
      */
     public function add($mapId, $webinarId = null, $webinarStep = null, $dateStatistics = null)
     {
-        if($mapId == null || $mapId <= 0) return;
+        if ($mapId == null || $mapId <= 0) {
+            return;
+        }
 
         $this->maps[] = array(
-            'mapId'             => $mapId,
-            'webinarId'         => $webinarId,
-            'webinarStep'       => $webinarStep,
-            'dateStatistics'    => $dateStatistics
+            'mapId' => $mapId,
+            'webinarId' => $webinarId,
+            'webinarStep' => $webinarStep,
+            'dateStatistics' => $dateStatistics
         );
     }
 
@@ -70,7 +74,9 @@ class Report_Poll extends Report {
      */
     public function generate($latest = true)
     {
-        if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
+        if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) {
+            return;
+        }
 
         $this->implementation->setCreator('OpenLabyrinth System');
         $this->implementation->setLastModifiedBy('OpenLabyrinth System');
@@ -81,8 +87,7 @@ class Report_Poll extends Report {
         $this->implementation->setCategory('Report');
         $this->implementation->setActiveSheet(0);
 
-        foreach($this->maps as $mapData)
-        {
+        foreach ($this->maps as $mapData) {
             $this->mapElements[] = new Report_Poll_Map(
                 $this->implementation,
                 $mapData['mapId'],
@@ -102,13 +107,13 @@ class Report_Poll extends Report {
      */
     public function get()
     {
-        if($this->implementation == null) return;
+        if ($this->implementation == null) {
+            return;
+        }
 
-        if($this->mapElements != null && count($this->mapElements) > 0)
-        {
+        if ($this->mapElements != null && count($this->mapElements) > 0) {
             $currentOffset = 1;
-            foreach($this->mapElements as $mapElement)
-            {
+            foreach ($this->mapElements as $mapElement) {
                 $currentOffset += $mapElement->insert($currentOffset);
             }
         }

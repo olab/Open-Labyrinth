@@ -20,7 +20,8 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Report_Poll_Map extends Report_Element {
+class Report_Poll_Map extends Report_Element
+{
 
     private $map;
     private $sections;
@@ -31,21 +32,31 @@ class Report_Poll_Map extends Report_Element {
     private $dateStatistics;
     private $latest;
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $dateStatistics = null, $latest = true) {
+    public function __construct(
+        Report_Impl $impl,
+        $mapId,
+        $countOfChoices,
+        $webinarId = null,
+        $webinarStep = null,
+        $dateStatistics = null,
+        $latest = true
+    ) {
         parent::__construct($impl);
 
-        if($mapId == null || $mapId <= 0) return;
+        if ($mapId == null || $mapId <= 0) {
+            return;
+        }
 
-        $this->map            = DB_ORM::model('map', array((int)$mapId));
+        $this->map = DB_ORM::model('map', array((int)$mapId));
         $this->countOfChoices = $countOfChoices;
-        $this->webinarId      = $webinarId;
-        $this->webinarStep    = $webinarStep;
+        $this->webinarId = $webinarId;
+        $this->webinarStep = $webinarStep;
         $this->dateStatistics = $dateStatistics;
-        $this->latest      = $latest;
+        $this->latest = $latest;
 
-        $this->elements       = array();
-        $this->sections       = array();
-        $this->questions      = array();
+        $this->elements = array();
+        $this->sections = array();
+        $this->questions = array();
 
         $this->loadElements();
     }
@@ -57,18 +68,20 @@ class Report_Poll_Map extends Report_Element {
      */
     public function insert($row)
     {
-        if ($this->map == null) return $row;
+        if ($this->map == null) {
+            return $row;
+        }
 
         $headerRow = $row;
         $row++;
 
-        $include_users = DB_ORM::select('webinar_user')->where('webinar_id', '=', $this->webinarId)->where('include_4R', '=', 1)->query()->as_array();
+        $include_users = DB_ORM::select('webinar_user')->where('webinar_id', '=', $this->webinarId)->where('include_4R',
+            '=', 1)->query()->as_array();
         $rowQuestionName = $row;
         $row++;
 
         // --- table user answers --- //
-        foreach ($include_users as $wUser)
-        {
+        foreach ($include_users as $wUser) {
             $userSession = DB_ORM::select('user_session')
                 ->where('user_id', '=', $wUser->user_id)
                 ->where('map_id', '=', $this->map->id)
@@ -78,34 +91,39 @@ class Report_Poll_Map extends Report_Element {
                 ->query()
                 ->as_array();
 
-            if ( ! $userSession) continue;
+            if (!$userSession) {
+                continue;
+            }
 
             // get last session id
-            $sessionId  = $userSession[0]->id;
-            $userNick   = DB_ORM::model('user', array($userSession[0]->user_id))->nickname;
-            $column     = 0;
+            $sessionId = $userSession[0]->id;
+            $userNick = DB_ORM::model('user', array($userSession[0]->user_id))->nickname;
+            $column = 0;
 
             $this->fillCell($column, $row, $userNick);
             $column++;
 
-            foreach ($this->questions as $multiQuestion)
-            {
+            foreach ($this->questions as $multiQuestion) {
                 $userResponseObj = DB_ORM::select('user_response')
                     ->where('question_id', '=', $multiQuestion->question->id)
                     ->where('session_id', '=', $sessionId)
                     ->query()
                     ->fetch(0);
 
-                if (! $userResponseObj) continue;
+                if (!$userResponseObj) {
+                    continue;
+                }
 
-                $this->fillCell($column, $rowQuestionName, 'Stem: '.$multiQuestion->question->stem);
-                $this->fillCell($column, $headerRow, 'Node ('.$userResponseObj->node_id.'). Question ('.$userResponseObj->question_id.')');
+                $this->fillCell($column, $rowQuestionName, 'Stem: ' . $multiQuestion->question->stem);
+                $this->fillCell($column, $headerRow,
+                    'Node (' . $userResponseObj->node_id . '). Question (' . $userResponseObj->question_id . ')');
                 $this->fillCell($column, $row, $userResponseObj->response);
                 $column++;
             }
             $row++;
         }
         $row++;
+
         // --- end table user answers --- //
 
         return $row;
@@ -116,7 +134,8 @@ class Report_Poll_Map extends Report_Element {
      *
      * @return mixed
      */
-    public function getKey() {
+    public function getKey()
+    {
         return $this->map->id;
     }
 
@@ -125,14 +144,15 @@ class Report_Poll_Map extends Report_Element {
      */
     private function loadElements()
     {
-        if($this->map == null || $this->map->nodes == null || count($this->map->nodes) <= 0) return;
+        if ($this->map == null || $this->map->nodes == null || count($this->map->nodes) <= 0) {
+            return;
+        }
 
-        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, array(1,2,3,4,5,6,7));
+        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id,
+            array(1, 2, 3, 4, 5, 6, 7));
 
-        if( $questions != null && count($questions) > 0)
-        {
-            foreach($questions as $question)
-            {
+        if ($questions != null && count($questions) > 0) {
+            foreach ($questions as $question) {
                 $this->questions[] = new Report_Poll_Question(
                     $this->implementation,
                     $question->id,
