@@ -10,6 +10,13 @@ jQuery(document).ready(function () {
         href = null,
         reportByFirstOrLastAttempt = $('#reportByFirstOrLastAttempt');
 
+    showWaitPopup('.sendXAPIStepReport');
+
+    $(document).on('click', '.sendXAPIStepReport', function(e){
+        e.preventDefault();
+        sendReport($(this).attr('href'), {'is_initial_request' : 1});
+    });
+
     $('#4R').change(function () {
         clickOnButton($(this));
     });
@@ -40,6 +47,12 @@ jQuery(document).ready(function () {
 
     function clickOnButton(button) {
         var typeId = button.attr('id');
+
+        if (typeId == 'xAPI') {
+            reportStepType.addClass('sendXAPIStepReport');
+        } else {
+            reportStepType.removeClass('sendXAPIStepReport');
+        }
 
         if (typeId == '4R' || typeId == 'xAPI') {
             reportByFirstOrLastAttempt.hide();
@@ -154,4 +167,32 @@ function ajaxExpert(idWebinarUser, idUser) {
         function (data) {
         }
     );
+}
+
+var sendReportFailedAttempts = 0;
+
+function sendReport(action, data) {
+    $.post(action, data)
+        .done(function(response){
+            var result = JSON.parse(response);
+            if (!result.completed) {
+
+                $('#please_wait_additional_info').html('Sent ' + result.sent + ' of ' + result.total + ' user sessions.');
+
+                data['is_initial_request'] = 0;
+                sendReport(action, data);
+            } else {
+                location.reload();
+            }
+        })
+        .fail(function(){
+            sendReportFailedAttempts++;
+            if (sendReportFailedAttempts > 6) {
+                alert('Something went wrong. Please try again.');
+            } else {
+                setTimeout(function(){
+                    sendReport(action, data);
+                }, 1000);
+            }
+        })
 }

@@ -61,32 +61,4 @@
             }
         });
     });
-
-    var sendReportFailedAttempts = 0;
-
-    function sendReport(action, data) {
-        $.post(action, data)
-            .done(function(response){
-                var result = JSON.parse(response);
-                console.log(result);
-                if (!result.completed) {
-
-                    $('#please_wait_additional_info').html('Sent ' + result.sent + ' of ' + result.total + ' user sessions.');
-
-                    data['is_initial_request'] = 0;
-                    console.log(data);
-                    sendReport(action, data);
-                } else {
-                    location.reload();
-                }
-            })
-            .fail(function(){
-                sendReportFailedAttempts++;
-                if (sendReportFailedAttempts > 6) {
-                    alert('Something went wrong. Please try again.');
-                } else {
-                    sendReport(action, data);
-                }
-            })
-    }
 </script>

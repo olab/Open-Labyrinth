@@ -32,7 +32,7 @@ function deleteJSCookie(cname)
 function showWaitPopup(selector)
 {
     $(document).ready(function(){
-        $(selector).on('click', function(){
+        $(document).on('click', selector, function(){
             $(this).hide();
             setTimeout(function(){
                 $('#please_wait').removeClass('hide');

@@ -651,32 +651,53 @@ class Controller_WebinarManager extends Controller_Base
 
     public function action_stepReportxAPI()
     {
+        set_time_limit(60 * 3);
+        $post = $this->request->post();
+        $is_initial_request = Arr::get($post, 'is_initial_request', 1) === '0' ? false : true;
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
-        $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
-
-        if (empty($webinarId) AND $stepKey != null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
-        }
 
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
         $isExistAccess = false;
 
-        if (Auth::instance()->get_user()->id == $webinar->author_id OR Auth::instance()->get_user()->type->name == 'superuser') {
+        if (Auth::instance()->get_user()->id == $webinar->author_id || Auth::instance()->get_user()->type->name == 'superuser') {
             $isExistAccess = true;
         }
 
-        if (!$isExistAccess AND $webinar->publish != null) {
+        if (!$isExistAccess && $webinar->publish != null) {
             $jsonObject = json_decode($webinar->publish);
             $isExistAccess = in_array($webinarId . '-' . $stepKey, $jsonObject);
         }
 
         if (!$isExistAccess) {
             Session::instance()->set('error_message', 'Access denied.');
-            Request::initial()->redirect($redirect_url);
+            $this->jsonResponse(array('completed' => true));
         }
 
         $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
+
+        $per_iteration = 1;
+        if ($is_initial_request) {
+            $i = 0;
+            $offset = 0;
+            $limit = $per_iteration;
+            $query_count = DB_SQL::select()
+                ->from(Model_Leap_User_Session::table())
+                ->where('webinar_id', '=', $webinarId)
+                ->where('webinar_step', '=', $stepKey);
+
+            if (!empty($not_included_user_ids)) {
+                $query_count->where('user_id', 'NOT IN', $not_included_user_ids);
+            }
+            Session::instance()->set('xAPI_report_total_sessions', $query_count
+                ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+                ->query()[0]['counter']
+            );
+        } else {
+            $i = Session::instance()->get('xAPI_report_i');
+            $offset = Session::instance()->get('xAPI_report_offset');
+            $limit = Session::instance()->get('xAPI_report_limit');
+        }
 
         $query = DB_ORM::select('User_Session')
             ->where('webinar_id', '=', $webinarId)
@@ -687,12 +708,36 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-        $sessions = $query->query();
+        $sessions = $query
+            ->order_by('id', 'ASC')
+            ->offset($offset)
+            ->limit($limit)
+            ->query();
 
-        Model_Leap_User_Session::sendSessionsToLRS($sessions);
+        if ($sessions->count() > 0) {
+            Model_Leap_User_Session::sendSessionsToLRS($sessions);
+        }
 
-        Session::instance()->set('info_message', 'Statements sent to LRS');
-        Request::initial()->redirect($redirect_url);
+        $offset += $per_iteration;
+        $limit += $per_iteration;
+        $i++;
+
+        Session::instance()->set('xAPI_report_i', $i);
+        Session::instance()->set('xAPI_report_offset', $offset);
+        Session::instance()->set('xAPI_report_limit', $limit);
+
+        $total_sessions = Session::instance()->get('xAPI_report_total_sessions', 0);
+
+        if ($is_initial_request && $sessions->count() == 0) {
+            Session::instance()
+                ->set('error_message', 'Sessions not found');
+            $this->jsonResponse(array('completed' => true, 'total' => $total_sessions, 'sent' => $offset));
+        } elseif ($sessions->count() == 0) {
+            Session::instance()->set('info_message', 'Statements sent to LRS');
+            $this->jsonResponse(array('completed' => true, 'total' => $total_sessions, 'sent' => $offset));
+        } else {
+            $this->jsonResponse(array('completed' => false, 'total' => $total_sessions, 'sent' => $offset));
+        }
     }
 
     public function action_report4RTimeBased()
