@@ -14,7 +14,7 @@ tinymce.init({
         "insertdatetime nonbreaking save table contextmenu directionality",
         "template paste textcolor layer advtextcolor rdface"
     ],
-    toolbar1: "undo redo | styleselect | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+    toolbar1: "undo redo | styleselect | bold italic | fontselect fontsizeselect | bullist numlist",
     image_advtab: true,
     templates: [],
     setup: function (editor) {
