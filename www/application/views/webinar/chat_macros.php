@@ -42,7 +42,7 @@
     });
 
     $(window).keydown(function(event) {
-        if(event.ctrlKey || event.metaKey) {
+        if(event.ctrlKey || event.metaKey || event.altKey) {
             event.preventDefault();
         }
     });
@@ -74,6 +74,10 @@ if(!empty($templateData['macros_list']) && count($templateData['macros_list']) >
         <script>
             $(document).ready(function(){
                 $('textarea.ttalk-textarea').bind('keydown', pressKey + '+<?php echo $hot_keys ?>', function(){
+                    macros($(this), '<?php echo $macros->text ?>');
+                });
+
+                $('textarea.ttalk-textarea').bind('keydown', 'alt+<?php echo $hot_keys ?>', function(){
                     macros($(this), '<?php echo $macros->text ?>');
                 });
             });
