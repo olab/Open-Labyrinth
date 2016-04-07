@@ -7,7 +7,8 @@ jQuery(document).ready(function () {
         reportMapType = $('.reportMapType'),
         reportStepType = $('.reportStepType'),
         selectedWeb = webinar.val(),
-        href = null;
+        href = null,
+        reportByFirstOrLastAttempt = $('#reportByFirstOrLastAttempt');
 
     $('#4R').change(function () {
         clickOnButton($(this));
@@ -39,6 +40,12 @@ jQuery(document).ready(function () {
 
     function clickOnButton(button) {
         var typeId = button.attr('id');
+
+        if (typeId == '4R' || typeId == 'xAPI') {
+            reportByFirstOrLastAttempt.hide();
+        } else {
+            reportByFirstOrLastAttempt.show();
+        }
 
         if (typeId == '4R' || typeId == 'Poll' || typeId == 'xAPI') {
             th.hide();

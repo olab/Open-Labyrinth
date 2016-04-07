@@ -52,7 +52,7 @@ if(!empty($userType) && $userType != 'learner') {
         <input type="radio" name="typeReport" id="xAPI"/>
         <label class="btn" for="xAPI" data-class="btn-info"><?php echo __('xAPI'); ?></label>
     </div>
-    <div class="radio_extended btn-group">
+    <div class="radio_extended btn-group" id="reportByFirstOrLastAttempt">
         <input type="radio" name="sortReport" id="reportByLatest" value="1" <?php if($reportByLatest) echo 'checked'; ?> />
         <label class="btn" for="reportByLatest" data-class="btn-info"><?php echo __('Last attempt'); ?></label>
         <input type="radio" name="sortReport" id="reportByFirst" value="0" <?php if(!$reportByLatest) echo 'checked'; ?> />
