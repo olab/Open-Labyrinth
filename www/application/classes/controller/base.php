@@ -436,4 +436,9 @@ class Controller_Base extends Controller_Template {
         Request::initial()->redirect($this->request->referrer());
     }
 
+    protected function jsonResponse($data)
+    {
+        die(json_encode($data));
+    }
+
 }

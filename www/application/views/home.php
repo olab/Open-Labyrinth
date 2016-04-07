@@ -71,6 +71,7 @@ $templateData['error_message'] = Session::instance()->get_once('error_message');
     </div>
     <div class="modal-body">
         <p><?php echo __('Please wait. Page will be reloaded automatically.'); ?></p>
+        <p id="please_wait_additional_info"></p>
     </div>
 </div>
 

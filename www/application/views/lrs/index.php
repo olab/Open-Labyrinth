@@ -29,14 +29,14 @@
     </a>
 </h1>
 
-<h4>Post-hoc report</h4>
+<!--<h4>Post-hoc report</h4>
 <form action="/lrs/sendReportSubmit" class="form-inline left" method="post">
     <fieldset>
         <div class="control-group">
             <input class="datepicker" type="text" name="date_from" id="date_from"
-                   value="<?php echo date('m/d/Y') ?>"/>
+                   value="<?php /*echo date('m/d/Y') */?>"/>
             -
-            <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php echo date('m/d/Y') ?>"/>
+            <input class="datepicker" type="text" name="date_to" id="date_to" value="<?php /*echo date('m/d/Y') */?>"/>
             <button type="submit" class="btn btn-primary _xapi-report">Send to all enabled LRS</button>
         </div>
     </fieldset>
@@ -45,7 +45,7 @@
     showWaitPopup('._xapi-report');
 </script>
 
-<hr>
+<hr>-->
 
 <table class="table table-striped table-bordered">
     <thead>

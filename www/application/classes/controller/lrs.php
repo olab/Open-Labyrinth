@@ -203,6 +203,7 @@ class Controller_LRS extends Controller_Base
     {
         $this->increaseMaxExecutionTime();
         $post = $this->request->post();
+        $is_initial_request = Arr::get($post, 'is_initial_request', 1) === '0' ? false : true;
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
         $referrer_url = Arr::get($post, 'referrer');
@@ -213,43 +214,63 @@ class Controller_LRS extends Controller_Base
 
         if (empty($date_from) || empty($date_to)) {
             Session::instance()->set('error_message', 'Dates cannot be blank');
-            Request::initial()->redirect($redirect_url);
+            $this->jsonResponse(array('completed' => true));
         }
 
         $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
         $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
-        $per_iteration = 300;
-        $i = 0;
-        $offset = 0;
-        $limit = $per_iteration;
-        do {
-            /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-            $sessions = DB_ORM::select('User_Session')
+        $per_iteration = 1;
+        if ($is_initial_request) {
+            $i = 0;
+            $offset = 0;
+            $limit = $per_iteration;
+            Session::instance()->set('xAPI_report_total_sessions', DB_SQL::select()
+                ->from(Model_Leap_User_Session::table())
                 ->where('start_time', '>=', $date_from_obj->getTimestamp())
                 ->where('start_time', '<=', $date_to_obj->getTimestamp())
-                ->offset($offset)
-                ->limit($limit)
-                ->query();
-
-            if ($sessions->count() > 0) {
-                Model_Leap_User_Session::sendSessionsToLRS($sessions);
-            }
-
-            $offset += $per_iteration;
-            $limit += $per_iteration;
-            $i++;
-
-        } while ($sessions->count() > 0);
-
-        if ($i < 2) {
-            Session::instance()
-                ->set('error_message', 'Sessions not found for date range: ' . $date_from . ' - ' . $date_to);
+                ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+                ->query()[0]['counter']
+            );
         } else {
-            Session::instance()->set('info_message', 'Statements sent to LRS');
+            $i = Session::instance()->get('xAPI_report_i');
+            $offset = Session::instance()->get('xAPI_report_offset');
+            $limit = Session::instance()->get('xAPI_report_limit');
         }
 
-        Request::initial()->redirect($redirect_url);
+        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
+        $sessions = DB_ORM::select('User_Session')
+            ->where('start_time', '>=', $date_from_obj->getTimestamp())
+            ->where('start_time', '<=', $date_to_obj->getTimestamp())
+            ->order_by('id', 'ASC')
+            ->offset($offset)
+            ->limit($limit)
+            ->query();
+
+        if ($sessions->count() > 0) {
+            Model_Leap_User_Session::sendSessionsToLRS($sessions);
+        }
+
+        $offset += $per_iteration;
+        $limit += $per_iteration;
+        $i++;
+
+        Session::instance()->set('xAPI_report_i', $i);
+        Session::instance()->set('xAPI_report_offset', $offset);
+        Session::instance()->set('xAPI_report_limit', $limit);
+
+        $total_sessions = Session::instance()->get('xAPI_report_total_sessions', 0);
+
+        if ($is_initial_request && $sessions->count() == 0) {
+            Session::instance()
+                ->set('error_message', 'Sessions not found for date range: ' . $date_from . ' - ' . $date_to);
+            $this->jsonResponse(array('completed' => true, 'total' => $total_sessions, 'sent' => $offset));
+        } elseif ($sessions->count() == 0) {
+            Session::instance()->set('info_message', 'Statements sent to LRS');
+            $this->jsonResponse(array('completed' => true, 'total' => $total_sessions, 'sent' => $offset));
+        } else {
+            $this->jsonResponse(array('completed' => false, 'total' => $total_sessions, 'sent' => $offset));
+        }
     }
 
     private function increaseMaxExecutionTime()
