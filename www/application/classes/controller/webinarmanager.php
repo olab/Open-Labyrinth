@@ -1001,7 +1001,7 @@ class Controller_WebinarManager extends Controller_Base
 
         if (empty($date_from) || empty($date_to)) {
             Session::instance()->set('error_message', 'Dates cannot be blank');
-            Request::initial()->redirect($redirect_url);
+            $this->jsonResponse(array('reload' => true));
         }
 
         $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
@@ -1019,7 +1019,7 @@ class Controller_WebinarManager extends Controller_Base
         if (empty($webinar_ids)) {
             Session::instance()
                 ->set('error_message', 'Scenarios sessions not found for date range: ' . $date_from . ' - ' . $date_to);
-            Request::initial()->redirect($redirect_url);
+            $this->jsonResponse(array('reload' => true));
         }
 
         $webinars = DB_ORM::select('webinar')
