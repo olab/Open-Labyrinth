@@ -282,7 +282,6 @@ class Model_Leap_User_Session extends Model_Leap_Base
         if (!($user_note instanceof Model_Leap_User_Note)) {
             $user_note = new Model_Leap_User_Note;
             if ($this->isWebinar()) {
-                $user_note->user_id = $this->user_id;
                 $user_note->webinar_id = $this->webinar_id;
             } else {
                 $user_note->session_id = $this->id;

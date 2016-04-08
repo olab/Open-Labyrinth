@@ -283,12 +283,14 @@ class Controller_RenderLabyrinth extends Controller_Template
         $text = trim($this->request->post('text'));
 
         $sessionId = Session::instance()->get('session_id');
-        /** @var Model_Leap_User_Session $sessionObj */
-        $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
+        if (!empty($sessionId)) {
+            /** @var Model_Leap_User_Session $sessionObj */
+            $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
 
-        $user_note = $sessionObj->getUserNoteOrCreateNew();
-        $user_note->text = $text;
-        $user_note->save();
+            $user_note = $sessionObj->getUserNoteOrCreateNew();
+            $user_note->text = $text;
+            $user_note->save();
+        }
 
         die(json_encode(array('result' => 'success')));
     }
@@ -2008,10 +2010,10 @@ class Controller_RenderLabyrinth extends Controller_Template
 <input type="hidden" class="question_id" value="' . $id . '">
 <input type="hidden" class="session_id" value="' . $sessionId . '">
 <input type="hidden" class="chat_session_id" value="' . $chat_session_id . '">
-<div class="chat-window" style="width:'.($ttulk_width + 4).'px;height:'.$ttulk_height.'px;overflow-y:auto;background:white;border:1px solid #eee"></div>
+<div class="chat-window" style="width:' . ($ttulk_width + 4) . 'px;height:' . $ttulk_height . 'px;overflow-y:auto;background:white;border:1px solid #eee"></div>
 
 <div class="ttalk">
-                    <textarea style="width:'.$ttulk_width.'px;height:'.$ttulk_textarea_height.'px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" data-question-id="' . $question->id . '" ' . $placeholder . '></textarea>' .
+                    <textarea style="width:' . $ttulk_width . 'px;height:' . $ttulk_textarea_height . 'px;border:1px solid #eee" autocomplete="off" class="ttalk-textarea" data-question-id="' . $question->id . '" ' . $placeholder . '></textarea>' .
                                                     '<p>
                         <button class="ttalkButton">Submit</button>
                     </p>';
