@@ -287,7 +287,13 @@ class Model_Leap_User_Session extends Model_Leap_Base
                 $user_note->session_id = $this->id;
             }
 
-            $user_note->user_id = $this->user_id;
+            $user_id = $this->user_id;
+
+            if (!empty($user_id)) {
+                $user_note->user_id = $user_id;
+            } else {
+                $user_note->user_id = null;
+            }
         }
 
         return $user_note;
