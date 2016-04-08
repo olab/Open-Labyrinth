@@ -11,54 +11,12 @@
 
         <div class="control-group">
             <div class="controls">
-                <span class="btn btn-primary js-get-report" data-type="4R">Get 4R Report</span>
-                <span class="btn btn-primary js-get-report" data-type="SCT">Get SCT Report</span>
-                <span class="btn btn-primary js-get-report" data-type="Poll">Get Poll Report</span>
-                <span class="btn btn-primary js-get-report" data-type="SJT">Get SJT Report</span>
+                <span class="btn btn-primary js-get-report _xapi-report" data-type="4R">Get 4R Report</span>
+                <span class="btn btn-primary js-get-report _xapi-report" data-type="SCT">Get SCT Report</span>
+                <span class="btn btn-primary js-get-report _xapi-report" data-type="Poll">Get Poll Report</span>
+                <span class="btn btn-primary js-get-report _xapi-report" data-type="SJT">Get SJT Report</span>
                 <span class="btn btn-primary js-get-report _xapi-report" data-type="xAPI">Send xAPI Report to all enabled LRS</span>
             </div>
         </div>
     </fieldset>
 </form>
-<script>
-    showWaitPopup('._xapi-report');
-
-    $(document).ready(function () {
-        $('.js-get-report').on('click', function () {
-            var button = $(this),
-                action = '/webinarmanager/',
-                form = button.closest('form'),
-                type = button.attr('data-type');
-
-            switch (type) {
-                case '4R':
-                    action += 'report4RTimeBased';
-                    break;
-
-                case 'SCT':
-                    action += 'reportSCTTimeBased';
-                    break;
-
-                case 'Poll':
-                    action += 'reportPollTimeBased';
-                    break;
-
-                case 'SJT':
-                    action += 'reportSJTTimeBased';
-                    break;
-
-                case 'xAPI':
-                    action = '/lrs/sendReportSubmit';
-                    break;
-            }
-
-            form.attr('action', action);
-
-            if (type === 'xAPI') {
-                sendReport(action, form.serializeObject());
-            } else {
-                form.submit();
-            }
-        });
-    });
-</script>

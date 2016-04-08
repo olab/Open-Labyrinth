@@ -66,7 +66,7 @@ class Report_Poll_Map extends Report_Element
      *
      * @return integer
      */
-    public function insert($row)
+    public function insert($row, $filename = null)
     {
         if ($this->map == null) {
             return $row;
@@ -122,6 +122,18 @@ class Report_Poll_Map extends Report_Element
                 $column++;
             }
             $row++;
+
+            if (!empty($filename)) {
+                $data = Controller_WebinarManager::getReportProgressData($filename);
+                $counter = $data['counter'];
+                $progress_filename = $data['progress_filename'];
+                $counter++;
+
+                file_put_contents($progress_filename, json_encode(array(
+                    'is_done' => false,
+                    'counter' => $counter,
+                )));
+            }
         }
         $row++;
 

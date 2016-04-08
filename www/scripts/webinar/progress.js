@@ -1,6 +1,49 @@
 var urlBase = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/';
+var reportFilename = 'report_' + (new Date).getTime();
 
 jQuery(document).ready(function () {
+
+    showWaitPopup('._xapi-report');
+
+    $('.js-get-report').on('click', function (e) {
+        var button = $(this),
+            action = '/webinarmanager/',
+            form = button.closest('form'),
+            type = button.attr('data-type');
+
+        switch (type) {
+            case '4R':
+                action += 'report4RTimeBased';
+                break;
+
+            case 'SCT':
+                action += 'reportSCTTimeBased';
+                break;
+
+            case 'Poll':
+                action += 'reportPollTimeBased';
+                break;
+
+            case 'SJT':
+                action += 'reportSJTTimeBased';
+                break;
+
+            case 'xAPI':
+                action = '/lrs/sendReportSubmit';
+                break;
+        }
+
+        form.attr('action', action);
+
+        if (type === 'xAPI') {
+            sendReport(action, form.serializeObject());
+        } else {
+            e.preventDefault();
+
+            handleAjaxReport(action, form.serializeObject());
+        }
+    });
+
     var th = $('#expert-th-js'),
         td = $('.expert-td-js'),
         webinar = $('#sct-webinars'),
@@ -11,10 +54,23 @@ jQuery(document).ready(function () {
         reportByFirstOrLastAttempt = $('#reportByFirstOrLastAttempt');
 
     showWaitPopup('.sendXAPIStepReport');
+    showWaitPopup('.reportStepType');
 
-    $(document).on('click', '.sendXAPIStepReport', function(e){
+    $(document).on('click', '.sendXAPIStepReport', function (e) {
         e.preventDefault();
-        sendReport($(this).attr('href'), {'is_initial_request' : 1});
+        sendReport($(this).attr('href'), {'is_initial_request': 1});
+    });
+
+
+    $(document).on('click', '.reportStepType', function (e) {
+
+        if ($(this).hasClass('sendXAPIStepReport')) {
+            return;
+        }
+
+        e.preventDefault();
+
+        handleAjaxReport($(this).attr('href'));
     });
 
     $('#4R').change(function () {
@@ -173,7 +229,7 @@ var sendReportFailedAttempts = 0;
 
 function sendReport(action, data) {
     $.post(action, data)
-        .done(function(response){
+        .done(function (response) {
             var result = JSON.parse(response);
             if (!result.completed) {
 
@@ -185,14 +241,54 @@ function sendReport(action, data) {
                 location.reload();
             }
         })
-        .fail(function(){
+        .fail(function () {
             sendReportFailedAttempts++;
             if (sendReportFailedAttempts > 6) {
                 alert('Something went wrong. Please try again.');
             } else {
-                setTimeout(function(){
+                setTimeout(function () {
                     sendReport(action, data);
                 }, 1000);
             }
         })
+}
+
+function getReportProgress() {
+    $.post('/webinarManager/getReportProgress', {'filename': reportFilename}).done(function (response) {
+        var result = JSON.parse(response);
+        if (result.is_done) {
+            $('#please_wait_additional_info').html('Processed ' + result.session_counter + ' items.');
+            var currentUrl = location.href;
+            location.href = '/webinarManager/downloadReport/' + reportFilename;
+            setTimeout(function () {
+                location.href = currentUrl;
+                location.reload();
+            }, 3000);
+        } else {
+            $('#please_wait_additional_info').html('Processed ' + result.session_counter + ' items.');
+            setTimeout(function () {
+                getReportProgress();
+            }, 3000);
+        }
+    });
+}
+
+function handleAjaxReport(action, data) {
+    var data = data || {};
+    data['filename'] = reportFilename;
+    data['is_ajax'] = 1;
+
+    $.post(action, data).done(function (response) {
+        if (empty(response)) {
+            return;
+        }
+        var result = JSON.parse(response);
+        if (result.reload) {
+            location.reload();
+        }
+    });
+
+    setTimeout(function () {
+        getReportProgress();
+    }, 3000);
 }

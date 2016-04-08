@@ -105,7 +105,7 @@ class Report_Poll extends Report
      *
      * @return mixed
      */
-    public function get()
+    public function get($save_to_file = false)
     {
         if ($this->implementation == null) {
             return;
@@ -114,9 +114,14 @@ class Report_Poll extends Report
         if ($this->mapElements != null && count($this->mapElements) > 0) {
             $currentOffset = 1;
             foreach ($this->mapElements as $mapElement) {
-                $currentOffset += $mapElement->insert($currentOffset);
+                $currentOffset += $mapElement->insert($currentOffset, $this->name);
             }
         }
-        $this->implementation->download($this->name);
+
+        $this->implementation->download($this->name, $save_to_file);
+
+        if ($save_to_file) {
+            Controller_WebinarManager::saveReportProgress($this->name, true);
+        }
     }
 }

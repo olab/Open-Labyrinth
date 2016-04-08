@@ -275,6 +275,6 @@ class Controller_LRS extends Controller_Base
 
     private function increaseMaxExecutionTime()
     {
-        set_time_limit(60 * 3);
+        set_time_limit(60 * 5);
     }
 }

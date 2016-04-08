@@ -470,12 +470,17 @@ class Controller_WebinarManager extends Controller_Base
 
     public function action_stepReport4R()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $dateId = $this->request->param('id3', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
 
         if (!($webinarId != null && $webinarId > 0 && $stepKey != null && $stepKey > 0)) {
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
 
@@ -494,10 +499,17 @@ class Controller_WebinarManager extends Controller_Base
 
         if (!$isExistAccess) {
             Session::instance()->set('error_message', 'Access denied.');
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect($redirect_url);
         }
 
-        $report = new Report_4R(new Report_Impl_PHPExcel(), $webinar->title);
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_4R(new Report_Impl_PHPExcel(), $filename);
         $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
         if ($webinar != null && count($webinar->maps) > 0) {
             foreach ($webinar->maps as $webinarMap) {
@@ -510,12 +522,14 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate();
-
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_stepReportSCT()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertWebinarId = $this->request->param('id3', null);
@@ -523,6 +537,9 @@ class Controller_WebinarManager extends Controller_Base
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($webinarId == null AND $stepKey) {
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
 
@@ -540,10 +557,17 @@ class Controller_WebinarManager extends Controller_Base
 
         if (!$isExistAccess) {
             Session::instance()->set('error_message', 'Access denied.');
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect($redirect_url);
         }
 
-        $report = new Report_SCT(new Report_Impl_PHPExcel(), $webinar->title);
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_SCT(new Report_Impl_PHPExcel(), $filename);
         if ($webinar != null && count($webinar->maps) > 0) {
             foreach ($webinar->maps as $webinarMap) {
                 if ($webinarMap->step == $stepKey) {
@@ -560,11 +584,14 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_stepReportSJT()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $scenarioId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertScenarioId = $this->request->param('id3', null);
@@ -572,6 +599,9 @@ class Controller_WebinarManager extends Controller_Base
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($scenarioId == null AND $stepKey) {
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
 
@@ -585,9 +615,17 @@ class Controller_WebinarManager extends Controller_Base
 
         if (!$isExistAccess) {
             Session::instance()->set('error_message', 'Access denied.');
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect($redirect_url);
         }
-        $report = new Report_SJT(new Report_Impl_PHPExcel(), $scenario->title);
+
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_SJT(new Report_Impl_PHPExcel(), $filename);
         if (count($scenario->maps)) {
             foreach ($scenario->maps as $scenarioMap) {
                 if ($scenarioMap->step == $stepKey) {
@@ -604,17 +642,23 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_stepReportPoll()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($webinarId == null AND $stepKey != null) {
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
 
@@ -632,9 +676,17 @@ class Controller_WebinarManager extends Controller_Base
 
         if (!$isExistAccess) {
             Session::instance()->set('error_message', 'Access denied.');
+            if ($is_ajax) {
+                $this->jsonResponse(array('reload' => true));
+            }
             Request::initial()->redirect($redirect_url);
         }
-        $report = new Report_Poll(new Report_Impl_PHPExcel(), $webinar->title);
+
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_Poll(new Report_Impl_PHPExcel(), $filename);
         if (count($webinar->maps) > 0) {
             foreach ($webinar->maps as $webinarMap) {
                 if ($webinarMap->step == $stepKey) {
@@ -646,12 +698,77 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
+    }
+
+    public static function saveReportProgress($filename, $is_done_new = null, $counter_new = null)
+    {
+        $data = static::getReportProgressData($filename);
+        $counter = $data['counter'];
+        $is_done = $data['is_done'];
+        $progress_filename = $data['progress_filename'];
+
+        file_put_contents($progress_filename, json_encode(array(
+            'is_done' => isset($is_done_new) ? $is_done_new : $is_done,
+            'counter' => isset($counter_new) ? $counter_new : $counter,
+        )));
+    }
+
+    public static function getReportProgressData($filename)
+    {
+        $progress_filename = $_SERVER['DOCUMENT_ROOT'] . '/tmp/report_progress_' . $filename;
+        if (file_exists($progress_filename)) {
+            $data = json_decode(file_get_contents($progress_filename), true);
+            $counter = (int)$data['counter'];
+            $is_done = $data['is_done'];
+        } else {
+            $counter = 0;
+            $is_done = false;
+        }
+
+        return array(
+            'is_done' => $is_done,
+            'counter' => $counter,
+            'progress_filename' => $progress_filename,
+        );
+    }
+
+    public function action_getReportProgress()
+    {
+        $filename = $this->request->post('filename');
+
+        $data = static::getReportProgressData($filename);
+
+        $is_done = $data['is_done'];
+        $counter = $data['counter'];
+        $progress_filename = $data['progress_filename'];
+
+        if ($is_done && file_exists($progress_filename)) {
+            unlink($progress_filename);
+        }
+
+        $this->jsonResponse(array(
+            'session_counter' => $counter,
+            'is_done' => $is_done,
+        ));
+    }
+
+    public function action_downloadReport()
+    {
+        $filename = $this->request->param('id');
+        $file_path = $_SERVER['DOCUMENT_ROOT'] . '/tmp/' . $filename . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xlsx');
+        header('Cache-Control: max-age=0');
+        readfile($file_path);
+        unlink($file_path);
+        die;
     }
 
     public function action_stepReportxAPI()
     {
-        set_time_limit(60 * 3);
+        set_time_limit(60 * 5);
         $post = $this->request->post();
         $is_initial_request = Arr::get($post, 'is_initial_request', 1) === '0' ? false : true;
         $webinarId = $this->request->param('id', null);
@@ -742,12 +859,17 @@ class Controller_WebinarManager extends Controller_Base
 
     public function action_report4RTimeBased()
     {
-
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $dateId = $this->request->param('id3', null);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_4R(new Report_Impl_PHPExcel(), '4R report ' . time());
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_4R(new Report_Impl_PHPExcel(), $filename);
         //$notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
         $notIncludUsers = null;
         foreach ($webinars as $webinar) {
@@ -761,18 +883,24 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate();
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_reportSCTTimeBased()
     {
-
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $expertWebinarId = $this->request->param('id3', null);
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_SCT(new Report_Impl_PHPExcel(), 'SCT report ' . time());
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_SCT(new Report_Impl_PHPExcel(), $filename);
         foreach ($webinars as $webinar) {
             if ($webinar != null && count($webinar->maps) > 0) {
                 foreach ($webinar->maps as $webinarMap) {
@@ -789,17 +917,24 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_reportSJTTimeBased()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $expertScenarioId = $this->request->param('id3', null);
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
 
-        $report = new Report_SJT(new Report_Impl_PHPExcel(), 'SJT report ' . time());
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_SJT(new Report_Impl_PHPExcel(), $filename);
         foreach ($webinars as $scenario) {
             if (count($scenario->maps)) {
                 foreach ($scenario->maps as $scenarioMap) {
@@ -816,15 +951,22 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     public function action_reportPollTimeBased()
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $webinars = $this->getWebinarsForTimeBasedReport();
         $latest = Session::instance()->get('report_by_latest_session', true);
 
-        $report = new Report_Poll(new Report_Impl_PHPExcel(), 'Poll report ' . time());
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
+        $report = new Report_Poll(new Report_Impl_PHPExcel(), $filename);
         foreach ($webinars as $webinar) {
             if (count($webinar->maps) > 0) {
                 foreach ($webinar->maps as $webinarMap) {
@@ -837,7 +979,8 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         $report->generate($latest);
-        $report->get();
+        $report->get($is_ajax);
+        die;
     }
 
     private function getWebinarsForTimeBasedReport()
@@ -906,6 +1049,8 @@ class Controller_WebinarManager extends Controller_Base
 
     private function createReport($type)
     {
+        $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
+        $filename = $this->request->post('filename');
         $scenarioId = $this->request->param('id', null);
         $mapId = $this->request->param('id2', null);
         $sectionId = $this->request->param('id3', null);
@@ -916,35 +1061,40 @@ class Controller_WebinarManager extends Controller_Base
             Request::initial()->redirect(URL::base() . 'webinarmanager/index');
         }
 
+        if ($is_ajax) {
+            Session::instance()->write();
+        }
+
         switch ($type) {
             case 'SCT':
-                $report = new Report_SCT(new Report_Impl_PHPExcel(),
-                    'SCT Report ' . DB_ORM::model('map', array((int)$mapId))->name);
+                $report = new Report_SCT(new Report_Impl_PHPExcel(), $filename);
                 $report->add($mapId, $scenarioId, $expertScenarioId, $sectionId);
                 $report->generate($latest);
-                $report->get();
+                $report->get($is_ajax);
+                die;
                 break;
             case 'Poll':
-                $report = new Report_Poll(new Report_Impl_PHPExcel(),
-                    'Poll ' . DB_ORM::model('map', array((int)$mapId))->name);
+                $report = new Report_Poll(new Report_Impl_PHPExcel(), $filename);
                 $report->add($mapId, $scenarioId, '');
                 $report->generate($latest);
-                $report->get();
+                $report->get($is_ajax);
+                die;
                 break;
             case 'SJT':
-                $report = new Report_SJT(new Report_Impl_PHPExcel(),
-                    'SJT ' . DB_ORM::model('map', array((int)$mapId))->name);
+                $report = new Report_SJT(new Report_Impl_PHPExcel(), $filename);
                 $report->add($mapId, $scenarioId, $expertScenarioId, '');
                 $report->generate($latest);
-                $report->get();
+                $report->get($is_ajax);
+                die;
                 break;
             case '4R':
                 $notIncludeUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($scenarioId);
 
-                $report = new Report_4R(new Report_Impl_PHPExcel(), DB_ORM::model('map', array((int)$mapId))->name);
+                $report = new Report_4R(new Report_Impl_PHPExcel(), $filename);
                 $report->add($mapId, $scenarioId, '', $notIncludeUsers);
                 $report->generate();
-                $report->get();
+                $report->get($is_ajax);
+                die;
                 break;
             default:
                 Request::initial()->redirect(URL::base() . 'webinarmanager/index');
