@@ -351,11 +351,25 @@ class Controller_ReportManager extends Controller_Base
         return $result;
     }
 
+    /**
+     * @return bool
+     */
     private function checkUser()
     {
-        $user_type = Auth::instance()->get_user()->type->name;
+        $user = Auth::instance()->get_user();
+        if (empty($user)) {
+            return false;
+        }
 
-        return (bool)(!empty($user_type) && ($user_type == 'author' || $user_type == 'superuser'));
+        $type = $user->type;
+
+        if (empty($type)) {
+            return false;
+        }
+
+        $user_type = $type->name;
+
+        return (bool)($user_type === 'author' || $user_type === 'superuser');
     }
 
     public function action_pathVisualisation()
