@@ -471,7 +471,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_stepReport4R()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $dateId = $this->request->param('id3', null);
@@ -529,7 +529,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_stepReportSCT()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertWebinarId = $this->request->param('id3', null);
@@ -591,7 +591,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_stepReportSJT()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $scenarioId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $expertScenarioId = $this->request->param('id3', null);
@@ -649,7 +649,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_stepReportPoll()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $webinarId = $this->request->param('id', null);
         $stepKey = $this->request->param('id2', null);
         $redirect_url = URL::base() . 'webinarManager/progress/' . $webinarId;
@@ -860,7 +860,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_report4RTimeBased()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $dateId = $this->request->param('id3', null);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
@@ -890,7 +890,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_reportSCTTimeBased()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $expertWebinarId = $this->request->param('id3', null);
         $latest = Session::instance()->get('report_by_latest_session', true);
 
@@ -924,7 +924,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_reportSJTTimeBased()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $expertScenarioId = $this->request->param('id3', null);
         $latest = Session::instance()->get('report_by_latest_session', true);
 
@@ -958,7 +958,7 @@ class Controller_WebinarManager extends Controller_Base
     public function action_reportPollTimeBased()
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $webinars = $this->getWebinarsForTimeBasedReport();
         $latest = Session::instance()->get('report_by_latest_session', true);
 
@@ -1050,7 +1050,7 @@ class Controller_WebinarManager extends Controller_Base
     private function createReport($type)
     {
         $is_ajax = ($this->request->post('is_ajax', '0') === '0' ? false : true);
-        $filename = $this->request->post('filename');
+        $filename = $this->request->post('filename', 'report');
         $scenarioId = $this->request->param('id', null);
         $mapId = $this->request->param('id2', null);
         $sectionId = $this->request->param('id3', null);

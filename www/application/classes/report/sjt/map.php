@@ -54,7 +54,7 @@ class Report_SJT_Map extends Report_Element
      *
      * @return integer
      */
-    public function insert($offset, $filename = null)
+    public function insert($offset, $filename = null, $save_to_file = false)
     {
         $localRow = $offset;
         $column = 0;
@@ -191,7 +191,7 @@ class Report_SJT_Map extends Report_Element
 
             }
 
-            if (!empty($filename)) {
+            if (!empty($filename) && $save_to_file) {
                 $data = Controller_WebinarManager::getReportProgressData($filename);
                 $counter = $data['counter'];
                 $progress_filename = $data['progress_filename'];

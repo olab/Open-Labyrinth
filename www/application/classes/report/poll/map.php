@@ -66,7 +66,7 @@ class Report_Poll_Map extends Report_Element
      *
      * @return integer
      */
-    public function insert($row, $filename = null)
+    public function insert($row, $filename = null, $save_to_file = false)
     {
         if ($this->map == null) {
             return $row;
@@ -123,7 +123,7 @@ class Report_Poll_Map extends Report_Element
             }
             $row++;
 
-            if (!empty($filename)) {
+            if (!empty($filename) && $save_to_file) {
                 $data = Controller_WebinarManager::getReportProgressData($filename);
                 $counter = $data['counter'];
                 $progress_filename = $data['progress_filename'];

@@ -112,7 +112,7 @@ class Report_SCT extends Report
         if (count($this->mapElements) > 0) {
             $currentOffset = 1;
             foreach ($this->mapElements as $mapElement) {
-                $currentOffset += $mapElement->insert($currentOffset, $this->name);
+                $currentOffset += $mapElement->insert($currentOffset, $this->name, $save_to_file);
             }
         }
 

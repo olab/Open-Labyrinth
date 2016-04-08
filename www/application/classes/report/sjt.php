@@ -112,7 +112,7 @@ class Report_SJT extends Report
         if (count($this->mapElements)) {
             $currentOffset = 1;
             foreach ($this->mapElements as $mapElement) {
-                $currentOffset += $mapElement->insert($currentOffset, $this->name);
+                $currentOffset += $mapElement->insert($currentOffset, $this->name, $save_to_file);
             }
         }
 

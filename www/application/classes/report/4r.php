@@ -114,7 +114,7 @@ class Report_4R extends Report
         if ($this->mapElements != null && count($this->mapElements) > 0) {
             $currentOffset = 1;
             foreach ($this->mapElements as $mapElement) {
-                $currentOffset += $mapElement->insert($currentOffset, $this->name);
+                $currentOffset += $mapElement->insert($currentOffset, $this->name, $save_to_file);
             }
         }
 

@@ -62,7 +62,7 @@ class Report_4R_Map extends Report_Element {
      *
      * @return integer
      */
-    public function insert($offset, $filename = null) {
+    public function insert($offset, $filename = null, $save_to_file = false) {
         $localOffset = 0;
 
         if($this->map == null) return $localOffset;
@@ -128,7 +128,7 @@ class Report_4R_Map extends Report_Element {
             foreach($this->questions as $question) {
                 $localOffset += $question->insert($offset + $localOffset) + 1;
 
-                if (!empty($filename)) {
+                if (!empty($filename) && $save_to_file) {
                     $data = Controller_WebinarManager::getReportProgressData($filename);
                     $counter = $data['counter'];
                     $progress_filename = $data['progress_filename'];
