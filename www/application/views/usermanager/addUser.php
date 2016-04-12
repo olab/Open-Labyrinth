@@ -53,12 +53,12 @@
         <div class="control-group">
             <label class="control-label"><?php echo __('language'); ?></label>
             <div class="controls">
+                <?php foreach($templateData['languages'] as $language) { ?>
                 <label class="radio">
-                    english   <input checked="checked" type="radio" name="langID" value="1" >
+                    <?php echo $language->name ?>
+                    <input <?php if ($language->id == 1){ ?>checked<?php } ?> type="radio" name="langID" value="<?php echo $language->id ?> ">
                 </label>
-                <label class="radio">
-                    francais <input type="radio" name="langID" value="2" >
-                </label>
+                <?php } ?>
             </div>
         </div>
         <div class="control-group">

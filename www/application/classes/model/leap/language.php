@@ -21,59 +21,72 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for languages table in database 
+ * @property int $id
+ * @property string $name
+ * @property string $key
  */
-class Model_Leap_Language extends DB_ORM_Model {
+class Model_Leap_Language extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
             'name' => new DB_ORM_Field_String($this, array(
                 'max_length' => 20,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
-            
             'key' => new DB_ORM_Field_String($this, array(
                 'max_length' => 20,
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
         );
     }
 
-    public static function data_source() {
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'languages';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
 
-    public function getLanguageByName($name) {
+    /**
+     * @return DB_ResultSet|self|static
+     */
+    public static function all()
+    {
+        return DB_ORM::select('Language')->order_by('name')->query();
+    }
+
+    public function getLanguageByName($name)
+    {
         $record = DB_SQL::select('default')
-                          ->from($this->table())
-                          ->column('id')
-                          ->where('name', '=', $name)
-                          ->limit(1)
-                          ->query();
-        if($record->is_loaded()) {
+            ->from(static::table())
+            ->column('id')
+            ->where('name', '=', $name)
+            ->limit(1)
+            ->query();
+
+        if ($record->is_loaded()) {
             return DB_ORM::model('language', array((int)$record[0]['id']));
         }
 
         return null;
     }
 }
-
-?>

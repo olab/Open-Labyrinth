@@ -280,7 +280,7 @@ class Controller_CounterManager extends Controller_Base {
         $ids = array();
         foreach($nodesArray as $node){
             $word = html_entity_decode($node->title, ENT_QUOTES);
-            $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+            $word = mb_ereg_replace(__('[^a-zA-Z0-9_.,; ]'), '', $word);
             $nodes[] = $word;
             $ids[] = '[[NODE:'.$node->id.']]';
 
@@ -295,7 +295,7 @@ class Controller_CounterManager extends Controller_Base {
         $ids = array();
         foreach($countersArray as $counter){
             $word = html_entity_decode($counter->name, ENT_QUOTES);
-            $word = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+            $word = mb_ereg_replace(__('[^a-zA-Z0-9_.,; ]'), '', $word);
             $counters[] = $word;
             $ids[] = '[[CR:'.$counter->id.']]';
         }
@@ -323,7 +323,7 @@ class Controller_CounterManager extends Controller_Base {
             $steps = DB_ORM::model('Webinar', $scenarioId)->steps;
             foreach ($steps as $step) {
                 $word               = html_entity_decode($step->name, ENT_QUOTES);
-                $word               = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+                $word               = mb_ereg_replace(__('[^a-zA-Z0-9_.,; ]'), '', $word);
                 $scenariosText[]    = $word;
                 $scenariosId[]      = '[[STEP:'.$step->id.']]';
             }
@@ -338,7 +338,7 @@ class Controller_CounterManager extends Controller_Base {
         foreach($conditionsAssign as $conditionAssign){
             $condition          = DB_ORM::model('Conditions', array($conditionAssign->condition_id));
             $word               = html_entity_decode($condition->name, ENT_QUOTES);
-            $word               = preg_replace('/[^a-zA-Z0-9_.,; ]/', '', $word);
+            $word               = mb_ereg_replace(__('[^a-zA-Z0-9_.,; ]'), '', $word);
             $conditionsText[]   = $word;
             $conditionsId[]     = '[[COND:'.$condition->id.']]';
         }

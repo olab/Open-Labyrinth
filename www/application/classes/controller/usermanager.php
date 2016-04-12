@@ -50,6 +50,7 @@ class Controller_UserManager extends Controller_Base {
     public function action_addUser() {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add User'))->set_url(URL::base() . 'usermanager/addUser'));
 
+        $this->templateData['languages'] = Model_Leap_Language::all();
         $this->templateData['types'] = DB_ORM::model('user_type')->getAllTypes();
         $this->templateData['post'] = Session::instance()->get('newUser');
         $array = array('uid', 'upw', 'uname', 'uemail', 'usertype', 'langID');
@@ -159,6 +160,7 @@ class Controller_UserManager extends Controller_Base {
         if ( ! ($loggedUserType == 'superuser' OR $loggedUserType == 'Director') AND $loggedUser->id != $userId) Request::initial()->redirect(URL::base());
 
         $this->templateData['user']     = $user;
+        $this->templateData['languages'] = Model_Leap_Language::all();
         $this->templateData['types']    = DB_ORM::select('user_type')->query()->as_array();
         $this->templateData['errorMsg'] = Session::instance()->get('errorMsg');
         Session::instance()->delete('errorMsg');
