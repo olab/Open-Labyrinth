@@ -57,9 +57,11 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model
                 'nullable' => false,
                 'savable' => true,
             )),
-            'date_stamp' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 20,
-                'nullable' => false,
+            'date_stamp' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
@@ -70,13 +72,23 @@ class Model_Leap_Statistics_User_SessionTrace extends DB_ORM_Model
                 'nullable' => false,
                 'savable' => true,
             )),
-            'bookmark_made' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => false,
+            'bookmark_made' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
-            'bookmark_used' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => false,
+            'bookmark_used' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
+            )),
+            'end_date_stamp' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
         );
 

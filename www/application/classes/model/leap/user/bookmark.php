@@ -71,7 +71,7 @@ class Model_Leap_User_Bookmark extends DB_ORM_Model
 
     public function addBookmark($nodeId, $sessionId, $userId)
     {
-        $current_time = time();
+        $current_time = microtime(true);
         // check for existing bookmark
         $nodeObj = DB_ORM::model('Map_Node', array($nodeId));
         if ($nodeObj) {

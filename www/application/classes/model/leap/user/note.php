@@ -64,20 +64,23 @@ class Model_Leap_User_Note extends Model_Leap_Base
                 'max_length' => 65535,
                 'nullable' => false,
             )),
-            'created_at' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
+            'created_at' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => false,
                 'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
-            'updated_at' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
+            'updated_at' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => false,
                 'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
-            'deleted_at' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
+            'deleted_at' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
                 'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
         );
 

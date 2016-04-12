@@ -68,7 +68,7 @@ class Model_Labyrinth extends Model
             } else {
                 if ($isRoot OR Session::instance()->get('webinarSection', false) == 'section') {
                     $sessionId = DB_ORM::model('user_session')
-                        ->createSession($result['userId'], $node->map_id, time(), getenv('REMOTE_ADDR'),
+                        ->createSession($result['userId'], $node->map_id, microtime(true), getenv('REMOTE_ADDR'),
                             Session::instance()->get('webinarId', null), Session::instance()->get('step', null));
 
                     $result['webinarId'] = Session::instance()->get('webinarId', null);
@@ -84,7 +84,7 @@ class Model_Labyrinth extends Model
                             $sessionId = $_COOKIE['OL'];
                         } else {
                             $sessionId = DB_ORM::model('user_session')->createSession($result['userId'], $node->map_id,
-                                time(), getenv('REMOTE_ADDR'));
+                                microtime(true), getenv('REMOTE_ADDR'));
                             Session::instance()->set('session_id', $sessionId);
                         }
                     }
@@ -510,7 +510,7 @@ class Model_Labyrinth extends Model
             unset($questionChoices['counter_ids']);
         }
 
-        $created_at = time();
+        $created_at = microtime(true);
         foreach ($sctResponses as $idQuestion => $idResponse) {
             DB_ORM::model('user_response')->createResponse($sessionId, $idQuestion, $idResponse, $nodeId, $created_at);
         }
@@ -519,7 +519,7 @@ class Model_Labyrinth extends Model
         if (count($questionChoices)) {
             foreach ($questionChoices as $qID => $questions) {
                 if (count($questions)) {
-                    $created_at = time();
+                    $created_at = microtime(true);
                     foreach ($questions as $q) {
                         DB_ORM::model('user_response')->createResponse($sessionId, $qID, $q['response'], $nodeId,
                             $created_at);
@@ -550,7 +550,7 @@ class Model_Labyrinth extends Model
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
         if (count($sliderQuestionChoices)) {
             $slidersSum = 0;
-            $created_at = time();
+            $created_at = microtime(true);
             foreach ($sliderQuestionChoices as $qID => $sliderValue) {
                 $slidersSum += $sliderValue;
                 DB_ORM::model('user_response')->createResponse($sessionId, $qID, $sliderValue, $nodeId, $created_at);
@@ -589,7 +589,7 @@ class Model_Labyrinth extends Model
 
         $draggingQuestionResponses = Session::instance()->get('dragQuestionResponses');
         if (count($draggingQuestionResponses)) {
-            $created_at = time();
+            $created_at = microtime(true);
             foreach ($draggingQuestionResponses as $responseJSON) {
                 $responseObject = json_decode($responseJSON, true);
                 if ($responseObject == null) {
