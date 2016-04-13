@@ -238,7 +238,7 @@ class Model_Leap_Map_Node extends Model_Leap_Base
                     'en-US' => 'node "' . $node->title . '" (#' . $node->id . ')'
                 ),
                 'description' => array(
-                    'en-US' => 'Node content: ' . $node->text
+                    'en-US' => 'Node content: ' . strip_tags($node->text)
                 ),
                 'type' => 'http://activitystrea.ms/schema/1.0/node',
                 'moreInfo' => $url,
