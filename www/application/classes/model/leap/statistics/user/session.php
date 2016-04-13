@@ -268,7 +268,7 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
      * @param integer|null $dateStatistics - if this sessions for Statistics
      * @return array|null - session ids or null
      */
-    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $date_from = null, $date_to = null) {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
@@ -287,6 +287,12 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
 
         if($dateStatistics != null && $dateStatistics > 0) {
             $builder = $builder->where('date_save_id', '=', $dateStatistics);
+        }
+
+        if (!empty($date_from) && !empty($date_to)) {
+            $builder = $builder
+                ->where('start_time', '>=', $date_from)
+                ->where('start_time', '<=', $date_to);
         }
 
         $records = $builder->query();

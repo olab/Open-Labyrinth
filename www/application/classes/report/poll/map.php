@@ -31,6 +31,8 @@ class Report_Poll_Map extends Report_Element
     private $webinarStep;
     private $dateStatistics;
     private $latest;
+    private $date_from = null;
+    private $date_to = null;
 
     public function __construct(
         Report_Impl $impl,
@@ -39,7 +41,9 @@ class Report_Poll_Map extends Report_Element
         $webinarId = null,
         $webinarStep = null,
         $dateStatistics = null,
-        $latest = true
+        $latest = true,
+        $date_from = null,
+        $date_to = null
     ) {
         parent::__construct($impl);
 
@@ -53,6 +57,8 @@ class Report_Poll_Map extends Report_Element
         $this->webinarStep = $webinarStep;
         $this->dateStatistics = $dateStatistics;
         $this->latest = $latest;
+        $this->date_from = $date_from;
+        $this->date_to = $date_to;
 
         $this->elements = array();
         $this->sections = array();
@@ -82,10 +88,18 @@ class Report_Poll_Map extends Report_Element
 
         // --- table user answers --- //
         foreach ($include_users as $wUser) {
-            $userSession = DB_ORM::select('user_session')
+            $query = DB_ORM::select('user_session')
                 ->where('user_id', '=', $wUser->user_id)
                 ->where('map_id', '=', $this->map->id)
-                ->where('webinar_id', '=', $this->webinarId)
+                ->where('webinar_id', '=', $this->webinarId);
+
+            if ($this->date_from > 0 && $this->date_to > 0) {
+                $query
+                    ->where('start_time', '>=', $this->date_from)
+                    ->where('start_time', '<=', $this->date_to);
+            }
+
+            $userSession = $query
                 ->order_by('id', $this->latest ? 'DESC' : 'ASC')
                 ->limit(1)
                 ->query()

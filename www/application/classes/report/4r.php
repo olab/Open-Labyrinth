@@ -73,7 +73,7 @@ class Report_4R extends Report
      *
      * @return mixed
      */
-    public function generate()
+    public function generate($date_from = null, $date_to = null)
     {
         if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) {
             return;
@@ -96,7 +96,9 @@ class Report_4R extends Report
                 $mapData['webinarId'],
                 $mapData['webinarStep'],
                 $mapData['notInUsers'],
-                $mapData['dateStatistics']);
+                $mapData['dateStatistics'],
+                $date_from,
+                $date_to);
         }
     }
 

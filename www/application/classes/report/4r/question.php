@@ -27,13 +27,15 @@ class Report_4R_Question extends Report_Element {
     private $notInUsers;
     private $dateStatistics;
     private $questionResponses;
+    private $date_from = null;
+    private $date_to = null;
 
     /**
      * Default constructor
      *
      * @param Report_Impl $impl - report implementation
      */
-    public function __construct(Report_Impl $impl, $questioId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function __construct(Report_Impl $impl, $questioId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $date_from = null, $date_to = null) {
         parent::__construct($impl);
 
         $this->question    = DB_ORM::model('map_question', array((int)$questioId));
@@ -42,6 +44,8 @@ class Report_4R_Question extends Report_Element {
         $this->notInUsers  = $notInUsers;
         $this->dateStatistics = $dateStatistics;
         $this->questionResponses = DB_ORM::model('map_question_response')->getResponsesByQuestion($questioId);
+        $this->date_from = $date_from;
+        $this->date_to = $date_to;
     }
 
     /**
@@ -57,7 +61,8 @@ class Report_4R_Question extends Report_Element {
             $statisticsModel = '';
         }
 
-        $sessions      = DB_ORM::model($statisticsModel.'user_session')->getSessions($this->question->map_id, $this->webinarId, $this->webinarStep, $this->notInUsers);
+        $sessions = DB_ORM::model($statisticsModel.'user_session')->getSessions($this->question->map_id, $this->webinarId, $this->webinarStep, $this->notInUsers, $this->date_from, $this->date_to);
+
         $responses     = DB_ORM::model($statisticsModel.'user_response')->getResponses($this->question->id, $sessions);
 
         $localOffset   = 0;
