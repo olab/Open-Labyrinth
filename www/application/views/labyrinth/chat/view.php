@@ -78,7 +78,7 @@ if (isset($templateData['map'])) {
                                 <h4 class="alert-heading"><?php echo __('Caution! Are you sure?'); ?></h4>
                             </div>
                             <div class="modal-body">
-                                <p><?php echo __('You have just clicked the delete button, are you certain that you wish to proceed with deleting "' . $chat->stem . '" chat?'); ?></p>
+                                <p><?php printf(__('You have just clicked the delete button, are you certain that you wish to proceed with deleting "%s" chat?'),$chat->stem); ?></p>
                                 <p>
                                     <a class="btn btn-danger" href="<?php echo URL::base() . 'chatManager/deleteChat/' . $templateData['map']->id . '/' . $chat->id; ?>"><?php echo __('Delete'); ?></a>
                                     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

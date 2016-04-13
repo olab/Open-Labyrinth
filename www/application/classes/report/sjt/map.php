@@ -30,8 +30,10 @@ class Report_SJT_Map extends Report_Element
     private $expertsScenarioId;
     private $includeUsers = array();
     private $latest;
+    private $date_from = null;
+    private $date_to = null;
 
-    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId, $sectionId, $latest = true)
+    public function __construct(Report_Impl $impl, $mapId, $webinarId, $expertsScenarioId, $sectionId, $latest = true, $date_from = null, $date_to = null)
     {
         parent::__construct($impl);
 
@@ -45,6 +47,8 @@ class Report_SJT_Map extends Report_Element
         $this->expertsScenarioId = $expertsScenarioId;
         $this->sectionId = $sectionId;
         $this->latest = $latest;
+        $this->date_from = $date_from;
+        $this->date_to = $date_to;
 
         $this->loadElements();
     }
@@ -120,10 +124,18 @@ class Report_SJT_Map extends Report_Element
                 foreach ($this->includeUsers as $userId) {
                     $lastUserResponse++;
 
-                    $sessionObj = DB_ORM::select('User_Session')
+                    $query = DB_ORM::select('User_Session')
                         ->where('user_id', '=', $userId)
                         ->where('map_id', '=', $this->map->id)
-                        ->where('webinar_id', '=', $this->webinarId)
+                        ->where('webinar_id', '=', $this->webinarId);
+
+                    if ($this->date_from > 0 && $this->date_to > 0) {
+                        $query
+                            ->where('start_time', '>=', $this->date_from)
+                            ->where('start_time', '<=', $this->date_to);
+                    }
+
+                    $sessionObj = $query
                         ->order_by('id', $this->latest ? 'DESC' : 'ASC')
                         ->limit(1)
                         ->query()

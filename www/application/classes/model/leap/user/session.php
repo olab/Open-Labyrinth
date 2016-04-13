@@ -59,13 +59,17 @@ class Model_Leap_User_Session extends Model_Leap_Base
                 'nullable' => false,
                 'unsigned' => true,
             )),
-            'start_time' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'start_time' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => false,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
-            'end_time' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'end_time' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
             'user_ip' => new DB_ORM_Field_String($this, array(
                 'max_length' => 50,
@@ -86,10 +90,11 @@ class Model_Leap_User_Session extends Model_Leap_Base
                 'nullable' => false,
                 'savable' => true
             )),
-            'reset_at' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
+            'reset_at' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
                 'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
         );
 

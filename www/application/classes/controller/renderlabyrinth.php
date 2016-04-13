@@ -132,7 +132,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
     private function renderNode($nodeObj, $action, $bookmark)
     {
-        $current_time = time();
+        $current_time = microtime(true);
 
         if ($nodeObj == null) {
             Request::initial()->redirect(URL::base());

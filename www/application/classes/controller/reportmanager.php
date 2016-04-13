@@ -72,7 +72,7 @@ class Controller_ReportManager extends Controller_Base
         if (!empty($sessionId) && is_numeric($sessionId)) {
             /** @var Model_Leap_User_Session $session */
             $session = DB_ORM::model('user_session', (int)$sessionId);
-            $session->end_time = time();
+            $session->end_time = microtime(true);
             $session->save();
             DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
 

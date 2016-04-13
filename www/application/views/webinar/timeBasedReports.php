@@ -1,6 +1,7 @@
 <form action="#" class="form-inline left" method="post">
     <input type="hidden" name="referrer" value="<?php echo Request::current()->url(true) . URL::query() ?>">
     <input type="hidden" name="is_initial_request" value="1">
+    <input type="hidden" name="webinar_id" value="<?php echo $templateData['webinar']->id ?>">
     <fieldset>
         <div class="control-group">
             <input class="datepicker" type="text" name="date_from" id="date_from"

@@ -56,10 +56,11 @@ class Model_Leap_Statement extends Model_Leap_Base
                 'nullable' => false,
                 'savable' => true,
             )),
-            'timestamp' => new DB_ORM_Field_String($this, array(
-                'max_length' => 255,
+            'timestamp' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => false,
                 'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
             'created_at' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,

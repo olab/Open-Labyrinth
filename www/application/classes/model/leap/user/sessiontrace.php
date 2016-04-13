@@ -80,13 +80,11 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
                 'nullable' => false,
                 'savable' => true,
             )),
-            'date_stamp' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 20,
-                'nullable' => false,
-            )),
-            'end_date_stamp' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 20,
+            'date_stamp' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
             'confidence' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 6,
@@ -99,15 +97,23 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
                 'default' => null,
                 'savable' => true,
             )),
-            'bookmark_made' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'bookmark_made' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
-                'default' => null,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
-            'bookmark_used' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'bookmark_used' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => true,
-                'default' => null,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
+            )),
+            'end_date_stamp' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
         );
 
@@ -655,7 +661,7 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
     public function setElapsedTime($sessionId)
     {
         $traceId = $this->getTopTraceBySessionId($sessionId);
-        $time = time();
+        $time = microtime(true);
         if ($traceId != null) {
             DB_ORM::update('user_sessionTrace')
                 ->set('end_date_stamp', $time)

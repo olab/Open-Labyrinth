@@ -62,9 +62,11 @@ class Model_Leap_User_Response extends Model_Leap_Base
                 'nullable' => false,
                 'unsigned' => true,
             )),
-            'created_at' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
+            'created_at' => new DB_ORM_Field_Decimal($this, array(
                 'nullable' => false,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
         );
 
@@ -139,7 +141,7 @@ class Model_Leap_User_Response extends Model_Leap_Base
             return false;
         }
         if (empty($created_at)) {
-            $created_at = time();
+            $created_at = microtime(true);
         }
 
         return DB_ORM::insert('User_Response')

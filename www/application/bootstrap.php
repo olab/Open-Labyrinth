@@ -20,6 +20,11 @@ $config = file_get_contents($configPath);
 $config = json_decode($config, true);
 
 /**
+ * Set precision for PHP floating points
+ */
+ini_set('precision', '16');
+
+/**
  * Set the default time zone.
  *
  * @see  http://kohanaframework.org/guide/using.configuration

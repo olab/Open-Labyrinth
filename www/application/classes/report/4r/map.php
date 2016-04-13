@@ -30,6 +30,8 @@ class Report_4R_Map extends Report_Element {
     private $notInUsers;
     private $dateStatistics;
     private $countOfChoices;
+    private $date_from = null;
+    private $date_to = null;
 
     private $choicesMap = array(
         1 => 'C',
@@ -38,7 +40,7 @@ class Report_4R_Map extends Report_Element {
         4 => 'F'
     );
 
-    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function __construct(Report_Impl $impl, $mapId, $countOfChoices, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $date_from = null, $date_to = null) {
         parent::__construct($impl);
 
         if($mapId == null || $mapId <= 0) return;
@@ -49,6 +51,8 @@ class Report_4R_Map extends Report_Element {
         $this->webinarStep    = $webinarStep;
         $this->notInUsers     = $notInUsers;
         $this->dateStatistics = $dateStatistics;
+        $this->date_from = $date_from;
+        $this->date_to = $date_to;
 
         $this->elements       = array();
         $this->sections       = array();
@@ -202,7 +206,10 @@ class Report_4R_Map extends Report_Element {
                                                             $this->webinarId,
                                                             $this->webinarStep,
                                                             $this->notInUsers,
-                                                            $this->dateStatistics);
+                                                            $this->dateStatistics,
+                                                            $this->date_from,
+                                                            $this->date_to
+                );
             }
         }
     }

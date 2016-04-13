@@ -869,16 +869,20 @@ class Controller_WebinarManager extends Controller_Base
         $dateId = $this->request->param('id3', null);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         if ($is_ajax) {
             Session::instance()->write();
         }
 
         $report = new Report_4R(new Report_Impl_PHPExcel(), $filename);
-        //$notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
-        $notIncludUsers = null;
+        //$notIncludUsers = null;
         foreach ($webinars as $webinar) {
             if ($webinar != null && count($webinar->maps) > 0) {
+                $notIncludUsers = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
                 foreach ($webinar->maps as $webinarMap) {
                     $mapId = ($webinarMap->which == 'labyrinth')
                         ? $webinarMap->reference_id
@@ -887,7 +891,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate();
+        $report->generate($date_from_obj->getTimestamp(), $date_to_obj->getTimestamp());
         $report->get($is_ajax);
         die;
     }
@@ -901,6 +905,10 @@ class Controller_WebinarManager extends Controller_Base
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         if ($is_ajax) {
             Session::instance()->write();
@@ -922,7 +930,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate($latest);
+        $report->generate($latest, $date_from_obj->getTimestamp(), $date_to_obj->getTimestamp());
         $report->get($is_ajax);
         die;
     }
@@ -936,6 +944,10 @@ class Controller_WebinarManager extends Controller_Base
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         $webinars = $this->getWebinarsForTimeBasedReport();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         if ($is_ajax) {
             Session::instance()->write();
@@ -957,7 +969,7 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
         }
-        $report->generate($latest);
+        $report->generate($latest, $date_from_obj->getTimestamp(), $date_to_obj->getTimestamp());
         $report->get($is_ajax);
         die;
     }
@@ -967,8 +979,13 @@ class Controller_WebinarManager extends Controller_Base
         $post = $this->request->post();
         $is_ajax = Arr::get($post, 'is_ajax', '0') === '0' ? false : true;
         $filename = Arr::get($post, 'filename', 'report');
-        $webinars = $this->getWebinarsForTimeBasedReport();
         $latest = Session::instance()->get('report_by_latest_session', true);
+
+        $webinars = $this->getWebinarsForTimeBasedReport();
+        $date_from = Arr::get($post, 'date_from');
+        $date_to = Arr::get($post, 'date_to');
+        $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
+        $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
 
         if ($is_ajax) {
             Session::instance()->write();
@@ -986,7 +1003,7 @@ class Controller_WebinarManager extends Controller_Base
             }
         }
 
-        $report->generate($latest);
+        $report->generate($latest, $date_from_obj->getTimestamp(), $date_to_obj->getTimestamp());
         $report->get($is_ajax);
         die;
     }
@@ -997,6 +1014,7 @@ class Controller_WebinarManager extends Controller_Base
         $post = $this->request->post();
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
+        $webinar_id = Arr::get($post, 'webinar_id');
         $redirect_url = URL::base() . 'webinarmanager/progress';
 
         if (empty($date_from) || empty($date_to)) {
@@ -1011,7 +1029,7 @@ class Controller_WebinarManager extends Controller_Base
             ->from(Model_Leap_User_Session::table())
             ->where('start_time', '>=', $date_from_obj->getTimestamp())
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
-            ->where('webinar_id', '>', 0)
+            ->where('webinar_id', '=', $webinar_id)
             ->column('webinar_id')
             ->query()
             ->as_array();
@@ -1023,7 +1041,7 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         $webinars = DB_ORM::select('webinar')
-            ->where('id', 'IN', $webinar_ids)
+            ->where('id', '=', $webinar_id)
             ->query();
 
         return $webinars;

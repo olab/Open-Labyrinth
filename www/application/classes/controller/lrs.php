@@ -181,35 +181,23 @@ class Controller_LRS extends Controller_Base
         $this->template->set('templateData', $this->templateData);
     }
 
-//    public function action_sendReportScenarioBasedSubmit()
-//    {
-//        $webinar_id = $this->request->param('id');
-//
-//        if (empty($webinar_id)) {
-//            die('webinar_id cannot be blank');
-//        }
-//
-//        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-//        $sessions = DB_ORM::select('User_Session')
-//            ->where('webinar_id', '=', $webinar_id)
-//            ->query();
-//
-//        $this->sendSessions($sessions);
-//
-//        Request::initial()->redirect(URL::base() . 'webinarManager/progress/' . $webinar_id);
-//    }
-
     public function action_sendReportSubmit()
     {
         $this->increaseMaxExecutionTime();
         $post = $this->request->post();
         $is_initial_request = Arr::get($post, 'is_initial_request', 1) === '0' ? false : true;
+        $webinar_id = Arr::get($post, 'webinar_id');
         $date_from = Arr::get($post, 'date_from');
         $date_to = Arr::get($post, 'date_to');
         $referrer_url = Arr::get($post, 'referrer');
         $redirect_url = $referrer_url;
         if (empty($redirect_url)) {
             $redirect_url = URL::base() . 'lrs';
+        }
+
+        if (empty($webinar_id)) {
+            Session::instance()->set('error_message', 'webinar_id cannot be blank');
+            $this->jsonResponse(array('completed' => true));
         }
 
         if (empty($date_from) || empty($date_to)) {
@@ -219,29 +207,45 @@ class Controller_LRS extends Controller_Base
 
         $date_from_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_from . ' 00:00:00');
         $date_to_obj = DateTime::createFromFormat('m/d/Y H:i:s', $date_to . ' 23:59:59');
+        $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar_id);
 
         $per_iteration = 1;
         if ($is_initial_request) {
             $i = 0;
             $offset = 0;
             $limit = $per_iteration;
-            Session::instance()->set('xAPI_report_total_sessions', DB_SQL::select()
+
+            $query_count = DB_SQL::select()
                 ->from(Model_Leap_User_Session::table())
                 ->where('start_time', '>=', $date_from_obj->getTimestamp())
                 ->where('start_time', '<=', $date_to_obj->getTimestamp())
+                ->where('webinar_id', '=', $webinar_id);
+
+            if (!empty($not_included_user_ids)) {
+                $query_count->where('user_id', 'NOT IN', $not_included_user_ids);
+            }
+
+            Session::instance()->set('xAPI_report_total_sessions', $query_count
                 ->column(DB_SQL::expr("COUNT(*)"), 'counter')
-                ->query()[0]['counter']
-            );
+                ->query()[0]['counter']);
+
         } else {
             $i = Session::instance()->get('xAPI_report_i');
             $offset = Session::instance()->get('xAPI_report_offset');
             $limit = Session::instance()->get('xAPI_report_limit');
         }
 
-        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
-        $sessions = DB_ORM::select('User_Session')
+        $query = DB_ORM::select('User_Session')
             ->where('start_time', '>=', $date_from_obj->getTimestamp())
             ->where('start_time', '<=', $date_to_obj->getTimestamp())
+            ->where('webinar_id', '=', $webinar_id);
+
+        if (!empty($not_included_user_ids)) {
+            $query->where('user_id', 'NOT IN', $not_included_user_ids);
+        }
+
+        /** @var Model_Leap_User_Session[]|DB_ResultSet $sessions */
+        $sessions = $query
             ->order_by('id', 'ASC')
             ->offset($offset)
             ->limit($limit)
