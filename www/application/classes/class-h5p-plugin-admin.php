@@ -652,7 +652,7 @@ class H5P_Plugin_Admin
      */
     public static function add_script($handle, $path)
     {
-        wp_enqueue_script(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
+        //wp_enqueue_script(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
     }
 
     /**
@@ -664,7 +664,7 @@ class H5P_Plugin_Admin
      */
     public static function add_style($handle, $path)
     {
-        wp_enqueue_style(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
+        //wp_enqueue_style(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
     }
 
     /**
@@ -911,14 +911,14 @@ class H5P_Plugin_Admin
             'filters' => $filters,
             'order' => $order,
             'l10n' => array(
-                'loading' => __('Loading data.', $this->plugin_slug),
-                'ajaxFailed' => __('Failed to load data.', $this->plugin_slug),
-                'noData' => __("There's no data available that matches your criteria.", $this->plugin_slug),
-                'currentPage' => __('Page $current of $total', $this->plugin_slug),
-                'nextPage' => __('Next page', $this->plugin_slug),
-                'previousPage' => __('Previous page', $this->plugin_slug),
-                'search' => __('Search', $this->plugin_slug),
-                'remove' => __('Remove', $this->plugin_slug),
+                'loading' => __('Loading data.'),
+                'ajaxFailed' => __('Failed to load data.'),
+                'noData' => __("There's no data available that matches your criteria."),
+                'currentPage' => __('Page $current of $total'),
+                'nextPage' => __('Next page'),
+                'previousPage' => __('Previous page'),
+                'search' => __('Search'),
+                'remove' => __('Remove'),
                 'empty' => $empty,
             )
         );
@@ -933,6 +933,13 @@ class H5P_Plugin_Admin
         H5P_Plugin_Admin::add_script('data-view', 'h5p-php-library/js/h5p-data-view.js');
         H5P_Plugin_Admin::add_script('data-views', 'admin/scripts/h5p-data-views.js');
         H5P_Plugin_Admin::add_style('admin', 'h5p-php-library/styles/h5p-admin.css');
+    }
+
+    public function get_data_view_settings($name, $source, $headers, $filters, $empty, $order)
+    {
+        ob_start();
+        $this->print_data_view_settings($name, $source, $headers, $filters, $empty, $order);
+        return ob_get_clean();
     }
 
     /**
