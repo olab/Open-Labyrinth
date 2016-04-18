@@ -4,7 +4,7 @@
 
 <div class="wrap">
     <h2><?php echo __('All H5P Content'); ?>
-        <a href="<?php print admin_url('admin.php?page=h5p_new'); ?>" class="add-new-h2">
+        <a href="/h5p/addContent" class="add-new-h2">
             <?php echo __('Add new'); ?>
         </a>
     </h2>

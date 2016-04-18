@@ -861,7 +861,8 @@ class wpdb
          *
          * @param array $incompatible_modes An array of incompatible modes.
          */
-        $incompatible_modes = (array)apply_filters('incompatible_sql_modes', $this->incompatible_modes);
+        //$incompatible_modes = (array)apply_filters('incompatible_sql_modes', $this->incompatible_modes);
+        $incompatible_modes = (array)$this->incompatible_modes;
 
         foreach ($modes as $i => $mode) {
             if (in_array($mode, $incompatible_modes)) {
@@ -1362,7 +1363,6 @@ class wpdb
      */
     public function print_error($str = '')
     {
-        global $EZSQL_ERROR;
 
         if (!$str) {
             if ($this->use_mysqli) {
@@ -1371,54 +1371,9 @@ class wpdb
                 $str = mysql_error($this->dbh);
             }
         }
-        $EZSQL_ERROR[] = array('query' => $this->last_query, 'error_str' => $str);
 
-        if ($this->suppress_errors) {
-            return false;
-        }
-
-        wp_load_translations_early();
-
-        if ($caller = $this->get_caller()) {
-            $error_str = sprintf(__('WordPress database error %1$s for query %2$s made by %3$s'), $str,
-                $this->last_query, $caller);
-        } else {
-            $error_str = sprintf(__('WordPress database error %1$s for query %2$s'), $str, $this->last_query);
-        }
-
-        error_log($error_str);
-
-        // Are we showing errors?
-        if (!$this->show_errors) {
-            return false;
-        }
-
-        // If there is an error then take note of it
-        if (is_multisite()) {
-            $msg = sprintf(
-                "%s [%s]\n%s\n",
-                __('WordPress database error:'),
-                $str,
-                $this->last_query
-            );
-
-            if (defined('ERRORLOGFILE')) {
-                error_log($msg, 3, ERRORLOGFILE);
-            }
-            if (defined('DIEONDBERROR')) {
-                wp_die($msg);
-            }
-        } else {
-            $str = htmlspecialchars($str, ENT_QUOTES);
-            $query = htmlspecialchars($this->last_query, ENT_QUOTES);
-
-            printf(
-                '<div id="error"><p class="wpdberror"><strong>%s</strong> [%s]<br /><code>%s</code></p></div>',
-                __('WordPress database error:'),
-                $str,
-                $query
-            );
-        }
+        echo $str;
+        die;
     }
 
     /**
@@ -1758,7 +1713,7 @@ class wpdb
          *
          * @param string $query Database query.
          */
-        $query = apply_filters('query', $query);
+        //$query = apply_filters('query', $query);
 
         $this->flush();
 
@@ -2480,7 +2435,8 @@ class wpdb
          * @param string $charset The character set to use. Default null.
          * @param string $table The name of the table being checked.
          */
-        $charset = apply_filters('pre_get_table_charset', null, $table);
+        //$charset = apply_filters('pre_get_table_charset', null, $table);
+        $charset = null;
         if (null !== $charset) {
             return $charset;
         }
@@ -2589,7 +2545,8 @@ class wpdb
          * @param string $table The name of the table being checked.
          * @param string $column The name of the column being checked.
          */
-        $charset = apply_filters('pre_get_col_charset', null, $table, $column);
+        //$charset = apply_filters('pre_get_col_charset', null, $table, $column);
+        $charset = null;
         if (null !== $charset) {
             return $charset;
         }

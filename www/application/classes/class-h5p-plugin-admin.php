@@ -626,6 +626,7 @@ class H5P_Plugin_Admin
     {
         ob_start();
         static::print_messages();
+
         return ob_get_clean();
     }
 
@@ -822,8 +823,8 @@ class H5P_Plugin_Admin
             $joins .= " LEFT JOIN {$wpdb->prefix}h5p_contents hc ON hr.content_id = hc.id";
         }
         if ($user_id === null) {
-            $extra_fields .= " hr.user_id, u.display_name AS user_name,";
-            $joins .= " LEFT JOIN {$wpdb->base_prefix}users u ON hr.user_id = u.ID";
+            $extra_fields .= " hr.user_id, u.nickname AS user_name,";
+            $joins .= " LEFT JOIN {$wpdb->base_prefix}users u ON hr.user_id = u.id";
         }
 
         // Add filters
@@ -939,6 +940,7 @@ class H5P_Plugin_Admin
     {
         ob_start();
         $this->print_data_view_settings($name, $source, $headers, $filters, $empty, $order);
+
         return ob_get_clean();
     }
 

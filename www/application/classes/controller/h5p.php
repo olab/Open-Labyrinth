@@ -47,20 +47,27 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_addContent()
+    {
+        $this->templateData['center'] = View::factory('h5p/contentAdd')
+            ->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    /**
+     * ajax request
+     */
+    public function action_addContentSubmit()
+    {
+        $this->ajax_contents(true);
+    }
+
     /**
      * ajax request
      */
     public function action_contents()
     {
         $this->ajax_contents();
-    }
-
-    /**
-     * ajax request
-     */
-    public function action_insertContent()
-    {
-        $this->ajax_contents(true);
     }
 
     public function action_index()
@@ -434,7 +441,7 @@ class Controller_H5P extends Controller_Base
 
         return $result;
     }
-    
+
     /**
      * Format time for use in content lists.
      *

@@ -973,8 +973,8 @@ class H5P_Plugin
 
         if ($current_user->ID) {
             $settings['user'] = array(
-                'name' => $current_user->display_name,
-                'mail' => $current_user->user_email
+                'name' => $current_user->nickname,
+                'mail' => $current_user->email
             );
         }
 

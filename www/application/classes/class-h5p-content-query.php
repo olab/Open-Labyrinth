@@ -38,7 +38,7 @@ class H5PContentQuery
         'created_at' => array('hc', 'created_at'),
         'updated_at' => array('hc', 'updated_at'),
         'user_id' => array('u', 'ID'),
-        'user_name' => array('u', 'display_name', true),
+        'user_name' => array('u', 'nickname', true),
         'tags' => array('t', 'GROUP_CONCAT(DISTINCT CONCAT(t.id,\',\',t.name) ORDER BY t.id SEPARATOR \';\')')
     );
 
@@ -70,14 +70,15 @@ class H5PContentQuery
         if (!isset($wpdb)) {
             $config = include './application/config/database.php';
             $config = $config['default']['connection'];
-            $GLOBALS['wpdb'] = new wpdb($config['username'], $config['password'], $config['database'], $config['hostname']);
+            $GLOBALS['wpdb'] = new wpdb($config['username'], $config['password'], $config['database'],
+                $config['hostname']);
             $wpdb = $GLOBALS['wpdb'];
         }
 
         $this->base_table = "h5p_contents hc";
         $this->valid_joins = array(
             'hl' => " LEFT JOIN h5p_libraries hl ON hl.id = hc.library_id",
-            'u' => " LEFT JOIN users u ON hc.user_id = u.ID",
+            'u' => " LEFT JOIN users u ON hc.user_id = u.id",
             't' => " LEFT JOIN h5p_contents_tags ct ON ct.content_id = hc.id
                LEFT JOIN h5p_tags t ON ct.tag_id = t.id
                LEFT JOIN h5p_contents_tags ct2 ON ct2.content_id = hc.id"
