@@ -184,7 +184,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                     'en-US' => 'question (#' . $this->id . ')'
                 ),
                 'description' => array(
-                    'en-US' => 'Question stem: ' . strip_tags($this->stem)
+                    'en-US' => 'Question stem: ' . Model_Leap_Statement::sanitizeString($this->stem)
                 ),
                 'type' => 'http://adlnet.gov/expapi/activities/cmi.interaction',
                 'moreInfo' => $url,

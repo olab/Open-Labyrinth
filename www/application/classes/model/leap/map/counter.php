@@ -141,7 +141,7 @@ class Model_Leap_Map_Counter extends Model_Leap_Base
                     'en-US' => 'counter "' . $this->name . '" (#' . $this->id . ')'
                 ),
                 'description' => array(
-                    'en-US' => 'Counter description: ' . strip_tags($this->description)
+                    'en-US' => 'Counter description: ' . Model_Leap_Statement::sanitizeString($this->description)
                 ),
                 //'type' => 'http://activitystrea.ms/schema/1.0/node',
                 'moreInfo' => $url,

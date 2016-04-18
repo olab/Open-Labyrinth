@@ -116,6 +116,19 @@ class Model_Leap_Statement extends Model_Leap_Base
     //-----------------------------------------------------
 
     /**
+     * @param string $string
+     * @return string
+     */
+    public static function sanitizeString($string)
+    {
+        $string = (string)$string;
+        $string = strip_tags($string);
+        $string = str_replace(PHP_EOL, '', $string);
+
+        return $string;
+    }
+
+    /**
      * @return string
      */
     public static function getExtensionCounterKey()
@@ -184,7 +197,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         $statement = array();
 
         $statement['timestamp'] = DateTime::createFromFormat('U.u', number_format($model->timestamp, 6, '.', ''))
-            ->format('Y-m-d\TH:i:s.u') . 'Z';
+                ->format('Y-m-d\TH:i:s.u') . 'Z';
         //end timestamp
 
         //actor

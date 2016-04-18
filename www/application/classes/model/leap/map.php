@@ -301,7 +301,7 @@ class Model_Leap_Map extends Model_Leap_Base
                     'en-US' => 'map "' . $map->name . '" (#' . $map->id . ')'
                 ),
                 'description' => array(
-                    'en-US' => 'Map description: ' . strip_tags($map->abstract)
+                    'en-US' => 'Map description: ' . Model_Leap_Statement::sanitizeString($map->abstract)
                 ),
                 'type' => 'http://adlnet.gov/expapi/activities/module',
                 'moreInfo' => $url,
