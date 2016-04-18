@@ -1,0 +1,34 @@
+{
+  "semantics": [
+    {
+      "label": "Carte",
+      "entity": "carta",
+      "field": {
+        "label": "Carta",
+        "fields": [
+          {
+            "label": "Immagine"
+          },
+          {
+            "label": "Descrizione",
+            "description": "Breve testo visualizzato quando due carte uguali vengono trovate."
+          }
+        ]
+      }
+    },
+    {
+      "label": "Localizzazione",
+      "fields": [
+        {
+          "label": "Testo Gira carta"
+        },
+        {
+          "label": "Testo Tempo trascorso"
+        },
+        {
+          "label": "Testo Feedback"
+        }
+      ]
+    }
+  ]
+}

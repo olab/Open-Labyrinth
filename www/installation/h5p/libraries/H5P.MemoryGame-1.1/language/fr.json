@@ -1,0 +1,37 @@
+{
+  "semantics": [
+    {
+      "label": "Cartes",
+      "entity": "une carte",
+      "field": {
+        "label": "Carte",
+        "fields": [
+          {
+            "label": "Image"
+          },
+          {
+            "label": "Description",
+            "description": "Petit texte affiché quand deux cartes identiques sont trouvées."
+          }
+        ]
+      }
+    },
+    {
+      "label": "Localisation",
+      "fields": [
+        {
+          "label": "Texte pour une carte à retourner",
+          "default": "Retourner"
+        },
+        {
+          "label": "Texte pour le temps passé",
+          "default": "Durée écoulée"
+        },
+        {
+          "label": "Texte de feedback",
+          "default": "Bon travail!"
+        }
+      ]
+    }
+  ]
+}

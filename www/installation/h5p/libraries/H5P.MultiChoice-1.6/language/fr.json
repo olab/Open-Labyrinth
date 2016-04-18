@@ -1,0 +1,143 @@
+{
+  "semantics": [
+    {
+      "label": "Image de la question",
+      "description": "Une image optionnelle peut être ajoutée."
+    },
+    {
+      "label": "Question"
+    },
+    {
+      "label": "Options disponibles",
+      "description": "L'utilisateur peut choisir ces options alternatives.",
+      "entity": "option",
+      "field": {
+        "label": "Option",
+        "fields": [
+          {
+            "label": "Texte"
+          },
+          {
+            "label": "Correct"
+          },
+          {
+            "label": "Aide",
+            "fields": [
+              {
+                "label": "Texte de l'aide"
+              },
+              {
+                "label": "Feedback",
+                "description": "Texte de feedback choisi."
+              },
+              {
+                "label": "Feedback pour la solution",
+                "description": "Affiché quand la solution est montrée."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Traduction de l'interface utilisateur pour les questions à choix multiples",
+      "fields": [
+        {
+          "label": "Texte du bouton vérifier"
+        },
+        {
+          "label": "Texte du bouton montrer la solution"
+        },
+        {
+          "label": "Texte du bouton Réessayer"
+        },
+        {
+          "label": "Tip label",
+          "default": "Show tip"
+        },
+        {
+          "label": "Feedback pour une réponse correcte"
+        },
+        {
+          "label": "Feedback pour une réponse presque correcte"
+        },
+        {
+          "label": "Feedback pour une mauvaise réponse"
+        },
+        {
+          "label": "Score Bar Label",
+          "default": "Score"
+        },
+        {
+          "label": "Tip Available",
+          "default": "Tip available"
+        },
+        {
+          "label": "Feedback Available",
+          "default": "Feedback available"
+        },
+        {
+          "label": "Read Feedback",
+          "default": "Read feedback"
+        },
+        {
+          "label": "Wrong Answer",
+          "default": "Wrong answer"
+        },
+        {
+          "label": "Correct Answer",
+          "default": "Correct answer"
+        },
+        {
+          "label": "Option should have been checked",
+          "default": "Should have been checked"
+        },
+        {
+          "label": "Option should not have been checked",
+          "default": "Should not have been checked"
+        }
+      ]
+    },
+    {
+      "label": "Options générales.",
+      "description": "Ces options vous permettent de contrôler le déroulement de vos activités.",
+      "fields": [
+        {
+          "label": "Activer le bouton \"Réessayer\""
+        },
+        {
+          "label": "Activer le bouton \"Solution\""
+        },
+        {
+          "label": "Question Type",
+          "description": "Select the look and behaviour of the question.",
+          "options": [
+            {
+              "label": "Automatic"
+            },
+            {
+              "label": "Multiple Choice (Checkboxes)"
+            },
+            {
+              "label": "Single Choice (Radio Buttons)"
+            }
+          ]
+        },
+        {
+          "label": "Donner un point pour chaque activité",
+          "description": "Un point par réponse correcte dans les QCM. Ce ne sera pas une option dans les \"Questions à choix unique\"."
+        },
+        {
+          "label": "Questions aléatoires",
+          "description": "Les questions seront affichées dans l'ordre aléatoire."
+        },
+        {
+          "label": "Une réponse est obligatoire pour montrer la solution"
+        },
+        {
+          "label": "Disable image zooming for question image."
+        }
+      ]
+    }
+  ]
+}

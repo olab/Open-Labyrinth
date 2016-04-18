@@ -681,7 +681,61 @@ class Installation {
 
         file_put_contents(DOCROOT . 'application/config/database.php', $header . $databaseConfig);
 
+        static::copyDirectory(DOCROOT . 'installation/h5p/', DOCROOT . 'files/h5p/');
+
         Installation::terminate();
+    }
+
+    public static function copyDirectory($src, $dst, $options = [])
+    {
+        if (!is_dir($dst)) {
+            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0777, true);
+        }
+
+        $handle = opendir($src);
+        if ($handle === false) {
+            throw new Exception("Unable to open directory: $src");
+        }
+        if (!isset($options['basePath'])) {
+            // this should be done only once
+            $options['basePath'] = realpath($src);
+        }
+        while (($file = readdir($handle)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $from = $src . DIRECTORY_SEPARATOR . $file;
+            $to = $dst . DIRECTORY_SEPARATOR . $file;
+            
+            if (is_file($from)) {
+                copy($from, $to);
+                if (isset($options['fileMode'])) {
+                    @chmod($to, $options['fileMode']);
+                }
+            } else {
+                static::copyDirectory($from, $to, $options);
+            }
+        }
+        closedir($handle);
+    }
+
+    public static function createDirectory($path, $mode = 0775, $recursive = true)
+    {
+        if (is_dir($path)) {
+            return true;
+        }
+        $parentDir = dirname($path);
+        if ($recursive && !is_dir($parentDir)) {
+            static::createDirectory($parentDir, $mode, true);
+        }
+        try {
+            $result = mkdir($path, $mode);
+            chmod($path, $mode);
+        } catch (\Exception $e) {
+            throw new Exception("Failed to create directory '$path': " . $e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $result;
     }
 
     public static function deleteDir($dirPath) {

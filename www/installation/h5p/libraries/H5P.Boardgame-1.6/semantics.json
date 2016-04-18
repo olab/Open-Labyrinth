@@ -1,0 +1,268 @@
+[
+  {
+    "name": "title",
+    "type": "text",
+    "label": "Game title",
+    "placeholder": "Arctic Knowledge",
+    "description": "This is the title of the game you are creating."
+  },
+  {
+    "name": "background",
+    "type": "image",
+    "label": "Board background",
+    "optional": true,
+    "description": "Select a suitable background image for your board game."
+  },
+  {
+    "name": "size",
+    "type": "group",
+    "widget": "dimensions",
+    "label": "Board size",
+    "description": "Specifiy how much space (in px) the board game should take up. The aspect ratio should match the one of your background image.",
+    "default": "background",
+    "max": "background",
+    "fields": [
+      {
+        "name": "width",
+        "type": "number"
+      },
+      {
+        "name": "height",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "name": "shadow",
+    "type": "boolean",
+    "label": "Enable dropshadow",
+    "description": "Enable a drop shadow around the board. If enabled the board takes up more space than the board size suggests",
+    "default": true,
+    "optional": true
+  },
+  {
+    "name": "introduction",
+    "type": "group",
+    "label": "Game introduction",
+    "fields": [
+      {
+        "name": "text",
+        "type": "text",
+        "widget": "html",
+        "tags": ["strong", "em", "sub", "sup"],
+        "enterMode": "p",
+        "label": "Welcome and instruction text",
+        "optional": true,
+        "placeholder": "Greetings young traveler! Are you ready to test your knowledge about the arctic?",
+        "description": "Explain what the user should do and what the point of the game is."
+      },
+      {
+        "name": "startButtonText",
+        "type": "text",
+        "label": "Button text",
+        "default": "Start",
+        "placeholder": "Start",
+        "description": "Label of the button the user has to press to start the game."
+      }
+    ]
+  },
+  {
+    "name": "hotspots",
+    "type": "list",
+    "label": "Hotspots",
+    "entity": "hotspot",
+    "description": "Hotspots are mini-games that are placed on the board. E.g. Quiz, Hangman.",
+    "min": 1,
+    "field": {
+      "name": "hotspot",
+      "type": "group",
+      "label": "Hotspot",
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "label": "Title",
+          "description": "Give your hotspot a name."
+        },
+        {
+          "name": "image",
+          "type": "image",
+          "label": "Hotspot image",
+          "description": "Image used on the board for users to idenitify the hotspot."
+        },
+        {
+          "name": "passedImage",
+          "type": "image",
+          "label": "Hotspot image - Passed",
+          "description": "The hotspot image will changed to this once the user has completed a minigame and passed."
+        },
+        {
+          "name": "failedImage",
+          "type": "image",
+          "label": "Hotspot image - Failed",
+          "description": "The hotspot image will change to this if the user fails."
+        },
+        {
+          "name": "coords",
+          "type": "group",
+          "widget": "coordinates",
+          "label": "Hotspot position",
+          "max": "../../size",
+          "description": "Position the hotspot on the game board by using coordinates in pixels.",
+          "default": {
+            "x": 10,
+            "y": 10
+          },
+          "fields": [
+            {
+              "name": "x",
+              "type": "number"
+            },
+            {
+              "name": "y",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "name": "action",
+          "type": "library",
+          "label": "Action",
+          "description": "Choose the minigame to start when the user chooses this hotspot.",
+          "options": [
+            "H5P.QuestionSet 1.6"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "progress",
+    "type": "group",
+    "label": "Progress indicator",
+    "fields": [
+      {
+        "name": "enabled",
+        "type": "boolean",
+        "label": "Enable progress indicator"
+      },
+      {
+        "name": "images",
+        "type": "list",
+        "entity": "image",
+        "description": "Select images to use as a progress indicator. One for each progress step plus one for no answers given yet.",
+        "field": {
+          "name": "image",
+          "type": "image",
+          "label": 0,
+          "optional": true
+        }
+      },
+      {
+        "name": "coords",
+        "type": "group",
+        "widget": "coordinates",
+        "label": "Progress indicator position",
+        "description": "Position the progress indicator on the board using pixel coordinates.",
+        "max": "../size",
+        "optional": true,
+        "fields": [
+          {
+            "name": "x",
+            "type": "number"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "gameFinished",
+    "type": "group",
+    "label": "Game finished",
+    "fields": [
+      {
+        "name": "video",
+        "type": "video",
+        "label": "Finished video",
+        "optional": true,
+        "description": "Video to play before the game results are shown."
+      },
+      {
+        "name": "allowSkipVideo",
+        "type": "boolean",
+        "label": "Allow skipping of finished video."
+      },
+      {
+        "name": "skipButtonText",
+        "type": "text",
+        "label": "Skip button text",
+        "default": "Skip video",
+        "description": "Label for the button the user has to press to skip the finished video."
+      }
+    ]
+  },
+  {
+    "name": "endResults",
+    "type": "group",
+    "label": "Game results",
+    "fields": [
+      {
+        "name": "text",
+        "type": "text",
+        "widget": "html",
+        "tags": ["strong", "em", "sub", "sup"],
+        "enterMode": "p",
+        "label": "Result text",
+        "default": "You scored @score of @total. That's @percentage %",
+        "description": "The text explaining the game score. Variables: @score, @total, @percentage."
+      },
+      {
+        "name": "retryButtonText",
+        "type": "text",
+        "label": "Retry button text",
+        "default": "Try more",
+        "description": "Label for the button the user has to press to start over."
+      },
+      {
+        "name": "solutionButtonText",
+        "type": "text",
+        "label": "Show solutions button",
+        "default": "Solutions",
+        "description": "Label for the button the user has to press to view the solutions."
+      }
+    ]
+  },
+  {
+    "name": "override",
+    "type": "group",
+    "label": "Settings for \"Show solution\" button and \"Retry\".",
+    "description": "These options will let you override when to display \"Show solution\" button and \"Retry\" in integrated h5p content.",
+    "fields": [
+      {
+        "name": "overrideButtons",
+        "type": "boolean",
+        "label": "Enable override for \"Show solution\" and \"Retry\" settings.",
+        "description": "If this is enabled the questions own settings will be ignored and the below settings will be used instead.",
+        "default": false
+      },
+      {
+        "name": "overrideShowSolutionButton",
+        "type": "boolean",
+        "label": "Enable \"Show solution\" buttons.",
+        "description": "Enabling this option will make questions show the \"Show solution\" button.",
+        "default": false
+      },
+      {
+        "name": "overrideRetry",
+        "type": "boolean",
+        "label": "Enable \"Retry\".",
+        "description": "Enabling this option will make the user able to \"Retry\" .",
+        "default": false
+      }
+    ]
+  }
+]

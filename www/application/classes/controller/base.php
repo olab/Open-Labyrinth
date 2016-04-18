@@ -22,6 +22,9 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Base extends Controller_Template {
 
+    /**
+     * @var View page template
+     */
     public $template = 'home';
 
     protected $templateData = array();

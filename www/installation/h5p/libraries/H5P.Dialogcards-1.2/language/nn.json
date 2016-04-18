@@ -1,0 +1,69 @@
+{
+  "semantics": [
+    {
+      "label": "Tittel"
+    },
+    {
+      "label": "Oppgåvetekst",
+      "default": "Sit i par og lag setningar der du inkluderer uttrykka under. <br/>Eksempel: Eg skulle ha sagt ja, i staden haldt eg munn."
+    },
+    {
+      "label": "Dialogkort",
+      "entity": "dialogkort",
+      "field": {
+        "label": "Dialogkort",
+        "fields": [
+          {
+            "label": "Tekst",
+            "description": "Nøkkelord til første delen av dialogen"
+          },
+          {
+            "label": "Svar",
+            "description": "Nøkkelord til neste delen av dialogen"
+          },
+          {
+            "label": "Bilete",
+            "description": "Valfritt bilete for kortet.(Korta kan bruka berre bilete, berre tekst, eller begge)"
+          },
+          {
+            "label": "Lydfilar"
+          },
+          {
+            "label": "Tips",
+            "fields": [
+              {
+                "label": "Tips til tekst",
+                "description": "Tips til første del av dialogen"
+              },
+              {
+                "label": "Tips til svar",
+                "description": "Tips til neste del av dialogen"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Tekst til \"Snu\" knappen",
+      "default": "Snu"
+    },
+    {
+      "label": "Tekst til \"Neste\" knappen",
+      "default": "Neste"
+    },
+    {
+      "label": "Tekst til \"Forrige\" knappen",
+      "default": "Forrige"
+    },
+    {
+      "label": "Tekst til \"Omstart\" knappen",
+      "default": "Prøv igjen"
+    },
+    {
+      "label": "Fremgangstekst",
+      "description": "Tilgjengelege variablar er @card og @total.",
+      "default": "Kort @card av @total"
+    }
+  ]
+}

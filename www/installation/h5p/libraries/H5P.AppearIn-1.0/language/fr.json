@@ -1,0 +1,21 @@
+{
+  "semantics": [
+    {
+      "label": "Nom du salon",
+      "default": "h5p",
+      "description": "Nom du salon"
+    },
+    {
+      "label": "Remplir la fenêtre",
+      "description": "Remplir la fenêtre à 100%."
+    },
+    {
+      "label": "Hauteur",
+      "description": "Définit la hauteur de la fenêtre du salon ce chat"
+    },
+    {
+      "label": "Largeur",
+      "description": "Définit la largeur de la fenêtre du salon ce chat"
+    }
+  ]
+}

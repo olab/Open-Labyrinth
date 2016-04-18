@@ -1,0 +1,24 @@
+{
+  "semantics": [
+    {
+      "label": "Titre",
+      "description": "Titre pour cette documentation"
+    },
+    {
+      "label": "Titre du menu de navigation"
+    },
+    {
+      "label": "Eléments",
+      "widgets": [
+        {
+          "label": "Default"
+        }
+      ],
+      "entity": "Element",
+      "field": {
+        "label": "Type de contenu",
+        "description": "Bibliothèque de contenu possible pour cet élément."
+      }
+    }
+  ]
+}

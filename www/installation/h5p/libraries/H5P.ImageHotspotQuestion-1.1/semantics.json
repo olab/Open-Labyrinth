@@ -1,0 +1,116 @@
+[
+  {
+    "name": "imageHotspotQuestion",
+    "type": "group",
+    "widget": "wizard",
+    "label": "Image Hotspot Question Editor",
+    "fields": [
+      {
+        "name": "backgroundImageSettings",
+        "type": "group",
+        "label": "Background image",
+        "fields": [
+          {
+            "name": "questionTitle",
+            "type": "text",
+            "label": "The title of this question",
+            "default": "Image hotspot question",
+            "description": "Used in summaries, statistics etc."
+          },
+          {
+            "name": "backgroundImage",
+            "type": "image",
+            "label": "Background image",
+            "description": "Select an image to use as background the image hotspot question."
+          }
+        ]
+      },
+      {
+        "name": "hotspotSettings",
+        "type": "group",
+        "label": "Hotspots",
+        "widget": "imageHotspotQuestion",
+        "description": "Choose appropriate figure for your hotspot, configure it, then drag and resize it into place.",
+        "fields": [
+          {
+            "name": "taskDescription",
+            "type": "text",
+            "label": "Task description",
+            "description": "Instructions to the user.",
+            "optional": true
+          },
+          {
+            "name": "hotspot",
+            "type": "list",
+            "label": "Hotspot",
+            "entity": "Hotspot",
+            "field": {
+              "type": "group",
+              "label": "Hotspot",
+              "fields": [
+                {
+                  "name": "userSettings",
+                  "type": "group",
+                  "label": "userSettings",
+                  "fields": [
+                    {
+                      "name": "correct",
+                      "type": "boolean",
+                      "label": "Correct",
+                      "description": "There can be multiple correct hotspots. However, the user gets correct/incorrect feedback immediately after first click."
+                    },
+                    {
+                      "name": "feedbackText",
+                      "type": "text",
+                      "label": "Feedback",
+                      "optional": true
+                    }
+                  ]
+                },
+                {
+                  "name": "computedSettings",
+                  "type": "group",
+                  "label": "computedSettings",
+                  "fields": [
+                    {
+                      "name": "x",
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "name": "y",
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "name": "width",
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "name": "height",
+                      "type": "number",
+                      "optional": true
+                    },
+                    {
+                      "name": "figure",
+                      "type": "text",
+                      "optional": true
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "noneSelectedFeedback",
+            "type": "text",
+            "label": "Feedback if the user selects an empty spot:",
+            "placeholder": "You didn't locate any hotspots, try again!",
+            "optional": true
+          }
+        ]
+      }
+    ]
+  }
+]

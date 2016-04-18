@@ -1,0 +1,61 @@
+[
+  {
+    "name": "graphMode",
+    "type": "select",
+    "label": "Type of chart",
+    "options": [
+      {
+        "value": "pieChart",
+        "label": "Pie Chart"
+      },
+      {
+        "value": "barChart",
+        "label": "Bar Chart"
+      }
+    ],
+    "default": "pieChart"
+  },
+  {
+    "name": "listOfTypes",
+    "type": "list",
+    "label": "Data elements",
+    "entity": "option",
+    "min": 1,
+    "defaultNum": 2,
+    "field": {
+      "name": "type",
+      "type": "group",
+      "label": "Data element",
+      "fields": [
+        {
+          "name": "text",
+          "type": "text",
+          "label": "Name"
+        },
+        {
+          "name": "value",
+          "type": "number",
+          "label": "Value",
+          "default": 1,
+          "min": 1
+        },
+        {
+          "name": "color",
+          "type": "text",
+          "widget": "colorSelector",
+          "label": "Color",
+          "default": "000",
+          "optional": true
+        },
+        {
+          "name": "fontColor",
+          "type": "text",
+          "widget": "colorSelector",
+          "label": "Font Color",
+          "default": "fff",
+          "optional": true
+        }
+      ]
+    }
+  }
+]

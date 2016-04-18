@@ -1,0 +1,47 @@
+{
+  "title": "Board Game",
+  "description": "The user is presented with a board with several hotspots. By clicking a hotspot he invokes a mini-game.",
+  "majorVersion": 1,
+  "minorVersion": 6,
+  "patchVersion": 1,
+  "embedTypes": [
+    "iframe"
+  ],
+  "runnable": 1,
+  "machineName": "H5P.Boardgame",
+  "author": "Amendor AS",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 6
+  },
+  "license": "cc-by-sa",
+  "preloadedDependencies": [
+    {
+      "machineName": "EmbeddedJS",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5P.Video",
+      "majorVersion": 1,
+      "minorVersion": 1
+    },
+    {
+      "machineName": "H5P.QuestionSet",
+      "majorVersion": 1,
+      "minorVersion": 6
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/boardgame.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "js/boardgame.js"
+    }
+  ],
+  "width": 635,
+  "height": 500
+}

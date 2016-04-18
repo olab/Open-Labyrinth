@@ -1,0 +1,373 @@
+.h5p-flashcards {
+  position: relative;
+  overflow: hidden;
+  padding: 0.5em 0 0em;
+  line-height: 1.25em;
+  font-size: 1em;
+
+  background: rgba(255, 255, 255, 0.9);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#e6FFFFFF,endColorstr=#e6FFFFFF);
+}
+
+.h5p-flashcards .h5p-loading {
+  padding: 1em;
+  text-align: center;
+}
+
+.h5p-flashcards .h5p-title {
+  text-align: left;
+  font-size: 1.5em;
+  margin: 0;
+}
+
+.h5p-flashcards .h5p-description {
+  text-align: left;
+  margin: 0 0.5em;
+  border-bottom: 0.1em solid #ddd;
+  padding: 0.375em 0 0.375em;
+}
+
+.h5p-flashcards .h5p-inner {
+  position: relative;
+  height: 32em;
+  margin: 1em 0.375em 0.375em;
+}
+
+.h5p-flashcards .h5p-card {
+  position: absolute;
+  display: inline-block;
+  visibility: hidden;
+  width: 100%;
+  height: inherit;
+  background: #fff;
+
+  -webkit-transform: translateX(105%);
+  -moz-transform: translateX(105%);
+  -ms-transform: translateX(105%);
+  transform: translateX(105%);
+
+  -webkit-transition: -webkit-transform 0.25s, visibility 0.25s;
+  -moz-transition: -moz-transform 0.25s, visibility 0.25s;
+  -ms-transition: -ms-transform 0.25s, visibility 0.25s;
+  transition: transform 0.25s, visibility 0.25s;
+}
+
+.h5p-flashcards .h5p-cardholder {
+  margin: auto;
+  height: 100%;
+  max-width: 32em;
+
+  background: #f4f4f4; /* Old browsers */
+  background: -moz-linear-gradient(top, #f4f4f4 0%, #e0e0e0 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f4f4f4), color-stop(100%,#e0e0e0)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #f4f4f4 0%,#e0e0e0 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #f4f4f4 0%,#e0e0e0 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #f4f4f4 0%,#e0e0e0 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #f4f4f4 0%,#e0e0e0 100%); /* W3C */
+
+  -webkit-box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+  -moz-box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+  box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+
+  -webkit-border-radius: 1em;
+  -moz-border-radius: 1em;
+  border-radius: 1em;
+  border: 0.1em solid #b6b6b6;
+}
+
+.h5p-flashcards .h5p-imageholder {
+
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+
+  -webkit-align-items: center;
+  align-items: center;
+
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+
+  padding: 0em 1em 1em;
+}
+
+.h5p-flashcards .h5p-card.h5p-current {
+  visibility: visible;
+
+  -webkit-transform: translateX(0);
+  -moz-transform: translateX(0);
+  -ms-transform: translateX(0);
+  transform: translateX(0);
+}
+
+.h5p-flashcards .h5p-card.h5p-previous {
+  -webkit-transform: translateX(-105%);
+  -moz-transform: translateX(-105%);
+  -ms-transform: translateX(-105%);
+  transform: translateX(-105%);
+}
+
+.h5p-flashcards .h5p-card .h5p-clue {
+  display: block;
+  margin: 1em auto 0 !important;
+  padding: 1em;
+  background: white;
+
+  text-align: center;
+
+  -webkit-box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+  -moz-box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+  box-shadow: 0em 0em 0.4em rgba(50, 50, 50, 0.5);
+
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  border-radius: 1em;
+  border: 0.1em solid #b6b6b6;
+
+  -webkit-transition: -webkit-transform 0.15s;
+  -moz-transition: -moz-transform 0.15s;
+  -ms-transform: -ms-transform 0.15s;
+  transition: transform 0.15s;
+}
+
+.h5p-flashcards .h5p-card div.h5p-clue:after {
+  content: "\f059";
+  font-family: 'H5PFontAwesome4';
+  font-size: 5em;
+  line-height: 100px;
+  color: #cccccc;
+}
+
+.h5p-flashcards .h5p-card img.h5p-clue {
+  display: block;
+}
+
+.h5p-flashcards .h5p-foot {
+  display: inline-block;
+  margin: 0em auto;
+  width: 100%;
+}
+
+.h5p-flashcards .h5p-imagetext {
+  background: none;
+  text-align: center;
+  overflow: hidden;
+  max-width: 32em;
+  padding: 1em 1em 0em;
+  margin: auto;
+}
+
+.h5p-flashcards .h5p-answer {
+  background: none;
+  overflow: hidden;
+  position: relative;
+  max-width: 32em;
+  margin: auto;
+}
+
+.h5p-flashcards .h5p-input {
+  text-align: center;
+  padding: 0em 1em;
+  margin-bottom: 1em;
+}
+
+.h5p-flashcards .h5p-inner .h5p-answer .h5p-input.h5p-correct:after {
+  content: "\f00c";
+  font-family: 'H5PFontAwesome4';
+  color: #39692e;
+  position: absolute;
+  right: 2.5em;
+  top: 2em;
+  font-size: 1em;
+}
+
+.h5p-flashcards .h5p-inner .h5p-answer .h5p-input.h5p-wrong:after {
+  content: "\f00d";
+  font-family: 'H5PFontAwesome4';
+  color: #c33f62;
+  position: absolute;
+  right: 2.5em;
+  top: 2em;
+  font-size: 1em;
+}
+
+/* If tip is present, correct/wrong marker has to be moved to the left */
+.h5p-flashcards .h5p-inner .h5p-answer .h5p-input.has-tip:after {
+  right: 4.5em;
+}
+
+.h5p-flashcards .h5p-textinput {
+  position: relative;
+  height: 1.5em;
+  width: 90%;
+  padding: 0.25em 0.5em;
+  margin: 1.5625em auto;
+
+  font-size: 1em;
+  font-weight: normal;
+  line-height: 1.25em;
+  word-wrap: break-word;
+
+  border-radius: 0.25em;
+  border: 0.0625em solid #a0a0a0;
+  color: rgb(51, 51, 51);
+  box-sizing: content-box;
+}
+
+.h5p-flashcards .h5p-textinput:focus {
+  outline: none;
+  box-shadow: 0 0 0.5em 0 #7fb8ff;
+  border-color: #7fb8ff;
+}
+
+.h5p-flashcards .h5p-input.h5p-correct .h5p-textinput[disabled] {
+  background-color: #d1e2ce;
+  border: 0.0625em solid #afcdaa;
+  color: #39692e;
+  font-weight: bold;
+}
+
+.h5p-flashcards .h5p-input.h5p-wrong .h5p-textinput[disabled] {
+  background-color: #e6ced1;
+  border: 0.0625em solid #ce9b9b;
+  color: #c33f62;
+  font-weight: bold;
+}
+
+.h5p-flashcards .h5p-button {
+  font-size: 1em;
+  display: block;
+  margin: auto;
+  padding: 0.3125em 0.6875em;
+  border: 0.1875em solid #fff;
+  border-radius: 0.3125em;
+  margin-bottom: 1em;
+  cursor: pointer;
+  color: #fff;
+  box-shadow: 0 0 0.5em #999;
+  text-decoration: none;
+
+  background: rgb(100,152,254); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(100,152,254,1) 0%, rgba(4,104,206,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(100,152,254,1)), color-stop(100%,rgba(4,104,206,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(100,152,254,1) 0%,rgba(4,104,206,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(100,152,254,1) 0%,rgba(4,104,206,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(100,152,254,1) 0%,rgba(4,104,206,1) 100%); /* IE10+ */
+}
+
+.h5p-flashcards .h5p-button:hover {
+  background: rgb(4,104,206); /* Old browsers */
+  background: -moz-linear-gradient(top,  rgba(4,104,206,1) 0%, rgba(100,152,254,1) 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(4,104,206,1)), color-stop(100%,rgba(100,152,254,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  rgba(4,104,206,1) 0%,rgba(100,152,254,1) 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  rgba(4,104,206,1) 0%,rgba(100,152,254,1) 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  rgba(4,104,206,1) 0%,rgba(100,152,254,1) 100%); /* IE10+ */
+}
+
+.h5p-flashcards .h5p-button[disabled],
+.h5p-flashcards .h5p-button[disabled]:hover {
+  background: #ccc;
+  cursor: default;
+}
+
+.h5p-flashcards .h5p-input .h5p-button:before {
+  content: "\f06e";
+  font-family: 'H5PFontAwesome4';
+  margin-right: 0.1875em;
+}
+
+.h5p-flashcards .h5p-progress {
+  margin-top: 0.375em;
+  color: #999;
+  text-align: center;
+  padding: 0em 3em;
+}
+.h5p-flashcards .h5p-navigation {
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  height: 2.5em;
+  padding-top: 0.5em;
+  max-width: 32em;
+  vertical-align:middle;
+}
+
+.h5p-flashcards .h5p-next {
+  position: absolute;
+  right: 0.375em;
+}
+
+.h5p-flashcards .h5p-previous {
+  position: absolute;
+  left: 0.375em;
+}
+
+.h5p-flashcards .h5p-button.h5p-next:after {
+  font-family: 'H5PFontAwesome4';
+  content: "\f054";
+  margin-left: 0.1875em;
+}
+
+.h5p-flashcards .h5p-button.h5p-previous:before {
+  font-family: 'H5PFontAwesome4';
+  content: "\f053";
+  margin-right: 0.1875em;
+}
+
+.h5p-flashcards .h5p-hidden {
+  display: none;
+}
+.h5p-flashcards .h5p-solution {
+  text-align: center;
+  width: 100%;
+  height: inherit;
+  top: 0;
+  left: 0;
+  position: absolute;
+  font-weight: bold;
+}
+.h5p-flashcards .h5p-solution > span {
+  display: inline-block;
+  position: relative;
+  top: 50%;
+
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+
+  color: #fff;
+  background: #000;
+  background: rgba(0, 0, 0, 0.7);
+
+  -webkit-transition: -webkit-transform 0.2s;
+  -moz-transition: -moz-transform 0.2s;
+  -ms-transition: -ms-transform 0.2s;
+  transition: transform 0.2s;
+}
+.h5p-flashcards .h5p-solution.h5p-hidden {
+  display: block;
+}
+
+.h5p-flashcards .h5p-solution.h5p-hidden > span {
+  -webkit-transform: scale(0,1);
+  -moz-transform: scale(0,1);
+  -ms-transform: scale(0,1);
+  transform: scale(0,1);
+}
+
+.h5p-flashcards .h5p-collapse {
+  -webkit-transform: scale(0,1);
+  -moz-transform: scale(0,1);
+  -ms-transform: scale(0,1);
+  transform: scale(0,1);
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.h5p-flashcards .joubel-tip-container {
+  position: absolute;
+  right: 2em;
+  top: 1.5em;
+}

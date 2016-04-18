@@ -221,3 +221,5 @@ Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', '
     ->defaults(array(
         'controller' => 'error'
     ));
+
+require_once './application/helpers.php';

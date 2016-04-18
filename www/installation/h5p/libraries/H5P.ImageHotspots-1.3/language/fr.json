@@ -1,0 +1,39 @@
+{
+  "semantics": [
+    {
+      "label": "Image d'arrière-plan",
+      "description": "Image affichée en arrière-plan."
+    },
+    {
+      "label": "Couleur",
+      "description": "Couleur des mini-jeux (en cote hexadécimal)."
+    },
+    {
+      "entity": "Mini-jeux",
+      "label": "Mini-jeux",
+      "field": {
+        "label": "Mini-jeux",
+        "fields": [
+          {
+            "label": "Hotspot position",
+            "description": "Click on the thumbnail image to place the hotspot"
+          },
+          {
+            "label": "Cover entire bakground image",
+            "description": "When the user clicks the hotspot the popup will cover the entire background image"
+          },
+          {
+            "label": "Entête",
+            "description": "Optional header for the popup"
+          },
+          {
+            "label": "Contenu en popup",
+            "field": {
+              "label": "Content Item"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

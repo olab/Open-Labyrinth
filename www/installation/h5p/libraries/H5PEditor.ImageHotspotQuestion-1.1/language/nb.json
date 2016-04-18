@@ -1,0 +1,10 @@
+{
+  "libraryStrings": {
+    "noImage": "Du må velge et bilde før du kan plassere målfelt.",
+    "done": "Ferdig",
+    "remove": "Slett målfelt",
+    "rectangle": "Lag rektangel",
+    "circle": "Lag sirkel",
+    "guiDescription": "Dra og slipp en figur for å lage et nytt hotspot. Dobbel-klikk en hotspot for å velge innstillinger. Dra en hotspot for å bevege den. Dra nede til høyre på hotspoten for å endre størrelsen."
+  }
+}

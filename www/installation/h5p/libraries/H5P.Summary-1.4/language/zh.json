@@ -1,0 +1,106 @@
+{
+  "semantics": [
+    {
+      "label": "介绍",
+      "description": "会显示在最终课后小结上面。"
+    },
+    {
+      "widgets": [
+        {
+          "label": "缺省"
+        },
+        {
+          "label": "文本"
+        }
+      ],
+      "label": "小结",
+      "description": "小结列表",
+      "entity": "语句",
+      "field": {
+        "label": "所有选项",
+        "fields": [
+          {
+            "label": "列出所有小结的选项。系统默认第一个选项是正确选项。",
+            "entity": "选项",
+            "field": {
+              "label": "选项"
+            }
+          },
+          {
+            "label": "提示",
+            "fields": [
+              {
+                "label": "提示文本"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "现在已答题数前面的文字。",
+      "description": "显示在题目上面。比如：'进度：2/5'"
+    },
+    {
+      "label": "回答错误后显示的文字。",
+      "description": "显示在题目上面。比如：'答错数：4'"
+    },
+    {
+      "label": "小结反馈顶部",
+      "description": "显示在小结反馈顶部。"
+    },
+    {
+      "label": "小结反馈",
+      "fields": [
+        {
+          "label": "全队",
+          "fields": [
+            {
+              "label": "标题"
+            },
+            {
+              "label": "详细信息"
+            }
+          ]
+        },
+        {
+          "label": "70 % - 99 % 回答正确",
+          "fields": [
+            {
+              "label": "标题"
+            },
+            {
+              "label": "详细信息"
+            }
+          ]
+        },
+        {
+          "label": "40 % - 69 % 回答正确",
+          "fields": [
+            {
+              "label": "标题"
+            },
+            {
+              "label": "详细信息"
+            }
+          ]
+        },
+        {
+          "label": "0 % - 39 % 回答正确",
+          "fields": [
+            {
+              "label": "标题"
+            },
+            {
+              "label": "详细信息"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "成绩",
+      "description": "可以选择的条目: @score, @total, @percent 。例如：  @total 道题目中，正确率为（ @percent % ），总得分为 @score 。"
+    }
+  ]
+}

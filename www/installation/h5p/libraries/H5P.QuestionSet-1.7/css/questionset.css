@@ -1,0 +1,223 @@
+/* IcoMoon font licensed under the GNU General Public License: http://www.gnu.org/licenses/gpl.html */
+@font-face {
+  font-family: 'icomoon-questionset';
+  src:url('../fonts/icomoon.eot');
+  src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.woff') format('woff'),
+    url('../fonts/icomoon.ttf') format('truetype'),
+    url('../fonts/icomoon.svg#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.questionset-results h2 {
+  font-size: 1.2em;
+  font-weight: bold;
+  padding-bottom: 0.5em;
+}
+
+.questionset, .intro-page, .questionset-results {
+  overflow: hidden;
+}
+.questionset.hidden {
+  display: none;
+}
+.questionset, .intro-page, .questionset-results {
+  position: relative;
+}
+.h5p-multichoice > .h5p-question {
+  text-align: left;
+  margin: 0.5em 0.5em 0.7em;
+  background: rgba(255, 255, 255, 0.9);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#e6FFFFFF,endColorstr=#e6FFFFFF);
+  zoom: 1;
+}
+.dots-container {
+  text-align: center;
+  line-height: 2em;
+}
+.progress-dot {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  margin: 0 0.25em;
+  cursor: pointer;
+  background: #fff;
+  background: #cecece;
+}
+.progress-dot:hover {
+  box-shadow: 0 0 0.5em #c7c7c7;
+}
+.progress-dot.answered {
+  background: #73a2d5;
+}
+.progress-dot.current {
+  background: #285585;
+}
+
+.intro-page .title {
+  font-size: 2em;
+  line-height: 2em;
+  font-weight: bold;
+  text-align: center;
+}
+.intro-page .title > span {
+  padding: 0.125em 0.5em;
+  border-radius: 0.125em;
+  background: rgb(255,255,255); /* Fallback for browsers not supporting rgba */
+  background: rgba(255,255,255,0.8); /* Gives WCAG contrast ratio of 5.6:1 with the current font color */
+}
+.intro-page .introduction {
+  font-size: 1.25em;
+  margin: 0 1em;
+  border-radius: 0.25em;
+  background: rgb(255,255,255); /* Fallback for browsers not supporting rgba */
+  background: rgba(255,255,255,0.8); /* Gives WCAG contrast ratio of 5.6:1 with the current font color */
+  padding: 0.25em 0.5em;
+}
+/* Overrides whatever margins have been set in site-CSS, to avoid too much spacing
+   on description field, aswell as getting same padding on top and bottom of field */
+.intro-page .introduction > p {
+  margin: 0 0 0.5em 0;
+}
+.intro-page .introduction > p:last-child {
+  margin: 0;
+}
+.intro-page .buttons {
+  margin: 3em auto;
+  text-align: center;
+}
+.qs-footer {
+  overflow: hidden;
+}
+
+.qs-footer > .prev {
+  float: left;
+}
+
+.qs-footer > .qs-solutionbutton {
+  float: none;
+}
+
+.qs-footer > .qs-retrybutton {
+  float: none;
+}
+
+.questionset-results a.h5p-button.qs-retrybutton:before {
+  font-family: 'H5PFontAwesome4';
+  padding-right: 0.5em;
+  content: "\f01e";
+}
+
+.qs-footer > .next, .qs-footer > .finish, .qs-finishbutton {
+  float: right;
+}
+
+/* Need to disable max-height animation stuff, since this will
+   make resizing of iframe in Safari not work! */
+.questionset .h5p-question-buttons.h5p-question-visible {
+  transition: none;
+}
+
+.h5p-question .h5p-question-prev,
+.h5p-question .h5p-question-finish,
+.h5p-question .h5p-question-next {
+  float: right;
+}
+
+.h5p-question .h5p-question-prev,
+.h5p-question .h5p-question-next {
+  padding: 0;
+  height: 2.1875em;
+  width: 2.1875em;
+}
+
+.h5p-question .h5p-question-next,
+.h5p-question .h5p-question-finish {
+  margin: 0 0 1.5em 0.5em;
+}
+
+.h5p-question .h5p-question-prev {
+  margin: 0 0.5em 1.5em 0.5em;
+}
+
+.h5p-question .h5p-question-next:before {
+  content: "\f054";
+  padding-right: 0;
+  position: relative;
+  left: 2px;
+}
+
+.h5p-question .h5p-question-prev:before {
+  content: "\f053";
+  padding-right: 0;
+  position: relative;
+  left: -2px;
+}
+
+.questionset-results .qs-finishbutton {
+  display: none;
+}
+
+.h5p-question .h5p-question-finish:before {
+  content: "\f00c";
+}
+
+.questionset-results a.h5p-button.qs-solutionbutton:before {
+  font-family: 'H5PFontAwesome4';
+  content: "\f06e   "; /* TODO: Use margin not whitespace, spacing is not content! */
+}
+
+.video-container {
+  position: relative;
+}
+.video-container > video {
+  background-color: #000;
+}
+.video-container > .h5p-button {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+.qs-progress {
+  text-align: center;
+  line-height: 1.5em;
+}
+
+.questionset-results {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#E6FFFFFF,endColorstr=#E6FFFFFF);
+  padding: 0.625em;
+}
+
+.questionset-results .feedback-section {
+  margin: 1em;
+}
+
+.questionset-results .feedback-section .feedback-text {
+  font-weight: bold;
+  color: #1a73d9;
+}
+
+.questionset-results .buttons {
+  margin-bottom: 1.5em;
+}
+
+/* No margin for questions when no frame */
+.h5p-no-frame .questionset .h5p-question > * {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.h5p-no-frame .questionset-results .feedback-section,
+.h5p-no-frame .questionset .h5p-question > *:first-child {
+  margin-top: 0;
+}
+
+.h5p-no-frame .questionset-results .buttons,
+.h5p-no-frame .questionset .h5p-question > *:last-child {
+  margin-bottom: 0;
+}

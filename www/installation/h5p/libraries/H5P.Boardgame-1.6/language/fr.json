@@ -1,0 +1,155 @@
+{
+  "semantics": [
+    {
+      "label": "Titre du jeu",
+      "description": "Titre du jeu que vous créez."
+    },
+    {
+      "label": "Arrière-plan du plateau",
+      "description": "Choisissez un bel arrière-plan pour votre plateau de jeu."
+    },
+    {
+      "label": "Taille du plateau",
+      "description": "Indiquez quelle taille (en px) doit avoir le plateau de jeu. Le ratio doit correspondre à l'une de vos images d'arrière-plan.",
+      "fields": [
+        {},
+        {}
+      ]
+    },
+    {
+      "label": "Activer le contour ombragé",
+      "description": "Activer un contour ombragé autour du plateau de jeu. Si activé, le plateau prendra un peu plus de place que prévu."
+    },
+    {
+      "label": "Introduction du jeu",
+      "fields": [
+        {
+          "label": "Message de bienvenue et instructions",
+          "description": "Expliquez comment fonctionne et quel est le but du jeu."
+        },
+        {
+          "label": "Bouton Start",
+          "default": "Démarrer",
+          "description": "Texte du bouton de démarrage du jeu."
+        }
+      ]
+    },
+    {
+      "label": "Mini-jeu",
+      "entity": "un mini-jeu",
+      "description": "Les minis-jeux Hotspots sont les jeux placés sur le plateau. Ex: Quiz, Pendu.",
+      "field": {
+        "label": "Mini-jeu",
+        "fields": [
+          {
+            "label": "Titre",
+            "description": "Donnez un nom à votre mini-jeu."
+          },
+          {
+            "label": "Icône du mini-jeu",
+            "description": "Image utilisée par le mini-jeu pour l'identifier sur le plateau."
+          },
+          {
+            "label": "Image du mini-jeu réussi",
+            "description": "Image utilisée par le mini-jeu quand il a été fini et réussi."
+          },
+          {
+            "label": "Image du mini-jeu échoué",
+            "description": "Image utilisée par le mini-jeu quand il a été fini et échoué."
+          },
+          {
+            "label": "Place du mini-jeu",
+            "description": "Place du mini-jeu sur le plateau, les coordonnées sont entrées en pixels.",
+            "default": {},
+            "fields": [
+              {},
+              {}
+            ]
+          },
+          {
+            "label": "Action",
+            "description": "Activité à démarrer quand l'utilisateur choisi ce mini-jeu."
+          }
+        ]
+      }
+    },
+    {
+      "label": "Indicateur de progression",
+      "fields": [
+        {
+          "label": "Activer l'indicateur de progression"
+        },
+        {
+          "entity": "Image",
+          "description": "Choisissez les images à utiliser pour visualiser la progression. Une pour chaque étape franchie et une pour les étapes restant à franchir.",
+          "field": {
+            "label": 0
+          }
+        },
+        {
+          "label": "Position de l'indicateur de progression",
+          "description": "Position de l'indicateur de progression, les coordonnées sont entrées en pixels.",
+          "fields": [
+            {},
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Jeu fini",
+      "fields": [
+        {
+          "label": "Video de fin",
+          "description": "Video à jouer juste avant la fin du jeu."
+        },
+        {
+          "label": "Permettre de passer la vidéo de fin du jeu."
+        },
+        {
+          "label": "Bouton d'annulation du passage de la vidéo",
+          "default": "Passer la video",
+          "description": "Texte autorisant l'utilisateur à passer la vidéo de fin du jeu."
+        }
+      ]
+    },
+    {
+      "label": "Résultats du jeu",
+      "fields": [
+        {
+          "label": "Texte affiché lors des résultats du jeu",
+          "default": "Vous avez @score sur @total. Soit un pourcentage de réussite de @percentage %",
+          "description": "Ce Texte explique le score au jeu. Variables: @score, @total, @percentage."
+        },
+        {
+          "label": "Bouton texte Réessayer",
+          "default": "Réessayer",
+          "description": "Texte du bouton de tentative supplémentaire."
+        },
+        {
+          "label": "Bouton Montrer la solution",
+          "default": "Solution",
+          "description": "Texte du bouton de révélation des solutions."
+        }
+      ]
+    },
+    {
+      "label": "Options pour les boutons \"Solutions\" et \"Réessayer\".",
+      "description": "Ces options vous permettent de choisir quand afficher les boutons \"Solutions\" et \"Réessayer\" dans votre acivité h5p.",
+      "fields": [
+        {
+          "label": "Activer les réglages par défaut pour les boutons \"Solution\" et \"Réessayer\".",
+          "description": "Si cette option est choisie, les réglages seront valables pour toutes les questions, les réglages individuels ne seront pas pris en compte."
+        },
+        {
+          "label": "Afficher le bouton \"Solution\".",
+          "description": "Affiche le bouton \"Solution\"."
+        },
+        {
+          "label": "Afficher le bouton \"Réessayer\".",
+          "description": "Affiche le bouton \"Réessayer\" ."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "semantics": [
+    {
+      "label": "Largeur",
+      "description": "Largeur du cadre compatible avec le CSS. Défaut: \"500px\""
+    },
+    {
+      "label": "Largeur minimale",
+      "description": "Largeur minimale du cadre compatible avec le CSS. Défaut: \"300px\""
+    },
+    {
+      "label": "Hauteur",
+      "description": "Hauteur du cadre compatible avec le CSS. Défaut: \"500px\""
+    },
+    {
+      "label": "Source",
+      "description": "URL du document externe, ou chemin vers un document H5P"
+    },
+    {
+      "label": "Redimensionnement supporté",
+      "description": "Si activé, le plein écran sera possible, et H5P remplira la fenêtre tant que possible"
+    }
+  ]
+}

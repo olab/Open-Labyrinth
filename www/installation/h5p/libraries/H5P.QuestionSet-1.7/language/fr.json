@@ -1,0 +1,163 @@
+{
+  "semantics": [
+    {
+      "label": "Introduction du Quiz ",
+      "fields": [
+        {
+          "label": "Montrer l'introduction"
+        },
+        {
+          "label": "Titre",
+          "description": "Ce titre sera affiché au-dessus de votre texte d'introduction."
+        },
+        {
+          "label": "Texte d'introduction ",
+          "description": "Ce texte sera affiché avant le démarrage du quiz."
+        },
+        {
+          "label": "Texte du bouton de démarrage"
+        },
+        {
+          "label": "Image d'arrière-plan",
+          "description": "Image d'arrière-plan optionnelle pour l'introduction."
+        }
+      ]
+    },
+    {
+      "label": "Image d'arrière-plan",
+      "description": "Image d'arrière-plan optionnelle pour la série de questions."
+    },
+    {
+      "label": "Indicateur de progression",
+      "description": "Style de l'indicateur de progression de la série de questions",
+      "options": [
+        {
+          "label": "Texte"
+        },
+        {
+          "label": "Points"
+        }
+      ]
+    },
+    {
+      "label": "Pourcentage de réussite",
+      "description": "Pourcentage exigé pour la réussite du quiz."
+    },
+    {
+      "label": "Questions",
+      "widgets": [
+        {
+          "label": "Par défaut"
+        },
+        {
+          "label": "Texte"
+        }
+      ],
+      "entity": "question",
+      "field": {
+        "label": "Type de question",
+        "description": "Types possibles pour cette question."
+      }
+    },
+    {
+      "label": "Interface des Textes dans le quiz",
+      "fields": [
+        {
+          "label": "Bouton précédent"
+        },
+        {
+          "label": "Bouton suivant"
+        },
+        {
+          "label": "Bouton fin"
+        },
+        {
+          "label": "Texte de progression",
+          "description": "Texte utilisé si la progression textuelle est utilisée."
+        }
+      ]
+    },
+    {
+      "label": "Quiz fini",
+      "fields": [
+        {
+          "label": "Montrer les résultats"
+        },
+        {
+          "label": "Feedback de fin",
+          "description": "Ce texte sera affiché quand l'utilisateur aura totalement terminé le quiz."
+        },
+        {
+          "label": "Texte d'affichage du score",
+          "description": "Texte utilisé pour afficher le score total de l'utilisateur. \"@score\" sera remplacé par le score de l'utilisateur, \"@total\" sera remplacé par le score maximum possible."
+        },
+        {
+          "label": "Texte de félicitation",
+          "description": "Texte affiché lors du passage du quiz avec succès."
+        },
+        {
+          "label": "Commentaire de fin de quiz réussi",
+          "description": "Commentaire affiché lors du passage du quiz avec succès."
+        },
+        {
+          "label": "Texte d'échec",
+          "description": "Texte affiché lors de l'échec au quiz."
+        },
+        {
+          "label": "Commentaire de fin de quiz échoué",
+          "description": "Commentaire affiché lors de l'échec au quiz."
+        },
+        {
+          "label": "Texte du bouton Solution",
+          "description": "Texte pour le bouton de solution."
+        },
+        {
+          "label": "Texte du bouton Réessayer",
+          "description": "Texte pour le bouton Réessayer."
+        },
+        {
+          "label": "Texte pour le bouton de fin"
+        },
+        {
+          "label": "Montrer une vidéo avant l'affichage des résultats du quiz"
+        },
+        {
+          "label": "Activer le bouton passer la vidéo"
+        },
+        {
+          "label": "Texte du bouton passer la vidéo"
+        },
+        {
+          "label": "Video en cas de succès",
+          "description": "Vidéo affichée lors du passage du quiz avec succès."
+        },
+        {
+          "label": "Video en cas d'échec",
+          "description": "Vidéo affichée lors de l'échec au quiz."
+        }
+      ]
+    },
+    {
+      "label": "Options pour les boutons \"Montrer la solution\" et \"Réessayer\".",
+      "description": "Ces options vous permettent de choisir quand afficher les boutons \"Solutions\" et \"Réessayer\" dans votre acivité h5p..",
+      "fields": [
+        {
+          "label": "Activer les réglages par défaut pour les boutons \"Solution\" et \"Réessayer\".",
+          "description": "Si cette option est choisie, les réglages seront valables pour toutes les questions, les réglages individuels ne seront pas pris en compte."
+        },
+        {
+          "label": "Afficher le bouton \"Solution\".",
+          "description": "Affiche le bouton \"Solution\"."
+        },
+        {
+          "label": "Afficher le bouton \"Réessayer\".",
+          "description": "Affiche le bouton \"Réessayer\"."
+        }
+      ]
+    },
+    {
+      "label": "Texte de la question",
+      "default": "Question"
+    }
+  ]
+}

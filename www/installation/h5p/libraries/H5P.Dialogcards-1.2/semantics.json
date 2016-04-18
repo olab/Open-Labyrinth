@@ -1,0 +1,120 @@
+[
+  {
+    "name": "title",
+    "type": "text",
+    "widget": "html",
+    "label": "Title",
+    "tags": ["p", "br", "strong", "em"]
+  },
+  {
+    "name": "description",
+    "type": "text",
+    "widget": "html",
+    "label": "Task description",
+    "default": "Sit in pairs and make up sentences where you include the expressions below.<br/>Example: I should have said yes, HOWEVER I kept my mouth shut.",
+    "tags": ["p", "br", "strong", "em"]
+  },
+  {
+    "name": "dialogs",
+    "type": "list",
+    "widgets": [
+      {
+        "name": "VerticalTabs",
+        "label": "Default"
+      }
+    ],
+    "label": "Dialogs",
+    "entity": "dialog",
+    "min": 1,
+    "defaultNum": 1,
+    "field": {
+      "name": "question",
+      "type": "group",
+      "label": "Question",
+      "fields": [
+        {
+          "name": "text",
+          "type": "text",
+          "label": "Text",
+          "description": "Hint for the first part of the dialogue"
+        },
+        {
+          "name": "answer",
+          "type": "text",
+          "label": "Answer",
+          "description": "Hint for the second part of the dialogue"
+        },
+        {
+          "name": "image",
+          "type": "image",
+          "label": "Image",
+          "optional": true,
+          "description": "Optional image for the card. (The card may use just an image, just a text or both)"
+        },
+        {
+          "name": "audio",
+          "type": "audio",
+          "label": "Audio files",
+          "optional": true
+        },
+        {
+          "name": "tips",
+          "type": "group",
+          "label": "Tips",
+          "fields": [
+            {
+              "name": "front",
+              "type": "text",
+              "label": "Tip for text",
+              "optional": true,
+              "description": "Tip for the first part of the dialogue"
+            },
+            {
+              "name": "back",
+              "type": "text",
+              "label": "Tip for answer",
+              "optional": true,
+              "description": "Tip for the second part of the dialogue"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "label": "Text for the turn button",
+    "name": "answer",
+    "type": "text",
+    "default": "Turn",
+    "common": true
+  },
+  {
+    "label": "Text for the next button",
+    "type": "text",
+    "name": "next",
+    "default": "Next",
+    "common": true
+  },
+  {
+    "name": "prev",
+    "type": "text",
+    "label": "Text for the previous button",
+    "default": "Previous",
+    "common": true
+  },
+  {
+    "name": "retry",
+    "type": "text",
+    "label": "Text for the retry button",
+    "default": "Retry",
+    "common": true
+  },
+  {
+    "name": "progressText",
+    "type": "text",
+    "label": "Progress text",
+    "description": "Available variables are @card and @total.",
+    "default": "Card @card of @total",
+    "common": true
+  }
+]

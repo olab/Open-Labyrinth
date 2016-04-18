@@ -1,0 +1,28 @@
+{
+  "title": "TimelineJS",
+  "contentType": "Library",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 6,
+  "descripion": "A Storytelling Timeline built in JavaScript. http://timeline.knightlab.com. Version 2.36.0",
+  "machineName": "TimelineJS",
+  "runnable": 0,
+  "author": "KnightLab",
+  "license": "MPL2",
+  "preloadedJs": [
+    {
+      "path": "js/timeline-min.js"
+    },
+    {
+      "path": "js/storyjs-embed.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/timeline.css"
+    }
+  ],
+  "embedTypes": [
+    "iframe"
+  ]
+}

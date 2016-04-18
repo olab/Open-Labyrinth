@@ -1,0 +1,38 @@
+{
+  "machineName": "H5P.GoToQuestion",
+  "title": "Go To Question",
+  "license": "MIT",
+  "author": "Joubel AS (FAP)",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 2,
+  "runnable": 0,
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 6
+  },
+  "preloadedJs": [
+    {
+      "path": "scripts/go-to-question.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "styles/go-to-question.css"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 2
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.Timecode",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ]
+}

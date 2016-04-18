@@ -1,0 +1,45 @@
+[
+  {
+    "label": "Task description",
+    "name": "taskDescription",
+    "type": "text",
+    "widget": "html",
+    "description": "Describe how the user should solve the task.",
+    "enterMode": "p",
+    "tags": [
+      "strong",
+      "em",
+      "u",
+      "a",
+      "ul",
+      "ol",
+      "h2",
+      "h3",
+      "hr"
+    ],
+    "optional": true
+  },
+  {
+    "label": "Solution image",
+    "name": "solutionImage",
+    "type": "image",
+    "description": "Users will guess the solution from this picture.",
+    "optional": true
+  },
+  {
+    "label": "Descriptive solution label",
+    "name": "solutionLabel",
+    "type": "text",
+    "widget": "textarea",
+    "default": "Click to see the answer.",
+    "description": "Clickable text area where the solution will be displayed.",
+    "optional": true
+  },
+  {
+    "label": "Solution text",
+    "name": "solutionText",
+    "type": "text",
+    "widget": "textarea",
+    "description": "The solution for the picture."
+  }
+]
