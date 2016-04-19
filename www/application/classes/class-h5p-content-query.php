@@ -65,15 +65,7 @@ class H5PContentQuery
         $reverse_order = null,
         $filters = null
     ) {
-        global $wpdb;
-
-        if (!isset($wpdb)) {
-            $config = include './application/config/database.php';
-            $config = $config['default']['connection'];
-            $GLOBALS['wpdb'] = new wpdb($config['username'], $config['password'], $config['database'],
-                $config['hostname']);
-            $wpdb = $GLOBALS['wpdb'];
-        }
+        $wpdb = getWPDB();
 
         $this->base_table = "h5p_contents hc";
         $this->valid_joins = array(

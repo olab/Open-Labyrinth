@@ -654,6 +654,8 @@ class H5P_Plugin_Admin
     public static function add_script($handle, $path)
     {
         //wp_enqueue_script(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
+        CustomAssetManager::addScript($handle, $path);
+
     }
 
     /**
@@ -666,6 +668,7 @@ class H5P_Plugin_Admin
     public static function add_style($handle, $path)
     {
         //wp_enqueue_style(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
+        CustomAssetManager::addStyle($handle, $path);
     }
 
     /**

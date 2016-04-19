@@ -62,7 +62,7 @@ class H5PWordPress implements H5PFrameworkInterface
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         // Assumes that replacement vars are in the correct order.
-        return vsprintf(__($message, $this->plugin_slug), $replacements);
+        return vsprintf(__($message), $replacements);
     }
 
     /**
@@ -671,7 +671,7 @@ class H5PWordPress implements H5PFrameworkInterface
          * @param int $libraryMajorVersion
          * @param int $libraryMinorVersion
          */
-        do_action_ref_array('h5p_alter_library_semantics', array(&$semantics, $name, $majorVersion, $minorVersion));
+        //do_action_ref_array('h5p_alter_library_semantics', array(&$semantics, $name, $majorVersion, $minorVersion));
     }
 
     /**

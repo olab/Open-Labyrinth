@@ -3,11 +3,11 @@
 /* Custom H5P font to use for icons. */
 @font-face {
   font-family: 'h5p';
-  src:    url('../fonts/h5p-core-14.eot?inh2er');
-  src:    url('../fonts/h5p-core-14.eot?inh2er#iefix') format('embedded-opentype'),
-  url('../fonts/h5p-core-14.ttf?inh2er') format('truetype'),
-  url('../fonts/h5p-core-14.woff?inh2er') format('woff'),
-  url('../fonts/h5p-core-14.svg?inh2er#h5p-core-14') format('svg');
+  src:    url('../../font/h5p/h5p-core-14.eot?inh2er');
+  src:    url('../../font/h5p/h5p-core-14.eot?inh2er#iefix') format('embedded-opentype'),
+  url('../../font/h5p/h5p-core-14.ttf?inh2er') format('truetype'),
+  url('../../font/h5p/h5p-core-14.woff?inh2er') format('woff'),
+  url('../../font/h5p/h5p-core-14.svg?inh2er#h5p-core-14') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -401,7 +401,7 @@ div.h5p-fullscreen {
   padding-left: 0.25em;
 }
 .h5p-throbber {
-  background: url('../images/throbber.gif?ver=1.2.1') 10px center no-repeat;
+  background: url('../../images/h5p/throbber.gif?ver=1.2.1') 10px center no-repeat;
   padding-left: 38px;
   min-height: 30px;
   line-height: 30px;

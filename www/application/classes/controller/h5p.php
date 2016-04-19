@@ -40,6 +40,14 @@ class Controller_H5P extends Controller_Base
         require_once 'application/classes/wp-db.php';
     }
 
+    public static function loadH5PEditorClasses()
+    {
+        require_once MODPATH . 'h5p-editor-php-library/h5peditor-storage.interface.php';
+        require_once MODPATH . 'h5p-editor-php-library/h5peditor.class.php';
+        require_once MODPATH . 'h5p-editor-php-library/h5peditor-file.class.php';
+        require_once 'application/classes/class-h5p-editor-wordpress-storage.php';
+    }
+
     public function before()
     {
         parent::before();
@@ -49,8 +57,59 @@ class Controller_H5P extends Controller_Base
 
     public function action_addContent()
     {
+        static::loadH5PEditorClasses();
+        $this->templateData['scripts_stack'][] = '/scripts/h5p/jquery.js';
+        $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-event-dispatcher.js';
+        $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-utils.js';
+        $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-data-view.js';
+        $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-data-views.js';
+
+        $this->templateData['styles_stack'][] = '/css/h5p/h5p.css';
+        $this->templateData['styles_stack'][] = '/css/h5p/h5p-admin.css';
+
+        $id = $this->request->param('id');
+
+        $content_admin = new H5PContentAdmin('H5P');
+        //$content_admin->load_content($id);
+        $content = $content_admin->content;
+
+        $contentExists = ($content !== null);
+
+        $plugin = H5P_Plugin::get_instance();
+        $core = $plugin->get_h5p_instance('core');
+
+        // Prepare form
+        $title = $contentExists ? $content['title'] : '';
+        $library = $contentExists ? H5PCore::libraryToString($content['library']) : 0;
+        $parameters = $contentExists ? $core->filterParameters($content) : '{}';
+
+        // Determine upload or create
+        if (!$contentExists && !$content_admin->has_libraries()) {
+            $upload = true;
+        } else {
+            //$upload = (filter_input(INPUT_POST, 'action') === 'upload');
+            $upload = false;
+        }
+
+        // Filter/escape parameters, double escape that is...
+        $parameters = esc_html($parameters, ENT_QUOTES, false, true);
+
+        //include_once('views/new-content.php');
+        $settings = $content_admin->get_editor_assets($contentExists ? $content['id'] : null);
+        H5P_Plugin_Admin::add_script('jquery', '/scripts/h5p/jquery.js');
+        H5P_Plugin_Admin::add_script('disable', '/scripts/h5p/disable.js');
+        H5P_Plugin_Admin::add_script('toggle', '/scripts/h5p/editor/scripts/h5p-toggle.js');
+
+        $this->loadAssets();
+
         $this->templateData['center'] = View::factory('h5p/contentAdd')
-            ->set('templateData', $this->templateData);
+            ->set('templateData', $this->templateData)
+            ->set('content', $content)
+            ->set('settings', $settings)
+            ->set('title', $title)
+            ->set('library', $library)
+            ->set('upload', $upload)
+            ->set('parameters', $parameters);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -59,7 +118,77 @@ class Controller_H5P extends Controller_Base
      */
     public function action_addContentSubmit()
     {
-        $this->ajax_contents(true);
+        static::loadH5PEditorClasses();
+        $plugin = H5P_Plugin::get_instance();
+
+        // Check if we have any content or errors loading content
+        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+        $content_admin = new H5PContentAdmin('H5P');
+        if ($id) {
+            $content_admin->load_content($id);
+            if (is_string($content_admin->content)) {
+                H5P_Plugin_Admin::set_error($content_admin->content);
+                $content_admin->content = null;
+            }
+        }
+
+        //if ($content_admin->content !== null) {
+        //    // We have existing content
+//
+        //    if (/*!$this->current_user_can_edit($this->content)*/
+        //    false
+        //    ) {
+        //        // The user isn't allowed to edit this content
+        //        H5P_Plugin_Admin::set_error(__('You are not allowed to edit this content.'));
+//
+        //        return;
+        //    }
+//
+        //    // Check if we're deleting content
+        //    $delete = filter_input(INPUT_GET, 'delete');
+        //    if ($delete) {
+        //        $this->deleteContent($plugin, $content_admin);
+        //        //TODO: redirect
+        //    }
+        //}
+
+        // Check if we're uploading or creating content
+        $action = filter_input(INPUT_POST, 'action', FILTER_VALIDATE_REGEXP,
+            array('options' => array('regexp' => '/^(upload|create)$/')));
+        if ($action) {
+            $core = $plugin->get_h5p_instance('core'); // Make sure core is loaded
+
+            $result = false;
+            if ($action === 'create') {
+                // Handle creation of new content.
+                $result = $content_admin->handle_content_creation($content_admin->content);
+            } elseif (isset($_FILES['h5p_file']) && $_FILES['h5p_file']['error'] === 0) {
+                // Create new content if none exists
+                $content = ($content_admin->content === null ? array('disable' => H5PCore::DISABLE_NONE) : $content_admin->content);
+                $content['title'] = $content_admin->get_input_title();
+                $content['uploaded'] = true;
+                $content_admin->get_disabled_content_features($core, $content);
+
+                // Handle file upload
+                $plugin_admin = H5P_Plugin_Admin::get_instance();
+                $result = $plugin_admin->handle_upload($content);
+            }
+
+            if ($result) {
+                $content['id'] = $result;
+                $content_admin->set_content_tags($content['id'], filter_input(INPUT_POST, 'tags'));
+
+                Session::instance()->set('success_message', 'Saved.');
+                Request::initial()->redirect(URL::base() . 'h5p/contents');
+            }
+        }
+    }
+
+    private function deleteContent(H5P_Plugin $plugin, H5PContentAdmin $content_admin)
+    {
+        $content_admin->set_content_tags($content_admin->content['id']);
+        $storage = $plugin->get_h5p_instance('storage');
+        $storage->deletePackage($content_admin->content);
     }
 
     /**
@@ -137,6 +266,13 @@ class Controller_H5P extends Controller_Base
             ->set('templateData', $this->templateData)
             ->set('data_view', $data_view);
         $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_ajax_libraries()
+    {
+        static::loadH5PEditorClasses();
+        $content_admin = new H5PContentAdmin('H5P');
+        $content_admin->ajax_libraries();
     }
 
     public function action_libraries()
@@ -472,5 +608,16 @@ class Controller_H5P extends Controller_Base
         $iso_time = date('c', $time);
 
         return "<time datetime=\"{$iso_time}\" title=\"{$formatted_time}\">{$human_time}</time>";
+    }
+
+    private function loadAssets()
+    {
+        foreach (CustomAssetManager::getScripts() as $script) {
+            $this->templateData['scripts_stack'][] = $script;
+        }
+
+        foreach (CustomAssetManager::getStyles() as $script) {
+            $this->templateData['styles_stack'][] = $script;
+        }
     }
 }
