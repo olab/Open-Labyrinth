@@ -420,11 +420,11 @@ class H5PWordPress implements H5PFrameworkInterface
      */
     public function updateContent($content, $contentMainId = null)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
-        $table = $wpdb->prefix . 'h5p_contents';
+        $table = 'h5p_contents';
         $data = array(
-            'updated_at' => current_time('mysql', 1),
+            'updated_at' => date('Y-m-d H:i:s'),
             'title' => $content['title'],
             'parameters' => $content['params'],
             'embed_type' => 'div', // TODO: Determine from library?
@@ -446,7 +446,7 @@ class H5PWordPress implements H5PFrameworkInterface
             // Insert new content
             $data['created_at'] = $data['updated_at'];
             $format[] = '%s';
-            $data['user_id'] = get_current_user_id();
+            $data['user_id'] = Auth::instance()->get_user()->id;
             $format[] = '%d';
             $wpdb->insert($table, $data, $format);
             $content['id'] = $wpdb->insert_id;
@@ -461,11 +461,11 @@ class H5PWordPress implements H5PFrameworkInterface
         if (!empty($content['uploaded'])) {
             $event_type .= ' upload';
         }
-        new H5P_Event('content', $event_type,
-            $content['id'],
-            $content['title'],
-            $content['library']['machineName'],
-            $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
+        //new H5P_Event('content', $event_type,
+        //    $content['id'],
+        //    $content['title'],
+        //    $content['library']['machineName'],
+        //    $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
 
         return $content['id'];
     }
@@ -967,7 +967,7 @@ class H5PWordPress implements H5PFrameworkInterface
         $wpdb->update(
             $wpdb->prefix . 'h5p_contents_user_data',
             array(
-                'updated_at' => current_time('mysql', 1),
+                'updated_at' => date('Y-m-d H:i:s'),
                 'data' => 'RESET'
             ),
             array(

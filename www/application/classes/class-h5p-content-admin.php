@@ -715,14 +715,11 @@ class H5PContentAdmin
     /**
      * Generic function for listing all H5P contents.
      *
-     * @global \wpdb $wpdb
      * @since 1.2.0
      * @param boolean $insert Place insert buttons instead of edit links.
      */
     public function ajax_contents($insert = false)
     {
-        global $wpdb;
-
         // Load input vars.
         $admin = H5P_Plugin_Admin::get_instance();
         list($offset, $limit, $sort_by, $sort_dir, $filters, $facets) = $admin->get_data_view_input();
@@ -988,7 +985,8 @@ class H5PContentAdmin
                 'height' => 50,
             ),
             'ajaxPath' => admin_url('/h5p/ajax_'),
-            'libraryUrl' => 'h5p/h5p-editor-php-library/h5peditor.class.php',
+            //'libraryUrl' => 'h5p/h5p-editor-php-library/h5peditor.class.php',
+            'libraryUrl' => '/scripts/h5p/editor',
             'copyrightSemantics' => $content_validator->getCopyrightSemantics(),
             'assets' => $assets,
             'deleteMessage' => __('Are you sure you wish to delete this content?'),

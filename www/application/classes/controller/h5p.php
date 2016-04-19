@@ -127,8 +127,10 @@ class Controller_H5P extends Controller_Base
         if ($id) {
             $content_admin->load_content($id);
             if (is_string($content_admin->content)) {
-                H5P_Plugin_Admin::set_error($content_admin->content);
+                //H5P_Plugin_Admin::set_error($content_admin->content);
+                Session::instance()->set('error_message', $content_admin->content);
                 $content_admin->content = null;
+                Request::initial()->redirect(URL::base() . 'h5p/addContent');
             }
         }
 
@@ -179,9 +181,12 @@ class Controller_H5P extends Controller_Base
                 $content_admin->set_content_tags($content['id'], filter_input(INPUT_POST, 'tags'));
 
                 Session::instance()->set('success_message', 'Saved.');
-                Request::initial()->redirect(URL::base() . 'h5p/contents');
+            } else {
+                Session::instance()->set('error_message', implode(', ', $core->h5pF->getMessages('error')));
             }
         }
+
+        Request::initial()->redirect(URL::base() . 'h5p/addContent');
     }
 
     private function deleteContent(H5P_Plugin $plugin, H5PContentAdmin $content_admin)

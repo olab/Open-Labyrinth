@@ -27,7 +27,7 @@
                     <label class="" id="title-prompt-text" for="title">
                         <?php echo __('Enter title here'); ?>
                     </label>
-                    <input id="title" type="text" name="title" value="<?php echo esc_html($title); ?>"/>
+                    <input id="title" type="text" name="title" value="<?php echo esc_html($title); ?>" required/>
                 </div>
                 <div class="h5p-upload">
                     <input type="file" name="h5p_file" id="h5p-file"/>
