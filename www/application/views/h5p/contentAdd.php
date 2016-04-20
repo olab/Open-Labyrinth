@@ -14,14 +14,14 @@
             <?php else: ?>
                 <?php echo __('Edit'); ?>
                 <em><?php echo $title; ?></em>
-                <a href="<?php print admin_url('admin.php?page=h5p&task=show&id=' . $content['id']); ?>"
+                <a href="<?php print '/h5p/showContent/' . $content['id']; ?>"
                    class="add-new-h2"><?php echo __('View'); ?></a>
-                <a href="<?php print admin_url('admin.php?page=h5p&task=results&id=' . $content['id']); ?>"
+                <a href="<?php print '/h5p/results/' . $content['id']; ?>"
                    class="add-new-h2"><?php echo __('Results'); ?></a>
             <?php endif; ?>
         </h2>
         <?php H5P_Plugin_Admin::print_messages(); ?>
-        <form method="post" enctype="multipart/form-data" id="h5p-content-form" action="/h5p/addContentSubmit">
+        <form method="post" enctype="multipart/form-data" id="h5p-content-form" action="/h5p/addContentSubmit/<?php echo (isset($content['id']) ? $content['id'] : '') ?>">
             <div id="post-body-content">
                 <div id="titlediv">
                     <label class="" id="title-prompt-text" for="title">

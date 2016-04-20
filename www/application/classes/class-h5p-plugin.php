@@ -568,28 +568,33 @@ class H5P_Plugin
     }
 
     /**
-     * Get H5P language code from WordPress.
+     * Get H5P language code
      *
-     * @since 1.0.0
+     * @param bool $english_only
      * @return string
      */
-    public function get_language()
+    public function get_language($english_only = true)
     {
-        if (defined('WPLANG')) {
-            $language = WPLANG;
+        $result = 'en';
+
+        if ($english_only) {
+            return $result;
         }
+
+        /** @var Model_Leap_User $user */
+        $user = Auth::instance()->get_user();
+
+        if (empty($user)) {
+            return $result;
+        }
+
+        $language = $user->language;
 
         if (empty($language)) {
-            $language = get_option('WPLANG');
+            return $result;
         }
 
-        if (!empty($language)) {
-            $languageParts = explode('_', $language);
-
-            return $languageParts[0];
-        }
-
-        return 'en';
+        return strtolower($language->name);
     }
 
     /**
@@ -715,31 +720,31 @@ class H5P_Plugin
         $content['disable'] |= $core->getGlobalDisable();
 
         $safe_parameters = $core->filterParameters($content);
-        if (has_action('h5p_alter_filtered_parameters')) {
-            // Parse the JSON parameters
-            $decoded_parameters = json_decode($safe_parameters);
-
-            /**
-             * Allows you to alter the H5P content parameters after they have been
-             * filtered. This hook only fires before view.
-             *
-             * @since 1.5.3
-             *
-             * @param object &$parameters
-             * @param string $libraryName
-             * @param int $libraryMajorVersion
-             * @param int $libraryMinorVersion
-             */
-            do_action_ref_array('h5p_alter_filtered_parameters', array(
-                &$decoded_parameters,
-                $content['library']['name'],
-                $content['library']['majorVersion'],
-                $content['library']['minorVersion']
-            ));
-
-            // Stringify the JSON parameters
-            $safe_parameters = json_encode($decoded_parameters);
-        }
+        //if (has_action('h5p_alter_filtered_parameters')) {
+        //    // Parse the JSON parameters
+        //    $decoded_parameters = json_decode($safe_parameters);
+//
+        //    /**
+        //     * Allows you to alter the H5P content parameters after they have been
+        //     * filtered. This hook only fires before view.
+        //     *
+        //     * @since 1.5.3
+        //     *
+        //     * @param object &$parameters
+        //     * @param string $libraryName
+        //     * @param int $libraryMajorVersion
+        //     * @param int $libraryMinorVersion
+        //     */
+        //    do_action_ref_array('h5p_alter_filtered_parameters', array(
+        //        &$decoded_parameters,
+        //        $content['library']['name'],
+        //        $content['library']['majorVersion'],
+        //        $content['library']['minorVersion']
+        //    ));
+//
+        //    // Stringify the JSON parameters
+        //    $safe_parameters = json_encode($decoded_parameters);
+        //}
 
         // Add JavaScript settings for this content
         $settings = array(
@@ -748,9 +753,9 @@ class H5P_Plugin
             'fullScreen' => $content['library']['fullscreen'],
             'exportUrl' => get_option('h5p_export',
                 true) ? $this->get_h5p_url() . '/exports/' . ($content['slug'] ? $content['slug'] . '-' : '') . $content['id'] . '.h5p' : '',
-            'embedCode' => '<iframe src="' . admin_url('admin-ajax.php?action=h5p_embed&id=' . $content['id']) . '" width=":w" height=":h" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
-            'resizeCode' => '<script src="' . plugins_url('h5p/h5p-php-library/js/h5p-resizer.js') . '" charset="UTF-8"></script>',
-            'url' => admin_url('admin-ajax.php?action=h5p_embed&id=' . $content['id']),
+            'embedCode' => '<iframe src="/h5p/embed/' . $content['id'] . '" width=":w" height=":h" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+            'resizeCode' => '<script src="/scripts/h5p/h5p-resizer.js" charset="UTF-8"></script>',
+            'url' => '/h5p/embed/' . $content['id'],
             'title' => $content['title'],
             'disable' => $content['disable'],
             'contentUserData' => array(
@@ -761,17 +766,17 @@ class H5P_Plugin
         );
 
         // Get preloaded user data for the current user
-        $current_user = wp_get_current_user();
-        if (get_option('h5p_save_content_state', false) && $current_user->ID) {
+        $current_user = Auth::instance()->get_user();
+        if (get_option('h5p_save_content_state', false) && $current_user->id) {
             $results = $wpdb->get_results($wpdb->prepare(
                 "SELECT hcud.sub_content_id,
                 hcud.data_id,
                 hcud.data
-          FROM {$wpdb->prefix}h5p_contents_user_data hcud
+          FROM h5p_contents_user_data hcud
           WHERE user_id = %d
           AND content_id = %d
           AND preload = 1",
-                $current_user->ID, $content['id']
+                $current_user->id, $content['id']
             ));
 
             if ($results) {
@@ -838,7 +843,7 @@ class H5P_Plugin
     public function alter_assets(&$files, &$dependencies, $embed)
     {
         return;
-        
+
         if (!has_action('h5p_alter_library_scripts') && !has_action('h5p_alter_library_styles')) {
             return;
         }
@@ -932,7 +937,7 @@ class H5P_Plugin
             'postUserStatistics' => (get_option('h5p_track_user', true) === '1') && $current_user->id,
             'ajaxPath' => admin_url('/h5p/ajax_'),
             'ajax' => array(
-                'setFinished' => admin_url('admin-ajax.php?action=h5p_setFinished'),
+                'setFinished' => '/h5p/saveResult',
                 'contentUserData' => admin_url('admin-ajax.php?action=h5p_contents_user_data&content_id=:contentId&data_type=:dataType&sub_content_id=:subContentId')
             ),
             'tokens' => array(

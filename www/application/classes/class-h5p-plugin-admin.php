@@ -135,94 +135,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Print page for embed iframe
-     *
-     * @since 1.3.0
-     */
-    public function embed()
-    {
-        // Allow other sites to embed
-        header_remove('X-Frame-Options');
-
-        // Find content
-        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-        if ($id !== null) {
-            $plugin = H5P_Plugin::get_instance();
-            $content = $plugin->get_content($id);
-            if (!is_string($content)) {
-
-                // Everyone is allowed to embed, set through settings
-                $embed_allowed = (get_option('h5p_embed', true) && !($content['disable'] & H5PCore::DISABLE_EMBED));
-
-                /**
-                 * Allows other plugins to change the access permission for the
-                 * embedded iframe's content.
-                 *
-                 * @since 1.5.3
-                 *
-                 * @param bool $access
-                 * @param int $content_id
-                 * @return bool New access permission
-                 */
-                $embed_allowed = apply_filters('h5p_embed_access', $embed_allowed, $id);
-
-                if (!$embed_allowed) {
-                    // Check to see if embed URL always should be available
-                    $embed_allowed = (defined('H5P_EMBED_URL_ALWAYS_AVAILABLE') && H5P_EMBED_URL_ALWAYS_AVAILABLE);
-                }
-
-                if ($embed_allowed) {
-                    $lang = $plugin->get_language();
-                    $cache_buster = '?ver=' . H5P_Plugin::VERSION;
-
-                    // Get core settings
-                    $integration = $plugin->get_core_settings();
-                    // TODO: The non-content specific settings could be apart of a combined h5p-core.js file.
-
-                    // Get core scripts
-                    $scripts = array();
-                    foreach (H5PCore::$scripts as $script) {
-                        $scripts[] = plugins_url('h5p/h5p-php-library/' . $script) . $cache_buster;
-                    }
-
-                    // Get core styles
-                    $styles = array();
-                    foreach (H5PCore::$styles as $style) {
-                        $styles[] = plugins_url('h5p/h5p-php-library/' . $style) . $cache_buster;
-                    }
-
-                    // Get content settings
-                    $integration['contents']['cid-' . $content['id']] = $plugin->get_content_settings($content);
-                    $core = $plugin->get_h5p_instance('core');
-
-                    // Get content assets
-                    $preloaded_dependencies = $core->loadContentDependencies($content['id'], 'preloaded');
-                    $files = $core->getDependenciesFiles($preloaded_dependencies);
-                    $plugin->alter_assets($files, $preloaded_dependencies, 'external');
-
-                    $scripts = array_merge($scripts, $core->getAssetsUrls($files['scripts']));
-                    $styles = array_merge($styles, $core->getAssetsUrls($files['styles']));
-
-                    include_once(plugin_dir_path(__FILE__) . '../h5p-php-library/embed.php');
-
-                    // Log embed view
-                    new H5P_Event('content', 'embed',
-                        $content['id'],
-                        $content['title'],
-                        $content['library']['name'],
-                        $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
-                    exit;
-                }
-            }
-        }
-
-        // Simple unavailble page
-        print '<body style="margin:0"><div style="background: #fafafa url(' . plugins_url('h5p/h5p-php-library/images/h5p.svg') . ') no-repeat center;background-size: 50% 50%;width: 100%;height: 100%;"></div><div style="width:100%;position:absolute;top:75%;text-align:center;color:#434343;font-family: Consolas,monaco,monospace">' . __('Content unavailable.',
-                $this->plugin_slug) . '</div></body>';
-        exit;
-    }
-
-    /**
      * Return an instance of this class.
      *
      * @since 1.0.0
@@ -672,84 +584,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Handle user results reported by the H5P content.
-     *
-     * @since 1.2.0
-     */
-    public function ajax_results()
-    {
-        global $wpdb;
-
-        $content_id = filter_input(INPUT_POST, 'contentId', FILTER_VALIDATE_INT);
-        if (!$content_id) {
-            H5PCore::ajaxError(__('Invalid content', $this->plugin_slug));
-            exit;
-        }
-        if (!wp_verify_nonce(filter_input(INPUT_POST, 'token'), 'h5p_result')) {
-            H5PCore::ajaxError(__('Invalid security token', $this->plugin_slug));
-            exit;
-        }
-
-        $user_id = get_current_user_id();
-        $result_id = $wpdb->get_var($wpdb->prepare(
-            "SELECT id
-        FROM {$wpdb->prefix}h5p_results
-        WHERE user_id = %d
-        AND content_id = %d",
-            $user_id,
-            $content_id
-        ));
-
-        $table = $wpdb->prefix . 'h5p_results';
-        $data = array(
-            'score' => filter_input(INPUT_POST, 'score', FILTER_VALIDATE_INT),
-            'max_score' => filter_input(INPUT_POST, 'maxScore', FILTER_VALIDATE_INT),
-            'opened' => filter_input(INPUT_POST, 'opened', FILTER_VALIDATE_INT),
-            'finished' => filter_input(INPUT_POST, 'finished', FILTER_VALIDATE_INT),
-            'time' => filter_input(INPUT_POST, 'time', FILTER_VALIDATE_INT)
-        );
-        if ($data['time'] === null) {
-            $data['time'] = 0;
-        }
-        $format = array(
-            '%d',
-            '%d',
-            '%d',
-            '%d',
-            '%d'
-        );
-
-        if (!$result_id) {
-            // Insert new results
-            $data['user_id'] = $user_id;
-            $format[] = '%d';
-            $data['content_id'] = $content_id;
-            $format[] = '%d';
-            $wpdb->insert($table, $data, $format);
-        } else {
-            // Update existing results
-            $wpdb->update($table, $data, array('id' => $result_id), $format, array('%d'));
-        }
-
-        // Get content info for log
-        $content = $wpdb->get_row($wpdb->prepare("
-        SELECT c.title, l.name, l.major_version, l.minor_version
-          FROM {$wpdb->prefix}h5p_contents c
-          JOIN {$wpdb->prefix}h5p_libraries l ON l.id = c.library_id
-         WHERE c.id = %d
-        ", $content_id));
-
-        // Log view
-        new H5P_Event('results', 'set',
-            $content_id, $content->title,
-            $content->name, $content->major_version . '.' . $content->minor_version);
-
-        // Success
-        H5PCore::ajaxSuccess();
-        exit;
-    }
-
-    /**
      * Create the where part of the results queries.
      *
      * @since 1.2.0
@@ -931,12 +765,12 @@ class H5P_Plugin_Admin
         $plugin->print_settings($settings);
 
         // Add JS
-        H5P_Plugin_Admin::add_script('jquery', 'h5p-php-library/js/jquery.js');
-        H5P_Plugin_Admin::add_script('event-dispatcher', 'h5p-php-library/js/h5p-event-dispatcher.js');
-        H5P_Plugin_Admin::add_script('utils', 'h5p-php-library/js/h5p-utils.js');
-        H5P_Plugin_Admin::add_script('data-view', 'h5p-php-library/js/h5p-data-view.js');
-        H5P_Plugin_Admin::add_script('data-views', 'admin/scripts/h5p-data-views.js');
-        H5P_Plugin_Admin::add_style('admin', 'h5p-php-library/styles/h5p-admin.css');
+        H5P_Plugin_Admin::add_script('jquery', 'scripts/h5p/jquery.js');
+        H5P_Plugin_Admin::add_script('event-dispatcher', 'scripts/h5p/h5p-event-dispatcher.js');
+        H5P_Plugin_Admin::add_script('utils', 'scripts/h5p/h5p-utils.js');
+        H5P_Plugin_Admin::add_script('data-view', 'scripts/h5p/h5p-data-view.js');
+        H5P_Plugin_Admin::add_script('data-views', 'scripts/h5p/h5p-data-views.js');
+        H5P_Plugin_Admin::add_style('admin', 'css/h5p/h5p-admin.css');
     }
 
     public function get_data_view_settings($name, $source, $headers, $filters, $empty, $order)

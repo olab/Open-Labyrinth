@@ -679,7 +679,7 @@ class H5PWordPress implements H5PFrameworkInterface
      */
     public function loadContent($id)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         $content = $wpdb->get_row($wpdb->prepare(
             "SELECT hc.id

@@ -93,7 +93,7 @@ function wp_upload_dir()
 {
     return array(
         'basedir' => DOCROOT . 'files/',
-        'baseurl' => DOCROOT . 'files/',
+        'baseurl' => URL::base(true) . 'files',
     );
 }
 

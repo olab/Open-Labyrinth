@@ -193,6 +193,10 @@ $templateData['error_message'] = Session::instance()->get_once('error_message');
                                     <li>
                                         <a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a>
                                     </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="<?php echo URL::base(); ?>h5p"><?php echo __('H5P'); ?></a>
+                                    </li>
                                 <?php } ?>
                                 <?php if ($type_name == 'superuser') { ?>
                                     <li class="divider"></li>
