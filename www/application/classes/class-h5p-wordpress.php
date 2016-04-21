@@ -309,9 +309,9 @@ class H5PWordPress implements H5PFrameworkInterface
         }
 
         // Log library successfully installed/upgraded
-        new H5P_Event('library', ($new ? 'create' : 'update'),
-            null, null,
-            $library['machineName'], $library['majorVersion'] . '.' . $library['minorVersion']);
+        //new H5P_Event('library', ($new ? 'create' : 'update'),
+        //    null, null,
+        //    $library['machineName'], $library['majorVersion'] . '.' . $library['minorVersion']);
 
         // Update languages
         $wpdb->delete(

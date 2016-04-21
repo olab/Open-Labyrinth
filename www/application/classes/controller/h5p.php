@@ -59,6 +59,42 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_libraryUpload()
+    {
+        if (!isset($_FILES['h5p_file'])) {
+            Session::instance()->set('error_message', __('File not selected.'));
+            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        }
+
+        if ($_FILES['h5p_file']['error'] !== 0) {
+            $phpFileUploadErrors = array(
+                1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
+                2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
+                3 => 'The uploaded file was only partially uploaded',
+                4 => 'No file was uploaded',
+                6 => 'Missing a temporary folder',
+                7 => 'Failed to write file to disk.',
+                8 => 'A PHP extension stopped the file upload.',
+            );
+
+            $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
+            Session::instance()->set('error_message', __($errorMessage));
+            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        }
+
+        // No upload errors, try to install package
+        $plugin_admin = H5P_Plugin_Admin::get_instance();
+        $result = $plugin_admin->handle_upload(null, filter_input(INPUT_POST, 'h5p_upgrade_only') ? true : false);
+
+        if ($result === false) {
+            Session::instance()->set('error_message', __('Error.'));
+        } else {
+            Session::instance()->set('success_message', __('Uploaded.'));
+        }
+
+        Request::initial()->redirect(URL::base() . 'h5p/libraries');
+    }
+
     public function action_libraryDeleteSubmit()
     {
         if ($this->request->method() !== 'POST') {

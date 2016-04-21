@@ -35,13 +35,20 @@
             </form>
         <?php endif; ?>
         <h3 class="h5p-admin-header"><?php echo __('Upload Libraries'); ?></h3>
-        <form method="post" enctype="multipart/form-data" id="h5p-library-form">
+        <div class="alert alert-info">
+            <?php echo __('Note: Value of php.ini directives post_max_size and upload_max_filesize should be greater than the size of the package.') ?>
+            <?php echo __('Current') ?> post_max_size = <?php echo ini_get('post_max_size') ?>,
+            <?php echo __('current') ?> upload_max_filesize = <?php echo ini_get('upload_max_filesize') ?>
+        </div>
+        <form method="post" enctype="multipart/form-data" id="h5p-library-form" action="/h5p/libraryUpload">
             <div class="h5p postbox">
                 <div class="h5p-text-holder">
                     <p><?php print __('Here you can upload new libraries or upload updates to existing libraries. Files uploaded here must be in the .h5p file format.') ?></p>
                     <input type="file" name="h5p_file" id="h5p-file"/>
-                    <input type="checkbox" name="h5p_upgrade_only" id="h5p-upgrade-only"/>
-                    <label for="h5p-upgrade-only"><?php print __('Only update existing libraries'); ?></label>
+                    <label for="h5p-upgrade-only">
+                        <input type="checkbox" name="h5p_upgrade_only" id="h5p-upgrade-only"/>
+                        <?php print __('Only update existing libraries'); ?>
+                    </label>
                     <div class="h5p-disable-file-check">
                         <label><input type="checkbox" name="h5p_disable_file_check"
                                       id="h5p-disable-file-check"/> <?php echo __('Disable file extension check'); ?>
@@ -51,8 +58,7 @@
                     </div>
                 </div>
                 <div class="h5p-button-holder">
-                    <input type="submit" name="submit" value="<?php echo __('Upload') ?>"
-                           class="button button-primary button-large"/>
+                    <input type="submit" name="submit" value="<?php echo __('Upload') ?>" class="btn btn-primary"/>
                 </div>
             </div>
         </form>
