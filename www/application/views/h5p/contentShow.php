@@ -11,10 +11,10 @@
     <?php if (!$has_errors) { ?>
         <h2>
             <?php print esc_html($content['title']); ?>
-            <a href="<?php print '/h5p/results/' . $content['id']; ?>" class="add-new-h2">
+            <a href="<?php print '/h5p/results/' . $content['id']; ?>" class="btn btn-primary">
                 <?php echo __('Results'); ?>
             </a>
-            <a href="<?php print '/h5p/addContent/' . $content['id']; ?>" class="add-new-h2">
+            <a href="<?php print '/h5p/addContent/' . $content['id']; ?>" class="btn btn-primary">
                 <?php echo __('Edit'); ?>
             </a>
         </h2>

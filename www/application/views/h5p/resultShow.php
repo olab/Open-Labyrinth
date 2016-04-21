@@ -10,10 +10,10 @@
     <?php if (!$has_errors) { ?>
         <h2>
             <?php printf(__('Results for "%s"'), esc_html($content['title'])); ?>
-            <a href="<?php print '/h5p/showContent/' . $content['id']; ?>" class="add-new-h2">
+            <a href="<?php print '/h5p/showContent/' . $content['id']; ?>" class="btn btn-primary">
                 <?php echo __('View'); ?>
             </a>
-            <a href="<?php print '/h5p/addContent/' . $content['id']; ?>" class="add-new-h2">
+            <a href="<?php print '/h5p/addContent/' . $content['id']; ?>" class="btn btn-primary">
                 <?php echo __('Edit'); ?>
             </a>
         </h2>

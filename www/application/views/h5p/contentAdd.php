@@ -14,10 +14,12 @@
             <?php else: ?>
                 <?php echo __('Edit'); ?>
                 <em><?php echo $title; ?></em>
-                <a href="<?php print '/h5p/showContent/' . $content['id']; ?>"
-                   class="add-new-h2"><?php echo __('View'); ?></a>
-                <a href="<?php print '/h5p/results/' . $content['id']; ?>"
-                   class="add-new-h2"><?php echo __('Results'); ?></a>
+                <a href="<?php print '/h5p/showContent/' . $content['id']; ?>" class="btn btn-primary">
+                    <?php echo __('View'); ?>
+                </a>
+                <a href="<?php print '/h5p/results/' . $content['id']; ?>" class="btn btn-primary">
+                    <?php echo __('Results'); ?>
+                </a>
             <?php endif; ?>
         </h2>
         <?php H5P_Plugin_Admin::print_messages(); ?>
@@ -35,8 +37,9 @@
                         <label><input type="checkbox" name="h5p_disable_file_check"
                                       id="h5p-disable-file-check"/> <?php echo __('Disable file extension check'); ?>
                         </label>
-                        <div
-                            class="h5p-warning"><?php echo __("Warning! This may have security implications as it allows for uploading php files. That in turn could make it possible for attackers to execute malicious code on your site. Please make sure you know exactly what you're uploading."); ?></div>
+                        <div class="h5p-warning">
+                            <?php echo __("Warning! This may have security implications as it allows for uploading php files. That in turn could make it possible for attackers to execute malicious code on your site. Please make sure you know exactly what you're uploading."); ?>
+                        </div>
                     </div>
                 </div>
                 <div class="h5p-create">
