@@ -451,40 +451,6 @@ class H5P_Plugin
     }
 
     /**
-     * Add capabilities to roles. "Copy" default WP caps on roles.
-     *
-     * @since 1.2.0
-     */
-    private static function add_capabilities()
-    {
-        /*global $wp_roles;
-        if (!isset($wp_roles)) {
-          $wp_roles = new WP_Roles();
-        }
-
-        $all_roles = $wp_roles->roles;
-        foreach ($all_roles as $role_name => $role_info) {
-          $role = get_role($role_name);
-
-          if (isset($role_info['capabilities']['install_plugins'])) {
-            $role->add_cap('disable_h5p_security');
-          }
-          if (isset($role_info['capabilities']['manage_options'])) {
-            $role->add_cap('manage_h5p_libraries');
-          }
-          if (isset($role_info['capabilities']['edit_others_pages'])) {
-            $role->add_cap('edit_others_h5p_contents');
-          }
-          if (isset($role_info['capabilities']['edit_posts'])) {
-            $role->add_cap('edit_h5p_contents');
-          }
-          if (isset($role_info['capabilities']['read'])) {
-            $role->add_cap('view_h5p_results');
-          }
-        }*/
-    }
-
-    /**
      * Load the plugin text domain for translation.
      *
      * @since 1.0.0
@@ -713,7 +679,7 @@ class H5P_Plugin
      */
     public function get_content_settings($content)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
         $core = $this->get_h5p_instance('core');
 
         // Add global disable settings
@@ -895,16 +861,14 @@ class H5P_Plugin
             $url = $rel_url . $script->path . $script->version;
             if (!in_array($url, self::$settings['loadedJs'])) {
                 self::$settings['loadedJs'][] = $url;
-                wp_enqueue_script($this->asset_handle(trim($script->path, '/')), $abs_url . $script->path, array(),
-                    str_replace('?ver', '', $script->version));
+                CustomAssetManager::addScript($this->asset_handle(trim($script->path, '/')), $abs_url . $script->path);
             }
         }
         foreach ($assets['styles'] as $style) {
             $url = $rel_url . $style->path . $style->version;
             if (!in_array($url, self::$settings['loadedCss'])) {
                 self::$settings['loadedCss'][] = $url;
-                wp_enqueue_style($this->asset_handle(trim($style->path, '/')), $abs_url . $style->path, array(),
-                    str_replace('?ver', '', $style->version));
+                CustomAssetManager::addStyle($this->asset_handle(trim($style->path, '/')), $abs_url . $style->path);
             }
         }
     }
