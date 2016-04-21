@@ -59,6 +59,125 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+
+    /**
+     * Ajax request.
+     * Handle user results reported by the H5P content. Save content state.
+     */
+    public function action_contentUserData()
+    {
+        $wpdb = getWPDB();
+
+        $content_id = filter_input(INPUT_GET, 'content_id');
+        $data_id = filter_input(INPUT_GET, 'data_type');
+        $sub_content_id = filter_input(INPUT_GET, 'sub_content_id');
+        $current_user = Auth::instance()->get_user();
+
+        if ($content_id === null ||
+            $data_id === null ||
+            $sub_content_id === null ||
+            empty($current_user)
+        ) {
+            return; // Missing parameters
+        }
+
+        $response = (object)array(
+            'success' => true
+        );
+
+        $data = filter_input(INPUT_POST, 'data');
+        $preload = filter_input(INPUT_POST, 'preload');
+        $invalidate = filter_input(INPUT_POST, 'invalidate');
+        if ($data !== null && $preload !== null && $invalidate !== null) {
+
+            if ($data === '0') {
+                // Remove data
+                $wpdb->delete('h5p_contents_user_data',
+                    array(
+                        'content_id' => $content_id,
+                        'data_id' => $data_id,
+                        'user_id' => $current_user->id,
+                        'sub_content_id' => $sub_content_id
+                    ),
+                    array('%d', '%s', '%d', '%d'));
+            } else {
+                // Wash values to ensure 0 or 1.
+                $preload = ($preload === '0' ? 0 : 1);
+                $invalidate = ($invalidate === '0' ? 0 : 1);
+
+                // Determine if we should update or insert
+                $update = $wpdb->get_var($wpdb->prepare(
+                    "SELECT content_id
+           FROM h5p_contents_user_data
+           WHERE content_id = %d
+             AND user_id = %d
+             AND data_id = %s
+             AND sub_content_id = %d",
+                    $content_id, $current_user->id, $data_id, $sub_content_id
+                ));
+
+                if ($update === null) {
+                    // Insert new data
+                    $wpdb->insert('h5p_contents_user_data',
+                        array(
+                            'user_id' => $current_user->id,
+                            'content_id' => $content_id,
+                            'sub_content_id' => $sub_content_id,
+                            'data_id' => $data_id,
+                            'data' => $data,
+                            'preload' => $preload,
+                            'invalidate' => $invalidate,
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ),
+                        array('%d', '%d', '%d', '%s', '%s', '%d', '%d', '%s')
+                    );
+                } else {
+                    // Update old data
+                    $wpdb->update('h5p_contents_user_data',
+                        array(
+                            'data' => $data,
+                            'preload' => $preload,
+                            'invalidate' => $invalidate,
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ),
+                        array(
+                            'user_id' => $current_user->id,
+                            'content_id' => $content_id,
+                            'data_id' => $data_id,
+                            'sub_content_id' => $sub_content_id
+                        ),
+                        array('%s', '%d', '%d', '%s'),
+                        array('%d', '%d', '%s', '%d')
+                    );
+                }
+            }
+
+            // Inserted, updated or deleted
+            H5PCore::ajaxSuccess();
+            exit;
+        } else {
+            // Fetch data
+            $response->data = $wpdb->get_var($wpdb->prepare(
+                "SELECT hcud.data
+         FROM h5p_contents_user_data hcud
+         WHERE user_id = %d
+           AND content_id = %d
+           AND data_id = %s
+           AND sub_content_id = %d",
+                $current_user->id, $content_id, $data_id, $sub_content_id
+            ));
+
+            if ($response->data === null) {
+                unset($response->data);
+            }
+        }
+
+        header('Cache-Control: no-cache');
+        header('Content-type: application/json; charset=utf-8');
+        print json_encode($response);
+        exit;
+    }
+
     public function action_libraryUpload()
     {
         if (!isset($_FILES['h5p_file'])) {

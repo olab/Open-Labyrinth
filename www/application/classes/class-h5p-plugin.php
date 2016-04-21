@@ -632,22 +632,22 @@ class H5P_Plugin
      */
     public function shortcode($atts)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
         if (isset($atts['slug'])) {
             $q = $wpdb->prepare(
                 "SELECT  id " .
-                "FROM    {$wpdb->prefix}h5p_contents " .
+                "FROM    h5p_contents " .
                 "WHERE   slug=%s",
                 $atts['slug']
             );
             $row = $wpdb->get_row($q, ARRAY_A);
 
             if ($wpdb->last_error) {
-                return sprintf(__('Database error: %s.', $this->plugin_slug), $wpdb->last_error);
+                return sprintf(__('Database error: %s.'), $wpdb->last_error);
             }
 
             if (!isset($row['id'])) {
-                return sprintf(__('Cannot find H5P content with slug: %s.', $this->plugin_slug), $atts['slug']);
+                return sprintf(__('Cannot find H5P content with slug: %s.'), $atts['slug']);
             }
 
             $atts['id'] = $row['id'];
@@ -661,11 +661,11 @@ class H5P_Plugin
         }
 
         // Log view
-        new H5P_Event('content', 'shortcode',
-            $content['id'],
-            $content['title'],
-            $content['library']['name'],
-            $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
+        //new H5P_Event('content', 'shortcode',
+        //    $content['id'],
+        //    $content['title'],
+        //    $content['library']['name'],
+        //    $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
 
         return $this->add_assets($content);
     }
@@ -895,20 +895,16 @@ class H5P_Plugin
     {
         $current_user = Auth::instance()->get_user();
 
-        if (empty($current_user)) {
-            $user_id = 0;
-        } else {
-            $user_id = $current_user->id;
-        }
+        $is_logged_in = !empty($current_user);
 
         $settings = array(
-            'baseUrl' => URL::base(true),
+            'baseUrl' => rtrim(URL::base(true), '/'),
             'url' => $this->get_h5p_url(),
-            'postUserStatistics' => (get_option('h5p_track_user', '1') === '1') && $user_id,
+            'postUserStatistics' => ($is_logged_in && (get_option('h5p_track_user', '1') === '1')),
             'ajaxPath' => admin_url('/h5p/ajax_'),
             'ajax' => array(
                 'setFinished' => '/h5p/saveResult',
-                'contentUserData' => admin_url('admin-ajax.php?action=h5p_contents_user_data&content_id=:contentId&data_type=:dataType&sub_content_id=:subContentId')
+                'contentUserData' => '/h5p/contentUserData?content_id=:contentId&data_type=:dataType&sub_content_id=:subContentId'
             ),
             'tokens' => array(
                 'result' => '',
@@ -916,7 +912,7 @@ class H5P_Plugin
             ),
             'saveFreq' => get_option('h5p_save_content_state', false) ? get_option('h5p_save_content_frequency',
                 30) : false,
-            'siteUrl' => URL::base(true),
+            'siteUrl' => rtrim(URL::base(true), '/'),
             'l10n' => array(
                 'H5P' => array(
                     'fullscreen' => __('Fullscreen'),
@@ -947,11 +943,13 @@ class H5P_Plugin
             )
         );
 
-        if ($user_id > 0) {
+        if ($is_logged_in) {
             $settings['user'] = array(
                 'name' => $current_user->nickname,
                 'mail' => $current_user->email
             );
+        } else {
+            unset($settings['siteUrl']);
         }
 
         return $settings;
