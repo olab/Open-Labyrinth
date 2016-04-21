@@ -59,6 +59,41 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    /**
+     * Handle ajax request to restrict access to the given library.
+     *
+     */
+    public function action_restrictAccess()
+    {
+        $wpdb = getWPDB();
+
+        $library_id = filter_input(INPUT_GET, 'id');
+        $restricted = filter_input(INPUT_GET, 'restrict');
+        $restrict = ($restricted === '1');
+
+        if ((!$restrict && $restricted !== '0')) {
+            return;
+        }
+
+        $wpdb->update(
+            'h5p_libraries',
+            array('restricted' => $restricted),
+            array('id' => $library_id),
+            array('%d'),
+            array('%d')
+        );
+
+        header('Content-type: application/json');
+        print json_encode(array(
+            'url' => '/h5p/restrictAccess?' .
+                'id=' . $library_id .
+                '&token=' . '' .
+                '&token_id=' . '' .
+                '&restrict=' . ($restrict ? 0 : 1),
+        ));
+        exit;
+    }
+
     public function action_saveXAPIStatement()
     {
         $data = $this->request->post();
@@ -669,14 +704,14 @@ class Controller_H5P extends Controller_Base
                 $usage = $interface->getLibraryUsage($library->id, $not_cached ? true : false);
                 if ($library->runnable) {
                     $upgrades = $core->getUpgrades($library, $versions);
-                    $upgradeUrl = empty($upgrades) ? false : admin_url('h5p/libraries/upgrade/' . $library->id . '?destination=' . admin_url('h5p/libraries'));
+                    $upgradeUrl = empty($upgrades) ? false : '/h5p/libraryUpgrade/' . $library->id . '?destination=/h5p/libraries';
 
                     $restricted = ($library->restricted ? true : false);
-                    $restricted_url = admin_url('admin-ajax.php?action=h5p_restrict_library' .
-                        '&id=' . $library->id .
+                    $restricted_url = '/h5p/restrictAccess?' .
+                        'id=' . $library->id .
                         //'&token=' . wp_create_nonce('h5p_library_' . $i) .
                         //'&token_id=' . $i .
-                        '&restrict=' . ($library->restricted === '1' ? 0 : 1));
+                        '&restrict=' . ($library->restricted === '1' ? 0 : 1);
                 } else {
                     $upgradeUrl = null;
                     $restricted = null;

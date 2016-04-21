@@ -498,42 +498,4 @@ class H5PLibraryAdmin
         exit;
     }
 
-    /**
-     * Handle ajax request to restrict access to the given library.
-     *
-     * @since 1.2.0
-     */
-    public function ajax_restrict_access()
-    {
-        global $wpdb;
-
-        $library_id = filter_input(INPUT_GET, 'id');
-        $restricted = filter_input(INPUT_GET, 'restrict');
-        $restrict = ($restricted === '1');
-
-        $token_id = filter_input(INPUT_GET, 'token_id');
-        if (!wp_verify_nonce(filter_input(INPUT_GET, 'token'),
-                'h5p_library_' . $token_id) || (!$restrict && $restricted !== '0')
-        ) {
-            return;
-        }
-
-        $wpdb->update(
-            $wpdb->prefix . 'h5p_libraries',
-            array('restricted' => $restricted),
-            array('id' => $library_id),
-            array('%d'),
-            array('%d')
-        );
-
-        header('Content-type: application/json');
-        print json_encode(array(
-            'url' => admin_url('admin-ajax.php?action=h5p_restrict_library' .
-                '&id=' . $library_id .
-                '&token=' . wp_create_nonce('h5p_library_' . $token_id) .
-                '&token_id=' . $token_id .
-                '&restrict=' . ($restrict ? 0 : 1)),
-        ));
-        exit;
-    }
 }
