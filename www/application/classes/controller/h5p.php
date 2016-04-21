@@ -793,7 +793,7 @@ class Controller_H5P extends Controller_Base
 
         $id = $this->request->param('id');
         $content_admin = new H5PContentAdmin('H5P');
-        if ($id) {
+        if (!empty($id)) {
             $content_admin->load_content($id);
             if (is_string($content_admin->content)) {
                 //H5P_Plugin_Admin::set_error($content_admin->content);
@@ -861,7 +861,12 @@ class Controller_H5P extends Controller_Base
             }
         }
 
-        Request::initial()->redirect(URL::base() . 'h5p/addContent');
+        $redirect_url = URL::base() . 'h5p/addContent';
+        if (!empty($id)) {
+            $redirect_url .= '/' . $id;
+        }
+
+        Request::initial()->redirect($redirect_url);
     }
 
     public function action_contentDelete()
