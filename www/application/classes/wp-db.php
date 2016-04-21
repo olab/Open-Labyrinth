@@ -1372,8 +1372,7 @@ class wpdb
             }
         }
 
-        echo $str;
-        die;
+        throw new Exception($str);
     }
 
     /**
