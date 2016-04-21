@@ -145,8 +145,8 @@ class Policy_Access extends Policy {
 
     public function execute (Model_Leap_User $user, array $array = NULL)
     {
-        $controller = Arr::get($array, 'controller');
-        $action     = Arr::get($array, 'action');
+        $controller = strtolower(Arr::get($array, 'controller'));
+        $action     = strtolower(Arr::get($array, 'action'));
         $id         = Arr::get($array, 'id');
         $id2        = Arr::get($array, 'id2');
         $userType   = Auth::instance()->get_user()->type->name;
