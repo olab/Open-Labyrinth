@@ -463,7 +463,6 @@ class Controller_H5P extends Controller_Base
         static::loadH5PEditorClasses();
         $plugin = H5P_Plugin::get_instance();
 
-        // Check if we have any content or errors loading content
         $id = $this->request->param('id');
         $content_admin = new H5PContentAdmin('H5P');
         if ($id) {
@@ -486,13 +485,6 @@ class Controller_H5P extends Controller_Base
         //        H5P_Plugin_Admin::set_error(__('You are not allowed to edit this content.'));
 
         //        return;
-        //    }
-
-        //    // Check if we're deleting content
-        //    $delete = filter_input(INPUT_GET, 'delete');
-        //    if ($delete) {
-        //        $this->deleteContent($plugin, $content_admin);
-        //        //TODO: redirect
         //    }
         //}
 
@@ -531,11 +523,32 @@ class Controller_H5P extends Controller_Base
         Request::initial()->redirect(URL::base() . 'h5p/addContent');
     }
 
-    private function deleteContent(H5P_Plugin $plugin, H5PContentAdmin $content_admin)
+    public function action_contentDelete()
     {
+        static::loadH5PEditorClasses();
+
+        $id = $this->request->param('id');
+
+        if (empty($id)) {
+            Session::instance()->set('error_message', 'id cannot be blank.');
+            Request::initial()->redirect(URL::base() . 'h5p/addContent');
+        }
+
+        $plugin = H5P_Plugin::get_instance();
+        $content_admin = new H5PContentAdmin('H5P');
+
+        $content_admin->load_content($id);
+        if (is_string($content_admin->content)) {
+            Session::instance()->set('error_message', $content_admin->content);
+            Request::initial()->redirect(URL::base() . 'h5p/addContent');
+        }
+
         $content_admin->set_content_tags($content_admin->content['id']);
         $storage = $plugin->get_h5p_instance('storage');
         $storage->deletePackage($content_admin->content);
+
+        Session::instance()->set('success_message', 'Deleted.');
+        Request::initial()->redirect(URL::base() . 'h5p/');
     }
 
     /**
