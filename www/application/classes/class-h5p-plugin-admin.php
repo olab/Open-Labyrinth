@@ -603,7 +603,7 @@ class H5P_Plugin_Admin
             $query_args[] = $user_id;
         }
         if (isset($where) && isset($filters[0])) {
-            $where .= ' AND ' . ($content_id === null ? 'hc.title' : 'u.user_login') . " LIKE '%%%s%%'";
+            $where .= ' AND ' . ($content_id === null ? 'hc.title' : 'u.nickname') . " LIKE '%%%s%%'";
             $query_args[] = $filters[0];
         }
 
@@ -670,7 +670,7 @@ class H5P_Plugin_Admin
         // Order results by the select column and direction
         $order_by = $this->get_order_by($sort_by, $sort_dir, array(
             (object)array(
-                'name' => ($content_id === null ? 'hc.title' : 'u.user_login'),
+                'name' => ($content_id === null ? 'hc.title' : 'u.nickname'),
                 'reverse' => true
             ),
             'hr.score',
