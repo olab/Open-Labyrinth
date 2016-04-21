@@ -67,15 +67,7 @@ class Controller_H5P extends Controller_Base
         }
 
         if ($_FILES['h5p_file']['error'] !== 0) {
-            $phpFileUploadErrors = array(
-                1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
-                2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
-                3 => 'The uploaded file was only partially uploaded',
-                4 => 'No file was uploaded',
-                6 => 'Missing a temporary folder',
-                7 => 'Failed to write file to disk.',
-                8 => 'A PHP extension stopped the file upload.',
-            );
+            $phpFileUploadErrors = getUploadErrorsList();
 
             $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
             Session::instance()->set('error_message', __($errorMessage));
@@ -711,11 +703,24 @@ class Controller_H5P extends Controller_Base
         if ($action) {
             $core = $plugin->get_h5p_instance('core'); // Make sure core is loaded
 
-            $result = false;
             if ($action === 'create') {
                 // Handle creation of new content.
                 $result = $content_admin->handle_content_creation($content_admin->content);
-            } elseif (isset($_FILES['h5p_file']) && $_FILES['h5p_file']['error'] === 0) {
+            } else {
+
+                if (!isset($_FILES['h5p_file'])) {
+                    Session::instance()->set('error_message', __('File not selected.'));
+                    Request::initial()->redirect(URL::base() . 'h5p/addContent');
+                }
+
+                if ($_FILES['h5p_file']['error'] !== 0) {
+                    $phpFileUploadErrors = getUploadErrorsList();
+
+                    $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
+                    Session::instance()->set('error_message', __($errorMessage));
+                    Request::initial()->redirect(URL::base() . 'h5p/addContent');
+                }
+
                 // Create new content if none exists
                 $content = ($content_admin->content === null ? array('disable' => H5PCore::DISABLE_NONE) : $content_admin->content);
                 $content['title'] = $content_admin->get_input_title();

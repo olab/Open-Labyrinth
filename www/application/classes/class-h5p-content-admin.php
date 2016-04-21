@@ -450,7 +450,7 @@ class H5PContentAdmin
         // Trim title and check length
         $trimmed_title = trim($title);
         if ($trimmed_title === '') {
-            H5P_Plugin_Admin::set_error(sprintf(__('Missing %s.'), 'title'));
+            H5P_Plugin_Admin::set_error(sprintf(__('Missing title.')));
 
             return null;
         }

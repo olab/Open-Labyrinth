@@ -307,3 +307,16 @@ function reset_mbstring_encoding()
 {
     mbstring_binary_safe_encoding(true);
 }
+
+function getUploadErrorsList()
+{
+    return array(
+        1 => __('The uploaded file exceeds the upload_max_filesize directive in php.ini'),
+        2 => __('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form'),
+        3 => __('The uploaded file was only partially uploaded'),
+        4 => __('No file was uploaded'),
+        6 => __('Missing a temporary folder'),
+        7 => __('Failed to write file to disk.'),
+        8 => __('A PHP extension stopped the file upload.'),
+    );
+}
