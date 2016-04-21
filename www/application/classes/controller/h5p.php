@@ -59,6 +59,83 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_libraryShow()
+    {
+        $wpdb = getWPDB();
+
+        $library_admin = new H5PLibraryAdmin('H5P');
+
+        $library = $library_admin->get_library($this->request->param('id'));
+        if (!$library) {
+            die(H5P_Plugin_Admin::getMessagesHTML());
+        }
+
+        // Add settings and translations
+        $plugin = H5P_Plugin::get_instance();
+        $interface = $plugin->get_h5p_instance('interface');
+
+        $settings = array(
+            'containerSelector' => '#h5p-admin-container',
+        );
+
+        // Build the translations needed
+        $settings['libraryInfo']['translations'] = array(
+            'noContent' => __('No content is using this library'),
+            'contentHeader' => __('Content using this library'),
+            'pageSizeSelectorLabel' => __('Elements per page'),
+            'filterPlaceholder' => __('Filter content'),
+            'pageXOfY' => __('Page $x of $y'),
+        );
+
+        $notCached = $interface->getNumNotFiltered();
+        if ($notCached) {
+            $settings['libraryInfo']['notCached'] = $this->get_not_cached_settings($notCached);
+        } else {
+            // List content which uses this library
+            $contents = $wpdb->get_results($wpdb->prepare(
+                "SELECT DISTINCT hc.id, hc.title
+            FROM {$wpdb->prefix}h5p_contents_libraries hcl
+            JOIN {$wpdb->prefix}h5p_contents hc ON hcl.content_id = hc.id
+            WHERE hcl.library_id = %d
+            ORDER BY hc.title",
+                $library->id
+            )
+            );
+            foreach ($contents as $content) {
+                $settings['libraryInfo']['content'][] = array(
+                    'title' => $content->title,
+                    'url' => '/h5p/contentShow/' . $content->id,
+                );
+            }
+        }
+
+        // Build library info
+        $settings['libraryInfo']['info'] = array(
+            __('Version') => H5PCore::libraryVersion($library),
+            __('Fullscreen') => $library->fullscreen ? __('Yes') : __('No'),
+            __('Content library') => $library->runnable ? __('Yes') : __('No'),
+            __('Used by') => (isset($contents) ? sprintf(__('%d contents'), count($contents)) : __('N/A')),
+        );
+
+        $this->add_admin_assets();
+        H5P_Plugin_Admin::add_script('library-list', '/scripts/h5p/h5p-library-details.js');
+
+        $messages = H5P_Plugin_Admin::getMessagesHTML();
+        $settings = $plugin->getSettingsHTML($settings, 'H5PAdminIntegration');
+
+        $this->loadAssets();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Librarires'))->set_url(URL::base(true) . 'h5p/libraries'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Library') . ' ' . $library->title));
+
+        $this->templateData['center'] = View::factory('h5p/libraryShow')
+            ->set('templateData', $this->templateData)
+            ->set('library', $library)
+            ->set('settings', $settings)
+            ->set('messages', $messages);
+        $this->template->set('templateData', $this->templateData);
+    }
+
     /**
      * Handle ajax request to restrict access to the given library.
      *
@@ -735,8 +812,8 @@ class Controller_H5P extends Controller_Base
                     'numContentDependencies' => $usage['content'] < 1 ? '' : $usage['content'],
                     'numLibraryDependencies' => $usage['libraries'] === 0 ? '' : $usage['libraries'],
                     'upgradeUrl' => $upgradeUrl,
-                    'detailsUrl' => admin_url('h5p/libraries/view/' . $library->id),
-                    'deleteUrl' => admin_url('h5p/libraries/delete/' . $library->id)
+                    'detailsUrl' => admin_url('h5p/libraryShow/' . $library->id),
+                    'deleteUrl' => admin_url('h5p/libraryDelete/' . $library->id)
                 );
 
                 $i++;
@@ -787,6 +864,8 @@ class Controller_H5P extends Controller_Base
         $current_update = get_option('h5p_current_update', 0);
         $updates_available = ($update_available !== 0 && $current_update !== 0 && $current_update < $update_available ? 1 : 0);
         $H5PAdminIntegration = $plugin->getSettingsHTML($settings, 'H5PAdminIntegration');
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Librarires')));
 
         $this->templateData['center'] = View::factory('h5p/librariesList')
             ->set('templateData', $this->templateData)

@@ -83,7 +83,7 @@ class H5PLibraryAdmin
      * @since 1.1.0
      * @param int $id optional
      */
-    private function get_library($id = null)
+    public function get_library($id = null)
     {
         global $wpdb;
 
@@ -104,7 +104,7 @@ class H5PLibraryAdmin
         )
         );
         if (!$this->library) {
-            H5P_Plugin_Admin::set_error(sprintf(__('Cannot find library with id: %d.', $this->plugin_slug), $id));
+            H5P_Plugin_Admin::set_error(sprintf(__('Cannot find library with id: %d.'), $id));
         }
 
         return $this->library;
