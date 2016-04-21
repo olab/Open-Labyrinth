@@ -637,14 +637,14 @@ class H5PWordPress implements H5PFrameworkInterface
      */
     public function loadLibrarySemantics($name, $majorVersion, $minorVersion)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         if ($this->isInDevMode()) {
             $semantics = $this->getSemanticsFromFile($name, $majorVersion, $minorVersion);
         } else {
             $semantics = $wpdb->get_var($wpdb->prepare(
                 "SELECT semantics
-          FROM {$wpdb->prefix}h5p_libraries
+          FROM h5p_libraries
           WHERE name = %s
           AND major_version = %d
           AND minor_version = %d",

@@ -36,6 +36,13 @@ define('ARRAY_A', 'ARRAY_A');
 define('ARRAY_N', 'ARRAY_N');
 
 /**
+ * important for correct json decode H5P semantics
+ */
+if (!defined('DB_CHARSET')) {
+    define('DB_CHARSET', 'utf8mb4');
+}
+
+/**
  * WordPress Database Access Abstraction Object
  *
  * It is possible to replace this class with your own
