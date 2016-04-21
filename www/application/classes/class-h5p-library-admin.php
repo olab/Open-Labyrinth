@@ -28,7 +28,7 @@ class H5PLibraryAdmin
      *
      * @since 1.1.0
      */
-    private $library = null;
+    public $library = null;
 
     /**
      * Initialize library admin
@@ -85,7 +85,7 @@ class H5PLibraryAdmin
      */
     public function get_library($id = null)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         if ($this->library !== null) {
             return $this->library; // Return the current loaded library.
@@ -170,118 +170,9 @@ class H5PLibraryAdmin
                 }
             }
         }
-
-        if ($task === 'delete') {
-            $library = $this->get_library();
-            if (!$library) {
-                return;
-            }
-
-            $plugin = H5P_Plugin::get_instance();
-            $interface = $plugin->get_h5p_instance('interface');
-
-            // Check if this library can be deleted
-            $usage = $interface->getLibraryUsage($library->id, $interface->getNumNotFiltered() ? true : false);
-            if ($usage['content'] !== 0 || $usage['libraries'] !== 0) {
-                H5P_Plugin_Admin::set_error(__('This Library is used by content or other libraries and can therefore not be deleted.',
-                    $this->plugin_slug));
-
-                return; // Nope
-            }
-
-            if ($post) {
-                check_admin_referer('h5p_library', 'lets_delete_this'); // Verify delete form
-                $interface->deleteLibrary($this->library);
-                wp_safe_redirect(admin_url('admin.php?page=h5p_libraries'));
-            }
-        }
+        
     }
-
-    /**
-     * Display a list of all h5p content libraries.
-     *
-     * @since 1.1.0
-     */
-    private function display_content_upgrades($library)
-    {
-        global $wpdb;
-
-        $plugin = H5P_Plugin::get_instance();
-        $core = $plugin->get_h5p_instance('core');
-        $interface = $plugin->get_h5p_instance('interface');
-
-        $versions = $wpdb->get_results($wpdb->prepare(
-            "SELECT hl2.id, hl2.name, hl2.title, hl2.major_version, hl2.minor_version, hl2.patch_version
-          FROM {$wpdb->prefix}h5p_libraries hl1
-          JOIN {$wpdb->prefix}h5p_libraries hl2
-            ON hl2.name = hl1.name
-          WHERE hl1.id = %d
-          ORDER BY hl2.title ASC, hl2.major_version ASC, hl2.minor_version ASC",
-            $library->id
-        ));
-
-        foreach ($versions as $version) {
-            if ($version->id === $library->id) {
-                $upgrades = $core->getUpgrades($version, $versions);
-                break;
-            }
-        }
-
-        if (count($versions) < 2) {
-            H5P_Plugin_Admin::set_error(__('There are no available upgrades for this library.', $this->plugin_slug));
-
-            return null;
-        }
-
-        // Get num of contents that can be upgraded
-        $contents = $interface->getNumContent($library->id);
-        if (!$contents) {
-            H5P_Plugin_Admin::set_error(__("There's no content instances to upgrade.", $this->plugin_slug));
-
-            return null;
-        }
-
-        $contents_plural = sprintf(_n('1 content', '%d contents', $contents, $this->plugin_slug), $contents);
-
-        // Add JavaScript settings
-        $return = filter_input(INPUT_GET, 'destination');
-        $settings = array(
-            'containerSelector' => '#h5p-admin-container',
-            'libraryInfo' => array(
-                'message' => sprintf(__('You are about to upgrade %s. Please select upgrade version.',
-                    $this->plugin_slug), $contents_plural),
-                'inProgress' => __('Upgrading to %ver...', $this->plugin_slug),
-                'error' => __('An error occurred while processing parameters:', $this->plugin_slug),
-                'errorData' => __('Could not load data for library %lib.', $this->plugin_slug),
-                'errorContent' => __('Could not upgrade content %id:', $this->plugin_slug),
-                'errorScript' => __('Could not load upgrades script for %lib.', $this->plugin_slug),
-                'errorParamsBroken' => __('Parameters are broken.', $this->plugin_slug),
-                'done' => sprintf(__('You have successfully upgraded %s.', $this->plugin_slug),
-                        $contents_plural) . ($return ? '<br/><a href="' . $return . '">' . __('Return',
-                            $this->plugin_slug) . '</a>' : ''),
-                'library' => array(
-                    'name' => $library->name,
-                    'version' => $library->major_version . '.' . $library->minor_version,
-                ),
-                'libraryBaseUrl' => admin_url('admin-ajax.php?action=h5p_content_upgrade_library&library='),
-                'scriptBaseUrl' => plugins_url('h5p/h5p-php-library/js'),
-                'buster' => '?ver=' . H5P_Plugin::VERSION,
-                'versions' => $upgrades,
-                'contents' => $contents,
-                'buttonLabel' => __('Upgrade', $this->plugin_slug),
-                'infoUrl' => admin_url('admin-ajax.php?action=h5p_content_upgrade_progress&id=' . $library->id),
-                'total' => $contents,
-                'token' => wp_create_nonce('h5p_content_upgrade')
-            )
-        );
-
-        $this->add_admin_assets();
-        H5P_Plugin_Admin::add_script('version', 'h5p-php-library/js/h5p-version.js');
-        H5P_Plugin_Admin::add_script('content-upgrade', 'h5p-php-library/js/h5p-content-upgrade.js');
-
-        return $settings;
-    }
-
+    
     /**
      * Helps rebuild all content caches.
      *
@@ -320,20 +211,6 @@ class H5PLibraryAdmin
 
         print (count($contents) - $done);
         exit;
-    }
-
-    /**
-     * Add generic admin interface assets.
-     *
-     * @since 1.1.0
-     */
-    private function add_admin_assets()
-    {
-        foreach (H5PCore::$adminScripts as $script) {
-            H5P_Plugin_Admin::add_script('admin-' . $script, 'h5p-php-library/' . $script);
-        }
-        H5P_Plugin_Admin::add_style('h5p', 'h5p-php-library/styles/h5p.css');
-        H5P_Plugin_Admin::add_style('admin', 'h5p-php-library/styles/h5p-admin.css');
     }
 
     /**

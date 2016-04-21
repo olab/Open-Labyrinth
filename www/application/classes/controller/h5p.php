@@ -59,6 +59,75 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_libraryDeleteSubmit()
+    {
+        if ($this->request->method() !== 'POST') {
+            Session::instance()->set('error_message', __('Wrong request method.'));
+            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        }
+
+        $library_admin = new H5PLibraryAdmin('H5P');
+
+        $id = $this->request->param('id');
+
+        if (empty($id)) {
+            die('id cannot be blank');
+        }
+
+        $library = $library_admin->get_library($id);
+
+        if (!$library) {
+            Session::instance()->set('error_message', __('Library not found.'));
+            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        }
+
+        $plugin = H5P_Plugin::get_instance();
+        $interface = $plugin->get_h5p_instance('interface');
+
+        // Check if this library can be deleted
+        $usage = $interface->getLibraryUsage($library->id, $interface->getNumNotFiltered() ? true : false);
+        if ($usage['content'] !== 0 || $usage['libraries'] !== 0) {
+            Session::instance()->set('error_message',
+                __('This Library is used by content or other libraries and can therefore not be deleted.'));
+            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        }
+
+        $interface->deleteLibrary($library_admin->library);
+        Session::instance()->set('success_message', __('Deleted.'));
+        Request::initial()->redirect(URL::base() . 'h5p/libraries');
+    }
+
+    public function action_libraryDelete()
+    {
+        $library_admin = new H5PLibraryAdmin('H5P');
+
+        $id = $this->request->param('id');
+
+        if (empty($id)) {
+            die('id cannot be blank');
+        }
+
+        $library = $library_admin->get_library($id);
+
+        $messages = H5P_Plugin_Admin::getMessagesHTML();
+
+        if (empty($library)) {
+            die($messages);
+        }
+
+        $this->loadAssets();
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Librarires'))->set_url(URL::base(true) . 'h5p/libraries'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Library') . ' ' . $library->title)->set_url(URL::base(true) . 'h5p/libraryShow/' . $id));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Delete')));
+
+        $this->templateData['center'] = View::factory('h5p/libraryDelete')
+            ->set('templateData', $this->templateData)
+            ->set('library', $library)
+            ->set('messages', $messages);
+        $this->template->set('templateData', $this->templateData);
+    }
+
     public function action_libraryShow()
     {
         $wpdb = getWPDB();
