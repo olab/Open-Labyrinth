@@ -11,7 +11,7 @@
       dataView.headers,
       dataView.l10n,
       {
-        table: 'wp-list-table widefat fixed'
+        table: 'table table-striped table-bordered widefat fixed'
       },
       dataView.filters,
       loaded,

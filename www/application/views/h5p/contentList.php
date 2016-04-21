@@ -3,8 +3,10 @@
 ?>
 
 <div class="wrap">
-    <h2><?php echo __('All H5P Content'); ?>
-        <a href="/h5p/addContent" class="add-new-h2">
+    <h2>
+        <?php echo __('All H5P Content'); ?>
+        <a class="btn btn-primary pull-right" href="<?php echo URL::base() . 'h5p/addContent'; ?>">
+            <i class="icon-plus-sign icon-white"></i>
             <?php echo __('Add new'); ?>
         </a>
     </h2>
