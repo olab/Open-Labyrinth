@@ -37,6 +37,23 @@ class Policy_Access extends Policy {
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
+        
+        //H5P
+        array('controller' => 'H5P', 'action' => 'libraryUpload'),
+        array('controller' => 'H5P', 'action' => 'libraryDeleteSubmit'),
+        array('controller' => 'H5P', 'action' => 'libraryDelete'),
+        array('controller' => 'H5P', 'action' => 'libraryShow'),
+        array('controller' => 'H5P', 'action' => 'restrictAccess'),
+        array('controller' => 'H5P', 'action' => 'showContent'),
+        array('controller' => 'H5P', 'action' => 'results'),
+        array('controller' => 'H5P', 'action' => 'ajaxResult'),
+        array('controller' => 'H5P', 'action' => 'addContent'),
+        array('controller' => 'H5P', 'action' => 'addContentSubmit'),
+        array('controller' => 'H5P', 'action' => 'contentDelete'),
+        array('controller' => 'H5P', 'action' => 'contents'),
+        array('controller' => 'H5P', 'action' => 'ajax_libraries'),
+        array('controller' => 'H5P', 'action' => 'libraries'),
+
     );
 
     private $authorRules = array(
@@ -66,6 +83,22 @@ class Policy_Access extends Policy {
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
+
+        //H5P
+        array('controller' => 'H5P', 'action' => 'libraryUpload'),
+        array('controller' => 'H5P', 'action' => 'libraryDeleteSubmit'),
+        array('controller' => 'H5P', 'action' => 'libraryDelete'),
+        array('controller' => 'H5P', 'action' => 'libraryShow'),
+        array('controller' => 'H5P', 'action' => 'restrictAccess'),
+        array('controller' => 'H5P', 'action' => 'showContent'),
+        array('controller' => 'H5P', 'action' => 'results'),
+        array('controller' => 'H5P', 'action' => 'ajaxResult'),
+        array('controller' => 'H5P', 'action' => 'addContent'),
+        array('controller' => 'H5P', 'action' => 'addContentSubmit'),
+        array('controller' => 'H5P', 'action' => 'contentDelete'),
+        array('controller' => 'H5P', 'action' => 'contents'),
+        array('controller' => 'H5P', 'action' => 'ajax_libraries'),
+        array('controller' => 'H5P', 'action' => 'libraries'),
     );
 
     private $mapActions = array(
