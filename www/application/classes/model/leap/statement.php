@@ -24,6 +24,7 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * @property int $id
  * @property int|null $session_id
+ * @property int $initiator
  * @property string $statement
  * @property float $timestamp
  * @property int $created_at
@@ -34,7 +35,25 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Statement extends Model_Leap_Base
 {
+    const INITIATOR_DEFAULT = 1;
+    const INITIATOR_H5P = 2;
+    const INITIATOR_VIDEO_MASHUP = 3;
+
+    private static $initiators = [
+        self::INITIATOR_DEFAULT => 'Default',
+        self::INITIATOR_H5P => 'H5P',
+        self::INITIATOR_VIDEO_MASHUP => 'Video mashup',
+    ];
+
     public $response;
+
+    /**
+     * @return array
+     */
+    public static function getInitiators()
+    {
+        return static::$initiators;
+    }
 
     public function __construct()
     {
@@ -49,6 +68,12 @@ class Model_Leap_Statement extends Model_Leap_Base
             'session_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
                 'nullable' => true,
+                'unsigned' => true,
+                'savable' => true,
+            )),
+            'initiator' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => false,
                 'unsigned' => true,
                 'savable' => true,
             )),
@@ -164,8 +189,15 @@ class Model_Leap_Statement extends Model_Leap_Base
      * @param null|float $timestamp
      * @return Model_Leap_Statement|static
      */
-    public static function create($session, $verb, $object, $result, $context = null, $timestamp = null)
-    {
+    public static function create(
+        $session,
+        $verb,
+        $object,
+        $result = null,
+        $context = null,
+        $timestamp = null,
+        $initiator = null
+    ) {
         /** @var self|static $model */
         $model = new static;
         if (is_numeric($session)) {
@@ -173,6 +205,7 @@ class Model_Leap_Statement extends Model_Leap_Base
             $session = DB_ORM::model('User_Session', array($session));
         }
         $model->session_id = $session->id;
+        $model->initiator = ($initiator === null ? self::INITIATOR_DEFAULT : $initiator);
 
         //timestamp
         if ($timestamp === null) {
@@ -184,7 +217,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         $statement = array();
 
         $statement['timestamp'] = DateTime::createFromFormat('U.u', number_format($model->timestamp, 6, '.', ''))
-            ->format('Y-m-d\TH:i:s.u') . 'Z';
+                ->format('Y-m-d\TH:i:s.u') . 'Z';
         //end timestamp
 
         //actor
@@ -210,26 +243,39 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end object
 
         //result
-        $statement['result'] = $result;
+        if (!empty($result)) {
+            $statement['result'] = $result;
+        }
         //end result
 
         //context
-        $statement['context']['contextActivities']['category']['id'] = Model_Leap_User_Session::getAdminBaseUrl() . $session->id;
+        $statement['context']['contextActivities']['category'][]['id'] = Model_Leap_User_Session::getAdminBaseUrl() . $session->id;
 
         $map_url = Model_Leap_Map::getAdminBaseUrl() . $session->map_id;
-        $statement['context']['contextActivities']['parent']['id'] = $map_url;
+        $statement['context']['contextActivities']['parent'][]['id'] = $map_url;
 
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
-            $statement['context']['contextActivities']['grouping']['id'] = $webinar_url;
+            $statement['context']['contextActivities']['grouping'][]['id'] = $webinar_url;
         }
 
         $statement['context']['extensions'][static::getExtensionSessionKey()] = $session->toxAPIExtensionObject();
 
         if (is_array($context)) {
             foreach ($context as $key => $value) {
-                $statement['context'][$key] = array_merge($statement['context'][$key], $context[$key]);
+                if ($key !== 'contextActivities') {
+                    $statement['context'][$key] = array_merge($statement['context'][$key], $context[$key]);
+                } else {
+                    foreach ($value as $contextActivitiesKey => $contextActivities) {
+                        if (!is_array($contextActivities)) {
+                            $contextActivities = [$contextActivities];
+                        }
+                        foreach ($contextActivities as $contextActivity) {
+                            $statement['context'][$key][$contextActivitiesKey][] = $contextActivity;
+                        }
+                    }
+                }
             }
         }
         //end context
@@ -309,6 +355,11 @@ class Model_Leap_Statement extends Model_Leap_Base
     public function insert($reload = false)
     {
         $id = $this->id;
+
+        $timestamp = $this->timestamp;
+        if (empty($timestamp)) {
+            $this->timestamp = microtime(true);
+        }
 
         if ($id <= 0) {
             $this->created_at = time();

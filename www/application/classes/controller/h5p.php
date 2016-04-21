@@ -59,6 +59,46 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_saveXAPIStatement()
+    {
+        $data = $this->request->post();
+        $session_id = Session::instance()->get('session_id');
+
+        if (empty($session_id)) {
+            throw new Exception('session_id cannot be blank');
+        }
+
+        /** @var Model_Leap_User_Session $session */
+        $session = DB_ORM::model('User_session', array($session_id));
+
+        $data['object']['id'] = URL::base(true) . ltrim($data['object']['id'], '/');
+
+        //unset($data['actor']['mbox']);
+        //$data['actor']['account'] = [
+        //    'homePage' => URL::base(true),
+        //    'name' => (string)$session->user_id,
+        //];
+
+        $result = isset($data['result']) ? $data['result'] : null;
+        $context = isset($data['context']) ? $data['context'] : null;
+
+        $statement = Model_Leap_Statement::create($session, $data['verb'], $data['object'], $result, $context, null,
+            Model_Leap_Statement::INITIATOR_H5P);
+
+        $counter = (int)DB_SQL::select()
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->from(Model_Leap_Map::table())
+            ->where('id', '=', $session->map_id)
+            ->where('send_xapi_statements', '=', 1)
+            ->query()
+            ->fetch(0)['counter'];
+
+        if ($counter === 1) {
+            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+        }
+        die;
+    }
+
     /**
      * Handle user results reported by the H5P content.
      */
@@ -169,7 +209,6 @@ class Controller_H5P extends Controller_Base
 
                     // Get core settings
                     $integration = $plugin->get_core_settings();
-                    // TODO: The non-content specific settings could be apart of a combined h5p-core.js file.
 
                     // Get core scripts
                     $scripts = array();
@@ -197,7 +236,7 @@ class Controller_H5P extends Controller_Base
                     $scripts = array_merge($scripts, $core->getAssetsUrls($files['scripts']));
                     $styles = array_merge($styles, $core->getAssetsUrls($files['styles']));
 
-                    include_once(MODPATH . 'h5p-php-library/embed.php');
+                    include_once(DOCROOT . 'application/views/h5p/embed.php');
 
                     // Log embed view
                     //new H5P_Event('content', 'embed',
@@ -205,12 +244,12 @@ class Controller_H5P extends Controller_Base
                     //    $content['title'],
                     //    $content['library']['name'],
                     //    $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']);
-                    exit;
+                    die;
                 }
             }
         }
 
-        // Simple unavailble page
+        // Simple unavailable page
         echo '<body style="margin:0"><div style="background: #fafafa url(/images/h5p/h5p.svg) no-repeat center;background-size: 50% 50%;width: 100%;height: 100%;"></div><div style="width:100%;position:absolute;top:75%;text-align:center;color:#434343;font-family: Consolas,monaco,monospace">' . __('Content unavailable.') . '</div></body>';
         die;
     }
