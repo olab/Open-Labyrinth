@@ -931,10 +931,16 @@ class H5P_Plugin
     {
         $current_user = Auth::instance()->get_user();
 
+        if (empty($current_user)) {
+            $user_id = 0;
+        } else {
+            $user_id = $current_user->id;
+        }
+
         $settings = array(
             'baseUrl' => URL::base(true),
             'url' => $this->get_h5p_url(),
-            'postUserStatistics' => (get_option('h5p_track_user', true) === '1') && $current_user->id,
+            'postUserStatistics' => (get_option('h5p_track_user', '1') === '1') && $user_id,
             'ajaxPath' => admin_url('/h5p/ajax_'),
             'ajax' => array(
                 'setFinished' => '/h5p/saveResult',
@@ -977,7 +983,7 @@ class H5P_Plugin
             )
         );
 
-        if ($current_user->id) {
+        if ($user_id > 0) {
             $settings['user'] = array(
                 'name' => $current_user->nickname,
                 'mail' => $current_user->email
