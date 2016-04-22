@@ -531,9 +531,10 @@ class H5PWordPress implements H5PFrameworkInterface
      */
     public function deleteLibraryUsage($contentId)
     {
-        global $wpdb;
-
-        $wpdb->delete($wpdb->prefix . 'h5p_contents_libraries', array('content_id' => $contentId), array('%d'));
+        DB_SQL::delete()
+            ->from('h5p_contents_libraries')
+            ->where('content_id', '=', $contentId)
+            ->execute();
     }
 
     /**
