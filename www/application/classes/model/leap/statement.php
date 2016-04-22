@@ -196,7 +196,8 @@ class Model_Leap_Statement extends Model_Leap_Base
         $result = null,
         $context = null,
         $timestamp = null,
-        $initiator = null
+        $initiator = null,
+        $bind_LRS = true
     ) {
         /** @var self|static $model */
         $model = new static;
@@ -283,24 +284,36 @@ class Model_Leap_Statement extends Model_Leap_Base
         $model->statement = json_encode($statement);
 
         $model->insert();
-        $model->bindLRS();
+
+        if ($bind_LRS) {
+            $model->bindLRS();
+        }
 
         return $model;
     }
 
+    /**
+     * @return Model_Leap_LRSStatement[]
+     */
     public function bindLRS()
     {
         $lrs_list = DB_ORM::select('LRS')
             ->where('is_enabled', '=', 1)
             ->query();
 
+        $result = [];
         foreach ($lrs_list as $lrs) {
             $lrs_statement = new Model_Leap_LRSStatement();
             $lrs_statement->lrs_id = $lrs->id;
             $lrs_statement->statement_id = $this->id;
+            $lrs_statement->status = Model_Leap_LRSStatement::STATUS_NEW;
 
-            $lrs_statement->save();
+            $lrs_statement->insert();
+
+            $result[] = $lrs_statement;
         }
+
+        return $result;
     }
 
     public static function xApiInit()

@@ -411,7 +411,7 @@ class Controller_H5P extends Controller_Base
         $context = isset($data['context']) ? $data['context'] : null;
 
         $statement = Model_Leap_Statement::create($session, $data['verb'], $data['object'], $result, $context, null,
-            Model_Leap_Statement::INITIATOR_H5P);
+            Model_Leap_Statement::INITIATOR_H5P, false);
 
         $counter = (int)DB_SQL::select()
             ->column(DB_SQL::expr("COUNT(*)"), 'counter')
@@ -422,6 +422,7 @@ class Controller_H5P extends Controller_Base
             ->fetch(0)['counter'];
 
         if ($counter === 1) {
+            $statement->bindLRS();
             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
         }
         die;

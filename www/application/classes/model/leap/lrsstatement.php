@@ -31,7 +31,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_LRS $lrs
  * @property Model_Leap_Statement $statement
  */
-class Model_Leap_LRSStatement extends DB_ORM_Model
+class Model_Leap_LRSStatement extends Model_Leap_Base
 {
     const STATUS_NEW = 0;
     const STATUS_SUCCESS = 1;
@@ -176,6 +176,18 @@ class Model_Leap_LRSStatement extends DB_ORM_Model
         $this->updated_at = time();
 
         parent::save($reload);
+    }
+
+    public function insert($reload = false)
+    {
+        $id = $this->id;
+        if ($id <= 0) {
+            $this->created_at = time();
+        }
+
+        $this->updated_at = time();
+
+        parent::insert($reload);
     }
 
 }

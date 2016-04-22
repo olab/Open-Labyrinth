@@ -249,12 +249,37 @@ class Model_Leap_User_Session extends Model_Leap_Base
 
     public function sendXAPIStatements()
     {
+        $this->sendInternalXAPIStatements();
+        $this->sendThirdPartyXAPIStatements();
+    }
+
+    public function sendInternalXAPIStatements()
+    {
         /** @var Model_Leap_LRSStatement[] $lrs_statements */
         $lrs_statements = DB_ORM::select('LRSStatement')
             ->join('INNER', 'statements')->on('lrs_statement.statement_id', '=', 'statements.id')
             ->where('statements.session_id', '=', $this->id)
             ->where('lrs_statement.status', '=', Model_Leap_LRSStatement::STATUS_NEW)
             ->query();
+
+        foreach ($lrs_statements as $lrs_statement) {
+            $lrs_statement->sendAndSave();
+        }
+    }
+
+    public function sendThirdPartyXAPIStatements()
+    {
+        /** @var Model_Leap_Statement[] $statements */
+        $statements = DB_ORM::select('Statement')
+            ->where('statements.session_id', '=', $this->id)
+            ->where('statements.initiator', '<>', Model_Leap_Statement::INITIATOR_DEFAULT)
+            ->query();
+
+        $lrs_statements = [];
+        foreach ($statements as $statement) {
+            $new_lrs_statements = $statement->bindLRS();
+            $lrs_statements = array_merge($lrs_statements, $new_lrs_statements);
+        }
 
         foreach ($lrs_statements as $lrs_statement) {
             $lrs_statement->sendAndSave();
