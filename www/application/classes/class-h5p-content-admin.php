@@ -122,27 +122,6 @@ class H5PContentAdmin
     }
 
     /**
-     * Permission check. Can the current user edit the given content?
-     *
-     * @since 1.1.0
-     * @param array $content
-     * @return boolean
-     */
-    private function current_user_can_edit($content)
-    {
-        if (current_user_can('edit_others_h5p_contents')) {
-            return true;
-        }
-
-        $user_id = get_current_user_id();
-        if (is_array($content)) {
-            return ($user_id === (int)$content['user_id']);
-        }
-
-        return ($user_id === (int)$content->user_id);
-    }
-
-    /**
      * Save tags for given content.
      * Removes unused tags.
      *
@@ -638,27 +617,5 @@ class H5PContentAdmin
 
         print $file->getResult();
         exit;
-    }
-
-    /**
-     * Provide data for content results view.
-     *
-     * @since 1.2.0
-     */
-    public function ajax_content_results()
-    {
-        $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-        if (!$id) {
-            return; // Missing id
-        }
-
-        $plugin = H5P_Plugin::get_instance();
-        $content = $plugin->get_content($id);
-        if (is_string($content) || !$this->current_user_can_edit($content)) {
-            return; // Error loading content or no access
-        }
-
-        $plugin_admin = H5P_Plugin_Admin::get_instance();
-        $plugin_admin->print_results($id);
     }
 }

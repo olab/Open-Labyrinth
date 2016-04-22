@@ -157,7 +157,7 @@ class H5P_Plugin_Admin
      */
     public function admin_notices()
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         // Gather all messages before printing
         $messages = array();
@@ -324,114 +324,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Register the administration menu for this plugin into the WordPress Dashboard menu.
-     *
-     * @since 1.0.0
-     */
-    public function add_plugin_admin_menu()
-    {
-        // H5P Content pages
-        $h5p_content = __('H5P Content', $this->plugin_slug);
-        add_menu_page($h5p_content, $h5p_content, 'edit_h5p_contents', $this->plugin_slug,
-            array($this->content, 'display_contents_page'), 'none');
-
-        $all_h5p_content = __('All H5P Content', $this->plugin_slug);
-        add_submenu_page($this->plugin_slug, $all_h5p_content, $all_h5p_content, 'edit_h5p_contents',
-            $this->plugin_slug, array($this->content, 'display_contents_page'));
-
-        $add_new = __('Add New', $this->plugin_slug);
-        $contents_page = add_submenu_page($this->plugin_slug, $add_new, $add_new, 'edit_h5p_contents',
-            $this->plugin_slug . '_new', array($this->content, 'display_new_content_page'));
-
-        // Process form data when saving H5Ps.
-        add_action('load-' . $contents_page, array($this->content, 'process_new_content'));
-
-        $update_available = get_option('h5p_update_available', 0);
-        $current_update = get_option('h5p_current_update', 0);
-        $updates_available = ($update_available !== 0 && $current_update !== 0 && $current_update < $update_available ? 1 : 0);
-        $title = sprintf(_n('%s new update is available!', '%s new updates are available!', $updates_available,
-            $this->plugin_slug), $updates_available);
-        $libraries = sprintf(__('Libraries', $this->plugin_slug) . ' %s',
-            "<span class='update-plugins count-{$updates_available}' title='{$title}'><span class='update-count'>" . number_format_i18n($updates_available) . "</span></span>");
-        $libraries_page = add_submenu_page($this->plugin_slug, __('Libraries', $this->plugin_slug), $libraries,
-            'manage_h5p_libraries', $this->plugin_slug . '_libraries', array($this->library, 'display_libraries_page'));
-
-        // Process form data when upload H5Ps without content.
-        add_action('load-' . $libraries_page, array($this->library, 'process_libraries'));
-
-        if (get_option('h5p_track_user', true)) {
-            $my_results = __('My Results', $this->plugin_slug);
-            add_submenu_page($this->plugin_slug, $my_results, $my_results, 'view_h5p_results',
-                $this->plugin_slug . '_results', array($this, 'display_results_page'));
-        }
-
-        // Settings page
-        add_options_page('H5P Settings', 'H5P', 'manage_options', $this->plugin_slug . '_settings',
-            array($this, 'display_settings_page'));
-    }
-
-    /**
-     * Display a settings page for H5P.
-     *
-     * @since 1.0.0
-     */
-    public function display_settings_page()
-    {
-        $save = filter_input(INPUT_POST, 'save_these_settings');
-        if ($save !== null) {
-            // Get input and store settings
-            check_admin_referer('h5p_settings', 'save_these_settings'); // Verify form
-
-            // Action bar
-            $frame = filter_input(INPUT_POST, 'frame', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_frame', $frame);
-
-            $download = filter_input(INPUT_POST, 'download', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_export', $download);
-
-            $embed = filter_input(INPUT_POST, 'embed', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_embed', $embed);
-
-            $copyright = filter_input(INPUT_POST, 'copyright', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_copyright', $copyright);
-
-            $about = filter_input(INPUT_POST, 'about', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_icon', $about);
-
-            $track_user = filter_input(INPUT_POST, 'track_user', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_track_user', $track_user);
-
-            $library_updates = filter_input(INPUT_POST, 'library_updates', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_library_updates', $track_user);
-
-            $save_content_state = filter_input(INPUT_POST, 'save_content_state', FILTER_VALIDATE_BOOLEAN);
-            update_option('h5p_save_content_state', $save_content_state);
-
-            $save_content_frequency = filter_input(INPUT_POST, 'save_content_frequency', FILTER_VALIDATE_INT);
-            update_option('h5p_save_content_frequency', $save_content_frequency);
-
-            $insert_method = filter_input(INPUT_POST, 'insert_method', FILTER_SANITIZE_SPECIAL_CHARS);
-            update_option('h5p_insert_method', $insert_method);
-        } else {
-            $frame = get_option('h5p_frame', true);
-            $download = get_option('h5p_export', true);
-            $embed = get_option('h5p_embed', true);
-            $copyright = get_option('h5p_copyright', true);
-            $about = get_option('h5p_icon', true);
-            $track_user = get_option('h5p_track_user', true);
-            $library_updates = get_option('h5p_library_updates', true);
-            $save_content_state = get_option('h5p_save_content_state', false);
-            $save_content_frequency = get_option('h5p_save_content_frequency', 30);
-            $insert_method = get_option('h5p_insert_method', 'id');
-        }
-
-        include_once('views/settings.php');
-        H5P_Plugin_Admin::add_script('disable', 'h5p-php-library/js/disable.js');
-
-        new H5P_Event('settings');
-    }
-
-    /**
      * Load content and add to title for certain pages.
      * Should we have used get_current_screen() ?
      *
@@ -543,20 +435,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Get proper handle for the given asset
-     *
-     * @since 1.1.0
-     * @param string $path
-     * @return string
-     */
-    private static function asset_handle($path)
-    {
-        $plugin = H5P_Plugin::get_instance();
-
-        return $plugin->asset_handle($path);
-    }
-
-    /**
      * Small helper for simplifying script enqueuing.
      *
      * @since 1.1.0
@@ -565,7 +443,6 @@ class H5P_Plugin_Admin
      */
     public static function add_script($handle, $path)
     {
-        //wp_enqueue_script(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
         CustomAssetManager::addScript($handle, $path);
 
     }
@@ -579,7 +456,6 @@ class H5P_Plugin_Admin
      */
     public static function add_style($handle, $path)
     {
-        //wp_enqueue_style(self::asset_handle($handle), plugins_url('h5p/' . $path), array(), H5P_Plugin::VERSION);
         CustomAssetManager::addStyle($handle, $path);
     }
 
@@ -620,7 +496,7 @@ class H5P_Plugin_Admin
      */
     public function get_results_num($content_id = null, $user_id = null, $filters = array())
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         $query_args = array();
 
@@ -648,7 +524,7 @@ class H5P_Plugin_Admin
         $sort_dir = 0,
         $filters = array()
     ) {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         $extra_fields = '';
         $joins = '';
@@ -782,52 +658,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Displays the "My Results" page.
-     *
-     * @since 1.2.0
-     */
-    public function display_results_page()
-    {
-        include_once('views/my-results.php');
-        $this->print_data_view_settings(
-            'h5p-my-results',
-            admin_url('admin-ajax.php?action=h5p_my_results'),
-            array(
-                (object)array(
-                    'text' => __('Content', $this->plugin_slug),
-                    'sortable' => true
-                ),
-                (object)array(
-                    'text' => __('Score', $this->plugin_slug),
-                    'sortable' => true
-                ),
-                (object)array(
-                    'text' => __('Maximum Score', $this->plugin_slug),
-                    'sortable' => true
-                ),
-                (object)array(
-                    'text' => __('Opened', $this->plugin_slug),
-                    'sortable' => true
-                ),
-                (object)array(
-                    'text' => __('Finished', $this->plugin_slug),
-                    'sortable' => true
-                ),
-                __('Time spent', $this->plugin_slug)
-            ),
-            array(true),
-            __("There are no logged results for your user.", $this->plugin_slug),
-            (object)array(
-                'by' => 4,
-                'dir' => 0
-            )
-        );
-
-        // Log visit to this page
-        new H5P_Event('results');
-    }
-
-    /**
      * Print results ajax data for either content or user, not both.
      *
      * @since 1.2.0
@@ -875,16 +705,6 @@ class H5P_Plugin_Admin
     }
 
     /**
-     * Provide data for content results view.
-     *
-     * @since 1.2.0
-     */
-    public function ajax_my_results()
-    {
-        $this->print_results(null, get_current_user_id());
-    }
-
-    /**
      * Load input vars for data views.
      *
      * @since 1.2.0
@@ -923,7 +743,7 @@ class H5P_Plugin_Admin
      */
     public function deleted_user($id)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         // Remove user scores/results
         $wpdb->delete('h5p_results', array('user_id' => $id), array('%d'));
