@@ -53,6 +53,7 @@ class Policy_Access extends Policy {
         array('controller' => 'H5P', 'action' => 'contents'),
         array('controller' => 'H5P', 'action' => 'ajax_libraries'),
         array('controller' => 'H5P', 'action' => 'libraries'),
+        array('controller' => 'H5P', 'action' => 'rebuildCache'),
 
     );
 
@@ -99,6 +100,7 @@ class Policy_Access extends Policy {
         array('controller' => 'H5P', 'action' => 'contents'),
         array('controller' => 'H5P', 'action' => 'ajax_libraries'),
         array('controller' => 'H5P', 'action' => 'libraries'),
+        array('controller' => 'H5P', 'action' => 'rebuildCache'),
     );
 
     private $mapActions = array(

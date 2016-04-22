@@ -59,6 +59,42 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    /**
+     * Ajax request.
+     * Helps rebuild all content caches.
+     */
+    public function action_rebuildCache()
+    {
+        if ($this->request->method() !== 'POST') {
+            die; // POST is required
+        }
+
+        $plugin = H5P_Plugin::get_instance();
+        $core = $plugin->get_h5p_instance('core');
+
+        // Do as many as we can in five seconds.
+        $start = microtime(true);
+
+        $contents = DB_SQL::select()
+            ->from('h5p_contents')
+            ->where('filtered', '=', '')
+            ->query()
+            ->as_array();
+
+        $done = 0;
+        foreach ($contents as $content) {
+            $content = $core->loadContent($content['id']);
+            $core->filterParameters($content);
+            $done++;
+
+            if ((microtime(true) - $start) > 5) {
+                break;
+            }
+        }
+
+        echo (count($contents) - $done);
+        die;
+    }
 
     /**
      * Ajax request.
@@ -1121,10 +1157,9 @@ class Controller_H5P extends Controller_Base
     {
         return array(
             'num' => $num,
-            'url' => admin_url('admin-ajax.php?action=h5p_rebuild_cache'),
+            'url' => '/h5p/rebuildCache',
             'message' => __('Not all content has gotten their cache rebuilt. This is required to be able to delete libraries, and to display how many contents that uses the library.'),
-            'progress' => sprintf(__('1 content need to get its cache rebuilt.',
-                '%d contents needs to get their cache rebuilt.'), $num),
+            'progress' => sprintf(__('%d contents needs to get their cache rebuilt.'), $num),
             'button' => __('Rebuild cache')
         );
     }

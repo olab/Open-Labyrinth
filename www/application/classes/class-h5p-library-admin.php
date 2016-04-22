@@ -174,46 +174,6 @@ class H5PLibraryAdmin
     }
     
     /**
-     * Helps rebuild all content caches.
-     *
-     * @since 1.1.0
-     */
-    public function ajax_rebuild_cache()
-    {
-        global $wpdb;
-
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            exit; // POST is required
-        }
-
-        $plugin = H5P_Plugin::get_instance();
-        $core = $plugin->get_h5p_instance('core');
-
-        // Do as many as we can in five seconds.
-        $start = microtime(true);
-
-        $contents = $wpdb->get_results(
-            "SELECT id
-          FROM {$wpdb->prefix}h5p_contents
-          WHERE filtered = ''"
-        );
-
-        $done = 0;
-        foreach ($contents as $content) {
-            $content = $core->loadContent($content->id);
-            $core->filterParameters($content);
-            $done++;
-
-            if ((microtime(true) - $start) > 5) {
-                break;
-            }
-        }
-
-        print (count($contents) - $done);
-        exit;
-    }
-
-    /**
      * AJAX processing for content upgrade script.
      */
     public function ajax_upgrade_progress()

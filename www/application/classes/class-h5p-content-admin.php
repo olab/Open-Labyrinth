@@ -102,7 +102,7 @@ class H5PContentAdmin
      */
     public function load_content($id)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
         $plugin = H5P_Plugin::get_instance();
 
         $this->content = $plugin->get_content($id);
@@ -140,22 +140,6 @@ class H5PContentAdmin
         }
 
         return ($user_id === (int)$content->user_id);
-    }
-
-    /**
-     * Permission check. Can the current user view results for the given content?
-     *
-     * @since 1.2.0
-     * @param array $content
-     * @return boolean
-     */
-    private function current_user_can_view_content_results($content)
-    {
-        if (!get_option('h5p_track_user', true)) {
-            return false;
-        }
-
-        return $this->current_user_can_edit($content);
     }
 
     /**
