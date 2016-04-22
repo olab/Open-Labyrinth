@@ -1320,12 +1320,6 @@ class Controller_H5P extends Controller_Base
 
     private function loadAssets()
     {
-        foreach (CustomAssetManager::getScripts() as $script) {
-            $this->templateData['scripts_stack'][] = $script;
-        }
-
-        foreach (CustomAssetManager::getStyles() as $script) {
-            $this->templateData['styles_stack'][] = $script;
-        }
+        $this->templateData = CustomAssetManager::loadAssets($this->templateData);
     }
 }

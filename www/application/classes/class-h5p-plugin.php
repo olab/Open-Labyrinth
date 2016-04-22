@@ -104,6 +104,30 @@ class H5P_Plugin
     }
 
     /**
+     * @param int $id
+     * @return string
+     */
+    public static function renderShortCode($id)
+    {
+        $plugin = H5P_Plugin::get_instance();
+
+        $html = $plugin->shortcode(['id' => $id]);
+
+        $raw_js = 'H5PIntegration = ' . json_encode($plugin->get_settings());
+        $js_for_xAPI = <<<'NOW'
+        H5P.externalDispatcher.on('xAPI', function (event) {
+            console.log(event.data.statement);
+            H5P.jQuery.post('/h5p/saveXAPIStatement', event.data.statement);
+        });
+NOW;
+
+        CustomAssetManager::addRawScript('H5PIntegration', $raw_js);
+        CustomAssetManager::addRawScript('H5PIntegration', $js_for_xAPI);
+
+        return $html;
+    }
+
+    /**
      * Return the plugin slug.
      *
      * @since 1.0.0

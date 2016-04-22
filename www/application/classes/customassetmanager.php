@@ -13,6 +13,45 @@ class CustomAssetManager
     private static $styles = [];
 
     /**
+     * @var array
+     */
+    private static $raw_scripts = [];
+
+    /***
+     * @param string $handle
+     * @param string $code
+     */
+    public static function addRawScript($handle, $code)
+    {
+        static::$raw_scripts[$handle][] = $code;
+    }
+
+    /**
+     * @param array $controller
+     * @return array
+     */
+    public static function loadAssets($templateData)
+    {
+        if (empty($templateData)) {
+            $templateData = [];
+        }
+
+        foreach (static::getScripts() as $script) {
+            $templateData['scripts_stack'][] = $script;
+        }
+
+        foreach (static::getStyles() as $script) {
+            $templateData['styles_stack'][] = $script;
+        }
+
+        foreach (static::getRawScripts() as $script) {
+            $templateData['raw_scripts_stack'][] = $script;
+        }
+
+        return $templateData;
+    }
+
+    /**
      * @param string $handle
      * @param string $path
      */
@@ -44,6 +83,14 @@ class CustomAssetManager
     public static function getStyles()
     {
         return ArrayHelper::flatten(static::$styles);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getRawScripts()
+    {
+        return ArrayHelper::flatten(static::$raw_scripts);
     }
 
     /**

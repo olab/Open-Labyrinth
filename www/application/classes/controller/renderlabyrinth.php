@@ -275,6 +275,8 @@ class Controller_RenderLabyrinth extends Controller_Template
             setcookie('wasRedirected', '', time() - 3600, '/');
         }
 
+        $data = CustomAssetManager::loadAssets($data);
+
         $this->template = View::factory($skin)->set('templateData', $data);
     }
 
@@ -1449,7 +1451,7 @@ class Controller_RenderLabyrinth extends Controller_Template
             }
         }
 
-        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON');
+        $codes = array('MR', 'FL', 'CHAT', 'DAM', 'AV', 'VPD', 'QU', 'INFO', 'CD', 'CR', 'NODE', 'BUTTON', 'H5P');
         foreach ($codes as $code) {
             $regExp = '/[\[' . $code . ':\d\]]+/';
             if (preg_match_all($regExp, $text, $matches)) {
@@ -1473,39 +1475,42 @@ class Controller_RenderLabyrinth extends Controller_Template
                                                 array('image/jpg', 'image/jpeg', 'image/gif', 'image/png'))) {
                                                 $replaceString = Controller_RenderLabyrinth::getImageHTML($id);
                                             } else {
-                                                $replaceString = Controller_RenderLabyrinth::getFileLink($id);
+                                                $replaceString = static::getFileLink($id);
                                             }
                                         }
                                         break;
                                     case 'AV':
-                                        $replaceString = Controller_RenderLabyrinth::getAvatarHTML($id);
+                                        $replaceString = static::getAvatarHTML($id);
                                         break;
                                     case 'CHAT':
-                                        $replaceString = Controller_RenderLabyrinth::getChatHTML($id);
+                                        $replaceString = static::getChatHTML($id);
                                         break;
                                     case 'QU':
-                                        $replaceString = Controller_RenderLabyrinth::getQuestionHTML($id);
+                                        $replaceString = static::getQuestionHTML($id);
                                         break;
                                     case 'VPD':
-                                        $replaceString = Controller_RenderLabyrinth::getVpdHTML($id);
+                                        $replaceString = static::getVpdHTML($id);
                                         break;
                                     case 'DAM':
-                                        $replaceString = Controller_RenderLabyrinth::getDamHTML($id);
+                                        $replaceString = static::getDamHTML($id);
                                         break;
                                     case 'INFO':
-                                        $replaceString = Controller_RenderLabyrinth::getInfoHTML($id);
+                                        $replaceString = static::getInfoHTML($id);
                                         break;
                                     case 'CD':
-                                        $replaceString = Controller_RenderLabyrinth::getVisualDisplayHTML($id);
+                                        $replaceString = static::getVisualDisplayHTML($id);
                                         break;
                                     case 'CR':
-                                        $replaceString = Controller_RenderLabyrinth::getCounterHTML($mapId, $id);
+                                        $replaceString = static::getCounterHTML($mapId, $id);
                                         break;
                                     case 'NODE':
-                                        $replaceString = Controller_RenderLabyrinth::getAnchorLinkHTML($mapId, $id);
+                                        $replaceString = static::getAnchorLinkHTML($mapId, $id);
                                         break;
                                     case 'BUTTON':
-                                        $replaceString = Controller_RenderLabyrinth::getButtonHTML($mapId, $id);
+                                        $replaceString = static::getButtonHTML($mapId, $id);
+                                        break;
+                                    case 'H5P':
+                                        $replaceString = static::getH5PHTML($id);
                                         break;
                                 }
 
@@ -1617,6 +1622,13 @@ class Controller_RenderLabyrinth extends Controller_Template
         $node = DB_ORM::model('map_node')->getNodeById((int)$id);
 
         return '<a ' . $link . ' class="btn">' . $node->title . '</a>';
+    }
+
+    private static function getH5PHTML($id)
+    {
+        Controller_H5P::loadH5PClasses();
+
+        return H5P_Plugin::renderShortCode($id);
     }
 
     private static function getFinalSubmissionHTML($mapId)
