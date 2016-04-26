@@ -318,11 +318,11 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $context['extensions'][Model_Leap_Statement::getExtensionNodeKey()] = $node->toxAPIExtensionObject();
 
         $node_url = URL::base(true) . 'nodeManager/editNode/' . $node->id;
-        $context['contextActivities']['parent']['id'] = $node_url;
+        $context['contextActivities']['parent'][]['id'] = $node_url;
 
         $session = $this->session;
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
+        $context['contextActivities']['grouping'][]['id'] = $map_url;
         //end context
 
         foreach ($changed_counters as $counter_id => $changed_counter) {
@@ -402,7 +402,7 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
-            $context['contextActivities']['parent']['id'] = $webinar_url;
+            $context['contextActivities']['parent'][]['id'] = $webinar_url;
         }
 
         //end context
@@ -453,7 +453,7 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $webinar_id = $session->webinar_id;
         if (!empty($webinar_id)) {
             $webinar_url = URL::base(true) . 'webinarManager/edit/' . $webinar_id;
-            $context['contextActivities']['parent']['id'] = $webinar_url;
+            $context['contextActivities']['parent'][]['id'] = $webinar_url;
         }
 
         //end context

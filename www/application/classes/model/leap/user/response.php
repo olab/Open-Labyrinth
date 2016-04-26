@@ -122,10 +122,10 @@ class Model_Leap_User_Response extends Model_Leap_Base
         $context = array();
         $session = $this->session;
         $node_url = URL::base(true) . 'nodeManager/editNode/' . $this->node_id;
-        $context['contextActivities']['parent']['id'] = $node_url;
+        $context['contextActivities']['parent'][]['id'] = $node_url;
 
         $map_url = URL::base(true) . 'labyrinthManager/global/' . $session->map_id;
-        $context['contextActivities']['grouping']['id'] = $map_url;
+        $context['contextActivities']['grouping'][]['id'] = $map_url;
 
         //end context
 
