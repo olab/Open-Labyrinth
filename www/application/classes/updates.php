@@ -192,6 +192,7 @@ class Updates
 
                     if (!$result){
                         $return = false;
+                        @Log::instance()->add(Log::DEBUG, mysql_error());
                     }
                 }
             }
