@@ -359,7 +359,7 @@ class Model_Leap_Statement extends Model_Leap_Base
         } catch (\Exception $ex) {
 
             Log::instance()->add(Log::DEBUG, 'Unexpected error: on ' . $ex->getFile() . ' at ' . $ex->getLine() .
-                ' with msg: ' . $ex->getMessage());
+                ' with msg: ' . $ex->getMessage() . '. Statement data: ' . $this->statement);
 
             return false;
         }
