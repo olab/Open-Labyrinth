@@ -189,9 +189,7 @@ class Model_Leap_User_Session extends Model_Leap_Base
     {
         /** @var Model_Leap_User_Session[] $sessions_array */
         $sessions_array = $sessions->as_array();
-        unset($sessions);
         foreach ($sessions_array as $key => $session) {
-            unset($sessions_array[$key]);
             static::createSessionStatements($session);
             $session->sendXAPIStatements();
         }
@@ -207,12 +205,10 @@ class Model_Leap_User_Session extends Model_Leap_Base
         foreach ($responses as $response) {
             $response->createXAPIStatement();
         }
-        unset($responses, $session->responses);
         //end create responses statements
 
         /** @var Model_Leap_User_SessionTrace[] $session_traces_array */
         $session_traces_array = $session->traces->as_array();
-        unset($session);
 
         if (count($session_traces_array) > 0) {
 
@@ -241,8 +237,6 @@ class Model_Leap_User_Session extends Model_Leap_Base
                 if (!isset($session_traces[$key + 1])) {
                     $session_trace->createXAPIStatementCompleted();
                 }
-
-                unset($session_trace, $session_traces_array[$key]);
             }
         }
     }
