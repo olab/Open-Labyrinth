@@ -230,11 +230,11 @@ class Model_Leap_User_Session extends Model_Leap_Base
                 $session_trace->createXAPIStatementSuspended();
                 $session_trace->createXAPIStatementResumed();
 
-                if (isset($session_traces[$key - 1])) {
-                    $session_trace->createXAPIStatementUpdated($session_traces[$key - 1]);
+                if (isset($session_traces_array[$key - 1])) {
+                    $session_trace->createXAPIStatementUpdated($session_traces_array[$key - 1]);
                 }
 
-                if (!isset($session_traces[$key + 1])) {
+                if (!isset($session_traces_array[$key + 1])) {
                     $session_trace->createXAPIStatementCompleted();
                 }
             }
