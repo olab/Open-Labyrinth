@@ -74,7 +74,7 @@ class Model_Leap_Option extends DB_ORM_Model
      * @param mixed $default
      * @return mixed
      */
-    public static function get_option($option, $default = false)
+    public static function get($option, $default = false)
     {
         $option = trim($option);
         if (empty($option)) {
@@ -98,6 +98,96 @@ class Model_Leap_Option extends DB_ORM_Model
         } else {
             return $value;
         }
+    }
+
+    /**
+     * Add a new option.
+     *
+     * @param string $option
+     * @param mixed $value
+     * @param bool $autoload
+     * @return bool
+     */
+    public static function set($option, $value = '', $autoload = true)
+    {
+        $option = trim($option);
+        if (empty($option)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = clone $value;
+        }
+
+        $autoload = (false === $autoload) ? 'no' : 'yes';
+
+        $option = new static;
+        $option->name = $option;
+        $option->value = $value;
+        $option->autoload = $autoload;
+
+        $option->save();
+
+        return true;
+    }
+
+    /**
+     * Update the value of an option that was already added.
+     *
+     * @param string $option
+     * @param mixed $value
+     * @param bool $autoload
+     * @return bool
+     */
+    public static function update($option, $value = '', $autoload = true)
+    {
+        $option = trim($option);
+        if (empty($option)) {
+            return false;
+        }
+
+        if (is_object($value)) {
+            $value = clone $value;
+        }
+
+        $old_value = get_option($option);
+
+        // If the new and old values are the same, no need to update.
+        if ($value === $old_value) {
+            return false;
+        }
+
+        $autoload = (false === $autoload) ? 'no' : 'yes';
+
+        DB_SQL::update()
+            ->set('autoload', $autoload)
+            ->set('value', $value)
+            ->table(static::table())
+            ->where('name', '=', $option)
+            ->execute();
+
+        return true;
+    }
+
+    /**
+     * Removes option by name.
+     *
+     * @param string $option
+     * @return bool
+     */
+    public static function remove($option)
+    {
+        $option = trim($option);
+        if (empty($option)) {
+            return false;
+        }
+
+        DB_SQL::delete()
+            ->from(static::table())
+            ->where('name', '=', $option)
+            ->execute();
+
+        return true;
     }
 
 }

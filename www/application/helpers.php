@@ -12,7 +12,22 @@ function admin_url($path = '')
 
 function get_option($option, $default = false)
 {
-    return Model_Leap_Option::get_option($option, $default);
+    return Model_Leap_Option::get($option, $default);
+}
+
+function update_option($option, $value, $autoload = null)
+{
+    return Model_Leap_Option::update($option, $value, $autoload);
+}
+
+function add_option($option, $value = '', $autoload = 'yes')
+{
+    return Model_Leap_Option::set($option, $value, $autoload);
+}
+
+function delete_option($option)
+{
+    return Model_Leap_Option::remove($option);
 }
 
 
