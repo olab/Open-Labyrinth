@@ -10,7 +10,12 @@
             <?php echo __('Add new'); ?>
         </a>
         <a class="btn btn-primary" href="<?php echo URL::base() . 'h5p/libraries'; ?>">
+            <i class="icon-list icon-white"></i>
             <?php echo __('Libraries'); ?>
+        </a>
+        <a class="btn btn-primary" href="<?php echo URL::base() . 'h5p/deleteTemporaryFiles'; ?>">
+            <i class="icon-trash icon-white"></i>
+            <?php echo __('Delete temporary files'); ?>
         </a>
     </h2>
     <div id="h5p-contents">

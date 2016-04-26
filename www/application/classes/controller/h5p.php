@@ -59,6 +59,21 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_deleteTemporaryFiles()
+    {
+        $temp_dir = DOCROOT . 'files/h5p/temp';
+
+        if (!file_exists($temp_dir) || ((time() - filemtime($temp_dir)) < 60 * 60 * 24)) {
+            Session::instance()->set('success_message', __('No files to delete.'));
+            Request::initial()->redirect(URL::base() . 'h5p');
+        }
+
+        FileHelper::removeDirectory($temp_dir);
+
+        Session::instance()->set('success_message', __('Deleted.'));
+        Request::initial()->redirect(URL::base() . 'h5p');
+    }
+
     /**
      * Ajax request.
      * Helps rebuild all content caches.
@@ -92,7 +107,7 @@ class Controller_H5P extends Controller_Base
             }
         }
 
-        echo (count($contents) - $done);
+        echo(count($contents) - $done);
         die;
     }
 
