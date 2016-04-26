@@ -121,12 +121,12 @@ class Model_Leap_Option extends DB_ORM_Model
 
         $autoload = (false === $autoload) ? 'no' : 'yes';
 
-        $option = new static;
-        $option->name = $option;
-        $option->value = $value;
-        $option->autoload = $autoload;
+        $model = new static;
+        $model->name = $option;
+        $model->value = $value;
+        $model->autoload = $autoload;
 
-        $option->save();
+        $model->save();
 
         return true;
     }
