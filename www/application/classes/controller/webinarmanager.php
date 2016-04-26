@@ -798,10 +798,11 @@ class Controller_WebinarManager extends Controller_Base
         $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar->id);
 
         $per_iteration = 1;
+        $limit = $per_iteration;
         if ($is_initial_request) {
             $i = 0;
             $offset = 0;
-            $limit = $per_iteration;
+            
             $query_count = DB_SQL::select()
                 ->from(Model_Leap_User_Session::table())
                 ->where('webinar_id', '=', $webinarId)
@@ -817,7 +818,6 @@ class Controller_WebinarManager extends Controller_Base
         } else {
             $i = Session::instance()->get('xAPI_report_i');
             $offset = Session::instance()->get('xAPI_report_offset');
-            $limit = Session::instance()->get('xAPI_report_limit');
         }
 
         $query = DB_ORM::select('User_Session')
@@ -840,18 +840,15 @@ class Controller_WebinarManager extends Controller_Base
         }
 
         $offset += $per_iteration;
-        $limit += $per_iteration;
         $i++;
 
         Session::instance()->set('xAPI_report_i', $i);
         Session::instance()->set('xAPI_report_offset', $offset);
-        Session::instance()->set('xAPI_report_limit', $limit);
 
         $total_sessions = Session::instance()->get('xAPI_report_total_sessions', 0);
 
         if ($is_initial_request && $sessions->count() == 0) {
-            Session::instance()
-                ->set('error_message', 'Sessions not found');
+            Session::instance()->set('error_message', 'Sessions not found');
             $this->jsonResponse(array('completed' => true, 'total' => $total_sessions, 'sent' => $offset));
         } elseif ($sessions->count() == 0) {
             Session::instance()->set('info_message', 'Statements sent to LRS');

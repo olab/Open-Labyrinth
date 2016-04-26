@@ -191,6 +191,7 @@ class Controller_LRS extends Controller_Base
         $date_to = Arr::get($post, 'date_to');
         $referrer_url = Arr::get($post, 'referrer');
         $redirect_url = $referrer_url;
+
         if (empty($redirect_url)) {
             $redirect_url = URL::base() . 'lrs';
         }
@@ -210,10 +211,10 @@ class Controller_LRS extends Controller_Base
         $not_included_user_ids = DB_ORM::model('webinar_user')->getNotIncludedUsers($webinar_id);
 
         $per_iteration = 1;
+        $limit = $per_iteration;
         if ($is_initial_request) {
             $i = 0;
             $offset = 0;
-            $limit = $per_iteration;
 
             $query_count = DB_SQL::select()
                 ->from(Model_Leap_User_Session::table())
@@ -232,7 +233,6 @@ class Controller_LRS extends Controller_Base
         } else {
             $i = Session::instance()->get('xAPI_report_i');
             $offset = Session::instance()->get('xAPI_report_offset');
-            $limit = Session::instance()->get('xAPI_report_limit');
         }
 
         $query = DB_ORM::select('User_Session')
@@ -256,12 +256,10 @@ class Controller_LRS extends Controller_Base
         }
 
         $offset += $per_iteration;
-        $limit += $per_iteration;
         $i++;
 
         Session::instance()->set('xAPI_report_i', $i);
         Session::instance()->set('xAPI_report_offset', $offset);
-        Session::instance()->set('xAPI_report_limit', $limit);
 
         $total_sessions = Session::instance()->get('xAPI_report_total_sessions', 0);
 
