@@ -12,10 +12,10 @@
 /**
  * Plugin class.
  *
- * @package H5P_Plugin
+ * @package H5PPlugin
  * @author Joubel <contact@joubel.com>
  */
-class H5P_Plugin
+class H5PPlugin
 {
 
     /**
@@ -39,7 +39,7 @@ class H5P_Plugin
      * Instance of this class.
      *
      * @since 1.0.0
-     * @var \H5P_Plugin
+     * @var \H5PPlugin
      */
     protected static $instance = null;
 
@@ -47,7 +47,7 @@ class H5P_Plugin
      * Instance of H5P WordPress Framework Interface.
      *
      * @since 1.0.0
-     * @var \H5PWordPress
+     * @var \H5POpenLabyrinth
      */
     protected static $interface = null;
 
@@ -97,7 +97,7 @@ class H5P_Plugin
         add_action('h5p_daily_cleanup', array($this, 'remove_old_log_events'));
 
         // Always check if the plugin has been updated to a newer version
-        add_action('init', array('H5P_Plugin', 'check_for_updates'), 1);
+        add_action('init', array('H5PPlugin', 'check_for_updates'), 1);
 
         // Add menu options to admin bar.
         add_action('admin_bar_menu', array($this, 'admin_bar'));*/
@@ -109,7 +109,7 @@ class H5P_Plugin
      */
     public static function renderShortCode($id)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
 
         $html = $plugin->shortcode(['id' => $id]);
 
@@ -142,7 +142,7 @@ NOW;
      * Return an instance of this class.
      *
      * @since 1.0.0
-     * @return \H5P_Plugin A single instance of this class.
+     * @return \H5PPlugin A single instance of this class.
      */
     public static function get_instance()
     {
@@ -592,12 +592,12 @@ NOW;
      *
      * @since 1.0.0
      * @param string $type
-     * @return \H5PWordPress|\H5PCore|\H5PContentValidator|\H5PExport|\H5PStorage|\H5PValidator
+     * @return \H5POpenLabyrinth|\H5PCore|\H5PContentValidator|\H5PExport|\H5PStorage|\H5PValidator
      */
     public function get_h5p_instance($type)
     {
         if (self::$interface === null) {
-            self::$interface = new H5PWordPress();
+            self::$interface = new H5POpenLabyrinth();
             $language = $this->get_language();
             self::$core = new H5PCore(self::$interface, $this->get_h5p_path(), $this->get_h5p_url(), $language,
                 get_option('h5p_export', true));
@@ -1073,7 +1073,7 @@ NOW;
      */
     public function remove_old_tmp_files()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
 
         $h5p_path = $plugin->get_h5p_path();
         $editor_path = $h5p_path . DIRECTORY_SEPARATOR . 'editor';

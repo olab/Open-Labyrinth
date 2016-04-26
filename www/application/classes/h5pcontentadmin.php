@@ -12,7 +12,7 @@
 /**
  * H5P Content Admin class
  *
- * @package H5P_Plugin_Admin
+ * @package H5PPluginAdmin
  * @author Joubel <contact@joubel.com>
  */
 class H5PContentAdmin
@@ -103,7 +103,7 @@ class H5PContentAdmin
     public function load_content($id)
     {
         $wpdb = getWPDB();
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
 
         $this->content = $plugin->get_content($id);
         if (!is_string($this->content)) {
@@ -198,7 +198,7 @@ class H5PContentAdmin
      */
     public function handle_content_creation($content)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $core = $plugin->get_h5p_instance('core');
 
         // Keep track of the old library and params
@@ -304,7 +304,7 @@ class H5PContentAdmin
         if ($value === null) {
             if ($default === null) {
                 // No default, set error message.
-                H5P_Plugin_Admin::set_error(sprintf(__('Missing %s.'), $field));
+                H5PPluginAdmin::set_error(sprintf(__('Missing %s.'), $field));
             }
 
             return $default;
@@ -329,13 +329,13 @@ class H5PContentAdmin
         // Trim title and check length
         $trimmed_title = trim($title);
         if ($trimmed_title === '') {
-            H5P_Plugin_Admin::set_error(sprintf(__('Missing title.')));
+            H5PPluginAdmin::set_error(sprintf(__('Missing title.')));
 
             return null;
         }
 
         if (strlen($trimmed_title) > 255) {
-            H5P_Plugin_Admin::set_error(__('Title is too long. Must be 256 letters or shorter.'));
+            H5PPluginAdmin::set_error(__('Title is too long. Must be 256 letters or shorter.'));
 
             return null;
         }
@@ -375,7 +375,7 @@ class H5PContentAdmin
             return;
         }
 
-        $plugin_admin = H5P_Plugin_Admin::get_instance();
+        $plugin_admin = H5PPluginAdmin::get_instance();
         $plugin_admin->print_data_view_settings(
             'h5p-insert-content',
             admin_url('admin-ajax.php?action=h5p_insert_content'),
@@ -449,10 +449,10 @@ class H5PContentAdmin
     {
         if (self::$h5peditor === null) {
             $upload_dir = wp_upload_dir();
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             self::$h5peditor = new H5peditor(
                 $plugin->get_h5p_instance('core'),
-                new H5PEditorWordPressStorage(),
+                new H5PEditorOpenLabyrinthStorage(),
                 '',
                 $plugin->get_h5p_path()
             );
@@ -469,7 +469,7 @@ class H5PContentAdmin
      */
     public function add_editor_assets($id = null)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $plugin->add_core_assets();
 
         // Make sure the h5p classes are loaded
@@ -478,7 +478,7 @@ class H5PContentAdmin
 
         // Add JavaScript settings
         $settings = $plugin->get_settings();
-        $cache_buster = '?ver=' . H5P_Plugin::VERSION;
+        $cache_buster = '?ver=' . H5PPlugin::VERSION;
 
         // Use jQuery and styles from core.
         $assets = array(
@@ -500,8 +500,8 @@ class H5PContentAdmin
         }
 
         // Add JavaScript with library framework integration (editor part)
-        H5P_Plugin_Admin::add_script('editor-editor', self::PATH_SCRIPTS . 'scripts/h5peditor-editor.js');
-        H5P_Plugin_Admin::add_script('editor', self::PATH_SCRIPTS . 'scripts/h5p-editor.js');
+        H5PPluginAdmin::add_script('editor-editor', self::PATH_SCRIPTS . 'scripts/h5peditor-editor.js');
+        H5PPluginAdmin::add_script('editor', self::PATH_SCRIPTS . 'scripts/h5p-editor.js');
 
         // Add translation
         //$language = $plugin->get_language();
@@ -509,7 +509,7 @@ class H5PContentAdmin
         //if (!file_exists(plugin_dir_path(__FILE__) . '../' . $language_script)) {
         //    $language_script = 'h5p-editor-php-library/language/en.js';
         //}
-        H5P_Plugin_Admin::add_script('language', $language_script);
+        H5PPluginAdmin::add_script('language', $language_script);
 
         // Add JavaScript settings
         $content_validator = $plugin->get_h5p_instance('contentvalidator');
@@ -561,7 +561,7 @@ class H5PContentAdmin
         header('Content-type: application/json');
 
         if ($name) {
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             print $editor->getLibraryData($name, $major_version, $minor_version, $plugin->get_language(),
                 $plugin->get_h5p_path());
 
@@ -583,7 +583,7 @@ class H5PContentAdmin
      */
     public function ajax_files()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $files_directory = $plugin->get_h5p_path();
 
         if (!wp_verify_nonce(filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING), 'h5p_editor_upload')) {

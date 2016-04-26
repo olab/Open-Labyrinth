@@ -1628,7 +1628,7 @@ class Controller_RenderLabyrinth extends Controller_Template
     {
         Controller_H5P::loadH5PClasses();
 
-        return H5P_Plugin::renderShortCode($id);
+        return H5PPlugin::renderShortCode($id);
     }
 
     private static function getFinalSubmissionHTML($mapId)

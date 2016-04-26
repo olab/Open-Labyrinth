@@ -22,7 +22,7 @@
                 </a>
             <?php endif; ?>
         </h2>
-        <?php H5P_Plugin_Admin::print_messages(); ?>
+        <?php H5PPluginAdmin::print_messages(); ?>
         <form method="post" enctype="multipart/form-data" id="h5p-content-form" action="/h5p/addContentSubmit/<?php echo (isset($content['id']) ? $content['id'] : '') ?>">
             <div class="row">
                 <div class="span8">

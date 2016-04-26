@@ -3,7 +3,7 @@
 /**
  * Handles all communication with the database.
  */
-class H5PEditorWordPressStorage implements H5peditorStorage
+class H5PEditorOpenLabyrinthStorage implements H5peditorStorage
 {
 
     /**
@@ -120,7 +120,7 @@ class H5PEditorWordPressStorage implements H5peditorStorage
      */
     public function alterLibraryFiles(&$files, $libraries)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $plugin->alter_assets($files, $libraries, 'editor');
     }
 }

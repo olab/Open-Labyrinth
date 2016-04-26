@@ -15,17 +15,17 @@
  * TODO: Add development mode
  * TODO: Move results stuff to seperate class
  *
- * @package H5P_Plugin_Admin
+ * @package H5PPluginAdmin
  * @author Joubel <contact@joubel.com>
  */
-class H5P_Plugin_Admin
+class H5PPluginAdmin
 {
 
     /**
      * Instance of this class.
      *
      * @since 1.0.0
-     * @var \H5P_Plugin_Admin
+     * @var \H5PPluginAdmin
      */
     protected static $instance = null;
 
@@ -56,7 +56,7 @@ class H5P_Plugin_Admin
      */
     private function __construct()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         // Prepare admin pages / sections
@@ -138,7 +138,7 @@ class H5P_Plugin_Admin
      * Return an instance of this class.
      *
      * @since 1.0.0
-     * @return \H5P_Plugin_Admin A single instance of this class.
+     * @return \H5PPluginAdmin A single instance of this class.
      */
     public static function get_instance()
     {
@@ -212,12 +212,12 @@ class H5P_Plugin_Admin
             }
             $messages[] = $fetching_msg;
             $messages[] = $help_msg;
-            update_option('h5p_last_info_print', H5P_Plugin::VERSION);
+            update_option('h5p_last_info_print', H5PPlugin::VERSION);
         }
 
         // Always print a message after
         $last_print = get_option('h5p_last_info_print', 0);
-        if (empty($messages) && $last_print !== H5P_Plugin::VERSION) {
+        if (empty($messages) && $last_print !== H5PPlugin::VERSION) {
             // Looks like we've just updated, always thank the user for updating.
             $messages[] = $staying_msg;
             if ($update_available > $current_update) {
@@ -230,7 +230,7 @@ class H5P_Plugin_Admin
             }
             // Always offer help
             $messages[] = $help_msg;
-            update_option('h5p_last_info_print', H5P_Plugin::VERSION);
+            update_option('h5p_last_info_print', H5PPlugin::VERSION);
         }
 
         if (!empty($messages)) {
@@ -261,7 +261,7 @@ class H5P_Plugin_Admin
         }
 
         // Get instances
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
         $validator = $plugin->get_h5p_instance('validator');
         $storage = $plugin->get_h5p_instance('storage');
@@ -317,10 +317,10 @@ class H5P_Plugin_Admin
      */
     public function enqueue_admin_styles_and_scripts()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $plugin->enqueue_styles_and_scripts();
         wp_enqueue_style($this->plugin_slug . '-admin-styles', plugins_url('styles/admin.css', __FILE__), array(),
-            H5P_Plugin::VERSION);
+            H5PPlugin::VERSION);
     }
 
     /**
@@ -357,7 +357,7 @@ class H5P_Plugin_Admin
      */
     public function handle_upload($content = null, $only_upgrade = null)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $validator = $plugin->get_h5p_instance('validator');
         $interface = $plugin->get_h5p_instance('interface');
 
@@ -396,7 +396,7 @@ class H5P_Plugin_Admin
      */
     public static function set_error($message)
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
         $interface->setErrorMessage($message);
     }
@@ -408,7 +408,7 @@ class H5P_Plugin_Admin
      */
     public static function print_messages()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
 
         foreach (array('updated', 'error') as $type) {
@@ -636,17 +636,17 @@ class H5P_Plugin_Admin
                 'empty' => $empty,
             )
         );
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $settings = array('dataViews' => $data_views);
         $plugin->print_settings($settings);
 
         // Add JS
-        H5P_Plugin_Admin::add_script('jquery', 'scripts/h5p/jquery.js');
-        H5P_Plugin_Admin::add_script('event-dispatcher', 'scripts/h5p/h5p-event-dispatcher.js');
-        H5P_Plugin_Admin::add_script('utils', 'scripts/h5p/h5p-utils.js');
-        H5P_Plugin_Admin::add_script('data-view', 'scripts/h5p/h5p-data-view.js');
-        H5P_Plugin_Admin::add_script('data-views', 'scripts/h5p/h5p-data-views.js');
-        H5P_Plugin_Admin::add_style('admin', 'css/h5p/h5p-admin.css');
+        H5PPluginAdmin::add_script('jquery', 'scripts/h5p/jquery.js');
+        H5PPluginAdmin::add_script('event-dispatcher', 'scripts/h5p/h5p-event-dispatcher.js');
+        H5PPluginAdmin::add_script('utils', 'scripts/h5p/h5p-utils.js');
+        H5PPluginAdmin::add_script('data-view', 'scripts/h5p/h5p-data-view.js');
+        H5PPluginAdmin::add_script('data-views', 'scripts/h5p/h5p-data-views.js');
+        H5PPluginAdmin::add_style('admin', 'css/h5p/h5p-admin.css');
     }
 
     public function get_data_view_settings($name, $source, $headers, $filters, $empty, $order)

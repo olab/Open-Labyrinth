@@ -1,6 +1,6 @@
 <?php
 
-class H5PWordPress implements H5PFrameworkInterface
+class H5POpenLabyrinth implements H5PFrameworkInterface
 {
 
     /**
@@ -58,7 +58,7 @@ class H5PWordPress implements H5PFrameworkInterface
         }
         $message = preg_replace('/(!|@|%)[a-z0-9]+/i', '%s', $message);
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $this->plugin_slug = $plugin->get_plugin_slug();
 
         // Assumes that replacement vars are in the correct order.
@@ -70,7 +70,7 @@ class H5PWordPress implements H5PFrameworkInterface
      */
     private function getH5pPath()
     {
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
 
         return $plugin->get_h5p_path();
     }
@@ -83,7 +83,7 @@ class H5PWordPress implements H5PFrameworkInterface
         static $dir;
 
         if (is_null($dir)) {
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             $core = $plugin->get_h5p_instance('core');
             $dir = $core->fs->getTmpPath();
         }
@@ -99,7 +99,7 @@ class H5PWordPress implements H5PFrameworkInterface
         static $path;
 
         if (is_null($path)) {
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             $core = $plugin->get_h5p_instance('core');
             $path = $core->fs->getTmpPath() . '.h5p';
         }
@@ -913,7 +913,7 @@ class H5PWordPress implements H5PFrameworkInterface
         return array(
             'name' => 'WordPress',
             'version' => $wp_version,
-            'h5pVersion' => H5P_Plugin::VERSION
+            'h5pVersion' => H5PPlugin::VERSION
         );
     }
 

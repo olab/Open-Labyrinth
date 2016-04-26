@@ -12,7 +12,7 @@
 /**
  * H5P Content Query class
  *
- * @package H5P_Plugin_Admin
+ * @package H5PPluginAdmin
  * @author Joubel <contact@joubel.com>
  */
 class H5PContentQuery

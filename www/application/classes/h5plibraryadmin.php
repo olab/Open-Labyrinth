@@ -12,7 +12,7 @@
 /**
  * H5P Library Admin class
  *
- * @package H5P_Plugin_Admin
+ * @package H5PPluginAdmin
  * @author Joubel <contact@joubel.com>
  */
 class H5PLibraryAdmin
@@ -66,7 +66,7 @@ class H5PLibraryAdmin
                 } else {
                     if ($upgrade) {
                         $admin_title = str_replace($title, __('Content Upgrade', $this->plugin_slug), $admin_title);
-                        $plugin = H5P_Plugin::get_instance();
+                        $plugin = H5PPlugin::get_instance();
                         $plugin->get_h5p_instance('core'); // Load core
                     }
                 }
@@ -104,7 +104,7 @@ class H5PLibraryAdmin
         )
         );
         if (!$this->library) {
-            H5P_Plugin_Admin::set_error(sprintf(__('Cannot find library with id: %d.'), $id));
+            H5PPluginAdmin::set_error(sprintf(__('Cannot find library with id: %d.'), $id));
         }
 
         return $this->library;
@@ -129,7 +129,7 @@ class H5PLibraryAdmin
                 if ($_FILES['h5p_file']['error'] === 0) {
                     // No upload errors, try to install package
                     check_admin_referer('h5p_library', 'lets_upgrade_that'); // Verify form
-                    $plugin_admin = H5P_Plugin_Admin::get_instance();
+                    $plugin_admin = H5PPluginAdmin::get_instance();
                     $plugin_admin->handle_upload(null, filter_input(INPUT_POST, 'h5p_upgrade_only') ? true : false);
                 } else {
                     $phpFileUploadErrors = array(
@@ -143,7 +143,7 @@ class H5PLibraryAdmin
                     );
 
                     $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
-                    H5P_Plugin_Admin::set_error(__($errorMessage, $this->plugin_slug));
+                    H5PPluginAdmin::set_error(__($errorMessage, $this->plugin_slug));
                 }
 
                 return;
@@ -151,10 +151,10 @@ class H5PLibraryAdmin
                 // No files, we must be trying to auto download & update
 
                 check_admin_referer('h5p_update', 'download_update'); // Verify form
-                if (!H5P_Plugin_Admin::download_h5p_libraries(true)) {
+                if (!H5PPluginAdmin::download_h5p_libraries(true)) {
                     // Ignore update if it failed, user must manually update.
                     update_option('h5p_current_update', get_option('h5p_update_available', 0));
-                    H5P_Plugin_Admin::set_error(
+                    H5PPluginAdmin::set_error(
                         vsprintf(
                             wp_kses(
                                 __('Unfortunately, we were unable to update your installed content types. You must manually download the update from <a href="%s" target="_blank">H5P.org</a>, and then upload it through the <em>Upload Libraries</em> section. If you need futher assistance, please file a <a href="%s" target="_blank">support request</a> or check out our <a href="%s" target="_blank">forum</a>.',
@@ -246,7 +246,7 @@ class H5PLibraryAdmin
         }
 
         // Prepare our interface
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
 
         // Get number of contents for this library
@@ -303,7 +303,7 @@ class H5PLibraryAdmin
             )
         );
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $core = $plugin->get_h5p_instance('core');
 
         $library->semantics = $core->loadLibrarySemantics($library->name, $library->version->major,

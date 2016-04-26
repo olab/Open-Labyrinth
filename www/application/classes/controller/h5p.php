@@ -31,15 +31,6 @@ class Controller_H5P extends Controller_Base
         require_once MODPATH . 'h5p-php-library/h5p-default-storage.class.php';
         require_once MODPATH . 'h5p-php-library/h5p-development.class.php';
         require_once MODPATH . 'h5p-php-library/h5p-event-base.class.php';
-
-        //TODO: tmp, rename classes and files to use autoload
-        require_once 'application/classes/class-h5p-content-admin.php';
-        require_once 'application/classes/class-h5p-content-query.php';
-        require_once 'application/classes/class-h5p-library-admin.php';
-        require_once 'application/classes/class-h5p-plugin.php';
-        require_once 'application/classes/class-h5p-plugin-admin.php';
-        require_once 'application/classes/class-h5p-wordpress.php';
-        require_once 'application/classes/wp-db.php';
     }
 
     public static function loadH5PEditorClasses()
@@ -47,9 +38,6 @@ class Controller_H5P extends Controller_Base
         require_once MODPATH . 'h5p-editor-php-library/h5peditor-storage.interface.php';
         require_once MODPATH . 'h5p-editor-php-library/h5peditor.class.php';
         require_once MODPATH . 'h5p-editor-php-library/h5peditor-file.class.php';
-
-        //TODO: tmp, rename classes and files to use autoload
-        require_once 'application/classes/class-h5p-editor-wordpress-storage.php';
     }
 
     public function before()
@@ -84,7 +72,7 @@ class Controller_H5P extends Controller_Base
             die; // POST is required
         }
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $core = $plugin->get_h5p_instance('core');
 
         // Do as many as we can in five seconds.
@@ -245,7 +233,7 @@ class Controller_H5P extends Controller_Base
         }
 
         // No upload errors, try to install package
-        $plugin_admin = H5P_Plugin_Admin::get_instance();
+        $plugin_admin = H5PPluginAdmin::get_instance();
         $result = $plugin_admin->handle_upload(null, filter_input(INPUT_POST, 'h5p_upgrade_only') ? true : false);
 
         if ($result === false) {
@@ -279,7 +267,7 @@ class Controller_H5P extends Controller_Base
             Request::initial()->redirect(URL::base() . 'h5p/libraries');
         }
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
 
         // Check if this library can be deleted
@@ -307,7 +295,7 @@ class Controller_H5P extends Controller_Base
 
         $library = $library_admin->get_library($id);
 
-        $messages = H5P_Plugin_Admin::getMessagesHTML();
+        $messages = H5PPluginAdmin::getMessagesHTML();
 
         if (empty($library)) {
             die($messages);
@@ -334,11 +322,11 @@ class Controller_H5P extends Controller_Base
 
         $library = $library_admin->get_library($this->request->param('id'));
         if (!$library) {
-            die(H5P_Plugin_Admin::getMessagesHTML());
+            die(H5PPluginAdmin::getMessagesHTML());
         }
 
         // Add settings and translations
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $interface = $plugin->get_h5p_instance('interface');
 
         $settings = array(
@@ -385,9 +373,9 @@ class Controller_H5P extends Controller_Base
         );
 
         $this->add_admin_assets();
-        H5P_Plugin_Admin::add_script('library-list', '/scripts/h5p/h5p-library-details.js');
+        H5PPluginAdmin::add_script('library-list', '/scripts/h5p/h5p-library-details.js');
 
-        $messages = H5P_Plugin_Admin::getMessagesHTML();
+        $messages = H5PPluginAdmin::getMessagesHTML();
         $settings = $plugin->getSettingsHTML($settings, 'H5PAdminIntegration');
 
         $this->loadAssets();
@@ -571,7 +559,7 @@ class Controller_H5P extends Controller_Base
         // Find content
         $id = $this->request->param('id');
         if ($id !== null) {
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             $content = $plugin->get_content($id);
             if (!is_string($content)) {
 
@@ -585,7 +573,7 @@ class Controller_H5P extends Controller_Base
 
                 if ($embed_allowed) {
                     $lang = $plugin->get_language();
-                    $cache_buster = '?ver=' . H5P_Plugin::VERSION;
+                    $cache_buster = '?ver=' . H5PPlugin::VERSION;
 
                     // Get core settings
                     $integration = $plugin->get_core_settings();
@@ -644,16 +632,16 @@ class Controller_H5P extends Controller_Base
         $content_admin->load_content($id);
 
         if (is_string($content_admin->content)) {
-            H5P_Plugin_Admin::set_error($content_admin->content);
+            H5PPluginAdmin::set_error($content_admin->content);
             $settings = null;
             $embed_code = null;
             $has_errors = true;
         } else {
-            $plugin = H5P_Plugin::get_instance();
+            $plugin = H5PPlugin::get_instance();
             $embed_code = $plugin->add_assets($content_admin->content);
 
             ob_start();
-            H5P_Plugin::get_instance()->add_settings();
+            H5PPlugin::get_instance()->add_settings();
             $settings = ob_get_clean();
             $has_errors = false;
 
@@ -665,7 +653,7 @@ class Controller_H5P extends Controller_Base
             //    $this->content['library']['majorVersion'] . '.' . $this->content['library']['minorVersion']);
         }
 
-        $messages = H5P_Plugin_Admin::getMessagesHTML();
+        $messages = H5PPluginAdmin::getMessagesHTML();
 
         $this->loadAssets();
 
@@ -688,11 +676,11 @@ class Controller_H5P extends Controller_Base
         $content_admin->load_content($id);
 
         if (is_string($content_admin->content)) {
-            H5P_Plugin_Admin::set_error($content_admin->content);
+            H5PPluginAdmin::set_error($content_admin->content);
             $settings = null;
             $has_errors = true;
         } else {
-            $plugin_admin = H5P_Plugin_Admin::get_instance();
+            $plugin_admin = H5PPluginAdmin::get_instance();
             $settings = $plugin_admin->get_data_view_settings(
                 'h5p-content-results',
                 '/h5p/ajaxResult/' . $content_admin->content['id'],
@@ -737,7 +725,7 @@ class Controller_H5P extends Controller_Base
             //    $this->content['library']['majorVersion'] . '.' . $this->content['library']['minorVersion']);
         }
 
-        $messages = H5P_Plugin_Admin::getMessagesHTML();
+        $messages = H5PPluginAdmin::getMessagesHTML();
 
         $this->loadAssets();
 
@@ -763,13 +751,13 @@ class Controller_H5P extends Controller_Base
             die('Missing id');
         }
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $content = $plugin->get_content($id);
         if (is_string($content)) {
             die('Error loading content');
         }
 
-        $plugin_admin = H5P_Plugin_Admin::get_instance();
+        $plugin_admin = H5PPluginAdmin::get_instance();
         $plugin_admin->print_results($id);
     }
 
@@ -795,7 +783,7 @@ class Controller_H5P extends Controller_Base
 
         $contentExists = ($content !== null);
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $core = $plugin->get_h5p_instance('core');
 
         // Prepare form
@@ -816,9 +804,9 @@ class Controller_H5P extends Controller_Base
 
         //include_once('views/new-content.php');
         $settings = $content_admin->get_editor_assets($contentExists ? $content['id'] : null);
-        H5P_Plugin_Admin::add_script('jquery', '/scripts/h5p/jquery.js');
-        H5P_Plugin_Admin::add_script('disable', '/scripts/h5p/disable.js');
-        H5P_Plugin_Admin::add_script('toggle', '/scripts/h5p/editor/scripts/h5p-toggle.js');
+        H5PPluginAdmin::add_script('jquery', '/scripts/h5p/jquery.js');
+        H5PPluginAdmin::add_script('disable', '/scripts/h5p/disable.js');
+        H5PPluginAdmin::add_script('toggle', '/scripts/h5p/editor/scripts/h5p-toggle.js');
 
         $this->loadAssets();
 
@@ -841,14 +829,14 @@ class Controller_H5P extends Controller_Base
     public function action_addContentSubmit()
     {
         static::loadH5PEditorClasses();
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
 
         $id = $this->request->param('id');
         $content_admin = new H5PContentAdmin('H5P');
         if (!empty($id)) {
             $content_admin->load_content($id);
             if (is_string($content_admin->content)) {
-                //H5P_Plugin_Admin::set_error($content_admin->content);
+                //H5PPluginAdmin::set_error($content_admin->content);
                 Session::instance()->set('error_message', $content_admin->content);
                 $content_admin->content = null;
                 Request::initial()->redirect(URL::base() . 'h5p/addContent');
@@ -862,7 +850,7 @@ class Controller_H5P extends Controller_Base
         //    false
         //    ) {
         //        // The user isn't allowed to edit this content
-        //        H5P_Plugin_Admin::set_error(__('You are not allowed to edit this content.'));
+        //        H5PPluginAdmin::set_error(__('You are not allowed to edit this content.'));
 
         //        return;
         //    }
@@ -899,7 +887,7 @@ class Controller_H5P extends Controller_Base
                 $content_admin->get_disabled_content_features($core, $content);
 
                 // Handle file upload
-                $plugin_admin = H5P_Plugin_Admin::get_instance();
+                $plugin_admin = H5PPluginAdmin::get_instance();
                 $result = $plugin_admin->handle_upload($content);
             }
 
@@ -932,7 +920,7 @@ class Controller_H5P extends Controller_Base
             Request::initial()->redirect(URL::base() . 'h5p/addContent');
         }
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $content_admin = new H5PContentAdmin('H5P');
 
         $content_admin->load_content($id);
@@ -1006,7 +994,7 @@ class Controller_H5P extends Controller_Base
             'class' => 'h5p-edit-link'
         );
 
-        $plugin_admin = H5P_Plugin_Admin::get_instance();
+        $plugin_admin = H5PPluginAdmin::get_instance();
         $data_view = $plugin_admin->get_data_view_settings(
             'h5p-contents',
             admin_url('/h5p/contents'),
@@ -1038,7 +1026,7 @@ class Controller_H5P extends Controller_Base
         $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-library-list.js';
         $this->templateData['scripts_stack'][] = '/scripts/h5p/h5p-event-dispatcher.js';
 
-        $plugin = H5P_Plugin::get_instance();
+        $plugin = H5PPlugin::get_instance();
         $core = $plugin->get_h5p_instance('core');
         $interface = $plugin->get_h5p_instance('interface');
 
@@ -1159,7 +1147,7 @@ class Controller_H5P extends Controller_Base
             ->set('update_available', $update_available)
             ->set('updates_available', $updates_available)
             ->set('current_update', $current_update)
-            ->set('messages', H5P_Plugin_Admin::getMessagesHTML());
+            ->set('messages', H5PPluginAdmin::getMessagesHTML());
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -1194,7 +1182,7 @@ class Controller_H5P extends Controller_Base
     {
 
         // Load input vars.
-        $admin = H5P_Plugin_Admin::get_instance();
+        $admin = H5PPluginAdmin::get_instance();
         list($offset, $limit, $sort_by, $sort_dir, $filters, $facets) = $admin->get_data_view_input();
 
         // Different fields for insert
