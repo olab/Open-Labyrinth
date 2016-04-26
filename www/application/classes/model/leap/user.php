@@ -40,6 +40,9 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $history
  * @property string $modeUI
  * @property string $settings
+ * @property Model_Leap_Language $language
+ * @property Model_Leap_User_Type $type
+ * @property Model_Leap_User_Group[]|DB_ResultSet $groups
  */
 class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
 
@@ -143,13 +146,13 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User {
                 'parent_key' => array('id'),
                 'parent_model' => 'language',
             )),
-            
+
             'type' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('type_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'user_type',
             )),
-            
+
             'groups' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('user_id'),
                 'child_model' => 'user_group',
@@ -191,7 +194,7 @@ private static function initialize_metadata($object)
         if ($result->is_loaded()) {
             $this->id = $result[0]['id'];
             $this->load();
-            
+
             return $this;
         }else{
             return false;
@@ -265,7 +268,7 @@ private static function initialize_metadata($object)
 
         return $ids;
     }
-    
+
     public function getAllUsers($order = 'DESC')
     {
         return DB_ORM::select('User')->order_by('nickname', $order)->query()->as_array();
@@ -324,21 +327,21 @@ private static function initialize_metadata($object)
             ->column('is_lti', $isLti)
             ->execute();
     }
-    
+
     public function updateUser($id, $password, $nickname, $email, $typeId, $languageId, $isLti = false) {
         $this->id = $id;
         $this->load();
-        
+
         if($password != '') {
             $this->password = Auth::instance()->hash($password);
         }
-        
+
         $this->email = $email;
         $this->nickname = $nickname;
         $this->language_id = $languageId;
         $this->type_id = $typeId;
         $this->is_lti = $isLti;
-        
+
         $this->save();
     }
 
@@ -377,8 +380,8 @@ private static function initialize_metadata($object)
                 ->where('id', 'NOT IN', $ids)
                 ->column('id');
         $qResult = $builder->query();
-        
-        
+
+
         if($qResult->is_loaded()) {
             $result = array();
             foreach($qResult as $record) {
@@ -386,7 +389,7 @@ private static function initialize_metadata($object)
             }
             return $result;
         }
-        
+
         return NULL;
     }
 

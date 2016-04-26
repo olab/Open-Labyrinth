@@ -1,0 +1,24 @@
+{
+  "libraryStrings": {
+    "confirmDeleteSlide": "Êtes-vous sûr de vouloir supprimer cette diapositive ?",
+    "sortSlide": "Tri des diapositives - :dir",
+    "removeSlide": "Supprimer cette diapositive",
+    "cloneSlide": "Dupliquer cette diapositive",
+    "newSlide": "Ajouter une diapositive",
+    "insertElement": "Cliquer ou glisser pour ajouter :type",
+    "newKeyword": "Nouveau mot-clé",
+    "deleteKeyword": "Supprimer ce mot-clé",
+    "removeKeywords": "Supprimer tous les mots-clés",
+    "disableKeywords": "Désactiver les mots-clés",
+    "removeElement": "Supprimer cet élément",
+    "confirmRemoveElement": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "cancel": "Annuler",
+    "done": "Valider",
+    "remove": "Supprimer",
+    "keywordsTip": "Astuce mot-clé",
+    "popupTitle": "Rediger :type",
+    "loading": "Chargement...",
+    "element": "Element",
+    "activeSurfaceWarning": "Êtes-vous sûr de vouloir activer le mode de surface active? Cette action ne peut pas être annulée."
+  }
+}

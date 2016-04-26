@@ -1,0 +1,163 @@
+{
+  "semantics": [
+    {
+      "label": "Introduzione quiz",
+      "fields": [
+        {
+          "label": "Visualizza introduzione"
+        },
+        {
+          "label": "Titolo",
+          "description": "Questo titolo verrà visualizzato sopra il testo introduttivo."
+        },
+        {
+          "label": "Testo introduttivo",
+          "description": "Questo testo verrà visualizzato prima dell'inizio del quiz."
+        },
+        {
+          "label": "Testo pulsante Start"
+        },
+        {
+          "label": "Immagine di sfondo",
+          "description": "Immagine di sfondo facoltativa per l'introduzione."
+        }
+      ]
+    },
+    {
+      "label": "Immagine di sfondo",
+      "description": "Immagine di sfondo facoltativa per il set di domande."
+    },
+    {
+      "label": "Indicatore di avanzamento",
+      "description": "Stile dell'indicatore di avanzamento del set di domande.",
+      "options": [
+        {
+          "label": "Testuale"
+        },
+        {
+          "label": "Punti"
+        }
+      ]
+    },
+    {
+      "label": "Percentuale superamento quiz",
+      "description": "Percentuale minima del punteggio totale richiesto per passare il quiz."
+    },
+    {
+      "label": "Domande",
+      "widgets": [
+        {
+          "label": "Predefinito"
+        },
+        {
+          "label": "Testuale"
+        }
+      ],
+      "entity": "domanda",
+      "field": {
+        "label": "Tipo di domanda",
+        "description": "Biblioteca per questa domanda."
+      }
+    },
+    {
+      "label": "Testi di interfaccia nel quiz",
+      "fields": [
+        {
+          "label": "Pulsante Indietro"
+        },
+        {
+          "label": "Pulsante Prossimo"
+        },
+        {
+          "label": "Pulsante Fine"
+        },
+        {
+          "label": "Testo Avanzamento",
+          "description": "esto utilizzato se il testo Avanzamento è selezionato."
+        }
+      ]
+    },
+    {
+      "label": "Quiz terminato",
+      "fields": [
+        {
+          "label": "Visualizza risultati"
+        },
+        {
+          "label": "Intestazione Feedback",
+          "description": "Questa intestazione verrà visualizzata alla fine del quiz, dopo che l'utente avrà risposto a tutte le domande."
+        },
+        {
+          "label": "Testo visualizza punteggio",
+          "description": "Testo utilizzato per visualizzare il punteggio Totale dell'utente. \"@score\" verrà rimpiazzato dal punteggio calcolato, \"@total\" sarà rimpiazzato dal punteggio massimo possibile. "
+        },
+        {
+          "label": "Messaggio di superamento quiz",
+          "description": "Questo testo verrà visualizzato sopra il punteggio se l'utente ha superato con successo il quiz."
+        },
+        {
+          "label": "Commento di superamento quiz",
+          "description": "Questo commento verrà visualizzato dopo il punteggio se l'utente ha superato con successo il quiz."
+        },
+        {
+          "label": "Titolo quiz fallito",
+          "description": "Questo testo verrà visualizzato sopra il punteggio se l'utente non ha superato il quiz."
+        },
+        {
+          "label": "Commento quiz fallito",
+          "description": "Questo commento verrà visualizzato dopo il punteggio se l'utente non ha superato il quiz."
+        },
+        {
+          "label": "Etichetta pulsante Soluzione",
+          "description": "Testo per il pulsante Soluzione."
+        },
+        {
+          "label": "Etichetta pulsante Riprova",
+          "description": "Testo per il pulsante Riprova."
+        },
+        {
+          "label": "Testo pulsante Fine"
+        },
+        {
+          "label": "Visualizza il video prima dei risultati del quiz"
+        },
+        {
+          "label": "Abilita pulsante Salta video"
+        },
+        {
+          "label": "Etichetta pulsante Salta video"
+        },
+        {
+          "label": "Video di superamento quiz",
+          "description": "Questo video verrà visualizzato sopra il punteggio se l'utente ha superato con successo il quiz."
+        },
+        {
+          "label": "Video quiz fallito",
+          "description": "Questo testo verrà visualizzato se l'utente non ha superato il quiz."
+        }
+      ]
+    },
+    {
+      "label": "Impostazioni per i pulsanti \"Mostra soluzione\" e \"Riprova\".",
+      "description": "Queste opzioni consentono di ignorare quando visualizzare i pulsanti \"Mostra soluzione\" e \"Riprova\" nel contenuto H5P integrato.",
+      "fields": [
+        {
+          "label": "Abilita ignora impostazioni per \"Mostra soluzione\" e \"Riprova\".",
+          "description": "Se questa opzione è abilitata le proprie impostazioni per le domande saranno ignorate e verranno utilizzate le impostazioni seguenti."
+        },
+        {
+          "label": "Abilita pulsanti \"Mostra soluzione\".",
+          "description": "L'attivazione di questa opzione farà in modo che le domande mostrino il tasto \"Mostra soluzione\"."
+        },
+        {
+          "label": "Abilita \"Riprova\".",
+          "description": "L'attivazione di questa opzione farà in modo che per l'utente sia abilitata l'opzione \"Riprova\"."
+        }
+      ]
+    },
+    {
+      "label": "Question label text",
+      "default": "Question"
+    }
+  ]
+}

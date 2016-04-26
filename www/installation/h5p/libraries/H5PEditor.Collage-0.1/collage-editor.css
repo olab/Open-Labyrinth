@@ -1,0 +1,280 @@
+.h5p-collage-wrapper {
+  background-color: #fff;
+}
+.h5p-collage-empty:before {
+  background-image: none;
+}
+.h5p-collage [aria-label]:hover:before {
+  font-size: 14px;
+  content: attr(aria-label);
+  position: absolute;
+  line-height: 14px;
+  background-color: rgba(0,0,0,0.7);
+  padding: 4px 6px;
+  color: #e0e0e0;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25em;
+  white-space: nowrap;
+  border-radius: 0.25em;
+}
+.h5p-collage-change-image,
+.h5p-collage-zoom-in,
+.h5p-collage-zoom-out {
+  font-size: 16px;
+  position: absolute;
+  background: rgba(0,0,0,0.7);
+  color: #e0e0e0;
+  width: 1.625em;
+  height: 1.5em;
+  line-height: 1.5em;
+  outline: none;
+  cursor: pointer;
+  border-radius: 0.25em;
+  top: 0.25em;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.h5p-collage-change-image:after,
+.h5p-collage-zoom-out:after,
+.h5p-collage-zoom-in:after {
+  font-family: H5PFontAwesome4;
+  font-size: 14px;
+}
+.h5p-collage-zoom-out[aria-disabled=true],
+.h5p-collage-zoom-in[aria-disabled=true] {
+  opacity: 0.6;
+}
+.h5p-collage-zoom-in {
+  padding-top: 1px;
+  left: 4em;
+}
+.h5p-collage-zoom-in:after {
+  content: "\f067";
+}
+.h5p-collage-zoom-out {
+  padding-top: 1px;
+  left: 2.125em;
+}
+.h5p-collage-zoom-out:after {
+  content: "\f068";
+}
+.h5p-collage-empty .h5p-collage-zoom-in,
+.h5p-collage-loading .h5p-collage-zoom-in,
+.h5p-collage-empty .h5p-collage-zoom-out,
+.h5p-collage-loading .h5p-collage-zoom-out,
+.h5p-collage-loading .h5p-collage-change-image {
+  visibility: hidden;
+}
+.h5p-collage-change-image {
+  left: 0.25em;
+  padding-bottom: 1px;
+}
+.h5p-collage-change-image:after {
+  content: "\f0ad";
+}
+.h5p-collage-zoom-in:hover,
+.h5p-collage-zoom-in:focus,
+.h5p-collage-zoom-out:hover,
+.h5p-collage-zoom-out:focus,
+.h5p-collage-change-image:hover,
+.h5p-collage-change-image:focus {
+  background: rgba(0,0,0,0.85);
+  color: #f0f0f0;
+}
+.h5p-collage-zoom-in:active,
+.h5p-collage-zoom-out:active,
+.h5p-collage-change-image:active {
+  color: #c0c0c0;
+}
+.h5p-collage-empty .h5p-collage-change-image {
+  width: 100%;
+  height: 100%;
+  color: #ddd;
+  cursor: pointer;
+  line-height: 1em;
+  background: transparent;
+  padding: 0;
+  top: 0;
+  left: 0;
+}
+.h5p-collage-empty .h5p-collage-change-image:after {
+  font-size: 4em;
+  content: "\f067";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+.h5p-collage-empty .h5p-collage-change-image:hover:before {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 2.5em);
+  margin-top: -0.25em;
+  background-color: transparent;
+  color: #afafaf;
+}
+.h5p-collage-empty .h5p-collage-change-image:hover,
+.h5p-collage-empty .h5p-collage-change-image:focus {
+  color: #afafaf;
+}
+.h5p-collage-empty .h5p-collage-change-image:active {
+  color: #668fbd;
+}
+.h5p-collage-image {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  cursor: pointer;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+.h5p-collage-grabbed {
+  cursor: move;
+  cursor: -webkit-grabbing;
+}
+
+.h5p-collage-editor-layout-selector {
+  overflow: hidden;
+  margin-bottom: 0.5em;
+}
+.h5p-collage-editor-layout-preview {
+  float: left;
+  width: 4em;
+  height: 3em;
+  margin: 0 1em 1em 0;
+  outline: none;
+}
+.h5p-collage-editor-layout-preview .h5p-collage-col:before {
+  display: block;
+  background: #ddd;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  content: " ";
+}
+.h5p-collage-editor-layout-preview:hover .h5p-collage-col:before,
+.h5p-collage-editor-layout-preview:focus .h5p-collage-col:before {
+  background: #afafaf;
+}
+.h5p-collage-editor-layout-preview:active .h5p-collage-col:before {
+  background: #668fbd;
+}
+.h5p-collage-editor-layout-preview.h5p-collage-selected-layout .h5p-collage-col:before {
+  background: #666;
+}
+.h5p-collage-editor-wrapper {
+  overflow: hidden;
+}
+.h5p-collage-editor .h5peditor-label {
+  margin-bottom: 0.5em;
+}
+.h5p-collage-editor .h5peditor-field-description {
+  margin-top: 0.25em;
+}
+.h5p-collage-selector-preview {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0.25em 0.5em;
+  font-size: 0.95em;
+  width: 2em;
+}
+.h5p-collage-spacing-item,
+.h5p-collage-frame-item,
+.h5p-collage-heightRatio-item {
+  float: left;
+  margin: 1em 1em 0;
+}
+.h5p-collage-heightRatio-item {
+  margin-bottom: 1em;
+}
+.h5p-collage-frame-selector {
+  line-height: 1.25em;
+}
+.h5p-collage-editor .h5peditor-form {
+  padding: 0;
+  background-color: #e9e9e9;
+}
+.h5p-collage-template-item {
+  padding: 0.5em 1em;
+}
+.h5p-collage-inner-wrapper,
+.h5p-collage-editor-layout-selector {
+  padding: 0.5em;
+  background-color: #fff;
+  box-shadow: 0 0 0.25em #999 inset;
+}
+.h5p-collage-collage-item .h5peditor-label {
+  padding: 0.25em 1em 0;
+}
+.h5p-collage-collage-item .h5peditor-field-description {
+  font-size: 12px;
+  padding: 0.33em 1.34em 0;
+}
+.h5p-no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.h5p-collage-photo:focus {
+  outline: none;
+}
+.h5p-collage-photo:focus:after {
+  content: " ";
+  box-shadow: 0 0 1em #fff inset;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.h5p-collage-loading:after {
+  content: "";
+  position: absolute;
+  width: 4.5em;
+  height: 4.5em;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border-top: 0.25em solid #d6d6d6;
+  box-shadow: 0 0 0.5em #d6d6d6;
+  background: transparent;
+  animation: spinning 1s infinite linear;
+}
+.h5p-collage-loading:before {
+  background-image: none;
+}
+@keyframes spinning {
+  0% {
+    transform: translate(-50%,-50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%,-50%) rotate(360deg);
+  }
+}
+
+.h5p-collage-zoom-level {
+  position: absolute;
+  bottom: 0.25em;
+  right: 0.5em;
+
+  line-height: 1em;
+  font-size: 16px;
+  color: #f0f0f0;
+  text-shadow: 0 0 0.125em #101010;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.5s, opacity 0.5s linear 0s;
+}
+.h5p-collage-zoom-level.h5p-collage-visible {
+  visibility: visible;
+  opacity: 1;
+  transition: none;
+}

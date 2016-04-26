@@ -30,6 +30,12 @@
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>"/>
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.css'); ?>">
 
+<?php if (!empty($templateData['styles_stack'])) { ?>
+    <?php foreach($templateData['styles_stack'] as $style) { ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get($style); ?>">
+    <?php } ?>
+<?php } ?>
+
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-1.7.2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-touch-punch.min.js'); ?>"></script>
@@ -498,5 +504,22 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
 </script>
 <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/user-notepad.js'); ?>"></script>
+
+<?php if (!empty($templateData['scripts_stack'])) { ?>
+    <?php foreach($templateData['scripts_stack'] as $script) { ?>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get($script); ?>"></script>
+    <?php } ?>
+<?php } ?>
+
+<script>
+    <?php
+    if (!empty($templateData['raw_scripts_stack'])) {
+        foreach ($templateData['raw_scripts_stack'] as $script) {
+            echo rtrim(trim($script), ';') . ";\n";
+        }
+    }
+    ?>
+</script>
+
 </body>
 </html>

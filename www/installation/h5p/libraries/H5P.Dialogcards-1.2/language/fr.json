@@ -1,0 +1,68 @@
+{
+  "semantics": [
+    {
+      "label": "Titre"
+    },
+    {
+      "label": "Consigne"
+    },
+    {
+      "widgets": [
+        {
+          "label": "Par défaut"
+        }
+      ],
+      "label": "Dialogues",
+      "entity": "dialogue",
+      "field": {
+        "label": "Question",
+        "fields": [
+          {
+            "label": "Texte",
+            "description": "Allusion pour la première partie du dialogue"
+          },
+          {
+            "label": "Réponse",
+            "description": "Allusion pour la seconde partie du dialogue"
+          },
+          {
+            "label": "Image",
+            "description": "Optional image for the card. (The card may use just an image, just a text or both)"
+          },
+          {
+            "label": "Audio files"
+          },
+          {
+            "label": "Aide",
+            "fields": [
+              {
+                "label": "Aide pour le texte",
+                "description": "Aide pour la première partie du dialogue"
+              },
+              {
+                "label": "Aide pour la réponse",
+                "description": "Aide pour la seconde partie du dialogue"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Texte pour le bouton retourner"
+    },
+    {
+      "label": "Texte pour le bouton suivant"
+    },
+    {
+      "label": "Texte pour le bouton précédent"
+    },
+    {
+      "label": "Texte pour le bouton Réessayer"
+    },
+    {
+      "label": "Texte de progression",
+      "description": "Les variables disponibles sont @card and @total."
+    }
+  ]
+}

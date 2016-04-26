@@ -1,0 +1,190 @@
+{
+  "semantics": [
+  {
+    "fields":
+    [
+      {
+        "label": "Otsikko",
+        "description": "Ensimmäisen ruudun otsikko."
+      },
+      {
+        "label": "Leipäteksti",
+        "description": "Anna ensimmäisen sivun varsinainen sisältö."
+      },
+      {
+        "label": "Zoomin alkutaso",
+        "description": "Voit muuttaa zoomauksen oletustasoa. Arvo vastaa zoomausnapin painallusta. Negatiivinen arvo vastaa loitonnusta ja positiivinen lähennystä. Oletusarvo on 0."
+      },
+      {
+        "label": "Background image",
+        "description": "An image to display as background."
+      },
+      {
+        "label": "Height",
+        "description": "The height in pixels"
+      },
+      {
+        "label": "Media",
+        "description": "Voit laittaa \"etusivulle\" mediaa.",
+        "fields": [
+          {
+            "label": "Media",
+            "description": "Linkki median URL-osoitteeseen (tällä hetkellä tuettuna Twitter, YouTube, Flickr, Vimeo, Wikipedia, Google Maps ja SoundCloud)."
+          },
+          {
+            "label": "Lähdetiedot",
+            "description": "Median lähdetiedot."
+          },
+          {
+            "label": "Kuvateksti",
+            "description": "Anna medialle kuvaus."
+          }
+        ]
+      },
+      {
+        "label": "Päivämäärät",
+        "description": "Lisää päivämääriä aikajanalle.",
+        "field": {
+          "label": "Päivämäärä",
+          "description": "Päivämäärä",
+          "fields":
+          [
+            {
+              "label": "Alkupäivämäärä",
+              "description": "VVVV,KK,PP (Anna vähintään VVVV)."
+            },
+            {
+              "label": "Loppupäivämäärä",
+              "description": "VVVV,KK,PP (Anna vähintään VVVV)."
+            },
+            {
+              "label": "Otsikko",
+              "description": "Anna päivämäärälle otsikko."
+            },
+            {
+              "label": "Leipäteksti",
+              "description": "Anna päivämäärälle sisältö."
+            },
+            {
+              "label": "Avainsanat",
+              "description": "Anna avainsanat (kategoriat)."
+            },
+            {
+              "label": "Media",
+              "description": "",
+              "fields": [
+                {
+                  "label": "Media",
+                  "description": "Linkki median URL-osoitteeseen (tällä hetkellä tuettuna Twitter, YouTube, Flickr, Vimeo, Wikipedia, Google Maps ja SoundCloud)."
+                },
+                {
+                  "label": "Esikatselukuva",
+                  "description": "Anna tarvittaessa esikatselukuva, 32x32"
+                },
+                {
+                  "label": "Lähdetiedot",
+                  "description": "Median lähdetiedot."
+                },
+                {
+                  "label": "Kuvateksti",
+                  "description": "Anna medialle kuvaus."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "label": "Aikakaudet",
+        "description": "Lisää aikakausi aikajanalle.",
+        "field": {
+          "label": "Aikakausi",
+          "description": "",
+          "fields":
+          [
+            {
+              "label": "Alkupäivämäärä",
+              "description": "VVVV,KK,PP (Anna vähintään VVVV)."
+            },
+            {
+              "label": "Loppupäivämäärä",
+              "description": "VVVV,KK,PP (Anna vähintään VVVV)."
+            },
+            {
+              "label": "Otsikko",
+              "description": "Aikakauden otsikko."
+            },
+            {
+              "label": "Teksti",
+              "description": "Aikakauden sisältöteksti"
+            },
+            {
+              "label": "Avainsana",
+              "description": "Aikakauden avainsanat (kategoria)."
+            }
+          ]
+        }
+      },
+      {
+        "label": "Kieli",
+        "description": "Käyttöliittymän kieli.",
+        "options": [
+          {"label": "Afrikaans"},
+          {"label": "Arabic"},
+          {"label": "Armenian"},
+          {"label": "Basque"},
+          {"label": "Bulgarian"},
+          {"label": "Catalan"},
+          {"label": "Chinese"},
+          {"label": "Croatian / Hrvatski"},
+          {"label": "Czech"},
+          {"label": "Danish"},
+          {"label": "Dutch"},
+          {"label": "English"},
+          {"label": "English (24-hour time)"},
+          {"label": "Esperanto"},
+          {"label": "Estonian"},
+          {"label": "Faroese"},
+          {"label": "Farsi"},
+          {"label": "Finnish"},
+          {"label": "French"},
+          {"label": "Galician"},
+          {"label": "Georgian"},
+          {"label": "German / Deutsch"},
+          {"label": "Greek"},
+          {"label": "Hebrew"},
+          {"label": "Hungarian"},
+          {"label": "Icelandic"},
+          {"label": "Indonesian"},
+          {"label": "Italian"},
+          {"label": "Japanese"},
+          {"label": "Korean"},
+          {"label": "Latvian"},
+          {"label": "Lithuanian"},
+          {"label": "Luxembourgish"},
+          {"label": "Malay"},
+          {"label": "Nepali"},
+          {"label": "Norwegian"},
+          {"label": "Polish"},
+          {"label": "Portuguese"},
+          {"label": "Portuguese (Brazilian)"},
+          {"label": "Romansh"},
+          {"label": "Russian"},
+          {"label": "Serbian - Cyrillic"},
+          {"label": "Serbian - Latin"},
+          {"label": "Sinhalese"},
+          {"label": "Slovak"},
+          {"label": "Slovenian"},
+          {"label": "Spanish"},
+          {"label": "Swedish"},
+          {"label": "Tagalog"},
+          {"label": "Tamil"},
+          {"label": "Taiwanese"},
+          {"label": "Telugu"},
+          {"label": "Turkish"},
+          {"label": "Ukrainian"}
+        ]
+      }
+    ]
+  }]
+}

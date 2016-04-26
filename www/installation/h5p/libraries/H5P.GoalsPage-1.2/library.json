@@ -1,0 +1,41 @@
+{
+  "title": "Goals page",
+  "description": "A page where you can make a list of goals.",
+  "majorVersion": 1,
+  "minorVersion": 2,
+  "patchVersion": 1,
+  "runnable": 0,
+  "author": "Joubel AS",
+  "license": "MIT",
+  "machineName": "H5P.GoalsPage",
+  "preloadedCss": [
+    {
+      "path": "goals-page.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "goals-page.js"
+    },
+    {
+      "path": "goal-instance.js"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "MustacheJS",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "FontAwesome",
+      "majorVersion": 4,
+      "minorVersion": 5
+    },
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 2
+    }
+  ]
+}

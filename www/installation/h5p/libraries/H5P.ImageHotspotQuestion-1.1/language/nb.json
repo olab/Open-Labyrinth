@@ -1,0 +1,67 @@
+{
+  "semantics": [
+    {
+      "label": "Oppgave innstillinger.",
+      "fields": [
+        {
+          "label": "Bakgrunnsbilde",
+          "fields": [
+            {
+              "label": "Oppgave tittel",
+              "description": "Brukes blant annet i oppsummeringer og statistikk."
+            },
+            {
+              "label": "Bakgrunnsbilde",
+              "description": "Velg et bilde som bakgrunn til oppgaven."
+            }
+          ]
+        },
+        {
+          "label": "Målfelt",
+          "description": "Velg figur på målfelt og innstillinger. Velg deretter posisjon og størrelse som ønsket.",
+          "fields": [
+            {
+              "label": "Oppgavebeskrivelse",
+              "description": "Instruksjoner om hvordan man skal løse oppgaven."
+            },
+            {
+              "label": "Målfelt",
+              "entity": "Målfelt",
+              "field": {
+                "label": "Målfelt",
+                "fields": [
+                  {
+                    "label": "Bruker innstillinger",
+                    "fields": [
+                      {
+                        "label": "Riktig",
+                        "description": "Det kan være flere riktige målfelt. Brukeren får umiddelbar tilbakemelding ved avgitt svar."
+                      },
+                      {
+                        "label": "Tilbakemelding"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Kalkulerte innstillinger",
+                    "fields": [
+                      {},
+                      {},
+                      {},
+                      {},
+                      {}
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Tilbakemelding når brukeren velger ikke treffer noen målfelt:",
+              "placeholder": "Du traff ingen målfelt, prøv igjen!"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

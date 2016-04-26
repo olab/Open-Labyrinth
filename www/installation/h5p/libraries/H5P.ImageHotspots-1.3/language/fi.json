@@ -1,0 +1,47 @@
+{
+  "semantics": [
+    {
+      "label": "Background image",
+      "description": "Image shown on background."
+    },
+    {
+      "label": "Color",
+      "description": "The color of the hotspots specified using a hex color code"
+    },
+    {
+      "entity": "hotspot",
+      "label": "Hotspots",
+      "field": {
+        "label": "Hotspot",
+        "fields": [
+          {
+            "label": "Position",
+            "fields": [
+              {
+                "label": "Horizontal position (x)",
+                "description": "The horizontal hotspot location in percent. (0 - 100)"
+              },
+              {
+                "label": "Vertical position (y)",
+                "description": "The vertical hotspot location in percent. (0 - 100)"
+              }
+            ]
+          },
+          {
+            "label": "Cover entire frame on popup"
+          },
+          {
+            "label": "Header",
+            "description": "optional"
+          },
+          {
+            "label": "Popup content",
+            "field": {
+              "label": "Content Item"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

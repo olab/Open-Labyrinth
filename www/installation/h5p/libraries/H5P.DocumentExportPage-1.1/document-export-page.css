@@ -1,0 +1,65 @@
+.h5p-document-export-page {
+  padding: 0.5em 1em;
+}
+
+.h5p-document-export-page .export-title {
+  padding: 0.5em 0;
+  margin-bottom: 0.5em;
+  font-size: 18px;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+.h5p-document-export-page .export-description {
+  padding: 1em 0em;
+}
+
+.h5p-document-export-page .export-help-text {
+  float: right;
+  color: #1a73d9;
+  cursor: pointer;
+  font-size: 0.8em;
+  line-height: 3.6em;
+}
+
+.h5p-document-export-page .export-help-text:hover {
+  color: #1a4773;
+}
+
+.h5p-document-export-page .export-document-button:before {
+  font-family: "H5PFontAwesome4";
+  content: "\f0f6";
+  margin-right: 0.75em;
+  position: relative;
+}
+
+/* Active state */
+.h5p-document-export-page .export-document-button:active:before {
+  top: 2px;
+}
+
+/* --------------------------- Required inputs not filled ------------------- */
+.h5p-document-export-page .export-error-message {
+  display: none;
+  padding: 1em 0;
+  color: red;
+}
+
+.h5p-document-export-page.required-inputs-not-filled .export-error-message {
+  display: block;
+}
+
+.h5p-document-export-page.required-inputs-not-filled .export-document-button {
+  display: none;
+}
+
+/* Override export page styling */
+.joubel-exportable-area .goals-output p.category {
+  margin-bottom: 0;
+}
+
+.joubel-exportable-area .goals-output ul {
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}

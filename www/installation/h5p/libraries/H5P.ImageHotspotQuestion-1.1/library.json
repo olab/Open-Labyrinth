@@ -1,0 +1,44 @@
+{
+  "title": "Find the Hotspot",
+  "description": "A question that is answered by pressing the correct hotspot.",
+  "contentType": "Question",
+  "majorVersion": 1,
+  "minorVersion": 1,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "Joubel AS",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 6
+  },
+  "machineName": "H5P.ImageHotspotQuestion",
+  "preloadedCss": [
+    {
+      "path": "image-hotspot-question.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "image-hotspot-question.js"
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.Wizard",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5PEditor.ImageHotspotQuestion",
+      "majorVersion": 1,
+      "minorVersion": 1
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "H5P.Question",
+      "majorVersion": 1,
+      "minorVersion": 1
+    }
+  ]
+}

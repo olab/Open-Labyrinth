@@ -1,0 +1,16 @@
+{
+  "title": "Mustache JS",
+  "contentType": "library",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+  "runnable": 0,
+  "machineName": "MustacheJS",
+  "author": "Joubel AS",
+  "license": "MIT",
+  "preloadedJs": [
+    {
+      "path": "mustache.js"
+    }
+  ]
+}

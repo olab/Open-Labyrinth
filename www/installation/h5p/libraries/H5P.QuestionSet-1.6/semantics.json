@@ -1,0 +1,336 @@
+[
+  {
+    "name": "introPage",
+    "type": "group",
+    "label": "Quiz introduction",
+    "fields": [
+      {
+        "name": "showIntroPage",
+        "type": "boolean",
+        "label": "Display introduction"
+      },
+      {
+        "name": "title",
+        "type": "text",
+        "label": "Title",
+        "optional": true,
+        "description": "This title will be displayed above the introduction text.",
+        "tags": [
+          "sub",
+          "sup",
+          "strong",
+          "em"
+        ]
+      },
+      {
+        "name": "introduction",
+        "type": "text",
+        "widget": "html",
+        "label": "Introduction text",
+        "optional": true,
+        "description": "This text will be displayed before the quiz starts.",
+        "enterMode": "p",
+        "tags": [
+          "sub",
+          "sup",
+          "strong",
+          "em",
+          "p"
+        ]
+      },
+      {
+        "name": "startButtonText",
+        "type": "text",
+        "label": "Start button text",
+        "optional": true,
+        "default": "Start Quiz"
+      },
+      {
+        "name": "backgroundImage",
+        "type": "image",
+        "label": "Background image",
+        "optional": true,
+        "description": "An optional background image for the introduction."
+      }
+    ]
+  },
+  {
+    "name": "backgroundImage",
+    "type": "image",
+    "label": "Background image",
+    "optional": true,
+    "description": "An optional background image for the Question set."
+  },
+  {
+    "name": "progressType",
+    "type": "select",
+    "label": "Progress indicator",
+    "description": "Question set progress indicator style.",
+    "options": [
+      {
+        "value": "textual",
+        "label": "Textual"
+      },
+      {
+        "value": "dots",
+        "label": "Dots"
+      }
+    ],
+    "default": "dots"
+  },
+  {
+    "name": "passPercentage",
+    "type": "number",
+    "label": "Pass percentage",
+    "description": "Percentage of Total score required for passing the quiz.",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "default": 50
+  },
+  {
+    "name": "questions",
+    "label": "Questions",
+    "type": "list",
+    "widgets": [
+      {
+        "name": "VerticalTabs",
+        "label": "Default"
+      },
+      {
+        "name": "QuestionSetTextualEditor",
+        "label": "Textual"
+      }
+    ],
+    "min": 1,
+    "entity": "question",
+    "field": {
+      "name": "question",
+      "type": "library",
+      "label": "Question type",
+      "description": "Library for this question.",
+      "options": [
+        "H5P.MultiChoice 1.5",
+        "H5P.DragQuestion 1.5",
+        "H5P.Blanks 1.4",
+        "H5P.MarkTheWords 1.5",
+        "H5P.DragText 1.4"
+      ]
+    }
+  },
+  {
+    "name": "texts",
+    "type": "group",
+    "label": "Interface texts in quiz",
+    "common": true,
+    "fields": [
+      {
+        "name": "prevButton",
+        "type": "text",
+        "label": "Back button",
+        "default": "Previous"
+      },
+      {
+        "name": "nextButton",
+        "type": "text",
+        "label": "Next button",
+        "default": "Next"
+      },
+      {
+        "name": "finishButton",
+        "type": "text",
+        "label": "Finish button",
+        "default": "Finish"
+      },
+      {
+        "name": "textualProgress",
+        "type": "text",
+        "label": "Progress text",
+        "description": "Text used if textual progress is selected.",
+        "default": "Question: @current of @total questions",
+        "tags": [
+          "strong",
+          "em"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "endGame",
+    "type": "group",
+    "label": "Quiz finished",
+    "fields": [
+      {
+        "name": "showResultPage",
+        "type": "boolean",
+        "label": "Display results",
+        "default": true
+      },
+      {
+        "name": "message",
+        "type": "text",
+        "label": "Feedback heading",
+        "default": "Your result:",
+        "optional": true,
+        "description": "This heading will be displayed at the end of the quiz when the user has answered all questions.",
+        "tags": [
+          "strong",
+          "em"
+        ]
+      },
+      {
+        "name": "scoreString",
+        "type": "text",
+        "label": "Score display text",
+        "description": "Text used to display Total user score. \"@score\" will be replaced by calculated score, \"@total\" will be replaced by maximum possible score. ",
+        "default": "You got @score points of @total possible.",
+        "optional": true
+      },
+      {
+        "name": "successGreeting",
+        "type": "text",
+        "label": "Quiz passed greeting",
+        "placeholder": "Congratulations!",
+        "default": "Congratulations!",
+        "optional": true,
+        "description": "This text will be displayed above the score if the user has successfully passed the quiz.",
+        "tags": [
+          "strong",
+          "em"
+        ]
+      },
+      {
+        "name": "successComment",
+        "type": "text",
+        "widget": "html",
+        "label": "Passed comment",
+        "default": "You did very well!",
+        "optional": true,
+        "description": "This comment will be displayed after the score if the user has successfully passed the quiz.",
+        "tags": [
+          "sub",
+          "sup",
+          "strong",
+          "em",
+          "a",
+          "p"
+        ]
+      },
+      {
+        "name": "failGreeting",
+        "type": "text",
+        "label": "Quiz failed title",
+        "default": "You did not pass this time.",
+        "optional": true,
+        "description": "This text will be displayed above the score if the user has failed the quiz.",
+        "tags": [
+          "strong",
+          "em"
+        ]
+      },
+      {
+        "name": "failComment",
+        "type": "text",
+        "widget": "html",
+        "label": "Failed comment",
+        "default": "Have another try!",
+        "optional": true,
+        "description": "This comment will be displayed after the score if the user has failed the quiz.",
+        "tags": [
+          "sub",
+          "sup",
+          "strong",
+          "em",
+          "a",
+          "p"
+        ]
+      },
+      {
+        "name": "solutionButtonText",
+        "type": "text",
+        "label": "Solution button label",
+        "default": "Show solution",
+        "description": "Text for the solution button."
+      },
+      {
+        "name": "retryButtonText",
+        "type": "text",
+        "label": "Retry button label",
+        "default": "Retry",
+        "description": "Text for the retry button."
+      },
+      {
+        "name": "finishButtonText",
+        "type": "text",
+        "label": "Finish button text",
+        "default": "Finish"
+      },
+      {
+        "name": "showAnimations",
+        "type": "boolean",
+        "label": "Display video before quiz results"
+      },
+      {
+        "name": "skippable",
+        "type": "boolean",
+        "label": "Enable skip video button"
+      },
+      {
+        "name": "skipButtonText",
+        "type": "text",
+        "label": "Skip video button label",
+        "default": "Skip video"
+      },
+      {
+        "name": "successVideo",
+        "type": "video",
+        "label": "Passed video",
+        "optional": true,
+        "description": "This video will be played if the user successfully passed the quiz."
+      },
+      {
+        "name": "failVideo",
+        "type": "video",
+        "label": "Fail video",
+        "optional": true,
+        "description": "This video will be played if the user failes the quiz."
+      }
+    ]
+  },
+  {
+    "name": "override",
+    "type": "group",
+    "label": "Settings for \"Show solution\" button and \"Retry\".",
+    "description": "These options will let you override when to display \"Show solution\" button and \"Retry\" in integrated h5p content.",
+    "optional": true,
+    "fields": [
+      {
+        "name": "overrideButtons",
+        "type": "boolean",
+        "label": "Enable override for \"Show solution\" and \"Retry\" settings.",
+        "description": "If this is enabled the questions own settings will be ignored and the below settings will be used instead.",
+        "default": false
+      },
+      {
+        "name": "overrideShowSolutionButton",
+        "type": "boolean",
+        "label": "Enable \"Show solution\" buttons.",
+        "description": "Enabling this option will make questions show the \"Show solution\" button.",
+        "default": false
+      },
+      {
+        "name": "overrideRetry",
+        "type": "boolean",
+        "label": "Enable \"Retry\".",
+        "description": "Enabling this option will make the user able to \"Retry\" .",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "questionLabel",
+    "type": "text",
+    "label": "Question label text",
+    "default": "Question"
+  }
+]

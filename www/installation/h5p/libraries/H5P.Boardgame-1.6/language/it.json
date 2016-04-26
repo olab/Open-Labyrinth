@@ -1,0 +1,150 @@
+{
+  "semantics": [
+    {
+      "label": "Titolo del gioco",
+      "description": "Questo è il titolo del gioco che si sta creando."
+    },
+    {
+      "label": "Sfondo del tavolo",
+      "description": "Selezionare un'immagine di sfondo adatta per il vostro gioco da tavolo."
+    },
+    {
+      "label": "Dimensioni del tavolo",
+      "description": "Specificare quanto spazio (in px) il gioco da tavolo dovrebbe prendere. Il rapporto del formato deve corrispondere a quello della tua immagine di sfondo.",
+      "fields": [
+        {},
+        {}
+      ]
+    },
+    {
+      "label": "Abilita ombreggiatura",
+      "description": "Abilita un'ombreggiatura attorno al tavolo. Se abilitata il tavolo occupa più spazio rispetto alle dimensioni che il tavolo suggerisce."
+    },
+    {
+      "label": "Introduzione gioco",
+      "fields": [
+        {
+          "label": "Testo di benvenuto e istruzioni",
+          "description": "Spiegare ciò che l'utente deve fare e lo scopo del gioco."
+        },
+        {
+          "label": "Testo pulsante",
+          "description": "Etichetta del pulsante che l'utente deve premere per iniziare il gioco."
+        }
+      ]
+    },
+    {
+      "label": "Punti focali",
+      "entity": "punto focale",
+      "description": "I punti focali sono mini-giochi che sono posti sul tavolo. Es.: Quiz, Hangman.",
+      "field": {
+        "label": "Hotspot",
+        "fields": [
+          {
+            "label": "Titolo",
+            "description": "Dài un nome al tuo punto focale."
+          },
+          {
+            "label": "Immagine punto focale",
+            "description": "Immagine utilizzata sul tavolo per gli utenti per identificare il punto focale."
+          },
+          {
+            "label": "Hotspot immagine - Superato",
+            "description": "L'immagine del punto focale sarà così modificata una volta che l'utente ha completato e superato un minigioco."
+          },
+          {
+            "label": "Hotspot immagine - Fallito",
+            "description": "L'immagine del punto focale sarà così modificata una volta che l'utente non ha superato un minigioco."
+          },
+          {
+            "label": "Posizione punto focale",
+            "description": "Posizionare il punto focale sul tabellone di gioco utilizzando le coordinate in pixel.",
+            "default": {},
+            "fields": [
+              {},
+              {}
+            ]
+          },
+          {
+            "label": "Avvio",
+            "description": "Scegliere il minigioco da avviare quando l'utente sceglie questo punto focale."
+          }
+        ]
+      }
+    },
+    {
+      "label": "Indicatore di avanzamento",
+      "fields": [
+        {
+          "label": "Abilita l'indicatore di avanzamento"
+        },
+        {
+          "entity": "immagine",
+          "description": "Selezionare le immagini da utilizzare per l'indicatore di avanzamento. Una per ogni step di avanzamento e una per le risposte non ancora date.",
+          "field": {
+            "label": 0
+          }
+        },
+        {
+          "label": "Posizione indicatore di avanzamento",
+          "description": "Posiziona l'indicatore di avanzamento sul tavolo usando le coordinate in pixel.",
+          "fields": [
+            {},
+            {}
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Gioco completato",
+      "fields": [
+        {
+          "label": "Video terminato",
+          "description": "Video da avviare prima che i risultati del gioco siano mostrati."
+        },
+        {
+          "label": "Consenti salto del video terminato."
+        },
+        {
+          "label": "Salta testo del pulsante",
+          "description": "Etichetta per il tasto che l'utente deve premere per saltare il video terminato."
+        }
+      ]
+    },
+    {
+      "label": "Risultati gioco",
+      "fields": [
+        {
+          "label": "Testo risultato",
+          "description": "Il testo che spiega il punteggio del gioco. Variabili: @score, @total, @percentage."
+        },
+        {
+          "label": "Testo del pulsante riprova",
+          "description": "Etichetta per il pulsante che l'utente deve premere per ricominciare."
+        },
+        {
+          "label": "Pulsante mostra soluzioni",
+          "description": "Etichetta per il pulsante che l'utente deve premere per visualizzare le soluzioni."
+        }
+      ]
+    },
+    {
+      "label": "Impostazioni per i pulsanti \"Mostra soluzione\" e \"Riprova\".",
+      "description": "Queste opzioni consentono di ignorare quando visualizzare i pulsanti \"Mostra soluzione\" e \"Riprova\" nel contenuto H5P integrato.",
+      "fields": [
+        {
+          "label": "Abilita ignora impostazioni per \"Mostra soluzione\" e \"Riprova\".",
+          "description": "Se questa opzione è abilitata le proprie impostazioni per le domande saranno ignorate e verranno utilizzate le impostazioni seguenti."
+        },
+        {
+          "label": "Abilita pulsanti \"Mostra soluzione\".",
+          "description": "L'attivazione di questa opzione farà in modo che le domande mostrino il tasto \"Mostra soluzione\"."
+        },
+        {
+          "label": "Abilita \"Riprova\".",
+          "description": "L'attivazione di questa opzione farà in modo che per l'utente sia abilitata l'opzione \"Riprova\"."
+        }
+      ]
+    }
+  ]
+}

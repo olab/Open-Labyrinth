@@ -1,0 +1,149 @@
+{
+  "semantics": [
+    {
+      "label": "Spørsmålsbilete",
+      "description": "Eit valfritt bilete som skal visast over spørsmålet."
+    },
+    {
+      "label": "Spørsmål"
+    },
+    {
+      "label": "Svaralternativ",
+      "description": "Svaralternativa brukaren kan velje mellom",
+      "entity": "svaralternativ",
+      "field": {
+        "label": "Svaralternativ",
+        "fields": [
+          {
+            "label": "Tekst"
+          },
+          {
+            "label": "Riktig"
+          },
+          {
+            "label": "Tips",
+            "fields": [
+              {
+                "label": "Tipstekst"
+              },
+              {
+                "label": "Tilbakemelding for valgt alternativ",
+                "description": "Visast når brukarane sjekkar hans svar."
+              },
+              {
+                "label": "Tilbakemelding for ikke valgt alternativ",
+                "description": "Visast når løysinga visast."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Oversetting for leietekstar i fleirval",
+      "fields": [
+        {
+          "label": "Tekst for \"Sjekk svar\" knapp",
+          "default": "Sjekk"
+        },
+        {
+          "label": "Tekst for \"Vis svar\" knapp",
+          "default": "Vis svar"
+        },
+        {
+          "label": "Merkelapp for «Prøv igjen»-knappen.",
+          "default": "Prøv igjen"
+        },
+        {
+          "label": "Tips tekst",
+          "default": "Vis tips"
+        },
+        {
+          "label": "Tilbakemelding ved riktig svar",
+          "default": "Rett!"
+        },
+        {
+          "label": "Tilbakemelding ved nesten riktig svar",
+          "default": "Nesten!"
+        },
+        {
+          "label": "Tilbakemelding ved galt svar",
+          "default": "Feil"
+        },
+        {
+          "label": "Resultatsindikator",
+          "default": "Resultat"
+        },
+        {
+          "label": "Tips tilgjengelig",
+          "default": "Tips tilgjengelig"
+        },
+        {
+          "label": "Tilbakemelding tilgjengelig",
+          "default": "Tilbakemelding tilgjengelig"
+        },
+        {
+          "label": "Les tilbakemelding",
+          "default": "Les tilbakemelding"
+        },
+        {
+          "label": "Galt svar",
+          "default": "Galt svar"
+        },
+        {
+          "label": "Riktig svar",
+          "default": "Riktig svar"
+        },
+        {
+          "label": "Skulle ha vært valgt",
+          "default": "Skulle ha vært valgt"
+        },
+        {
+          "label": "Skulle ikke ha vært valgt",
+          "default": "Skulle ikke ha vært valgt"
+        }
+      ]
+    },
+    {
+      "label": "Innstillinger for oppgave-oppførsel",
+      "description": "Disse instillingene lar deg bestemme hvordan oppgavetypen skal oppføre seg.",
+      "fields": [
+        {
+          "label": "Aktiver \"Prøv igjen\""
+        },
+        {
+          "label": "Aktiver \"Vis svar\" knapp"
+        },
+        {
+          "label": "Spørsmålstype",
+          "description": "Velg utseende og oppførsel for spørsmålet.",
+          "options": [
+            {
+              "label": "Automatisk"
+            },
+            {
+              "label": "Fleirval (avkrysningsbokser)"
+            },
+            {
+              "label": "Einvalg (radioknapper)"
+            }
+          ]
+        },
+        {
+          "label": "Gje eitt poeng for heile oppgåva",
+          "description": "Gir eitt poeng totalt for fleire rette alternativ. Kun valbar om \"Bare eitt svar\" er slått av."
+        },
+        {
+          "label": "Tilfeldige svaralternativ",
+          "description": "Slå på for å vise de mulige svara i tilfeldig rekkefølge."
+        },
+        {
+          "label": "Krev inndata fra brukeren før fasit gis."
+        },
+        {
+          "label": "Slå av bilete zooming."
+        }
+      ]
+    }
+  ]
+}

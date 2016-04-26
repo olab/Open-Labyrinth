@@ -22,6 +22,9 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Base extends Controller_Template {
 
+    /**
+     * @var View page template
+     */
     public $template = 'home';
 
     protected $templateData = array();
@@ -37,6 +40,9 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'reportManager', 'action' => 'showReport'),
         array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
         array('controller' => 'updateDatabase', 'action' => 'index'),
+        array('controller' => 'H5P', 'action' => 'embed'),
+        array('controller' => 'H5P', 'action' => 'saveResult'),
+        array('controller' => 'H5P', 'action' => 'saveXAPIStatement'),
     );
 
     private $blockedAccess = array(
@@ -382,7 +388,7 @@ class Controller_Base extends Controller_Template {
 
                 $isRedirect = true;
                 foreach ($this->unauthorizedRules as $rule) {
-                    if ($controller == $rule['controller'] AND $action == $rule['action']) {
+                    if (strtolower($controller) === strtolower($rule['controller']) && strtolower($action) === strtolower($rule['action'])) {
                         $isRedirect = false;
                     }
                 }

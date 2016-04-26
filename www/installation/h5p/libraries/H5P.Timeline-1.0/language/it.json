@@ -1,0 +1,300 @@
+{
+  "semantics": [
+    {
+      "fields": [
+        {
+          "label": "Intestazione",
+          "description": "L'intestazione principale della timeline va qui (prima pagina)"
+        },
+        {
+          "label": "Testo del corpo",
+          "description": "Il corpo principale della timeline va qui (prima pagina)."
+        },
+        {
+          "label": "Livello di zoom predefinito",
+          "description": "Questo modifica il livello di zoom predefinito. Equivale a premere il tasto zoom-in o zoom-out il numero di volte specificato. I numeri negativi indicano i valori di zoom-out. Il valore di default è 0."
+        },
+        {
+          "label": "Background image",
+          "description": "An image to display as background."
+        },
+        {
+          "label": "Height",
+          "description": "The height in pixels"
+        },
+        {
+          "label": "Risorsa",
+          "description": "Qui è possibile aggiungere una risorsa alla tua timeline \"prima pagina\"",
+          "fields": [
+            {
+              "label": "Media",
+              "description": "URL media (Twitter, YouTube, Flickr, Vimeo, Google Maps e SoundCloud sono correttamente supportati)"
+            },
+            {
+              "label": "Reputazione",
+              "description": "Reputazione sui media"
+            },
+            {
+              "label": "Didascalia",
+              "description": "Qui descrizione didascalia"
+            }
+          ]
+        },
+        {
+          "label": "Date",
+          "description": "Aggiungi le tue date alla timeline!",
+          "field": {
+            "label": "Date",
+            "description": "Data",
+            "fields": [
+              {
+                "label": "Inizio data",
+                "description": "YYYY,MM,DD (YYYY minimo richiesto)",
+                "regexp": {}
+              },
+              {
+                "label": "Fine data",
+                "description": "YYYY,MM,DD (YYYY minimo richiesto)",
+                "regexp": {}
+              },
+              {
+                "label": "Titolo",
+                "description": "Titolo data d'ingresso"
+              },
+              {
+                "label": "Testo del corpo",
+                "description": "Corpo della data d'ingresso"
+              },
+              {
+                "label": "Tags",
+                "description": "Inserisci Tags (categorie)"
+              },
+              {
+                "label": "Risorsa",
+                "description": "",
+                "fields": [
+                  {
+                    "label": "Media",
+                    "description": "URL media (Twitter, YouTube, Flickr, Vimeo, Wikipedia, Google Maps e SoundCloud sono correttamente supportati)."
+                  },
+                  {
+                    "label": "immagine in miniatura",
+                    "description": "Aggiungere un'immagine in miniatura se necessario, 32x32 px"
+                  },
+                  {
+                    "label": "Reputazione",
+                    "description": "Reputazione sui media"
+                  },
+                  {
+                    "label": "Didascalia",
+                    "description": "Testo della didascalia"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "label": "Epoche",
+          "description": "Aggiugni un'epoca alla tua timeline",
+          "field": {
+            "label": "Epoca",
+            "description": "",
+            "fields": [
+              {
+                "label": "Data inizio",
+                "description": "YYYY,MM,DD (YYYY minimo richiesto)",
+                "regexp": {}
+              },
+              {
+                "label": "Data fine",
+                "description": "YYYY,MM,DD (YYYY minimo richiesto)",
+                "regexp": {}
+              },
+              {
+                "label": "Intstazione",
+                "description": "Intestazione epoca"
+              },
+              {
+                "label": "Testo",
+                "description": "Corpo dell'epoca"
+              },
+              {
+                "label": "Tag",
+                "description": "Tags epoca (categorie)"
+              }
+            ]
+          }
+        },
+        {
+          "label": "Lingua",
+          "description": "Imposta la lingua dell'interfaccia utente",
+          "options": [
+            {
+              "label": "Afrikaans"
+            },
+            {
+              "label": "Arabic"
+            },
+            {
+              "label": "Armenian"
+            },
+            {
+              "label": "Basque"
+            },
+            {
+              "label": "Bulgarian"
+            },
+            {
+              "label": "Catalan"
+            },
+            {
+              "label": "Chinese"
+            },
+            {
+              "label": "Croatian / Hrvatski"
+            },
+            {
+              "label": "Czech"
+            },
+            {
+              "label": "Danish"
+            },
+            {
+              "label": "Dutch"
+            },
+            {
+              "label": "English"
+            },
+            {
+              "label": "English (24-hour time)"
+            },
+            {
+              "label": "Esperanto"
+            },
+            {
+              "label": "Estonian"
+            },
+            {
+              "label": "Faroese"
+            },
+            {
+              "label": "Farsi"
+            },
+            {
+              "label": "Finnish"
+            },
+            {
+              "label": "French"
+            },
+            {
+              "label": "Galician"
+            },
+            {
+              "label": "Georgian"
+            },
+            {
+              "label": "German / Deutsch"
+            },
+            {
+              "label": "Greek"
+            },
+            {
+              "label": "Hebrew"
+            },
+            {
+              "label": "Hungarian"
+            },
+            {
+              "label": "Icelandic"
+            },
+            {
+              "label": "Indonesian"
+            },
+            {
+              "label": "Italian"
+            },
+            {
+              "label": "Japanese"
+            },
+            {
+              "label": "Korean"
+            },
+            {
+              "label": "Latvian"
+            },
+            {
+              "label": "Lithuanian"
+            },
+            {
+              "label": "Luxembourgish"
+            },
+            {
+              "label": "Malay"
+            },
+            {
+              "label": "Nepali"
+            },
+            {
+              "label": "Norwegian"
+            },
+            {
+              "label": "Polish"
+            },
+            {
+              "label": "Portuguese"
+            },
+            {
+              "label": "Portuguese (Brazilian)"
+            },
+            {
+              "label": "Romansh"
+            },
+            {
+              "label": "Russian"
+            },
+            {
+              "label": "Serbian - Cyrillic"
+            },
+            {
+              "label": "Serbian - Latin"
+            },
+            {
+              "label": "Sinhalese"
+            },
+            {
+              "label": "Slovak"
+            },
+            {
+              "label": "Slovenian"
+            },
+            {
+              "label": "Spanish"
+            },
+            {
+              "label": "Swedish"
+            },
+            {
+              "label": "Tagalog"
+            },
+            {
+              "label": "Tamil"
+            },
+            {
+              "label": "Taiwanese"
+            },
+            {
+              "label": "Telugu"
+            },
+            {
+              "label": "Turkish"
+            },
+            {
+              "label": "Ukrainian"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

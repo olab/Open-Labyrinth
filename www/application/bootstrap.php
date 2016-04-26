@@ -123,6 +123,8 @@ $modules = array(
     'phpexcel' => MODPATH . 'phpexcel',
     'kohana-media' => MODPATH . 'kohana-media',
     'TinCanPHP' => MODPATH . 'TinCanPHP', // https://github.com/RusticiSoftware/TinCanPHP
+    'h5p-php-library' => MODPATH . 'h5p-php-library', // https://github.com/h5p/h5p-php-library
+    'h5p-editor-php-library' => MODPATH . 'h5p-editor-php-library', // https://github.com/h5p/h5p-editor-php-library
 );
 
 Kohana::modules($modules);
@@ -219,3 +221,5 @@ Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', '
     ->defaults(array(
         'controller' => 'error'
     ));
+
+require_once './application/helpers.php';

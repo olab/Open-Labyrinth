@@ -1,0 +1,122 @@
+{
+  "semantics": [
+    {
+      "label": "مصادر الفيديو",
+      "description": "\"MP4\"للتأكد من أن الفيديو يعمل في جميع المتصفحات يجب عليك إضافة كل ويب إم وتنسيق المصادر"
+    },
+    {
+      "label": "Visuals",
+      "fields": [
+        {
+          "label": "الملصق"
+        },
+        {
+          "label": "مشغل فيديو مناسبا لاستخدام كل المساحة المتاحة",
+          "description": "إذا لم يتم تعيين مشغل فيديو سيكون لها نسبة الارتفاع نفس الفيديو"
+        },
+        {
+          "label": "مشاهدة ضوابط مشغل فيديو",
+          "description": "إضافة عناصر تحكم إلى مشغل الفيديو. وهذا يسمح للمستخدمين للعب، وقفة، الخ"
+        }
+      ]
+    },
+    {
+      "name": "playback",
+      "type": "group",
+      "label": "Playback",
+      "fields": [
+        {
+          "label": "التشغيل التلقائي الفيديو",
+          "description": "بدء تشغيل الفيديو تلقائيا. قد لا تعمل على الأجهزة النقالة"
+        },
+        {
+          "label": "تشغيل مستمر للفيديو",
+          "description": "بدء تلقائيا الفيديو مرة أخرى عندما ينتهي"
+        }
+      ]
+    },
+    {
+      "label": "توطين الفيديو",
+      "fields": [
+        {
+          "label": "الاسم",
+          "description": "يساعد على تحديد المضمون من هذا النوع"
+        },
+        {
+          "label": "تحميل"
+        },
+        {
+          "label": "لا يوجد مشغل فيديو"
+        },
+        {
+          "label": "لا مصادر"
+        },
+        {
+          "label": "تم احباط المشغل"
+        },
+        {
+          "label": "فشل الشبكة"
+        },
+        {
+          "label": "لا يمكن فك شفرة مصدر الفيديو"
+        },
+        {
+          "label": "صيغة غير مدعومة"
+        },
+        {
+          "label": "وسائل الإعلام مشفرة"
+        },
+        {
+          "label": "خطأ غير معروف"
+        },
+        {
+          "label": "رابط يوتوب غير صالح"
+        },
+        {
+          "label": "رابط يوتوب مجهول"
+        },
+        {
+          "label": "فيديو يوتوب مقييد"
+        }
+      ]
+    },
+    {
+      "label": "Accessibility",
+      "fields": [
+        {
+          "label": "Add video track",
+          "entity": "Track",
+          "field": {
+            "label": "Track",
+            "fields": [
+              {
+                "label": "Track label"
+              },
+              {
+                "label": "Type kind, refer to <a href=https://html.spec.whatwg.org/multipage/embedded-content.html#the-track-element>HTML living standard</a>",
+                "default": "descriptions",
+                "options": [
+                  {
+                    "label": "Subtitles"
+                  },
+                  {
+                    "label": "Captions"
+                  },
+                  {
+                    "label": "Descriptions"
+                  },
+                  {
+                    "label": "Chapters"
+                  }
+                ]
+              },
+              {
+                "label": "Track file (WebVTT)"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

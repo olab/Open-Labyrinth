@@ -53,6 +53,13 @@ if ($user) {
     <link rel="stylesheet" type="text/css" href="<?php echo URL::base(); ?>css/font-awesome-ie7.min.css"/><![endif]-->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+    <?php if (!empty($templateData['styles_stack'])) { ?>
+        <?php foreach($templateData['styles_stack'] as $style) { ?>
+            <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get($style); ?>">
+        <?php } ?>
+    <?php } ?>
+
     <link rel="shortcut icon" href="<?php echo URL::base(); ?>images/ico/favicon.ico"/>
     <script> var baseURL = '<?php echo URL::base() ?>';</script>
     <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
@@ -185,6 +192,10 @@ $templateData['error_message'] = Session::instance()->get_once('error_message');
                                 <?php if (in_array($type_name, array('superuser', 'author'))) { ?>
                                     <li>
                                         <a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="<?php echo URL::base(); ?>h5p"><?php echo __('H5P'); ?></a>
                                     </li>
                                 <?php } ?>
                                 <?php if ($type_name == 'superuser') { ?>
@@ -430,5 +441,12 @@ if (isset($templateData)) { ?>
 } else { ?>
     <div style="margin: 10px 100px;">You must choose chat</div><?php
 }; ?>
+
+<?php if (!empty($templateData['scripts_stack'])) { ?>
+    <?php foreach($templateData['scripts_stack'] as $script) { ?>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get($script); ?>"></script>
+    <?php } ?>
+<?php } ?>
+
 </body>
 </html>

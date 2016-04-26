@@ -1,0 +1,140 @@
+{
+  "semantics": [
+    {
+      "label": "Tittelen til spelet",
+      "placeholder": "Det fine spelet mitt",
+      "description": "Dette er tittelen til spelet du lagar."
+    },
+    {
+      "label": "Bakgrunn til spelet",
+      "description": "Vel ein passande bakgrunn til brettspelet ditt."
+    },
+    {
+      "label": "Størrelse til spelbrettet",
+      "description": "Spesifiser spelbrettet sin storleik i pikslar. Proporsjonane for høgde og breidde bør samsvare med bakgrunnsbiletet."
+    },
+    {
+      "label": "Slå på skygge rundt brettet",
+      "description": "Hvis slått på tar spelet mer plass enn det 'Størrelse til spelbrettet' antydar"
+    },
+    {
+      "label": "Introduksjon",
+      "fields": [
+        {
+          "label": "Velkomst-tekst og instruksjon",
+          "placeholder": "Velkomen unge reisande! Er du klar til å teste ut dine kunnskapar? Klikk på punkta på kartet for å få ulike spelutfordingar.",
+          "description": "Forklar kva brukaren skal gjere og kva poenget med spelet er."
+        },
+        {
+          "label": "Tekst til startknapp",
+          "default": "Start",
+          "description": "Tekst til knappen som startar spelet."
+        }
+      ]
+    },
+    {
+      "label": "Hotspots",
+      "entity": "hotspot",
+      "description": "Hotspots er minispel som blir lagt ut på eit brett. Døme på minispel er spørsmålssett og hangman.",
+      "field": {
+        "label": "Hotspot",
+        "fields": [
+          {
+            "label": "Tittel",
+            "description": "Gi ditt hotspot eit namn."
+          },
+          {
+            "label": "Hotspotbilete",
+            "description": "Bilete blir plassert på brettet. Klikk på dette biletet starter mini-spillet."
+          },
+          {
+            "label": "Hotspotbilete - bestått",
+            "description": "Dette hotspotbiletet blir nytta for minispel brukaren har bestått."
+          },
+          {
+            "label": "Hotspotbilete - ikkje bestått",
+            "description": "Dette hotspotbiletet blir vist for minispill som brukaren ikkje har bestått."
+          },
+          {
+            "label": "Hotspot posisjon",
+            "description": "Skriv ned posisjon til dette hotspottet på spelbrettet i pikslar."
+          },
+          {
+            "label": "Minispill",
+            "description": "Vel minispelet som skal starte når brukaren klikkjer på dette hotspottet."
+          }
+        ]
+      }
+    },
+    {
+      "label": "Indikator for framdrift",
+      "fields": [
+        {
+          "label": "Slå på indikatoren for framdrift"
+        },
+        {
+          "description": "Vel bilete som skal bli brukt som indikator for framdrift. Det må vere like mange bilete som det er hotspots pluss et når ingen hotspots er fyllt ut."
+        },
+        {
+          "label": "Posisjonen til indikatoren for framdrift",
+          "description": "Skriv ned i pikslar posisjonen til indikatoren for framdrift."
+        }
+      ]
+    },
+    {
+      "label": "Spillets avslutning",
+      "fields": [
+        {
+          "label": "Avslutningsvideo",
+          "description": "Video som blir spelt av før resultata blir vist. Spelaren har på dette tidspunktet, bestått alle minispill."
+        },
+        {
+          "label": "La spelaren hoppe over avslutningsvideoen."
+        },
+        {
+          "label": "Tekst til \"hopp over\" knappen",
+          "default": "Hopp over",
+          "description": "Tekst til knappen som lar brukaren hoppe over avslutningsvideoen."
+        }
+      ]
+    },
+    {
+      "label": "Resultatsida",
+      "fields": [
+        {
+          "label": "Resultat-tekst",
+          "default": "Du fikk @score av @total poeng.<br/>Det blir @percentage %",
+          "description": "Teksten som brukaren får som vurdering til slutt. Variablar: @score, @total, @percentage."
+        },
+        {
+          "label": "Tekst for \"Spill vidare\" knapp",
+          "default": "Spill vidare",
+          "description": "Tekst til knappen brukaren klikkjer på for å spele vidare."
+        },
+        {
+          "label": "Tekst for \"Vis svar\" knappen",
+          "default": "Vis svar",
+          "description": "Tekst til knappen brukaren klikkjer på for å vise svar."
+        }
+      ]
+    },
+    {
+      "label": "Innstillinger for \"Vis svar\" knapp og \"Prøv igjen\".",
+      "description": "Disse instillingene lar deg overstyre når \"Vis svar\" knapp og \"Prøv igjen\" er slått på i integrert h5p innhald.",
+      "fields": [
+        {
+          "label": "Slå på overstyring for \"Vis svar\" og \"Prøv igjen\".",
+          "description": "Aktivering vil overstyre dei følgjande innstillingene for integrert innhald."
+        },
+        {
+          "label": "Slå på \"Vis svar\" knapp.",
+          "description": "Aktivering vil slå på \"Vis svar\" knappen."
+        },
+        {
+          "label": "Slå på \"Prøv igjen\".",
+          "description": "Aktivering vil slå på \"Prøv igjen\" ."
+        }
+      ]
+    }
+  ]
+}

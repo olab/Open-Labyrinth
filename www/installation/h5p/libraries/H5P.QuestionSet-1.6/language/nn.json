@@ -1,0 +1,175 @@
+{
+  "semantics": [
+    {
+      "label": "Introduksjon",
+      "fields": [
+        {
+          "label": "Vis introduksjon"
+        },
+        {
+          "label": "Tittel",
+          "description": "Tittel for intoduksjonssiden."
+        },
+        {
+          "label": "Introduksjonstekst",
+          "description": "Denne teksten vises før spørsmålssettet starter."
+        },
+        {
+          "label": "Tekst til \"Start\" knappen",
+          "default": "Start"
+        },
+        {
+          "label": "Bakgrunnsbilde",
+          "description": "Bakgrunnsbilde for introduksjonssiden"
+        }
+      ]
+    },
+    {
+      "label": "Bakgrunnsbilde",
+      "description": "Bakgrunnsbilde for spørsmålssettet(ikke obligatorisk)."
+    },
+    {
+      "label": "Fremdriftsindikator",
+      "description": "Velg om fremdriften skal angis som prikker(få spørsmål) eller som tekst(mange spørsmål).",
+      "options": [
+        {
+          "label": "Angi fremdrift med tekst"
+        },
+        {
+          "label": "Angi fremdrift med prikker"
+        }
+      ]
+    },
+    {
+      "label": "Krav for å bestå",
+      "description": "Antall prosent riktig som kreves for å bestå spørsmålssettet."
+    },
+    {
+      "label": "Spørsmål",
+      "entity": "spørsmål",
+      "field": {
+        "label": "Spørsmål",
+        "fields": [
+          {
+            "label": "Spørsmålstype",
+            "description": "Velg spørsmålstype for dette spørsmålet"
+          }
+        ]
+      }
+    },
+    {
+      "label": "Ledetekster",
+      "fields": [
+        {
+          "label": "Forrige-knappen",
+          "default": "Forrige"
+        },
+        {
+          "label": "Neste-knappen",
+          "default": "Neste"
+        },
+        {
+          "label": "Avslutt-knappen",
+          "default": "Avslutt"
+        },
+        {
+          "label": "Fremdriftstekst",
+          "description": "Tekst brukt hvis tekstlig angivelse av fremdrift er valgt. Variabler: @current og @total",
+          "default": "Deloppgave @current av @total"
+        }
+      ]
+    },
+    {
+      "label": "Spørsmålssett avslutning",
+      "fields": [
+        {
+          "label": "Vis resultat"
+        },
+        {
+          "label": "Overskrift over tilbakemeldingar",
+          "default": "Ditt resultat:",
+          "description": "Denne overskriften vises over tilbakemeldingane på slutten av spørsmålssettet."
+        },
+        {
+          "label": "Poengvisningstekst",
+          "default": "Du fikk @score poeng av @total mulige.",
+          "description": "Tekst som viser brukerens oppnådde poeng. \"@score\" blir erstatta med utregna resultat, \"@total\" blir erstatta med høgest mulig resultat."
+        },
+        {
+          "label": "Tittel ved bestått",
+          "default": "Gratulerer!",
+          "description": "Denne tittelen vises dersom brukeren har bestått spørsmålssettet."
+        },
+        {
+          "label": "Kommentar ved bestått",
+          "default": "Du presterte meget godt!",
+          "description": "Denne kommentaren vises dersom brukaren har bestått spørsmålssettet."
+        },
+        {
+          "label": "Tittel ved ikkje bestått",
+          "default": "Ikkje bestått",
+          "description": "Denne tittelen visast dersom brukaren ikkje har bestått spørsmålssettet."
+        },
+        {
+          "label": "Kommentar ved ikkje bestått",
+          "default": "Dette er litt mange feil her. Prøv igjen!",
+          "description": "Denne kommentaren vises dersom brukaren ikkje har bestått spørsmålssettet."
+        },
+        {
+          "label": "Tekst til \"Fasit\" knapp",
+          "default": "Vis fasit",
+          "description": ""
+        },
+        {
+          "label": "Tekst til \"Prøv igjen\" knapp",
+          "default": "Prøv igjen",
+          "description": ""
+        },
+        {
+          "label": "Tekst til \"Avslutt\" knapp",
+          "default": "Avslutt"
+        },
+        {
+          "label": "Vis video før resultata"
+        },
+        {
+          "label": "Tillat å hoppe over video"
+        },
+        {
+          "label": "Tekst til \"Hopp over video\" knapp",
+          "default": "Hopp over"
+        },
+        {
+          "label": "Video ved bestått",
+          "description": "Denne videoen vil bli vist dersom brukaren består spørsmålssettet."
+        },
+        {
+          "label": "Video ved ikke bestått",
+          "description": "Denne videoen vil bli vist dersom brukaren ikkje består spørsmålssettet."
+        }
+      ]
+    },
+    {
+      "label": "Innstillinger for \"Vis svar\" knapp og \"Prøv igjen\".",
+      "description": "Disse instillingene lar deg overstyre når \"Vis svar\" knapp og \"Prøv igjen\" er slått på i integrert h5p innhald.",
+      "fields": [
+        {
+          "label": "Slå på overstyring for \"Vis svar\" og \"Prøv igjen\".",
+          "description": "Aktivering vil overstyre dei følgjande innstillingene for integrert innhald."
+        },
+        {
+          "label": "Slå på \"Vis svar\" knapp.",
+          "description": "Aktivering vil slå på \"Vis svar\" knappen."
+        },
+        {
+          "label": "Slå på \"Prøv igjen\".",
+          "description": "Aktivering vil slå på \"Prøv igjen\" ."
+        }
+      ]
+    },
+    {
+      "label": "Spørsmål-etikett",
+      "default": "Spørsmål"
+    }
+  ]
+}

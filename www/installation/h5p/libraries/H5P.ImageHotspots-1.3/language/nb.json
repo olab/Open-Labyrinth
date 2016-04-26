@@ -1,0 +1,48 @@
+{
+  "semantics": [
+    {
+      "label": "Bakgrunnsbilde",
+      "description": "Bilde brukt som bakgrunn"
+    },
+    {
+      "label": "Punktfarge",
+      "description": "Fargen på punktene (spesifisert med heksadesimal fargekode)"
+    },
+    {
+      "entity": "punkt",
+      "label": "Punkter",
+      "field": {
+        "label": "Punkt",
+        "fields": [
+          {
+            "label": "Position",
+            "fields": [
+              {
+                "label": "Horisontal posisjon (x)",
+                "description": "Den horisontale posisjonen til punktet målt i prosent. (0 - 100)"
+              },
+              {
+                "label": "Vertical posisjon (y)",
+                "description": "Den verticale posisjonen til punktet målt i prosent. (0 - 100)"
+              }
+            ]
+          },
+          {
+            "label": "Dekk hele bakgrunnsbildet",
+            "description": "Når brukeren klikker vil popup dekke hele bakgrunnsbildet"
+          },
+          {
+            "label": "Overskrift",
+            "description": "Valgfri overskrift for popup"
+          },
+          {
+            "label": "Innhold",
+            "field" : {
+              "label": "Innholdselement"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

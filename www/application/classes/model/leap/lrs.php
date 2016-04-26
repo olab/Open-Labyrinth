@@ -126,16 +126,14 @@ class Model_Leap_LRS extends DB_ORM_Model
     public static function count($active = null)
     {
         $query = DB_SQL::select()
-            ->from(static::table())
-            ->column(DB_SQL::expr("COUNT(*)"), 'counter');
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->from(static::table());
 
         if ($active !== null) {
             $query->where('is_enabled', '=', $active);
         }
 
-        $result = $query->query();
-
-        return (int)$result[0]['counter'];
+        return (int)$query->query()->fetch(0)['counter'];
     }
 
     public function getAPIVersionName()
