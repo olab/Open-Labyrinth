@@ -31,6 +31,41 @@ class Controller_RenderLabyrinth extends Controller_Template
     public static $nodeId = 0;
     public static $scenarioId = false;
 
+    public function action_saveVideoXAPIStatements()
+    {
+        $data = $this->request->post();
+        $session_id = Session::instance()->get('session_id');
+        $initiator = Model_Leap_Statement::INITIATOR_VIDEO_MASHUP;
+
+        if (empty($session_id)) {
+            throw new Exception('session_id cannot be blank');
+        }
+
+        /** @var Model_Leap_User_Session $session */
+        $session = DB_ORM::model('User_session', array($session_id));
+
+        $result = isset($data['result']) ? $data['result'] : null;
+        $context = isset($data['context']) ? $data['context'] : null;
+
+        $statement = Model_Leap_Statement::create($session, $data['verb'], $data['object'], $result, $context, null,
+            $initiator, false);
+
+        $counter = (int)DB_SQL::select()
+            ->column(DB_SQL::expr("COUNT(*)"), 'counter')
+            ->from(Model_Leap_Map::table())
+            ->where('id', '=', $session->map_id)
+            ->where('send_xapi_statements', '=', 1)
+            ->query()
+            ->fetch(0)['counter'];
+
+        if ($counter === 1) {
+            $statement->bindLRS();
+            Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+        }
+        
+        die;
+    }
+
     private function renderLabyrinth($action)
     {
         Lti_DataConnector::getLtiPost();
