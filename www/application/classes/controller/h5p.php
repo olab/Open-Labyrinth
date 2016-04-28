@@ -927,7 +927,8 @@ class Controller_H5P extends Controller_Base
             }
 
             if ($result) {
-                $content['id'] = $result;
+                $id = $result;
+                $content['id'] = $id;
                 $content_admin->set_content_tags($content['id'], filter_input(INPUT_POST, 'tags'));
 
                 Session::instance()->set('success_message', 'Saved.');
