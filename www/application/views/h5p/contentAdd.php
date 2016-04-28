@@ -50,6 +50,22 @@
                     </div>
                 </div>
                 <div class="span4">
+                    <?php if (!empty($content)): ?>
+                        <div class="postbox h5p-sidebar panel">
+                            <div class="panel-heading">
+                                <b><?php echo __('Shortcode'); ?></b>
+                            </div>
+                            <div class="panel-body">
+                                <div class="h5p-action-bar-settings h5p-panel">
+                                    <p><?php echo __("What's next?"); ?></p>
+                                    <p><?php echo __('You can use the following shortcode to insert this interactive content into nodes:'); ?></p>
+                                    <code>[[H5P:<?php print $content['id'] ?>]]</code>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    <?php endif; ?>
+
                     <div class="postbox h5p-sidebar panel">
                         <div class="panel-heading">
                             <b><?php echo __('Actions'); ?></b>
