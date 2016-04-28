@@ -99,6 +99,10 @@ class CustomAssetManager
      */
     private static function sanitizePath($path)
     {
+        if (strpos($path, 'http') === 0) {
+            return $path;
+        }
+
         return '/' . ltrim($path, '/');
     }
 }
