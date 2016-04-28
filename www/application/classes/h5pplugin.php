@@ -531,7 +531,7 @@ NOW;
      * Get the URL for the H5P files folder.
      *
      * @since 1.0.0
-     * @param $absolute Optional.
+     * @param bool $absolute
      * @return string
      */
     public function get_h5p_url($absolute = false)

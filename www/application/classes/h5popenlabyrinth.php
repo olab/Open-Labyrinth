@@ -1070,7 +1070,7 @@ class H5POpenLabyrinth implements H5PFrameworkInterface
         foreach ($libraries as $library) {
             // TODO: Avoid errors if they already exists...
             $wpdb->insert(
-                "{$wpdb->prefix}h5p_libraries_cachedassets",
+                "h5p_libraries_cachedassets",
                 array(
                     'library_id' => isset($library['id']) ? $library['id'] : $library['libraryId'],
                     'hash' => $key
@@ -1092,7 +1092,7 @@ class H5POpenLabyrinth implements H5PFrameworkInterface
         // Get all the keys so we can remove the files
         $results = $wpdb->get_results($wpdb->prepare("
         SELECT hash
-          FROM {$wpdb->prefix}h5p_libraries_cachedassets
+          FROM h5p_libraries_cachedassets
          WHERE library_id = %d
         ", $library_id));
 
@@ -1102,7 +1102,7 @@ class H5POpenLabyrinth implements H5PFrameworkInterface
             $hashes[] = $key->hash;
 
             $wpdb->delete(
-                "{$wpdb->prefix}h5p_libraries_cachedassets",
+                "h5p_libraries_cachedassets",
                 array('hash' => $key->hash),
                 array('%s'));
         }
