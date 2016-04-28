@@ -445,7 +445,7 @@ class H5PContentAdmin
      * @since 1.1.0
      * @return \H5peditor
      */
-    private function get_h5peditor_instance()
+    public function get_h5peditor_instance()
     {
         if (self::$h5peditor === null) {
             $upload_dir = wp_upload_dir();
@@ -573,49 +573,6 @@ class H5PContentAdmin
             print $editor->getLibraries();
         }
 
-        exit;
-    }
-
-    /**
-     * Handle file uploads through AJAX.
-     *
-     * @since 1.1.0
-     */
-    public function ajax_files()
-    {
-        $plugin = H5PPlugin::get_instance();
-        $files_directory = $plugin->get_h5p_path();
-
-        if (!wp_verify_nonce(filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING), 'h5p_editor_upload')) {
-            H5PCore::ajaxError(__('Invalid security token. Please reload the editor.', $this->plugin_slug));
-            exit;
-        }
-
-        $contentId = filter_input(INPUT_POST, 'contentId', FILTER_SANITIZE_NUMBER_INT);
-        if ($contentId) {
-            $files_directory .= '/content/' . $contentId;
-        } else {
-            $files_directory .= '/editor';
-        }
-
-        $editor = $this->get_h5peditor_instance();
-        $interface = $plugin->get_h5p_instance('interface');
-        $file = new H5peditorFile($interface, $files_directory);
-
-        if (!$file->isLoaded()) {
-            H5PCore::ajaxError(__('File not found on server. Check file upload settings.', $this->plugin_slug));
-            exit;
-        }
-
-        if ($file->validate() && $file->copy()) {
-            // Keep track of temporary files so they can be cleaned up later.
-            $editor->addTmpFile($file);
-        }
-
-        header('Cache-Control: no-cache');
-        header('Content-type: application/json; charset=utf-8');
-
-        print $file->getResult();
         exit;
     }
 }

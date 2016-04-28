@@ -47,6 +47,41 @@ class Controller_H5P extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('H5P manager'))->set_url(URL::base() . 'h5p/index'));
     }
 
+    public function action_ajax_files()
+    {
+        static::loadH5PEditorClasses();
+        $plugin = H5PPlugin::get_instance();
+        $files_directory = $plugin->get_h5p_path();
+
+        $contentId = filter_input(INPUT_POST, 'contentId', FILTER_SANITIZE_NUMBER_INT);
+        if ($contentId) {
+            $files_directory .= '/content/' . $contentId;
+        } else {
+            $files_directory .= '/editor';
+        }
+
+        $content_admin = new H5PContentAdmin('H5P');
+        $editor = $content_admin->get_h5peditor_instance();
+        $interface = $plugin->get_h5p_instance('interface');
+        $file = new H5peditorFile($interface, $files_directory);
+
+        if (!$file->isLoaded()) {
+            H5PCore::ajaxError(__('File not found on server. Check file upload settings.'));
+            die;
+        }
+
+        if ($file->validate() && $file->copy()) {
+            // Keep track of temporary files so they can be cleaned up later.
+            $editor->addTmpFile($file);
+        }
+
+        header('Cache-Control: no-cache');
+        header('Content-type: application/json; charset=utf-8');
+
+        echo $file->getResult();
+        die;
+    }
+
     public function action_deleteTemporaryFiles()
     {
         $temp_dir = DOCROOT . 'files/h5p/temp';
