@@ -25,11 +25,36 @@ class Policy_Access extends Policy {
         array('controller' => 'webinarManager', 'action' => 'delete'),
         array('controller' => 'webinarManager', 'action' => 'save'),
         array('controller' => 'webinarManager', 'action' => 'changeStep'),
+        array('controller' => 'webinarManager', 'action' => 'chats'),
+        array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
         array('controller' => 'dForumManager', 'action' => 'addForum'),
         array('controller' => 'dForumManager', 'action' => 'editForum'),
         array('controller' => 'dForumManager', 'action' => 'updateForum'),
         array('controller' => 'dForumManager', 'action' => 'deleteForum'),
-        array('controller' => 'dForumManager', 'action' => 'saveNewForum')
+        array('controller' => 'dForumManager', 'action' => 'saveNewForum'),
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
+        
+        //H5P
+        array('controller' => 'H5P', 'action' => 'libraryUpload'),
+        array('controller' => 'H5P', 'action' => 'libraryDeleteSubmit'),
+        array('controller' => 'H5P', 'action' => 'libraryDelete'),
+        array('controller' => 'H5P', 'action' => 'libraryShow'),
+        array('controller' => 'H5P', 'action' => 'restrictAccess'),
+        array('controller' => 'H5P', 'action' => 'showContent'),
+        array('controller' => 'H5P', 'action' => 'results'),
+        array('controller' => 'H5P', 'action' => 'ajaxResult'),
+        array('controller' => 'H5P', 'action' => 'addContent'),
+        array('controller' => 'H5P', 'action' => 'addContentSubmit'),
+        array('controller' => 'H5P', 'action' => 'contentDelete'),
+        array('controller' => 'H5P', 'action' => 'contents'),
+        array('controller' => 'H5P', 'action' => 'ajax_libraries'),
+        array('controller' => 'H5P', 'action' => 'libraries'),
+        array('controller' => 'H5P', 'action' => 'rebuildCache'),
+
     );
 
     private $authorRules = array(
@@ -44,12 +69,38 @@ class Policy_Access extends Policy {
         array('controller' => 'userManager', 'action' => 'deleteGroup'),
         array('controller' => 'userManager', 'action' => 'addMemberToGroup'),
         array('controller' => 'userManager', 'action' => 'updateGroup'),
-        array('controller' => 'userManager', 'action' => 'removeMember')
+        array('controller' => 'userManager', 'action' => 'removeMember'),
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
     );
 
     private $reviewerRules = array(
         array('controller' => 'collectionManager', 'action' => 'editCollection'),
-        array('controller' => 'collectionManager', 'action' => 'addCollection')
+        array('controller' => 'collectionManager', 'action' => 'addCollection'),
+        array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'videoservice', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
+
+        //H5P
+        array('controller' => 'H5P', 'action' => 'libraryUpload'),
+        array('controller' => 'H5P', 'action' => 'libraryDeleteSubmit'),
+        array('controller' => 'H5P', 'action' => 'libraryDelete'),
+        array('controller' => 'H5P', 'action' => 'libraryShow'),
+        array('controller' => 'H5P', 'action' => 'restrictAccess'),
+        array('controller' => 'H5P', 'action' => 'showContent'),
+        array('controller' => 'H5P', 'action' => 'results'),
+        array('controller' => 'H5P', 'action' => 'ajaxResult'),
+        array('controller' => 'H5P', 'action' => 'addContent'),
+        array('controller' => 'H5P', 'action' => 'addContentSubmit'),
+        array('controller' => 'H5P', 'action' => 'contentDelete'),
+        array('controller' => 'H5P', 'action' => 'contents'),
+        array('controller' => 'H5P', 'action' => 'ajax_libraries'),
+        array('controller' => 'H5P', 'action' => 'libraries'),
+        array('controller' => 'H5P', 'action' => 'rebuildCache'),
     );
 
     private $mapActions = array(
@@ -96,8 +147,8 @@ class Policy_Access extends Policy {
 
     public function execute (Model_Leap_User $user, array $array = NULL)
     {
-        $controller = Arr::get($array, 'controller');
-        $action     = Arr::get($array, 'action');
+        $controller = strtolower(Arr::get($array, 'controller'));
+        $action     = strtolower(Arr::get($array, 'action'));
         $id         = Arr::get($array, 'id');
         $id2        = Arr::get($array, 'id2');
         $userType   = Auth::instance()->get_user()->type->name;

@@ -102,7 +102,7 @@ if ($user) {
                         <h4><?php echo __('Are you sure want to duplicate Case?'); ?></h4>
                     </div>
                     <div class="modal-body">
-                        <p><?php echo __('You have just clicked the duplicate button, are you certain that you wish to proceed with duplicate "'.$map->name.'" labyrinth?'); ?></p>
+                        <p><?php printf(__('You have just clicked the duplicate button, are you certain that you wish to proceed with duplicate "%s" labyrinth?'),$map->name); ?></p>
                         <p>
                             <a class="btn confirm-link" href="<?php echo URL::base().'authoredLabyrinth/duplicate/'.$map->id; ?>"><?php echo __('Duplicate Case'); ?></a>
                             <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>

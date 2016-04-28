@@ -18,7 +18,9 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if (isset($templateData['webinar'])) { ?>
+if (isset($templateData['webinar'])) {
+    echo View::factory('webinar/_topMenu')->set('scenario', $templateData['webinar'])->set('webinars', $templateData['webinars']);
+    ?>
 <div class="page-header"><h1><?php echo __('Statistics for ').' "'.$templateData['webinar']->title.'"'; ?></h1></div>
 
 <table class="table table-striped table-bordered">

@@ -19,6 +19,11 @@
  *
  */
 ?>
+<p>
+    <a class="btn btn-primary" href="<?php echo URL::base().'ltimanager/providers'; ?>">
+        <?php echo __('Providers manager'); ?>
+    </a>
+</p>
 <h1 class="page-header">
     <?php echo __('Consumers manager'); ?>
     <a class="btn btn-primary pull-right" href="<?php echo URL::base().'ltimanager/userView'; ?>"><i class="icon-plus-sign icon-white"></i><?php echo __('Add a consumer'); ?></a>

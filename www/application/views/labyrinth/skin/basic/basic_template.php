@@ -61,10 +61,14 @@
             }
         });
 
-        // use in basic.js
+        // use in basic.js & turkTalk.js
         var urlBase = '<?php echo URL::base(); ?>';
     </script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
+
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/helper.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/turkTalk.js'); ?>"></script>
+
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js'); ?>"></script>
@@ -287,9 +291,9 @@
         <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
         <?php
-        $assign  = null;
         $section = false;
         foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
+            $assign  = null;
             foreach ($mapPopup->assign as $a){
                 foreach (Arr::get($templateData,'sections', array()) as $s){
                     if ($a->assign_to_id == $s->id){
@@ -299,7 +303,7 @@
                 }
                 if ($a->assign_to_id == $templateData['node']->id OR $a->assign_to_id == $templateData['map']->id OR $section) $assign = $a;
             }
-            if (isset($assign)) { ?>
+            if ( ! is_null($assign)) { ?>
             <div
                 class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
                 popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"

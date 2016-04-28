@@ -1,0 +1,6 @@
+ALTER TABLE `statistics_user_sessions` ADD `end_time` DECIMAL(18,6) NULL DEFAULT NULL AFTER `start_time`;
+ALTER TABLE `statistics_user_sessions` CHANGE `start_time` `start_time` DECIMAL(18,6) NOT NULL;
+ALTER TABLE `user_sessions` CHANGE `start_time` `start_time` DECIMAL(18,6) NOT NULL, CHANGE `end_time` `end_time` DECIMAL(18,6) NULL DEFAULT NULL;
+ALTER TABLE `statistics_user_sessiontraces` CHANGE `date_stamp` `date_stamp` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `bookmark_made` `bookmark_made` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `bookmark_used` `bookmark_used` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `end_date_stamp` `end_date_stamp` DECIMAL(18,6) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `user_sessiontraces` CHANGE `date_stamp` `date_stamp` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `bookmark_made` `bookmark_made` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `bookmark_used` `bookmark_used` DECIMAL(18,6) NULL DEFAULT NULL, CHANGE `end_date_stamp` `end_date_stamp` DECIMAL(18,6) NULL DEFAULT NULL;
+ALTER TABLE `user_responses` CHANGE `created_at` `created_at` DECIMAL(18,6) NOT NULL;

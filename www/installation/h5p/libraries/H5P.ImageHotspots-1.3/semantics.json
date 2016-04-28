@@ -1,0 +1,81 @@
+[
+  {
+    "label": "Background image",
+    "name": "image",
+    "type": "image",
+    "description": "Image shown on background."
+  },
+  {
+    "name": "color",
+    "type": "text",
+    "label": "Hotspot color",
+    "description": "The color of the hotspots",
+    "optional": true,
+    "default": "981d99",
+    "widget": "colorSelector",
+    "spectrum": {
+      "showInput": true
+    }
+  },
+  {
+    "name": "hotspots",
+    "type": "list",
+    "entity": "hotspot",
+    "label": "Hotspots",
+    "min": 1,
+    "defaultNum": 1,
+    "field": {
+      "name": "hotspot",
+      "type": "group",
+      "label": "Hotspot",
+      "fields": [
+        {
+          "name": "position",
+          "type": "group",
+          "widget": "imageCoordinateSelector",
+          "imageFieldPath": "../../image",
+          "label": "Hotspot position",
+          "description": "Click on the thumbnail image to place the hotspot",
+          "fields": [
+            {
+              "name": "x",
+              "type": "number"
+            },
+            {
+              "name": "y",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "name": "alwaysFullscreen",
+          "type": "boolean",
+          "label": "Cover entire background image",
+          "description": "When the user clicks the hotspot the popup will cover the entire background image"
+        },
+        {
+          "name": "header",
+          "type": "text",
+          "label": "Header",
+          "description": "Optional header for the popup",
+          "optional": true
+        },
+        {
+          "name": "content",
+          "type": "list",
+          "label": "Popup content",
+          "field": {
+            "name": "action",
+            "type": "library",
+            "label": "Content Item",
+            "options": [
+              "H5P.Text 1.1",
+              "H5P.Video 1.2",
+              "H5P.Image 1.0"
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

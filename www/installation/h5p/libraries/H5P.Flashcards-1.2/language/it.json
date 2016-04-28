@@ -1,0 +1,57 @@
+{
+  "semantics": [
+    {
+      "label": "Descrizione attività"
+    },
+    {
+      "widgets": [
+        {
+          "label": "Predefinito"
+        }
+      ],
+      "label": "Schede",
+      "entity": "scheda",
+      "field": {
+        "label": "Scheda",
+        "fields": [
+          {
+            "label": "Domanda",
+            "description": "Domanda testuale facoltativa per la scheda. (La scheda può utilizzare solo un'immagine, solo un testo o entrambi)"
+          },
+          {
+            "label": "Risposta",
+            "description": "Risposta facoltativa (soluzione) per la scheda."
+          },
+          {
+            "label": "Immagine",
+            "description": "Immagine facoltativa per la scheda. (La scheda può utilizzare solo un'immagine, solo un testo o entrambi)"
+          },
+          {
+            "label": "Suggerimento",
+            "fields": [
+              {
+                "label": "testo del suggerimento"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Testo di avanzamento",
+      "description": "Testo di avanzamento, variabili disponibili: @card e @total. Esempio: 'Scheda @card di @total'"
+    },
+    {
+      "label": "Testo per il pulsante Prossimo"
+    },
+    {
+      "label": "Testo per il pulsante Precedente"
+    },
+    {
+      "label": "Testo per il pulsante Inserisci risposte"
+    },
+    {
+      "label": "Richiedere l'immissione dei dati all'utente prima che la soluzione sia visulizzata"
+    }
+  ]
+}

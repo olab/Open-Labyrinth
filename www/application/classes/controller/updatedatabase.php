@@ -51,4 +51,64 @@ class Controller_UpdateDatabase extends Controller_Base {
         unset($this->templateData['right']);
         $this->template->set('templateData', $this->templateData);
     }
+
+    public function action_rollback() {
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Rolling Back Database')));
+
+        $result = $this->request->param('id');
+
+        $message = '<div class="alert alert-warning"><b>Attention!</b> This action could permanently delete some of your data.</div>';
+        if($result !== null) {
+            switch ($result) {
+                case 0:
+                    $message = '<div class="alert alert-info"><span class="lead">Roll back instructions was not found.</span></div>';
+                    break;
+
+                case 1:
+                    $message = '<div class="alert alert-success"><span class="lead">Database has been successfully Rolling Back.</span></div>';
+                    break;
+
+                case 2:
+                    $message = '<div class="alert alert-error"><span class="lead">Update directory "' . URL::base() . 'updates/roll_back" was not found.</span></div>';
+                    break;
+            }
+        }
+
+        $dir = DOCROOT.'updates/roll_back/';
+        if(is_dir($dir)) {
+            $files = scandir($dir);
+            array_shift($files);
+            array_shift($files);
+            if(count($files) > 0){
+                usort($files, array('Updates', 'sortVersionInOrder'));
+                $files = array_reverse($files);
+                $versions = array();
+                foreach($files as $file){
+                    $ext = pathinfo($file, PATHINFO_EXTENSION);
+                    if ($ext == 'sql') {
+                        $versions[] = pathinfo($file, PATHINFO_FILENAME);
+                    }
+                }
+
+                if(count($versions) > 0){
+                    array_shift($versions);
+                }
+
+                $this->templateData['versions'] = $versions;
+            }
+        }
+
+        $this->templateData['message'] = $message;
+        $this->templateData['center'] = View::factory('updatedatabase/rollback')->set('templateData', $this->templateData);
+        unset($this->templateData['left']);
+        unset($this->templateData['right']);
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_doRollback(){
+        $post = $this->request->post();
+        $toVersion = Arr::get($post, 'toVersion', null);
+        $result = Updates::rollback($toVersion);
+        Request::initial()->redirect(URL::base(true).'updatedatabase/rollback/'.$result);
+    }
 }

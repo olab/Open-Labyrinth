@@ -34,6 +34,13 @@
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css"/>
 <link rel="stylesheet" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
 <link href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet"/>
+
+<?php if (!empty($templateData['styles_stack'])) { ?>
+    <?php foreach($templateData['styles_stack'] as $style) { ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get($style); ?>">
+    <?php } ?>
+<?php } ?>
+
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
 <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -370,7 +377,7 @@ if ($templateData['skin_path'] != NULL) {
                                 <a href="<?php echo URL::base(); ?>renderLabyrinth/mapinfo/<?php echo $templateData['map']->id; ?>"
                                    class="btn row-fluid"><i class="icon-info-sign"></i>information</a></div>
                             <button class="btn row-fluid" onclick='ajaxBookmark();'
-                                    name="bookmark"><i class="icon-edit"></i>bookmark
+                                    name="bookmark"><i class="icon-edit"></i>suspend
                             </button>
 
 
@@ -447,6 +454,22 @@ if ($templateData['skin_path'] != NULL) {
         src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
+
+<?php if (!empty($templateData['scripts_stack'])) { ?>
+    <?php foreach($templateData['scripts_stack'] as $script) { ?>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get($script); ?>"></script>
+    <?php } ?>
+<?php } ?>
+
+<script>
+    <?php
+    if (!empty($templateData['raw_scripts_stack'])) {
+        foreach ($templateData['raw_scripts_stack'] as $script) {
+            echo rtrim(trim($script), ';') . ";\n";
+        }
+    }
+    ?>
+</script>
 
 </body>
 </html>

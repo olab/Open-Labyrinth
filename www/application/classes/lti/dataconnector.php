@@ -251,7 +251,9 @@ class Lti_DataConnector {
             'created'               => $now,
             'updated'               => $now
         );
+
         $key = $resource_link->getKey();
+
         if (is_null($resource_link->created)) {
             DB_ORM::model('lti_context')->addContext($key, $data);
             $resource_link->created = $time;

@@ -1,0 +1,68 @@
+{
+  "semantics": [
+    {
+      "label": "العنوان"
+    },
+    {
+      "label": "وصف النشاط"
+    },
+    {
+      "widgets": [
+        {
+          "label": "افتراضي"
+        }
+      ],
+      "label": "الحوارات",
+      "entity": "الحوار",
+      "field": {
+        "label": "السؤال",
+        "fields": [
+          {
+            "label": "نص",
+            "description": "تلميح للجزء الأول من الحوار"
+          },
+          {
+            "label": "الاجابة",
+            "description": "تلميح للجزء الثاني من الحوار"
+          },
+          {
+            "label": "Image",
+            "description": "Optional image for the card. (The card may use just an image, just a text or both)"
+          },
+          {
+            "label": "Audio files"
+          },
+          {
+            "label": "نصائح",
+            "fields": [
+              {
+                "label": "تلميح للنص",
+                "description": "نصيحة للالجزء الأول من الحوار"
+              },
+              {
+                "label": "نصيحة للإجابة",
+                "description": "نصيحة للجزء الثاني من الحوار"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "نص زر التدوير"
+    },
+    {
+      "label": "نص الزر التالي"
+    },
+    {
+      "label": "نص الزر السابق"
+    },
+    {
+      "label": "النص الزر إعادة المحاولة"
+    },
+    {
+      "label": "نص التقدم",
+      "description": "المتغيرات المتاحة هي البطاقة والمجموع"
+    }
+  ]
+}

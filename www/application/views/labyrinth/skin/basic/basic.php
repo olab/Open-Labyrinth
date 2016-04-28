@@ -30,6 +30,12 @@
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>"/>
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.css'); ?>">
 
+<?php if (!empty($templateData['styles_stack'])) { ?>
+    <?php foreach($templateData['styles_stack'] as $style) { ?>
+        <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get($style); ?>">
+    <?php } ?>
+<?php } ?>
+
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-1.7.2.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-touch-punch.min.js'); ?>"></script>
@@ -85,10 +91,12 @@
         }
     });
 
-    // use in basic.js
+    // use in basic.js & turkTalk.js
     var urlBase = '<?php echo URL::base(); ?>';
 </script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/basic.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/helper.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/turkTalk.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js'); ?>"></script>
@@ -295,6 +303,16 @@ $id_map  = $templateData['map']->id;
 $id_node = $templateData['node']->id; ?>
 </head>
 <body>
+<?php if(!empty($templateData['wasRedirected'])) { ?>
+    <div style="position: fixed; left: 50%;top:20px; z-index: 1500; margin-left: -89px;" id="wasRedirected" class="alert alert-success">
+        <span>You have been redirected.</span>
+    </div>
+    <script>
+        setTimeout(function(){
+            $('#wasRedirected').hide();
+        }, 8000);
+    </script>
+<?php } ?>
 <div align="center" class="popup-outside-container">
     <table style="padding-top:20px;" id="centre_table" width="90%" border="0" cellpadding="12" cellspacing="2">
         <tr>
@@ -342,7 +360,7 @@ $id_node = $templateData['node']->id; ?>
                         <br/><strong>Score:</strong>
                     </h5>
 
-                    <input type="button" onclick='ajaxBookmark();' name="bookmark" value="bookmark"/>
+                    <input type="button" onclick='ajaxBookmark();' name="bookmark" value="suspend"/>
                     <?php if (isset($templateData['editor']) and $templateData['editor'] == TRUE) { ?>
                         <h5>
                             <a href="<?php echo URL::base().'renderLabyrinth/go/'.$id_map.'/'.$id_node; ?><?php if (!isset($templateData['node_edit'])) echo '/1'; ?>">
@@ -352,6 +370,13 @@ $id_node = $templateData['node']->id; ?>
                     <?php } ?>
                     <p>
                         <a href='<?php echo URL::base(); ?>renderLabyrinth/reset/<?php echo $id_map; ?><?php if(isset($templateData['webinarId']) && isset($templateData['webinarStep'])) echo '/' . $templateData['webinarId'] . '/' . $templateData['webinarStep']; ?>'>reset</a>
+                    </p>
+
+                    <p>
+                        <label for="user_notepad"></label>
+                        <textarea class="user_notepad" id="user_notepad">
+                            <?php if(!empty($templateData['user_notepad_text'])) echo $templateData['user_notepad_text']; ?>
+                        </textarea>
                     </p>
 
                     <a href="<?php echo URL::base(); ?>">
@@ -391,9 +416,9 @@ $id_node = $templateData['node']->id; ?>
 <button id="finishButton" class="demo btn btn-primary btn-large" href="#finish" data-toggle="modal" style="display: none" type="submit"></button>
 
 <?php
-$assign  = null;
 $section = false;
 foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
+    $assign  = null;
     foreach ($mapPopup->assign as $a){
         foreach (Arr::get($templateData,'sections', array()) as $s){
             if ($a->assign_to_id == $s->id){
@@ -405,7 +430,7 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
             $a->assign_to_id == $id_map OR
             $section) $assign = $a;
     }
-    if (isset($assign)) { ?>
+    if ( ! is_null($assign)) { ?>
     <div class="popup hide <?php echo Popup_Positions::toString($mapPopup->position_id); ?>"
          popup-position-type="<?php echo Popup_Position_Types::toString($mapPopup->position_type); ?>"
          time-before="<?php echo $mapPopup->time_before; ?>"
@@ -478,5 +503,23 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
                                      } ?>];
 </script>
 <script src="<?php echo URL::base().'scripts/popupRender.js'; ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/user-notepad.js'); ?>"></script>
+
+<?php if (!empty($templateData['scripts_stack'])) { ?>
+    <?php foreach($templateData['scripts_stack'] as $script) { ?>
+        <script type="text/javascript" src="<?php echo ScriptVersions::get($script); ?>"></script>
+    <?php } ?>
+<?php } ?>
+
+<script>
+    <?php
+    if (!empty($templateData['raw_scripts_stack'])) {
+        foreach ($templateData['raw_scripts_stack'] as $script) {
+            echo rtrim(trim($script), ';') . ";\n";
+        }
+    }
+    ?>
+</script>
+
 </body>
 </html>

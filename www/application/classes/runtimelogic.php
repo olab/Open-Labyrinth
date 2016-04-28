@@ -140,8 +140,9 @@ class RunTimeLogic {
                 foreach($matches[0] as $key => $match){
                     $search[$i] = $match;
                     $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
+
                     if (gettype($questionAnswersMatch) == 'array') {
-                        $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
+                        $answerStrPosMatch = $this->strposa($matches[2][$key], array_pop($questionAnswersMatch));
                         $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
 
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
@@ -307,7 +308,10 @@ class RunTimeLogic {
                 if ($questionType == 7) {
                     $response = DB_ORM::model('Map_Question_Response', array($response))->response;
                 }
-                if ($numberOfResponses > 1) {
+
+                if ($questionType == 3) {
+                    $return[$value->created_at][] = $response;
+                }elseif ($numberOfResponses > 1) {
                     $return[] = $response;
                 } else {
                     $return = $response;
@@ -481,8 +485,9 @@ class RunTimeLogic {
             {
                 if (strpos($haystack, $value) !== false) return true;
             }
+        } else if (strpos($haystack, $needle) !== false){
+            return true;
         }
-        else if (strpos($haystack, $needle) !== false) return true;
 
         return false;
     }

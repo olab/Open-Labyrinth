@@ -166,7 +166,7 @@ class Controller_CollectionManager extends Controller_Base {
             $userType   = $user->type_id;
             $idUser     = $user->id;
             $idScenario = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $idUser);
+            $assignUser = DB_ORM::model('Map_User')->assignOrNot($idMap, $user);
         }
 
         // first check by author_id, second check for author right

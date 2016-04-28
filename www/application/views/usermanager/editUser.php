@@ -33,6 +33,8 @@ if(isset($templateData['user'])) {
     <h1><?php echo __('Edit')." ".__('user account'); ?></h1>
 </div>
 
+    <?php if ($templateData['errorMsg'] != NULL){ echo '<div class="alert alert-danger">' . $templateData['errorMsg'] . '</div>'; } ?>
+
 <form class="form-horizontal" action="<?php echo URL::base().'usermanager/saveOldUser/'.$templateData['user']->id; ?>" method="post">
     <fieldset class="fieldset">
         <legend><?php echo __("User Details");?></legend>
@@ -62,12 +64,12 @@ if(isset($templateData['user'])) {
         <div class="control-group">
             <label class="control-label"><?php echo __('Language'); ?></label>
             <div class="controls">
-                <label class="radio">
-                    english   <input checked="checked" type="radio" name="langID" value="1" <?php if($templateData['user']->language_id == 1) echo 'checked=""'; ?>>
-                </label>
-                <label class="radio">
-                    francais <input type="radio" name="langID" value="2" <?php if($templateData['user']->language_id == 2) echo 'checked=""'; ?>>
-                </label>
+                <?php foreach($templateData['languages'] as $language) { ?>
+                    <label class="radio">
+                        <?php echo $language->name ?>
+                        <input <?php if ($language->id == $templateData['user']->language_id){ ?>checked<?php } ?> type="radio" name="langID" value="<?php echo $language->id ?> ">
+                    </label>
+                <?php } ?>
             </div>
         </div>
         <div class="control-group">
@@ -96,10 +98,9 @@ if(isset($templateData['user'])) {
                 </div>
             </div>
         </div>
-    </fieldset><?php
+    </fieldset>
 
-    echo Helper_Controller_Metadata::displayEditor($templateData["user"],"user");
-    if ($templateData['errorMsg'] != NULL) echo $templateData['errorMsg']; ?>
+    <?php echo Helper_Controller_Metadata::displayEditor($templateData["user"],"user");  ?>
 
     <div class="form-actions">
         <div class="pull-right">

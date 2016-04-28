@@ -42,6 +42,7 @@ if (isset($templateData['map'])) {
             <li><a href="<?php echo URL::base().'nodeManager/grid/'.$id_map.'/1'; ?>"><i class="icon-th"></i> <?php echo __('Node Grid'); ?></a></li>
             <?php } ?>
             <li><a href="<?php echo URL::base().'linkManager/index/'.$id_map; ?>"><i class="icon-link"></i> <?php echo __('Links'); ?></a></li>
+
             <li class="nav-header">Sub-Options</li>
             <li><a href="<?php echo URL::base().'nodeManager/sections/'.$id_map; ?>"><i class="icon-th-list"></i> <?php echo __('Sections'); ?></a></li>
             <?php if ($user->modeUI == 'advanced') { ?>
@@ -66,7 +67,7 @@ if (isset($templateData['map'])) {
             <?php } ?>
             <li><a href="<?php echo URL::base().'fileManager/index/'.$id_map; ?>"><i class="icon-file"></i> <?php echo __('Files'); ?></a></li>
             <li class="nav-header">Control</li>
-            <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users'); ?></a></li>
+            <li><a href="<?php echo URL::base().'mapUserManager/index/'.$id_map; ?>"><i class="icon-user"></i> <?php echo __('Users & Groups'); ?></a></li>
             <li><a href="<?php echo URL::base().'reportManager/index/'.$id_map; ?>"><i class="icon-calendar"></i> <?php echo __('Sessions'); ?></a></li>
             <?php if ($user->modeUI == 'advanced') { ?>
             <li class="nav-header">Global elements</li>
@@ -112,7 +113,7 @@ if (isset($templateData['map'])) {
         <div class="modal-body">
             <p><?php echo __('You try go to the page on which already another author is working, you can go there with "Read-only" permission.'); ?></p>
             <p>
-                <a class="btn btn-primary" href="javascript:void(0);"><?php echo __('Enter with Read-only'); ?></a>
+                <a id="readonlyEnter" class="btn btn-primary" href="javascript:void(0);"><?php echo __('Enter with Read-only'); ?></a>
                 <button class="btn btn-primary" id="discard">Discard</button>
                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </p>

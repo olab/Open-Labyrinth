@@ -1,0 +1,46 @@
+{
+  "title": "Flashcards",
+  "description": "Create cards where the user has to guess the answer.",
+  "majorVersion": 1,
+  "minorVersion": 2,
+  "patchVersion": 3,
+  "runnable": 1,
+  "author": "Joubel AS",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 4
+  },
+  "license": "MIT",
+  "machineName": "H5P.Flashcards",
+  "preloadedCss": [
+    {
+      "path": "css/flashcards.css"
+    }
+  ],
+  "preloadedJs": [
+    {
+      "path": "js/flashcards.js"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "FontAwesome",
+      "majorVersion": 4,
+      "minorVersion": 5
+    },
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 2
+    }
+  ],
+  "w": 635,
+  "h": 500,
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.VerticalTabs",
+      "majorVersion": 1,
+      "minorVersion": 1
+    }
+  ]
+}

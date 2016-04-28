@@ -63,6 +63,10 @@ class Model_Leap_Group extends DB_ORM_Model {
         return array('id');
     }
 
+    public function getByName($name){
+        return DB_ORM::select('Group')->where('name', '=', $name)->limit(1)->query()->fetch(0);
+    }
+
     public function getAllGroupsId($order = 'ASC') {
         $builder = DB_SQL::select('default')->from($this->table())->column('id')->order_by('name', $order);
         $result = $builder->query();

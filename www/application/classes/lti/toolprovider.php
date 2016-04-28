@@ -317,7 +317,7 @@ class Lti_ToolProvider {
         $admin      = $this->user->isAdmin();
         $author     = $this->user->isStaff();
         $learner    =  $this->user->isLearner();
-        $role       = null;
+        $role       = 1;
         if ($admin) $role = 4;
         elseif ($author) $role = 2;
         elseif ($learner) $role = 1;
@@ -332,19 +332,44 @@ class Lti_ToolProvider {
         $uiMode     = 'easy';
         $password   = $this->consumer->secret;
         $nickname   = $this->user->fullname;
+        $userId = $this->user->getId();
         $key = $this->resource_link->getKey();
-        $user = DB_ORM::model('user')->getUserByName($key);
+        $username = $userId . '_' . $key;
+        $user = DB_ORM::model('user')->getUserByName($username);
         $email      = $this->user->email;
-        if ($user) {
-            // If user exists, simply save the current details
-            $id = $user->id;
-            DB_ORM::model('User')->updateUser($id, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
-        } else {
-            $username = $key;
-            DB_ORM::model('User')->createUser($username, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+
+        $trimPattern = " \t\n\r\0\x0B\"";
+
+        if(isset($this->resource_link->settings['custom__group'])){
+            $groupName = trim($this->resource_link->settings['custom__group'], $trimPattern);
+        }elseif(isset($this->resource_link->settings['custom_group'])){
+            $groupName = trim($this->resource_link->settings['custom_group'], $trimPattern);
+        }else{
+            $groupName = null;
         }
 
-        $status = Auth::instance()->login($key, $this->consumer->secret);
+        if(!empty($groupName)) {
+            $group = DB_ORM::model('Group')->getByName($groupName);
+            $groupId = (!empty($group)) ? $group->id : null;
+        }
+
+        if ($user) {
+            $id = $user->id;
+            DB_ORM::model('User')->updateUser($id, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+            if(!empty($groupId)) {
+                $alreadyInGroup = DB_ORM::model('User_Group')->userExist($id, $groupId);
+                if(!$alreadyInGroup){
+                    DB_ORM::model('User_Group')->add($groupId, $id);
+                }
+            }
+        } else {
+            $id = DB_ORM::model('User')->createUser($username, $password, $nickname, $email, $role, $languageId, $uiMode, $isLti);
+            if(!empty($groupId)) {
+                DB_ORM::model('User_Group')->add($groupId, $id);
+            }
+        }
+
+        $status = Auth::instance()->login($username, $this->consumer->secret);
         $redirectURL = URL::site(NULL, TRUE);
         if ($status) {
             $redirectURL .= Arr::get($_SERVER, 'REDIRECT_URL', '');
@@ -364,6 +389,7 @@ class Lti_ToolProvider {
         if ($context->hasOutcomesService()) {
             $outcome = new Lti_Outcome($tool_provider->user->lti_result_sourcedid);
             $outcome->setValue($score);
+            //file_put_contents($_SERVER['DOCUMENT_ROOT'].'/testtxtfile.txt', var_export($score, true), FILE_APPEND);
             $context->doOutcomesService(Lti_ResourceLink::EXT_WRITE, $outcome);
         }
         return $tool_provider->return_url;
@@ -543,6 +569,7 @@ class Lti_ToolProvider {
         ### Set the request context/resource link
         #
       $this->resource_link = new Lti_ResourceLink($this->consumer, trim($_POST['resource_link_id']));
+
       if (isset($_POST['context_id'])) {
         $this->resource_link->lti_context_id = trim($_POST['context_id']);
       }
@@ -675,6 +702,10 @@ class Lti_ToolProvider {
       // Persist changes to resource link
       $this->resource_link->save();
       if($saveUser){
+
+          $consumer_key = $this->consumer->getKey();
+          DB_ORM::delete('lti_user')->where('consumer_key', '=', $consumer_key)->execute();
+
           $this->user->save();
       }
     }

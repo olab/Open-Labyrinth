@@ -131,19 +131,38 @@ class Installation {
             if (!$errorFound){
                 $baseUrl = URL::base();
                 if ($baseUrl != '/'){
-                    $content = '';
-                    $handle = fopen(DOCROOT . 'application/bootstrap.php', 'r');
-                    while (($buffer = fgets($handle)) !== false) {
-                        $content .= $buffer;
-                    }
-
-                    $content = str_replace("'base_url' => '/',", "'base_url' => '".$baseUrl."',", $content);
-                    file_put_contents(DOCROOT . 'application/bootstrap.php', $content);
+                    $configPath = DOCROOT.'config.json';
+                    $config = self::getContent($configPath);
+                    $config['base_url'] = $baseUrl;
+                    self::createFile($configPath, $config, true);
                 }
                 Session::set('installationStep', '2');
             }
         }
         Installation::redirect(URL::base() . 'installation/index.php');
+    }
+
+    public static function createFile($filename, $content = '', $toJSON = false, $permission = 0777)
+    {
+        if ($toJSON){
+            $content = json_encode($content);
+        }
+        $result = file_put_contents($filename, $content);
+        chmod($filename, $permission);
+
+        return ($result !== false);
+    }
+
+    public static function getContent($filename, $json = true)
+    {
+        $content = null;
+        if (file_exists($filename)){
+            $content = file_get_contents($filename);
+            if ($json){
+                $content = json_decode($content, true);
+            }
+        }
+        return $content;
     }
 
     public static function action_overview(){
@@ -190,8 +209,8 @@ class Installation {
             clearstatcache(TRUE);
         }
 
-        $temp['item'] = 'PHP 5.3.3 or newer';
-        if (version_compare(PHP_VERSION, '5.3.3', '>=')){
+        $temp['item'] = 'PHP 5.4.0 or newer';
+        if (version_compare(PHP_VERSION, '5.4.0', '>=')){
             $temp['label'] = 'success';
             $temp['status'] = 'Yes';
         } else {
@@ -601,8 +620,8 @@ class Installation {
         } else {
             $host = $olab['db_host'];
         }
-
-        $link = mysql_connect($host, $olab['db_user'], $olab['db_pass']);
+        //TODO: The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead
+        $link = @mysql_connect($host, $olab['db_user'], $olab['db_pass']);
 
         $db_selected = mysql_select_db($olab['db_name']);
         if ($db_selected) {
@@ -662,7 +681,61 @@ class Installation {
 
         file_put_contents(DOCROOT . 'application/config/database.php', $header . $databaseConfig);
 
+        static::copyDirectory(DOCROOT . 'installation/h5p/', DOCROOT . 'files/h5p/');
+
         Installation::terminate();
+    }
+
+    public static function copyDirectory($src, $dst, $options = [])
+    {
+        if (!is_dir($dst)) {
+            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0777, true);
+        }
+
+        $handle = opendir($src);
+        if ($handle === false) {
+            throw new Exception("Unable to open directory: $src");
+        }
+        if (!isset($options['basePath'])) {
+            // this should be done only once
+            $options['basePath'] = realpath($src);
+        }
+        while (($file = readdir($handle)) !== false) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+            $from = $src . DIRECTORY_SEPARATOR . $file;
+            $to = $dst . DIRECTORY_SEPARATOR . $file;
+            
+            if (is_file($from)) {
+                copy($from, $to);
+                if (isset($options['fileMode'])) {
+                    @chmod($to, $options['fileMode']);
+                }
+            } else {
+                static::copyDirectory($from, $to, $options);
+            }
+        }
+        closedir($handle);
+    }
+
+    public static function createDirectory($path, $mode = 0775, $recursive = true)
+    {
+        if (is_dir($path)) {
+            return true;
+        }
+        $parentDir = dirname($path);
+        if ($recursive && !is_dir($parentDir)) {
+            static::createDirectory($parentDir, $mode, true);
+        }
+        try {
+            $result = mkdir($path, $mode);
+            chmod($path, $mode);
+        } catch (\Exception $e) {
+            throw new Exception("Failed to create directory '$path': " . $e->getMessage(), $e->getCode(), $e);
+        }
+
+        return $result;
     }
 
     public static function deleteDir($dirPath) {
@@ -755,7 +828,8 @@ class Installation {
         if ($c=preg_match_all ($regExp, $str, $matches)) {
             if (isset($matches[0][0])) {
                 $found = 0;
-                $result = self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
+                //TODO: replace preg_replace by preg_replace_callback
+                $result = @self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
             }
         }
 

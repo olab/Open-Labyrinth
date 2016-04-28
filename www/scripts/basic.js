@@ -122,7 +122,14 @@ $(document).ready(function(){
     });
 
     $('.lightning-choice').change(function(){
+        var type = $(this).attr('type');
         lightningChoice($(this));
+        if(typeof type != 'undefined' && type == 'checkbox') {
+            var inputs = $(this).closest('.navigation').find('.lightning-choice');
+            inputs.each(function () {
+                lightningChoice($(this), true);
+            });
+        }
     });
 
     $('.drag-question-container').sortable({
@@ -134,6 +141,19 @@ $(document).ready(function(){
 
     $('.sct-question').change(function(){
         lightningSct($(this));
+    });
+
+    $(document).ready(function(){
+        var ttalkButton = $('.ttalkButton');
+        ttalkButton.on('click', function () {
+            addChatMessage($(this), 1);
+        });
+
+        $('textarea.ttalk-textarea').on('keyup', function(e){
+            if(!e.shiftKey && e.keyCode == 13) {
+                ttalkButton.trigger('click');
+            }
+        });
     });
 
     function validationAndLightningText($this){
@@ -206,7 +226,7 @@ $(document).ready(function(){
         );
     }
 
-    function lightningChoice($this){
+    function lightningChoice($this, notShowResponse){
         lightningNotSaved = true;
 
         var questionId = $this.data('question'),
@@ -221,7 +241,9 @@ $(document).ready(function(){
         $.get(
             URL,
             function(data){
-                if (data != '') $('#AJAXresponse' + responseId).html(data);
+                if (data != '' && notShowResponse !== true) {
+                    $('#AJAXresponse' + responseId).html(data);
+                }
                 if (checkAnswer(questionId, response)) imitateGo();
                 if (actionGoClicked) window.location.href = toNodeHref;
                 lightningNotSaved = false;
@@ -316,6 +338,7 @@ function sendSliderValue(qid, value) {
         function(){}
     );
 }
+
 // ----- end different type of questions ----- //
 
 window.dhx_globalImgPath = urlBase + "scripts/dhtmlxSlider/codebase/imgs/";
@@ -329,7 +352,7 @@ function ajaxBookmark() {
     $.get(
         urlBase + 'renderLabyrinth/addBookmark/' + idNode,
         function(){
-            $("input[name='bookmark']").val('saved');
+            window.location.href = urlBase;
         }
     )
 }

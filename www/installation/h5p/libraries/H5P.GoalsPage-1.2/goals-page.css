@@ -1,0 +1,204 @@
+.h5p-goals-page {
+  padding: 0.5em 1em;
+}
+
+.h5p-goals-page .goals-help-text {
+  float: right;
+  color: #1a73d9;
+  cursor: pointer;
+  font-size: 0.8em;
+  line-height: 3.6em;
+}
+
+/* Goal container */
+.h5p-goals-page .created-goal-container {
+  position: relative;
+  border-bottom: 2px solid #D6D6D6;
+  background-color: #f5f5f5;
+  padding: 0.75em;
+  padding-bottom: 1.9em;
+  margin-bottom: 1em;
+}
+
+/* ------------------------ Main classes ----------------------------- */
+
+.h5p-goals-page .goals-title {
+  border-bottom: 1px solid #ccc;
+  padding: 0.5em 0;
+  margin-bottom: 0.5em;
+  font-size: 18px;
+  color: #555;
+}
+
+.h5p-goals-page .goals-define {
+  margin: 1em 0;
+}
+
+.h5p-goals-page .goals-description {
+  padding-top: 1em;
+}
+
+.h5p-goals-page .goals-counter .goals-counter-text {
+  color: #555;
+  opacity: 0.75;
+}
+
+.h5p-goals-page .goals-view {
+  padding-top: 0.25em;
+}
+
+/* ------------------- Goal container truncation ------------------------- */
+
+.h5p-goals-page .created-goal-container .created-goal {
+  display: block;
+  padding-left: 1px;
+  color: #fff;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+/* Set initial height of input field when empty, so it is editable */
+.h5p-goals-page .created-goal-container .created-goal:empty {
+  display: inline-block;
+  min-height: 0.5em;
+}
+
+.h5p-goals-page .created-goal-container .created-goal:focus {
+  border: 0;
+  outline: 0;
+}
+
+/* IE adds <p>s when editing goals. Don't want margin from theme */
+.h5p-goals-page .created-goal-container .created-goal > p {
+  margin: 0;
+  padding: 0;
+}
+
+/* ------------------------- Goal container colors ------------------------ */
+/* Background colors */
+.h5p-goals-page .created-goal-container.goal-type-0,
+.h5p-goals-page .created-goal-container.goal-type-1,
+.h5p-goals-page .created-goal-container.goal-type-2 {
+  background-color: #1a73d9;
+}
+
+.h5p-goals-page .created-goal-container.focused {
+  background-color: #eee;
+  color: #666;
+}
+
+.h5p-goals-page .created-goal-container.focused .created-goal {
+  color: #666;
+}
+
+.h5p-goals-buttons {
+  position: absolute;
+  right: 0;
+  bottom: 0.3em;
+  color: #333;
+  border-top-left-radius: 3px;
+  padding: 0em 0.3em;
+  font-size: 0.9em;
+  display: inline-block;
+}
+
+.created-goal-container.focused .h5p-goals-buttons {
+  display: inline-block;
+  color: #333;
+}
+
+.h5p-goals-buttons > .h5p-created-goal-remove {
+  margin-left: .3em;
+}
+
+.h5p-goals-page .h5p-goals-button {
+  float: right;
+  cursor: pointer;
+  background: #fff;
+  opacity: 0.75;
+  border-radius: 0.3em;
+  padding: 0.2em 0.3em;
+  line-height: 1;
+
+}
+
+.h5p-goals-page .h5p-goals-button:hover {
+  color: #000;
+}
+
+.created-goal-container .h5p-created-goal-done {
+  display: none;
+}
+.created-goal-container.focused .h5p-created-goal-done {
+  display: inline-block;
+}
+
+.created-goal-container.focused .h5p-created-goal-remove,
+.created-goal-container.focused .h5p-created-goal-edit {
+  display: none;
+}
+
+/* Icons */
+.h5p-goals-page .h5p-goals-button:before {
+  font-family: 'H5PFontAwesome4';
+  content: '\f00c';
+  padding-right: 0.3em;
+}
+
+.h5p-goals-page .h5p-created-goal-remove:before {
+  content: '\f00d';
+}
+
+.h5p-goals-page .h5p-created-goal-edit:before {
+  content: '\f044';
+}
+
+.h5p-goals-page .h5p-created-goal-done:hover,
+.h5p-goals-page .h5p-created-goal-edit:hover,
+.h5p-goals-page .h5p-created-goal-remove:hover {
+  opacity: 1;
+}
+
+/* ------------------------------ Buttons -------------------------------------------------- */
+/* Rounded button css in 'H5P.JoubelUI' library */
+
+.h5p-goals-page .goals-define .goals-create:before {
+  font-family: "H5PFontAwesome4";
+  content: "\f040";
+  margin-right: 0.75em;
+}
+
+.h5p-goals-page .goals-define .goals-search {
+  float: left;
+  margin-right: 1em;
+}
+
+.h5p-goals-page .goals-define .goals-search:before {
+  font-family: "H5PFontAwesome4";
+  content: "\f07c";
+  margin-right: 0.75em;
+}
+
+/* Active state positioning */
+.h5p-goals-page .goals-define .goals-search:active:before,
+.h5p-goals-page .goals-define .goals-create:active:before {
+  position: relative;
+  top: 2px;
+}
+
+/* ------------------------------ Responsive view ------------------------- */
+
+/* Hide description field */
+.h5p-goals-page .goals-view.no-footer-description .created-goal-container .footer-description {
+  display: none;
+}
+
+.h5p-goals-page .goals-view.no-footer-description.no-footer-labels .h5p-created-goal-remove-text,
+.h5p-goals-page .goals-view.no-footer-description.no-footer-labels .h5p-created-goal-done-text,
+.h5p-goals-page .goals-view.no-footer-description.no-footer-labels .h5p-created-goal-edit-text {
+  display: none;
+}
+
+.h5p-goals-page .goals-view.no-footer-description.no-footer-labels .h5p-goals-button:before {
+  padding-right: 0;
+}

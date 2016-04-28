@@ -53,12 +53,55 @@ class Updates
                                 $skipFiles[$f] = 1;
                                 $result = 1;
                             }
-                            @unlink($pathToFile);
+                            //@unlink($pathToFile);
                         }
                     }
                 }
 
                 file_put_contents($infoFile, json_encode($skipFiles));
+            }
+        } else {
+            return 2;
+        }
+
+        return $result;
+    }
+
+    public static function rollback($toVersion){
+        $result = 0;
+        $dir = DOCROOT.'updates/roll_back/';
+        if(is_dir($dir)){
+            $files = scandir($dir);
+            array_shift($files);
+            array_shift($files);
+            if (count($files) > 0){
+                $historyPath = DOCROOT.'updates/history.json';
+                if(file_exists($historyPath)){
+                    $history = file_get_contents($historyPath);
+                    $history = json_decode($history, true);
+                }
+                usort($files, array('Updates', 'sortVersionInOrder'));
+                $files = array_reverse($files);
+                foreach($files as $f){
+                    $ext = pathinfo($f, PATHINFO_EXTENSION);
+                    if ($ext == 'sql'){
+
+                        $version = pathinfo($f, PATHINFO_FILENAME);
+                        if($version == $toVersion) break;
+
+                        $pathToFile = $dir.$f;
+                        Updates::populateDatabase($pathToFile);
+                        $result = 1;
+
+                        if(isset($history[$f])) {
+                            unset($history[$f]);
+                        }
+                    }
+                }
+                if(isset($history)) {
+                    $history = json_encode($history);
+                    file_put_contents($historyPath, $history);
+                }
             }
         } else {
             return 2;
@@ -97,7 +140,8 @@ class Updates
         if ($c=preg_match_all ($regExp, $str, $matches)) {
             if (isset($matches[0][0])) {
                 $found = 0;
-                $result = self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
+                //TODO: preg_replace(): The /e modifier is deprecated, use preg_replace_callback instead
+                $result = @self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'', $matches[0][0]));
             }
         }
 
@@ -148,6 +192,7 @@ class Updates
 
                     if (!$result){
                         $return = false;
+                        @Log::instance()->add(Log::DEBUG, mysql_error());
                     }
                 }
             }

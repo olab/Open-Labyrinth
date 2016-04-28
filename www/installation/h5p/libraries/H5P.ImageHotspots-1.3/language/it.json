@@ -1,0 +1,47 @@
+{
+  "semantics": [
+    {
+      "label": "Immagine di sfondo",
+      "description": "Immagine impostata come sfondo."
+    },
+    {
+      "label": "Colore",
+      "description": "Il colore dei punti focali viene impostato utilizzando un codice esadecimale."
+    },
+    {
+      "entity": "punto focale",
+      "label": "Punti focali",
+      "field": {
+        "label": "Punto focale",
+        "fields": [
+          {
+            "label": "Position",
+            "fields": [
+              {
+                "label": "Posizione orizzontale (x)",
+                "description": "Posizione orizzontale del punto focale stabilita in percentuale. (0 - 100)"
+              },
+              {
+                "label": "Posizione verticale (y)",
+                "description": "Posizione verticale del punto focale stabilita in percentuale. (0 - 100)"
+              }
+            ]
+          },
+          {
+            "label": "Cover entire frame on popup"
+          },
+          {
+            "label": "Testata",
+            "description": "optional"
+          },
+          {
+            "label": "Popup contenuto",
+            "field": {
+              "label": "Content Item"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

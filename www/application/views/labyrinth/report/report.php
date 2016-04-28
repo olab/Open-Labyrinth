@@ -56,6 +56,17 @@ if (isset($templateData['session'])) {
     </div>
     <h1 class="report-title"><?php echo __('Labyrinth session "').$templateData['session']->map->name.'"'.' user '.$templateData['session']->user->nickname; ?></h1>
 
+    <?php
+    $flash = Session::instance()->get_once('finalSubmit', null);
+    if(!empty($flash)){
+        ?>
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <?php echo $flash; ?>
+        </div>
+    <?php
+    }
+    ?>
 
     <table class="table  table-striped table-bordered">
         <tr>
@@ -87,7 +98,7 @@ if (isset($templateData['session'])) {
                         }
                     }
                     $t = $max - $templateData['session']->start_time;
-                    echo date('i:s', $t);
+                    echo gmdate('H:i:s', $t);
                 } ?>
             </td>
         </tr>

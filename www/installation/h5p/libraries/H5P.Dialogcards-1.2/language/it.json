@@ -1,0 +1,68 @@
+{
+  "semantics": [
+    {
+      "label": "Titolo"
+    },
+    {
+      "label": "Descrizione attività"
+    },
+    {
+      "widgets": [
+        {
+          "label": "Predefinito"
+        }
+      ],
+      "label": "Dialoghi",
+      "entity": "dialogo",
+      "field": {
+        "label": "Domanda",
+        "fields": [
+          {
+            "label": "Testo",
+            "description": "Suggerimento per la prima parte del dialogo"
+          },
+          {
+            "label": "Risposta",
+            "description": "Suggerimento per la seconda parte del dialogo"
+          },
+          {
+            "label": "Image",
+            "description": "Optional image for the card. (The card may use just an image, just a text or both)"
+          },
+          {
+            "label": "Audio files"
+          },
+          {
+            "label": "Suggerimenti",
+            "fields": [
+              {
+                "label": "Suggerimento per il testo",
+                "description": "Suggerimento per la prima parte del dialogo"
+              },
+              {
+                "label": "Suggerimento per la risposta",
+                "description": "Suggerimento per la seconda parte del dialogo"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Testo per il pulsante Gira"
+    },
+    {
+      "label": "Testo per il pulsante Prossimo"
+    },
+    {
+      "label": "Testo per il pulsante Precedente"
+    },
+    {
+      "label": "Testo per il pulsante Indietro"
+    },
+    {
+      "label": "Testo avanzamento",
+      "description": "Le variabili disponibili sono @card e @total."
+    }
+  ]
+}

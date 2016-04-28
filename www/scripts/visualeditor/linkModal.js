@@ -5,6 +5,7 @@ var LinkModal = function() {
     var $linkTypes = null;
     var $linkLabel = null;
     var $linkImages = null;
+    var $linkHidden = null;
     var visualEditor = null;
     
     self.link = null;
@@ -28,6 +29,9 @@ var LinkModal = function() {
 
         if('linkLabel' in parameters)
             $linkLabel = $(parameters.linkLabel);
+
+        if('linkHidden' in parameters)
+            $linkHidden = $(parameters.linkHidden);
 
         if('visualEditor' in parameters)
             visualEditor = parameters.visualEditor;
@@ -71,16 +75,28 @@ var LinkModal = function() {
                     }
                 });
             }
+
+            if($linkHidden != null) {
+                $.each($linkHidden.children(), function(index, object) {
+                    if($(object).attr('value') == self.link.linkHidden) {
+                        $(object).attr('selected', 'selected');
+                    } else {
+                        $(object).removeAttr('selected');
+                    }
+                });
+            }
         }
     }
 
     var ApplyEvent = function() {
-        if(self.link != null && $linkTypes != null && $linkLabel != null && $linkImages != null && visualEditor != null) {
+        if(self.link != null && $linkTypes != null && $linkLabel != null && $linkImages != null && $linkHidden != null && visualEditor != null) {
             var value = $linkTypes.children().filter('.active').attr('value');
             if(value != 'delete') {
                 self.link.type = value;
                 self.link.label = $linkLabel.val();
                 self.link.imageId = $linkImages.val();
+                self.link.linkHidden = $linkHidden.val();
+                self.link.lineColor = self.link.linkHidden == 1 ? '#969595': '#ffffff';
             } else {
                 visualEditor.DeleteLinkById(self.link.id);
                 self.link = null;

@@ -46,9 +46,18 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
                 'unsigned' => TRUE,
             )),
 
-            'start_time' => new DB_ORM_Field_Integer($this, array(
-                'max_length' => 11,
-                'nullable' => FALSE,
+            'start_time' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => false,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
+            )),
+
+            'end_time' => new DB_ORM_Field_Decimal($this, array(
+                'nullable' => true,
+                'savable' => true,
+                'precision' => 18,
+                'scale' => 6,
             )),
 
             'user_ip' => new DB_ORM_Field_String($this, array(
@@ -119,6 +128,7 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
                 ->column('user_id', $data['user_id'])
                 ->column('map_id', $data['map_id'])
                 ->column('start_time', $data['start_time'])
+                ->column('end_time', $data['end_time'])
                 ->column('user_ip', $data['user_ip'])
                 ->column('webinar_id', $data['webinar_id'])
                 ->column('webinar_step', $data['webinar_step'])
@@ -258,7 +268,7 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
      * @param integer|null $dateStatistics - if this sessions for Statistics
      * @return array|null - session ids or null
      */
-    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null) {
+    public function getSessions($mapId, $webinarId = null, $webinarStep = null, $notInUsers = null, $dateStatistics = null, $date_from = null, $date_to = null) {
         $builder = DB_SQL::select('default')
             ->from($this->table())
             ->where('map_id', '=', $mapId, 'AND')
@@ -277,6 +287,12 @@ class Model_Leap_Statistics_User_Session extends DB_ORM_Model {
 
         if($dateStatistics != null && $dateStatistics > 0) {
             $builder = $builder->where('date_save_id', '=', $dateStatistics);
+        }
+
+        if (!empty($date_from) && !empty($date_to)) {
+            $builder = $builder
+                ->where('start_time', '>=', $date_from)
+                ->where('start_time', '<=', $date_to);
         }
 
         $records = $builder->query();

@@ -198,7 +198,7 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
             $statusKey = false;
             $usersList = $this->getAll();
             do{
-                $newKey = 'SW-'.$this->getRandomString(6);
+                $newKey = $this->getRandomLetter().'-'.$this->getRandomString(6);
                 foreach($usersList as $user) {
                     if($user->consumer_key == $newKey) $statusKey = true;
                 }
@@ -230,6 +230,16 @@ class Model_Leap_Lti_Consumer extends DB_ORM_Model {
 
     public function getAll() {
         return DB_ORM::select('Lti_Consumer')->query()->as_array();
+    }
+
+    private function getRandomLetter($length = 2) {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $value = '';
+        $charsLength = strlen($chars) - 1;
+        for ($i = 1 ; $i <= $length; $i++) {
+            $value .= $chars[rand(0, $charsLength)];
+        }
+        return $value;
     }
 
     private function getRandomString($length = 8) {

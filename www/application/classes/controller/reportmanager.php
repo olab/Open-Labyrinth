@@ -24,7 +24,8 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_ReportManager extends Controller_Base
 {
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
         parent::before();
@@ -34,19 +35,21 @@ class Controller_ReportManager extends Controller_Base
 
     public function action_index()
     {
-        $mapId = $this->request->param('id', NULL);
+        $mapId = $this->request->param('id', null);
 
-        if ($mapId != NULL AND $this->checkUser())
-        {
-            $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
-            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
-            $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-            $this->templateData['center']   = View::factory('labyrinth/report/allView')->set('templateData', $this->templateData);
+        if ($mapId != null AND $this->checkUser()) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+            $this->templateData['sessions'] = $this->templateData['map']->sessions;
+            $this->templateData['sessionsComplete'] = $this->templateData['map']->getCompleteSessions($this->templateData['sessions']);
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+                $this->templateData);
+            $this->templateData['center'] = View::factory('labyrinth/report/allView')->set('templateData',
+                $this->templateData);
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
 
-            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $mapId));
         } else {
             Request::initial()->redirect(URL::base());
         }
@@ -54,25 +57,68 @@ class Controller_ReportManager extends Controller_Base
 
     public function action_finishAndShowReport()
     {
-        Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
-        $sessionId      = $this->request->param('id', NULL);
-        $mapId          = $this->request->param('id2', NULL);
-        $previewNodeId  = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId);
+        $sessionId = Session::instance()->get('session_id', null);
+        $mapId = $this->request->param('id2', null);
+        $previousNodeId = DB_ORM::model('user_sessionTrace')->getTopTraceBySessionId($sessionId, true);
+        $previousNodeId = $previousNodeId['node_id'];
+        $user = Auth::instance()->get_user();
+        $userId = (!empty($user)) ? $user->id : null;
 
-        if ($sessionId == NULL) {
+        if ($sessionId == null) {
             $sessionId = isset($_COOKIE['OL']) ? $_COOKIE['OL'] : 'notExist';
         }
 
-        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previewNodeId);
-        DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
+        Model::factory('Labyrinth')->addQuestionResponsesAndChangeCounterValues($mapId, $sessionId, $previousNodeId);
+        if (!empty($sessionId) && is_numeric($sessionId)) {
+            /** @var Model_Leap_User_Session $session */
+            $session = DB_ORM::model('user_session', (int)$sessionId);
+            $session->end_time = microtime(true);
+            $session->save();
+            DB_ORM::model('user_sessionTrace')->setElapsedTime((int)$sessionId);
 
-        Request::initial()->redirect(URL::base().'reportManager/showReport/'.$sessionId);
+            //send xAPI statement
+            if (Model_Leap_Map::isXAPIStatementsEnabled($mapId)) {
+                $session_trace = $session->getLatestTrace();
+                /** @var Model_Leap_Statement $statement */
+                $statement = $session_trace->createXAPIStatementCompleted();
+                Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
+            }
+            //end send xAPI statement
+        }
+        Session::instance()->delete('session_id'); // set in renderLabyrinth, checkTypeCompatibility method
+        Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
+        if (!empty($mapId) && !empty($userId)) {
+            DB_ORM::model('User_Bookmark')->deleteBookmarksByMapAndUser($mapId, $userId);
+        }
+
+        //send score to LTI Consumer
+        $toolProvider = Session::instance()->get('lti_tool_provider');
+        if (!empty($toolProvider)) {
+            $last_trace = DB_ORM::model('User_SessionTrace')->getLastTraceBySessionId($sessionId);
+            if (!empty($last_trace)) {
+                $score = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($last_trace);
+                $score = isset($score['value']) ? $score['value'] : 0;
+                $this->setScore($score);
+            }
+        }
+        //end send score to LTI Consumer
+
+        if (empty($sessionId) || $sessionId == 'notExist') {
+            $sessionIdUrl = $this->request->param('id', null);
+            if (empty($sessionIdUrl)) {
+                $sessionIdUrl = 'notExist';
+            }
+        } else {
+            $sessionIdUrl = $sessionId;
+        }
+        Request::initial()->redirect(URL::base() . 'reportManager/showReport/' . $sessionIdUrl);
     }
 
-    public function action_exportToExcel() {
+    public function action_exportToExcel()
+    {
         $reportId = $this->request->param('id', null);
 
-        if($reportId != null) {
+        if ($reportId != null) {
             $report = new Report_Session(new Report_Impl_PHPExcel(), $reportId);
             $report->generate();
 
@@ -82,31 +128,25 @@ class Controller_ReportManager extends Controller_Base
 
     public function action_showReport()
     {
-        $reportId = $this->request->param('id', NULL);
-        $isFromLabyrinth = $this->request->param('id2', 0);
+        $reportId = $this->request->param('id', null);
 
-        if ($reportId == NULL) {
+        if ($reportId == null) {
             Request::initial()->redirect(URL::base());
         }
 
-        $session    = DB_ORM::model('user_session', array((int)$reportId));
-        $mapId      = $session->map_id;
+        $session = DB_ORM::model('user_session', array((int)$reportId));
+        $mapId = $session->map_id;
 
-        $this->templateData['session']      = $session;
-        $this->templateData['map']          = $session->map;
-        $this->templateData['counters']     = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
-        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap($mapId);
-
-        if($isFromLabyrinth){
-            $progress = DB_ORM::model('Map_Counter')->progress($this->templateData['session']->traces['0']->counters, $this->templateData['session']->map->id);
-            $this->setScore($progress);
-        }
+        $this->templateData['session'] = $session;
+        $this->templateData['map'] = $session->map;
+        $this->templateData['counters'] = DB_ORM::model('user_sessionTrace')->getCountersValues($this->templateData['session']->id);
+        $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap($mapId);
 
         if ($session->webinar_id AND $session->webinar_step) {
             $scenario = DB_ORM::model('webinar', array($session->webinar_id));
 
-            $this->templateData['webinarID']        = $scenario->id;
-            $this->templateData['webinarForum']     = $scenario->forum_id;
+            $this->templateData['webinarID'] = $scenario->id;
+            $this->templateData['webinarForum'] = $scenario->forum_id;
 
             if (count($scenario->steps)) {
                 foreach ($scenario->steps as $step_order => $scenarioStep) {
@@ -114,17 +154,19 @@ class Controller_ReportManager extends Controller_Base
                         continue;
                     }
                     if (count($scenarioStep->maps)) {
-                        foreach($scenarioStep->maps as $map_order => $scenarioStepMap) {
-                            if ($scenario->changeSteps == 'automatic' AND $map_order + 1 == count($scenarioStep->maps) AND isset($scenario->steps[$step_order+1])) {
-                                DB_ORM::model('Webinar')->changeWebinarStep($scenario->id, $scenario->steps[$step_order+1]->id);
+                        foreach ($scenarioStep->maps as $map_order => $scenarioStepMap) {
+                            if ($scenario->changeSteps == 'automatic' AND $map_order + 1 == count($scenarioStep->maps) AND isset($scenario->steps[$step_order + 1])) {
+                                DB_ORM::model('Webinar')->changeWebinarStep($scenario->id,
+                                    $scenario->steps[$step_order + 1]->id);
                             }
 
-                            $isFinished = DB_ORM::model('user_session')->isUserFinishMap($scenarioStepMap->reference_id, $session->user_id, $scenarioStepMap->which, $scenario->id, $session->webinar_step);
+                            $isFinished = DB_ORM::model('user_session')->isUserFinishMap($scenarioStepMap->reference_id,
+                                $session->user_id, $scenarioStepMap->which, $scenario->id, $session->webinar_step);
                             if ($isFinished == Model_Leap_User_Session::USER_NOT_PLAY_MAP) {
                                 $this->templateData['nextCase'] = array(
-                                    'webinarId'     => $scenario->id,
-                                    'webinarStep'   => $scenarioStep->id,
-                                    'webinarMap'    => $scenarioStepMap->reference_id
+                                    'webinarId' => $scenario->id,
+                                    'webinarStep' => $scenarioStep->id,
+                                    'webinarMap' => $scenarioStepMap->reference_id
                                 );
                                 break;
                             }
@@ -139,16 +181,67 @@ class Controller_ReportManager extends Controller_Base
         foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array() as $question) {
             $questions[$question->id] = $question;
         }
+
         $this->templateData['questions'] = $questions;
         $this->templateData['responses'] = array();
 
-        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->query()->as_array();
+        if ($this->templateData['map']->revisable_answers) {
+            $orderBy = 'DESC';
+        } else {
+            $orderBy = 'ASC';
+        }
+
+        $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id',
+            $orderBy)->query()->as_array();
+        $multipleResponses = $this->mcqConvertResponses($userResponses, $questions, $orderBy);
+
+        $answeredQuestions = array();
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
+            $nodeId = $userResponse->node_id;
             if ($questions[$questionId]->entry_type_id == 8) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
-            $this->templateData['responses'][] = $userResponse;
+
+            if (!isset($answeredQuestions[$nodeId]) || !in_array($questionId, $answeredQuestions[$nodeId])) {
+                if (in_array($questions[$questionId]->entry_type_id, array(1, 2, 4, 5, 6, 7, 8, 9, 10))) {
+                    $this->templateData['responses'][] = $userResponse;
+                    $answeredQuestions[$nodeId][] = $questionId;
+                } elseif (in_array($questions[$questionId]->entry_type_id, array(3))) {
+                    if (isset($multipleResponses[$questionId], $multipleResponses[$questionId][$nodeId])) {
+                        foreach ($multipleResponses[$questionId][$nodeId] as $mcqUserResponse) {
+                            $this->templateData['responses'][] = $mcqUserResponse;
+                        }
+                        $answeredQuestions[$nodeId][] = $questionId;
+                    }
+                } elseif (in_array($questions[$questionId]->entry_type_id, array(11))) {
+
+                    $responseArray = json_decode($userResponse->response, true);
+                    if (!empty($responseArray)) {
+                        $responseArray = end($responseArray);
+
+                        if ($responseArray['type'] == 'init' || $responseArray['type'] == 'bell') {
+                            continue;
+                        }
+
+                        if ($responseArray['type'] == 'text') {
+                            $userResponse->response = $responseArray['role'] . ': ' . $responseArray['text'];
+                        } else {
+                            $userResponse->response = 'Redirect to the Node ID: ' . $responseArray['text']['node_id'];
+                        }
+                        $this->templateData['responses'][] = $userResponse;
+                    }
+
+                } else {
+                    $this->templateData['responses'][] = $userResponse;
+                }
+            }
+        }
+
+        if (!empty($this->templateData['responses'])) {
+            usort($this->templateData['responses'], function ($a, $b) {
+                return ($a->id < $b->id) ? -1 : 1;
+            });
         }
 
         $allCounters = DB_ORM::model('map_counter')->getCountersByMap($this->templateData['session']->map_id);
@@ -156,21 +249,28 @@ class Controller_ReportManager extends Controller_Base
             $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
         }
 
-        $this->templateData['feedbacks']    = Model::factory('labyrinth')->getMainFeedback($session, $this->templateData['counters'], $session->map_id);
-        $this->templateData['center']       = View::factory('labyrinth/report/report')->set('templateData', $this->templateData);
-        $this->templateData['left']         = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['feedbacks'] = Model::factory('labyrinth')->getMainFeedback($session,
+            $this->templateData['counters'], $session->map_id);
+        $this->templateData['center'] = View::factory('labyrinth/report/report')->set('templateData',
+            $this->templateData);
+        $editorAccess = $this->checkUser();
+        if ($editorAccess) {
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+                $this->templateData);
+        }
         $this->template->set('templateData', $this->templateData);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['session']->map->name)->set_url(URL::base().'labyrinthManager/global/'.$this->templateData['session']->map->id));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$this->templateData['session']->map->id));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($reportId)->set_url(URL::base().'reportManager/showReport/'.$reportId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['session']->map->name)->set_url(URL::base() . 'labyrinthManager/global/' . $this->templateData['session']->map->id));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $this->templateData['session']->map->id));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($reportId)->set_url(URL::base() . 'reportManager/showReport/' . $reportId));
     }
 
-    public function action_summaryReport() {
-        $mapId = $this->request->param('id', NULL);
-        if ($mapId != NULL) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
-            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int) $mapId);
+    public function action_summaryReport()
+    {
+        $mapId = $this->request->param('id', null);
+        if ($mapId != null) {
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+            $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$mapId);
 
             $minClicks = 0;
             if (count($this->templateData['sessions']) > 0) {
@@ -189,13 +289,13 @@ class Controller_ReportManager extends Controller_Base
             }
 
             $allCounters = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-            if ($allCounters != NULL and count($allCounters) > 0) {
+            if ($allCounters != null and count($allCounters) > 0) {
                 foreach ($allCounters as $counter) {
                     $this->templateData['startValueCounters'][$counter->id] = $counter->start_value;
                 }
             }
 
-            $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
+            $this->templateData['allCounters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
             $this->templateData['minClicks'] = $minClicks;
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $mapId));
@@ -215,56 +315,109 @@ class Controller_ReportManager extends Controller_Base
         }
     }
 
-    private function checkUser()
+    public function mcqConvertResponses($userResponses, $questions, $orderBy)
     {
-        $user_type = Auth::instance()->get_user()->type->name;
-        return (bool) ($user_type == 'author' OR $user_type == 'superuser');
+        $multipleResponses = array();
+        $result = array();
+
+        foreach ($userResponses as $userResponse) {
+            $questionId = $userResponse->question_id;
+            $responseNodeId = $userResponse->node_id;
+            if (in_array($questions[$questionId]->entry_type_id, array(3))) {
+                $multipleResponses[$questionId][$responseNodeId][] = $userResponse->created_at;
+            }
+        }
+
+        foreach ($userResponses as $userResponse) {
+            $questionId = $userResponse->question_id;
+            $responseNodeId = $userResponse->node_id;
+            if (!isset($multipleResponses[$questionId]) || !isset($multipleResponses[$questionId][$responseNodeId])) {
+                continue;
+            }
+
+            if ($orderBy == 'DESC') {
+                //get last response
+                $created_at = max($multipleResponses[$questionId][$responseNodeId]);
+            } else {
+                //get first response
+                $created_at = min($multipleResponses[$questionId][$responseNodeId]);
+            }
+
+            if ($userResponse->created_at == $created_at) {
+                $result[$questionId][$responseNodeId][] = $userResponse;
+            }
+        }
+
+        return $result;
     }
 
-    public function action_pathVisualisation ()
+    /**
+     * @return bool
+     */
+    private function checkUser()
     {
-        $id_map     = $this->request->param('id', NULL);
-        $id_session = $this->request->param('id2', NULL);
+        $user = Auth::instance()->get_user();
+        if (empty($user)) {
+            return false;
+        }
 
-        if ($id_map == NULL AND ! $this->checkUser()) Request::initial()->redirect(URL::base());
+        $type = $user->type;
+
+        if (empty($type)) {
+            return false;
+        }
+
+        $user_type = $type->name;
+
+        return (bool)($user_type === 'author' || $user_type === 'superuser');
+    }
+
+    public function action_pathVisualisation()
+    {
+        $id_map = $this->request->param('id', null);
+        $id_session = $this->request->param('id2', null);
+
+        if ($id_map == null AND !$this->checkUser()) {
+            Request::initial()->redirect(URL::base());
+        }
 
         // selected_session needed for build path by javascript
-        if ($id_session)
-        {
+        if ($id_session) {
             $sessions_for_encode = array();
-            foreach (DB_ORM::select('user_sessiontrace')->where('session_id', '=', $id_session)->query() as $session)
-            {
+            foreach (DB_ORM::select('user_sessiontrace')->where('session_id', '=', $id_session)->query() as $session) {
                 $sessions_for_encode[] = array(
-                    'id_node'   =>$session->node_id,
-                    'start'     =>$session->date_stamp,
-                    'end'       =>$session->end_date_stamp,
+                    'id_node' => $session->node_id,
+                    'start' => $session->date_stamp,
+                    'end' => $session->end_date_stamp,
                 );
             }
             $this->templateData['selected_session'] = json_encode($sessions_for_encode);
         }
 
-        $this->templateData['map']      = DB_ORM::model('map', array((int)$id_map));
-        $this->templateData['mapJSON']  = Model::factory('visualEditor')->generateJSON($id_map);
+        $this->templateData['map'] = DB_ORM::model('map', array((int)$id_map));
+        $this->templateData['mapJSON'] = Model::factory('visualEditor')->generateJSON($id_map);
         $this->templateData['sessions'] = DB_ORM::model('user_session')->getAllSessionByMap((int)$id_map);
-        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
-        $this->templateData['current_s']= $id_session;
-        $this->templateData['center']   = View::factory('labyrinth/report/pathVisualisation')->set('templateData', $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+            $this->templateData);
+        $this->templateData['current_s'] = $id_session;
+        $this->templateData['center'] = View::factory('labyrinth/report/pathVisualisation')->set('templateData',
+            $this->templateData);
         $this->template->set('templateData', $this->templateData);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$id_map));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base().'reportManager/index/'.$id_map));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $id_map));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $id_map));
     }
 
-    private function setScore($progress){
-        $ses = Session::instance();
-        $toolProvider = $ses->get('lti_tool_provider');
-        if( ! is_null($toolProvider)){
-            $progress = explode(' of ',$progress);
-            $score = ($progress[1] != 0) ? round((($progress[0]*100/$progress[1])/100),3) : 0;
-            $returnUrl = Lti_ToolProvider::sendScore($score);
-            Auth::instance()->logout();
-            Request::initial()->redirect( ! is_null($returnUrl) ? $returnUrl : URL::base());
+    private function setScore($score)
+    {
+        $score = (float)$score;
+        if (!empty($score)) {
+            $score = $score / 100;
+            $score = round((float)$score, 2);
         }
-        return;
+
+        $returnUrl = Lti_ToolProvider::sendScore($score);
+        Auth::instance()->logout();
+        Request::initial()->redirect(!empty($returnUrl) ? $returnUrl : URL::base());
     }
 }

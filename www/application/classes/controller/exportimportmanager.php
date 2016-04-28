@@ -129,6 +129,7 @@ class Controller_ExportImportManager extends Controller_Base {
         header("Content-length: ".filesize($path));
 
         readfile($path);
+        exit();
     }
 
     public function exportVUE($mapId) {
@@ -1093,7 +1094,7 @@ class Controller_ExportImportManager extends Controller_Base {
         $string = html_entity_decode($string, $quote_style, $charset);
         $string = preg_replace_callback('~&#x([0-9a-fA-F]+);~i', array($this,"chr_utf8_callback"), $string);
         $string = html_entity_decode($string, $quote_style, $charset);
-        $string = preg_replace('~&#([0-9]+);~e', $this->chr_utf8("\\1"), $string);
+        $string = preg_replace_callback('~&#([0-9]+);~', array($this, 'chr_utf8'), $string);
         return $string;
     }
 
@@ -1126,6 +1127,11 @@ class Controller_ExportImportManager extends Controller_Base {
 
     private function chr_utf8($num)
     {
+
+        if(is_array($num)) {
+            $num = $num[1];
+        }
+
         $result = '';
         if ($num < 128)     $result = chr($num);
         if ($num < 2048)    $result = chr(($num >> 6) + 192).chr(($num & 63) + 128);

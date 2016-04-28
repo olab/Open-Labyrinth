@@ -23,7 +23,8 @@ defined('SYSPATH') or die('No direct script access.');
 /**
  * Class 4R Report
  */
-class Report_SCT extends Report {
+class Report_SCT extends Report
+{
 
     private $maps;
     private $name;
@@ -35,12 +36,13 @@ class Report_SCT extends Report {
      * @param Report_Impl $impl - report class implementation
      * @param string $name - report name
      */
-    public function __construct(Report_Impl $impl, $name) {
+    public function __construct(Report_Impl $impl, $name)
+    {
         parent::__construct($impl);
 
-        $this->maps           = array();
-        $this->name           = $name;
-        $this->mapElements    = array();
+        $this->maps = array();
+        $this->name = $name;
+        $this->mapElements = array();
     }
 
     /**
@@ -52,13 +54,15 @@ class Report_SCT extends Report {
      */
     public function add($mapId, $webinarId, $expertWebinarId, $sectionId)
     {
-        if($mapId == null || $mapId <= 0) return;
+        if ($mapId == null || $mapId <= 0) {
+            return;
+        }
 
         $this->maps[] = array(
-            'mapId'             => $mapId,
-            'webinarId'         => $webinarId,
-            'expertWebinarId'   => $expertWebinarId,
-            'sectionId'         => $sectionId
+            'mapId' => $mapId,
+            'webinarId' => $webinarId,
+            'expertWebinarId' => !empty($expertWebinarId) ? $expertWebinarId : $webinarId,
+            'sectionId' => $sectionId
         );
     }
 
@@ -67,9 +71,11 @@ class Report_SCT extends Report {
      *
      * @return mixed
      */
-    public function generate()
+    public function generate($latest = true, $date_from = null, $date_to = null)
     {
-        if($this->implementation == null || $this->maps == null || count($this->maps) <= 0) return;
+        if ($this->implementation == null || $this->maps == null || count($this->maps) <= 0) {
+            return;
+        }
 
         $this->implementation->setCreator('OpenLabyrinth System');
         $this->implementation->setLastModifiedBy('OpenLabyrinth System');
@@ -80,14 +86,16 @@ class Report_SCT extends Report {
         $this->implementation->setCategory('Report');
         $this->implementation->setActiveSheet(0);
 
-        foreach($this->maps as $mapData)
-        {
+        foreach ($this->maps as $mapData) {
             $this->mapElements[] = new Report_SCT_Map(
                 $this->implementation,
                 $mapData['mapId'],
                 $mapData['webinarId'],
                 $mapData['expertWebinarId'],
-                $mapData['sectionId']
+                $mapData['sectionId'],
+                $latest,
+                $date_from,
+                $date_to
             );
         }
     }
@@ -97,18 +105,23 @@ class Report_SCT extends Report {
      *
      * @return mixed
      */
-    public function get()
+    public function get($save_to_file = false)
     {
-        if($this->implementation == null) return;
+        if ($this->implementation == null) {
+            return;
+        }
 
-        if(count($this->mapElements) > 0)
-        {
+        if (count($this->mapElements) > 0) {
             $currentOffset = 1;
-            foreach($this->mapElements as $mapElement)
-            {
-                $currentOffset += $mapElement->insert($currentOffset);
+            foreach ($this->mapElements as $mapElement) {
+                $currentOffset += $mapElement->insert($currentOffset, $this->name, $save_to_file);
             }
         }
-        $this->implementation->download($this->name);
+
+        $this->implementation->download($this->name, $save_to_file);
+
+        if ($save_to_file) {
+            Controller_WebinarManager::saveReportProgress($this->name, true);
+        }
     }
 }

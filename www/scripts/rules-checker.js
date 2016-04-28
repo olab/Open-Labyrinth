@@ -1,3 +1,5 @@
+var canSubmitCheckRuleForm = false;
+
 $(document).ready(function() {
     $('#rule_submit_check').click(function() {
         $(this).button('loading');
@@ -8,6 +10,12 @@ $(document).ready(function() {
     });
     $('#check_rule_button').click(function() {
         checkRule(0);
+    });
+    $('.check-rule-form').on('submit',function(e){
+        if(!canSubmitCheckRuleForm) {
+            canSubmitCheckRuleForm = true;
+            checkRule(1);
+        }
     });
 });
 

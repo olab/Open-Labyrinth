@@ -363,7 +363,7 @@ class Controller_Home extends Controller_Base {
         $user               = Auth::instance()->get_user();
         if ($user) {
             $userName           = $user->nickname;
-            $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);;
+            $usersInformation   = DB_ORM::model('user')->getUsersHistory($user->id);
             $userArray          = Arr::get($usersInformation, $user->id, NULL);
             $uri                = Arr::get($userArray, 'href', NULL);
 

@@ -107,6 +107,7 @@ class Model_Leap_Lti_Context extends DB_ORM_Model {
         return array('context_id');
     }
     public function addContext($consumerKey, $values) {
+        DB_ORM::delete('Lti_Context')->where('consumer_key' , '=', $consumerKey)->execute();
         $builder =  DB_ORM::insert('Lti_Context')
             ->column('consumer_key',        $consumerKey)
             ->column('context_id',          Arr::get($values, 'context_id',''))

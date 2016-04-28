@@ -14,13 +14,23 @@ if (is_file(APPPATH . 'classes/kohana' . EXT)) {
     require SYSPATH . 'classes/kohana' . EXT;
 }
 
+$configPath = DOCROOT.'config.json';
+if (!file_exists($configPath)) throw new \ErrorException('File of configuration ('.$configPath.') not found.');
+$config = file_get_contents($configPath);
+$config = json_decode($config, true);
+
+/**
+ * Set precision for PHP floating points
+ */
+ini_set('precision', '16');
+
 /**
  * Set the default time zone.
  *
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/timezones
  */
-date_default_timezone_set('America/Denver');
+date_default_timezone_set($config['timezone']);
 
 /**
  * Set the default locale.
@@ -28,7 +38,7 @@ date_default_timezone_set('America/Denver');
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/setlocale
  */
-setlocale(LC_ALL, 'en_US.utf-8');
+setlocale(LC_ALL, $config['locale']);
 
 /**
  * Enable the Kohana auto-loader.
@@ -51,7 +61,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the default language
  */
-I18n::lang('en-us');
+I18n::lang($config['lang']);
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
@@ -77,7 +87,7 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  * - boolean  caching     enable or disable internal caching                 FALSE
  */
 Kohana::init(array(
-    'base_url' => '/',
+    'base_url' => $config['base_url'],
     'errors' => TRUE
 ));
 
@@ -96,7 +106,7 @@ Kohana::$config->attach(new Config_File);
 /**
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
-Kohana::modules(array(
+$modules = array(
     'auth' => MODPATH . 'auth', // Basic authentication
     // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
     // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
@@ -110,9 +120,17 @@ Kohana::modules(array(
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface
     'oauth' => MODPATH . 'oauth', // OAuth module
-    'phpexcel' => MODPATH . 'phpexcel'
-));
+    'phpexcel' => MODPATH . 'phpexcel',
+    'kohana-media' => MODPATH . 'kohana-media',
+    'TinCanPHP' => MODPATH . 'TinCanPHP', // https://github.com/RusticiSoftware/TinCanPHP
+    'h5p-php-library' => MODPATH . 'h5p-php-library', // https://github.com/h5p/h5p-php-library
+    'h5p-editor-php-library' => MODPATH . 'h5p-editor-php-library', // https://github.com/h5p/h5p-editor-php-library
+);
 
+Kohana::modules($modules);
+$mods = Model_Leap_Vocabulary_Vocablet::getEnabled();
+
+$mods = array_merge( $modules,$mods);
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
@@ -125,25 +143,25 @@ Route::set('sparql', '<directory>(/<controller>(/<action>(/<id>)))',
         'directory' => '(sparql/api|sparql)'
     ))
     ->defaults(array(
-    'controller' => 'endpoint',
-    'action' => 'index',
-));
+        'controller' => 'endpoint',
+        'action' => 'index',
+    ));
 
 Route::set('metadata', '<directory>(/<controller>(/<action>(/<id>)))',
     array(
         'directory' => '(metadata/api|metadata)'
     ))
     ->defaults(array(
-    'controller' => 'manager',
-    'action' => 'index',
-));
+        'controller' => 'manager',
+        'action' => 'index',
+    ));
 
 Route::set('rdf', '<controller>/<type>/<id>',
-        array(
-            'controller'=>'resource|data'
-        )
+    array(
+        'controller'=>'resource|data'
     )
-   ;
+)
+;
 
 Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
     array(
@@ -153,24 +171,55 @@ Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
         'controller' => 'manager',
         'action' => 'index',
     ));
+Route::set('vocabulary_vocablets', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/vocablets'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
+Route::set('vocabulary_inline', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/inline'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
+Route::set('vocabulary_inline_entities', '<directory>(/<controller>(/<action>))',
+    array(
+        'directory' => 'vocabulary/inline/entities'
+    ))
+    ->defaults(
+        array(
+            'controller' => 'manager',
+            'action' => 'index',
+        ));
 
 Route::set('vocabulary', '<directory>(/<controller>(/<action>))',
     array(
         'directory' => 'vocabulary'
     ))
-    ->defaults(array(
-    'controller' => 'manager',
-    'action' => 'index',
-));
-
-
-Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<id5>)(/<id6>)))')
-        ->defaults(array(
-            'controller' => 'home',
+    ->defaults(
+        array(
+            'controller' => 'manager',
             'action' => 'index',
         ));
+
+
+Kohana::modules($mods);
+Route::set('default', '(<controller>(/<action>(/<id>)(/<id2>)(/<id3>)(/<id4>)(/<id5>)(/<id6>)))')
+    ->defaults(array(
+        'controller' => 'home',
+        'action' => 'index',
+    ));
 
 Route::set('error', 'error/<action>(/<message>)', array('action' => '[0-9]++', 'message' => '.+'))
     ->defaults(array(
         'controller' => 'error'
     ));
+
+require_once './application/helpers.php';

@@ -28,6 +28,48 @@ class Controller_LtiManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__("Lti manager"))->set_url(URL::base().'ltimanager/index'));
     }
 
+    public function action_providers()
+    {
+        $this->templateData['providers'] = DB_ORM::select('Lti_Provider')->query();
+
+        $this->templateData['center'] = View::factory('lti/providers')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Providers')));
+    }
+
+    public function action_providerView()
+    {
+        $key = $this->request->param('id');
+        $this->templateData['provider'] = $key ? DB_ORM::model('Lti_Provider', array($key)) : false;
+        $this->templateData['center'] = View::factory('lti/provider')->set('templateData', $this->templateData);
+        $this->template->set('templateData', $this->templateData);
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Provider Manager')));
+    }
+
+    public function action_saveProvider()
+    {
+        $post = $this->request->post();
+        $id = Arr::get($post, 'id', null);
+
+        $provider = DB_ORM::model('Lti_Provider', array($id));
+        $provider->name = Arr::get($post, 'name', $provider->name);
+        $provider->consumer_key = Arr::get($post, 'consumer_key', $provider->consumer_key);
+        $provider->secret = Arr::get($post, 'secret', $provider->secret);
+        $provider->launch_url = Arr::get($post, 'launch_url', $provider->launch_url);
+        $provider->save();
+
+        Request::initial()->redirect(URL::base().'ltimanager/providers');
+    }
+
+    public function action_deleteProvider() {
+        $id = $this->request->param('id', null);
+        $provider = DB_ORM::model('Lti_Provider', $id);
+        $provider->delete();
+
+        Request::initial()->redirect(URL::base().'ltimanager/providers');
+    }
+
     public function action_index()
     {
         $this->templateData['users'] = DB_ORM::model('Lti_Consumer')->getAll();

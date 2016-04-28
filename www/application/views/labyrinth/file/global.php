@@ -123,6 +123,6 @@ if (isset($templateData['map'])) { ?>
         } ?>
         </tbody>
     </table>
-    <script src="http://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
-    <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script><?php
+    <script src="//blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+    <script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script><?php
 } ?>

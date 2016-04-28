@@ -1,0 +1,55 @@
+[
+  {
+    "name": "cards",
+    "type": "list",
+    "label": "Cards",
+    "entity": "card",
+    "min": 1,
+    "max": 100,
+    "field": {
+      "type": "group",
+      "label": "Card",
+      "fields": [
+        {
+          "name": "image",
+          "type": "image",
+          "label": "Image"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "label": "Description",
+          "maxLength": 150,
+          "optional": true,
+          "description": "A short text that is displayed once the two equal cards are found."
+        }
+      ]
+    }
+  },
+  {
+    "label": "Localization",
+    "name": "l10n",
+    "type": "group",
+    "common": true,
+    "fields": [
+      {
+        "label": "Card turns text",
+        "name": "cardTurns",
+        "type": "text",
+        "default": "Card turns"
+      },
+      {
+        "label": "Time spent text",
+        "name": "timeSpent",
+        "type": "text",
+        "default": "Time spent"
+      },
+      {
+        "label": "Feedback text",
+        "name": "feedback",
+        "type": "text",
+        "default": "Good work!"
+      }
+    ]
+  }
+]

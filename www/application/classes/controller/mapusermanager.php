@@ -36,7 +36,8 @@ class Controller_MapUserManager extends Controller_Base {
         $mapId          = $this->request->param('id', NULL);
         $authorOrder    = $this->request->param('id2', 0);
         $learnerOrder   = $this->request->param('id3', 0);
-        $reviewerOrder  = $this->request->param('id4', 'ASC');
+        $reviewerOrder  = $this->request->param('id4', 0);
+        $groupOrder  = $this->request->param('id5', 0);
         $tiedUsers      = array();
 
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
@@ -51,8 +52,20 @@ class Controller_MapUserManager extends Controller_Base {
             foreach ($userIds as $userId) $tiedUsers[] = $userId;
         }
 
+        $existGroups = array();
+        if($this->templateData['map'] != null && count($this->templateData['map']->groups) > 0) {
+            foreach($this->templateData['map']->groups as $mapGroup) {
+                $existGroups[] = $mapGroup->group_id;
+            }
+        }
+
         $authorOrder = $authorOrder == 0 ? 'ASC' : 'DESC';
         $learnerOrder = $learnerOrder == 0 ? 'ASC' : 'DESC';
+        $reviewerOrder = $reviewerOrder == 0 ? 'ASC' : 'DESC';
+        $groupOrder = $groupOrder == 0 ? 'ASC' : 'DESC';
+
+        $this->templateData['existGroupsIds'] = $existGroups;
+        $this->templateData['groups'] = DB_ORM::model('group')->getAllGroups($groupOrder);
 
         $this->templateData['existAuthors']  = DB_ORM::model('map_user')->getAllAuthors($mapId, $authorOrder);
         $this->templateData['existLearners'] = DB_ORM::model('map_user')->getAllLearners((int) $mapId, $learnerOrder);
@@ -64,9 +77,10 @@ class Controller_MapUserManager extends Controller_Base {
         $this->templateData['reviewers']     = DB_ORM::model('user')->getAllReviewers($reviewerOrder);
         $this->templateData['allAdmins']     = array_merge((array)$this->templateData['admins'], (array)$this->templateData['authors']);
 
-        $this->templateData['authorOrder']   = $authorOrder  == 'ASC' ? 0 : 1;
-        $this->templateData['learnerOrder']  = $learnerOrder == 'ASC' ? 0 : 1;
-        $this->templateData['reviewerOrder'] = ($reviewerOrder == 'DESC') ? 'ASC' : 'DESC';
+        $this->templateData['authorOrder']   = $authorOrder   == 'ASC' ? 0 : 1;
+        $this->templateData['learnerOrder']  = $learnerOrder  == 'ASC' ? 0 : 1;
+        $this->templateData['reviewerOrder'] = $reviewerOrder == 'ASC' ? 0 : 1;
+        $this->templateData['groupOrder']    = $groupOrder    == 'ASC' ? 0 : 1;
 
         $this->templateData['left']          = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->templateData['center']        = View::factory('labyrinth/user/view')->set('templateData', $this->templateData);
@@ -134,7 +148,42 @@ class Controller_MapUserManager extends Controller_Base {
             else DB_ORM::model('map_user')->deleteByUserId($mapId, $user->id);
         }
 
+        // ---- groups ---- //
+        $groupIds = Arr::get($post, 'groups', array());
+        if(count($groupIds) > 0) {
+            DB_ORM::model('map_group')->removeGroups($mapId, $groupIds, 'NOT IN');
+            DB_ORM::model('map_group')->addNewGroups($mapId, $groupIds);
+        }else{
+            DB_ORM::model('map_group')->removeAllGroups($mapId);
+        }
+        // ---- end groups ---- //
+
         Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId.'/'.$authorOrder.'/'.$learnerOrder);
+    }
+
+    public function action_removeAllGroups(){
+        $mapId = $this->request->param('id', NULL);
+        $authorOrder = $this->request->param('id2', 0);
+        $learnerOrder = $this->request->param('id3', 0);
+        if(!empty($mapId)) {
+            DB_ORM::model('map_group')->removeAllGroups($mapId);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+        }else{
+            Request::initial()->redirect(URL::base());
+        }
+    }
+
+    public function action_addAllGroups(){
+        $mapId = $this->request->param('id', NULL);
+        $authorOrder = $this->request->param('id2', 0);
+        $learnerOrder = $this->request->param('id3', 0);
+        if(!empty($mapId)) {
+            $groupIds = DB_ORM::model('group')->getAllGroupsId();
+            DB_ORM::model('map_group')->addNewGroups($mapId, $groupIds);
+            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+        }else{
+            Request::initial()->redirect(URL::base());
+        }
     }
 
     public function action_deleteUser() {

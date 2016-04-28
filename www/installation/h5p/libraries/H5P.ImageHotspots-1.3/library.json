@@ -1,0 +1,55 @@
+{
+  "title": "Image Hotspots",
+  "description": "Add hotspots with useful information and media to an image.",
+  "majorVersion": 1,
+  "minorVersion": 3,
+  "patchVersion": 0,
+  "runnable": 1,
+  "author": "Joubel AS (fnoks)",
+  "license": "MIT",
+  "machineName": "H5P.ImageHotspots",
+  "fullscreen": 1,
+  "embedTypes": [
+    "iframe"
+  ],
+  "preloadedJs": [
+    {
+      "path": "scripts/image-hotspots.js"
+    },
+    {
+      "path": "scripts/hotspot.js"
+    },
+    {
+      "path": "scripts/popup.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "styles/image-hotspots.css"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "FontAwesome",
+      "majorVersion": 4,
+      "minorVersion": 5
+    },
+    {
+      "machineName": "H5P.Transition",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.ImageCoordinateSelector",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5PEditor.ColorSelector",
+      "majorVersion": 1,
+      "minorVersion": 0
+    }
+  ]
+}

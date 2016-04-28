@@ -1,0 +1,110 @@
+[
+  {
+    "name": "title",
+    "label": "Title",
+    "type": "text",
+    "description": "Title for the goals page.",
+    "default": "Goals"
+  },
+  {
+    "name": "description",
+    "label": "Description",
+    "type": "text",
+    "widget": "html",
+    "description": "Description of the goals page.",
+    "default": "Insert the goals that you have chosen to work with.",
+    "enterMode": "p",
+    "tags": [
+      "strong",
+      "em",
+      "u",
+      "a",
+      "ul",
+      "ol",
+      "h2",
+      "h3",
+      "hr"
+    ],
+    "optional": true
+  },
+  {
+    "name": "defineGoalText",
+    "label": "Define goal link text",
+    "type": "text",
+    "description": "Text that will be displayed on the button for creating a new goal.",
+    "default": "Create a new goal"
+  },
+  {
+    "name": "definedGoalLabel",
+    "label": "Label for a user defined goal",
+    "type": "text",
+    "description": "Text that will be displayed as label on a user created goal.",
+    "default": "User defined goal"
+  },
+  {
+    "name": "defineGoalPlaceholder",
+    "label": "Define goal placeholder",
+    "type": "text",
+    "description": "Text that will be displayed as a placeholder when creating a new goal.",
+    "default": "Write here..."
+  },
+  {
+    "name": "goalsAddedText",
+    "label": "Text indicating how many goals has been added",
+    "type": "text",
+    "default": "Goals added:",
+    "description": "This text will follow after the amount of goals that is currently created, example: 'Goals added: 5' where 'Goals added:' is this text."
+  },
+  {
+    "name": "finishGoalText",
+    "label": "Text for \"Finish goal\"-button",
+    "type": "text",
+    "default": "Finish"
+  },
+  {
+    "name": "editGoalText",
+    "label": "Text for \"Edit goal\"-button",
+    "type": "text",
+    "default": "Edit"
+  },
+  {
+    "name": "specifyGoalText",
+    "label": "Text for \"Specify goal\"-button",
+    "type": "text",
+    "default": "Specification"
+  },
+  {
+    "name": "removeGoalText",
+    "label": "Text for \"Remove goal\"-button",
+    "type": "text",
+    "default": "Remove"
+  },
+  {
+    "name": "helpTextLabel",
+    "label": "Label for help text",
+    "type": "text",
+    "description": "Label for showing additional helpful information to the user.",
+    "default": "More information"
+  },
+  {
+    "name": "helpText",
+    "label": "Fill in additional help information",
+    "type": "text",
+    "widget": "html",
+    "description": "Here you can fill in additional helpful information for the user.",
+    "enterMode": "p",
+    "optional": true,
+    "tags": [
+      "strong",
+      "em",
+      "u",
+      "a",
+      "ul",
+      "ol",
+      "h2",
+      "h3",
+      "hr"
+    ],
+    "optional": true
+  }
+]

@@ -22,6 +22,9 @@ defined('SYSPATH') or die('No direct script access.');
 
 class Controller_Base extends Controller_Template {
 
+    /**
+     * @var View page template
+     */
     public $template = 'home';
 
     protected $templateData = array();
@@ -37,6 +40,9 @@ class Controller_Base extends Controller_Template {
         array('controller' => 'reportManager', 'action' => 'showReport'),
         array('controller' => 'renderLabyrinth', 'action' => 'questionResponce'),
         array('controller' => 'updateDatabase', 'action' => 'index'),
+        array('controller' => 'H5P', 'action' => 'embed'),
+        array('controller' => 'H5P', 'action' => 'saveResult'),
+        array('controller' => 'H5P', 'action' => 'saveXAPIStatement'),
     );
 
     private $blockedAccess = array(
@@ -239,7 +245,10 @@ class Controller_Base extends Controller_Template {
         parent::before();
         Lti_DataConnector::getLtiPost();
 
-        if ($_POST OR $_GET OR $this->request->is_ajax()) {
+        $post = $_POST;
+        unset($post['Submit']);
+
+        if ($post OR $_GET OR $this->request->is_ajax()) {
             return;
         }
 
@@ -269,10 +278,14 @@ class Controller_Base extends Controller_Template {
             // ----- end check access ----- //
 
             if ($topMenu) return;
-            
+
             foreach ($usersHistory as $value) {
-                if ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
-                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0)) {
+                $splitHref = explode('/', $value['href']);
+                $isSameLabyrinth = ($splitHref[count($splitHref) - 1] == $this->request->param('id', 0));
+
+                if ($isSameLabyrinth AND
+                    ((strcmp($value['href'], $uri) == 0) AND ($user_id != $value['id']) AND ($value['readonly'] == 0) OR
+                    ((boolean) preg_match('#(grid|visualManager)#i', $uri)) AND ((boolean) preg_match('#(grid|visualManager)#i', $value['href'])) AND ($user_id != $value['id']) AND ($value['readonly'] == 0))) {
                     $readonly = 1;
                     $historyShowWarningPopup = 1;
                     break;
@@ -375,7 +388,7 @@ class Controller_Base extends Controller_Template {
 
                 $isRedirect = true;
                 foreach ($this->unauthorizedRules as $rule) {
-                    if ($controller == $rule['controller'] AND $action == $rule['action']) {
+                    if (strtolower($controller) === strtolower($rule['controller']) && strtolower($action) === strtolower($rule['action'])) {
                         $isRedirect = false;
                     }
                 }
@@ -427,6 +440,11 @@ class Controller_Base extends Controller_Template {
             : Auth::instance()->get_user();
         $user->changeUI($mode);
         Request::initial()->redirect($this->request->referrer());
+    }
+
+    protected function jsonResponse($data)
+    {
+        die(json_encode($data));
     }
 
 }

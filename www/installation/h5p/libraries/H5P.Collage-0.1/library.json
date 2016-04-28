@@ -1,0 +1,37 @@
+{
+  "machineName": "H5P.Collage",
+  "title": "Collage",
+  "license": "MIT",
+  "author": "Joubel AS (FAP&MVM)",
+  "majorVersion": 0,
+  "minorVersion": 1,
+  "patchVersion": 4,
+  "runnable": 1,
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 4
+  },
+  "preloadedJs": [
+    {
+      "path": "collage.js"
+    },
+    {
+      "path": "template.js"
+    },
+    {
+      "path": "clip.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "collage.css"
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.Collage",
+      "majorVersion": 0,
+      "minorVersion": 1
+    }
+  ]
+}

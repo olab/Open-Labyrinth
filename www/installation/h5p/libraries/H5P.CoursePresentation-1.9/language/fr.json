@@ -1,0 +1,282 @@
+{
+  "semantics": [
+    {
+      "fields": [
+        {
+          "field": {
+            "fields": [
+              {
+                "field": {
+                  "fields": [
+                    {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {
+                      "label": "Commentaires",
+                      "description": "Les commentaires sont affichés pour aider les utilisateurs pendant le diaporama."
+                    },
+                    {
+                      "label": "Toujours afficher les commentaires"
+                    },
+                    {
+                      "label": "Opacité de l'arrière-plan"
+                    },
+                    {
+                      "label": "Montrer comme bouton"
+                    },
+                    {
+                      "label": "Titre"
+                    },
+                    {
+                      "label": "Aller à la diapositive"
+                    },
+                    {
+                      "label": "Invisible",
+                      "description": "Curseur par défaut, pas de titre, pas d'index. Attention: Les utilisateurs mal à l'aise avec le clavier auront des difficultés à réaliser cette activité."
+                    },
+                    {
+                      "label": "Metadata",
+                      "fields": [
+                        {
+                          "label": "Titre"
+                        },
+                        {
+                          "label": "Auteur"
+                        },
+                        {
+                          "label": "Licence"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {},
+              {
+                "fields": [
+                  {
+                    "englishLabel": "Image",
+                    "label": "Image",
+                    "englishDescription": "Image background should have a 2:1 width to height ratio to avoid stretching. High resolution images will display better on larger screens.",
+                    "description": "L'image d'arrière-plan doit avoir un ratio largeur:hauteur de 2:1 pour éviter les déformations. Les images en haute résolution permettent un meilleur rendu sur les grands écrans."
+                  },
+                  {
+                    "englishLabel": "Pick a color",
+                    "label": "Sélectionner une couleur",
+                    "englishDefault": null,
+                    "default": null
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {},
+        {
+          "label": "Liste des mots-clés"
+        },
+        {
+          "label": "Toujours montrer"
+        },
+        {
+          "label": "Cacher automatiquement"
+        },
+        {
+          "label": "Opacité"
+        },
+        {
+          "fields": [
+            {
+              "englishLabel": "Image",
+              "label": "Image",
+              "englishDescription": "Image background should have a 2:1 width to height ratio to avoid stretching. High resolution images will display better on larger screens.",
+              "description": "L'image d'arrière-plan doit avoir un ratio largeur:hauteur de 2:1 pour éviter les déformations. Les images en haute résolution permettent un meilleur rendu sur les grands écrans."
+            },
+            {
+              "englishLabel": "Pick a color",
+              "label": "Sélectionner une couleur",
+              "englishDefault": null,
+              "default": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Traductions",
+      "fields": [
+        {
+          "label": "Traduction pour \"Diapositive\"",
+          "default": "Diapositive"
+        },
+        {
+          "label": "Traduction pour \"Score\"",
+          "default": "Score"
+        },
+        {
+          "label": "Traduction pour \"Score maximum\"",
+          "default": "Score maximum"
+        },
+        {
+          "label": "Félicitations pour ce très bon score",
+          "description": "@percent est remplacé par le pourcentage de réussite réél de l'utilisateur",
+          "default": "Félicitations ! Vous avez un score de @percent !"
+        },
+        {
+          "label": "Bravo pour ce bon score",
+          "description": "@percent est remplacé par le pourcentage de réussite réél de l'utilisateur",
+          "default": "Bravo ! Vous avez un score de @percent !"
+        },
+        {
+          "label": "Mauvais score",
+          "description": "@percent est remplacé par le pourcentage de réussite réél de l'utilisateur",
+          "default": "Vous avez un score de @percent."
+        },
+        {
+          "label": "Traduction pour \"Total\"",
+          "default": "Total"
+        },
+        {
+          "label": "Texte pour le bouton Montrer la solution",
+          "default": "Montrer la solution"
+        },
+        {
+          "label": "Texte pour le bouton Réessayer",
+          "default": "Réessayer"
+        },
+        {
+          "label": "Traduction pour \"Titre\"",
+          "default": "Titre"
+        },
+        {
+          "label": "Traduction pour \"Auteur/créateur\"",
+          "default": "Auteur/créateur"
+        },
+        {
+          "label": "Traduction pour \"Licence\"",
+          "default": "Licence"
+        },
+        {
+          "label": "Traduction pour \"Licence\"",
+          "default": "Licence"
+        },
+        {
+          "label": "Texte du bouton d'exportation",
+          "default": "Exporter"
+        },
+        {
+          "label": "Texte pour le bouton \"Droits d'utilisation\"",
+          "default": "Droits d'utilisation"
+        },
+        {
+          "label": "Cacher le bouton d'affichage de la liste des mots-clés",
+          "default": "Cacher la liste des mots-clés"
+        },
+        {
+          "label": "Montrer le bouton d'affichage de la liste des mots-clés",
+          "default": "Afficher la liste des mots-clés"
+        },
+        {
+          "label": "Texte de mise en plein écran",
+          "default": "Plein écran"
+        },
+        {
+          "label": "Texte de sortie du plein écran",
+          "default": "Sortir du Plein écran"
+        },
+        {
+          "label": "Texte d'accès à la diapositive précédente",
+          "default": "Diapositive précédente"
+        },
+        {
+          "label": "Texte d'accès à la diapositive suivante",
+          "default": "Diapositive suivante"
+        },
+        {
+          "label": "Texte pour la diapositive affichée",
+          "default": "Diapositive affichée"
+        },
+        {
+          "label": "Texte de la dernière diapositive",
+          "default": "Dernière diapositive"
+        },
+        {
+          "label": "Texte de sortie du mode de solution",
+          "default": "Sortir du mode de solution"
+        },
+        {
+          "label": "Texte du mode de solution",
+          "default": "Mode de solution"
+        },
+        {
+          "label": "Texte affiché lors de multiples activités sur une page",
+          "default": "Multiples activités"
+        },
+        {
+          "label": "Texte d'affichage du score",
+          "default": "Votre score :"
+        },
+        {
+          "label": "Texte de partage sur Facebook",
+          "default": "Partager sur Facebook"
+        },
+        {
+          "label": "Texte de partage sur Twitter",
+          "default": "Partager sur Twitter"
+        },
+        {
+          "label": "Titre de la légende de la diapositive",
+          "default": "Légende"
+        },
+        {
+          "label": "Titre pour l'icône de commentaire",
+          "default": "Montrer les commentaires"
+        },
+        {
+          "label": "Titre pour le bouton Imprimer",
+          "default": "Imprimer"
+        },
+        {
+          "label": "Texte pour la boite de dialogue d'impression",
+          "default": "Comment souhaitez-vous imprimer ?"
+        },
+        {
+          "label": "Texte pour le bouton Imprimer toutes les diapositives",
+          "default": "Imprimer toutes les diapositives"
+        },
+        {
+          "label": "Texte pour le bouton Imprimer la diapositive courante",
+          "default": "Imprimer la diapositive courante"
+        }
+      ]
+    },
+    {
+      "label": "Paramètres",
+      "description": "Ces options vous permettent de proposer de passer certaines séquences.",
+      "fields": [
+        {
+          "label": "Activer la surface active",
+          "description":"Supprime les boutons de navigation entre diapositives pour l'utilisateur. Utiliser le glisser pour passer d'une diapositive à une autre."
+        },
+        {
+          "label": "Activer la possibilité de passer certaines séquences.",
+          "description": "Si cette option est choisie, les réglages seront valables pour toutes les questions, les réglages individuels ne seront pas pris en compte."
+        },
+        {
+          "label": "Afficher le bouton \"Solution\".",
+          "description": "Affiche le bouton \"Solution\"."
+        },
+        {
+          "label": "Afficher le bouton \"Réessayer\".",
+          "description": "Affiche le bouton \"Réessayer\"."
+        },
+        {
+          "label": "Comportement",
+          "description": "Style de la légende de la diapositive"
+        }
+      ]
+    }
+  ]
+}
