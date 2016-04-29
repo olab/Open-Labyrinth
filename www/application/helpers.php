@@ -10,17 +10,17 @@ function admin_url($path = '')
     return $url;
 }
 
-function get_option($option, $default = false)
+function get_option($option, $default = false, $cast = true)
 {
-    return Model_Leap_Option::get($option, $default);
+    return Model_Leap_Option::get($option, $default, $cast);
 }
 
-function update_option($option, $value, $autoload = null)
+function update_option($option, $value, $autoload = false)
 {
     return Model_Leap_Option::update($option, $value, $autoload);
 }
 
-function add_option($option, $value = '', $autoload = 'yes')
+function add_option($option, $value = '', $autoload = false)
 {
     return Model_Leap_Option::set($option, $value, $autoload);
 }
@@ -102,6 +102,27 @@ function is_serialized($data, $strict = true)
     }
 
     return false;
+}
+
+/**
+ * @param string $string
+ * @return bool
+ */
+function isJSON($string)
+{
+    if (!is_string($string)) {
+        return false;
+    }
+
+    if ($string === '') {
+        return false;
+    }
+
+    if (!in_array($string{0}, ['[', '{'])) {
+        return false;
+    }
+
+    return true;
 }
 
 function wp_upload_dir()

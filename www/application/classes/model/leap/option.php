@@ -72,9 +72,10 @@ class Model_Leap_Option extends DB_ORM_Model
     /**
      * @param string $option
      * @param mixed $default
+     * @param bool $cast
      * @return mixed
      */
-    public static function get($option, $default = false)
+    public static function get($option, $default = false, $cast = true)
     {
         $option = trim($option);
         if (empty($option)) {
@@ -93,11 +94,15 @@ class Model_Leap_Option extends DB_ORM_Model
             return $default;
         }
 
-        if (is_serialized($value)) { // don't attempt to unserialize data that wasn't serialized going in
-            return @unserialize($value);
-        } else {
-            return $value;
+        if ($cast) {
+            if (is_serialized($value)) {
+                return @unserialize($value);
+            } elseif (isJSON($value)) {
+                return json_decode($value, true);
+            }
         }
+
+        return $value;
     }
 
     /**
@@ -107,16 +112,18 @@ class Model_Leap_Option extends DB_ORM_Model
      * @param mixed $value
      * @param bool $autoload
      * @return bool
+     * @throws Exception
+     * @throws Kohana_Marshalling_Exception
      */
-    public static function set($option, $value = '', $autoload = true)
+    public static function set($option, $value = '', $autoload = false)
     {
         $option = trim($option);
         if (empty($option)) {
-            return false;
+            throw new Exception('Option cannot be blank.');
         }
 
-        if (is_object($value)) {
-            $value = clone $value;
+        if (is_object($value) || is_array($value)) {
+            $value = json_encode($value);
         }
 
         $autoload = (false === $autoload) ? 'no' : 'yes';
@@ -138,24 +145,25 @@ class Model_Leap_Option extends DB_ORM_Model
      * @param mixed $value
      * @param bool $autoload
      * @return bool
+     * @throws Exception
      */
-    public static function update($option, $value = '', $autoload = true)
+    public static function update($option, $value = '', $autoload = false)
     {
         $option = trim($option);
         if (empty($option)) {
-            return false;
+            throw new Exception('Option cannot be blank.');
         }
 
-        if (is_object($value)) {
-            $value = clone $value;
+        if (is_object($value) || is_array($value)) {
+            $value = json_encode($value);
         }
 
-        $old_value = get_option($option);
+        /*$old_value = get_option($option);
 
         // If the new and old values are the same, no need to update.
         if ($value === $old_value) {
             return false;
-        }
+        }*/
 
         $autoload = (false === $autoload) ? 'no' : 'yes';
 

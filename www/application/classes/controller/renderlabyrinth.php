@@ -31,7 +31,7 @@ class Controller_RenderLabyrinth extends Controller_Template
     public static $nodeId = 0;
     public static $scenarioId = false;
 
-    public function action_saveVideoXAPIStatements()
+    public function action_saveVideoXAPIStatement()
     {
         $data = $this->request->post();
         $session_id = Session::instance()->get('session_id');
