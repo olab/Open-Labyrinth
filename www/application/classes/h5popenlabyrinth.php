@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,7 +19,6 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
 class H5POpenLabyrinth implements H5PFrameworkInterface
 {
 
@@ -1084,20 +1084,31 @@ class H5POpenLabyrinth implements H5PFrameworkInterface
      */
     public function saveCachedAssets($key, $libraries)
     {
-        global $wpdb;
+        $wpdb = getWPDB();
 
         foreach ($libraries as $library) {
-            // TODO: Avoid errors if they already exists...
-            $wpdb->insert(
-                "h5p_libraries_cachedassets",
-                array(
-                    'library_id' => isset($library['id']) ? $library['id'] : $library['libraryId'],
-                    'hash' => $key
-                ),
-                array(
-                    '%d',
-                    '%s'
-                ));
+
+            $id = isset($library['id']) ? $library['id'] : $library['libraryId'];
+
+            $already_exists = DB_SQL::select()
+                ->from('h5p_libraries_cachedassets')
+                ->where('library_id', '=', $id)
+                ->where('hash', '=', $key)
+                ->query()
+                ->fetch(0);
+
+            if (!$already_exists) {
+                $wpdb->insert(
+                    "h5p_libraries_cachedassets",
+                    array(
+                        'library_id' => $id,
+                        'hash' => $key
+                    ),
+                    array(
+                        '%d',
+                        '%s'
+                    ));
+            }
         }
     }
 
