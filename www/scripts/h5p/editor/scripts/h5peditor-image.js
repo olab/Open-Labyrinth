@@ -36,15 +36,6 @@ ns.widgets.image = function (parent, field, params, setValue) {
   parent.ready(function () {
     self.passReadies = false;
   });
-
-  this.confirmationDialog = new H5P.ConfirmationDialog({
-    headerText: H5PEditor.t('core', 'removeImage'),
-    bodyText: H5PEditor.t('core', 'confirmImageRemoval')
-  });
-
-  this.confirmationDialog.on('confirmed', function () {
-    self.removeImage();
-  });
 };
 
 ns.widgets.image.prototype = Object.create(ns.File.prototype);
@@ -62,7 +53,7 @@ ns.widgets.image.prototype.appendTo = function ($wrapper) {
   var label = '';
   if (this.field.label !== 0) {
     var labelString = this.field.label === undefined ? this.field.name : this.field.label;
-    label = '<span class="h5peditor-label' + (this.field.optional ? '' : ' h5peditor-required') + '">' + labelString + '</span>';
+    label = '<span class="h5peditor-label">' + labelString + '</span>';
   }
 
   var htmlString = label + '<div class="file"></div>' +
@@ -219,7 +210,10 @@ ns.widgets.image.prototype.addFile = function () {
     .end()
     .next()
     .click(function () {
-      that.confirmRemovalDialog.show(that.$file.offset().top);
+      if (!window.confirm(ns.t('core', 'confirmRemoval', {':type': 'file'}))) {
+        return false;
+      }
+      that.removeImage();
       return false;
     });
 
