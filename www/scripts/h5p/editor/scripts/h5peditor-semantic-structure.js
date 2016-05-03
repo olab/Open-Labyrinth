@@ -53,7 +53,7 @@ H5PEditor.SemanticStructure = (function ($) {
       var $label;
       if (field.label !== 0) {
         // Add label
-        $label = createLabel(self.label, field.optional).appendTo($wrapper);
+        $label = createLabel(self.label).appendTo($wrapper);
       }
 
       var innerClass;
@@ -262,9 +262,9 @@ H5PEditor.SemanticStructure = (function ($) {
    * @param {String} text
    * @returns {jQuery}
    */
-  var createLabel = function (text, optional) {
+  var createLabel = function (text) {
     return $('<label/>', {
-      'class': 'h5peditor-label' + (optional ? '' : ' h5peditor-required'),
+      'class': 'h5peditor-label',
       text: text
     });
   };
