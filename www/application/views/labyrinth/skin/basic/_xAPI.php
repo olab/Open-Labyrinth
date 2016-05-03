@@ -28,9 +28,6 @@
             }
         });
 
-        console.log(event);
-        console.log('parent says: ' + origin);
-
         if (!isOriginAllowed) {
             return;
         }
@@ -63,8 +60,6 @@
                 }
             }
         }, event.origin);
-
-        console.log('parent says: videoServiceLoaded');
     }
 
     function receivedXAPIStatement(event, data)
