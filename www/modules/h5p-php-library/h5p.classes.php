@@ -1468,7 +1468,7 @@ class H5PStorage {
    *  The main id of the new content (used in frameworks that support revisioning)
    */
   public function copyPackage($contentId, $copyFromId, $contentMainId = NULL) {
-    $this->h5pC->fs->cloneContent($contentId, $newContentId);
+    $this->h5pC->fs->cloneContent($copyFromId, $contentId);
     $this->h5pF->copyLibraryUsage($contentId, $copyFromId, $contentMainId);
   }
 }
@@ -1660,12 +1660,10 @@ class H5PCore {
 
   public static $coreApi = array(
     'majorVersion' => 1,
-    'minorVersion' => 7
+    'minorVersion' => 6
   );
   public static $styles = array(
     'styles/h5p.css',
-    'styles/h5p-confirmation-dialog.css',
-    'styles/h5p-core-button.css'
   );
   public static $scripts = array(
     'js/jquery.js',
@@ -1674,7 +1672,6 @@ class H5PCore {
     'js/h5p-x-api-event.js',
     'js/h5p-x-api.js',
     'js/h5p-content-type.js',
-    'js/h5p-confirmation-dialog.js'
   );
   public static $adminScripts = array(
     'js/jquery.js',
@@ -1974,9 +1971,9 @@ class H5PCore {
       // Get aggregated files for assets
       $key = self::getDependenciesHash($dependencies);
 
-      $files = $this->fs->getCachedAssets($key);
-      if ($files) {
-        return $files; // Using cached assets
+      $cachedAssets = $this->fs->getCachedAssets($key);
+      if ($cachedAssets !== NULL) {
+        return array_merge($files, $cachedAssets); // Using cached assets
       }
     }
 
@@ -3626,31 +3623,31 @@ class H5PContentValidator {
               ),
               (object) array(
                 'value' => 'CC BY',
-                'label' => $this->h5pF->t('Attribution 4.0')
+                'label' => $this->h5pF->t('Attribution')
               ),
               (object) array(
                 'value' => 'CC BY-SA',
-                'label' => $this->h5pF->t('Attribution-ShareAlike 4.0')
+                'label' => $this->h5pF->t('Attribution-ShareAlike')
               ),
               (object) array(
                 'value' => 'CC BY-ND',
-                'label' => $this->h5pF->t('Attribution-NoDerivs 4.0')
+                'label' => $this->h5pF->t('Attribution-NoDerivs')
               ),
               (object) array(
                 'value' => 'CC BY-NC',
-                'label' => $this->h5pF->t('Attribution-NonCommercial 4.0')
+                'label' => $this->h5pF->t('Attribution-NonCommercial')
               ),
               (object) array(
                 'value' => 'CC BY-NC-SA',
-                'label' => $this->h5pF->t('Attribution-NonCommercial-ShareAlike 4.0')
+                'label' => $this->h5pF->t('Attribution-NonCommercial-ShareAlike')
               ),
               (object) array(
                 'value' => 'CC BY-NC-ND',
-                'label' => $this->h5pF->t('Attribution-NonCommercial-NoDerivs 4.0')
+                'label' => $this->h5pF->t('Attribution-NonCommercial-NoDerivs')
               ),
               (object) array(
                 'value' => 'GNU GPL',
-                'label' => $this->h5pF->t('General Public License v3')
+                'label' => $this->h5pF->t('General Public License')
               ),
               (object) array(
                 'value' => 'PD',
