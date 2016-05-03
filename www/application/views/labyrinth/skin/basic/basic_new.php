@@ -265,6 +265,11 @@
         }
     });
 </script>
+
+<?php
+include DOCROOT . 'application/views/labyrinth/skin/basic/_xAPI.php';
+?>
+    
 <?php
 if ($templateData['skin_path'] != NULL) {
     $doc_file = DOCROOT . 'css/skin/' . $templateData['skin_path'] . '/default.css';
