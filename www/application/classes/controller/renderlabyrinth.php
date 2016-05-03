@@ -47,8 +47,13 @@ class Controller_RenderLabyrinth extends Controller_Template
         $result = isset($data['result']) ? $data['result'] : null;
         $context = isset($data['context']) ? $data['context'] : null;
 
-        $statement = Model_Leap_Statement::create($session, $data['verb'], $data['object'], $result, $context, null,
-            $initiator, false);
+        $timestamp = null;
+        if (!empty($data['timestamp'])) {
+            $timestamp = DateTime::createFromFormat('Y-m-d\TH:i:s.u', rtrim($data['timestamp'], 'Z'))->format('U.u');
+        }
+
+        $statement = Model_Leap_Statement::create($session, $data['verb'], $data['object'], $result, $context,
+            $timestamp, $initiator, false);
 
         $counter = (int)DB_SQL::select()
             ->column(DB_SQL::expr("COUNT(*)"), 'counter')
@@ -62,7 +67,7 @@ class Controller_RenderLabyrinth extends Controller_Template
             $statement->bindLRS();
             Model_Leap_LRSStatement::sendStatementsToLRS($statement->lrs_statements);
         }
-        
+
         die;
     }
 
