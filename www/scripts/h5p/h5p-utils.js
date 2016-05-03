@@ -97,8 +97,8 @@ var H5PUtils = H5PUtils || {};
    * @returns {$}
    */
   H5PUtils.getRebuildCache = function (notCached) {
-    var $container = $('<div class="h5p-admin-rebuild-cache"><p class="message">' + notCached.message + '</p><p class="progress">' + notCached.progress + '</p></div>');
-    var $button = $('<button>' + notCached.button + '</button>').appendTo($container).click(function () {
+    var $container = $('<div class="h5p-admin-rebuild-cache alert alert-warning"><p class="message">' + notCached.message + '</p><p class="progress">' + notCached.progress + '</p></div>');
+    var $button = $('<button class="btn btn-success">' + notCached.button + '</button>').appendTo($container).click(function () {
       var $spinner = $('<div/>', {class: 'h5p-spinner'}).replaceAll($button);
       var parts = ['|', '/', '-', '\\'];
       var current = 0;
