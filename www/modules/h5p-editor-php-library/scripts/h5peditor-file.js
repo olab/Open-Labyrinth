@@ -29,24 +29,8 @@ ns.File = function (parent, field, params, setValue) {
   parent.ready(function () {
     self.passReadies = false;
   });
-
-  // Create remove file dialog
-  this.confirmRemovalDialog = new H5P.ConfirmationDialog({
-    headerText: H5PEditor.t('core', 'removeFile'),
-    dialogText: H5PEditor.t('core', 'confirmRemoval', {':type': 'file'})
-  }).appendTo(document.body);
-
-  // Remove file on confirmation
-  this.confirmRemovalDialog.on('confirmed', function () {
-    delete self.params;
-    self.setValue(self.field);
-    self.addFile();
-
-    for (var i = 0; i < self.changes.length; i++) {
-      self.changes[i]();
-    }
-  });
 };
+
 
 ns.File.prototype = Object.create(H5P.EventDispatcher.prototype);
 ns.File.prototype.constructor = ns.File;
@@ -63,7 +47,7 @@ ns.File.prototype.appendTo = function ($wrapper) {
 
   var label = '';
   if (this.field.label !== 0) {
-    label = '<span class="h5peditor-label' + (this.field.optional ? '' : ' h5peditor-required') + '">' + (this.field.label === undefined ? this.field.name : this.field.label) + '</span>';
+    label = '<span class="h5peditor-label">' + (this.field.label === undefined ? this.field.name : this.field.label) + '</span>';
   }
 
   var html = ns.createItem(this.field.type, label + '<div class="file"></div><a class="h5p-copyright-button" href="#">' + ns.t('core', 'editCopyright') + '</a><div class="h5p-editor-dialog"><a href="#" class="h5p-close" title="' + ns.t('core', 'close') + '"></a></div>', this.field.description);
@@ -135,7 +119,17 @@ ns.File.prototype.addFile = function () {
     that.uploadFile();
     return false;
   }).children('img').attr('src', thumbnail.path).end().next().click(function (e) {
-    that.confirmRemovalDialog.show(H5P.jQuery(this).offset().top);
+    if (!confirm(ns.t('core', 'confirmRemoval', {':type': 'file'}))) {
+      return false;
+    }
+    delete that.params;
+    that.setValue(that.field);
+    that.addFile();
+
+    for (var i = 0; i < that.changes.length; i++) {
+      that.changes[i]();
+    }
+
     return false;
   });
 };
