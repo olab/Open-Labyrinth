@@ -1,0 +1,1 @@
+INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES ('12', 'DropDown', 'DropDown', 'choice', NULL);

@@ -22,6 +22,7 @@ if(isset($templateData['map']) AND isset($templateData['type'])) {
 $q          = isset($templateData['question']);
 $mapId      = $templateData['map']->id;
 $type       = $templateData['type']->id;
+$isDropDown = ($type == 12);
 $questionId = $q ? $templateData['question']->id : '';
 $stem       = $q ? $templateData['question']->stem : ''?>
 
@@ -31,6 +32,8 @@ $stem       = $q ? $templateData['question']->stem : ''?>
 
 <form class="form-horizontal" method="POST" action="<?php echo URL::base().'questionManager/questionPOST/'.$mapId.'/'.$type.'/'.$questionId; ?>">
     <fieldset class="fieldset">
+
+        <?php if(!$isDropDown){ ?>
         <div class="control-group">
             <label class="control-label"><?php echo __('Question type'); ?></label>
             <div class="controls">
@@ -46,6 +49,8 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                 </div>
             </div>
         </div>
+        <?php } ?>
+
         <div class="control-group">
             <label for="stem" class="control-label"><?php echo __('Stem'); ?></label>
             <div class="controls"><textarea id="stem" name="stem"><?php echo $stem; ?></textarea></div>
@@ -70,6 +75,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
             </div>
         </div>
 
+        <?php if(!$isDropDown){ ?>
         <div class="control-group">
             <label class="control-label"><?php echo __('Layout of answers') ?></label>
             <div class="controls">
@@ -88,6 +94,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                 </div>
             </div>
         </div>
+        <?php } ?>
 
         <div class="control-group">
             <label class="control-label"><?php echo __('Show submit button') ?></label>
