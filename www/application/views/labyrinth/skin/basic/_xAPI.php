@@ -15,14 +15,13 @@
 
     eventer(messageEvent, receiveMessage);
 
-    function receiveMessage(event)
-    {
+    function receiveMessage(event) {
         var origin = event.origin || event.originalEvent.origin; // For Chrome, the origin property is in the event.originalEvent object.
         var dataKey = event.message ? "message" : "data";
         var data = event[dataKey];
         var isOriginAllowed = false;
 
-        $.each(curios_video_player_domains, function(index, value){
+        $.each(curios_video_player_domains, function (index, value) {
             if (origin === 'http://' + value || origin === 'https://' + value) {
                 isOriginAllowed = true;
             }
@@ -42,14 +41,14 @@
                 break;
 
             default:
-                throw new CustomException('invalid data type');
+                //throw new CustomException('invalid data type');
+                return;
                 break;
         }
 
     }
 
-    function videoServiceLoaded(event)
-    {
+    function videoServiceLoaded(event) {
         event.source.postMessage({
             type: 'changeConfig',
             actor: {
@@ -62,8 +61,7 @@
         }, event.origin);
     }
 
-    function receivedXAPIStatement(event, data)
-    {
+    function receivedXAPIStatement(event, data) {
         $.post('/renderLabyrinth/saveVideoXAPIStatement', data.statement);
     }
 
