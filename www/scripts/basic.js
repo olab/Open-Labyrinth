@@ -1,65 +1,65 @@
-var submitTextQ         = [],
-    questions           = null,
-    toNodeHref          = '',
-    savedTextQ          = 0,
+var submitTextQ = [],
+    questions = null,
+    toNodeHref = '',
+    savedTextQ = 0,
     getQuestionResponse = 0,
-    alreadyPolled       = 0,
-    lightningNotSaved   = false,
-    actionGoClicked     = false;
+    alreadyPolled = 0,
+    lightningNotSaved = false,
+    actionGoClicked = false;
 
 function valToTextarea() {
-    tinyMCE.activeEditor.on('keyUp', function() {
-        $('#'+$(this).prop('id')).html(tinyMCE.activeEditor.getContent());
+    tinyMCE.activeEditor.on('keyUp', function () {
+        $('#' + $(this).prop('id')).html(tinyMCE.activeEditor.getContent());
     });
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
     questions = $('[name^="qresponse_"]');
     var goLink = $('a[href^="/renderLabyrinth/go"]');
 
-    goLink.click(function(e){
+    goLink.click(function (e) {
 
         toNodeHref = e.currentTarget.href;
 
         actionGoClicked = true;
         if (lightningNotSaved) e.preventDefault();
 
-        if (questions.length > 0){
+        if (questions.length > 0) {
             var notSubmitTextQuestion = [];
 
-            questions.each(function(){
+            questions.each(function () {
                 var idTextQ = parseInt($(this).prop('name').replace('qresponse_', ''));
                 if ($.inArray(idTextQ, submitTextQ) === -1) notSubmitTextQuestion.push(idTextQ);
             });
 
-            if (notSubmitTextQuestion.length)
-            {
+            if (notSubmitTextQuestion.length) {
                 e.preventDefault();
                 getQuestionResponse = 1;
 
-                for (var i=0; i<notSubmitTextQuestion.length; i++){
+                for (var i = 0; i < notSubmitTextQuestion.length; i++) {
                     ajaxFunction(notSubmitTextQuestion[i]);
                 }
             }
         }
 
         // ----- poll ----- //
-        if (pollTime){
+        if (pollTime) {
             e.preventDefault();
             savedTextQ += 100; // cancel ajaxFunction()
 
-            var split           = toNodeHref.split('/'),
-                keys            = split.length,
-                selectedNodeId  = split[keys-1];
+            var split = toNodeHref.split('/'),
+                keys = split.length,
+                selectedNodeId = split[keys - 1];
 
-            if ( ! alreadyPolled){
+            if (!alreadyPolled) {
                 alreadyPolled++;
-                $.get(urlBase + 'renderLabyrinth/savePoll/' + idNode + '/' + selectedNodeId, function(data){});
+                $.get(urlBase + 'renderLabyrinth/savePoll/' + idNode + '/' + selectedNodeId, function (data) {
+                });
             }
 
-            setTimeout(function() {
-                $.get(urlBase + 'renderLabyrinth/getNodeIdByPoll/' + idNode + '/' + pollTime, function(data){
-                    window.location.href = urlBase + 'renderLabyrinth/go/' + split[keys-2] + '/' + data;
+            setTimeout(function () {
+                $.get(urlBase + 'renderLabyrinth/getNodeIdByPoll/' + idNode + '/' + pollTime, function (data) {
+                    window.location.href = urlBase + 'renderLabyrinth/go/' + split[keys - 2] + '/' + data;
                 });
 
             }, pollTime * 1000);
@@ -68,35 +68,34 @@ $(document).ready(function(){
     });
 
     // ----- patient ----- //
-    if (idPatients.length > 2)
-    {
+    if (idPatients.length > 2) {
         ajaxPatient();
         setInterval(ajaxPatient, (5000));
     }
 
-    function ajaxPatient(){
+    function ajaxPatient() {
         $.post(
             urlBase + 'renderLabyrinth/dataPatientAjax?patients=' + idPatients,
-            function(data){
+            function (data) {
                 console.log(data);
                 data = $.parseJSON(data);
                 // change condition block
-                var ulPatient       = $('.patient-js'),
-                    patientArray    = data.conditions,
-                    deactivate      = data.deactivateNode;
+                var ulPatient = $('.patient-js'),
+                    patientArray = data.conditions,
+                    deactivate = data.deactivateNode;
 
                 for (var i = 0; i < ulPatient.length; i++) ulPatient.eq(i).html(patientArray[i]);
 
                 // deactivate go link
-                if(deactivate){
-                    goLink.each(function(){
-                        var href    = $(this).prop('href'),
-                            split   = href.split('/'),
-                            idNode  = split[split.length -1];
+                if (deactivate) {
+                    goLink.each(function () {
+                        var href = $(this).prop('href'),
+                            split = href.split('/'),
+                            idNode = split[split.length - 1];
 
-                        if ($.inArray(idNode, deactivate) != -1){
-                            $(this).css('opacity','0.5');
-                            $(this).click(function(e){
+                        if ($.inArray(idNode, deactivate) != -1) {
+                            $(this).css('opacity', '0.5');
+                            $(this).click(function (e) {
                                 e.preventDefault();
                             });
                         }
@@ -105,26 +104,27 @@ $(document).ready(function(){
             }
         );
     }
+
     // ----- end patient ----- //
 
     // ----- lightning rule ----- //
-    var rightAnswer     = false,
-        ruleExist       = jsonRule.length > 2,
+    var rightAnswer = false,
+        ruleExist = jsonRule.length > 2,
         $lightningMulti = $('.lightning-multi'),
-        cumulative      = $lightningMulti.hasClass('cumulative');
+        cumulative = $lightningMulti.hasClass('cumulative');
 
-    $('.lightning-single').focusout(function(){
+    $('.lightning-single').focusout(function () {
         validationAndLightningText($(this));
     });
 
-    $lightningMulti.focusout(function(){
+    $lightningMulti.focusout(function () {
         validationAndLightningText($(this));
     });
 
-    $('.lightning-choice').change(function(){
+    $('.lightning-choice').change(function () {
         var type = $(this).attr('type');
         lightningChoice($(this));
-        if(typeof type != 'undefined' && type == 'checkbox') {
+        if (typeof type != 'undefined' && type == 'checkbox') {
             var inputs = $(this).closest('.navigation').find('.lightning-choice');
             inputs.each(function () {
                 lightningChoice($(this), true);
@@ -135,38 +135,42 @@ $(document).ready(function(){
     $('.drag-question-container').sortable({
         axis: "y",
         cursor: "move",
-        create: function (event, ui) { dragAndDropPost($(this)); },
-        stop: function (event, ui) { dragAndDropPost($(this)); }
+        create: function (event, ui) {
+            dragAndDropPost($(this));
+        },
+        stop: function (event, ui) {
+            dragAndDropPost($(this));
+        }
     });
 
-    $('.sct-question').change(function(){
+    $('.sct-question').change(function () {
         lightningSct($(this));
     });
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         var ttalkButton = $('.ttalkButton');
         ttalkButton.on('click', function () {
             addChatMessage($(this), 1);
         });
 
-        $('textarea.ttalk-textarea').on('keyup', function(e){
-            if(!e.shiftKey && e.keyCode == 13) {
+        $('textarea.ttalk-textarea').on('keyup', function (e) {
+            if (!e.shiftKey && e.keyCode == 13) {
                 ttalkButton.trigger('click');
             }
         });
     });
 
-    function validationAndLightningText($this){
+    function validationAndLightningText($this) {
         lightningNotSaved = true;
 
-        var response        = $this.val(),
-            dbId            = $this.data('dbid'),
-            validatorName   = $this.data('validator'),
-            errorMsg        = $this.data('errormsg'),
-            parameter       = $this.data('parameter'),
-            parameters      = '',
-            validation      = false,
-            $thisId         = parseInt($this.prop('id').replace('qresponse_', ''));
+        var response = $this.val(),
+            dbId = $this.data('dbid'),
+            validatorName = $this.data('validator'),
+            errorMsg = $this.data('errormsg'),
+            parameter = $this.data('parameter'),
+            parameters = '',
+            validation = false,
+            $thisId = parseInt($this.prop('id').replace('qresponse_', ''));
 
         submitTextQ.push($thisId);
 
@@ -185,15 +189,15 @@ $(document).ready(function(){
 
             $this.parent().find('.error-validation').remove();
 
-            if ( ! validation) $this.after('<span class="error-validation" style="color: red; margin-left: 5px;">' + errorMsg + '</span>');
+            if (!validation) $this.after('<span class="error-validation" style="color: red; margin-left: 5px;">' + errorMsg + '</span>');
 
         }
 
         if (ruleExist) rightAnswer = checkAnswer($thisId, $this.val());
         $.post(
             urlBase + 'renderLabyrinth/ajaxTextQuestionSave',
-            {response: response, questionId: $thisId, nodeId: idNode, dbId:dbId },
-            function(data){
+            {response: response, questionId: $thisId, nodeId: idNode, dbId: dbId},
+            function (data) {
                 $this.data('dbid', data);
                 if (rightAnswer) imitateGo();
                 if (actionGoClicked) window.location.href = toNodeHref;
@@ -205,20 +209,20 @@ $(document).ready(function(){
     function dragAndDropPost(obj) {
         lightningNotSaved = true;
 
-        var questionId      = obj.attr('questionId'),
+        var questionId = obj.attr('questionId'),
             responsesObject = [];
 
-        obj.children().each(function(index, value) {
+        obj.children().each(function (index, value) {
             responsesObject.push($(value).attr('responseId'));
         });
 
         var responsesJSON = JSON.stringify(responsesObject);
-        rightAnswer = checkAnswer(questionId, responsesJSON.replace(/"|\[|\]/g,''));
+        rightAnswer = checkAnswer(questionId, responsesJSON.replace(/"|\[|\]/g, ''));
 
         $.post(
             urlBase + 'renderLabyrinth/ajaxDraggingQuestionResponse',
-            { questionId: questionId, responsesJSON: responsesJSON },
-            function(){
+            {questionId: questionId, responsesJSON: responsesJSON},
+            function () {
                 if (rightAnswer) imitateGo();
                 if (actionGoClicked) window.location.href = toNodeHref;
                 lightningNotSaved = false;
@@ -226,21 +230,21 @@ $(document).ready(function(){
         );
     }
 
-    function lightningChoice($this, notShowResponse){
+    function lightningChoice($this, notShowResponse) {
         lightningNotSaved = true;
 
         var questionId = $this.data('question'),
             responseId = $this.data('response'),
-            tries      = $this.data('tries'),
-            response   = $this.data('val'),
-            check      = $this.is(':checked'),
-            URL        = urlBase + 'renderLabyrinth/questionResponse/' + responseId + '/' + questionId + '/' + idNode + (check ? '/1' : '/0');
+            tries = $this.data('tries'),
+            response = $this.data('val'),
+            check = $this.is(':checked'),
+            URL = urlBase + 'renderLabyrinth/questionResponse/' + responseId + '/' + questionId + '/' + idNode + (check ? '/1' : '/0');
 
         if (tries == 1) $('.questionForm_' + questionId + ' .click').remove();
 
         $.get(
             URL,
-            function(data){
+            function (data) {
                 if (data != '' && notShowResponse !== true) {
                     $('#AJAXresponse' + responseId).html(data);
                 }
@@ -251,13 +255,13 @@ $(document).ready(function(){
         );
     }
 
-    function lightningSct($this){
+    function lightningSct($this) {
         lightningNotSaved = true;
 
         var questionId = $this.data('question');
 
-        if($this.hasClass('disposable')){
-            $('.sct-question').each(function(i, v){
+        if ($this.hasClass('disposable')) {
+            $('.sct-question').each(function (i, v) {
                 var current = $('.sct-question').eq(i);
                 if (current.data('question') == questionId) current.prop('disabled', true);
             });
@@ -267,8 +271,8 @@ $(document).ready(function(){
 
         $.post(
             urlBase + 'renderLabyrinth/ajaxScriptConcordanceTesting',
-            { idResponse: $this.data('response'), idQuestion: questionId },
-            function(){
+            {idResponse: $this.data('response'), idQuestion: questionId},
+            function () {
                 if (rightAnswer) imitateGo();
                 if (actionGoClicked) window.location.href = toNodeHref;
                 lightningNotSaved = false;
@@ -276,19 +280,20 @@ $(document).ready(function(){
         );
     }
 
-    function checkAnswer(questionId, answer){
+    function checkAnswer(questionId, answer) {
         var result = false;
-        $.each(JSON.parse(jsonRule), function(response, id){
+        $.each(JSON.parse(jsonRule), function (response, id) {
             if (answer == response && id == questionId) result = true;
         });
         return result;
     }
 
-    function imitateGo(){
-        $("[href*='/renderLabyrinth/go']").each(function(){
+    function imitateGo() {
+        $("[href*='/renderLabyrinth/go']").each(function () {
             window.location.href = this.href;
         });
     }
+
     // ----- end lightning rule ----- //
 });
 
@@ -300,8 +305,8 @@ function ajaxFunction(qid) {
 
     $.get(
         urlBase + "renderLabyrinth/questionResponse/" + B64.encode(response) + "/" + qid + "/" + idNode,
-        function(data) {
-            if(data != '') $('#AJAXresponse' + qid).html(data);
+        function (data) {
+            if (data != '') $('#AJAXresponse' + qid).html(data);
             savedTextQ += 1;
             if (savedTextQ == questions.length && getQuestionResponse) window.location.href = toNodeHref;
         }
@@ -310,22 +315,23 @@ function ajaxFunction(qid) {
 
 // ----- different type of questions ----- //
 function ajaxDrag(id) {
-    $('#questionSubmit'+id).show();
+    $('#questionSubmit' + id).show();
 
-    var response = $('#qresponse_'+id),
+    var response = $('#qresponse_' + id),
         responsesObject = [];
 
-    response.sortable( "option", "cancel", "li" );
+    response.sortable("option", "cancel", "li");
 
-    response.children('.sortable').each(function(index, value) {
+    response.children('.sortable').each(function (index, value) {
         responsesObject.push($(value).attr('responseId'));
-        $(value).css('color','gray');
+        $(value).css('color', 'gray');
     });
 
     $.post(
         urlBase + 'renderLabyrinth/ajaxDraggingQuestionResponse',
         {questionId: id, responsesJSON: JSON.stringify(responsesObject)},
-        function(){}
+        function () {
+        }
     );
 }
 
@@ -335,7 +341,8 @@ function sendSliderValue(qid, value) {
     $.post(
         URL,
         {value: value},
-        function(){}
+        function () {
+        }
     );
 }
 
@@ -343,7 +350,7 @@ function sendSliderValue(qid, value) {
 
 window.dhx_globalImgPath = urlBase + "scripts/dhtmlxSlider/codebase/imgs/";
 
-function toggle_visibility(id){
+function toggle_visibility(id) {
     var e = document.getElementById(id);
     e.style.display = (e.style.display == 'none') ? 'block' : 'none';
 }
@@ -351,7 +358,7 @@ function toggle_visibility(id){
 function ajaxBookmark() {
     $.get(
         urlBase + 'renderLabyrinth/addBookmark/' + idNode,
-        function(){
+        function () {
             window.location.href = urlBase;
         }
     )
