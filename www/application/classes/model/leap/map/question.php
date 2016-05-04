@@ -47,6 +47,19 @@ defined('SYSPATH') or die('No direct script access.');
 class Model_Leap_Map_Question extends Model_Leap_Base
 {
 
+    const ENTRY_TYPE_SINGLE_LINE = 1;
+    const ENTRY_TYPE_MULTI_LNE = 2;
+    const ENTRY_TYPE_MCQ = 3;
+    const ENTRY_TYPE_PCQ = 4;
+    const ENTRY_TYPE_SLIDER = 5;
+    const ENTRY_TYPE_DRAG_AND_DROP = 6;
+    const ENTRY_TYPE_SCT = 7;
+    const ENTRY_TYPE_SJT = 8;
+    const ENTRY_TYPE_CUMULATIVE= 9;
+    const ENTRY_TYPE_RICH_TEXT = 10;
+    const ENTRY_TYPE_TURK_TALK = 11;
+    const ENTRY_TYPE_DROP_DOWN = 12;
+
     public function __construct()
     {
         parent::__construct();
@@ -425,6 +438,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
         $this->submit_text = Arr::get($values, 'submitButtonText', $this->submit_text);
         $this->type_display = Arr::get($values, 'typeDisplay', $this->submit_text);
         $this->is_private = Arr::get($values, 'is_private', false);
+        $this->settings = json_encode(Arr::get($values, 'settingsJSON', []));
 
         $this->save();
 
@@ -646,6 +660,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             ->column('submit_text', Arr::get($values, 'submitButtonText', 'Submit'))
             ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0))
             ->column('is_private', (int)Arr::get($values, 'is_private', false) ? 1 : 0)
+            ->column('settings', json_encode(Arr::get($values, 'settingsJSON', [])))
             ->execute();
 
         $responses = array();
@@ -838,9 +853,22 @@ class Model_Leap_Map_Question extends Model_Leap_Base
 
     /**
      * @return bool
+     * @throws Exception
      */
     public function isFreeTextAllowed()
     {
-        return true;
+        if ($this->entry_type_id != self::ENTRY_TYPE_DROP_DOWN) {
+            throw new Exception('Method not allowed for object #' . $this->id);
+        }
+
+        $settings = $this->settings;
+
+        if (empty($settings)) {
+            return false;
+        }
+
+        $settings = json_decode($this->settings, true);
+
+        return isset($settings['isFreeTextAllowed']) ? $settings['isFreeTextAllowed'] : false;
     }
 }

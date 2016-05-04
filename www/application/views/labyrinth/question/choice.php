@@ -22,7 +22,7 @@ if(isset($templateData['map']) AND isset($templateData['type'])) {
 $q          = isset($templateData['question']);
 $mapId      = $templateData['map']->id;
 $type       = $templateData['type']->id;
-$isDropDown = ($type == 12);
+$isDropDown = ($type == Model_Leap_Map_Question::ENTRY_TYPE_DROP_DOWN);
 $questionId = $q ? $templateData['question']->id : '';
 $stem       = $q ? $templateData['question']->stem : ''?>
 
@@ -55,6 +55,27 @@ $stem       = $q ? $templateData['question']->stem : ''?>
             <label for="stem" class="control-label"><?php echo __('Stem'); ?></label>
             <div class="controls"><textarea id="stem" name="stem"><?php echo $stem; ?></textarea></div>
         </div>
+
+        <?php if($isDropDown){ ?>
+        <div class="control-group">
+            <label class="control-label"><?php echo __('Allow free text') ?></label>
+            <div class="controls">
+                <div class="radio_extended btn-group">
+                    <input autocomplete="off" id="isFreeTextAllowed1" type="radio" name="settingsJSON[isFreeTextAllowed]" value="1"
+                    <?php if (isset($templateData['question'])){
+                        echo ($templateData['question']->isFreeTextAllowed()) ? 'checked="checked"' : '';
+                    } else {
+                        echo 'checked="checked"';
+                    }
+                    ?>
+                    />
+                    <label data-class="btn-info" class="btn" for="isFreeTextAllowed1"><?php echo __('Yes'); ?></label>
+                    <input autocomplete="off" id="isFreeTextAllowed0" type="radio" name="settingsJSON[isFreeTextAllowed]" value="0" <?php echo ((isset($templateData['question']) && !$templateData['question']->isFreeTextAllowed()) ? 'checked="checked"' : '') ?>/>
+                    <label data-class="btn-info" class="btn" for="isFreeTextAllowed0"><?php echo __('No'); ?></label>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
 
         <div class="control-group">
             <label class="control-label"><?php echo __('Show answer to user') ?></label>
