@@ -41,7 +41,7 @@
                 break;
 
             default:
-                //throw new CustomException('invalid data type');
+                throw new CustomException('invalid data type');
                 return;
                 break;
         }
