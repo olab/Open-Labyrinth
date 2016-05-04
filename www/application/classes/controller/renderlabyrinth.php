@@ -1025,9 +1025,34 @@ class Controller_RenderLabyrinth extends Controller_Template
     {
         $this->auto_render = false;
         $questionId = $this->request->param('id', null);
-        $responses = Session::instance()->get('sliderQuestionResponses');
+        $responses = Session::instance()->get('sliderQuestionResponses', []);
         $responses[$questionId] = Arr::get($_POST, 'value', 0);
         Session::instance()->set('sliderQuestionResponses', $responses);
+    }
+
+    public function action_saveDropDownResponse()
+    {
+        $returnStr = '';
+        $questionId = $this->request->param('id', null);
+        $response = trim(Arr::get($_POST, 'value', ''));
+        $responses = Session::instance()->get('dropDownQuestionResponses', []);
+        $responses[$questionId] = $response;
+        Session::instance()->set('dropDownQuestionResponses', $responses);
+
+        /** @var Model_Leap_Map_Question $question */
+        $question = DB_ORM::model('Map_Question', array($questionId));
+
+        if ($question->show_answer) {
+            /** @var Model_Leap_Map_Question_Response|bool $responseObj */
+            $responseObj = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($questionId, $response);
+
+            if (!empty($responseObj)) {
+                $returnStr .= $responseObj->getIsCorrectHTML();
+                $returnStr .= $responseObj->getFeedbackHTML();
+            }
+        }
+
+        die($returnStr);
     }
 
     public function action_remote()
@@ -1678,6 +1703,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
     private static function getQuestionHTML($id)
     {
+        /** @var Model_Leap_Map_Question $question */
         $question = DB_ORM::model('map_question', array((int)$id));
         $result = '';
         $q_type = $question->type->value;
@@ -2071,8 +2097,10 @@ class Controller_RenderLabyrinth extends Controller_Template
                     </p>';
                                                 $result .= '</div>';
                                                 $result .= '</div>';
-
-                                                Controller_RenderLabyrinth::addQuestionIdToSession($id);
+                                            } elseif ($q_type === 'DropDown') {
+                                                ob_start();
+                                                include DOCROOT . 'application/views/renderlabyrinth/_dropDown.php';
+                                                $result .= ob_get_clean();
                                             }
                                         }
                                     }

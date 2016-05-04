@@ -100,6 +100,46 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model
         return array('id');
     }
 
+    /**
+     * @param int $questionId
+     * @param mixed $response
+     * @return self|static|bool
+     */
+    public static function getByQuestionAndAnswer($questionId, $response)
+    {
+        return DB_ORM::select('Map_Question_Response')
+            ->where('response', '=', $response)
+            ->where('question_id', '=', $questionId)
+            ->limit(1)
+            ->query()
+            ->fetch(0);
+    }
+
+    /**
+     * @return string
+     */
+    public function getIsCorrectHTML()
+    {
+        switch ($this->is_correct) {
+            case 0:
+                return '<img src="' . URL::base() . 'images/cross.jpg"> ';
+                break;
+            case 1:
+                return '<img src="' . URL::base() . 'images/tick.jpg"> ';
+                break;
+        }
+
+        return ''; //neutral
+    }
+
+    /**
+     * @return string
+     */
+    public function getFeedbackHTML()
+    {
+        return ($this->feedback != null && strlen($this->feedback) > 0 ? '(' . $this->feedback . ')' : '');
+    }
+
     public function addFullResponses($questionId, $values)
     {
         $this->question_id = $questionId;

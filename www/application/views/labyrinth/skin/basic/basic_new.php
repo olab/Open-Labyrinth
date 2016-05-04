@@ -34,6 +34,7 @@
 <link rel="stylesheet" href="<?php echo URL::base(); ?>scripts/datepicker/css/datepicker.css"/>
 <link rel="stylesheet" href="<?php echo URL::base(); ?>css/skin/basic/layout.css"/>
 <link href="<?php echo URL::base(); ?>scripts/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.css'); ?>">
 
 <?php if (!empty($templateData['styles_stack'])) { ?>
     <?php foreach($templateData['styles_stack'] as $style) { ?>
@@ -56,6 +57,7 @@
 <link rel="apple-touch-icon-precomposed" sizes="144x144"
       href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-144-precomposed.png"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.js'); ?>"></script>
 <script language="JavaScript">
     function toggle_visibility(id) {
         var e = document.getElementById(id);

@@ -123,18 +123,20 @@ $stem       = $q ? $templateData['question']->stem : ''?>
             </div>
         </div>
 
-        <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
-        <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
-            <label class="control-label"><?php echo __('Redirect Node') ?></label>
-            <div class="controls">
-                <select autocomplete="off" name="redirectNode">
-                    <option value="">Select</option>
-                    <?php foreach($templateData['nodes'] as $node) { ?>
-                    <option value="<?php echo $node->id; ?>" <?php echo ((isset($templateData['question']) && $templateData['question']->redirect_node_id == $node->id) ? 'selected=""' : ''); ?>><?php echo $node->title; ?></option>
-                    <?php } ?>
-                </select>
+        <?php if(!$isDropDown){ ?>
+            <?php if(isset($templateData['nodes']) && count($templateData['nodes']) > 0) { ?>
+            <div class="control-group submitSettingsContainer <?php echo ((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
+                <label class="control-label"><?php echo __('Redirect Node') ?></label>
+                <div class="controls">
+                    <select autocomplete="off" name="redirectNode">
+                        <option value="">Select</option>
+                        <?php foreach($templateData['nodes'] as $node) { ?>
+                        <option value="<?php echo $node->id; ?>" <?php echo ((isset($templateData['question']) && $templateData['question']->redirect_node_id == $node->id) ? 'selected=""' : ''); ?>><?php echo $node->title; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
             </div>
-        </div>
+            <?php } ?>
         <?php } ?>
 
         <div class="control-group">
@@ -153,6 +155,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
             </div>
         </div>
 
+        <?php if(!$isDropDown){ ?>
         <div class="control-group">
             <label class="control-label"><?php echo __('Number of tries allowed'); ?></label>
             <div class="controls">
@@ -171,6 +174,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                 </div>
             </div>
         </div>
+        <?php } ?>
 
         <div class="control-group">
             <label for="feedback" class="control-label"><?php echo __('General feedback'); ?></label>

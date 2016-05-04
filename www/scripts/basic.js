@@ -245,11 +245,19 @@ $(document).ready(function () {
         $.get(
             URL,
             function (data) {
+
                 if (data != '' && notShowResponse !== true) {
                     $('#AJAXresponse' + responseId).html(data);
                 }
-                if (checkAnswer(questionId, response)) imitateGo();
-                if (actionGoClicked) window.location.href = toNodeHref;
+
+                if (checkAnswer(questionId, response)) {
+                    imitateGo();
+                }
+
+                if (actionGoClicked) {
+                    window.location.href = toNodeHref;
+                }
+
                 lightningNotSaved = false;
             }
         );
@@ -362,4 +370,16 @@ function ajaxBookmark() {
             window.location.href = urlBase;
         }
     )
+}
+
+function onDropDownChange(value, text) {
+    saveDropDownResponse(this.question_id, text);
+}
+
+function saveDropDownResponse(qid, value) {
+    var URL = urlBase + 'renderLabyrinth/saveDropDownResponse/' + qid;
+    
+    $.post(URL, {value: value}).done(function (data) {
+        $('#AJAXresponse' + qid).html(data);
+    });
 }

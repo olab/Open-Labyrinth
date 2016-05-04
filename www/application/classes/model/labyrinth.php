@@ -532,20 +532,51 @@ class Model_Labyrinth extends Model
                             $c_debug[$counterIDs[$qID]]['question_value'] = $score;
                             $c_debug[$counterIDs[$qID]]['question_id'] = $qID;
 
-                            $valueStr = (string)$score;
+                            $countersFunc[$counterIDs[$qID]][] = $this->prepareCounterScoreString($score);
+
                             $value = $this->calculateCounterFunction($value, $score);
-
-                            if (($valueStr[0] != '-') && ($valueStr[0] != '=')) {
-                                $valueStr = '+' . $score;
-                            }
-
-                            $countersFunc[$counterIDs[$qID]][] = $valueStr;
                             $counterString = $this->setCounterValueToString($counterIDs[$qID], $counterString, $value);
                         }
                     }
                 }
             }
         }
+
+        $dropDownResponses = Session::instance()->get('dropDownQuestionResponses');
+        if (!empty($dropDownResponses)) {
+            $created_at = microtime(true);
+            foreach ($dropDownResponses as $qID => $dropDownResponse) {
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $dropDownResponse, $nodeId, $created_at);
+                /** @var Model_Leap_Map_Question $question */
+                $question = DB_ORM::model('map_question', array((int)$qID));
+                if ($question != null) {
+
+                    $counter_id = $question->counter_id;
+
+                    if (!empty($counter_id)) {
+
+                        $response = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($qID, $dropDownResponse);
+
+                        if (!empty($response)) {
+                            $score = $response->score;
+                            $value = $this->getCounterValueFromString($question->counter->id, $counterString);
+                            //get info for c_debug
+                            $c_debug[$question->counter->id]['previous_value'] = $value;
+                            $c_debug[$question->counter->id]['question_value'] = $score;
+                            $c_debug[$question->counter->id]['question_id'] = $qID;
+
+                            $countersFunc[$question->counter->id][] = $this->prepareCounterScoreString($score);
+
+                            $value = $this->calculateCounterFunction($value, $score);
+                            $counterString = $this->setCounterValueToString($question->counter->id, $counterString,
+                                $value);
+                        }
+                    }
+
+                }
+            }
+        }
+        Session::instance()->delete('dropDownQuestionResponses');
 
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
         if (count($sliderQuestionChoices)) {
@@ -567,13 +598,9 @@ class Model_Labyrinth extends Model
                                 $c_debug[$question->counter->id]['question_value'] = $score;
                                 $c_debug[$question->counter->id]['question_id'] = $qID;
 
-                                $valueStr = (string)$score;
-                                $value = $this->calculateCounterFunction($value, $score);
-                                if (($valueStr[0] != '-') && ($valueStr[0] != '=')) {
-                                    $valueStr = '+' . $score;
-                                }
+                                $countersFunc[$question->counter->id][] = $this->prepareCounterScoreString($score);
 
-                                $countersFunc[$question->counter->id][] = $valueStr;
+                                $value = $this->calculateCounterFunction($value, $score);
                                 $counterString = $this->setCounterValueToString($question->counter->id, $counterString,
                                     $value);
                             }
@@ -678,6 +705,20 @@ class Model_Labyrinth extends Model
         Session::instance()->delete('arrayAddedQuestions');
 
         return $c_debug;
+    }
+
+    /**
+     * @param mixed $score
+     * @return string
+     */
+    private function prepareCounterScoreString($score)
+    {
+        $valueStr = (string)$score;
+        if (($valueStr[0] != '-') && ($valueStr[0] != '=')) {
+            $valueStr = '+' . $score;
+        }
+
+        return $valueStr;
     }
 
     private function clearQuestionResponses()
@@ -1344,6 +1385,7 @@ class Model_Labyrinth extends Model
         $question = DB_ORM::model('map_question', array((int)$questionId));
 
         if ($question) {
+            /** @var Model_Leap_Map_Question_Response|null $responseObj */
             $responseObj = null;
             if (($question->type->value != 'text') AND ($question->type->value != 'area')) {
                 foreach ($question->responses as $resp) {
@@ -1465,15 +1507,8 @@ class Model_Labyrinth extends Model
             Session::instance()->set('questionChoices', json_encode($qChoices));
 
             if ($question->show_answer AND $question->type->value != 'text' AND $question->type->value != 'area') {
-                switch ($responseObj->is_correct) {
-                    case 0:
-                        $returnStr .= '<img src="' . URL::base() . 'images/cross.jpg"> ';
-                        break;
-                    case 1:
-                        $returnStr .= '<img src="' . URL::base() . 'images/tick.jpg"> ';
-                        break;
-                }
-                $returnStr .= ($responseObj->feedback != null && strlen($responseObj->feedback) > 0 ? ('(' . $responseObj->feedback . ')') : '');
+                $returnStr .= $responseObj->getIsCorrectHTML();
+                $returnStr .= $responseObj->getFeedbackHTML();
             }
         }
 

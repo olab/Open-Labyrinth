@@ -29,13 +29,13 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $num_tries
  * @property int $redirect_node_id
  * @property int $type_display
+ * @property int $counter_id
  * @property int|bool $show_answer
  * @property int|bool $show_submit
  * @property int|bool $is_private
  * @property string $stem
  * @property string $feedback
  * @property string $prompt
- * @property string $counter_id
  * @property string $submit_text
  * @property string $settings
  * @property Model_Leap_Map_Question_Response[]|DB_ResultSet $responses
@@ -834,5 +834,13 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             }
             $builder->execute();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFreeTextAllowed()
+    {
+        return true;
     }
 }

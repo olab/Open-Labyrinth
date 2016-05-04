@@ -29,6 +29,7 @@
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/css/bootstrap-modal.css'); ?>"/>
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>"/>
 <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.css'); ?>">
+<link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.css'); ?>">
 
 <?php if (!empty($templateData['styles_stack'])) { ?>
     <?php foreach($templateData['styles_stack'] as $style) { ?>
@@ -98,6 +99,7 @@
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/helper.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/turkTalk.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js'); ?>"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
