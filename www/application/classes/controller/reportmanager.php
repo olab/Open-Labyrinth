@@ -199,22 +199,33 @@ class Controller_ReportManager extends Controller_Base
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             $nodeId = $userResponse->node_id;
-            if ($questions[$questionId]->entry_type_id == 8) {
+            if ($questions[$questionId]->entry_type_id == Model_Leap_Map_Question::ENTRY_TYPE_SJT) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
 
             if (!isset($answeredQuestions[$nodeId]) || !in_array($questionId, $answeredQuestions[$nodeId])) {
-                if (in_array($questions[$questionId]->entry_type_id, array(1, 2, 4, 5, 6, 7, 8, 9, 10))) {
+                if (in_array($questions[$questionId]->entry_type_id, [
+                    Model_Leap_Map_Question::ENTRY_TYPE_SINGLE_LINE,
+                    Model_Leap_Map_Question::ENTRY_TYPE_MULTI_LNE,
+                    Model_Leap_Map_Question::ENTRY_TYPE_PCQ,
+                    Model_Leap_Map_Question::ENTRY_TYPE_SLIDER,
+                    Model_Leap_Map_Question::ENTRY_TYPE_DRAG_AND_DROP,
+                    Model_Leap_Map_Question::ENTRY_TYPE_SCT,
+                    Model_Leap_Map_Question::ENTRY_TYPE_SJT,
+                    Model_Leap_Map_Question::ENTRY_TYPE_CUMULATIVE,
+                    Model_Leap_Map_Question::ENTRY_TYPE_RICH_TEXT,
+                    Model_Leap_Map_Question::ENTRY_TYPE_DROP_DOWN,
+                ])) {
                     $this->templateData['responses'][] = $userResponse;
                     $answeredQuestions[$nodeId][] = $questionId;
-                } elseif (in_array($questions[$questionId]->entry_type_id, array(3))) {
+                } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_MCQ))) {
                     if (isset($multipleResponses[$questionId], $multipleResponses[$questionId][$nodeId])) {
                         foreach ($multipleResponses[$questionId][$nodeId] as $mcqUserResponse) {
                             $this->templateData['responses'][] = $mcqUserResponse;
                         }
                         $answeredQuestions[$nodeId][] = $questionId;
                     }
-                } elseif (in_array($questions[$questionId]->entry_type_id, array(11))) {
+                } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_TURK_TALK))) {
 
                     $responseArray = json_decode($userResponse->response, true);
                     if (!empty($responseArray)) {
