@@ -1035,21 +1035,23 @@ class Controller_RenderLabyrinth extends Controller_Template
         $returnStr = '';
         $questionId = $this->request->param('id', null);
         $response = trim(Arr::get($_POST, 'value', ''));
+
+        /** @var Model_Leap_Map_Question_Response|bool $responseObj */
+        $responseObj = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($questionId, $response);
+        /** @var Model_Leap_Map_Question $question */
+        $question = DB_ORM::model('Map_Question', array($questionId));
+
+        if (empty($responseObj) && !$question->isFreeTextAllowed()) {
+            die('Free text not allowed. Please select item from Drop-down list.');
+        }
+
         $responses = Session::instance()->get('dropDownQuestionResponses', []);
         $responses[$questionId] = $response;
         Session::instance()->set('dropDownQuestionResponses', $responses);
 
-        /** @var Model_Leap_Map_Question $question */
-        $question = DB_ORM::model('Map_Question', array($questionId));
-
-        if ($question->show_answer) {
-            /** @var Model_Leap_Map_Question_Response|bool $responseObj */
-            $responseObj = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($questionId, $response);
-
-            if (!empty($responseObj)) {
-                $returnStr .= $responseObj->getIsCorrectHTML();
-                $returnStr .= $responseObj->getFeedbackHTML();
-            }
+        if ($question->show_answer && !empty($responseObj)) {
+            $returnStr .= $responseObj->getIsCorrectHTML();
+            $returnStr .= $responseObj->getFeedbackHTML();
         }
 
         die($returnStr);
