@@ -1,0 +1,2 @@
+INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES ('13', 'Multiple-choice grid', 'mcq-grid', 'grid', NULL);
+INSERT INTO `map_question_types` (`id`, `title`, `value`, `template_name`, `template_args`) VALUES ('14', 'Pick-choice grid', 'pcq-grid', 'grid', NULL);

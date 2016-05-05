@@ -59,6 +59,8 @@ class Model_Leap_Map_Question extends Model_Leap_Base
     const ENTRY_TYPE_RICH_TEXT = 10;
     const ENTRY_TYPE_TURK_TALK = 11;
     const ENTRY_TYPE_DROP_DOWN = 12;
+    const ENTRY_TYPE_MCQ_GRID = 13;
+    const ENTRY_TYPE_PCQ_GRID = 14;
 
     public function __construct()
     {
