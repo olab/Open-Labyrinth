@@ -58,6 +58,15 @@
       href="<?php echo URL::base(); ?>images/ico/apple-touch-icon-144-precomposed.png"/>
 <script type="text/javascript" src="<?php echo URL::base(); ?>scripts/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.js'); ?>"></script>
+    
+<script>        
+    // use in basic.js & turkTalk.js
+    var urlBase = '<?php echo URL::base(); ?>';
+</script>
+
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/helper.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/turkTalk.js'); ?>"></script>
+    
 <script language="JavaScript">
     function toggle_visibility(id) {
         var e = document.getElementById(id);
@@ -461,6 +470,7 @@ if ($templateData['skin_path'] != NULL) {
         src="<?php echo URL::base(); ?>scripts/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
 <script src="<?php echo URL::base(); ?>scripts/bootstrap-modal/js/bootstrap-modal.js"></script>
+<script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/user-notepad.js'); ?>"></script>
 
 <?php if (!empty($templateData['scripts_stack'])) { ?>
     <?php foreach($templateData['scripts_stack'] as $script) { ?>

@@ -29,6 +29,13 @@
     <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/css/bootstrap-modal.css'); ?>"/>
     <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'css/font.css'); ?>"/>
     <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.css'); ?>">
+    <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.css'); ?>">
+
+    <?php if (!empty($templateData['styles_stack'])) { ?>
+        <?php foreach($templateData['styles_stack'] as $style) { ?>
+            <link rel="stylesheet" type="text/css" href="<?php echo ScriptVersions::get($style); ?>">
+        <?php } ?>
+    <?php } ?>
 
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-1.7.2.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/jquery-ui-1.9.1.custom.min.js'); ?>"></script>
@@ -72,6 +79,7 @@
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxcommon.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/dhtmlxslider.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxSlider/codebase/ext/dhtmlxslider_start.js'); ?>"></script>
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/dhtmlxCombo/codebase/dhtmlxcombo.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/visualeditor/base64v1_0.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modal.js'); ?>"></script>
     <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/bootstrap-modal/js/bootstrap-modalmanager.js'); ?>"></script>
@@ -264,6 +272,11 @@
             });
         });
     </script>
+
+    <?php
+    include DOCROOT . 'application/views/labyrinth/skin/basic/_xAPI.php';
+    ?>
+
 </head>
 
     <body <?php if(isset($templateData['bodyStyle'])) echo 'style="'.$templateData['bodyStyle'].'"'; ?>><?php
@@ -354,5 +367,23 @@
                 }; ?>
             </div>
         </div>
+
+    <script type="text/javascript" src="<?php echo ScriptVersions::get(URL::base().'scripts/user-notepad.js'); ?>"></script>
+
+    <?php if (!empty($templateData['scripts_stack'])) { ?>
+        <?php foreach($templateData['scripts_stack'] as $script) { ?>
+            <script type="text/javascript" src="<?php echo ScriptVersions::get($script); ?>"></script>
+        <?php } ?>
+    <?php } ?>
+
+    <script>
+        <?php
+        if (!empty($templateData['raw_scripts_stack'])) {
+            foreach ($templateData['raw_scripts_stack'] as $script) {
+                echo rtrim(trim($script), ';') . ";\n";
+            }
+        }
+        ?>
+    </script>
     </body>
 </html>
