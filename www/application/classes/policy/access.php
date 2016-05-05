@@ -37,7 +37,8 @@ class Policy_Access extends Policy {
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
-        
+        array('controller' => 'options', 'action' => 'index', 'isFullController' => true),
+
         //H5P
         array('controller' => 'H5P', 'action' => 'libraryUpload'),
         array('controller' => 'H5P', 'action' => 'libraryDeleteSubmit'),
@@ -84,6 +85,7 @@ class Policy_Access extends Policy {
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'lrs', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'webinarManager', 'action' => 'stepReportxAPI'),
+        array('controller' => 'options', 'action' => 'index', 'isFullController' => true),
 
         //H5P
         array('controller' => 'H5P', 'action' => 'libraryUpload'),
