@@ -22,6 +22,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * @property int $id
+ * @property int $parent_id
  * @property int $map_id
  * @property int $entry_type_id
  * @property int $width
@@ -43,6 +44,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property Model_Leap_Map_Counter $counter
  * @property Model_Leap_Map $map
  * @property Model_Leap_Map_Question_Type $type
+ * @property Model_Leap_Map_Question $parent
  */
 class Model_Leap_Map_Question extends Model_Leap_Base
 {
@@ -55,7 +57,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
     const ENTRY_TYPE_DRAG_AND_DROP = 6;
     const ENTRY_TYPE_SCT = 7;
     const ENTRY_TYPE_SJT = 8;
-    const ENTRY_TYPE_CUMULATIVE= 9;
+    const ENTRY_TYPE_CUMULATIVE = 9;
     const ENTRY_TYPE_RICH_TEXT = 10;
     const ENTRY_TYPE_TURK_TALK = 11;
     const ENTRY_TYPE_DROP_DOWN = 12;
@@ -71,6 +73,11 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 'max_length' => 11,
                 'nullable' => false,
                 'unsigned' => true,
+            )),
+            'parent_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => true,
+                'savable' => true,
             )),
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
@@ -171,6 +178,11 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 'child_key' => array('question_id'),
                 'child_model' => 'user_response',
                 'parent_key' => array('id'),
+            )),
+            'parent' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('parent_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'Map_Question',
             )),
         );
     }

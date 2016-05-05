@@ -22,6 +22,7 @@ defined('SYSPATH') or die('No direct script access.');
 
 /**
  * @property int $id
+ * @property int $parent_id
  * @property int $question_id
  * @property int $is_correct
  * @property int $score
@@ -30,6 +31,8 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $feedback
  * @property string $from
  * @property string $to
+ * @property Model_Leap_Map_Question_Response $parent
+ * @property Model_Leap_Map_Question $question
  */
 class Model_Leap_Map_Question_Response extends DB_ORM_Model
 {
@@ -43,6 +46,11 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model
                 'max_length' => 11,
                 'nullable' => false,
                 'unsigned' => true,
+            )),
+            'parent_id' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 11,
+                'nullable' => true,
+                'savable' => true,
             )),
             'question_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
@@ -81,6 +89,19 @@ class Model_Leap_Map_Question_Response extends DB_ORM_Model
                 'nullable' => false,
                 'unsigned' => true,
                 'default' => 0
+            )),
+        );
+
+        $this->relations = array(
+            'question' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('question_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'Map_Question',
+            )),
+            'parent' => new DB_ORM_Relation_BelongsTo($this, array(
+                'child_key' => array('parent_id'),
+                'parent_key' => array('id'),
+                'parent_model' => 'Map_Question',
             )),
         );
     }
