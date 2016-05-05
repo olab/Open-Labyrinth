@@ -18,7 +18,7 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-if(isset($templateData['map']) AND isset($templateData['type'])) {
+
 $q          = isset($templateData['question']);
 $mapId      = $templateData['map']->id;
 $type       = $templateData['type']->id;
@@ -136,30 +136,25 @@ $stem       = $q ? $templateData['question']->stem : '';
     </fieldset>
 
     <h3>Responses</h3>
-    <table id="responses_list" class="table table-bordered table-striped table-condensed">
+    <table id="responses_list" class="table table-bordered table-striped table-condensed" style="width: 60%">
         <thead>
         <tr>
-            <th>#</th>
+            <th style="width:2%;">#</th>
             <th>Value</th>
-            <th></th>
+            <th style="width:2%;"></th>
         </tr>
         </thead>
         <tbody>
         <?php
         if(isset($templateData['question']) AND count($templateData['question']->responses) > 0) {
-            $responseIndex = 1;
-
             foreach($templateData['question']->responses as $response) { ?>
-                
+
             <tr>
                 <td>
-                    <?php echo isset($macros_counter) ? ++$macros_counter : $macros_counter = 1; ?>
+                    <?php echo isset($counter) ? ++$counter : $counter = 1; ?>
                 </td>
                 <td>
-                    <input type="text" name="macros_text[]" value="<?php echo htmlspecialchars($macros->text) ?>">
-                </td>
-                <td>
-                    <input type="text" name="macros_hot_keys[]" value="<?php echo htmlspecialchars($macros->hot_keys) ?>">
+                    <input type="text" name="existing_responses_grid[<?php echo $response->id ?>]" value="<?php echo htmlspecialchars($response->response) ?>">
                 </td>
                 <td>
                     <span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span>
@@ -167,17 +162,16 @@ $stem       = $q ? $templateData['question']->stem : '';
             </tr>
 
                 <?php
-                $responseIndex++;
             }
         } ?>
         </tbody>
     </table>
-    <?php } ?>
+
+    <div>
+        <span class="btn btn-info addResponseGrid"><i class="icon-plus-sign"></i>Add response</span>
+    </div>
 
     <div class="form-actions">
-        <div class="pull-left">
-            <button class="btn btn-info addResponseGrid" type="button"><i class="icon-plus-sign"></i>Add response</button>
-        </div>
         <div class="pull-right">
             <input class="btn btn-primary btn-large question-save-btn" type="submit" name="Submit" value="Save changes">
         </div>
