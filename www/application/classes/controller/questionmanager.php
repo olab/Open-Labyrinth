@@ -62,7 +62,7 @@ class Controller_QuestionManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
     }
-    
+
     public function action_question()
     {
         $mapId      = $this->request->param('id', 0);
@@ -192,6 +192,138 @@ class Controller_QuestionManager extends Controller_Base {
         Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
     }
 
+    public function action_questionGridPOST()
+    {
+        $post             = $this->request->post();
+        $mapId            = $this->request->param('id', 0);
+        $postType         = Arr::get($post, 'question_type', null);
+        $existingSubQuestions      = Arr::get($post, 'existingSubQuestions', []);
+        $existingSubQuestionsOrder      = Arr::get($post, 'existingSubQuestionsOrder', []);
+        $subQuestions      = Arr::get($post, 'subQuestions', []);
+        $subQuestionsOrder      = Arr::get($post, 'subQuestionsOrder', []);
+        $responses        = Arr::get($post, 'responses', []);
+        $responsesOrder        = Arr::get($post, 'responsesOrder', []);
+        $goToAttributes        = Arr::get($post, 'goToAttributes', false);
+        $existingResponses       = Arr::get($post, 'existingResponses', []);
+        $existingResponsesOrder       = Arr::get($post, 'existingResponsesOrder', []);
+        $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
+        $questionId       = $this->request->param('id3', 0);
+        $map              = DB_ORM::model('map', array((int)$mapId));
+        $type             = DB_ORM::model('map_question_type', array((int)$typeId));
+
+        if ( ! ($post AND $map AND $type)) Request::initial()->redirect(URL::base());
+
+        if (!empty($questionId)) {
+            $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
+            $private    = Arr::get($post, 'is_private');
+
+            if ($references AND $private) {
+                $ses = Session::instance();
+                $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
+                $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
+                $post['is_private'] = FALSE;
+            }
+
+            /** @var Model_Leap_Map_Question $question */
+            $question = DB_ORM::model('Map_Question', array($questionId));
+
+            if (!empty($typeId)) {
+                $question->entry_type_id = $typeId;
+            }
+            $question->stem = Arr::get($post, 'stem', $question->stem);
+            $question->feedback = Arr::get($post, 'feedback', $question->feedback);
+            $question->show_answer = Arr::get($post, 'showAnswer', $question->show_answer);
+            $question->counter_id = Arr::get($post, 'counter', $question->counter_id);
+            $question->num_tries = Arr::get($post, 'tries', $question->num_tries);
+            $question->show_submit = Arr::get($post, 'showSubmit', $question->show_submit);
+            $question->redirect_node_id = Arr::get($post, 'redirectNode', $question->redirect_node_id);
+            $question->submit_text = Arr::get($post, 'submitButtonText', $question->submit_text);
+            $question->type_display = Arr::get($post, 'typeDisplay', $question->submit_text);
+            $question->is_private = Arr::get($post, 'is_private', false);
+            $question->settings = json_encode(Arr::get($post, 'settingsJSON', []));
+
+            $question->save();
+        } else {
+            $questionId = DB_ORM::insert('map_question')
+                ->column('map_id', $mapId)
+                ->column('entry_type_id', $type->id)
+                ->column('stem', Arr::get($post, 'stem', ''))
+                ->column('feedback', Arr::get($post, 'feedback', ''))
+                ->column('show_answer', (int)Arr::get($post, 'showAnswer', 0))
+                ->column('counter_id', (int)Arr::get($post, 'counter', 0))
+                ->column('num_tries', (int)Arr::get($post, 'tries', 1))
+                ->column('show_submit', (int)Arr::get($post, 'showSubmit', 0))
+                ->column('redirect_node_id', (int)Arr::get($post, 'redirectNode', null))
+                ->column('submit_text', Arr::get($post, 'submitButtonText', 'Submit'))
+                ->column('type_display', (int)Arr::get($post, 'typeDisplay', 0))
+                ->column('is_private', (int)Arr::get($post, 'is_private', false) ? 1 : 0)
+                ->column('settings', json_encode(Arr::get($post, 'settingsJSON', [])))
+                ->execute();
+        }
+        
+        if(empty($questionId) || !is_numeric($questionId)){
+            throw new Exception('Invalid Question id');
+        }
+
+        //save sub-questions
+        foreach ($existingSubQuestions as $subQuestion_id => $subQuestion_value){
+            DB_ORM::update('Map_Question')
+                ->where('id', '=', $subQuestion_id)
+                ->set('stem', $subQuestion_value)
+                ->set('order', $existingSubQuestionsOrder[$subQuestion_id])
+                ->execute();
+        }
+
+        $delete_query = DB_ORM::delete('Map_Question')
+            ->where('parent_id', '=', $questionId);
+        $subQuestionsIds = array_keys($existingSubQuestions);
+        if(!empty($subQuestionsIds)){
+            $delete_query->where('id', 'NOT IN', $subQuestionsIds);
+        }
+        $delete_query->execute();
+
+        foreach ($subQuestions as $key => $subQuestion_value){
+            DB_ORM::insert('Map_Question')
+                ->column('stem', $subQuestion_value)
+                ->column('parent_id', $questionId)
+                ->column('order', $subQuestionsOrder[$key])
+                ->execute();
+        }
+        //end save sub-questions
+
+        //save responses
+        foreach ($existingResponses as $response_id => $response_value){
+            DB_ORM::update('Map_Question_Response')
+                ->where('id', '=', $response_id)
+                ->set('response', $response_value)
+                ->set('order', $existingResponsesOrder[$response_id])
+                ->execute();
+        }
+
+        $delete_query = DB_ORM::delete('Map_Question_Response')
+            ->where('question_id', '=', $questionId);
+        $response_ids = array_keys($existingResponses);
+        if(!empty($response_ids)){
+            $delete_query->where('id', 'NOT IN', $response_ids);
+        }
+        $delete_query->execute();
+        
+        foreach ($responses as $key => $response){
+            DB_ORM::insert('Map_Question_Response')
+                ->column('response', $response)
+                ->column('question_id', $questionId)
+                ->column('order', $responsesOrder[$key])
+                ->execute();
+        }
+        //end save responses
+
+        $redirectUrl = URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId;
+        if ($goToAttributes) {
+            $redirectUrl .= '#goToAttributes';
+        }
+        Request::initial()->redirect($redirectUrl);
+    }
+
     public function action_deleteQuestion()
     {
         $mapId      = $this->request->param('id', NULL);
@@ -215,12 +347,12 @@ class Controller_QuestionManager extends Controller_Base {
             Request::initial()->redirect(URL::base());
         }
     }
-    
+
     public function action_duplicateQuestion()
     {
         $mapId      = $this->request->param('id', null);
         $questionId = $this->request->param('id2', null);
-        
+
         if ($mapId AND $questionId)
         {
             DB_ORM::model('map_question')->duplicateQuestion($questionId);
@@ -228,10 +360,10 @@ class Controller_QuestionManager extends Controller_Base {
         }
         else Request::initial()->redirect(URL::base());
     }
-    
+
     public function action_copyQuestion() {
         $mapId = $this->request->param('id', null);
-        
+
         if($mapId != null && $_POST != null) {
             DB_ORM::model('map_question')->copyQuestion($mapId, $_POST);
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);

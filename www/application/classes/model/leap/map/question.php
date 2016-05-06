@@ -31,6 +31,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $redirect_node_id
  * @property int $type_display
  * @property int $counter_id
+ * @property int $order
  * @property int|bool $show_answer
  * @property int|bool $show_submit
  * @property int|bool $is_private
@@ -41,6 +42,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $settings
  * @property Model_Leap_Map_Question_Response[]|DB_ResultSet $responses
  * @property Model_Leap_User_Response[]|DB_ResultSet $user_responses
+ * @property Model_Leap_Map_Question[]|DB_ResultSet $subQuestions
  * @property Model_Leap_Map_Counter $counter
  * @property Model_Leap_Map $map
  * @property Model_Leap_Map_Question_Type $type
@@ -149,7 +151,12 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 'savable' => true,
                 'nullable' => false,
                 'default' => false
-            ))
+            )),
+            'order' => new DB_ORM_Field_Integer($this, array(
+                'max_length' => 10,
+                'nullable' => true,
+                'savable' => true,
+            )),
         );
 
         $this->relations = array(
@@ -177,6 +184,11 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             'user_responses' => new DB_ORM_Relation_HasMany($this, array(
                 'child_key' => array('question_id'),
                 'child_model' => 'user_response',
+                'parent_key' => array('id'),
+            )),
+            'subQuestions' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('parent_id'),
+                'child_model' => 'Map_Question',
                 'parent_key' => array('id'),
             )),
             'parent' => new DB_ORM_Relation_BelongsTo($this, array(

@@ -157,14 +157,27 @@ $(function () {
     // Grid question types
     $(document).ready(function () {
         var responses = $('#responses_list').find('tbody'),
-            responseTemplate = '<tr><td></td><td><input type="text" name="responses_grid[]"></td><td><span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span></td></tr>';
+            responseTemplate = '<tr><td></td><td><input type="text" name="responses[]"></td><td><input type="text" name="responsesOrder[]"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
 
         $(document).on('click', '.addResponseGrid', function (e) {
             e.preventDefault();
             responses.append(responseTemplate);
         });
 
-        $(document).on('click', '.removeResponseGrid', function (e) {
+        var sub_questions = $('#sub_questions_list').find('tbody'),
+            questionTemplate = '<tr><td></td><td><input type="text" name="subQuestions[]"></td><td><input type="text" name="subQuestionsOrder[]"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
+
+        $(document).on('click', '.addSubQuestion', function (e) {
+            e.preventDefault();
+            sub_questions.append(questionTemplate);
+        });
+
+        $(document).on('click', '.addSubQuestion', function (e) {
+            e.preventDefault();
+            $(this).closest('tr').remove();
+        });
+
+        $(document).on('click', '.removeRow', function (e) {
             e.preventDefault();
             $(this).closest('tr').remove();
         });
