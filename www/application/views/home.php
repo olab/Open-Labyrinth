@@ -194,7 +194,7 @@ $templateData['error_message'] = Session::instance()->get_once('error_message');
                                         <a href="<?php echo URL::base(); ?>videoservice"><?php echo __('Video mashup'); ?></a>
                                     </li>
                                     <li>
-                                        <a href="<?php echo URL::base(); ?>options"><?php echo __('Settings'); ?></a>
+                                        <a href="<?php echo URL::base(); ?>options"><?php echo __('Video Settings'); ?></a>
                                     </li>
                                     <li class="divider"></li>
                                     <li>
