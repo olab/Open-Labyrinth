@@ -27,20 +27,7 @@ $stem = $q ? $templateData['question']->stem : '';
 $subQuestions = isset($templateData['question']) ? $templateData['question']->subQuestions : [];
 $responses = isset($templateData['question']) ? $templateData['question']->responses : [];
 $attributes = isset($templateData['attributes']) ? $templateData['attributes'] : [];
-$correctness = [
-    [
-        'value' => 1,
-        'name' => __('Correct'),
-    ],
-    [
-        'value' => 2,
-        'name' => __('Neutral'),
-    ],
-    [
-        'value' => 0,
-        'name' => __('Incorrect'),
-    ],
-];
+$correctness = $templateData['correctness'];
 ?>
 
 <div class="page-header">
@@ -185,15 +172,21 @@ $correctness = [
                     <?php echo isset($counter2) ? ++$counter2 : $counter2 = 1; ?>
                 </td>
                 <td>
-                    <input type="text" name="existingSubQuestions[<?php echo $subQuestion->id ?>]"
-                           value="<?php echo htmlspecialchars($subQuestion->stem) ?>">
+                    <input
+                        class="subQuestionInput"
+                        type="text"
+                        name="existingSubQuestions[<?php echo $subQuestion->id ?>]"
+                        value="<?php echo htmlspecialchars($subQuestion->stem) ?>">
                 </td>
                 <td>
-                    <input type="text" name="existingSubQuestionsOrder[<?php echo $subQuestion->id ?>]"
-                           value="<?php echo $subQuestion->order ?>">
+                    <input
+                        class="orderInput"
+                        type="text"
+                        name="existingSubQuestionsOrder[<?php echo $subQuestion->id ?>]"
+                        value="<?php echo $subQuestion->order ?>">
                 </td>
                 <td>
-                    <span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span>
+                    <span class="btn btn-danger removeRow"><i class="icon-trash"></i></span>
                 </td>
             </tr>
         <?php } ?>
@@ -223,15 +216,21 @@ $correctness = [
                     <?php echo isset($counter1) ? ++$counter1 : $counter1 = 1; ?>
                 </td>
                 <td>
-                    <input type="text" name="existingResponses[<?php echo $response->id ?>]"
-                           value="<?php echo htmlspecialchars($response->response) ?>">
+                    <input
+                        class="responseInput"
+                        type="text"
+                        name="existingResponses[<?php echo $response->id ?>]"
+                        value="<?php echo htmlspecialchars($response->response) ?>">
                 </td>
                 <td>
-                    <input type="text" name="existingResponsesOrder[<?php echo $response->id ?>]"
-                           value="<?php echo $response->order ?>">
+                    <input
+                        class="orderInput"
+                        type="text"
+                        name="existingResponsesOrder[<?php echo $response->id ?>]"
+                        value="<?php echo $response->order ?>">
                 </td>
                 <td>
-                    <span class="btn btn-danger remove-macros"><i class="icon-trash"></i></span>
+                    <span class="btn btn-danger removeRow"><i class="icon-trash"></i></span>
                 </td>
             </tr>
         <?php } ?>
@@ -245,8 +244,10 @@ $correctness = [
     <hr>
 
     <div>
-        <input class="btn btn-primary btn-large question-save-btn" type="submit" name="goToAttributes" value="Save changes and proceed to attributes">
+        <input class="btn btn-primary" type="submit" name="goToAttributes" value="Save changes and proceed to attributes">
     </div>
+
+    <hr>
 
     <h3 id="goToAttributes">Attributes</h3>
     <?php if (count($responses) > 0 && count($subQuestions) > 0) { ?>
@@ -305,13 +306,13 @@ $correctness = [
         </table>
     <?php } else { ?>
         <div class="alert alert-info">
-            Please add and save sub-questions and responses first.
+            Please save sub-questions and responses first.
         </div>
     <?php } ?>
 
     <div class="form-actions">
         <div class="pull-right">
-            <input class="btn btn-primary btn-large question-save-btn" type="submit" name="Submit" value="Save changes">
+            <input class="btn btn-primary btn-large" type="submit" name="Submit" value="Save changes">
         </div>
     </div>
 </form>

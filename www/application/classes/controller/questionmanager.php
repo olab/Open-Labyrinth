@@ -118,6 +118,20 @@ class Controller_QuestionManager extends Controller_Base {
             Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID
         ])) {
             $this->templateData['attributes'] = $this->createAttributesArray($this->templateData['question']);
+            $this->templateData['correctness'] = [
+                [
+                    'value' => 1,
+                    'name' => __('Correct'),
+                ],
+                [
+                    'value' => 2,
+                    'name' => __('Neutral'),
+                ],
+                [
+                    'value' => 0,
+                    'name' => __('Incorrect'),
+                ],
+            ];
         }
 
         $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
@@ -127,9 +141,14 @@ class Controller_QuestionManager extends Controller_Base {
 
     private function createAttributesArray(Model_Leap_Map_Question $question)
     {
-        $subQuestions = $question->subQuestions;
-        $responses = $question->responses;
         $result = [];
+        foreach ($question->subQuestions as $subQuestion) {
+            foreach ($subQuestion->responses as $subQuestionResponse) {
+                $result[$subQuestion->id][$subQuestionResponse->parent_id]['feedback'] = $subQuestionResponse->feedback;
+                $result[$subQuestion->id][$subQuestionResponse->parent_id]['correctness'] = $subQuestionResponse->is_correct;
+                $result[$subQuestion->id][$subQuestionResponse->parent_id]['score'] = $subQuestionResponse->score;
+            }
+        }
 
         return $result;
     }
@@ -282,6 +301,40 @@ class Controller_QuestionManager extends Controller_Base {
             throw new Exception('Invalid Question id');
         }
 
+        //save attributes
+        foreach ($attributes as $subQuestionId => $subQuestionArray) {
+            foreach ($subQuestionArray as $responseId => $responseArray) {
+
+                $subQuestionResponse = DB_ORM::select('Map_Question_Response')
+                    ->where('parent_id', '=', $responseId)
+                    ->where('question_id', '=', $subQuestionId)
+                    ->limit(1)
+                    ->query()
+                    ->fetch(0);
+
+                if (empty($subQuestionResponse)) {
+                    $subQuestionResponse = new Model_Leap_Map_Question_Response();
+                    $subQuestionResponse->parent_id = $responseId;
+                    $subQuestionResponse->question_id = $subQuestionId;
+                }
+
+                if (isset($responseArray['feedback'])) {
+                    $subQuestionResponse->feedback = trim($responseArray['feedback']);
+                }
+
+                if (isset($responseArray['correctness'])) {
+                    $subQuestionResponse->is_correct = (int)$responseArray['correctness'];
+                }
+
+                if (isset($responseArray['score'])) {
+                    $subQuestionResponse->score = (int)$responseArray['score'];
+                }
+
+                $subQuestionResponse->save();
+            }
+        }
+        //end save attributes
+
         //save sub-questions
         foreach ($existingSubQuestions as $subQuestion_id => $subQuestion_value){
             DB_ORM::update('Map_Question')
@@ -333,40 +386,6 @@ class Controller_QuestionManager extends Controller_Base {
                 ->execute();
         }
         //end save responses
-
-        //save attributes
-        foreach ($attributes as $subQuestionId => $subQuestionArray) {
-            foreach ($subQuestionArray as $responseId => $responseArray) {
-
-                $subQuestionResponse = DB_ORM::select('Map_Question_Response')
-                    ->where('parent_id', '=', $responseId)
-                    ->where('question_id', '=', $subQuestionId)
-                    ->limit(1)
-                    ->query()
-                    ->fetch(0);
-
-                if (empty($subQuestionResponse)) {
-                    $subQuestionResponse = new Model_Leap_Map_Question_Response();
-                    $subQuestionResponse->parent_id = $responseId;
-                    $subQuestionResponse->question_id = $subQuestionId;
-                }
-
-                if (isset($responseArray['feedback'])) {
-                    $subQuestionResponse->feedback = trim($responseArray['feedback']);
-                }
-
-                if (isset($responseArray['correctness'])) {
-                    $subQuestionResponse->is_correct = (int)$responseArray['correctness'];
-                }
-
-                if (isset($responseArray['score'])) {
-                    $subQuestionResponse->score = (int)$responseArray['score'];
-                }
-
-                $subQuestionResponse->save();
-            }
-        }
-        //end save attributes
 
         $redirectUrl = URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId;
         if ($goToAttributes) {

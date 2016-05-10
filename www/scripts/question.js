@@ -156,25 +156,21 @@ $(function () {
 
     // Grid question types
     $(document).ready(function () {
-        var responses = $('#responses_list').find('tbody'),
-            responseTemplate = '<tr><td></td><td><input type="text" name="responses[]"></td><td><input type="text" name="responsesOrder[]"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
+        var responses = $('#responses_list').find('tbody');
 
         $(document).on('click', '.addResponseGrid', function (e) {
             e.preventDefault();
+            var responseCounter = $('.responseInput').length + 1,
+                responseTemplate = '<tr><td></td><td><input class="responseInput" type="text" name="responses[]"></td><td><input class="orderInput" type="text" name="responsesOrder[]" value="'+responseCounter+'"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
             responses.append(responseTemplate);
         });
 
-        var sub_questions = $('#sub_questions_list').find('tbody'),
-            questionTemplate = '<tr><td></td><td><input type="text" name="subQuestions[]"></td><td><input type="text" name="subQuestionsOrder[]"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
-
+        var sub_questions = $('#sub_questions_list').find('tbody');
         $(document).on('click', '.addSubQuestion', function (e) {
             e.preventDefault();
+            var subQuestionCounter = $('.subQuestionInput').length + 1,
+                questionTemplate = '<tr><td></td><td><input class="subQuestionInput"  type="text" name="subQuestions[]"></td><td><input class="orderInput" type="text" name="subQuestionsOrder[]" value="'+subQuestionCounter+'"></td><td><span class="btn btn-danger removeRow"><i class="icon-trash"></i></span></td></tr>';
             sub_questions.append(questionTemplate);
-        });
-
-        $(document).on('click', '.addSubQuestion', function (e) {
-            e.preventDefault();
-            $(this).closest('tr').remove();
         });
 
         $(document).on('click', '.removeRow', function (e) {
@@ -182,4 +178,5 @@ $(function () {
             $(this).closest('tr').remove();
         });
     });
+    // end Grid question types
 });
