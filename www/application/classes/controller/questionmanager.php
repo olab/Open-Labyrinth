@@ -270,7 +270,7 @@ class Controller_QuestionManager extends Controller_Base {
             DB_ORM::update('Map_Question')
                 ->where('id', '=', $subQuestion_id)
                 ->set('stem', $subQuestion_value)
-                ->set('order', $existingSubQuestionsOrder[$subQuestion_id])
+                ->set('order', (int)$existingSubQuestionsOrder[$subQuestion_id])
                 ->execute();
         }
 
@@ -296,7 +296,7 @@ class Controller_QuestionManager extends Controller_Base {
             DB_ORM::update('Map_Question_Response')
                 ->where('id', '=', $response_id)
                 ->set('response', $response_value)
-                ->set('order', $existingResponsesOrder[$response_id])
+                ->set('order', (int)$existingResponsesOrder[$response_id])
                 ->execute();
         }
 
