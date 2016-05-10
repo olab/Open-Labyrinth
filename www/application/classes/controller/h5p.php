@@ -473,14 +473,6 @@ class Controller_H5P extends Controller_Base
         /** @var Model_Leap_User_Session $session */
         $session = DB_ORM::model('User_session', array($session_id));
 
-        $data['object']['id'] = URL::base(true) . ltrim($data['object']['id'], '/');
-
-        //unset($data['actor']['mbox']);
-        //$data['actor']['account'] = [
-        //    'homePage' => URL::base(true),
-        //    'name' => (string)$session->user_id,
-        //];
-
         $result = isset($data['result']) ? $data['result'] : null;
         $context = isset($data['context']) ? $data['context'] : null;
 

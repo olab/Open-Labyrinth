@@ -252,8 +252,11 @@ class Model_Leap_Statement extends Model_Leap_Base
         //end verb
 
         //object
-        $statement['object']['objectType'] = 'Activity';
         $statement['object'] = $object;
+
+        if (!isset($statement['object']['objectType'])) {
+            $statement['object']['objectType'] = 'Activity';
+        }
         //end object
 
         //result

@@ -749,7 +749,7 @@ NOW;
                 true) ? $this->get_h5p_url() . '/exports/' . ($content['slug'] ? $content['slug'] . '-' : '') . $content['id'] . '.h5p' : '',
             'embedCode' => '<iframe src="/h5p/embed/' . $content['id'] . '" width=":w" height=":h" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
             'resizeCode' => '<script src="/scripts/h5p/h5p-resizer.js" charset="UTF-8"></script>',
-            'url' => '/h5p/embed/' . $content['id'],
+            'url' => URL::base(true) . 'h5p/embed/' . $content['id'],
             'title' => $content['title'],
             'disable' => $content['disable'],
             'contentUserData' => array(
