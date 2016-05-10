@@ -113,9 +113,25 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['validators'] = $validators;
         }
 
+        if (in_array($typeId, [
+            Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
+            Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID
+        ])) {
+            $this->templateData['attributes'] = $this->createAttributesArray($this->templateData['question']);
+        }
+
         $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
         $this->template->set('templateData', $this->templateData);
+    }
+
+    private function createAttributesArray(Model_Leap_Map_Question $question)
+    {
+        $subQuestions = $question->subQuestions;
+        $responses = $question->responses;
+        $result = [];
+
+        return $result;
     }
 
     public function action_questionSJT()
@@ -206,6 +222,7 @@ class Controller_QuestionManager extends Controller_Base {
         $goToAttributes        = Arr::get($post, 'goToAttributes', false);
         $existingResponses       = Arr::get($post, 'existingResponses', []);
         $existingResponsesOrder       = Arr::get($post, 'existingResponsesOrder', []);
+        $attributes      = Arr::get($post, 'attributes', []);
         $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
         $questionId       = $this->request->param('id3', 0);
         $map              = DB_ORM::model('map', array((int)$mapId));
@@ -260,7 +277,7 @@ class Controller_QuestionManager extends Controller_Base {
                 ->column('settings', json_encode(Arr::get($post, 'settingsJSON', [])))
                 ->execute();
         }
-        
+
         if(empty($questionId) || !is_numeric($questionId)){
             throw new Exception('Invalid Question id');
         }
@@ -307,7 +324,7 @@ class Controller_QuestionManager extends Controller_Base {
             $delete_query->where('id', 'NOT IN', $response_ids);
         }
         $delete_query->execute();
-        
+
         foreach ($responses as $key => $response){
             DB_ORM::insert('Map_Question_Response')
                 ->column('response', $response)
@@ -316,6 +333,40 @@ class Controller_QuestionManager extends Controller_Base {
                 ->execute();
         }
         //end save responses
+
+        //save attributes
+        foreach ($attributes as $subQuestionId => $subQuestionArray) {
+            foreach ($subQuestionArray as $responseId => $responseArray) {
+
+                $subQuestionResponse = DB_ORM::select('Map_Question_Response')
+                    ->where('parent_id', '=', $responseId)
+                    ->where('question_id', '=', $subQuestionId)
+                    ->limit(1)
+                    ->query()
+                    ->fetch(0);
+
+                if (empty($subQuestionResponse)) {
+                    $subQuestionResponse = new Model_Leap_Map_Question_Response();
+                    $subQuestionResponse->parent_id = $responseId;
+                    $subQuestionResponse->question_id = $subQuestionId;
+                }
+
+                if (isset($responseArray['feedback'])) {
+                    $subQuestionResponse->feedback = trim($responseArray['feedback']);
+                }
+
+                if (isset($responseArray['correctness'])) {
+                    $subQuestionResponse->is_correct = (int)$responseArray['correctness'];
+                }
+
+                if (isset($responseArray['score'])) {
+                    $subQuestionResponse->score = (int)$responseArray['score'];
+                }
+
+                $subQuestionResponse->save();
+            }
+        }
+        //end save attributes
 
         $redirectUrl = URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId;
         if ($goToAttributes) {

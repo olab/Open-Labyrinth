@@ -26,6 +26,21 @@ $questionId = $q ? $templateData['question']->id : '';
 $stem = $q ? $templateData['question']->stem : '';
 $subQuestions = isset($templateData['question']) ? $templateData['question']->subQuestions : [];
 $responses = isset($templateData['question']) ? $templateData['question']->responses : [];
+$attributes = isset($templateData['attributes']) ? $templateData['attributes'] : [];
+$correctness = [
+    [
+        'value' => 1,
+        'name' => __('Correct'),
+    ],
+    [
+        'value' => 2,
+        'name' => __('Neutral'),
+    ],
+    [
+        'value' => 0,
+        'name' => __('Incorrect'),
+    ],
+];
 ?>
 
 <div class="page-header">
@@ -256,7 +271,32 @@ $responses = isset($templateData['question']) ? $templateData['question']->respo
 
                     <?php foreach ($responses as $response) { ?>
                         <td>
+                            <div class="control-group">
+                                    <input
+                                        placeholder="Feedback"
+                                        name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][feedback]"
+                                        value="<?php if(isset($attributes[$subQuestion->id][$response->id]['feedback'])) echo $attributes[$subQuestion->id][$response->id]['feedback'] ?>">
+                            </div>
 
+                            <div class="control-group">
+                                    <select name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][correctness]">
+                                        <option value=""> - Select correctness - </option>
+                                        <?php foreach ($correctness as $variant) { ?>
+                                            <option value="<?php echo $variant['value']?>" <?php if(isset($attributes[$subQuestion->id][$response->id]['correctness']) && $attributes[$subQuestion->id][$response->id]['correctness'] == $variant['value']) echo 'selected'; ?>>
+                                                Correctness: <?php echo $variant['name']?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                            </div>
+
+                            <div class="control-group">
+                                    <select name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][score]">
+                                        <option value="0"> - Select score - </option>
+                                        <?php for ($j = -10; $j <= 10; $j++) { ?>
+                                            <option value="<?php echo $j; ?>" <?php if(isset($attributes[$subQuestion->id][$response->id]['score']) && $attributes[$subQuestion->id][$response->id]['score'] == $j) echo 'selected'; ?>>Score: <?php echo $j; ?></option>
+                                        <?php } ?>
+                                    </select>
+                            </div>
                         </td>
                     <?php } ?>
                 </tr>

@@ -190,6 +190,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 'child_key' => array('parent_id'),
                 'child_model' => 'Map_Question',
                 'parent_key' => array('id'),
+                'options' => array(array('order_by', array('map_questions.order', 'ASC')))
             )),
             'parent' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('parent_id'),
