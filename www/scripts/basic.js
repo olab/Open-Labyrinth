@@ -383,3 +383,11 @@ function saveDropDownResponse(qid, value) {
         $('#AJAXresponse' + qid).html(data);
     });
 }
+
+function onMCQGridChange(qid, responseData) {
+    var URL = urlBase + 'renderLabyrinth/saveMCQGridResponse/' + qid;
+
+    $.post(URL, {value: responseData}).done(function (data) {
+        console.log('catch');
+    });
+}

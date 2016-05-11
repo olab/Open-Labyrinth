@@ -542,6 +542,70 @@ class Model_Labyrinth extends Model
             }
         }
 
+        $mcqGridResponses = Session::instance()->get('mcqGridResponses');
+        if (!empty($mcqGridResponses)) {
+            $created_at = microtime(true);
+            foreach ($mcqGridResponses as $qID => $mcqGridResponse) {
+
+                /** @var Model_Leap_Map_Question $question */
+                $question = DB_ORM::model('map_question', array((int)$qID));
+
+                $mcqGridResponseJson = [];
+
+                foreach ($mcqGridResponse as $subQuestionId => $subQuestionArray) {
+                    foreach ($subQuestionArray as $responseId => $response_value) {
+
+                        /** @var Model_Leap_Map_Question_Response $subQuestionResponse */
+                        $subQuestionResponse = DB_ORM::select('Map_Question_Response')
+                            ->where('parent_id', '=', $responseId)
+                            ->where('question_id', '=', $subQuestionId)
+                            ->limit(1)
+                            ->query()
+                            ->fetch(0);
+
+                        $mcqGridResponseJson[] = [
+                            'subQuestionId' => (int)$subQuestionId,
+                            'subQuestionResponse' => [
+                                'id' => !empty($subQuestionResponse) ? (int)$subQuestionResponse->id : null,
+                                'parent_id' => (int)$responseId,
+                                'value' => $response_value,
+                            ],
+                        ];
+
+                        if ($question != null) {
+
+                            $counter_id = $question->counter_id;
+
+                            if (!empty($counter_id)) {
+
+                                $response = $subQuestionResponse;
+
+                                if (!empty($response)) {
+                                    $score = $response->score;
+                                    $value = $this->getCounterValueFromString($counter_id, $counterString);
+                                    //get info for c_debug
+                                    $c_debug[$counter_id]['previous_value'] = $value;
+                                    $c_debug[$counter_id]['question_value'] = $score;
+                                    $c_debug[$counter_id]['question_id'] = $qID;
+
+                                    $countersFunc[$counter_id][] = $this->prepareCounterScoreString($score);
+
+                                    $value = $this->calculateCounterFunction($value, $score);
+                                    $counterString = $this->setCounterValueToString($counter_id, $counterString,
+                                        $value);
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, json_encode($mcqGridResponseJson),
+                    $nodeId, $created_at);
+            }
+        }
+        Session::instance()->delete('mcqGridResponses');
+
         $dropDownResponses = Session::instance()->get('dropDownQuestionResponses');
         if (!empty($dropDownResponses)) {
             $created_at = microtime(true);

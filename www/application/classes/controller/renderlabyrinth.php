@@ -1057,6 +1057,28 @@ class Controller_RenderLabyrinth extends Controller_Template
         die($returnStr);
     }
 
+
+    public function action_saveMCQGridResponse()
+    {
+        $returnStr = '';
+        $questionId = $this->request->param('id', null);
+        $userResponse = $this->request->post();
+        parse_str($userResponse['value'], $userResponse);
+
+        $userResponse = !empty($userResponse['userResponses']) ? $userResponse['userResponses'] : [];
+
+        $this->saveGridResponse($questionId, $userResponse);
+
+        die($returnStr);
+    }
+
+    private function saveGridResponse($questionId, $userResponse)
+    {
+        $responses = Session::instance()->get('mcqGridResponses', []);
+        $responses[$questionId] = $userResponse;
+        Session::instance()->set('mcqGridResponses', $responses);
+    }
+
     public function action_remote()
     {
         $mapId = $this->request->param('id', null);
@@ -2103,6 +2125,11 @@ class Controller_RenderLabyrinth extends Controller_Template
                                                 ob_start();
                                                 include DOCROOT . 'application/views/renderlabyrinth/_dropDown.php';
                                                 $result .= ob_get_clean();
+                                            } elseif ($q_type === 'mcq-grid' || $q_type === 'pcq-grid') {
+                                                $userResponses = self::getGridResponse($sessionId, $id, $orderBy, self::$nodeId);
+                                                ob_start();
+                                                include DOCROOT . 'application/views/renderlabyrinth/_grid.php';
+                                                $result .= ob_get_clean();
                                             }
                                         }
                                     }
@@ -2113,6 +2140,23 @@ class Controller_RenderLabyrinth extends Controller_Template
                 }
             }
             $result = '<div class="questions"><p>' . $question->stem . '</p>' . $result . '</div>';
+        }
+
+        return $result;
+    }
+    
+    public static function getGridResponse($sessionId, $questionId, $orderBy, $nodeId = null)
+    {
+        $result = [];
+        $response = self::getPickResponse($sessionId, $questionId, $orderBy, self::$nodeId);
+        if (empty($response)) {
+            return $result;
+        }
+
+        $responseArray = json_decode($response, true);
+
+        foreach ($responseArray as $array) {
+            $result[$array['subQuestionId']][$array['subQuestionResponse']['parent_id']] = true;
         }
 
         return $result;
