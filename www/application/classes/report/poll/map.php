@@ -129,10 +129,35 @@ class Report_Poll_Map extends Report_Element
                     continue;
                 }
 
-                $this->fillCell($column, $rowQuestionName, 'Stem: ' . $multiQuestion->question->stem);
-                $this->fillCell($column, $headerRow,
-                    'Node (' . $userResponseObj->node_id . '). Question (' . $userResponseObj->question_id . ')');
-                $this->fillCell($column, $row, $userResponseObj->response);
+                if (in_array($multiQuestion->question->entry_type_id, [
+                    Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID,
+                    Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
+                ])) {
+                    $gridResponse = json_decode($userResponseObj->response, true);
+                    foreach ($gridResponse as $array) {
+                        $stem = DB_SQL::select()
+                            ->from(Model_Leap_Map_Question::table())
+                            ->column('stem')
+                            ->where('id', '=', $array['subQuestionId'])
+                            ->query()
+                            ->fetch(0);
+
+                        if (!empty($stem)) {
+                            $stem = $stem['stem'];
+                        }
+
+                        $this->fillCell($column, $rowQuestionName, 'Stem: ' . $stem);
+                        $this->fillCell($column, $headerRow,
+                            'Node (' . $userResponseObj->node_id . '). Question (' . $userResponseObj->question_id . ')');
+                        $this->fillCell($column, $row, $array['subQuestionResponse']['value']);
+                        $column++;
+                    }
+                } else {
+                    $this->fillCell($column, $rowQuestionName, 'Stem: ' . $multiQuestion->question->stem);
+                    $this->fillCell($column, $headerRow,
+                        'Node (' . $userResponseObj->node_id . '). Question (' . $userResponseObj->question_id . ')');
+                    $this->fillCell($column, $row, $userResponseObj->response);
+                }
                 $column++;
             }
             $row++;
@@ -175,8 +200,18 @@ class Report_Poll_Map extends Report_Element
             return;
         }
 
-        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id,
-            array(1, 2, 3, 4, 5, 6, 7));
+        $questions = DB_ORM::model('map_question')->getQuestionsByMapAndTypes($this->map->id, [
+            Model_Leap_Map_Question::ENTRY_TYPE_SINGLE_LINE,
+            Model_Leap_Map_Question::ENTRY_TYPE_MULTI_LNE,
+            Model_Leap_Map_Question::ENTRY_TYPE_MCQ,
+            Model_Leap_Map_Question::ENTRY_TYPE_PCQ,
+            Model_Leap_Map_Question::ENTRY_TYPE_SLIDER,
+            Model_Leap_Map_Question::ENTRY_TYPE_DRAG_AND_DROP,
+            Model_Leap_Map_Question::ENTRY_TYPE_SCT,
+            Model_Leap_Map_Question::ENTRY_TYPE_DROP_DOWN,
+            Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID,
+            Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
+        ]);
 
         if ($questions != null && count($questions) > 0) {
             foreach ($questions as $question) {
