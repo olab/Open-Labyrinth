@@ -251,14 +251,14 @@ $correctness = $templateData['correctness'];
 
                     <?php foreach ($responses as $response) { ?>
                         <td>
-                            <div class="control-group">
+                            <div style="margin-bottom:8px;">
                                     <input
                                         placeholder="Feedback"
                                         name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][feedback]"
                                         value="<?php if(isset($attributes[$subQuestion->id][$response->id]['feedback'])) echo $attributes[$subQuestion->id][$response->id]['feedback'] ?>">
                             </div>
 
-                            <div class="control-group">
+                            <div style="margin-bottom:8px;">
                                     <select name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][correctness]">
                                         <option value=""> - Select correctness - </option>
                                         <?php foreach ($correctness as $variant) { ?>
@@ -269,7 +269,7 @@ $correctness = $templateData['correctness'];
                                     </select>
                             </div>
 
-                            <div class="control-group">
+                            <div>
                                     <select name="attributes[<?php echo $subQuestion->id ?>][<?php echo $response->id ?>][score]">
                                         <option value="0"> - Select score - </option>
                                         <?php for ($j = -10; $j <= 10; $j++) { ?>
