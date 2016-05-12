@@ -215,6 +215,8 @@ class Controller_ReportManager extends Controller_Base
                     Model_Leap_Map_Question::ENTRY_TYPE_CUMULATIVE,
                     Model_Leap_Map_Question::ENTRY_TYPE_RICH_TEXT,
                     Model_Leap_Map_Question::ENTRY_TYPE_DROP_DOWN,
+                    Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID,
+                    Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
                 ])) {
                     $this->templateData['responses'][] = $userResponse;
                     $answeredQuestions[$nodeId][] = $questionId;
