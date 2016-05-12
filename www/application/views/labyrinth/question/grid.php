@@ -80,27 +80,6 @@ $correctness = $templateData['correctness'];
             </div>
         </div>
 
-        <div class="control-group">
-            <label class="control-label"><?php echo __('Show submit button') ?></label>
-            <div class="controls">
-                <div class="radio_extended btn-group">
-                    <input autocomplete="off" type="radio" id="showSubmit" name="showSubmit"
-                           value="1" <?php echo((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? 'checked="checked"' : '') ?>/>
-                    <label data-class="btn-info" class="btn" for="showSubmit"><?php echo __('Show'); ?></label>
-
-                    <input autocomplete="off" type="radio" id="hideSubmit" name="showSubmit" value="0"
-                        <?php if (isset($templateData['question'])) {
-                            echo ($templateData['question']->show_submit == 0) ? 'checked="checked"' : '';
-                        } else {
-                            echo 'checked="checked"';
-                        }
-                        ?>
-                    />
-                    <label data-class="btn-info" class="btn" for="hideSubmit"><?php echo __('Do not show'); ?></label>
-                </div>
-            </div>
-        </div>
-
         <div
             class="control-group submitSettingsContainer <?php echo((isset($templateData['question']) && $templateData['question']->show_submit == 1) ? '' : 'hide') ?>">
             <label class="control-label"><?php echo __('Submit button text') ?></label>

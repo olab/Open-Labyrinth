@@ -1062,12 +1062,30 @@ class Controller_RenderLabyrinth extends Controller_Template
     {
         $returnStr = '';
         $questionId = $this->request->param('id', null);
-        $userResponse = $this->request->post();
-        parse_str($userResponse['value'], $userResponse);
+        $data = $this->request->post();
+        $currentResponseData = $data['currentResponseData'];
+        $userResponse = [];
+        parse_str($data['value'], $userResponse);
 
         $userResponse = !empty($userResponse['userResponses']) ? $userResponse['userResponses'] : [];
 
         $this->saveGridResponse($questionId, $userResponse);
+
+        /** @var Model_Leap_Map_Question_Response|bool $responseObj */
+        $responseObj = DB_ORM::select('Map_Question_Response')
+            ->where('question_id', '=', $currentResponseData['subQuestionId'])
+            ->where('parent_id', '=', $currentResponseData['responseId'])
+            ->limit(1)
+            ->query()
+            ->fetch(0);
+        
+        /** @var Model_Leap_Map_Question $question */
+        $question = DB_ORM::model('Map_Question', array($questionId));
+
+        if ($question->show_answer && !empty($responseObj)) {
+            $returnStr .= $responseObj->getIsCorrectHTML();
+            $returnStr .= $responseObj->getFeedbackHTML();
+        }
 
         die($returnStr);
     }

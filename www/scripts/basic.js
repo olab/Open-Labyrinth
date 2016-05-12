@@ -384,10 +384,10 @@ function saveDropDownResponse(qid, value) {
     });
 }
 
-function onMCQGridChange(qid, responseData) {
+function onMCQGridChange(qid, responseData, selectorForResponse, currentResponseData) {
     var URL = urlBase + 'renderLabyrinth/saveMCQGridResponse/' + qid;
 
-    $.post(URL, {value: responseData}).done(function (data) {
-        console.log('catch');
+    $.post(URL, {value: responseData, currentResponseData: currentResponseData}).done(function (data) {
+        $(selectorForResponse).html(data);
     });
 }
