@@ -245,7 +245,7 @@ if (isset($templateData['session'])) {
                     $responses = $question->responses;
                     $isPCQ = ($questionType === 'pcq-grid');
                     ?>
-                    <table class="table table-condensed">
+                    <table class="table table-condensed table-bordered">
                         <thead>
                         <tr>
                             <th></th>
