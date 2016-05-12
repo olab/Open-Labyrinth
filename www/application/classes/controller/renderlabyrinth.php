@@ -1078,7 +1078,7 @@ class Controller_RenderLabyrinth extends Controller_Template
             ->limit(1)
             ->query()
             ->fetch(0);
-        
+
         /** @var Model_Leap_Map_Question $question */
         $question = DB_ORM::model('Map_Question', array($questionId));
 
@@ -2140,11 +2140,14 @@ class Controller_RenderLabyrinth extends Controller_Template
                                                 $result .= '</div>';
                                                 $result .= '</div>';
                                             } elseif ($q_type === 'DropDown') {
+                                                $userResponse = self::getPickResponse($sessionId, $id, $orderBy,
+                                                    self::$nodeId);
                                                 ob_start();
                                                 include DOCROOT . 'application/views/renderlabyrinth/_dropDown.php';
                                                 $result .= ob_get_clean();
                                             } elseif ($q_type === 'mcq-grid' || $q_type === 'pcq-grid') {
-                                                $userResponses = self::getGridResponse($sessionId, $id, $orderBy, self::$nodeId);
+                                                $userResponses = self::getGridResponse($sessionId, $id, $orderBy,
+                                                    self::$nodeId);
                                                 ob_start();
                                                 include DOCROOT . 'application/views/renderlabyrinth/_grid.php';
                                                 $result .= ob_get_clean();
@@ -2162,7 +2165,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         return $result;
     }
-    
+
     public static function getGridResponse($sessionId, $questionId, $orderBy, $nodeId = null)
     {
         $result = [];

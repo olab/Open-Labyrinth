@@ -1,5 +1,6 @@
 <?php
-/** @var $question Model_Leap_Map_Question */
+/** @var Model_Leap_Map_Question $question */
+/** @var string $userResponse */
 
 $question_id_attribute = 'dropDown-question' . $question->id;
 $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submit';
@@ -7,7 +8,9 @@ $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submi
 <select style="width:200px;" id="<?php echo $question_id_attribute ?>">
     <option value=""></option>
     <?php foreach ($question->responses as $response) { ?>
-        <option value="<?php echo $response->response ?>"><?php echo $response->response ?></option>
+        <option value="<?php echo $response->response ?>" <?php if($userResponse === $response->response) echo 'selected' ?>>
+            <?php echo $response->response ?>
+        </option>
     <?php } ?>
 </select>
 <div id="AJAXresponse<?php echo $question->id ?>"></div>
@@ -27,7 +30,6 @@ $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submi
     <?php } ?>
 
     dropDownQuestion.attachEvent('onChange', onDropDownChange);
-    //dropDownQuestion.attachEvent('onBlur', onDropDownChange);
 
     //for future usage
     if (typeof dropDownQuestions == 'undefined') {
