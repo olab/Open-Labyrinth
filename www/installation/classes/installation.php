@@ -209,8 +209,8 @@ class Installation {
             clearstatcache(TRUE);
         }
 
-        $temp['item'] = 'PHP 5.4.0 or newer';
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')){
+        $temp['item'] = 'PHP 5.5.0 or newer';
+        if (version_compare(PHP_VERSION, '5.5.0', '>=')){
             $temp['label'] = 'success';
             $temp['status'] = 'Yes';
         } else {
