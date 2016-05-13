@@ -36,6 +36,18 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_Map_Question_Response extends DB_ORM_Model
 {
+    const IS_CORRECT_CORRECT = 1;
+    const IS_CORRECT_NEUTRAL = 2;
+    const IS_CORRECT_INCORRECT = 0;
+
+    public static function getCorrectness()
+    {
+        return [
+            self::IS_CORRECT_CORRECT => 'Correct',
+            self::IS_CORRECT_NEUTRAL => 'Neutral',
+            self::IS_CORRECT_INCORRECT => 'Incorrect',
+        ];
+    }
 
     public function __construct()
     {

@@ -120,15 +120,15 @@ class Controller_QuestionManager extends Controller_Base {
             $this->templateData['attributes'] = $this->createAttributesArray($this->templateData['question']);
             $this->templateData['correctness'] = [
                 [
-                    'value' => 1,
+                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_CORRECT,
                     'name' => __('Correct'),
                 ],
                 [
-                    'value' => 2,
+                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL,
                     'name' => __('Neutral'),
                 ],
                 [
-                    'value' => 0,
+                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_INCORRECT,
                     'name' => __('Incorrect'),
                 ],
             ];
