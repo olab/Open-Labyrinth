@@ -301,6 +301,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
 
         return $result;
     }
+
     /**
      * @param $string
      * @return string
@@ -556,6 +557,14 @@ class Model_Leap_Map_Question extends Model_Leap_Base
         $this->is_private = Arr::get($values, 'is_private', false);
         $this->settings = json_encode(Arr::get($values, 'settingsJSON', []));
 
+        $external_source_id = trim(Arr::get($values, 'external_source_id', $this->external_source_id));
+
+        if (empty($external_source_id)) {
+            $external_source_id = null;
+        }
+
+        $this->external_source_id = $external_source_id;
+
         $this->save();
 
         DB_ORM::model('map_question_response')->updateResponses($this->id, $values);
@@ -763,6 +772,12 @@ class Model_Leap_Map_Question extends Model_Leap_Base
 
     private function saveResponceQuestion($mapId, $type, $values)
     {
+        $external_source_id = trim(Arr::get($values, 'external_source_id'));
+
+        if (empty($external_source_id)) {
+            $external_source_id = null;
+        }
+
         $newQuestionId = DB_ORM::insert('map_question')
             ->column('map_id', $mapId)
             ->column('entry_type_id', $type->id)
@@ -777,6 +792,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             ->column('type_display', (int)Arr::get($values, 'typeDisplay', 0))
             ->column('is_private', (int)Arr::get($values, 'is_private', false) ? 1 : 0)
             ->column('settings', json_encode(Arr::get($values, 'settingsJSON', [])))
+            ->column('external_source_id', $external_source_id)
             ->execute();
 
         $responses = array();

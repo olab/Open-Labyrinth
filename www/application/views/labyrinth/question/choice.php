@@ -219,6 +219,23 @@ $stem       = $q ? $templateData['question']->stem : ''?>
 
     </fieldset>
 
+    <hr>
+
+    <h3><?php echo __('Responses') ?></h3>
+
+    <div class="control-group">
+        <label for="external_source_id" class="control-label"><?php echo __('Google Spreadsheet ID'); ?></label>
+        <div class="controls">
+            <input
+                id="external_source_id"
+                name="external_source_id"
+                value="<?php if(isset($templateData['question'])) echo $templateData['question']->external_source_id ?>"
+                maxlength="255"
+                style="width:400px;"
+            >
+        </div>
+    </div>
+
     <div class="question-response-panel-group" id="accordion"><?php
         if(isset($templateData['question']) AND count($templateData['question']->responses) > 0) {
             $responseIndex = 1;
