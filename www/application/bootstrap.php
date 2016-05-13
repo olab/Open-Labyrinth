@@ -14,8 +14,10 @@ if (is_file(APPPATH . 'classes/kohana' . EXT)) {
     require SYSPATH . 'classes/kohana' . EXT;
 }
 
-$configPath = DOCROOT.'config.json';
-if (!file_exists($configPath)) throw new \ErrorException('File of configuration ('.$configPath.') not found.');
+$configPath = DOCROOT . 'config.json';
+if (!file_exists($configPath)) {
+    throw new \ErrorException('File of configuration (' . $configPath . ') not found.');
+}
 $config = file_get_contents($configPath);
 $config = json_decode($config, true);
 
@@ -88,7 +90,7 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  */
 Kohana::init(array(
     'base_url' => $config['base_url'],
-    'errors' => TRUE
+    'errors' => true
 ));
 
 Cookie::$path = Kohana::$base_url;
@@ -130,7 +132,7 @@ $modules = array(
 Kohana::modules($modules);
 $mods = Model_Leap_Vocabulary_Vocablet::getEnabled();
 
-$mods = array_merge( $modules,$mods);
+$mods = array_merge($modules, $mods);
 
 
 /**
@@ -168,10 +170,9 @@ Route::set('metadata', '<directory>(/<controller>(/<action>(/<id>)))',
 
 Route::set('rdf', '<controller>/<type>/<id>',
     array(
-        'controller'=>'resource|data'
+        'controller' => 'resource|data'
     )
-)
-;
+);
 
 Route::set('vocabulary_mappings', '<directory>(/<controller>(/<action>))',
     array(
