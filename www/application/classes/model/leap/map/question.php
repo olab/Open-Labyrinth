@@ -18,6 +18,10 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+use Google\Spreadsheet\DefaultServiceRequest;
+use Google\Spreadsheet\ServiceRequestFactory;
+use Google\Spreadsheet\SpreadsheetService;
+
 defined('SYSPATH') or die('No direct script access.');
 
 /**
@@ -40,6 +44,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $prompt
  * @property string $submit_text
  * @property string $settings
+ * @property string $external_source_id
  * @property Model_Leap_Map_Question_Response[]|DB_ResultSet $responses
  * @property Model_Leap_User_Response[]|DB_ResultSet $user_responses
  * @property Model_Leap_Map_Question[]|DB_ResultSet $subQuestions
@@ -157,6 +162,11 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 'nullable' => true,
                 'savable' => true,
             )),
+            'external_source_id' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
+                'nullable' => true,
+                'savable' => true,
+            )),
         );
 
         $this->relations = array(
@@ -215,10 +225,89 @@ class Model_Leap_Map_Question extends Model_Leap_Base
         return array('id');
     }
 
-
     public static function getAdminBaseUrl()
     {
         return URL::base(true) . 'questionManager/question/';
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasExternalResource()
+    {
+        $external_source_id = $this->external_source_id;
+
+        return !empty($external_source_id);
+    }
+
+    /**
+     * @return Model_Leap_Map_Question_Response[]
+     */
+    public function getExternalResponses()
+    {
+        $result = [];
+        $configArray = get_option('google_service_account_credentials');
+
+        if (empty($configArray)) {
+            return $result;
+        }
+
+        $client = new Google_Client();
+        $client->setAuthConfig($configArray);
+
+        $client->setApplicationName(APP_NAME);
+        $client->setScopes(['https://www.googleapis.com/auth/drive', 'https://spreadsheets.google.com/feeds']);
+
+        //$fileId = '1VTmfUkX3tXFlXFoY6frHKn695TPxvQdCEbx5XTXDz0Q';
+        $fileId = $this->external_source_id;
+
+        $tokenArray = $client->fetchAccessTokenWithAssertion();
+        $accessToken = $tokenArray["access_token"];
+
+        $serviceRequest = new DefaultServiceRequest($accessToken);
+        ServiceRequestFactory::setInstance($serviceRequest);
+
+        $service = new SpreadsheetService;
+        $spreadsheet = $service->getSpreadsheetById($fileId);
+        $worksheetFeed = $spreadsheet->getWorksheets();
+
+        /** @var \Google\Spreadsheet\Worksheet $worksheet */
+        $worksheet = $worksheetFeed[0];
+        $listFeed = $worksheet->getListFeed();
+
+        /** @var \Google\Spreadsheet\ListEntry $entry */
+        foreach ($listFeed->getEntries() as $entry) {
+
+            $values = $entry->getValues();
+
+            $response = new Model_Leap_Map_Question_Response;
+
+            $response->feedback = $this->sanitizeString($values['feedback']);
+            $response->response = $this->sanitizeString($values['response']);
+            $response->is_correct = (int)$values['iscorrect'];
+            $response->score = (int)$values['score'];
+            $response->order = (int)$values['order'];
+
+            $result[] = $response;
+        }
+
+        usort($result, function ($a, $b) {
+            if ($a->order == $b->order) {
+                return 0;
+            }
+
+            return ($a->order < $b->order) ? -1 : 1;
+        });
+
+        return $result;
+    }
+    /**
+     * @param $string
+     * @return string
+     */
+    protected function sanitizeString($string)
+    {
+        return htmlspecialchars($string);
     }
 
     public function getAdminUrl()

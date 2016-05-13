@@ -1,0 +1,2 @@
+ALTER TABLE `map_questions` ADD `external_source_id` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `order`;
+INSERT INTO `options` (`id`, `name`, `value`, `autoload`) VALUES (NULL, 'google_service_account_credentials', '', 'no');
