@@ -81,8 +81,11 @@ class Report_Poll_Map extends Report_Element
         $headerRow = $row;
         $row++;
 
-        $include_users = DB_ORM::select('webinar_user')->where('webinar_id', '=', $this->webinarId)->where('include_4R',
-            '=', 1)->query()->as_array();
+        $include_users = DB_ORM::select('webinar_user')
+            ->where('webinar_id', '=', $this->webinarId)
+            ->where('include_4R', '=', 1)
+            ->query()
+            ->as_array();
         $rowQuestionName = $row;
         $row++;
 
