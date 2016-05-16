@@ -141,6 +141,7 @@ class Report_SCT_Map extends Report_Element
                             ->where('question_id', '=', $question->id)
                             ->where('node_id', '=', $nodeId)
                             ->where('session_id', '=', $sessionObj->id)
+                            ->order_by('id', $this->latest ? 'DESC' : 'ASC')
                             ->limit(1)
                             ->query()
                             ->fetch(0);

@@ -124,6 +124,7 @@ class Report_Poll_Map extends Report_Element
                 $userResponseObj = DB_ORM::select('user_response')
                     ->where('question_id', '=', $multiQuestion->question->id)
                     ->where('session_id', '=', $sessionId)
+                    ->order_by('id', $this->latest ? 'DESC' : 'ASC')
                     ->limit(1)
                     ->query()
                     ->fetch(0);
