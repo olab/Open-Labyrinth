@@ -2,6 +2,58 @@
 
 class Model_Leap_Base extends DB_ORM_Model
 {
+    /**
+     * @var array
+     */
+    protected static $_static_cache = [];
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    final public static function staticCacheSet($key, $value)
+    {
+        static::$_static_cache[static::staticCacheGetKeyValue($key)] = $value;
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    final public static function staticCacheHas($key)
+    {
+        return isset(static::$_static_cache[static::staticCacheGetKeyValue($key)]);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    final public static function staticCacheGet($key)
+    {
+        if (static::staticCacheHas($key)) {
+            return static::$_static_cache[static::staticCacheGetKeyValue($key)];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param string $key
+     */
+    final public static function staticCacheForget($key)
+    {
+        unset(static::$_static_cache[static::staticCacheGetKeyValue($key)]);
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    private static function staticCacheGetKeyValue($key)
+    {
+        return $key;
+    }
 
     public function as_array($with_relations = false)
     {

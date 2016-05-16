@@ -231,6 +231,22 @@ class Model_Leap_Map_Question extends Model_Leap_Base
     }
 
     /**
+     * @return DB_ResultSet|Model_Leap_Map_Question_Response[]
+     */
+    public function getResponses()
+    {
+        if (!$this->hasExternalResource()) {
+            return $this->responses;
+        }
+
+        if (!static::staticCacheHas(__METHOD__)) {
+            static::staticCacheSet(__METHOD__, $this->getExternalResponses());
+        }
+
+        return static::staticCacheGet(__METHOD__);
+    }
+
+    /**
      * @return bool
      */
     public function hasExternalResource()
