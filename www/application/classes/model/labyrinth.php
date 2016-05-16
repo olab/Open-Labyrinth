@@ -619,20 +619,24 @@ class Model_Labyrinth extends Model
 
                     if (!empty($counter_id)) {
 
-                        $response = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($qID, $dropDownResponse);
+                        if ($question->hasExternalResource()) {
+                            $response = $question->getExternalResponseByValue($dropDownResponse);
+                        } else {
+                            $response = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($qID, $dropDownResponse);
+                        }
 
                         if (!empty($response)) {
                             $score = $response->score;
-                            $value = $this->getCounterValueFromString($question->counter->id, $counterString);
+                            $value = $this->getCounterValueFromString($counter_id, $counterString);
                             //get info for c_debug
-                            $c_debug[$question->counter->id]['previous_value'] = $value;
-                            $c_debug[$question->counter->id]['question_value'] = $score;
-                            $c_debug[$question->counter->id]['question_id'] = $qID;
+                            $c_debug[$counter_id]['previous_value'] = $value;
+                            $c_debug[$counter_id]['question_value'] = $score;
+                            $c_debug[$counter_id]['question_id'] = $qID;
 
-                            $countersFunc[$question->counter->id][] = $this->prepareCounterScoreString($score);
+                            $countersFunc[$counter_id][] = $this->prepareCounterScoreString($score);
 
                             $value = $this->calculateCounterFunction($value, $score);
-                            $counterString = $this->setCounterValueToString($question->counter->id, $counterString,
+                            $counterString = $this->setCounterValueToString($counter_id, $counterString,
                                 $value);
                         }
                     }
