@@ -58,4 +58,22 @@ class Controller_Options extends Controller_Base
         Session::instance()->set('success_message', 'Saved.');
         Request::initial()->redirect(URL::base() . 'options');
     }
+
+    public function action_all()
+    {
+        $this->templateData['center'] = View::factory('options/googleServiceAccountCredentials')
+            ->set('googleServiceAccountCredentials', get_option('google_service_account_credentials', '', false));
+        $this->template->set('templateData', $this->templateData);
+    }
+
+    public function action_saveAll()
+    {
+        $post = $this->request->post();
+        $googleServiceAccountCredentials = trim(Arr::get($post, 'google_service_account_credentials'));
+
+        update_option('google_service_account_credentials', $googleServiceAccountCredentials);
+
+        Session::instance()->set('success_message', 'Saved.');
+        Request::initial()->redirect(URL::base() . 'options/all');
+    }
 }

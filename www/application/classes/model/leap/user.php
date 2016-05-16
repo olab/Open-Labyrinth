@@ -46,6 +46,12 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User
 {
+    const TYPE_LEARNER = 1;
+    const TYPE_AUTHOR = 2;
+    const TYPE_REVIEWER = 3;
+    const TYPE_SUPERUSER = 4;
+    const TYPE_REMOTE_SERVICE = 5;
+    const TYPE_DIRECTOR = 6;
 
     public function __construct()
     {
@@ -602,6 +608,14 @@ class Model_Leap_User extends DB_ORM_Model implements Model_ACL_User
         $settings = json_decode($this->settings, true);
 
         return !empty($settings) ? $settings : array();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuperuser()
+    {
+        return ($this->type_id == self::TYPE_SUPERUSER);
     }
 }
 
