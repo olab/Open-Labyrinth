@@ -239,11 +239,11 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             return $this->responses;
         }
 
-        if (!static::staticCacheHas(__METHOD__)) {
-            static::staticCacheSet(__METHOD__, $this->getExternalResponses());
+        if (!$this->cacheHas(__METHOD__)) {
+            $this->cacheSet(__METHOD__, $this->getExternalResponses());
         }
 
-        return static::staticCacheGet(__METHOD__);
+        return $this->cacheGet(__METHOD__);
     }
 
     /**

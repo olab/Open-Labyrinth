@@ -1645,7 +1645,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                         }
                     } else {
                         if ($q_type == 'pcq') {
-                            if (count($question->responses) > 0) {
+                            if (count($question->getResponses()) > 0) {
 
                                 $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
 
