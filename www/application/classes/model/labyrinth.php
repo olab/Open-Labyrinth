@@ -1446,13 +1446,14 @@ class Model_Labyrinth extends Model
     public function question($questionId, $response, $questionStatus, $nodeId)
     {
         $returnStr = '';
+        /** @var Model_Leap_Map_Question $question */
         $question = DB_ORM::model('map_question', array((int)$questionId));
 
         if ($question) {
             /** @var Model_Leap_Map_Question_Response|null $responseObj */
             $responseObj = null;
             if (($question->type->value != 'text') AND ($question->type->value != 'area')) {
-                foreach ($question->responses as $resp) {
+                foreach ($question->getResponses() as $resp) {
                     if ($resp->id == $response) {
                         $responseObj = $resp;
                         break;

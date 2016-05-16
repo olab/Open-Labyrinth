@@ -380,7 +380,7 @@ function saveDropDownResponse(qid, value) {
     var URL = urlBase + 'renderLabyrinth/saveDropDownResponse/' + qid;
     
     $.post(URL, {value: value}).done(function (data) {
-        $('#AJAXresponse' + qid).html(data);
+        $('#AJAXResponseDropDown' + qid).html(data);
     });
 }
 

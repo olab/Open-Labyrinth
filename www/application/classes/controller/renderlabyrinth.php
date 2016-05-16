@@ -1036,10 +1036,14 @@ class Controller_RenderLabyrinth extends Controller_Template
         $questionId = $this->request->param('id', null);
         $response = trim(Arr::get($_POST, 'value', ''));
 
-        /** @var Model_Leap_Map_Question_Response|bool $responseObj */
-        $responseObj = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($questionId, $response);
         /** @var Model_Leap_Map_Question $question */
         $question = DB_ORM::model('Map_Question', array($questionId));
+
+        if ($question->hasExternalResource()) {
+            $responseObj = $question->getExternalResponseByValue($response);
+        } else {
+            $responseObj = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($questionId, $response);
+        }
 
         if (empty($responseObj) && !$question->isFreeTextAllowed()) {
             die('Free text not allowed. Please select item from Drop-down list.');
@@ -1878,13 +1882,13 @@ class Controller_RenderLabyrinth extends Controller_Template
                     Controller_RenderLabyrinth::addQuestionIdToSession($id);
                 } else {
                     if ($q_type == 'mcq') {
-                        if (count($question->responses)) {
+                        if (count($question->getResponses()) > 0) {
                             $userResponse = self::getMultipleResponse($sessionId, $id, $orderBy, self::$nodeId);
                             $displayType = ($question->type_display == 1) ? ' horizontal' : '';
                             $result = '<div class="questionResponces' . $displayType . '">';
                             $result .= '<ul class="navigation">';
                             $i = 1;
-                            foreach ($question->responses as $response) {
+                            foreach ($question->getResponses() as $response) {
                                 $result .= '<li>';
                                 $result .= '<span id="click' . $response->id . '"><input type="checkbox" class="lightning-choice" name="option-' . $id . '" data-question="' . $question->id . '" data-response="' . $response->id . '" data-tries="' . $question->num_tries . '" data-val="' . $response->response . '" ' . (in_array($response->response,
                                         $userResponse) ? 'checked' : '') . '/></span>';
@@ -1903,7 +1907,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                         }
                     } else {
                         if ($q_type == 'pcq') {
-                            if (count($question->responses)) {
+                            if (count($question->responses) > 0) {
 
                                 $userResponse = self::getPickResponse($sessionId, $id, $orderBy, self::$nodeId);
 
@@ -1912,7 +1916,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                                 $result .= '<ul class="navigation">';
                                 $i = 1;
 
-                                foreach ($question->responses as $response) {
+                                foreach ($question->getResponses() as $response) {
                                     $result .= '<li>';
                                     $result .= '<span id="click' . $response->id . '"><input type="radio" class="lightning-choice" name="option-' . $id . '" data-question="' . $question->id . '" data-response="' . $response->id . '" data-tries="' . $question->num_tries . '" data-val="' . $response->response . '" ' . ($userResponse == $response->response ? 'checked' : '') . '/></span>';
                                     $result .= '<span>' . $response->response . '</span>';

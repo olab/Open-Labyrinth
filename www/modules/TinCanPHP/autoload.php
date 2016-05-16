@@ -17,7 +17,7 @@
 
 if (file_exists('vendor/autoload.php')) {
     // prefer the composer autoloader
-    return require_once('vendor/autoload.php');
+    //return require_once('vendor/autoload.php'); //TODO: install package via composer to avoid this changes
 }
 
 spl_autoload_register(function($className) {

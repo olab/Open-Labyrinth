@@ -7,13 +7,13 @@ $submitText = ($question->submit_text != null) ? $question->submit_text : 'Submi
 ?>
 <select style="width:200px;" id="<?php echo $question_id_attribute ?>">
     <option value=""></option>
-    <?php foreach ($question->responses as $response) { ?>
+    <?php foreach ($question->getResponses() as $response) { ?>
         <option value="<?php echo $response->response ?>" <?php if($userResponse === $response->response) echo 'selected' ?>>
             <?php echo $response->response ?>
         </option>
     <?php } ?>
 </select>
-<div id="AJAXresponse<?php echo $question->id ?>"></div>
+<div id="AJAXResponseDropDown<?php echo $question->id ?>"></div>
 
 <?php if ($question->show_submit == 1) { ?>
 <span id="questionSubmit<?php echo $question->id ?>" style="display:none;font-size:12px">Answer has been sent.</span>

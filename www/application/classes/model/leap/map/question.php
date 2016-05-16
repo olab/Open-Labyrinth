@@ -257,6 +257,22 @@ class Model_Leap_Map_Question extends Model_Leap_Base
     }
 
     /**
+     * @param string $value
+     * @return Model_Leap_Map_Question_Response|null
+     */
+    public function getExternalResponseByValue($value)
+    {
+        foreach ($this->getExternalResponses() as $externalResponse) {
+            if ($externalResponse->response == $value) {
+                return $externalResponse;
+                break;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
      * @return Model_Leap_Map_Question_Response[]
      */
     public function getExternalResponses()
@@ -292,12 +308,13 @@ class Model_Leap_Map_Question extends Model_Leap_Base
         $listFeed = $worksheet->getListFeed();
 
         /** @var \Google\Spreadsheet\ListEntry $entry */
-        foreach ($listFeed->getEntries() as $entry) {
+        foreach ($listFeed->getEntries() as $key => $entry) {
 
             $values = $entry->getValues();
 
             $response = new Model_Leap_Map_Question_Response;
-
+            
+            $response->id = 1000000000 + $key + ($this->id * 500); // temporary id
             $response->feedback = $this->sanitizeString($values['feedback']);
             $response->response = $this->sanitizeString($values['response']);
             $response->is_correct = (int)$values['iscorrect'];
@@ -324,7 +341,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
      */
     protected function sanitizeString($string)
     {
-        return htmlspecialchars($string);
+        return trim(htmlspecialchars($string));
     }
 
     public function getAdminUrl()
