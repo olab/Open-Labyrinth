@@ -218,15 +218,19 @@ class Controller_ReportManager extends Controller_Base
                     Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID,
                     Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
                 ])) {
+                    
                     $this->templateData['responses'][] = $userResponse;
                     $answeredQuestions[$nodeId][] = $questionId;
+                    
                 } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_MCQ))) {
+                    
                     if (isset($multipleResponses[$questionId], $multipleResponses[$questionId][$nodeId])) {
                         foreach ($multipleResponses[$questionId][$nodeId] as $mcqUserResponse) {
                             $this->templateData['responses'][] = $mcqUserResponse;
                         }
                         $answeredQuestions[$nodeId][] = $questionId;
                     }
+                    
                 } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_TURK_TALK))) {
 
                     $responseArray = json_decode($userResponse->response, true);

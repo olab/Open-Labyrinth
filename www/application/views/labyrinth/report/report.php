@@ -201,6 +201,7 @@ if (isset($templateData['session'])) {
         </thead>
         <tbody><?php
         foreach ($templateData['responses'] as $response) {
+            /** @var Model_Leap_Map_Question $question */
             $question = $templateData['questions'][$response->question_id];
             $responseMap = array();
             $questionType = $question->type->value;
@@ -297,8 +298,8 @@ if (isset($templateData['session'])) {
             </td>
             <td><?php
                 $responseFeedback = '';
-                if (($questionType == 'pcq' OR $questionType == 'mcq') AND count($question->responses)) {
-                    foreach ($question->responses as $resp) {
+                if (($questionType == 'pcq' OR $questionType == 'mcq') AND count($question->responses) > 0) {
+                    foreach ($question->getResponses() as $resp) {
                         if ($user_response == $resp->response) {
                             $responseFeedback = $resp->feedback;
                         }
