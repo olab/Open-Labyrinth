@@ -71,7 +71,7 @@ class Controller_Options extends Controller_Base
         $post = $this->request->post();
         $googleServiceAccountCredentials = trim(Arr::get($post, 'google_service_account_credentials'));
 
-        update_option('google_service_account_credentials', $googleServiceAccountCredentials);
+        update_option('google_service_account_credentials', $googleServiceAccountCredentials, false);
 
         Session::instance()->set('success_message', 'Saved.');
         Request::initial()->redirect(URL::base() . 'options/all');
