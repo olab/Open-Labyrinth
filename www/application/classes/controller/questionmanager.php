@@ -21,27 +21,32 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Controller_QuestionManager extends Controller_Base {
+class Controller_QuestionManager extends Controller_Base
+{
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
         parent::before();
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base().'authoredLabyrinth'));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
-        $mapId = $this->request->param('id', NULL);
+    public function action_index()
+    {
+        $mapId = $this->request->param('id', null);
 
-        if ( ! $mapId ) Request::initial()->redirect(URL::base());
+        if (!$mapId) {
+            Request::initial()->redirect(URL::base());
+        }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-        $this->templateData['map']              = DB_ORM::model('map', array((int) $mapId));
-        $this->templateData['counters']         = DB_ORM::model('map_counter')->getCountersByMap($mapId);
-        $this->templateData['questions']        = DB_ORM::model('map_question')->getQuestionsByMap((int) $mapId);
-        $this->templateData['question_types']   = DB_ORM::model('map_question_type')->getAllTypes();
+        $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap($mapId);
+        $this->templateData['questions'] = DB_ORM::model('map_question')->getQuestionsByMap((int)$mapId);
+        $this->templateData['question_types'] = DB_ORM::model('map_question_type')->getAllTypes();
 
         if (Auth::instance()->get_user()->type->name == 'superuser') {
             $this->templateData['isSuperuser'] = true;
@@ -55,8 +60,10 @@ class Controller_QuestionManager extends Controller_Base {
             $ses->delete('warningMessage');
         }
 
-        $this->templateData['center'] = View::factory('labyrinth/question/view')->set('templateData', $this->templateData);
-        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/question/view')->set('templateData',
+            $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+            $this->templateData);
         $this->template->set('templateData', $this->templateData);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -65,32 +72,33 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_question()
     {
-        $mapId      = $this->request->param('id', 0);
-        $typeId     = $this->request->param('id2', 0);
+        $mapId = $this->request->param('id', 0);
+        $typeId = $this->request->param('id2', 0);
         $questionId = $this->request->param('id3', 0);
-        $map        = DB_ORM::model('map', array((int)$mapId));
-        $type       = DB_ORM::model('map_question_type', array((int) $typeId));
+        $map = DB_ORM::model('map', array((int)$mapId));
+        $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
-        if ( ! ($map AND $type)) {
+        if (!($map AND $type)) {
             Request::initial()->redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-        $this->templateData['map']          = DB_ORM::model('map', array((int)$mapId));
-        $this->templateData['type']         = DB_ORM::model('map_question_type', array((int) $typeId));
-        $this->templateData['counters']     = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-        $this->templateData['nodes']        = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
-        $this->templateData['validation']   = DB_ORM::model('Map_Question_Validation')->getRecord($questionId);
+        $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
+        $this->templateData['type'] = DB_ORM::model('map_question_type', array((int)$typeId));
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
+        $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int)$mapId);
+        $this->templateData['validation'] = DB_ORM::model('Map_Question_Validation')->getRecord($questionId);
 
-        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base().'labyrinthManager/global/'.$mapId));
-        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base().'questionManager/index/'.$mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
+        Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
 
         if ($questionId) {
             $questionObj = DB_ORM::model('map_question', array((int)$questionId));
 
             $this->templateData['question'] = $questionObj;
-            $this->templateData['used']     = count(DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU'));
+            $this->templateData['used'] = count(DB_ORM::model('map_node_reference')->getByElementType($questionId,
+                'QU'));
 
             if ($questionObj->settings) {
                 $jsonSettings = json_decode($questionObj->settings);
@@ -101,14 +109,15 @@ class Controller_QuestionManager extends Controller_Base {
                     $this->templateData['question']->settings = Arr::get($jsonSettings, 0, '');
                 }
             }
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId));
         } else {
-            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base().'questionManager/question/'.$mapId.'/'.$typeId));
+            Breadcrumbs::add(Breadcrumb::factory()->set_title(__('New'))->set_url(URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId));
         }
 
         if ($type->value == 'area' OR $type->value == 'text' OR $type->value == 'cml') {
             $validation = DB_ORM::model('Map_Question_Validation');
-            $validators = array_merge($validation->one_parameter, $validation->two_parameter, $validation->three_parameter);
+            $validators = array_merge($validation->one_parameter, $validation->two_parameter,
+                $validation->three_parameter);
             ksort($validators);
             $this->templateData['validators'] = $validators;
         }
@@ -135,8 +144,10 @@ class Controller_QuestionManager extends Controller_Base {
             ],
         ];
 
-        $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
-        $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+        $this->templateData['center'] = View::factory('labyrinth/question/' . $type->template_name)->set('templateData',
+            $this->templateData);
+        $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+            $this->templateData);
         $this->template->set('templateData', $this->templateData);
     }
 
@@ -156,64 +167,73 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_questionSJT()
     {
-        $post       = $this->request->post();
-        $stem       = Arr::get($post, 'stem', '');
-        $feedback   = Arr::get($post, 'feedback', '');
-        $score      = Arr::get($post, 'score', '');
-        $responses  = Arr::get($post, 'responses', '');
-        $mapId      = $this->request->param('id', 0);
+        $post = $this->request->post();
+        $stem = Arr::get($post, 'stem', '');
+        $feedback = Arr::get($post, 'feedback', '');
+        $score = Arr::get($post, 'score', '');
+        $responses = Arr::get($post, 'responses', '');
+        $mapId = $this->request->param('id', 0);
         $questionId = $this->request->param('id2', 0);
 
         if ($questionId) {
-            DB_ORM::update('Map_Question')->set('stem', $stem)->set('feedback', $feedback)->where('id', '=', $questionId)->execute();
+            DB_ORM::update('Map_Question')->set('stem', $stem)->set('feedback', $feedback)->where('id', '=',
+                $questionId)->execute();
             foreach ($responses as $index => $response) {
                 $isIndex = strpos($index, 'i');
                 if ($isIndex !== false) {
                     $responseId = str_replace('i', '', $index);
-                    DB_ORM::update('Map_Question_Response')->set('response', $response)->where('id', '=', $responseId)->execute();
+                    DB_ORM::update('Map_Question_Response')->set('response', $response)->where('id', '=',
+                        $responseId)->execute();
                     foreach (Arr::get($score, $index, array()) as $position => $points) {
-                        DB_ORM::update('SJTResponse')->set('points', $points)->where('position', '=', $position)->where('response_id', '=', $responseId)->execute();
+                        DB_ORM::update('SJTResponse')->set('points', $points)->where('position', '=',
+                            $position)->where('response_id', '=', $responseId)->execute();
                     }
                 }
             }
         } else {
-            $questionId = DB_ORM::insert('Map_Question')->column('map_id', $mapId)->column('stem', $stem)->column('entry_type_id', 8)->column('feedback', $feedback)->execute();
+            $questionId = DB_ORM::insert('Map_Question')->column('map_id', $mapId)->column('stem',
+                $stem)->column('entry_type_id', 8)->column('feedback', $feedback)->execute();
             foreach ($responses as $index => $response) {
-                $responseId = DB_ORM::insert('Map_Question_Response')->column('question_id', $questionId)->column('response', $response)->execute();
+                $responseId = DB_ORM::insert('Map_Question_Response')->column('question_id',
+                    $questionId)->column('response', $response)->execute();
                 foreach (Arr::get($score, $index, array()) as $position => $points) {
-                    DB_ORM::insert('SJTResponse')->column('response_id', $responseId)->column('position', $position)->column('points', $points)->execute();
+                    DB_ORM::insert('SJTResponse')->column('response_id', $responseId)->column('position',
+                        $position)->column('points', $points)->execute();
                 }
             }
         }
-        Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+        Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
     }
 
     public function action_questionPOST()
     {
-        $post             = $this->request->post();
-        $mapId            = $this->request->param('id', 0);
-        $postType         = Arr::get($post, 'question_type', null);
-        $validator        = Arr::get($post, 'validator', 'no validator');
-        $secondParameter  = Arr::get($post, 'second_parameter');
-        $errorMessage     = Arr::get($post, 'error_message');
-        $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
-        $questionId       = $this->request->param('id3', 0);
-        $map              = DB_ORM::model('map', array((int)$mapId));
-        $type             = DB_ORM::model('map_question_type', array((int)$typeId));
+        $post = $this->request->post();
+        $mapId = $this->request->param('id', 0);
+        $postType = Arr::get($post, 'question_type', null);
+        $validator = Arr::get($post, 'validator', 'no validator');
+        $secondParameter = Arr::get($post, 'second_parameter');
+        $errorMessage = Arr::get($post, 'error_message');
+        $typeId = ($postType != null) ? $postType : $this->request->param('id2', 0);
+        $questionId = $this->request->param('id3', 0);
+        $map = DB_ORM::model('map', array((int)$mapId));
+        $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
-        if ( ! ($post AND $map AND $type)) Request::initial()->redirect(URL::base());
+        if (!($post AND $map AND $type)) {
+            Request::initial()->redirect(URL::base());
+        }
 
         $post['settings'] = json_encode(array(Arr::get($post, 'settings', ''), Arr::get($post, 'isCorrect', 0)));
 
         if ($questionId) {
             $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
-            $private    = Arr::get($post, 'is_private');
+            $private = Arr::get($post, 'is_private');
 
             if ($references AND $private) {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
-                $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
-                $post['is_private'] = FALSE;
+                $ses->set('warningMessage',
+                    'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
+                $post['is_private'] = false;
             }
 
             DB_ORM::model('map_question')->updateQuestion($questionId, $type, $post);
@@ -223,42 +243,46 @@ class Controller_QuestionManager extends Controller_Base {
 
         $validator == 'no validator'
             ? DB_ORM::model('Map_Question_Validation')->deleteByQuestionId($questionId)
-            : DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter, $errorMessage);
+            : DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter,
+            $errorMessage);
 
-        Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+        Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
     }
 
     public function action_questionGridPOST()
     {
-        $post             = $this->request->post();
-        $mapId            = $this->request->param('id', 0);
-        $postType         = Arr::get($post, 'question_type', null);
-        $existingSubQuestions      = Arr::get($post, 'existingSubQuestions', []);
-        $existingSubQuestionsOrder      = Arr::get($post, 'existingSubQuestionsOrder', []);
-        $subQuestions      = Arr::get($post, 'subQuestions', []);
-        $subQuestionsOrder      = Arr::get($post, 'subQuestionsOrder', []);
-        $responses        = Arr::get($post, 'responses', []);
-        $responsesOrder        = Arr::get($post, 'responsesOrder', []);
-        $goToAttributes        = Arr::get($post, 'goToAttributes', false);
-        $existingResponses       = Arr::get($post, 'existingResponses', []);
-        $existingResponsesOrder       = Arr::get($post, 'existingResponsesOrder', []);
-        $attributes      = Arr::get($post, 'attributes', []);
-        $typeId           = ($postType != null) ? $postType : $this->request->param('id2', 0);
-        $questionId       = $this->request->param('id3', 0);
-        $map              = DB_ORM::model('map', array((int)$mapId));
-        $type             = DB_ORM::model('map_question_type', array((int)$typeId));
+        $post = $this->request->post();
+        $mapId = $this->request->param('id', 0);
+        $postType = Arr::get($post, 'question_type', null);
+        $existingSubQuestions = Arr::get($post, 'existingSubQuestions', []);
+        $existingSubQuestionsOrder = Arr::get($post, 'existingSubQuestionsOrder', []);
+        $subQuestions = Arr::get($post, 'subQuestions', []);
+        $subQuestionsOrder = Arr::get($post, 'subQuestionsOrder', []);
+        $responses = Arr::get($post, 'responses', []);
+        $responsesOrder = Arr::get($post, 'responsesOrder', []);
+        $goToAttributes = Arr::get($post, 'goToAttributes', false);
+        $existingResponses = Arr::get($post, 'existingResponses', []);
+        $existingResponsesOrder = Arr::get($post, 'existingResponsesOrder', []);
+        $attributes = Arr::get($post, 'attributes', []);
+        $typeId = ($postType != null) ? $postType : $this->request->param('id2', 0);
+        $questionId = $this->request->param('id3', 0);
+        $map = DB_ORM::model('map', array((int)$mapId));
+        $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
-        if ( ! ($post AND $map AND $type)) Request::initial()->redirect(URL::base());
+        if (!($post AND $map AND $type)) {
+            Request::initial()->redirect(URL::base());
+        }
 
         if (!empty($questionId)) {
             $references = DB_ORM::model('map_node_reference')->getNotParent($mapId, $questionId, 'QU');
-            $private    = Arr::get($post, 'is_private');
+            $private = Arr::get($post, 'is_private');
 
             if ($references AND $private) {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
-                $ses->set('warningMessage', 'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
-                $post['is_private'] = FALSE;
+                $ses->set('warningMessage',
+                    'The question wasn\'t set to private. The selected question is used in the following labyrinths:');
+                $post['is_private'] = false;
             }
 
             /** @var Model_Leap_Map_Question $question */
@@ -298,7 +322,7 @@ class Controller_QuestionManager extends Controller_Base {
                 ->execute();
         }
 
-        if(empty($questionId) || !is_numeric($questionId)){
+        if (empty($questionId) || !is_numeric($questionId)) {
             throw new Exception('Invalid Question id');
         }
 
@@ -337,7 +361,7 @@ class Controller_QuestionManager extends Controller_Base {
         //end save attributes
 
         //save sub-questions
-        foreach ($existingSubQuestions as $subQuestion_id => $subQuestion_value){
+        foreach ($existingSubQuestions as $subQuestion_id => $subQuestion_value) {
             DB_ORM::update('Map_Question')
                 ->where('id', '=', $subQuestion_id)
                 ->set('stem', $subQuestion_value)
@@ -348,12 +372,12 @@ class Controller_QuestionManager extends Controller_Base {
         $delete_query = DB_ORM::delete('Map_Question')
             ->where('parent_id', '=', $questionId);
         $subQuestionsIds = array_keys($existingSubQuestions);
-        if(!empty($subQuestionsIds)){
+        if (!empty($subQuestionsIds)) {
             $delete_query->where('id', 'NOT IN', $subQuestionsIds);
         }
         $delete_query->execute();
 
-        foreach ($subQuestions as $key => $subQuestion_value){
+        foreach ($subQuestions as $key => $subQuestion_value) {
             DB_ORM::insert('Map_Question')
                 ->column('stem', $subQuestion_value)
                 ->column('parent_id', $questionId)
@@ -363,7 +387,7 @@ class Controller_QuestionManager extends Controller_Base {
         //end save sub-questions
 
         //save responses
-        foreach ($existingResponses as $response_id => $response_value){
+        foreach ($existingResponses as $response_id => $response_value) {
             DB_ORM::update('Map_Question_Response')
                 ->where('id', '=', $response_id)
                 ->set('response', $response_value)
@@ -374,12 +398,12 @@ class Controller_QuestionManager extends Controller_Base {
         $delete_query = DB_ORM::delete('Map_Question_Response')
             ->where('question_id', '=', $questionId);
         $response_ids = array_keys($existingResponses);
-        if(!empty($response_ids)){
+        if (!empty($response_ids)) {
             $delete_query->where('id', 'NOT IN', $response_ids);
         }
         $delete_query->execute();
 
-        foreach ($responses as $key => $response){
+        foreach ($responses as $key => $response) {
             DB_ORM::insert('Map_Question_Response')
                 ->column('response', $response)
                 ->column('question_id', $questionId)
@@ -388,7 +412,7 @@ class Controller_QuestionManager extends Controller_Base {
         }
         //end save responses
 
-        $redirectUrl = URL::base().'questionManager/question/'.$mapId.'/'.$typeId.'/'.$questionId;
+        $redirectUrl = URL::base() . 'questionManager/question/' . $mapId . '/' . $typeId . '/' . $questionId;
         if ($goToAttributes) {
             $redirectUrl .= '#goToAttributes';
         }
@@ -397,20 +421,20 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_deleteQuestion()
     {
-        $mapId      = $this->request->param('id', NULL);
-        $questionId = $this->request->param('id2', NULL);
+        $mapId = $this->request->param('id', null);
+        $questionId = $this->request->param('id2', null);
 
-        if ($mapId != NULL and $questionId != NULL)
-        {
+        if ($mapId != null and $questionId != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
             $references = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
-            if($references != NULL){
+            if ($references != null) {
                 $ses = Session::instance();
                 $ses->set('listOfUsedReferences', CrossReferences::getListReferenceForView($references));
-                $ses->set('warningMessage', 'The question wasn\'t deleted. The selected question is used in the following labyrinths:');
+                $ses->set('warningMessage',
+                    'The question wasn\'t deleted. The selected question is used in the following labyrinths:');
             } else {
-                DB_ORM::model('map_question', array((int) $questionId))->delete();
+                DB_ORM::model('map_question', array((int)$questionId))->delete();
                 DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
             }
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
@@ -421,21 +445,22 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_duplicateQuestion()
     {
-        $mapId      = $this->request->param('id', null);
+        $mapId = $this->request->param('id', null);
         $questionId = $this->request->param('id2', null);
 
-        if ($mapId AND $questionId)
-        {
+        if ($mapId AND $questionId) {
             DB_ORM::model('map_question')->duplicateQuestion($questionId);
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_copyQuestion() {
+    public function action_copyQuestion()
+    {
         $mapId = $this->request->param('id', null);
 
-        if($mapId != null && $_POST != null) {
+        if ($mapId != null && $_POST != null) {
             DB_ORM::model('map_question')->copyQuestion($mapId, $_POST);
             Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
@@ -443,7 +468,7 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
 
-    public function action_deleteResponseSCT ()
+    public function action_deleteResponseSCT()
     {
         $idResponse = $this->request->param('id');
         DB_ORM::delete('Map_Question_Response')->where('id', '=', $idResponse)->execute();
@@ -452,16 +477,16 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_globalQuestions()
     {
-        $mapId = $this->request->param('id', NULL);
+        $mapId = $this->request->param('id', null);
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
         if ($mapId) {
-            $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+            $this->templateData['map'] = DB_ORM::model('map', array((int)$mapId));
 
             $allTypes = DB_ORM::model('map_question_type')->getAllTypes();
             $array = array();
-            foreach($allTypes as $key=>$type){
+            foreach ($allTypes as $key => $type) {
                 $array[$key]['id'] = $type->id;
                 $array[$key]['title'] = $type->title;
             }
@@ -473,8 +498,10 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->templateData['isSuperuser'] = true;
             }
 
-            $this->templateData['center'] = View::factory('labyrinth/question/global')->set('templateData', $this->templateData);
-            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
+            $this->templateData['center'] = View::factory('labyrinth/question/global')->set('templateData',
+                $this->templateData);
+            $this->templateData['left'] = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData',
+                $this->templateData);
             $this->template->set('templateData', $this->templateData);
 
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
@@ -486,14 +513,14 @@ class Controller_QuestionManager extends Controller_Base {
 
     public function action_exportQuestion()
     {
-        $mapId      = $this->request->param('id', NULL);
-        $questionId = $this->request->param('id2', NULL);
+        $mapId = $this->request->param('id', null);
+        $questionId = $this->request->param('id2', null);
         if ($mapId AND $questionId) {
-            $rand       = uniqid();
-            $tmpFolder  = 'tmp/'.$rand.'/';
+            $rand = uniqid();
+            $tmpFolder = 'tmp/' . $rand . '/';
             if (mkdir($tmpFolder)) {
-                $questionName = 'question_'.$rand.'.xml';
-                $responseName = 'response_'.$rand.'.xml';
+                $questionName = 'question_' . $rand . '.xml';
+                $responseName = 'response_' . $rand . '.xml';
                 $question = DB_ORM::model('map_question')->getQuestionById($questionId);
                 $question[0]['name_file'] = $questionName;
                 $this->createXMLFile($tmpFolder, $questionName, $question);
@@ -502,16 +529,16 @@ class Controller_QuestionManager extends Controller_Base {
                 $this->createZipArchive($tmpFolder, $rand);
                 $this->removeDirectory($tmpFolder);
 
-                $zipFile = 'tmp/'.$rand.'.zip';
+                $zipFile = 'tmp/' . $rand . '.zip';
                 header("Cache-Control: public");
                 header("Content-Description: File Transfer");
-                header("Content-Disposition: attachment; filename=".$question[0]['stem'].'.zip');
+                header("Content-Disposition: attachment; filename=" . $question[0]['stem'] . '.zip');
                 header("Content-Type: application/zip");
                 header("Content-Transfer-Encoding: binary");
-                readfile('tmp/'.$rand.'.zip');
+                readfile('tmp/' . $rand . '.zip');
                 unlink($zipFile);
             } else {
-                Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+                Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
             }
         } else {
             Request::initial()->redirect(URL::base());
@@ -520,26 +547,30 @@ class Controller_QuestionManager extends Controller_Base {
 
     private function createZipArchive($folderPath, $name)
     {
-        $dest = 'tmp/'.$name.'.zip';
+        $dest = 'tmp/' . $name . '.zip';
         $zip = new ZipArchive();
 
         if ($h = opendir($folderPath)) {
             if ($zip->open($dest, ZIPARCHIVE::CREATE)) {
                 while (false !== ($f = readdir($h))) {
-                    if (strstr($f, '.') AND file_exists($folderPath . '/' . $f) AND strcmp($f, '.') != 0 AND strcmp($f, '..') != 0) {
-                        $zip->addFile($folderPath.'/'.$f, $f);
+                    if (strstr($f, '.') AND file_exists($folderPath . '/' . $f) AND strcmp($f, '.') != 0 AND strcmp($f,
+                            '..') != 0
+                    ) {
+                        $zip->addFile($folderPath . '/' . $f, $f);
                     }
                 }
             }
             closedir($h);
         }
         $zip->close();
+
         return true;
     }
 
-    private function removeDirectory($dir) {
-        if ($objs = glob($dir."/*")) {
-            foreach($objs as $obj) {
+    private function removeDirectory($dir)
+    {
+        if ($objs = glob($dir . "/*")) {
+            foreach ($objs as $obj) {
                 is_dir($obj) ? removeDirectory($obj) : unlink($obj);
             }
         }
@@ -548,12 +579,12 @@ class Controller_QuestionManager extends Controller_Base {
 
     private function createXMLFile($path, $name, $array)
     {
-        if (count($array)){
+        if (count($array)) {
             $xml = new SimpleXMLElement('<xml />');
             $arrayXml = $xml->addChild($name);
             $this->createXMLTree($arrayXml, $name, $array);
 
-            $filePath =  $path . $name;
+            $filePath = $path . $name;
             $f = fopen($filePath, 'w');
             if (function_exists('dom_import_simplexml')) {
                 $dom = dom_import_simplexml($xml)->ownerDocument;
@@ -562,7 +593,8 @@ class Controller_QuestionManager extends Controller_Base {
             } else {
                 $xmlObject = $xml;
             }
-            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $xmlObject->saveXML());
+            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>',
+                $xmlObject->saveXML());
             fwrite($f, $outputXML);
             fclose($f);
         }
@@ -570,12 +602,12 @@ class Controller_QuestionManager extends Controller_Base {
 
     private function createXMLTree($xml, $name, $array)
     {
-        if (count($array)){
-            foreach($array as $key => $value){
-                if(is_array($value)){
-                    $this->createXMLTree($xml->addChild($name.'_'.$key), $name.'_'.$key, $value);
-                }else {
-                    if ( ! is_numeric($value)) {
+        if (count($array)) {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $this->createXMLTree($xml->addChild($name . '_' . $key), $name . '_' . $key, $value);
+                } else {
+                    if (!is_numeric($value)) {
                         $value = base64_encode($value);
                     }
                     $xml->addChild($key, $value);
@@ -584,47 +616,50 @@ class Controller_QuestionManager extends Controller_Base {
         }
     }
 
-    private function mergeArraysFromDB($rootElements, $model, $key = 'id'){
+    private function mergeArraysFromDB($rootElements, $model, $key = 'id')
+    {
         $elementsArray = array();
-        if (count($rootElements) > 0){
-            foreach($rootElements as $element){
+        if (count($rootElements) > 0) {
+            foreach ($rootElements as $element) {
                 $array = DB_ORM::model($model)->exportMVP($element[$key]);
-                if (count($array) > 0){
+                if (count($array) > 0) {
                     $elementsArray = array_merge($elementsArray, $array);
                 }
             }
         }
+
         return $elementsArray;
     }
 
-    public function action_importQuestion(){
-        $mapId        = $this->request->param('id', NULL);
-        $questionFile = base64_decode($this->request->param('id2', NULL));
-        if ($mapId){
-            if (file_exists('global/questions/'.$questionFile)){
-                $response     = array();
-                $questions    = $this->getFieldsArray('global/questions/', 'question');
-                $xmlResponse  = explode('_',$questionFile);
-                $xmlResponse  = explode('.',$xmlResponse[1]);
-                $responseFile = 'response_'.$xmlResponse[0].'.xml';
+    public function action_importQuestion()
+    {
+        $mapId = $this->request->param('id', null);
+        $questionFile = base64_decode($this->request->param('id2', null));
+        if ($mapId) {
+            if (file_exists('global/questions/' . $questionFile)) {
+                $response = array();
+                $questions = $this->getFieldsArray('global/questions/', 'question');
+                $xmlResponse = explode('_', $questionFile);
+                $xmlResponse = explode('.', $xmlResponse[1]);
+                $responseFile = 'response_' . $xmlResponse[0] . '.xml';
 
-                if (is_file('global/questions/'.$responseFile)){
-                    $xmlFile    = file_get_contents('global/questions/'.$responseFile);
-                    $responses  = simplexml_load_string($xmlFile);
-                    $json       = json_encode($responses);
-                    $array      = json_decode($json, true);
-                    foreach (Arr::get($array, $responseFile, array()) as $value){
-                            $response[] = $value;
+                if (is_file('global/questions/' . $responseFile)) {
+                    $xmlFile = file_get_contents('global/questions/' . $responseFile);
+                    $responses = simplexml_load_string($xmlFile);
+                    $json = json_encode($responses);
+                    $array = json_decode($json, true);
+                    foreach (Arr::get($array, $responseFile, array()) as $value) {
+                        $response[] = $value;
                     }
                 }
 
-                foreach ($questions as $question){
-                    if (base64_decode($question->name_file) == $questionFile){
+                foreach ($questions as $question) {
+                    if (base64_decode($question->name_file) == $questionFile) {
                         DB_ORM::model('map_question')->importQuestion($question, $response);
                     }
                 }
             }
-            Request::initial()->redirect(URL::base().'questionManager/index/'.$mapId);
+            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
             Request::initial()->redirect(URL::base());
         }
@@ -634,31 +669,32 @@ class Controller_QuestionManager extends Controller_Base {
     {
         $dataArray = array();
         if (is_dir($dir)) {
-            $listOfFile       = scandir($dir);
+            $listOfFile = scandir($dir);
             $listFileQuestion = array();
 
-            foreach ($listOfFile as $file){
+            foreach ($listOfFile as $file) {
                 $part = explode('_', $file);
-                if($part[0] == $name){
+                if ($part[0] == $name) {
                     $listFileQuestion[] = $file;
                 }
             }
 
             $data = array();
-            foreach($listFileQuestion as $file){
-                $xmlFile = file_get_contents($dir.$file);
-                $ob      = simplexml_load_string($xmlFile);
-                foreach($ob as $files){
+            foreach ($listFileQuestion as $file) {
+                $xmlFile = file_get_contents($dir . $file);
+                $ob = simplexml_load_string($xmlFile);
+                foreach ($ob as $files) {
                     $data[] = $files;
                 }
             }
 
-            foreach($data as $key=>$tags){
-                foreach($tags as $tag){
+            foreach ($data as $key => $tags) {
+                foreach ($tags as $tag) {
                     $dataArray[$key] = $tag;
                 }
             }
         }
+
         return $dataArray;
     }
 
