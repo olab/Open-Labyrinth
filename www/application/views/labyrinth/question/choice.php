@@ -228,7 +228,8 @@ $correctness = $templateData['correctness'];
 
     <?php include DOCROOT . 'application/views/labyrinth/question/_googleServiceAccountCredentials.php'?>
 
-    <div class="question-response-panel-group" id="accordion"><?php
+    <div class="question-response-panel-group" id="accordion">
+        <?php
         if(isset($templateData['question']) AND count($templateData['question']->responses) > 0) {
             $responseIndex = 1;
 
@@ -240,63 +241,50 @@ $correctness = $templateData['correctness'];
                 $jsonResponse .= '"correctness": "' . $response->is_correct . '", ';
                 $jsonResponse .= '"score": "' . $response->score . '", ';
                 $jsonResponse .= '"order": "' . $response->order . '"';
-                $jsonResponse .= '}';?>
+                $jsonResponse .= '}';
+
+                ?>
+
             <div class="panel sortable">
                 <input type="hidden" name="responses[]" value='<?php echo $jsonResponse; ?>'/>
-                <div class="panel-heading response-labels" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#responseCollapse_<?php echo $response->id; ?>">
-                    <label for="response_<?php echo $response->id; ?>"><?php echo __('Response'); ?></label>
+                <div class="panel-heading response-labels">
+                    <?php echo __('Response'); ?>
                     <input type="text" class="response-input" id="response_<?php echo $response->id; ?>" value="<?php echo $response->response; ?>">
-                    Feedback<input type="text" value="<?php echo $response->feedback; ?>" readonly>
-                    Correctness<input type="text" value="<?php if ($response->is_correct == 1) echo 'Correct'; elseif ($response->is_correct == 0) echo 'Incorrect'; else echo 'Neutral'; ?>" readonly>
+
+                    <?php echo __('Feedback'); ?>
+                    <input autocomplete="off" class="feedback-input" type="text" id="feedback_<?php echo $response->id; ?>" name="feedback_<?php echo $response->id; ?>" value="<?php echo $response->feedback; ?>"/>
+
+                    <?php echo __('Correctness'); ?>
+                    <select class="correctness-select"  id="correctness_<?php echo $response->id; ?>" name="correctness_<?php echo $response->id; ?>">
+                        <option value="<?php echo Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL?>">
+                            - Select -
+                        </option>
+                        <?php foreach ($correctness as $variant) { ?>
+                            <option id="correctness<?php echo $variant['value']?>_<?php echo $response->id; ?>" value="<?php echo $variant['value']?>" <?php if($response->is_correct == $variant['value']) echo 'selected'; ?>>
+                                <?php echo __($variant['name']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+
+                    <?php echo __('Score'); ?>
+                    <select class="score-select number-select" id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
+                        <?php for ($j = -10; $j <= 10; $j++) { ?>
+                            <option value="<?php echo $j; ?>" <?php echo ($response->score == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
+                        <?php } ?>
+                    </select>
+
+                    <?php echo __('Order'); ?>
+                    <select class="response-order-select number-select" id="order_<?php echo $response->id; ?>" name="order_<?php echo $response->id; ?>">
+                        <?php for ($j = 1; $j <= count($templateData['question']->responses); $j++) { ?>
+                            <option value="<?php echo $j; ?>" <?php echo ($responseIndex == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
+                        <?php } ?>
+                    </select>
+
                     <button type="button" class="btn-remove-response btn btn-danger btn-small"><i class="icon-trash"></i></button>
                 </div>
-                <div id="responseCollapse_<?php echo $response->id; ?>" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <div class="control-group">
-                            <label for="feedback_<?php echo $response->id; ?>" class="control-label"><?php echo __('Feedback'); ?></label>
-                            <div class="controls"><input autocomplete="off" class="feedback-input" type="text" id="feedback_<?php echo $response->id; ?>" name="feedback_<?php echo $response->id; ?>" value="<?php echo $response->feedback; ?>"/></div>
-                        </div>
+            </div>
 
-                        <div class="control-group">
-                            <label for="correctness_<?php echo $response->id; ?>" class="control-label"><?php echo __('Correctness'); ?></label>
-                            <div class="controls">
-                                <select class="correctness-select"  id="correctness_<?php echo $response->id; ?>" name="correctness_<?php echo $response->id; ?>">
-                                    <option value="<?php echo Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL?>">
-                                        - Select -
-                                    </option>
-                                    <?php foreach ($correctness as $variant) { ?>
-                                        <option id="correctness<?php echo $variant['value']?>_<?php echo $response->id; ?>" value="<?php echo $variant['value']?>" <?php if($response->is_correct == $variant['value']) echo 'selected'; ?>>
-                                            <?php echo __($variant['name']); ?>
-                                        </option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="score_<?php echo $response->id; ?>" class="control-label"><?php echo __('Score'); ?></label>
-                            <div class="controls">
-                                <select class="score-select" id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
-                                    <?php for ($j = -10; $j <= 10; $j++) { ?>
-                                        <option value="<?php echo $j; ?>" <?php echo ($response->score == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="order_<?php echo $response->id; ?>" class="control-label"><?php echo __('Order'); ?></label>
-                            <div class="controls">
-                                <select class="response-order-select" id="order_<?php echo $response->id; ?>" name="order_<?php echo $response->id; ?>">
-                                    <?php for ($j = 1; $j <= count($templateData['question']->responses); $j++) { ?>
-                                        <option value="<?php echo $j; ?>" <?php echo ($responseIndex == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div><?php
+                <?php
             $responseIndex++;
             }
         } ?>

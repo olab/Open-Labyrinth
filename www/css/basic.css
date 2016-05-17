@@ -1439,7 +1439,6 @@ table.dataTable tr.even td[class*='sorting'] {
 
 .question-response-panel-group .panel .panel-heading {
     background-color: #fbfbfb;
-    cursor: pointer;
     padding: 5px 10px;
     border-radius: 4px;
 }
@@ -1474,6 +1473,14 @@ table.dataTable tr.even td[class*='sorting'] {
 
 .question-response-panel-group .panel-collapse .panel-body .control-group .controls {
     margin-left: 110px;
+}
+
+.question-response-panel-group select {
+    width:120px;
+}
+
+.number-select,select.number-select {
+    width:80px;
 }
 
 .question-response-draggable-panel-group .response-panel {

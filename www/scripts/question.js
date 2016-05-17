@@ -47,37 +47,18 @@ $(function () {
             orderOptions = generateOrderListOptions(),
             html = "<div class=\"panel sortable\">" +
                 "<input type=\"hidden\" name=\"responses[]\" value=\"\"/>" +
-                "<div class=\"panel-heading\" class=\"accordion-toggle\" data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#responseCollapse_" + newId + "\">" +
-                "<label for=\"response_" + newId + "\">Response</label>" +
-                "<input type=\"text\" class=\"response-input\" id=\"response_" + newId + "\" value=\"\"> " +
-                "<button type=\"button\" class=\"btn-remove-response btn btn-danger btn-small\"><i class=\"icon-trash\"></i></button>" +
-                "</div>" +
-                "<div id=\"responseCollapse_" + newId + "\" class=\"panel-collapse collapse\">" +
-                "<div class=\"panel-body\">" +
-                "<div class=\"control-group\">" +
-                "<label for=\"feedback_" + newId + "\" class=\"control-label\">Feedback</label>" +
-                "<div class=\"controls\"><input autocomplete=\"off\" class=\"feedback-input\" type=\"text\" id=\"feedback_" + newId + "\" name=\"feedback_" + newId + "\" value=\"\"/></div>" +
-                "</div>" +
-
-                "<div class=\"control-group\">" +
-                "<label for=\"correctness_" + newId + "\" class=\"control-label\">Correctness</label>" +
-                "<div class=\"controls\">" +
+                "<div class=\"panel-heading\">" +
+                "Response " +
+                "<input type=\"text\" class=\"response-input\" id=\"response_" + newId + "\" value=\"\">" +
+                " Feedback " +
+                "<input autocomplete=\"off\" class=\"feedback-input\" type=\"text\" id=\"feedback_" + newId + "\" name=\"feedback_" + newId + "\" value=\"\"/>" +
+                " Correctness " +
                 "<select class=\"correctness-select\" id=\"correctness_" + newId + "\" name=\"correctness_" + newId + "\">" + correctnessOptions + "</select>" +
-                "</div>" +
-                "</div>" +
-
-                "<div class=\"control-group\">" +
-                "<label for=\"score_" + newId + "\" class=\"control-label\">Score</label>" +
-                "<div class=\"controls\"><select autocomplete=\"off\" class=\"score-select\" id=\"score_\" name=\"score_\">" + scoreOptions + "</select></div>" +
-                "</div>" +
-
-                "<div class=\"control-group\">" +
-                "<label for=\"order_" + newId + "\" class=\"control-label\">Order</label>" +
-                "<div class=\"controls\">" +
+                " Score " +
+                "<select autocomplete=\"off\" class=\"score-select\" id=\"score_\" name=\"score_\">" + scoreOptions + "</select>" +
+                " Order " +
                 "<select class=\"response-order-select\" id=\"order_" + newId + "\" name=\"order_" + newId + "\">" + orderOptions + "</select>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
+                "<button type=\"button\" class=\"btn-remove-response btn btn-danger btn-small\"><i class=\"icon-trash\"></i></button>" +
                 "</div>" +
                 "</div>";
 
