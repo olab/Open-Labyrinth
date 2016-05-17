@@ -74,6 +74,7 @@ class Policy_Access extends Policy {
         array('controller' => 'backup', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'ltimanager', 'action' => 'index', 'isFullController' => true),
         array('controller' => 'UpdateDatabase', 'action' => 'index', 'isFullController' => true),
+        array('controller' => 'options', 'action' => 'all'),
     );
 
     private $reviewerRules = array(
