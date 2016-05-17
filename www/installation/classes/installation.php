@@ -228,26 +228,6 @@ class Installation
         }
         $array[] = $temp;
 
-        $temp['item'] = 'Mod-rewrite';
-
-        if (function_exists('apache_get_modules')) {
-            $mod_rewrite_enabled = in_array('mod_rewrite', apache_get_modules());
-        } else {
-            $mod_rewrite_env = getenv('HTTP_MOD_REWRITE');
-            $mod_rewrite_enabled = (!empty($mod_rewrite_env) && strtolower($mod_rewrite_env) == 'on') ? true : false;
-        }
-
-        if ($mod_rewrite_enabled) {
-            $temp['label'] = 'success';
-            $temp['status'] = 'Yes';
-        } else {
-            $temp['label'] = 'important';
-            $temp['status'] = 'No';
-            $status = false;
-        }
-        $array[] = $temp;
-
-
         $temp['item'] = 'System Directory';
         if (is_dir(SYSPATH) AND is_file(SYSPATH . 'classes/kohana' . EXT)) {
             $temp['label'] = 'success';
