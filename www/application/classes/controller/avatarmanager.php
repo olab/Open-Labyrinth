@@ -319,9 +319,14 @@ class Controller_AvatarManager extends Controller_Base {
             $this->createXMLTree($arrayXml, $array, $name);
             $filePath =  $path . $name.'.xml';
             $f = fopen($filePath, 'w');
-            $dom = dom_import_simplexml($xml)->ownerDocument;
-            $dom->formatOutput = true;
-            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $dom->saveXML());
+            if (function_exists('dom_import_simplexml')) {
+                $dom = dom_import_simplexml($xml)->ownerDocument;
+                $dom->formatOutput = true;
+                $xmlObject = $dom;
+            } else {
+                $xmlObject = $xml;
+            }
+            $outputXML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $xmlObject->saveXML());
             fwrite($f, $outputXML);
             fclose($f);
         }
