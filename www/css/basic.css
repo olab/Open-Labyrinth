@@ -1449,7 +1449,6 @@ table.dataTable tr.even td[class*='sorting'] {
     padding-top: 5px;
     line-height: 20px;
     color: #333333;
-    font-size: 21px;
     margin-right: 5px;
 }
 
@@ -1550,7 +1549,6 @@ table.dataTable tr.even td[class*='sorting'] {
 .response-labels {
     line-height: 20px;
     color: #333333;
-    font-size: 21px;
 }
 .response-labels input:nth-child(3),
 .response-labels input:nth-child(4){

@@ -3,7 +3,8 @@ $(function () {
         parent,
         id,
         button,
-        scoreOptions = '';
+        scoreOptions = '',
+        correctnessOptions = '<option value="2">- Select -</option><option value="1" >Correct</option><option value="2" selected>Neutral</option><option value="0" >Incorrect</option>';
 
     $responsesContainer.sortable({
         axis: "y",
@@ -59,16 +60,9 @@ $(function () {
                 "</div>" +
 
                 "<div class=\"control-group\">" +
-                "<label class=\"control-label\">Correctness</label>" +
+                "<label for=\"correctness_" + newId + "\" class=\"control-label\">Correctness</label>" +
                 "<div class=\"controls\">" +
-                "<div class=\"radio_extended btn-group\">" +
-                "<input autocomplete=\"off\" id=\"correctness1_" + newId + "\" type=\"radio\" name=\"correctness_" + newId + "\" value=\"1\"/>" +
-                "<label data-class=\"btn-success\" class=\"btn\" for=\"correctness1_" + newId + "\">Correct</label>" +
-                "<input autocomplete=\"off\" id=\"correctness2_" + newId + "\" type=\"radio\" name=\"correctness_" + newId + "\" value=\"2\"/>" +
-                "<label class=\"btn\" for=\"correctness2_" + newId + "\">Neutral</label>" +
-                "<input autocomplete=\"off\" id=\"correctness0_" + newId + "\" type=\"radio\" name=\"correctness_" + newId + "\" value=\"0\" />" +
-                "<label data-class=\"btn-danger\" class=\"btn\" for=\"correctness0_" + newId + "\">Incorrect</label>" +
-                "</div>" +
+                "<select class=\"correctness-select\" id=\"correctness_" + newId + "\" name=\"correctness_" + newId + "\">" + correctnessOptions + "</select>" +
                 "</div>" +
                 "</div>" +
 
@@ -80,7 +74,7 @@ $(function () {
                 "<div class=\"control-group\">" +
                 "<label for=\"order_" + newId + "\" class=\"control-label\">Order</label>" +
                 "<div class=\"controls\">" +
-                "<select autocomplete=\"off\" class=\"response-order-select\" id=\"order_" + newId + "\" name=\"order_" + newId + "\">" + orderOptions + "</select>" +
+                "<select class=\"response-order-select\" id=\"order_" + newId + "\" name=\"order_" + newId + "\">" + orderOptions + "</select>" +
                 "</div>" +
                 "</div>" +
                 "</div>" +
@@ -97,7 +91,7 @@ $(function () {
                 jsonObject = (jsonStr.length > 0) ? JSON.parse(jsonStr) : {},
                 response = $(value).find('.response-input').val(),
                 feedback = $(value).find('.feedback-input').val(),
-                correct = parseInt($(value).find('input:radio:checked').val()),
+                correct = parseInt($(value).find('.correctness-select').val()),
                 score = parseInt($(value).find('.score-select').val()),
                 order = parseInt($(value).find('.response-order-select').val());
 

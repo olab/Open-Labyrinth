@@ -24,7 +24,10 @@ $mapId      = $templateData['map']->id;
 $type       = $templateData['type']->id;
 $isDropDown = ($type == Model_Leap_Map_Question::ENTRY_TYPE_DROP_DOWN);
 $questionId = $q ? $templateData['question']->id : '';
-$stem       = $q ? $templateData['question']->stem : ''?>
+$stem       = $q ? $templateData['question']->stem : '';
+$correctness = $templateData['correctness'];
+
+?>
 
 <div class="page-header">
     <h1><?php echo $q ? (__('Edit question "').$stem.'"') : (__('New question for "').$templateData['map']->name.'"'); ?></h1>
@@ -255,23 +258,25 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label"><?php echo __('Correctness'); ?></label>
+                            <label for="correctness_<?php echo $response->id; ?>" class="control-label"><?php echo __('Correctness'); ?></label>
                             <div class="controls">
-                                <div class="radio_extended btn-group">
-                                    <input autocomplete="off" id="correctness1_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="1" <?php echo ($response->is_correct == 1) ? 'checked="checked"' : ''; ?>/>
-                                    <label data-class="btn-success" class="btn" for="correctness1_<?php echo $response->id; ?>"><?php echo __('Correct'); ?></label>
-                                    <input autocomplete="off" id="correctness2_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="2" <?php echo ($response->is_correct == 2) ? 'checked="checked"' : ''; ?>/>
-                                    <label class="btn" for="correctness2_<?php echo $response->id; ?>"><?php echo __('Neutral'); ?></label>
-                                    <input autocomplete="off" id="correctness0_<?php echo $response->id; ?>" type="radio" name="correctness_<?php echo $response->id; ?>" value="0" <?php echo ($response->is_correct == 0) ? 'checked="checked"' : ''; ?>/>
-                                    <label data-class="btn-danger" class="btn" for="correctness0_<?php echo $response->id; ?>"><?php echo __('Incorrect'); ?></label>
-                                </div>
+                                <select class="correctness-select"  id="correctness_<?php echo $response->id; ?>" name="correctness_<?php echo $response->id; ?>">
+                                    <option value="<?php echo Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL?>">
+                                        - Select -
+                                    </option>
+                                    <?php foreach ($correctness as $variant) { ?>
+                                        <option id="correctness<?php echo $variant['value']?>_<?php echo $response->id; ?>" value="<?php echo $variant['value']?>" <?php if($response->is_correct == $variant['value']) echo 'selected'; ?>>
+                                            <?php echo __($variant['name']); ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
                             </div>
                         </div>
 
                         <div class="control-group">
                             <label for="score_<?php echo $response->id; ?>" class="control-label"><?php echo __('Score'); ?></label>
                             <div class="controls">
-                                <select autocomplete="off" class="score-select" id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
+                                <select class="score-select" id="score_<?php echo $response->id; ?>" name="score_<?php echo $response->id; ?>">
                                     <?php for ($j = -10; $j <= 10; $j++) { ?>
                                         <option value="<?php echo $j; ?>" <?php echo ($response->score == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
                                     <?php } ?>
@@ -282,7 +287,7 @@ $stem       = $q ? $templateData['question']->stem : ''?>
                         <div class="control-group">
                             <label for="order_<?php echo $response->id; ?>" class="control-label"><?php echo __('Order'); ?></label>
                             <div class="controls">
-                                <select autocomplete="off" class="response-order-select" id="order_<?php echo $response->id; ?>" name="order_<?php echo $response->id; ?>">
+                                <select class="response-order-select" id="order_<?php echo $response->id; ?>" name="order_<?php echo $response->id; ?>">
                                     <?php for ($j = 1; $j <= count($templateData['question']->responses); $j++) { ?>
                                         <option value="<?php echo $j; ?>" <?php echo ($responseIndex == $j ? 'selected=""' : ''); ?>><?php echo $j; ?></option>
                                     <?php } ?>

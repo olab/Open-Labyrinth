@@ -118,21 +118,22 @@ class Controller_QuestionManager extends Controller_Base {
             Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID
         ])) {
             $this->templateData['attributes'] = $this->createAttributesArray($this->templateData['question']);
-            $this->templateData['correctness'] = [
-                [
-                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_CORRECT,
-                    'name' => __('Correct'),
-                ],
-                [
-                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL,
-                    'name' => __('Neutral'),
-                ],
-                [
-                    'value' => Model_Leap_Map_Question_Response::IS_CORRECT_INCORRECT,
-                    'name' => __('Incorrect'),
-                ],
-            ];
         }
+
+        $this->templateData['correctness'] = [
+            [
+                'value' => Model_Leap_Map_Question_Response::IS_CORRECT_CORRECT,
+                'name' => __('Correct'),
+            ],
+            [
+                'value' => Model_Leap_Map_Question_Response::IS_CORRECT_NEUTRAL,
+                'name' => __('Neutral'),
+            ],
+            [
+                'value' => Model_Leap_Map_Question_Response::IS_CORRECT_INCORRECT,
+                'name' => __('Incorrect'),
+            ],
+        ];
 
         $this->templateData['center']   = View::factory('labyrinth/question/'.$type->template_name)->set('templateData', $this->templateData);
         $this->templateData['left']     = View::factory('labyrinth/labyrinthEditorMenu')->set('templateData', $this->templateData);
