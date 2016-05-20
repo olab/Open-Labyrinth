@@ -122,11 +122,11 @@ class Controller_QuestionManager extends Controller_Base
             $this->templateData['validators'] = $validators;
         }
 
-        if (in_array($typeId, [
+        if (!empty($questionObj) && in_array($typeId, [
             Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
             Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID
         ])) {
-            $this->templateData['attributes'] = $this->createAttributesArray($this->templateData['question']);
+            $this->templateData['attributes'] = $this->createAttributesArray($questionObj);
         }
 
         $this->templateData['correctness'] = [
