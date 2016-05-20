@@ -2,15 +2,15 @@
 $googleServiceAccountCredentials = get_option('google_service_account_credentials');
 ?>
 
-<?php if (empty($googleServiceAccountCredentials)){ ?>
+<?php if (empty($googleServiceAccountCredentials)) { ?>
     <?php if (Auth::instance()->get_user()->isSuperuser()) { ?>
         <div class="alert alert-warning">
-        <?php echo __('Please set Google service account credentials to use Google Spreadsheets.') ?>
+            <?php echo __('Please set Google service account credentials to use Google Spreadsheets.') ?>
         </div>
     <?php } else { ?>
-    <div class="alert alert-warning">
-        <?php echo __('Please ask superuser to set Google service account credentials to use Google Spreadsheets.') ?>
-    </div>
+        <div class="alert alert-warning">
+            <?php echo __('Please ask superuser to set Google service account credentials to use Google Spreadsheets.') ?>
+        </div>
     <?php } ?>
 <?php } ?>
 
@@ -20,16 +20,21 @@ $googleServiceAccountCredentials = get_option('google_service_account_credential
         <input
             id="external_source_id"
             name="external_source_id"
-            value="<?php if(isset($templateData['question'])) echo $templateData['question']->external_source_id ?>"
+            value="<?php if (isset($templateData['question'])) echo $templateData['question']->external_source_id ?>"
             maxlength="255"
             style="width:400px;"
         >
         <?php if (Auth::instance()->get_user()->isSuperuser()) { ?>
-            <div class="help-inline">
-                <a href="<?php echo URL::base() . 'options/all'?>">
+            <div class="help-inline small">
+                <a href="<?php echo URL::base() . 'options/all' ?>">
                     <?php echo __('Set Google service account credentials') ?>
                 </a>
             </div>
+            <?php if (!empty($googleServiceAccountCredentials['client_email'])) { ?>
+                <div class="help-inline small">
+                    <?php echo sprintf(__('Use <b>%s</b> as an email to share private Spreadsheet.'), $googleServiceAccountCredentials['client_email']) ?>
+                </div>
+            <?php } ?>
         <?php } ?>
     </div>
 </div>
