@@ -493,10 +493,8 @@ class RunTimeLogic
                     return true;
                 }
             }
-        } else {
-            if (strpos($haystack, $needle) !== false) {
-                return true;
-            }
+        } elseif (strpos($haystack, $needle) !== false) {
+            return true;
         }
 
         return false;
