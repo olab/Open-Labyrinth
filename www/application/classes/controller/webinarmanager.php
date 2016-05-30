@@ -1585,9 +1585,10 @@ class Controller_WebinarManager extends Controller_Base
                 ob_start();
                 ?>
                 <div class="message" style="padding:10px;border-bottom:1px solid #eee;">
-                    <div class="name"><b><?php echo $name ?>:</b></div>
-                    <div
-                        class="text"><?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?></div>
+                    <div>
+                        <b><?php echo $name ?>:</b>
+                        <?php echo is_array($response['text']) ? json_encode($response['text']) : $response['text'] ?>
+                    </div>
                 </div>
                 <?php
                 $response_text = ob_get_clean();
