@@ -36,6 +36,14 @@ $chats = $templateData['chats'];
         background: linear-gradient(to bottom,  #fefcea 0%,#f1da36 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefcea', endColorstr='#f1da36',GradientType=0 ); /* IE6-9 */
     }
+
+    @media (max-width:1870px){
+        .chat{width:12%;}
+    }
+
+    @media (max-width:1505px){
+        .chat{width:11.9%;}
+    }
 </style>
 <script>
     var urlBase = '<?php echo URL::base(true)?>';
