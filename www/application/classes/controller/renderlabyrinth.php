@@ -1839,7 +1839,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                                                     $question->stem, $chat_session_id, true, 'init', self::$nodeId);
 
                                                 $ttulk_width = $question->width * 8;
-                                                $ttulk_height = $question->height * 150;
+                                                $ttulk_height = $question->height * 37;
                                                 if ($question->height >= 8) {
                                                     $ttulk_textarea_height = 8 * 6.25;
                                                 } else {
