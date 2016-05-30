@@ -20,14 +20,15 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class RunTimeLogic {
+class RunTimeLogic
+{
 
-    var $values             = array();
-    var $conditionValue     = array();
-    var $questionId         = null;
-    var $questionResponse   = null;
-    var $errors             = array();
-    var $sessionId          = 0;
+    var $values = array();
+    var $conditionValue = array();
+    var $questionId = null;
+    var $questionResponse = null;
+    var $errors = array();
+    var $sessionId = 0;
 
     public function parsingString($string, $sessionId = 0)
     {
@@ -37,14 +38,14 @@ class RunTimeLogic {
 
         if ($string) {
             $changedCounters = array();
-            $errors          = array();
-            $r               = array();
-            $pattern         = '(.*?);\s*(?=IF|\s*$)';
+            $errors = array();
+            $r = array();
+            $pattern = '(.*?);\s*(?=IF|\s*$)';
 
-            preg_match_all("/".$pattern."/is", $string, $matches);
+            preg_match_all("/" . $pattern . "/is", $string, $matches);
 
             if (count($matches[0])) {
-                foreach($matches[0] as $newIF){
+                foreach ($matches[0] as $newIF) {
                     $resultCon = $this->replaceConditions($newIF);
                     $resultStr = $this->replaceFunctions($resultCon);
                     ob_start();
@@ -56,7 +57,7 @@ class RunTimeLogic {
                         $this->errors[] = $newIF;
                     } else {
                         if (isset($finalResult['counters']) AND (count($finalResult['counters']))) {
-                            foreach($finalResult['counters'] as $key => $value) {
+                            foreach ($finalResult['counters'] as $key => $value) {
                                 $this->values[$key] = $value;
                                 $changedCounters[$key] = $value;
                             }
@@ -86,34 +87,35 @@ class RunTimeLogic {
             $array['result'] = $finalResult;
             $array['errors'] = $this->errors;
         }
+
         return $array;
     }
 
-    public function replaceFunctions ($string)
+    public function replaceFunctions($string)
     {
-        $error          = false;
-        $search         = array();
-        $replace        = array();
-        $onNode         = 1;
-        $i              = 0;
+        $error = false;
+        $search = array();
+        $replace = array();
+        $onNode = 1;
+        $i = 0;
         $previousNodeId = 0;
 
         $pattern = 'MATCH\s*\\(\\[\\[CR:(\d+)\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
                     $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
-                    $replace[$i] = ' ('.$register.'("'.$this->getValue($matches[1][$key]).'", '.$matches[2][$key].') !== false) ';
+                    $replace[$i] = ' (' . $register . '("' . $this->getValue($matches[1][$key]) . '", ' . $matches[2][$key] . ') !== false) ';
                     $i++;
                 }
             }
         }
 
         $pattern = 'NOT-MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
                     $questionAnswers = $this->getQUAnswer($matches[1][$key]);
                     if ($questionAnswers != '') {
@@ -124,7 +126,7 @@ class RunTimeLogic {
                             $replace[$i] = " ( $answerStrPos == false) ";
                         } else {
                             $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
-                            $replace[$i] = ' ('.$register.'(\''.$questionAnswers.'\', '.$matches[2][$key].') === false OR \''.$questionAnswers.'\'!='.$matches[2][$key].')';
+                            $replace[$i] = ' (' . $register . '(\'' . $questionAnswers . '\', ' . $matches[2][$key] . ') === false OR \'' . $questionAnswers . '\'!=' . $matches[2][$key] . ')';
                         }
                     } else {
                         $replace[$i] = " (false) ";
@@ -135,9 +137,9 @@ class RunTimeLogic {
         }
 
         $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
                     $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
 
@@ -148,7 +150,7 @@ class RunTimeLogic {
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
                     } else {
                         $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
-                        $replace[$i] = '('.$register.'(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false OR \''.$questionAnswersMatch.'\'=='.$matches[2][$key].')';
+                        $replace[$i] = '(' . $register . '(\'' . $questionAnswersMatch . '\', ' . $matches[2][$key] . ') !== false OR \'' . $questionAnswersMatch . '\'==' . $matches[2][$key] . ')';
                     }
                     $i++;
                 }
@@ -156,18 +158,17 @@ class RunTimeLogic {
         }
 
         $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)\s*ON_NODE\s*\((.*?[^)]*)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
                     $onNode = json_decode($matches[4][0], true);
                     $questionAnswersMatch = $this->getQUAnswer($matches[1][$key], $onNode);
-                    if ($this->sessionId != 0)
-                    {
+                    if ($this->sessionId != 0) {
                         $previousNodeId = DB_ORM::model('User_SessionTrace')->getPreviousTrace($this->sessionId);
                         $previousNodeId = $previousNodeId->node_id;
                     }
-                    $onNode = (int) in_array($previousNodeId, $onNode);
+                    $onNode = (int)in_array($previousNodeId, $onNode);
 
                     if (gettype($questionAnswersMatch) == 'array') {
                         $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
@@ -176,7 +177,7 @@ class RunTimeLogic {
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
                     } else {
                         $register = ($matches[3][$key] == 1) ? 'strpos' : 'stripos';
-                        $replace[$i] = '('.$register.'(\''.$questionAnswersMatch.'\', '.$matches[2][$key].') !== false OR \''.$questionAnswersMatch.'\'=='.$matches[2][$key].')';
+                        $replace[$i] = '(' . $register . '(\'' . $questionAnswersMatch . '\', ' . $matches[2][$key] . ') !== false OR \'' . $questionAnswersMatch . '\'==' . $matches[2][$key] . ')';
                     }
                     $i++;
                 }
@@ -184,44 +185,44 @@ class RunTimeLogic {
         }
 
         $pattern = 'UPPER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
-                    $replace[$i] = ' strtoupper("'.$this->getValue($matches[1][$key]).'") ';
+                    $replace[$i] = ' strtoupper("' . $this->getValue($matches[1][$key]) . '") ';
                     $i++;
                 }
             }
         }
 
         $pattern = 'LOWER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
-                    $replace[$i] = ' strtolower("'.$this->getValue($matches[1][$key]).'") ';
+                    $replace[$i] = ' strtolower("' . $this->getValue($matches[1][$key]) . '") ';
                     $i++;
                 }
             }
         }
 
         $pattern = 'PROPER\s*\\(.*?\\[\\[CR:(\d+)\\]\\].*?\\)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
-                    $replace[$i] = ' ucfirst("'.$this->getValue($matches[1][$key]).'") ';
+                    $replace[$i] = ' ucfirst("' . $this->getValue($matches[1][$key]) . '") ';
                     $i++;
                 }
             }
         }
 
         $pattern = '\\[\\[CR:(\d+)\\]\\]\sDIV\s(\d+)';
-        if (preg_match_all ("/".$pattern."/is", $string, $matches)){
-            if (count($matches[0])){
-                foreach($matches[0] as $key => $match){
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
                     $search[$i] = $match;
-                    $replace[$i] = ' intval("'.$this->getValue($matches[1][$key]).'" / '.$matches[2][$key].') ';
+                    $replace[$i] = ' intval("' . $this->getValue($matches[1][$key]) . '" / ' . $matches[2][$key] . ') ';
                     $i++;
                 }
             }
@@ -230,35 +231,35 @@ class RunTimeLogic {
         $string = str_replace($search, $replace, $string);
 
         $pattern = '\sMOD\s';
-        $string = preg_replace("/".$pattern."/", ' % ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' % ', $string);
 
         $pattern = '\\[\\[CR:(\d+)\\]\\]';
-        $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCounter'), $string);
+        $string = preg_replace_callback("/" . $pattern . "/is", array($this, 'replaceCounter'), $string);
 
         $pattern = '\[\[COND:(\d+)\]\]';
-        $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceCondition'), $string);
+        $string = preg_replace_callback("/" . $pattern . "/is", array($this, 'replaceCondition'), $string);
 
         $pattern = '\\[\\[QU_ANSWER\\]\\]';
-        $string = preg_replace_callback("/".$pattern."/", array($this, 'replaceQuestionAnswer'), $string);
+        $string = preg_replace_callback("/" . $pattern . "/", array($this, 'replaceQuestionAnswer'), $string);
 
         $pattern = '(?<=[^=|!|<|>])=(?=[^=])';
-        $string = preg_replace("/".$pattern."/is", ' == ', $string);
+        $string = preg_replace("/" . $pattern . "/is", ' == ', $string);
 
         $pattern = '\s====\s';
-        $string = preg_replace("/".$pattern."/is", ' = ', $string);
+        $string = preg_replace("/" . $pattern . "/is", ' = ', $string);
 
         $pattern = '\s*ON_NODE\s*\([^\)]*\)';
-        $string = preg_replace("/".$pattern."/is", ' AND '.$onNode , $string);
+        $string = preg_replace("/" . $pattern . "/is", ' AND ' . $onNode, $string);
 
         $pattern = '\[\[|\]\]';
-        $string = preg_replace("/".$pattern."/is", '"', $string);
+        $string = preg_replace("/" . $pattern . "/is", '"', $string);
 
         return array('str' => $string, 'error' => $error);
     }
 
     private function replaceCounter($matches)
     {
-        return '"'.$this->getValue($matches[1]).'"';
+        return '"' . $this->getValue($matches[1]) . '"';
     }
 
     private function replaceCondition()
@@ -266,17 +267,19 @@ class RunTimeLogic {
         $value = 'notExist';
         $scenarioId = Controller_RenderLabyrinth::$scenarioId;
         if ($scenarioId) {
-            $obj = DB_ORM::select('Conditions_Assign')->where('scenario_id', '=', Controller_RenderLabyrinth::$scenarioId)->query()->fetch(0);
+            $obj = DB_ORM::select('Conditions_Assign')->where('scenario_id', '=',
+                Controller_RenderLabyrinth::$scenarioId)->query()->fetch(0);
             if ($obj) {
                 $value = $obj->value;
             }
         }
-        return '"'.$value.'"';
+
+        return '"' . $value . '"';
     }
 
     private function replaceQuestionAnswer($matches)
     {
-        return '\''.$this->getQUAnswer().'\'';
+        return '\'' . $this->getQUAnswer() . '\'';
     }
 
     public function getValue($id)
@@ -285,6 +288,7 @@ class RunTimeLogic {
         if (isset($this->values[$id])) {
             $value = $this->values[$id];
         }
+
         return $value;
     }
 
@@ -305,19 +309,20 @@ class RunTimeLogic {
 
             foreach ($responses as $value) {
                 $response = $value->response;
-                if ($questionType == 7) {
+                if ($questionType == Model_Leap_Map_Question::ENTRY_TYPE_SCT) {
                     $response = DB_ORM::model('Map_Question_Response', array($response))->response;
                 }
 
-                if ($questionType == 3) {
+                if ($questionType == Model_Leap_Map_Question::ENTRY_TYPE_MCQ) {
                     $return[$value->created_at][] = $response;
-                }elseif ($numberOfResponses > 1) {
+                } elseif ($numberOfResponses > 1) {
                     $return[] = $response;
                 } else {
                     $return = $response;
                 }
             }
         }
+
         return $return;
     }
 
@@ -326,167 +331,172 @@ class RunTimeLogic {
         $string = DB_ORM::model('Cron')->replaceConditions($string);
 
         $pattern = '\s(THEN)\s(?=\[\[COND|\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ELSE|ENDIF|;\s*IF|$)';
-        $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
+        $string = preg_replace_callback("/" . $pattern . "/is", array($this, 'replaceThen'), $string);
 
         $pattern = '\s(ELSE)\s(?=\[\[COND\\[\\[CR|BREAK|STOP|GOTO|NO\\-ENTRY|CORRECT|INCORRECT)(.*?)(?=ENDIF|;\s*IF|$)';
-        $string = preg_replace_callback("/".$pattern."/is", array($this, 'replaceThen'), $string);
+        $string = preg_replace_callback("/" . $pattern . "/is", array($this, 'replaceThen'), $string);
 
         $pattern = '\sENDIF\s';
-        $string = preg_replace("/".$pattern."/", ' } ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' } ', $string);
 
         $pattern = '\sELSEIF\s';
-        $string = preg_replace("/".$pattern."/", ' } elseif ( ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' } elseif ( ', $string);
 
         $pattern = '\sELSE\s';
-        $string = preg_replace("/".$pattern."/", ' } else { ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' } else { ', $string);
 
         $pattern = ';\s*IF\s';
-        $string = preg_replace("/".$pattern."/", ' } if ( ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' } if ( ', $string);
 
         $pattern = '\s*IF\s';
-        $string = preg_replace("/".$pattern."/", ' if ( ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' if ( ', $string);
 
         $pattern = '\sTHEN\s';
-        $string = preg_replace("/".$pattern."/", ' ) { ', $string);
+        $string = preg_replace("/" . $pattern . "/", ' ) { ', $string);
 
-        return $string. ' } return $r; ';
+        return $string . ' } return $r; ';
     }
 
-    private function replaceThen ($matches)
+    private function replaceThen($matches)
     {
         $resultStr = null;
         $actionArray = explode(',', $matches[2]);
 
-        foreach($actionArray as $action)
-        {
+        foreach ($actionArray as $action) {
             $resultStr .= $this->parseAction($action);
         }
 
-        return (($matches[1] == 'THEN') ? ' ) { ' : ' } else { ').$resultStr;
+        return (($matches[1] == 'THEN') ? ' ) { ' : ' } else { ') . $resultStr;
     }
 
     public function parseAction($str)
     {
-        $startStr       = $str;
-        $returnString   = '';
-        $posCR          = strpos($str, '[[CR:');
-        $posCOND        = strpos($str, '[[COND:');
-        $posAnswer      = strpos($str, '[[QU_ANSWER:');
-        $posDEACTIVATE  = strpos($str, 'DEACTIVATE');
-        $posGOTO        = strpos($str, 'GOTO');
-        $posNOENTRY     = strpos($str, 'NO-ENTRY');
-        $posBREAK       = strpos($str, 'BREAK');
-        $posSTOP        = strpos($str, 'STOP');
-        $posCorrect     = strpos($str, 'CORRECT');
-        $posIncorrect   = strpos($str, 'INCORRECT');
+        $startStr = $str;
+        $returnString = '';
+        $posCR = strpos($str, '[[CR:');
+        $posCOND = strpos($str, '[[COND:');
+        $posAnswer = strpos($str, '[[QU_ANSWER:');
+        $posDEACTIVATE = strpos($str, 'DEACTIVATE');
+        $posGOTO = strpos($str, 'GOTO');
+        $posNOENTRY = strpos($str, 'NO-ENTRY');
+        $posBREAK = strpos($str, 'BREAK');
+        $posSTOP = strpos($str, 'STOP');
+        $posCorrect = strpos($str, 'CORRECT');
+        $posIncorrect = strpos($str, 'INCORRECT');
 
         // replace answer must be first
-        if ($posAnswer !== false)
-        {
-            $mark       = substr($str, $posAnswer);
+        if ($posAnswer !== false) {
+            $mark = substr($str, $posAnswer);
             $questionId = preg_replace('/[^0-9]/', '', $mark);
-            $sessionId  = Session::instance()->get('session_id', 0);
-            $responses  = DB_ORM::model('User_Response')->getResponse($sessionId, $questionId);
-            $response   = array_pop($responses);
-            if ($sessionId AND $response)
-            {
-                $response = '\''.$response->response.'\'';
+            $sessionId = Session::instance()->get('session_id', 0);
+            $responses = DB_ORM::model('User_Response')->getResponse($sessionId, $questionId);
+            $response = array_pop($responses);
+            if ($sessionId AND $response) {
+                $response = '\'' . $response->response . '\'';
                 $response = str_replace('"', '', $response);
             }
-            $str        = str_replace($mark, $response, $str);
+            $str = str_replace($mark, $response, $str);
         }
 
-        if ($posCR !== false)
-        {
-            $result  = null;
-            $id      = null;
+        if ($posCR !== false) {
+            $result = null;
+            $id = null;
             $pattern = '\\[\\[CR:(\d+)\\]\\]\s*=';
-            preg_match_all ("/".$pattern."/is", $str, $matches);
+            preg_match_all("/" . $pattern . "/is", $str, $matches);
 
-            if (count($matches[0]) > 0) $id = $matches[1][0];
+            if (count($matches[0]) > 0) {
+                $id = $matches[1][0];
+            }
 
             $posEqual = strpos($str, '=');
-            if ($posEqual !== false)
-            {
+            if ($posEqual !== false) {
                 $str = substr($str, $posEqual + 1, strlen($str));
                 $resultArray = $this->replaceFunctions($str);
-                if ($resultArray['error'] == false)
-                {
+                if ($resultArray['error'] == false) {
                     ob_start();
-                    $result = eval('return '.$resultArray['str'].';');
+                    $result = eval('return ' . $resultArray['str'] . ';');
                     $checkErrors = ob_get_contents();
                     ob_end_clean();
-                    if ($checkErrors != '') $this->errors[] = $startStr;
+                    if ($checkErrors != '') {
+                        $this->errors[] = $startStr;
+                    }
                 }
             }
-            $returnString = ' $r["counters"]["'.$id.'"] ==== "'.$result.'"; ';
-        }
-        elseif ($posCOND !== false)
-        {
-            $result  = null;
-            $id      = null;
+            $returnString = ' $r["counters"]["' . $id . '"] ==== "' . $result . '"; ';
+        } elseif ($posCOND !== false) {
+            $result = null;
+            $id = null;
             $pattern = '\\[\\[COND:(\d+)\\]\\]\s*=';
-            preg_match_all ("/".$pattern."/is", $str, $matches);
+            preg_match_all("/" . $pattern . "/is", $str, $matches);
 
-            if (count($matches[0]) > 0) $id = $matches[1][0];
+            if (count($matches[0]) > 0) {
+                $id = $matches[1][0];
+            }
 
             $posEqual = strpos($str, '=');
-            if ($posEqual !== false)
-            {
+            if ($posEqual !== false) {
                 $str = substr($str, $posEqual + 1, strlen($str));
                 $resultArray = $this->replaceFunctions($str);
-                if ($resultArray['error'] == false)
-                {
+                if ($resultArray['error'] == false) {
                     ob_start();
-                    $result = eval('return '.$resultArray['str'].';');
+                    $result = eval('return ' . $resultArray['str'] . ';');
                     $checkErrors = ob_get_contents();
                     ob_end_clean();
-                    if ($checkErrors != '') $this->errors[] = $startStr;
+                    if ($checkErrors != '') {
+                        $this->errors[] = $startStr;
+                    }
                 }
             }
-            $returnString = ' $r["conditions"]["'.$id.'"] ==== "'.$result.'"; ';
-        }
-        elseif ($posGOTO !== false)
-        {
+            $returnString = ' $r["conditions"]["' . $id . '"] ==== "' . $result . '"; ';
+        } elseif ($posGOTO !== false) {
             $id = null;
 
             $pattern = 'GOTO\s*\\[\\[NODE:(\d+)\\]\\]';
-            preg_match_all ("/".$pattern."/is", $str, $matches);
+            preg_match_all("/" . $pattern . "/is", $str, $matches);
 
-            if (count($matches[0]) > 0) $id = $matches[1][0];
+            if (count($matches[0]) > 0) {
+                $id = $matches[1][0];
+            }
 
-            $returnString = ' $r["goto"] ==== "'.$id.'"; ';
-        }
-        elseif ($posDEACTIVATE !== false)
-        {
+            $returnString = ' $r["goto"] ==== "' . $id . '"; ';
+        } elseif ($posDEACTIVATE !== false) {
             $id = null;
 
             $pattern = 'DEACTIVATE\s*\\[\\[NODE:(\d+)\\]\\]';
-            preg_match_all ("/".$pattern."/is", $str, $matches);
+            preg_match_all("/" . $pattern . "/is", $str, $matches);
 
-            if (count($matches[0]) > 0) $id = $matches[1][0];
+            if (count($matches[0]) > 0) {
+                $id = $matches[1][0];
+            }
 
-            $returnString = ' $r["deactivate"] ==== "'.$id.'"; ';
+            $returnString = ' $r["deactivate"] ==== "' . $id . '"; ';
+        } elseif ($posNOENTRY !== false) {
+            $returnString = ' $r["no-entry"] ==== "1"; ';
+        } elseif ($posBREAK !== false) {
+            $returnString = ' $r["break"] ==== "1"; return $r; ';
+        } elseif ($posSTOP !== false) {
+            $returnString = ' $r["stop"] ==== "1"; return $r; ';
+        } elseif ($posIncorrect !== false) {
+            $returnString = ' $r["incorrect"] ==== "1"; ';
+        } elseif ($posCorrect !== false) {
+            $returnString = ' $r["correct"] ==== "1"; ';
         }
-        elseif ($posNOENTRY !== false)      $returnString = ' $r["no-entry"] ==== "1"; ';
-        elseif ($posBREAK !== false)        $returnString = ' $r["break"] ==== "1"; return $r; ';
-        elseif ($posSTOP !== false)         $returnString = ' $r["stop"] ==== "1"; return $r; ';
-        elseif ($posIncorrect !== false)    $returnString = ' $r["incorrect"] ==== "1"; ';
-        elseif ($posCorrect !== false)      $returnString = ' $r["correct"] ==== "1"; ';
 
         return $returnString;
     }
 
     public function strposa($haystack, $needle)
     {
-        if (is_array($needle))
-        {
-            foreach ($needle as $value)
-            {
-                if (strpos($haystack, $value) !== false) return true;
+        if (is_array($needle)) {
+            foreach ($needle as $value) {
+                if (strpos($haystack, $value) !== false) {
+                    return true;
+                }
             }
-        } else if (strpos($haystack, $needle) !== false){
-            return true;
+        } else {
+            if (strpos($haystack, $needle) !== false) {
+                return true;
+            }
         }
 
         return false;
