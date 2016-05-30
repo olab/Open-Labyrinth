@@ -12,7 +12,8 @@ $(document).ready(function() {
         checkRule(0);
     });
     $('.check-rule-form').on('submit',function(e){
-        if(!canSubmitCheckRuleForm) {
+        if (!canSubmitCheckRuleForm) {
+            e.preventDefault();
             canSubmitCheckRuleForm = true;
             checkRule(1);
         }
