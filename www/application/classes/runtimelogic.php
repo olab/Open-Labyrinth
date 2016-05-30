@@ -171,7 +171,7 @@ class RunTimeLogic
                     $onNode = (int)in_array($previousNodeId, $onNode);
 
                     if (gettype($questionAnswersMatch) == 'array') {
-                        $answerStrPosMatch = $this->strposa($matches[2][$key], $questionAnswersMatch);
+                        $answerStrPosMatch = $this->strposa($matches[2][$key], array_pop($questionAnswersMatch));
                         $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
 
                         $replace[$i] = " ( $answerStrPosMatch != false) ";
