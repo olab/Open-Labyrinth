@@ -136,6 +136,28 @@ class RunTimeLogic
             }
         }
 
+        $pattern = 'MULTI_EQUAL\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
+        if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
+            if (count($matches[0])) {
+                foreach ($matches[0] as $key => $match) {
+                    $search[$i] = $match;
+                    $questionAnswersMatch = $this->getQUAnswer($matches[1][$key]);
+
+                    if (gettype($questionAnswersMatch) == 'array') { //should be array only
+                        $needle = trim($matches[2][$key], '"\'');
+                        $needle = eval('return ' . $needle . ';'); //should be array only
+                        $answerStrPosMatch = $this->isArrayValuesEqual($needle, array_pop($questionAnswersMatch));
+                        $answerStrPosMatch = !empty($answerStrPosMatch) ? $answerStrPosMatch : 0;
+
+                        $replace[$i] = " ( $answerStrPosMatch != false) ";
+                    } else {
+                        $replace[$i] = " (false) ";
+                    }
+                    $i++;
+                }
+            }
+        }
+
         $pattern = 'MATCH\s*\\(\\[\\[QU_ANSWER:*(\d+)*\\]\\].*?,.*?(".*?"|\'.*?\').*?,*(\d*|)\\)';
         if (preg_match_all("/" . $pattern . "/is", $string, $matches)) {
             if (count($matches[0])) {
@@ -498,5 +520,16 @@ class RunTimeLogic
         }
 
         return false;
+    }
+
+    public function isArrayValuesEqual($a, $b)
+    {
+        $x = array_values($a);
+        $y = array_values($b);
+
+        sort($x);
+        sort($y);
+
+        return ($x == $y);
     }
 }
