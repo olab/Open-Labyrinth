@@ -110,14 +110,14 @@ Kohana::$config->attach(new Config_File);
  */
 $modules = array(
     'auth' => MODPATH . 'auth', // Basic authentication
-    // 'cache'      => MODPATH.'cache',      // Caching with multiple backends
-    // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+    'cache' => MODPATH . 'cache', // Caching with multiple backends
+    // 'codebench'  => MODPATH.'codebench', // Benchmarking tool
     'database' => MODPATH . 'database', // Database access
-    // 'image'      => MODPATH.'image',      // Image manipulation
+    // 'image'      => MODPATH.'image', // Image manipulation
     'acl' => MODPATH . 'acl', // Access control module
     'orm' => MODPATH . 'orm', // Object Relationship Mapping
-    // 'unittest'   => MODPATH.'unittest',   // Unit testing
-    // 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+    // 'unittest'   => MODPATH.'unittest', // Unit testing
+    // 'userguide'  => MODPATH.'userguide', // User guide and API documentation
     'leap' => MODPATH . 'leap', // Include Leap ORM
     'breadcrumbs' => MODPATH . 'breadcrumbs', // Breadcrumbs
     'restful' => MODPATH . 'restful', // RESTful interface

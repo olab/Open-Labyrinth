@@ -233,14 +233,33 @@ class Model_Leap_Map_Question extends Model_Leap_Base
     /**
      * @return DB_ResultSet|Model_Leap_Map_Question_Response[]
      */
-    public function getResponses()
+    public function getResponses($sessionId = null)
     {
         if (!$this->hasExternalResource()) {
             return $this->responses;
         }
 
+        if ($sessionId === null) {
+            $sessionId = Session::instance()->get('session_id');
+        }
+        
         if (!$this->cacheHas(__METHOD__)) {
-            $this->cacheSet(__METHOD__, $this->getExternalResponses());
+            
+            $cacheKey = __METHOD__ . '_' . $sessionId;
+            
+            if (!empty($sessionId)) {
+                $responses = Cache::instance()->get($cacheKey);
+            }
+
+            if (empty ($responses)) {
+                $responses = $this->getExternalResponses();
+
+                if (!empty($sessionId)) {
+                    Cache::instance()->set($cacheKey, $responses, 60 * 15);
+                }
+            }
+
+            $this->cacheSet(__METHOD__, $responses);
         }
 
         return $this->cacheGet(__METHOD__);
@@ -268,7 +287,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
                 break;
             }
         }
-        
+
         return null;
     }
 
@@ -313,7 +332,7 @@ class Model_Leap_Map_Question extends Model_Leap_Base
             $values = $entry->getValues();
 
             $response = new Model_Leap_Map_Question_Response;
-            
+
             $response->id = 1000000000 + $key + ($this->id * 500); // temporary id
             $response->feedback = $this->sanitizeString($values['feedback']);
             $response->response = $this->sanitizeString($values['response']);
