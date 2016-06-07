@@ -124,7 +124,6 @@ $modules = array(
     'oauth' => MODPATH . 'oauth', // OAuth module
     'phpexcel' => MODPATH . 'phpexcel',
     'kohana-media' => MODPATH . 'kohana-media',
-    'TinCanPHP' => MODPATH . 'TinCanPHP', // https://github.com/RusticiSoftware/TinCanPHP
     'h5p-php-library' => MODPATH . 'h5p-php-library', // https://github.com/h5p/h5p-php-library
     'h5p-editor-php-library' => MODPATH . 'h5p-editor-php-library', // https://github.com/h5p/h5p-editor-php-library
 );

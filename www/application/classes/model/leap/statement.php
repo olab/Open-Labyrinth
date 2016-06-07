@@ -332,15 +332,8 @@ class Model_Leap_Statement extends Model_Leap_Base
         return $result;
     }
 
-    public static function xApiInit()
-    {
-        require_once MODPATH . 'TinCanPHP/autoload.php';
-    }
-
     public function send(Model_Leap_LRS $lrs_obj)
     {
-        static::xApiInit();
-
         $lrs = new TinCan\RemoteLRS($lrs_obj->url, $lrs_obj->getAPIVersionName(), $lrs_obj->username,
             $lrs_obj->password);
 

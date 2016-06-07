@@ -1,6 +1,14 @@
 {
+    "name": "olab/Open-Labyrinth",
+    "description": "OpenLabyrinth is an open-source platform for creating and playing virtual patients.",
+    "keywords": ["oLab", "Open-Labyrinth", "OpenLabyrinth"],
+    "homepage": "http://openlabyrinth.ca",
+    "license": "GNU-GPL3",
+    "type": "project",
     "require": {
+        "php": ">=5.5.0",
         "google/apiclient": "^2.0.0@RC",
-        "asimlqt/php-google-spreadsheet-client": "2.3.*"
+        "asimlqt/php-google-spreadsheet-client": "2.3.*",
+        "rusticisoftware/tincan": "^0.40.0"
     }
 }
