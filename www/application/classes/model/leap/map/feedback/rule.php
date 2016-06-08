@@ -104,19 +104,15 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
     public static function primary_key() {
         return array('id');
     }
-    
-    public function getRulesByMap ($mapId)
+
+    /**
+     * @param Model_Leap_Map|int $map
+     * @return array
+     */
+    public static function getRulesByMap($map)
     {
-        $builder = DB_SQL::select('default')->from($this->table())->where('map_id', '=', $mapId);
-        $result = $builder->query();
-        
-        if($result->is_loaded())
-        {
-            $rules = array();
-            foreach($result as $record)$rules[] = DB_ORM::model('map_feedback_rule', array((int)$record['id']));
-            return $rules;
-        }
-        return array();
+        $map = is_numeric($map) ? DB_ORM::model('Map', [$map]) : $map;
+        return $map->feedbackRules->as_array();
     }
     
     public function getAllRules() {
@@ -135,8 +131,11 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         return NULL;
     }
     
-    public function getRulesByTypeName($typeName) {
-        $rules = $this->getAllRules();
+    public function getRulesByTypeName($typeName, $rules = null) {
+        if ($rules === null) {
+            $rules = $this->getAllRules();
+        }
+        
         if($rules != NULL and count($rules) > 0) {
             $result = array();
             foreach($rules as $rule) {
@@ -197,7 +196,7 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
     {
         if( ! $toMapId) return;
         
-        foreach($this->getRulesByMap($fromMapId) as $rule)
+        foreach(static::getRulesByMap($fromMapId) as $rule)
         {
             DB_ORM::insert('map_feedback_rule')
                 ->column('map_id', $toMapId)

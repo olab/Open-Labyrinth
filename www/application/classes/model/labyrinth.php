@@ -1586,7 +1586,7 @@ class Model_Labyrinth extends Model
 
     public function getMainFeedback($session, $counters, $mapId)
     {
-        $rules = DB_ORM::model('map_feedback_rule')->getRulesByMap($mapId);
+        $rules = Model_Leap_Map_Feedback_Rule::getRulesByMap($mapId);
 
         $result = array();
         $map = DB_ORM::model('map', array((int)$mapId));
@@ -1594,7 +1594,7 @@ class Model_Labyrinth extends Model
             $result['general'] = $map->feedback;
         }
 
-        if ($rules != null and count($rules) > 0) {
+        if (count($rules) > 0) {
             $mustVisited = 0;
             $mustAvoid = 0;
             if (count($session->traces) > 0) {

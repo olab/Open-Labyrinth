@@ -37,13 +37,15 @@ class Controller_FeedbackManager extends Controller_Base {
         if ($mapId == NULL) Request::initial()->redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
-        $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
+        $map = DB_ORM::model('map', array((int) $mapId));
+        $rules = Model_Leap_Map_Feedback_Rule::getRulesByMap($map);
+        $this->templateData['map'] = $map;
         $this->templateData['operators'] = DB_ORM::model('map_feedback_operator')->getAllOperators();
-        $this->templateData['time_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('time taken');
-        $this->templateData['visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('node visit');
-        $this->templateData['must_visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must visit');
-        $this->templateData['must_avoid_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must avoid');
-        $this->templateData['counter_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('counter value');
+        $this->templateData['time_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('time taken', $rules);
+        $this->templateData['visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('node visit', $rules);
+        $this->templateData['must_visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must visit', $rules);
+        $this->templateData['must_avoid_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must avoid', $rules);
+        $this->templateData['counter_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('counter value', $rules);
         $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
         $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
 

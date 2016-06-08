@@ -28,6 +28,8 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $abstract
  * @property string $keywords
  * @property bool $send_xapi_statements
+ * 
+ * @property Model_Leap_Map_Feedback_Rule[]|DB_ResultSet $feedbackRules
  */
 class Model_Leap_Map extends Model_Leap_Base
 {
@@ -233,6 +235,11 @@ class Model_Leap_Map extends Model_Leap_Base
                 'child_model' => 'user_session',
                 'parent_key' => array('id'),
                 'options' => array(array('order_by', array('user_sessions.start_time', 'DESC')))
+            )),
+            'feedbackRules' => new DB_ORM_Relation_HasMany($this, array(
+                'child_key' => array('map_id'),
+                'child_model' => 'Map_Feedback_Rule',
+                'parent_key' => array('id'),
             )),
         );
         self::initialize_metadata($this);
