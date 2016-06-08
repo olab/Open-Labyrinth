@@ -610,7 +610,8 @@ class Model_Labyrinth extends Model
         if (!empty($dropDownResponses)) {
             $created_at = microtime(true);
             foreach ($dropDownResponses as $qID => $dropDownResponse) {
-                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $dropDownResponse, $nodeId, $created_at);
+                DB_ORM::model('user_response')->createResponse($sessionId, $qID, $dropDownResponse, $nodeId,
+                    $created_at);
                 /** @var Model_Leap_Map_Question $question */
                 $question = DB_ORM::model('map_question', array((int)$qID));
                 if ($question != null) {
@@ -622,7 +623,8 @@ class Model_Labyrinth extends Model
                         if ($question->hasExternalResource()) {
                             $response = $question->getExternalResponseByValue($dropDownResponse);
                         } else {
-                            $response = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($qID, $dropDownResponse);
+                            $response = Model_Leap_Map_Question_Response::getByQuestionAndAnswer($qID,
+                                $dropDownResponse);
                         }
 
                         if (!empty($response)) {
@@ -1586,13 +1588,14 @@ class Model_Labyrinth extends Model
 
     public function getMainFeedback($session, $counters, $mapId)
     {
-        $rules = Model_Leap_Map_Feedback_Rule::getRulesByMap($mapId);
-
         $result = array();
         $map = DB_ORM::model('map', array((int)$mapId));
+
         if ($map != null and $map->feedback != '') {
             $result['general'] = $map->feedback;
         }
+
+        $rules = Model_Leap_Map_Feedback_Rule::getRulesByMap($map);
 
         if (count($rules) > 0) {
             $mustVisited = 0;

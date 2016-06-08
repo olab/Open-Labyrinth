@@ -21,9 +21,11 @@
  */
 defined('SYSPATH') or die('No direct script access.');
 
-class Controller_FeedbackManager extends Controller_Base {
+class Controller_FeedbackManager extends Controller_Base
+{
 
-    public function before() {
+    public function before()
+    {
         $this->templateData['labyrinthSearch'] = 1;
 
         parent::before();
@@ -31,23 +33,31 @@ class Controller_FeedbackManager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
-    public function action_index() {
-        $mapId = $this->request->param('id', NULL);
+    public function action_index()
+    {
+        $mapId = $this->request->param('id', null);
 
-        if ($mapId == NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == null) {
+            Request::initial()->redirect(URL::base());
+        }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
-        $map = DB_ORM::model('map', array((int) $mapId));
+        $map = DB_ORM::model('map', array((int)$mapId));
         $rules = Model_Leap_Map_Feedback_Rule::getRulesByMap($map);
         $this->templateData['map'] = $map;
         $this->templateData['operators'] = DB_ORM::model('map_feedback_operator')->getAllOperators();
-        $this->templateData['time_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('time taken', $rules);
-        $this->templateData['visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('node visit', $rules);
-        $this->templateData['must_visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must visit', $rules);
-        $this->templateData['must_avoid_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('must avoid', $rules);
-        $this->templateData['counter_feedback_rules'] = DB_ORM::model('map_feedback_rule')->getRulesByTypeName('counter value', $rules);
-        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int) $mapId);
-        $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int) $mapId);
+        $this->templateData['time_feedback_rules'] = DB_ORM::model('map_feedback_rule')
+            ->getRulesByTypeName('time taken', $rules);
+        $this->templateData['visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')
+            ->getRulesByTypeName('node visit', $rules);
+        $this->templateData['must_visit_feedback_rules'] = DB_ORM::model('map_feedback_rule')
+            ->getRulesByTypeName('must visit', $rules);
+        $this->templateData['must_avoid_feedback_rules'] = DB_ORM::model('map_feedback_rule')
+            ->getRulesByTypeName('must avoid', $rules);
+        $this->templateData['counter_feedback_rules'] = DB_ORM::model('map_feedback_rule')
+            ->getRulesByTypeName('counter value', $rules);
+        $this->templateData['counters'] = DB_ORM::model('map_counter')->getCountersByMap((int)$mapId);
+        $this->templateData['nodes'] = DB_ORM::model('map_node')->getNodesByMap((int)$mapId);
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Feedback'))->set_url(URL::base() . 'feedbackManager/index/' . $mapId));
@@ -64,38 +74,41 @@ class Controller_FeedbackManager extends Controller_Base {
         $this->template->set('templateData', $this->templateData);
     }
 
-    public function action_updateGeneral() {
-        $mapId = $this->request->param('id', NULL);
-        if ($_POST and $mapId != NULL)
-        {
+    public function action_updateGeneral()
+    {
+        $mapId = $this->request->param('id', null);
+        if ($_POST and $mapId != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
-            DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', NULL));
+            DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', null));
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_addRule() {
-        $mapId = $this->request->param('id', NULL);
-        $typeName = $this->request->param('id2', NULL);
-        if ($_POST and $mapId != NULL and $typeName != NULL)
-        {
+    public function action_addRule()
+    {
+        $mapId = $this->request->param('id', null);
+        $typeName = $this->request->param('id2', null);
+        if ($_POST and $mapId != null and $typeName != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_feedback_rule')->addRule($mapId, $typeName, $_POST);
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 
-    public function action_deleteRule() {
-        $mapId = $this->request->param('id', NULL);
-        $ruleId = $this->request->param('id2', NULL);
-        if ($mapId != NULL and $ruleId != NULL)
-        {
+    public function action_deleteRule()
+    {
+        $mapId = $this->request->param('id', null);
+        $ruleId = $this->request->param('id2', null);
+        if ($mapId != null and $ruleId != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
-            DB_ORM::model('map_feedback_rule', array((int) $ruleId))->delete();
+            DB_ORM::model('map_feedback_rule', array((int)$ruleId))->delete();
             Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+        } else {
+            Request::initial()->redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
     }
 }

@@ -21,70 +21,72 @@
 defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Model for map_feedback_rules table in database 
+ * Model for map_feedback_rules table in database
  */
-class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
+class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model
+{
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
 
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
-                'unsigned' => TRUE,
+                'nullable' => false,
+                'unsigned' => true,
             )),
-            
+
             'map_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
+
             'rule_type_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
+
             'operator_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
+
             'counter_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
+
             'value' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => FALSE,
+                'nullable' => false,
             )),
-            
+
             'message' => new DB_ORM_Field_Text($this, array(
-                'nullable' => FALSE,
-                'savable' => TRUE,
+                'nullable' => false,
+                'savable' => true,
             )),
         );
-        
+
         $this->relations = array(
             'map' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('map_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map',
             )),
-            
+
             'type' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('rule_type_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map_feedback_type',
             )),
-            
+
             'operator' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('operator_id'),
                 'parent_key' => array('id'),
                 'parent_model' => 'map_feedback_operator',
             )),
-            
+
             'counter' => new DB_ORM_Relation_BelongsTo($this, array(
                 'child_key' => array('counter_id'),
                 'parent_key' => array('id'),
@@ -93,15 +95,18 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
         );
     }
 
-    public static function data_source() {
+    public static function data_source()
+    {
         return 'default';
     }
 
-    public static function table() {
+    public static function table()
+    {
         return 'map_feedback_rules';
     }
 
-    public static function primary_key() {
+    public static function primary_key()
+    {
         return array('id');
     }
 
@@ -112,61 +117,67 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
     public static function getRulesByMap($map)
     {
         $map = is_numeric($map) ? DB_ORM::model('Map', [$map]) : $map;
+
         return $map->feedbackRules->as_array();
     }
     
-    public function getAllRules() {
+    public function getAllRules()
+    {
         $builder = DB_SQL::select('default')->from($this->table());
         $result = $builder->query();
-        
-        if($result->is_loaded()) {
+
+        if ($result->is_loaded()) {
             $rules = array();
-            foreach($result as $record) {
+            foreach ($result as $record) {
                 $rules[] = DB_ORM::model('map_feedback_rule', array((int)$record['id']));
             }
-            
+
             return $rules;
         }
-        
-        return NULL;
+
+        return null;
     }
-    
-    public function getRulesByTypeName($typeName, $rules = null) {
+
+    public function getRulesByTypeName($typeName, $rules = null)
+    {
         if ($rules === null) {
             $rules = $this->getAllRules();
         }
-        
-        if($rules != NULL and count($rules) > 0) {
+
+        if ($rules != null and count($rules) > 0) {
             $result = array();
-            foreach($rules as $rule) {
-                if($rule->type->name == $typeName) {
+            foreach ($rules as $rule) {
+                if ($rule->type->name == $typeName) {
                     $result[] = $rule;
                 }
             }
-            
+
             return $result;
         }
-        
-        return NULL;
+
+        return null;
     }
-    
-    public function getRulesByTypeNameAndMapId($typeName, $mapId) {
+
+    public function getRulesByTypeNameAndMapId($typeName, $mapId)
+    {
         $rules = $this->getRulesByTypeName($typeName);
-        if($rules != null && count($rules) > 0) {
+        if ($rules != null && count($rules) > 0) {
             $result = array();
-            foreach($rules as $rule) {
-                if($rule->map_id == $mapId)
+            foreach ($rules as $rule) {
+                if ($rule->map_id == $mapId) {
                     $result[] = $rule;
+                }
             }
-            
-            return count($result) > 0 ? $result : NULL;
+
+            return count($result) > 0 ? $result : null;
         }
-        
-        return NULL;
+
+        return null;
     }
-    
-    public function addRule($mapId, $typeName, $values) {
-        switch($typeName) {
+
+    public function addRule($mapId, $typeName, $values)
+    {
+        switch ($typeName) {
             case 'time':
                 $this->addTimeRule($mapId, $values);
                 break;
@@ -174,9 +185,9 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
                 $this->addVisitRule($mapId, $values);
                 break;
             case 'must':
-                $type = Arr::get($values, 'crtype', NULL);
-                if($type != NULL) {
-                    switch($type){
+                $type = Arr::get($values, 'crtype', null);
+                if ($type != null) {
+                    switch ($type) {
                         case 'mustvisit':
                             $this->addMustVisitRule($mapId, $values);
                             break;
@@ -191,13 +202,14 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
                 break;
         }
     }
-    
+
     public function duplicateRules($fromMapId, $toMapId)
     {
-        if( ! $toMapId) return;
-        
-        foreach(static::getRulesByMap($fromMapId) as $rule)
-        {
+        if (!$toMapId) {
+            return;
+        }
+
+        foreach (static::getRulesByMap($fromMapId) as $rule) {
             DB_ORM::insert('map_feedback_rule')
                 ->column('map_id', $toMapId)
                 ->column('rule_type_id', $rule->rule_type_id)
@@ -208,49 +220,54 @@ class Model_Leap_Map_Feedback_Rule extends DB_ORM_Model {
                 ->execute();
         }
     }
-    
-    private function addTimeRule($mapId, $values) {
+
+    private function addTimeRule($mapId, $values)
+    {
         $this->map_id = $mapId;
         $this->rule_type_id = 1;
         $this->operator_id = Arr::get($values, 'cop', 0);
         $this->value = Arr::get($values, 'cval', 0);
         $this->message = Arr::get($values, 'cMess', '');
-        
+
         $this->save();
     }
-    
-    private function addVisitRule($mapId, $values) {
+
+    private function addVisitRule($mapId, $values)
+    {
         $this->map_id = $mapId;
         $this->rule_type_id = 3;
         $this->value = Arr::get($values, 'cval', '');
         $this->message = Arr::get($values, 'cMess', '');
-        
+
         $this->save();
     }
-    
-    private function addMustVisitRule($mapId, $values) {
+
+    private function addMustVisitRule($mapId, $values)
+    {
         $this->map_id = $mapId;
         $this->rule_type_id = 4;
         $this->operator_id = Arr::get($values, 'cop', 0);
         $this->value = Arr::get($values, 'cval', '');
         $this->message = Arr::get($values, 'cMess', '');
-        
+
         $this->save();
     }
-    
-    private function addMustAvoidRule($mapId, $values) {
+
+    private function addMustAvoidRule($mapId, $values)
+    {
         $this->map_id = $mapId;
         $this->rule_type_id = 5;
         $this->operator_id = Arr::get($values, 'cop', 0);
         $this->value = Arr::get($values, 'cval', '');
         $this->message = Arr::get($values, 'cMess', '');
-        
+
         $this->save();
     }
-    
-    private function addCounterRule($mapId, $values) {
-        $counterId = Arr::get($values, 'cid', NULL);
-        if($counterId != NULL) {
+
+    private function addCounterRule($mapId, $values)
+    {
+        $counterId = Arr::get($values, 'cid', null);
+        if ($counterId != null) {
             $this->map_id = $mapId;
             $this->rule_type_id = 2;
             $this->counter_id = $counterId;

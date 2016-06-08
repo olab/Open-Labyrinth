@@ -28,7 +28,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property string $abstract
  * @property string $keywords
  * @property bool $send_xapi_statements
- * 
+ *
  * @property Model_Leap_Map_Feedback_Rule[]|DB_ResultSet $feedbackRules
  */
 class Model_Leap_Map extends Model_Leap_Base
