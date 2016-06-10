@@ -30,6 +30,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property bool $send_xapi_statements
  *
  * @property Model_Leap_Map_Feedback_Rule[]|DB_ResultSet $feedbackRules
+ * @property Model_Leap_User_Session[]|DB_ResultSet $sessions
  */
 class Model_Leap_Map extends Model_Leap_Base
 {
@@ -320,16 +321,20 @@ class Model_Leap_Map extends Model_Leap_Base
         return $object;
     }
 
+    /**
+     * @param null|Model_Leap_User_Session[]|DB_ResultSet $sessions $sessions
+     * @return array
+     */
     public function getCompleteSessions($sessions = null)
     {
         $result = array();
         $session_ids = array();
 
-        if (empty($sessions) || count($sessions) == 0) {
+        if ($sessions === null) {
             $sessions = $this->sessions;
         }
 
-        if (!empty($sessions) && count($sessions) > 0) {
+        if ($sessions->count() > 0) {
             foreach ($sessions as $session) {
 
                 //check Final Submission and View feedback
@@ -356,11 +361,9 @@ class Model_Leap_Map extends Model_Leap_Base
                 ->query()
                 ->as_array();
 
-            unset($session_ids);
             if (!empty($completeSessions)) {
                 foreach ($completeSessions as $key => $array) {
                     $result[] = $array['session_id'];
-
                 }
             }
         }

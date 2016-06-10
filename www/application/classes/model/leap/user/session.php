@@ -149,6 +149,23 @@ class Model_Leap_User_Session extends Model_Leap_Base
         return URL::base(true) . 'reportManager/showReport/';
     }
 
+    /**
+     * @param int $mapId
+     * @param array $columns
+     * @param int $limit
+     * @return DB_ResultSet|self|static
+     */
+    public static function getByMapId($mapId, $columns = [], $limit = null, $offset = 0)
+    {
+        $query = DB_ORM::select('User_Session', $columns)->where('map_id', '=', $mapId);
+        
+        if ($limit !== null) {
+            $query->limit($limit);
+            $query->offset($offset);
+        }
+        
+        return $query->query();
+    }
 
     public function toxAPIExtensionObject()
     {
