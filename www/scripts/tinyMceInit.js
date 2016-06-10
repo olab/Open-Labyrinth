@@ -3,6 +3,7 @@ var baseURL = window.location.protocol + "//" + window.location.hostname + (wind
 function tinyMceInit(selector, readOnly){
     tinymce.init({
         selector: selector,
+        auto_focus: 'mdesc',
         theme: "modern",
         content_css: baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/css/rdface.css,' + baseURL + 'scripts/tinymce/js/tinymce/plugins/rdface/schema_creator/schema_colors.css',
         entity_encoding: "raw",
@@ -20,6 +21,9 @@ function tinyMceInit(selector, readOnly){
         image_advtab: true,
         templates: [],
         convert_urls: false,
-        readonly: readOnly
+        readonly: readOnly,
+        init_instance_callback : function(editor) {
+            window.scrollTo(0, 0);
+        }
     });
 }
