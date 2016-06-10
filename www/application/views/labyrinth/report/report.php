@@ -19,6 +19,14 @@
  *
  */
 
+$isFeedbackExists = (
+    !empty($templateData['feedbacks']['general']) ||
+    !empty($templateData['feedbacks']['timeTaken']) ||
+    !empty($templateData['feedbacks']['nodeVisit']) ||
+    !empty($templateData['feedbacks']['mustVisit']) ||
+    !empty($templateData['feedbacks']['counters'])
+);
+
 function getRandomColor()
 {
     mt_srand((double)microtime() * 1000000);
@@ -74,7 +82,7 @@ if (isset($templateData['session'])) {
     }
     ?>
 
-    <table class="table  table-striped table-bordered">
+    <table class="table table-striped table-bordered">
     <tr>
         <td><?php echo __('user'); ?></td>
         <td><?php echo $templateData['session']->user->nickname; ?></td>
@@ -137,9 +145,11 @@ if (isset($templateData['session'])) {
             <td><?php echo $progress; ?></td>
         </tr>
     <?php endif; ?>
-    </table><?php
-    if (isset($templateData['feedbacks']['general'])) { ?>
-        <table class="table table-striped table-bordered">
+    </table>
+
+    <?php if ($isFeedbackExists) { ?>
+    <table class="table table-striped table-bordered">
+    <?php if (isset($templateData['feedbacks']['general'])) { ?>
         <tr>
             <td><?php echo __('general feedback'); ?></td>
             <td><?php echo $templateData['feedbacks']['general']; ?></td>
@@ -184,9 +194,13 @@ if (isset($templateData['session'])) {
                     echo $msg . '<br/>';
                 } ?></td>
         </tr>
-        </table><?php
+        <?php
     }
-
+    ?>
+    </table>
+        <?php } ?>
+    
+    <?php
     if (count($templateData['responses'])) { ?>
         <h3><?php echo __('Questions'); ?></h3>
         <table class="table table-striped table-bordered">
