@@ -428,7 +428,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem
         }
 
         if (!file_exists(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'])) {
-            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'], 0777, true);
+            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'], DEFAULT_FOLDER_MODE, true);
         }
 
         if (isset($mediaElements['media_elements_files'])) {

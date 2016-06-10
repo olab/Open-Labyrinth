@@ -494,7 +494,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem
         }
 
         if (!file_exists(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'])) {
-            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'], 0777, true);
+            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'], DEFAULT_FOLDER_MODE, true);
         }
 
         if (isset($mediaElements['media_elements_files']) AND count($mediaElements['media_elements_files'])) {
@@ -507,7 +507,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem
         }
 
         if (!file_exists(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages')) {
-            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages', 0777, true);
+            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages', DEFAULT_FOLDER_MODE, true);
         }
 
         if (isset($mediaElements['media_elements_vdimages']) AND count($mediaElements['media_elements_vdimages'])) {
@@ -521,7 +521,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem
         }
 
         if (!file_exists(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages/thumbs')) {
-            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages/thumbs', 0777, true);
+            mkdir(DOCROOT . '/files/' . $this->labyrinthArray['map']['database_id'] . '/vdImages/thumbs', DEFAULT_FOLDER_MODE, true);
         }
 
         if (isset($mediaElements['media_elements_vdimages_thumbs']) AND count($mediaElements['media_elements_vdimages_thumbs'])) {
@@ -761,7 +761,7 @@ class ImportExport_AdvancedFormatSystem implements ImportExport_FormatSystem
         }
 
         if (!is_dir($this->folderPath . '/media/vdImages')) {
-            mkdir($this->folderPath . '/media/vdImages', 0777, true);
+            mkdir($this->folderPath . '/media/vdImages', DEFAULT_FOLDER_MODE, true);
         }
         if (!is_dir($this->folderPath . '/media/vdImages/thumbs')) {
             mkdir($this->folderPath . '/media/vdImages/thumbs');

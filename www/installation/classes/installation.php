@@ -146,7 +146,7 @@ class Installation
         Installation::redirect(URL::base() . 'installation/index.php');
     }
 
-    public static function createFile($filename, $content = '', $toJSON = false, $permission = 0777)
+    public static function createFile($filename, $content = '', $toJSON = false, $permission = DEFAULT_FILE_MODE)
     {
         if ($toJSON) {
             $content = json_encode($content);
@@ -689,7 +689,7 @@ class Installation
     public static function copyDirectory($src, $dst, $options = [])
     {
         if (!is_dir($dst)) {
-            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0777, true);
+            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : DEFAULT_FOLDER_MODE, true);
         }
 
         $handle = opendir($src);

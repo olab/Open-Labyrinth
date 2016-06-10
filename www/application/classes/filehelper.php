@@ -57,7 +57,7 @@ class FileHelper
     public static function copyDirectory($src, $dst, $options = [])
     {
         if (!is_dir($dst)) {
-            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0777, true);
+            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : DEFAULT_FOLDER_MODE, true);
         }
 
         $handle = opendir($src);

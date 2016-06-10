@@ -527,7 +527,7 @@ class Controller_ExportImportManager extends Controller_Base {
 
         if (isset($xml->resources->resource)) {
             if (!file_exists(DOCROOT.'/files/'.$map->id)) {
-                mkdir(DOCROOT.'/files/'.$map->id, 0777, true);
+                mkdir(DOCROOT.'/files/'.$map->id, DEFAULT_FOLDER_MODE, true);
             }
             foreach ($xml->resources->resource as $resource) {
                 $attr = $resource->attributes();

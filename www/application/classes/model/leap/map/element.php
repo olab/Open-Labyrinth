@@ -234,7 +234,7 @@ class Model_Leap_Map_Element extends DB_ORM_Model {
         if($values['filename']['size'] < 1024 * 3 * 1024) {
             if(is_uploaded_file($values['filename']['tmp_name'])) {
                 if (!file_exists(DOCROOT.'/files/'.$mapId)) {
-                    mkdir(DOCROOT.'/files/'.$mapId, 0777, true);
+                    mkdir(DOCROOT.'/files/'.$mapId, DEFAULT_FOLDER_MODE, true);
                 }
                 if(file_exists(DOCROOT.'/files/'.$mapId.'/'.$values['filename']['name'])) {
                     $name = pathinfo($values['filename']['name'], PATHINFO_FILENAME);

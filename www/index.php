@@ -53,8 +53,12 @@ error_reporting(E_ALL | E_STRICT);
  * @see  http://kohanaframework.org/guide/using.configuration
  */
 
-//Set application name to send as User-Agent HTTP header, etc
+//Set application name to send it as User-Agent HTTP header, etc
 define('APP_NAME', 'OpenLabyrinth');
+
+// Default File system permissions
+define('DEFAULT_FOLDER_MODE', 0755);
+define('DEFAULT_FILE_MODE', 0644);
 
 // Set the full path to the docroot
 define('DOCROOT', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR);

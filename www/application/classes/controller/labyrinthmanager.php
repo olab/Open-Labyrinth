@@ -616,7 +616,7 @@ class Controller_LabyrinthManager extends Controller_Base
                     $folder = DOCROOT . 'css/skin/' . $receivedMapId . '_' . $skin_name . '/';
                     $skinName = $skin_name;
                     $skinPath = $receivedMapId . '_' . $skin_name;
-                    @mkdir($folder, 0777);
+                    @mkdir($folder, DEFAULT_FOLDER_MODE);
 
                     $outside_image = $_POST['outside_image'];
                     $centre_image = $_POST['centre_image'];
