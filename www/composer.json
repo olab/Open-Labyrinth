@@ -1,6 +1,7 @@
 {
     "require": {
         "google/apiclient": "^2.0.0@RC",
-        "asimlqt/php-google-spreadsheet-client": "2.3.*"
+        "asimlqt/php-google-spreadsheet-client": "2.3.*",
+        "ramsey/uuid": "^3.4"
     }
 }

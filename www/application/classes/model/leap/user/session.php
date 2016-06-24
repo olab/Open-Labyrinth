@@ -18,6 +18,8 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
+use Ramsey\Uuid\Uuid;
+
 defined('SYSPATH') or die('No direct script access.');
 
 /**
@@ -30,6 +32,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int|null $webinar_id
  * @property int|null $webinar_step
  * @property bool $notCumulative
+ * @property string $uuid
  * @property string $user_ip
  * @property Model_Leap_User $user
  * @property Model_Leap_User_SessionTrace[]|DB_ResultSet $traces
@@ -47,6 +50,10 @@ class Model_Leap_User_Session extends Model_Leap_Base
         $this->fields = array(
             'id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 10,
+                'nullable' => false,
+            )),
+            'uuid' => new DB_ORM_Field_String($this, array(
+                'max_length' => 255,
                 'nullable' => false,
             )),
             'user_id' => new DB_ORM_Field_Integer($this, array(
@@ -351,6 +358,7 @@ class Model_Leap_User_Session extends Model_Leap_Base
     public function createSession($userId, $mapId, $startTime, $userIp, $webinarId = null, $webinarStep = null)
     {
         $builder = DB_ORM::insert('user_session')
+            ->column('uuid', Uuid::uuid4()->toString())
             ->column('user_id', $userId)
             ->column('map_id', $mapId)
             ->column('start_time', $startTime)
