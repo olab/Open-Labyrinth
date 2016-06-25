@@ -138,7 +138,7 @@ $mods = array_merge($modules, $mods);
 /**
  * Load Composer packages from vendor folder
  */
-$vendorAutoload = DOCROOT . 'vendor/autoload.php';
+$vendorAutoload = DOCROOT . '../vendor/autoload.php';
 if (file_exists($vendorAutoload)) {
     require_once $vendorAutoload;
 }
