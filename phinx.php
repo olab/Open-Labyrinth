@@ -1,6 +1,6 @@
 <?php
 
-define('SYSPATH', realpath($system) . DIRECTORY_SEPARATOR);
+define('SYSPATH', '1');
 require './www/application/config/database.php';
 
 $config = $config["default"];
