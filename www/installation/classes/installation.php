@@ -20,6 +20,8 @@
  *
  */
 defined('SYSPATH') or die('No direct script access.');
+defined('DEFAULT_FOLDER_MODE') || define('DEFAULT_FOLDER_MODE', 0755);
+defined('DEFAULT_FILE_MODE') || define('DEFAULT_FILE_MODE', 0644);
 
 class Installation
 {
