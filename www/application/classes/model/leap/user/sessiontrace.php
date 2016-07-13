@@ -201,6 +201,17 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $result = array(
             'completion' => true,
         );
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url][] = [
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            ];
+        }
         //end result
 
         //context
@@ -240,6 +251,17 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $result = array(
             'completion' => true,
         );
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url][] = [
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            ];
+        }
         //end result
 
         //context
@@ -346,8 +368,10 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
             );
             //end result
 
+            $statement = Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+            
             if ($only_main) {
-                return Model_Leap_Statement::create($session, $verb, $object, $result, $context, $timestamp);
+                return $statement;
             }
         }
 
@@ -387,11 +411,11 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         foreach ($counters as $counter_id => $counter_value) {
             $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
             $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
-            $result['extensions'][$counter_base_url][] = array(
+            $result['extensions'][$counter_base_url][] = [
                 'id' => $counter_url,
                 'internal_id' => $counter_id,
                 'value' => $counter_value,
-            );
+            ];
         }
         //end result
 
@@ -445,6 +469,17 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
 
         $result['score']['raw'] = $score_value;
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url][] = [
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            ];
+        }
         //end result
 
         //context
@@ -488,6 +523,17 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $result = array(
             'completion' => true,
         );
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url][] = [
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            ];
+        }
         //end result
 
         //context
@@ -526,6 +572,17 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $result = array(
             'completion' => true,
         );
+
+        $counters = $this->getCountersAsArray();
+        foreach ($counters as $counter_id => $counter_value) {
+            $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
+            $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            $result['extensions'][$counter_base_url][] = [
+                'id' => $counter_url,
+                'internal_id' => $counter_id,
+                'value' => $counter_value,
+            ];
+        }
         //end result
 
         //context
