@@ -24,6 +24,7 @@ defined('SYSPATH') or die('No direct script access.');
  * @property int $id
  * @property int $map_id
  * @property int $icon_id
+ * @property float $start_value
  * @property string $name
  * @property string $description
  * @property Model_Leap_Map $map

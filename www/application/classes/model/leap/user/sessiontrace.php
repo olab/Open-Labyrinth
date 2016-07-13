@@ -280,7 +280,7 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         return $this->createXAPIStatementUpdated($previous_session_trace, true);
     }
 
-    public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace, $only_main = false)
+    public function createXAPIStatementUpdated(Model_Leap_User_SessionTrace $previous_session_trace, $only_main = false, $isSecondTrace = false)
     {
         if ($previous_session_trace->counters === $this->counters) {
             return false;
@@ -306,7 +306,18 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         $changed_counters = array();
         foreach ($current_counters as $id => $current_counter) {
             if (isset($previous_counters[$id])) {
-                if ($previous_counters[$id] !== $current_counter) {
+
+                $old_counter_value = $previous_counters[$id];
+                
+                if ($isSecondTrace) { // TODO: move initial counter values to the user_sessions table (add new column)
+                    /** @var Model_Leap_Map_Counter $counterObj */
+                    $counterObj = DB_ORM::model('Map_Counter', [$id]);
+                    if ($counterObj->is_loaded()) {
+                        $old_counter_value = (string)$counterObj->start_value;
+                    }
+                }
+                
+                if ($old_counter_value !== $current_counter) {
                     $changed_counters[$id] = $current_counter;
                 }
             } else {
@@ -402,8 +413,25 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
             'completion' => true,
         );
 
-        $score_value = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($this->as_array());
-        $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
+        // TODO: move initial counter values to the user_sessions table (add new column)
+        
+        $mainCounter = DB_SQL::select('default')
+            ->from(Model_Leap_Map_Counter::table())
+            ->where('status', '=', '1', 'AND')
+            ->where('map_id', '=', $this->map_id)
+            ->limit(1)
+            ->query();
+
+        if ($mainCounter->is_loaded()) {
+            if (isset($mainCounter[0])) {
+                $score_value = $mainCounter[0]['start_value'];
+            }
+        }
+        
+        if (!isset($score_value)) {
+            $score_value = DB_ORM::model('Map_Counter')->getMainCounterFromSessionTrace($this->as_array());
+            $score_value = isset($score_value['value']) ? $score_value['value'] : 0;
+        }
 
         $result['score']['raw'] = $score_value;
 
@@ -411,10 +439,19 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
         foreach ($counters as $counter_id => $counter_value) {
             $counter_base_url = URL::base(true) . 'counterManager/editCounter/';
             $counter_url = $counter_base_url . $this->map_id . '/' . $counter_id;
+            
+            // TODO: move initial counter values to the user_sessions table (add new column)
+            
+            /** @var Model_Leap_Map_Counter $counterObj */
+            $counterObj = DB_ORM::model('Map_Counter', [$counter_id]);
+            if ($counterObj->is_loaded()) {
+                $counter_value = $counterObj->start_value;
+            }
+            
             $result['extensions'][$counter_base_url][] = [
                 'id' => $counter_url,
-                'internal_id' => $counter_id,
-                'value' => $counter_value,
+                'internal_id' => (string)$counter_id,
+                'value' => (string)$counter_value,
             ];
         }
         //end result
