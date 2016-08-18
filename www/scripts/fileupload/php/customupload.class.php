@@ -58,7 +58,7 @@ class CustomUploadHandler extends UploadHandler
         'video/x-flv' => 'flv',
     ];
 
-    
+
     /**
      * CustomUploadHandler constructor.
      * @param null|array $options
@@ -77,7 +77,7 @@ class CustomUploadHandler extends UploadHandler
             // take precedence over the following max_file_size setting:
             'max_file_size' => null,
             'min_file_size' => 1,
-            'accept_file_types' => '/.+$/i',
+            'accept_file_types' => '#\.(' . implode('|', static::getAllowedExtensions()) . ')$#i',
             // The maximum number of files for the upload directory:
             'max_number_of_files' => null,
             // Image resolution restrictions:
@@ -177,5 +177,17 @@ class CustomUploadHandler extends UploadHandler
         }
 
         return array_key_exists($mime, $allowedMimeTypes);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAllowedExtensions()
+    {
+        $result = array_values(static::$allowedMimeTypes);
+        $result[] = 'jpeg';
+        $result = array_unique($result);
+
+        return $result;
     }
 }

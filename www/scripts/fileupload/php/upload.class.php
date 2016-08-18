@@ -184,7 +184,7 @@ class UploadHandler
             return false;
         }
         if (!preg_match($this->options['accept_file_types'], $file->name)) {
-            $file->error = 'acceptFileTypes';
+            $file->error = 'File extension is not allowed';
             return false;
         }
         if ($uploaded_file && is_uploaded_file($uploaded_file)) {
