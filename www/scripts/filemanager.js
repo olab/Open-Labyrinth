@@ -1,32 +1,41 @@
-
 $(function () {
     'use strict';
     $('#fileupload').addClass('fileupload-processing');
 
     var fileCount = 0,
-        fileUploadedCount = 0;
+        fileUploadedCount = 0,
+        redirectClosure = function () {
+            if (fileUploadedCount >= fileCount) {
+                $.ajaxSetup({async: true});
+                window.location.href = jQuery('#redirect_url').val();
+            }
+        };
 
     $('#fileupload').fileupload({
         url: dataURL,
-        done: function(e, data) {
-            if(fileCount <= 0) {
+        done: function (e, data) {
+
+            if (fileCount <= 0) {
                 fileCount = $('#filesTable tr').length;
             }
 
             $.ajaxSetup({async: false});
-            $.each(data.files, function (index, file) {
-                $.post(replaceAction,
-                       {
-                           mapId: displayMapId,
-                           fileName: file.name
-                       },
-                       function(d) {
-                           fileUploadedCount += 1;
-                           if(fileUploadedCount >= fileCount) {
-                               $.ajaxSetup({async: true});
-                               window.location.href = jQuery('#redirect_url').val();
-                           }
-                       });
+            $.each(data.result, function (index, file) {
+                if (file.hasOwnProperty('error') && file.error.length > 0) {
+                    fileUploadedCount += 1;
+                    alert(file.name + ': ' + file.error);
+                    redirectClosure();
+                } else {
+                    $.post(replaceAction,
+                        {
+                            mapId: displayMapId,
+                            fileName: file.name
+                        },
+                        function (d) {
+                            fileUploadedCount += 1;
+                            redirectClosure();
+                        });
+                }
             });
         },
         progressall: function (e, data) {
@@ -39,12 +48,12 @@ $(function () {
         }
     });
 });
-$(document).ready( function() {
-       $("#maincb").click( function() {
-            if($('#maincb').attr('checked')){
-                $('.check_box:enabled').attr('checked', true);
-            } else {
-                $('.check_box:enabled').attr('checked', false);
-            }
-       });
+$(document).ready(function () {
+    $("#maincb").click(function () {
+        if ($('#maincb').attr('checked')) {
+            $('.check_box:enabled').attr('checked', true);
+        } else {
+            $('.check_box:enabled').attr('checked', false);
+        }
     });
+});

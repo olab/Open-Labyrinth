@@ -10,11 +10,12 @@
  * http://www.opensource.org/licenses/MIT
  */
 
+define('SYSPATH', 1);
 error_reporting(E_ALL | E_STRICT);
 set_time_limit(0);
-require('upload.class.php');
+require_once 'customupload.class.php';
 
-$upload_handler = new UploadHandler();
+$upload_handler = new CustomUploadHandler();
 
 header('Pragma: no-cache');
 header('Cache-Control: no-store, no-cache, must-revalidate');
