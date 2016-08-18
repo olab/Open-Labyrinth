@@ -27,18 +27,21 @@ class CustomUploadHandler extends UploadHandler
         'application/pdf' => 'pdf',
         'application/msword' => 'doc',
         'application/vnd.ms-excel' => 'xls',
-        "application/zip" => 'docx',
+        "application/zip" => 'zip',
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => 'docx',
         "application/rtf" => 'rtf',
         'application/x-shockwave-flash' => 'swf',
         'application/mp4' => 'mp4',
         'application/vnd.ms-powerpoint' => 'ppt',
+        'application/x-rpm' => 'rpm',
 
         'audio/x-aac' => 'aac',
         'audio/x-aiff' => 'aif',
         'audio/ogg' => 'oga',
         'audio/mp4' => 'mp4a',
         'audio/mpeg' => 'mpga',
+        'audio/x-pn-realaudio' => 'ram',
+        'audio/x-wav' => 'wav',
 
         'video/x-msvideo' => 'avi',
         'video/quicktime' => 'qt',
@@ -48,6 +51,8 @@ class CustomUploadHandler extends UploadHandler
         'video/jpeg' => 'jpgv',
         'video/3gpp' => '3gp',
         'video/3gpp2' => '3g2',
+        'video/x-ms-wmv' => 'wmv',
+        'video/x-flv' => 'flv',
     ];
 
     protected function validate($uploaded_file, $file, $error, $index)
