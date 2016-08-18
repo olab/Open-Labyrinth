@@ -44,6 +44,46 @@ class Controller_FileManager extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
+    public function action_fileupload()
+    {
+        error_reporting(E_ALL | E_STRICT);
+        set_time_limit(0);
+        require_once DOCROOT . 'scripts/fileupload/php/customupload.class.php';
+
+        $upload_handler = new CustomUploadHandler();
+
+        header('Pragma: no-cache');
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Content-Disposition: inline; filename="files.json"');
+        header('X-Content-Type-Options: nosniff');
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE');
+        header('Access-Control-Allow-Headers: X-File-Name, X-File-Type, X-File-Size');
+
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case 'OPTIONS':
+                break;
+            case 'HEAD':
+            case 'GET':
+                $upload_handler->get();
+                break;
+            case 'POST':
+                if (isset($_REQUEST['_method']) && $_REQUEST['_method'] === 'DELETE') {
+                    $upload_handler->delete();
+                } else {
+                    $upload_handler->post();
+                }
+                break;
+            case 'DELETE':
+                $upload_handler->delete();
+                break;
+            default:
+                header('HTTP/1.1 405 Method Not Allowed');
+        }
+
+        die;
+    }
+
     public function action_index()
     {
         $mapId = $this->request->param('id', null);

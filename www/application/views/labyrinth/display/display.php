@@ -26,11 +26,11 @@ $fonts = Arr::get($templateData, 'fonts', array());
     var displayJSON = <?php echo ((isset($templateData['displayJSON']) && strlen($templateData['displayJSON']) > 0) ? $templateData['displayJSON'] : 'null'); ?>;
     var displayBaseURL = '<?php echo URL::base(); ?>visualdisplaymanager/display/<?php echo $templateData['map']->id; ?>/';
     var baseDisplayImagesPath = '<?php echo URL::base(); ?>files/<?php echo $templateData['map']->id; ?>/vdImages/';
-    var displayUploadURL = '<?php echo URL::base(); ?>scripts/fileupload/php';
+    var displayUploadURL = '<?php echo URL::base(); ?>fileManager/fileupload';
     var displayMapId = <?php echo $templateData['map']->id; ?>;
     var replaceAction = '<?php echo URL::base(); ?>visualdisplaymanager/replaceDisplayFile';
     var displayDeleteImageURL = '<?php echo URL::base(); ?>visualdisplaymanager/deleteImage/<?php echo $templateData['map']->id; ?>/<?php if(isset($templateData['display'])) echo $templateData['display']->id; ?>';
-    var dataURL = '<?php echo URL::base(); ?>scripts/fileupload/php/';
+    var dataURL = '<?php echo URL::base(); ?>fileManager/fileupload';
 </script>
 
 <div class="control-group">

@@ -20,7 +20,7 @@
  */
 if (isset($templateData['map'])) { ?>
 <script>
-    var dataURL = '<?php echo URL::base(); ?>scripts/fileupload/php/';
+    var dataURL = '<?php echo URL::base(); ?>fileManager/fileupload';
     var replaceAction = '<?php echo URL::base(); ?>fileManager/replaceFiles';
     var displayMapId = <?php echo $templateData['map']->id; ?>;
     var fileManagerUrl = '<?php echo URL::base(); ?>fileManager/<?php echo $templateData['map']->id; ?>';
