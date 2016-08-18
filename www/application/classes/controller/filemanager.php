@@ -41,6 +41,10 @@ class Controller_FileManager extends Controller_Base
 
         parent::before();
 
+        if (!Auth::instance()->logged_in()) {
+            die('You are not logged in.');
+        }
+
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('My Labyrinths'))->set_url(URL::base() . 'authoredLabyrinth'));
     }
 
