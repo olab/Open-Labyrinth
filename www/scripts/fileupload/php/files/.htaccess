@@ -1,4 +1,8 @@
+# security restrictions
 ForceType application/octet-stream
+Header set Content-Disposition attachment
 <FilesMatch "(?i)\.(gif|jpe?g|png)$">
-  ForceType none
+    ForceType none
+    Header unset Content-Disposition
 </FilesMatch>
+Header set X-Content-Type-Options nosniff
