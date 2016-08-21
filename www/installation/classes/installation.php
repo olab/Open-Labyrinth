@@ -209,13 +209,8 @@ class Installation
     {
         $array = array();
         $status = true;
-        if (version_compare(PHP_VERSION, '5.3', '<')) {
-            // Clear out the cache to prevent errors. This typically happens on Windows/FastCGI.
-            clearstatcache();
-        } else {
-            // Clearing the realpath() cache is only possible PHP 5.3+
-            clearstatcache(true);
-        }
+
+        clearstatcache(true);
 
         $temp['item'] = 'PHP 5.4.0 or newer';
         if (version_compare(PHP_VERSION, '5.4.0', '>=')){
