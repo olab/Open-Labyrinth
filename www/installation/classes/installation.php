@@ -610,6 +610,7 @@ class Installation
 
     public static function proceed()
     {
+        set_time_limit(600);
         $checkBaseUrl = URL::base();
         $olab = json_decode(Session::get('installationDatabase'), true);
         if (isset($olab['db_port']) && ($olab['db_port'] != '')) {
