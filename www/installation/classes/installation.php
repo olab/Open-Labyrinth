@@ -349,6 +349,17 @@ class Installation
         $array = array();
         $status = true;
 
+        $temp['item'] = URL::base() . '/';
+        if (is_writable(DOCROOT)) {
+            $temp['label'] = 'success';
+            $temp['status'] = 'Writable';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'Not writable';
+            $status = false;
+        }
+        $array[] = $temp;
+
         $temp['item'] = URL::base() . 'application/bootstrap.php';
         if (is_dir(APPPATH) AND is_writable(APPPATH . 'bootstrap.php')) {
             $temp['label'] = 'success';
