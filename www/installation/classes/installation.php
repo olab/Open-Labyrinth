@@ -349,7 +349,7 @@ class Installation
         $array = array();
         $status = true;
 
-        $temp['item'] = URL::base() . '/';
+        $temp['item'] = URL::base();
         if (is_writable(DOCROOT)) {
             $temp['label'] = 'success';
             $temp['status'] = 'Writable';
