@@ -20,26 +20,36 @@
  */
 defined('SYSPATH') or die('No direct access allowed.');
 
-class Auth_Leap extends Auth {
+class Auth_Leap extends Auth
+{
 
-    protected function _login($username, $password, $remember) {
+    /**
+     * @param string $username
+     * @param string $password
+     * @param $remember
+     * @return bool
+     * @throws Kohana_Exception
+     */
+    protected function _login($username, $password, $remember)
+    {
         if (is_string($username) and
-                is_string($password) and
-                $username != '' and
-                $password != '') {
+            is_string($password) and
+            $username != '' and
+            $password != ''
+        ) {
 
             $user = DB_ORM::model('user');
             $user->getUserByName($username);
 
             $hashPassword = '';
-            if(is_string($password)) {
+            if (is_string($password)) {
                 $hashPassword = $this->hash($password);
             }
-            
+
             if ($user->password === $hashPassword || $user->password === $password) {
 
                 // "Remember me" commented: OL does not use this function
-                if ($remember === TRUE) {
+                if ($remember === true) {
                     /* $data = array(
                       'user_id' => $user->id,
                       'expires' => time() + $this->_config['lifetime'],
@@ -51,25 +61,50 @@ class Auth_Leap extends Auth {
 
                 $this->complete_login($user);
 
-                return TRUE;
+                return true;
             }
 
-            return FALSE;
+            return false;
         }
 
-        return FALSE;
+        return false;
     }
 
-    public function check_password($password) {
+    /**
+     * @return bool
+     */
+    public function refresh()
+    {
+        $user = $this->get_user();
+        if (!is_object($user)) {
+            return false;
+        }
+
+        return $this->complete_login(DB_ORM::model('user', [$user->id]));
+    }
+
+    /**
+     * @param string $password
+     * @return bool
+     * @throws Kohana_Exception
+     */
+    public function check_password($password)
+    {
         $user = $this->get_user();
 
-        if (!$user)
-            return FALSE;
+        if (!$user) {
+            return false;
+        }
 
         return ($user->password === $this->hash($password));
     }
 
-    public function password($user) {
+    /**
+     * @param Model_Leap_User $user
+     * @return string
+     */
+    public function password($user)
+    {
         if (!is_object($user)) {
             $username = $user;
 
@@ -82,5 +117,3 @@ class Auth_Leap extends Auth {
     }
 
 }
-
-?>
