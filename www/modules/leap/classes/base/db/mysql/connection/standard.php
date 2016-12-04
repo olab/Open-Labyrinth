@@ -59,6 +59,19 @@ abstract class Base_DB_MySQL_Connection_Standard extends DB_SQL_Connection_Stand
 			if ( ! empty($this->data_source->charset) AND ! @mysql_set_charset(strtolower($this->data_source->charset), $this->link_id)) {
 				throw new Kohana_Database_Exception('Message: Failed to set character set. Reason: :reason', array(':reason' => mysql_error($this->link_id)));
 			}
+
+			//Set session variables from config
+            $config = Kohana::$config->load('database')->{Database::$default};
+            if (!empty($config['connection']['variables'])) {
+                // Set session variables
+                $variables = array();
+
+                foreach ($config['connection']['variables'] as $var => $val) {
+                    $variables[] = 'SESSION '.$var.' = '.$this->quote($val);
+                }
+
+                mysql_query('SET '.implode(', ', $variables), $this->link_id);
+            }
 		}
 	}
 
