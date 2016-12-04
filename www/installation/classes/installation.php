@@ -670,6 +670,7 @@ class Installation
                 "database"      => "' . $olab['db_name'] . '",
                 "username"      => "' . $olab['db_user'] . '",
                 "password"      => "' . $olab['db_pass'] . '",
+                "variables"     => [\'sql_mode\' => \'NO_ENGINE_SUBSTITUTION\'],
             ),
             "caching"       => FALSE,
             "charset"       => "utf8",
