@@ -253,6 +253,11 @@ class Controller_Base extends Controller_Template {
         }
 
         if (Auth::instance()->logged_in()) {
+            
+            if (Session::instance()->get_once('user_was_updated', false)) {
+                Auth::instance()->refresh();
+            }
+            
             $uri                        = $this->request->detect_uri();
             $controllerAction           = strtolower($this->request->controller()).'/'.$this->request->action();
             $topMenu                    = in_array($controllerAction, $this->exceptionsTopMenu);

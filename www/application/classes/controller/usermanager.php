@@ -197,7 +197,7 @@ class Controller_UserManager extends Controller_Base
 
     public function action_saveOldUser()
     {
-        if (isset($_POST) && !empty($_POST)) {
+        if (!empty($_POST)) {
             $userId = $this->request->param('id', 0);
             $user = DB_ORM::model('user')->getUserById(htmlspecialchars($userId));
             $userEmail = $user->email;
@@ -229,6 +229,10 @@ class Controller_UserManager extends Controller_Base
                     Arr::get($_POST, 'uemail', ''), Arr::get($_POST, 'usertype', $type),
                     Arr::get($_POST, 'langID', null));
             }
+        }
+
+        if ($userId == Auth::instance()->get_user()->id) {
+            Session::instance()->set('user_was_updated', true);
         }
 
         Model_Leap_Metadata_Record::updateMetadata("user", $userId, $_POST);
