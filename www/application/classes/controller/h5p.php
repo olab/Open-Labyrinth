@@ -272,7 +272,10 @@ class Controller_H5P extends Controller_Base
         $result = $plugin_admin->handle_upload(null, filter_input(INPUT_POST, 'h5p_upgrade_only') ? true : false);
 
         if ($result === false) {
-            Session::instance()->set('error_message', __('Error.'));
+            $errorMessage = implode('; ', H5PPlugin::get_instance()
+                ->get_h5p_instance('interface')
+                ->getMessages('error'));
+            Session::instance()->set('error_message', __($errorMessage));
         } else {
             Session::instance()->set('success_message', __('Uploaded.'));
         }
