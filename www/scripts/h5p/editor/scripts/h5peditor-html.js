@@ -288,7 +288,7 @@ ns.Html.prototype.createToolbar = function () {
 ns.Html.prototype.appendTo = function ($wrapper) {
   var that = this;
 
-  this.$item = ns.$(ns.createItem(this.field.type, this.createHtml(), this.field.description)).appendTo($wrapper);
+  this.$item = ns.$(ns.createItem(this.field.type, this.createHtml())).appendTo($wrapper);
 
   this.$input = this.$item.children('.ckeditor');
   this.$errors = this.$item.children('.h5p-errors');
@@ -385,6 +385,28 @@ ns.Html.prototype.appendTo = function ($wrapper) {
           var urlField = targetTab.get('linkTargetType');
           urlField['default'] = '_blank';
         }
+
+        // Override show event handler
+        var onShow = dialogDefinition.onShow;
+        dialogDefinition.onShow = function () {
+          if (onShow !== undefined) {
+            onShow.apply(this, arguments);
+          }
+
+          // Grab current item
+          var $item = ns.Html.current.$item;
+
+          // Position dialog above text field
+          var itemPos = $item.offset();
+          var itemWidth = $item.width();
+          var itemHeight = $item.height();
+          var dialogSize = this.getSize();
+
+          var x = itemPos.left + (itemWidth / 2) - (dialogSize.width / 2);
+          var y = itemPos.top + (itemHeight / 2) - (dialogSize.height / 2);
+
+          this.move(x, y, true);
+        };
       });
       ns.Html.first = false;
     }
@@ -397,9 +419,10 @@ ns.Html.prototype.appendTo = function ($wrapper) {
 ns.Html.prototype.createHtml = function () {
   var html = '';
   if (this.field.label !== undefined) {
-    html += '<label class="h5peditor-label">' + this.field.label + '</label>';
+    html += '<label class="h5peditor-label' + (this.field.optional ? '' : ' h5peditor-required') + '">' + this.field.label + '</label>';
   }
 
+  html += ns.createDescription(this.field.description);
   html += '<div class="ckeditor" tabindex="0" contenteditable="true">';
 
   if (this.value !== undefined) {
@@ -436,7 +459,7 @@ ns.Html.prototype.validate = function () {
   if (!this.field.optional && !textValue.length) {
     // We can accept empty text, if there's an image instead.
     if (! (this.inTags("img") && $value.find('img').length > 0)) {
-      this.$errors.append(ns.createError(this.field.label + ' is required and must have some text or at least an image in it.'));
+      this.$errors.append(ns.createError(ns.t('core', 'requiredProperty', {':property': ns.t('core', 'textField')})));
     }
   }
 

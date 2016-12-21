@@ -100,6 +100,7 @@ H5P.ContentUpgradeProcess = (function (Version) {
       else {
         // Go through the minor versions for this major version
         asyncSerial(minors, function (minor, upgrade, nextMinor) {
+          minor =+ minor;
           if (minor <= oldVersion.minor || minor > newVersion.minor) {
             // Older than or equal to the current version or newer than the selected
             nextMinor();
@@ -181,7 +182,7 @@ H5P.ContentUpgradeProcess = (function (Version) {
         break;
 
       case 'group':
-        if (field.fields.length === 1) {
+        if (field.fields.length === 1 && field.isSubContent !== true) {
           // Single field to process, wrapper will be skipped
           self.processField(field.fields[0], params, function (err, upgradedParams) {
             if (upgradedParams) {

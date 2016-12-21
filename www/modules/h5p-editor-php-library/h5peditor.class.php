@@ -4,9 +4,7 @@ class H5peditor {
 
   public static $styles = array(
     'libs/darkroom.css',
-    'styles/css/application.css',
-    'styles/css/h5peditor-image.css',
-    'styles/css/h5peditor-image-popup.css'
+    'styles/css/application.css'
   );
   public static $scripts = array(
     'scripts/h5peditor.js',
@@ -18,6 +16,7 @@ class H5peditor {
     'scripts/h5peditor-html.js',
     'scripts/h5peditor-number.js',
     'scripts/h5peditor-textarea.js',
+    'scripts/h5peditor-file-uploader.js',
     'scripts/h5peditor-file.js',
     'scripts/h5peditor-image.js',
     'scripts/h5peditor-image-popup.js',
@@ -34,7 +33,7 @@ class H5peditor {
     'scripts/h5peditor-none.js',
     'ckeditor/ckeditor.js',
   );
-  private $h5p, $storage, $files_directory, $basePath, $relativePathRegExp;
+  private $h5p, $storage, $files_directory, $basePath;
 
   /**
    * Constructor for the core editor library.
@@ -43,15 +42,13 @@ class H5peditor {
    * @param mixed $storage Instance of h5peditor storage.
    * @param string $basePath Url path to prefix assets with.
    * @param string $filesDir H5P files directory.
-   * @param string $editorFilesDir Optional custom editor files directory outside h5p files directory.
    */
-  function __construct($h5p, $storage, $basePath, $filesDir, $editorFilesDir = NULL, $relativePathRegExp = '/^(\.\.\/){1,2}(\d+|editor)\/(.+)$/') {
+  function __construct($h5p, $storage, $basePath, $filesDir, $editorFilesDir = NULL) {
     $this->h5p = $h5p;
     $this->storage = $storage;
     $this->basePath = $basePath;
     $this->contentFilesDir = $filesDir . DIRECTORY_SEPARATOR . 'content';
     $this->editorFilesDir = ($editorFilesDir === NULL ? $filesDir . DIRECTORY_SEPARATOR . 'editor' : $editorFilesDir);
-    $this->relativePathRegExp = $relativePathRegExp;
   }
 
   /**
@@ -65,7 +62,7 @@ class H5peditor {
       $libraries = array();
       foreach ($_POST['libraries'] as $libraryName) {
         $matches = array();
-        preg_match_all('/(.+)\s(\d)+\.(\d)$/', $libraryName, $matches);
+        preg_match_all('/(.+)\s(\d+)\.(\d+)$/', $libraryName, $matches);
         if ($matches) {
           $libraries[] = (object) array(
             'uberName' => $libraryName,
@@ -81,11 +78,13 @@ class H5peditor {
 
     if ($this->h5p->development_mode & H5PDevelopment::MODE_LIBRARY) {
       $devLibs = $this->h5p->h5pD->getLibraries();
+    }
 
-      // Replace libraries with devlibs
-      for ($i = 0, $s = count($libraries); $i < $s; $i++) {
+    for ($i = 0, $s = count($libraries); $i < $s; $i++) {
+      if (!empty($devLibs)) {
         $lid = $libraries[$i]->name . ' ' . $libraries[$i]->majorVersion . '.' . $libraries[$i]->minorVersion;
         if (isset($devLibs[$lid])) {
+          // Replace library with devlib
           $libraries[$i] = (object) array(
             'uberName' => $lid,
             'name' => $devLibs[$lid]['machineName'],
@@ -93,8 +92,17 @@ class H5peditor {
             'majorVersion' => $devLibs[$lid]['majorVersion'],
             'minorVersion' => $devLibs[$lid]['minorVersion'],
             'runnable' => $devLibs[$lid]['runnable'],
+            'restricted' => $libraries[$i]->restricted,
+            'tutorialUrl' => $libraries[$i]->tutorialUrl,
+            'isOld' => $libraries[$i]->isOld
           );
         }
+      }
+      
+      // Some libraries rely on an LRS to work and must be enabled manually
+      if ($libraries[$i]->name === 'H5P.Questionnaire' &&
+          !$this->h5p->h5pF->getOption('enable_lrs_content_types')) {
+        $libraries[$i]->restricted = TRUE;
       }
     }
 
@@ -139,7 +147,7 @@ class H5peditor {
    *
    * @param string $oldLibrary
    * @param string $oldParameters
-   * @param object $newLibrary
+   * @param array $newLibrary
    * @param string $newParameters
    */
   public function processParameters($contentId, $newLibrary, $newParameters, $oldLibrary = NULL, $oldParameters = NULL) {
@@ -235,7 +243,9 @@ class H5peditor {
 
       case 'group':
         if (isset($params)) {
-          if (count($field->fields) == 1) {
+          $isSubContent = isset($field->isSubContent) && $field->isSubContent == TRUE;
+
+          if (count($field->fields) == 1 && !$isSubContent) {
             $params = (object) array($field->fields[0]->name => $params);
           }
           $this->processSemantics($files, $field->fields, $params);
@@ -264,14 +274,14 @@ class H5peditor {
 
     // File could be copied from another content folder.
     $matches = array();
-    if (preg_match($this->relativePathRegExp, $params->path, $matches)) {
+    if (preg_match($this->h5p->relativePathRegExp, $params->path, $matches)) {
       // Create copy of file
-      $source = $this->content_directory . $params->path;
-      $destination = $this->content_directory . $matches[3];
+      $source = $this->content_directory . $matches[1] . $matches[4] . '/' . $matches[5];
+      $destination = $this->content_directory . $matches[5];
       if (file_exists($source) && !file_exists($destination)) {
         copy($source, $destination);
       }
-      $params->path = $matches[3];
+      $params->path = $matches[5];
     }
     else {
       // Check if tmp file

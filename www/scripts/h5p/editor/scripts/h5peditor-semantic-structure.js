@@ -31,7 +31,8 @@ H5PEditor.SemanticStructure = (function ($) {
      * Global instance variables.
      * @private
      */
-    var $widgetSelect, $wrapper, $inner, $errors, $description, $helpText, widgets;
+    var $widgetSelect, $wrapper, $inner, $errors, $content,
+      $description, $helpText, widgets;
 
     /**
      * Initialize. Wrapped to avoid leaking variables
@@ -53,10 +54,9 @@ H5PEditor.SemanticStructure = (function ($) {
       var $label;
       if (field.label !== 0) {
         // Add label
-        $label = createLabel(self.label).appendTo($wrapper);
+        $label = createLabel(self.label, field.optional).appendTo($wrapper);
       }
 
-      var innerClass;
       widgets = getValidWidgets();
       if (widgets.length > 1) {
         // Create widget select box
@@ -77,6 +77,10 @@ H5PEditor.SemanticStructure = (function ($) {
       $inner = $('<div/>', {
         'class': 'h5peditor-widget-wrapper',
         appendTo: $wrapper
+      });
+
+      $content = $('<div/>', {
+        'class': 'h5peditor-field-content'
       });
 
       // Create errors container
@@ -262,12 +266,14 @@ H5PEditor.SemanticStructure = (function ($) {
    * @param {String} text
    * @returns {jQuery}
    */
-  var createLabel = function (text) {
+  var createLabel = function (text, optional) {
     return $('<label/>', {
-      'class': 'h5peditor-label',
+      'class': 'h5peditor-label' + (optional ? '' : ' h5peditor-required'),
       text: text
     });
   };
+
+
 
   /**
    * @constant
