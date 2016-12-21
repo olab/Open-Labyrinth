@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,7 +19,6 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
 class H5PContentAdmin
 {
 
@@ -525,12 +525,12 @@ class H5PContentAdmin
                 'height' => 50,
             ),
             'ajaxPath' => admin_url('/h5p/ajax_'),
+            // admin_url('admin-ajax.php?token=' . wp_create_nonce('h5p_editor_ajax') . '&action=h5p_')
             //'libraryUrl' => 'h5p/h5p-editor-php-library/h5peditor.class.php',
             'libraryUrl' => '/scripts/h5p/editor',
             'copyrightSemantics' => $content_validator->getCopyrightSemantics(),
             'assets' => $assets,
-            'deleteMessage' => __('Are you sure you wish to delete this content?'),
-            'uploadToken' => ''
+            'deleteMessage' => __('Are you sure you wish to delete this content?')
         );
 
         if ($id !== null) {
