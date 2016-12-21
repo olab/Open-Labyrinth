@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,7 +19,6 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
 class H5PContentQuery
 {
 
@@ -244,11 +244,10 @@ class H5PContentQuery
     {
         global $wpdb;
 
-        $query = "SELECT COUNT(hc.id)
+        $query = "SELECT COUNT(DISTINCT hc.id)
       FROM {$this->base_table}
       {$this->join}
-      {$this->where}
-      GROUP BY hc.id";
+      {$this->where}";
 
         if (!empty($this->where_args)) {
             // We need to prep if we have args

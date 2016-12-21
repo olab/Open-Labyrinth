@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Open Labyrinth [ http://www.openlabyrinth.ca ]
  *
@@ -18,7 +19,6 @@
  * @copyright Copyright 2012 Open Labyrinth. All Rights Reserved.
  *
  */
-
 class H5PPlugin
 {
 
@@ -29,7 +29,7 @@ class H5PPlugin
      * @since 1.0.0
      * @var string
      */
-    const VERSION = '1.6.0';
+    const VERSION = '1.6.2';
 
     /**
      * The Unique identifier for this plugin.
@@ -966,7 +966,11 @@ NOW;
                     'embedDescription' => __('View the embed code for this content.'),
                     'h5pDescription' => __('Visit H5P.org to check out more cool content.'),
                     'contentChanged' => __('This content has changed since you last used it.'),
-                    'startingOver' => __("You'll be starting over.")
+                    'startingOver' => __("You'll be starting over."),
+                    'confirmDialogHeader' => __('Confirm action'),
+                    'confirmDialogBody' => __('Please confirm that you wish to proceed. This action is not reversible.'),
+                    'cancelLabel' => __('Cancel'),
+                    'confirmLabel' => __('Confirm')
                 )
             )
         );
