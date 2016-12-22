@@ -362,6 +362,19 @@ class H5PPluginAdmin
 
         $skipContent = ($content === null);
         if ($validator->isValidPackage($skipContent, $only_upgrade) && ($skipContent || $content['title'] !== null)) {
+            if (function_exists('check_upload_size')) {
+                // Check file sizes before continuing!
+                $tmpDir = $interface->getUploadedH5pFolderPath();
+                $error = self::check_upload_sizes($tmpDir);
+                if ($error !== null) {
+                    // Didn't meet space requirements, cleanup tmp dir.
+                    $interface->setErrorMessage($error);
+                    H5PCore::deleteFileTree($tmpDir);
+
+                    return false;
+                }
+            }
+            // No file size check errors
             if (isset($content['id'])) {
                 $interface->deleteLibraryUsage($content['id']);
             }
@@ -370,11 +383,47 @@ class H5PPluginAdmin
 
             return $storage->contentId;
         }
-
         // The uploaded file was not a valid H5P package
         @unlink($interface->getUploadedH5pPath());
 
         return false;
+    }
+
+    /**
+     * Avoid breaking the upload limit with any of the files
+     *
+     * @since 1.7.3
+     * @param string $dir
+     * @return string on error, null if all is OK
+     */
+    public static function check_upload_sizes($dir)
+    {
+        $files = scandir($dir);
+        foreach ($files as $file) {
+            $firstChar = substr($file, 0, 1);
+            if ($firstChar === '.' || $firstChar === '_') {
+                continue; // Skip hidden files (will not be save by core)
+            }
+
+            $path = ($dir . '/' . $file);
+            if (is_dir($path)) {
+                // Scan dir
+                $error = self::check_upload_sizes($path);
+                if ($error !== null) {
+                    return $error;
+                }
+            } elseif (is_file($path)) {
+                // Check file size
+                $_POST['html-upload'] = true; // Small hack to get output instead of wp_die().
+                $upload = check_upload_size(array('tmp_name' => $path, 'error' => '0'));
+                $_POST['html-upload'] = false;
+                if ($upload['error'] != '0') {
+                    return $upload['error'];
+                }
+            }
+        }
+
+        return null; // All OK
     }
 
     /**

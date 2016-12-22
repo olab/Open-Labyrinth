@@ -30,14 +30,22 @@ function delete_option($option)
     return Model_Leap_Option::remove($option);
 }
 
+/**
+ * Determine if uploaded file exceeds space quota.
+ *
+ * @param array $file $_FILES array for a given file.
+ * @return array $_FILES array with 'error' key set if file exceeds quota. 'error' is empty otherwise.
+ */
+function check_upload_size($file)
+{
+    return $file;
+}
 
 /**
  * Check value to find if it was serialized.
  *
  * If $data is not an string, then returned value will always be false.
  * Serialized data is always a string.
- *
- * @since 2.0.5
  *
  * @param string $data Value to check to see if was serialized.
  * @param bool $strict Optional. Whether to be strict about the end of the string. Default true.
@@ -297,8 +305,6 @@ function value($value)
  * `mbstring_binary_safe_encoding()` call must be followed up with an equal number
  * of `reset_mbstring_encoding()` calls.
  *
- * @since 3.7.0
- *
  * @see reset_mbstring_encoding()
  *
  * @staticvar array $encodings
@@ -336,8 +342,6 @@ function mbstring_binary_safe_encoding($reset = false)
  * Reset the mbstring internal encoding to a users previously set encoding.
  *
  * @see mbstring_binary_safe_encoding()
- *
- * @since 3.7.0
  */
 function reset_mbstring_encoding()
 {

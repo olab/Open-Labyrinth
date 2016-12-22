@@ -1123,4 +1123,12 @@ class H5POpenLabyrinth implements H5PFrameworkInterface
 
         return $hashes;
     }
+
+    /**
+     * Implements afterExportCreated
+     */
+    public function afterExportCreated()
+    {
+
+    }
 }

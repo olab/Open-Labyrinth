@@ -70,6 +70,14 @@ class Controller_H5P extends Controller_Base
             die;
         }
 
+        if (function_exists('check_upload_size')) {
+            $upload = check_upload_size($_FILES['file']);
+            if ($upload['error'] != '0') {
+                H5PCore::ajaxError($upload['error']);
+                die;
+            }
+        }
+
         if ($file->validate() && $file->copy()) {
             // Keep track of temporary files so they can be cleaned up later.
             $editor->addTmpFile($file);
