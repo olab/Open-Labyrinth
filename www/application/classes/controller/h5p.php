@@ -1075,10 +1075,6 @@ class Controller_H5P extends Controller_Base
             )
         );
 
-        // Find out which version of libraries that should be upgraded
-        $minVersions = $core->getMinimumVersionsSupported(MODPATH . 'h5p-php-library/library-support.json');
-        $needsUpgrade = '';
-
         // Add settings for each library
         $i = 0;
         foreach ($libraries as $versions) {
@@ -1098,14 +1094,6 @@ class Controller_H5P extends Controller_Base
                     $upgradeUrl = null;
                     $restricted = null;
                     $restricted_url = null;
-                }
-
-                // Check if this should be upgraded.
-                if ($minVersions !== null && isset($minVersions[$library->name])) {
-                    $min = $minVersions[$library->name];
-                    if (!$core->isLibraryVersionSupported($library, $min->versions)) {
-                        $needsUpgrade .= '<li><a href="' . $min->downloadUrl . '">' . $library->name . '</a> (' . H5PCore::libraryVersion($library) . ')</li>';
-                    }
                 }
 
                 $contents_count = $interface->getNumContent($library->id);
@@ -1147,21 +1135,6 @@ class Controller_H5P extends Controller_Base
         // Make it possible to rebuild all caches.
         if ($not_cached) {
             $settings['libraryList']['notCached'] = $this->get_not_cached_settings($not_cached);
-        }
-
-        if ($needsUpgrade !== '') {
-            // Set update message
-            $interface->setErrorMessage('
-          <p>' . __('The following libraries are outdated and should be upgraded:') . '</p>
-          <ul id="h5p-outdated">' . $needsUpgrade . '</ul>
-          <p>' . __('To upgrade all the installed libraries, do the following:') . '</p>
-          <ol>
-            <li>' . sprintf(__('Download the H5P file from the %s page.'),
-                    '<a href="https://h5p.org/update-all-content-types">Upgrade All Content Types</a>') . '</li>
-            <li>' . sprintf(__('Select the downloaded <em> %s</em> file in the form below.'), 'upgrades.h5p') . '</li>
-            <li>' . __('Check off "Only update existing libraries" and click the <em>Upload</em> button.') . '</li>
-          </ol> </p>'
-            );
         }
 
         // Updates

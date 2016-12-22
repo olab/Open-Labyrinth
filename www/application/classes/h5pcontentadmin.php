@@ -359,8 +359,7 @@ class H5PContentAdmin
 
         $insert_method = get_option('h5p_insert_method', 'id');
         $button_content =
-            '<a href="#" id="add-h5p" class="button" title="' . __('Insert H5P Content',
-                $this->plugin_slug) . '" data-method="' . $insert_method . '">' .
+            '<a href="#" id="add-h5p" class="button" title="' . __('Insert H5P Content') . '" data-method="' . $insert_method . '">' .
             __('Add H5P') .
             '</a>';
 

@@ -312,19 +312,6 @@ class H5PPluginAdmin
     }
 
     /**
-     * Register and enqueue admin-specific style sheet.
-     *
-     * @since 1.0.0
-     */
-    public function enqueue_admin_styles_and_scripts()
-    {
-        $plugin = H5PPlugin::get_instance();
-        $plugin->enqueue_styles_and_scripts();
-        wp_enqueue_style($this->plugin_slug . '-admin-styles', plugins_url('styles/admin.css', __FILE__), array(),
-            H5PPlugin::VERSION);
-    }
-
-    /**
      * Load content and add to title for certain pages.
      * Should we have used get_current_screen() ?
      *

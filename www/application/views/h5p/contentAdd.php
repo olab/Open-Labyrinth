@@ -142,7 +142,7 @@
                             <div class="h5p-panel">
                             <textarea rows="2" name="tags"
                                       class="h5p-tags"><?php print esc_html($content['tags']); ?></textarea>
-                                <p class="howto">Separate tags with commas</p>
+                                <p class="howto"><?php __('Separate tags with commas') ?></p>
                             </div>
                         </div>
                     </div>
