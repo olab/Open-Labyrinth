@@ -51,7 +51,7 @@ var H5PLibraryList = H5PLibraryList || {};
           class: 'h5p-admin-center'
         },
         '<div class="h5p-admin-buttons-wrapper">' +
-            '<button class="h5p-admin-upgrade-library"></button>' +
+            '<button class="h5p-admin-upgrade-library hide"></button>' +
             (library.detailsUrl ? '<button class="h5p-admin-view-library" title="' + t.viewLibrary + '"></button>' : '') +
             (library.deleteUrl ? '<button class="h5p-admin-delete-library"></button>' : '') +
             '</div>'
