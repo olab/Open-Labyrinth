@@ -62,7 +62,7 @@
     if (parameters !== undefined) {
       for (var property in parameters) {
         if (parameters.hasOwnProperty(property)) {
-          url += '&' + property + '=' + parameters[property];
+          url += (url.indexOf('?') === -1 ? '?' : '&') + property + '=' + parameters[property];
         }
       }
     }
