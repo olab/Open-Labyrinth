@@ -1074,7 +1074,7 @@ class Controller_H5P extends Controller_Base
 
         $settings = array(
             'containerSelector' => '#h5p-admin-container',
-            'extraTableClasses' => 'wp-list-table widefat fixed',
+            'extraTableClasses' => 'table table-striped table-bordered widefat fixed',
             'l10n' => array(
                 'NA' => __('N/A'),
                 'viewLibrary' => __('View library details'),
