@@ -341,7 +341,7 @@
             }
         } ?>
 
-        <div class="modal hide fade" id="counter-debug">
+        <div class="modal popup hide fade" id="counter-debug">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="alert-heading"><?php echo __('Debbuger window'); ?></h4>
