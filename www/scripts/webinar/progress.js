@@ -263,7 +263,7 @@ function getReportProgress() {
             setTimeout(function () {
                 location.href = currentUrl;
                 location.reload();
-            }, 7000);
+            }, 12000);
         } else {
             $('#please_wait_additional_info').html('Processed ' + result.session_counter + ' items.');
             setTimeout(function () {
