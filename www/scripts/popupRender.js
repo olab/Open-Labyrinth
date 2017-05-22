@@ -3,7 +3,7 @@ $(function() {
         $popupInsideContainer  = $('.popup-inside-container'),
         assignTypeCheck        = { labyrinth: mapCheck, node: nodeCheck, section: sectionCheck };
 
-    $.each($('.popup'), function(){
+    $.each($('.popup'), function() {
         var $popup                      = $(this),
             assignType                  = $popup.attr('assign-type'),
             startTime                   = parseInt($popup.attr('time-before')),
@@ -22,16 +22,22 @@ $(function() {
 
         if (titleHide == 1) $popup.children('.header').hide();
 
-        if (is_background_transparent == 0) $popup.css('background', background_color);
-        else {
+        if (is_background_transparent == 0) {
+            $popup.css('background', background_color);
+        } else {
             color = hexToRgb(background_color);
-            $popup.css('background', 'rgba('+color.r+','+color.g+','+color.b+','+(1-(background_transparent/100))+')');
+            if (color !== null) {
+                $popup.css('background', 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + (1 - (background_transparent / 100)) + ')');
+            }
         }
 
-        if (is_border_transparent == 0) $popup.css('border', '1px solid ' + border_color);
-        else {
+        if (is_border_transparent == 0) {
+            $popup.css('border', '1px solid ' + border_color);
+        } else {
             color = hexToRgb(border_color);
-            $popup.css('border', '1px solid rgba('+color.r+','+color.g+','+color.b+','+(1-(border_transparent/100))+')');
+            if (color !== null) {
+                $popup.css('border', '1px solid rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + (1 - (border_transparent / 100)) + ')');
+            }
         }
 
         if (isNaN(startTime)) startTime = 0;
@@ -63,11 +69,11 @@ $(function() {
         }
     });
 
-    function mapCheck(){
+    function mapCheck() {
         return true;
     }
 
-    function nodeCheck($object){
+    function nodeCheck($object) {
         return $object.attr('assign-to-id') == nodeId;
     }
 
