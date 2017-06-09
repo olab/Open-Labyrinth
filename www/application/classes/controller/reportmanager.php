@@ -198,8 +198,13 @@ class Controller_ReportManager extends Controller_Base
         }
 
         $questions = array();
-        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->where('id', 'IN', $questionsIds, 'OR')
-                     ->query()->as_array() as $question) {
+        $query = DB_ORM::select('map_question')->where('map_id', '=', $mapId);
+
+        if (!empty($questionsIds)) {
+            $query->where('id', 'IN', $questionsIds, 'OR');
+        }
+
+        foreach ($query->query()->as_array() as $question) {
             $questions[$question->id] = $question;
         }
 
