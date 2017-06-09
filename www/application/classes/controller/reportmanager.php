@@ -41,9 +41,9 @@ class Controller_ReportManager extends Controller_Base
             $mapId = (int)$mapId;
             $this->templateData['map'] = DB_ORM::model('map', array($mapId));
             $this->templateData['sessions'] = Model_Leap_User_Session::getByMapId($mapId, [
-                'id', 
-                'user_id', 
-                'start_time', 
+                'id',
+                'user_id',
+                'start_time',
                 'end_time',
             ]);
             $this->templateData['sessionsComplete'] = $this->templateData['map']->getCompleteSessions($this->templateData['sessions']);
@@ -183,14 +183,6 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
-        $questions = array();
-        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array() as $question) {
-            $questions[$question->id] = $question;
-        }
-
-        $this->templateData['questions'] = $questions;
-        $this->templateData['responses'] = array();
-
         if ($this->templateData['map']->revisable_answers) {
             $orderBy = 'DESC';
         } else {
@@ -199,12 +191,32 @@ class Controller_ReportManager extends Controller_Base
 
         $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id',
             $orderBy)->query()->as_array();
+
+        $questionsIds = array();
+        foreach ($userResponses as $userResponse) {
+            $questionsIds[$userResponse->question_id] = $userResponse->question_id;
+        }
+
+        $questions = array();
+        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->where('id', 'IN', $questionsIds, 'OR')
+                     ->query()->as_array() as $question) {
+            $questions[$question->id] = $question;
+        }
+
+        $this->templateData['questions'] = $questions;
+        $this->templateData['responses'] = array();
+
         $multipleResponses = $this->mcqConvertResponses($userResponses, $questions, $orderBy);
 
         $answeredQuestions = array();
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             $nodeId = $userResponse->node_id;
+
+            if (!isset($questions[$questionId])) {
+                continue;
+            }
+
             if ($questions[$questionId]->entry_type_id == Model_Leap_Map_Question::ENTRY_TYPE_SJT) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
@@ -224,19 +236,19 @@ class Controller_ReportManager extends Controller_Base
                     Model_Leap_Map_Question::ENTRY_TYPE_MCQ_GRID,
                     Model_Leap_Map_Question::ENTRY_TYPE_PCQ_GRID,
                 ])) {
-                    
+
                     $this->templateData['responses'][] = $userResponse;
                     $answeredQuestions[$nodeId][] = $questionId;
-                    
+
                 } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_MCQ))) {
-                    
+
                     if (isset($multipleResponses[$questionId], $multipleResponses[$questionId][$nodeId])) {
                         foreach ($multipleResponses[$questionId][$nodeId] as $mcqUserResponse) {
                             $this->templateData['responses'][] = $mcqUserResponse;
                         }
                         $answeredQuestions[$nodeId][] = $questionId;
                     }
-                    
+
                 } elseif (in_array($questions[$questionId]->entry_type_id, array(Model_Leap_Map_Question::ENTRY_TYPE_TURK_TALK))) {
 
                     $responseArray = json_decode($userResponse->response, true);
@@ -346,7 +358,7 @@ class Controller_ReportManager extends Controller_Base
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             $responseNodeId = $userResponse->node_id;
-            if (in_array($questions[$questionId]->entry_type_id, array(3))) {
+            if (isset($questions[$questionId]) && in_array($questions[$questionId]->entry_type_id, array(3))) {
                 $multipleResponses[$questionId][$responseNodeId][] = $userResponse->created_at;
             }
         }
