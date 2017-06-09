@@ -177,14 +177,6 @@ class Controller_ReportManager extends Controller_Base
             }
         }
 
-        $questions = array();
-        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->query()->as_array() as $question) {
-            $questions[$question->id] = $question;
-        }
-
-        $this->templateData['questions'] = $questions;
-        $this->templateData['responses'] = array();
-
         if ($this->templateData['map']->revisable_answers) {
             $orderBy = 'DESC';
         } else {
@@ -193,12 +185,32 @@ class Controller_ReportManager extends Controller_Base
 
         $userResponses = DB_ORM::select('user_response')->where('session_id', '=', $session->id)->order_by('id',
             $orderBy)->query()->as_array();
+
+        $questionsIds = array();
+        foreach ($userResponses as $userResponse) {
+            $questionsIds[$userResponse->question_id] = $userResponse->question_id;
+        }
+
+        $questions = array();
+        foreach (DB_ORM::select('map_question')->where('map_id', '=', $mapId)->where('id', 'IN', $questionsIds, 'OR')
+                     ->query()->as_array() as $question) {
+            $questions[$question->id] = $question;
+        }
+
+        $this->templateData['questions'] = $questions;
+        $this->templateData['responses'] = array();
+
         $multipleResponses = $this->mcqConvertResponses($userResponses, $questions, $orderBy);
 
         $answeredQuestions = array();
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             $nodeId = $userResponse->node_id;
+
+            if (!isset($questions[$questionId])) {
+                continue;
+            }
+
             if ($questions[$questionId]->entry_type_id == 8) {
                 $userResponse->response = DB_ORM::model('User_Response')->sjtConvertResponse($userResponse->response);
             }
@@ -323,7 +335,7 @@ class Controller_ReportManager extends Controller_Base
         foreach ($userResponses as $userResponse) {
             $questionId = $userResponse->question_id;
             $responseNodeId = $userResponse->node_id;
-            if (in_array($questions[$questionId]->entry_type_id, array(3))) {
+            if (isset($questions[$questionId]) && in_array($questions[$questionId]->entry_type_id, array(3))) {
                 $multipleResponses[$questionId][$responseNodeId][] = $userResponse->created_at;
             }
         }
