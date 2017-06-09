@@ -137,9 +137,15 @@ if (isset($templateData['session'])) {
             echo $mustVisited; ?>&nbsp;<?php echo __('required nodes and'); ?>&nbsp;
             <?php echo $mustAvoid; ?>&nbsp;<?php echo __('avoid nodes visited'); ?></td>
     </tr>
-    <?php if ($progress = DB_ORM::model('Map_Counter')->progress($templateData['session']->traces['0']->counters,
-        $templateData['session']->map->id)
-    ): ?>
+    <?php
+
+    if (isset($templateData['session']->traces['0'])) {
+        $counterPoints = $templateData['session']->traces['0']->counters;
+    } else {
+        $counterPoints = '';
+    }
+
+    if ($progress = DB_ORM::model('Map_Counter')->progress($counterPoints, $templateData['session']->map->id)): ?>
         <tr>
             <td>your score</td>
             <td><?php echo $progress; ?></td>
