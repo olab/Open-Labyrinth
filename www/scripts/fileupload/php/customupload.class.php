@@ -45,6 +45,8 @@ class CustomUploadHandler extends UploadHandler
         'audio/mpeg' => 'mpga',
         'audio/x-pn-realaudio' => 'ram',
         'audio/x-wav' => 'wav',
+        'audio/mpeg3' => 'mp3',
+        'audio/x-mpeg-3' => 'mp3',
 
         'video/x-msvideo' => 'avi',
         'video/quicktime' => 'qt',
