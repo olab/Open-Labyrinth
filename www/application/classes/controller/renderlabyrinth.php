@@ -47,7 +47,7 @@ class Controller_RenderLabyrinth extends Controller_Template {
         $continue    = true;
         $scenarioId  = Controller_RenderLabyrinth::$scenarioId;
 
-        if ($action == 'index') {
+        if ($action === 'index') {
             $mapDB = DB_ORM::model('map', array($mapId));
             if ($mapDB->security_id == 4) {
                 $sessionId      = Session::instance()->id();
@@ -89,11 +89,11 @@ class Controller_RenderLabyrinth extends Controller_Template {
                 }
             }
 
-        } elseif ($action == 'resume') {
+        } elseif ($action === 'resume') {
             $result     = DB_ORM::model('User_Bookmark')->getBookmarkByMapAndUser($mapId, Auth::instance()->get_user()->id);
             $node       = DB_ORM::model('map_node')->getNodeById(Arr::get($result, 'node_id', 0));
             $bookmark   = Arr::get($result, 'id', 0);
-        } elseif ($action == 'go') {
+        } elseif ($action === 'go') {
 
             $sessionId = Session::instance()->get('session_id');
             $sessionObj = DB_ORM::model('user_session', (int)$sessionId);
@@ -136,13 +136,13 @@ class Controller_RenderLabyrinth extends Controller_Template {
 
         self::$nodeId = $nodeObj->id;
 
-        $editOnId   = ($action == 'go') ? 'id3' : 'id2';
+        $editOnId   = ($action === 'go') ? 'id3' : 'id2';
         $editOn     = $this->request->param($editOnId, null);
         $nodeId     = $nodeObj->id;
         $mapId      = $nodeObj->map_id;
-        $isRoot     = ($nodeObj->type_id == 1 && $action == 'index') ? true : false;
+        $isRoot     = ($nodeObj->type_id == 1 && $action === 'index');
         $scenarioId = DB_ORM::model('User_Session', array(Session::instance()->get('session_id')))->webinar_id;
-        $data       = ($action == 'resume')
+        $data       = ($action === 'resume')
             ? Model::factory('labyrinth')->execute($nodeId, $bookmark)
             : Model::factory('labyrinth')->execute($nodeId, null, $isRoot, Controller_RenderLabyrinth::$isCumulative);
 
@@ -237,13 +237,18 @@ class Controller_RenderLabyrinth extends Controller_Template {
             }
         }
 
-        if ($action = 'index') {
+        if ($action = 'index') { // @TODO: there is a bug
             $data['session'] = (int) $data['traces'][0]->session_id;
         }
 
         if(!empty($_COOKIE['wasRedirected'])){
             $data['wasRedirected'] = true;
             setcookie('wasRedirected', '', time() - 3600, '/');
+        }
+
+        $redirectToNode = $this->request->query('redirectToNode');
+        if (!empty($redirectToNode)) {
+            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $redirectToNode);
         }
 
         $this->template = View::factory($skin)->set('templateData', $data);
