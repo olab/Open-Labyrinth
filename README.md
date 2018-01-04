@@ -14,7 +14,7 @@ Apache server.
 The install routines are still a bit glitchy - we apologize for this. Linux experts should have no trouble. The rest of us 
 mortals might have a hiccup or two. 
 
-Version 3.3 is very stable and recommended for production settings.
+Version 3.3 is very stable and recommended for production settings. Version 3.4.1 has a number of more advanced features but is harder to install and is more fussy about PHP version and other factors. Apart from maintenance fixes, we will not be continuing to develop OpenLabyrinth v3. All our future efforts are being directed towards OLab4 -- https://github.com/olab/OLab4 
 
-If you want to see some of the latest development features, send us a note via info AT openlabyrinth DOT ca and we can set 
-you up with a test account at http://demo.openlabyrinth.ca/
+If you want to see some of the latest development features, send us a note via http://openlabyrinth.ca/free-trial/ and we can set 
+you up with a test account on the demo server at http://demo.openlabyrinth.ca/
