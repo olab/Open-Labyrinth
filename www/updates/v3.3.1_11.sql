@@ -1,1 +1,0 @@
-INSERT INTO `languages` (`name`, `key`) VALUES ('RU', 'ru-ru');

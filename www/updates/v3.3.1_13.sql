@@ -1,1 +1,0 @@
-ALTER TABLE `statements` ADD `initiator` TINYINT UNSIGNED NOT NULL DEFAULT '1' AFTER `session_id`;

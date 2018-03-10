@@ -1,1 +1,0 @@
-INSERT INTO  `map_question_types` ( `id` , `title` , `value` , `template_name` , `template_args` ) VALUES ( 10 ,  'Rich text',  'area',  'area', NULL );

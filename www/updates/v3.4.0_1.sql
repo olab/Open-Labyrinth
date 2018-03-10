@@ -1,1 +1,0 @@
-INSERT INTO `options` (`id`, `name`, `value`, `autoload`) VALUES (NULL, 'curios_video_player_domains', '[]', 'no');

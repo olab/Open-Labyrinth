@@ -1,1 +1,0 @@
-ALTER TABLE `user_sessions` ADD `uuid` VARCHAR(255) NOT NULL AFTER `id`;
