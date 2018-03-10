@@ -1,4 +1,4 @@
-OpenLabyrinth
+OpenLabyrinth THIS IS BETA
 ==============
 OpenLabyrinth is an open-source (GNU-GPL3 licence) platform for creating and playing virtual patients. 
 
