@@ -1,1 +1,0 @@
-ALTER TABLE `user_notes` CHANGE `user_id` `user_id` INT(10) UNSIGNED NULL DEFAULT NULL;
