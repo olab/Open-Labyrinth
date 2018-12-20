@@ -9,6 +9,9 @@
     "scripts": {
         "post-update-cmd": [
             "if [ -d \"vendor/koseven/koseven/\" ] \nthen \ncp -r vendor/koseven/koseven/modules/ www/ \nfi"
+        ],
+        "post-install-cmd": [
+            "if [ -d \"vendor/koseven/koseven/\" ] \nthen \ncp -r vendor/koseven/koseven/modules/ www/ \nfi"
         ]
     }
 }
