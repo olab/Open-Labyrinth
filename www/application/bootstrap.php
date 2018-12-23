@@ -67,6 +67,21 @@ spl_autoload_register(array('Kohana', 'auto_load_lowercase'));
  */
 ini_set('unserialize_callback_func', 'spl_autoload_call');
 
+/**
+ * Enable composer autoload libraries
+ */
+if (is_file(DOCROOT.'/vendor/autoload.php'))
+{
+	require DOCROOT.'/vendor/autoload.php';
+}
+
+/**
+ * Set the mb_substitute_character to "none"
+ *
+ * @link http://www.php.net/manual/function.mb-substitute-character.php
+ */
+mb_substitute_character('none');
+
 // -- Configuration and initialization -----------------------------------------
 
 /**
@@ -83,6 +98,11 @@ I18n::lang($config['lang']);
 if (isset($_SERVER['KOHANA_ENV'])) {
     Kohana::$environment = constant('Kohana::' . strtoupper($_SERVER['KOHANA_ENV']));
 }
+
+/**
+ * Koseven requires a cookie salt
+ */
+Cookie::$salt = $config['cookie_salt'];
 
 /**
  * Initialize Kohana, setting the default options.
