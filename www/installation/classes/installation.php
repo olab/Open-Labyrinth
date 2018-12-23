@@ -682,10 +682,14 @@ class Installation
 (1, '" . $olabUser['admin_user'] . "', '" . $password . "', '" . $olabUser['admin_email'] . "', 'administrator', 1, 4);";
         mysqli_query($link, $query) or die(mysqli_error($link));
 
+        /**
+         * @TODO: change this to koseven standard (mysqli or pdo allowed)
+         * But beware: leap orm would have to be rewritten too for this to work.
+         */
         $databaseConfig = '$config = array();
         $config["default"] = array(
             "type"          => "mysql",
-            "driver"        => "standard",
+            "driver"        => "improved",
             "connection"    => array(
                 "persistent"    => FALSE,
                 "hostname"      => "'.$olab['db_host'].'",
@@ -699,7 +703,6 @@ class Installation
             "profiling"     => FALSE,
             "table_prefix"  => "",
         );
-
         return $config;';
 
         $content = '';
