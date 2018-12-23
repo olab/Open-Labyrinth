@@ -136,12 +136,18 @@ class Installation
 
             if (!$errorFound) {
                 $baseUrl = URL::base();
-                if ($baseUrl != '/') {
-                    $configPath = DOCROOT . 'config.json';
-                    $config = self::getContent($configPath);
-                    $config['base_url'] = $baseUrl;
-                    self::createFile($configPath, $config, true);
+                $configPath = DOCROOT . 'config.json';
+                $config = self::getContent($configPath);
+                $config['base_url'] = $baseUrl;
+                $config['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
+                $geo_guess = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
+                if(is_array($geo_guess)) {
+                    $config['timezone'] = $geo_guess['geoplugin_timezone'];
+                    $config['lang'] =
                 }
+
+                self::createFile($configPath, $config, true);
+
                 Session::set('installationStep', '2');
             }
         }
@@ -168,6 +174,8 @@ class Installation
                 $content = json_decode($content, true);
             }
         }
+        // generate random cookie salt
+        $content['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
 
         return $content;
     }
@@ -810,7 +818,7 @@ class Installation
                         if ($ext == 'sql') {
                             $pathToFile = $dir . $f;
                             if (!isset($skipFiles[$f])) {
-                                Installation::populateDatabase($link, $pathToFile);
+                                Installation::populateDatabase($pathToFile);
                                 $skipFiles[$f] = 1;
                                 $result = 1;
                             }
@@ -944,8 +952,10 @@ class Installation
     public static function terminate()
     {
         if ((is_writable(DOCROOT . 'install.php')) AND (is_dir(DOCROOT . 'installation') AND is_writable(DOCROOT . 'installation'))) {
-            unlink(DOCROOT . 'install.php');
-            Installation::deleteDir(DOCROOT . 'installation');
+            //unlink(DOCROOT . 'install.php');
+            rename(DOCROOT . 'install.php', DOCROOT . '__install.php');
+            rename(DOCROOT . 'installation', DOCROOT . '__installation');
+            //Installation::deleteDir(DOCROOT . 'installation');
             $baseUrl = URL::base();
             session_destroy();
             Installation::redirect($baseUrl);
@@ -954,5 +964,171 @@ class Installation
             Session::set('installationStep', '1');
             Installation::redirect(URL::base() . 'installation/index.php');
         }
+    }
+
+    public static function country_code_to_locale($country_code)
+    {
+        $locales = array('af-ZA',
+            'am-ET',
+            'ar-AE',
+            'ar-BH',
+            'ar-DZ',
+            'ar-EG',
+            'ar-IQ',
+            'ar-JO',
+            'ar-KW',
+            'ar-LB',
+            'ar-LY',
+            'ar-MA',
+            'ar-OM',
+            'ar-QA',
+            'ar-SA',
+            'ar-SY',
+            'ar-TN',
+            'ar-YE',
+            'az-Cyrl-AZ',
+            'az-Latn-AZ',
+            'be-BY',
+            'bg-BG',
+            'bn-BD',
+            'bs-Cyrl-BA',
+            'bs-Latn-BA',
+            'cs-CZ',
+            'da-DK',
+            'de-AT',
+            'de-CH',
+            'de-DE',
+            'de-LI',
+            'de-LU',
+            'dv-MV',
+            'el-GR',
+            'en-AU',
+            'en-BZ',
+            'en-CA',
+            'en-GB',
+            'en-IE',
+            'en-JM',
+            'en-MY',
+            'en-NZ',
+            'en-SG',
+            'en-TT',
+            'en-US',
+            'en-ZA',
+            'en-ZW',
+            'es-AR',
+            'es-BO',
+            'es-CL',
+            'es-CO',
+            'es-CR',
+            'es-DO',
+            'es-EC',
+            'es-ES',
+            'es-GT',
+            'es-HN',
+            'es-MX',
+            'es-NI',
+            'es-PA',
+            'es-PE',
+            'es-PR',
+            'es-PY',
+            'es-SV',
+            'es-US',
+            'es-UY',
+            'es-VE',
+            'et-EE',
+            'fa-IR',
+            'fi-FI',
+            'fil-PH',
+            'fo-FO',
+            'fr-BE',
+            'fr-CA',
+            'fr-CH',
+            'fr-FR',
+            'fr-LU',
+            'fr-MC',
+            'he-IL',
+            'hi-IN',
+            'hr-BA',
+            'hr-HR',
+            'hu-HU',
+            'hy-AM',
+            'id-ID',
+            'ig-NG',
+            'is-IS',
+            'it-CH',
+            'it-IT',
+            'ja-JP',
+            'ka-GE',
+            'kk-KZ',
+            'kl-GL',
+            'km-KH',
+            'ko-KR',
+            'ky-KG',
+            'lb-LU',
+            'lo-LA',
+            'lt-LT',
+            'lv-LV',
+            'mi-NZ',
+            'mk-MK',
+            'mn-MN',
+            'ms-BN',
+            'ms-MY',
+            'mt-MT',
+            'nb-NO',
+            'ne-NP',
+            'nl-BE',
+            'nl-NL',
+            'pl-PL',
+            'prs-AF',
+            'ps-AF',
+            'pt-BR',
+            'pt-PT',
+            'ro-RO',
+            'ru-RU',
+            'rw-RW',
+            'sv-SE',
+            'si-LK',
+            'sk-SK',
+            'sl-SI',
+            'sq-AL',
+            'sr-Cyrl-BA',
+            'sr-Cyrl-CS',
+            'sr-Cyrl-ME',
+            'sr-Cyrl-RS',
+            'sr-Latn-BA',
+            'sr-Latn-CS',
+            'sr-Latn-ME',
+            'sr-Latn-RS',
+            'sw-KE',
+            'tg-Cyrl-TJ',
+            'th-TH',
+            'tk-TM',
+            'tr-TR',
+            'uk-UA',
+            'ur-PK',
+            'uz-Cyrl-UZ',
+            'uz-Latn-UZ',
+            'vi-VN',
+            'wo-SN',
+            'yo-NG',
+            'zh-CN',
+            'zh-HK',
+            'zh-MO',
+            'zh-SG',
+            'zh-TW');
+
+        // randomize the array, such that we get random locales
+        // for countries with multiple languages (CA, CH)
+        shuffle($locales);
+
+        foreach ($locales as $locale) {
+            $locale_region = locale_get_region($locale);
+
+            if (strtoupper($country_code) == $locale_region) {
+                return $locale;
+            }
+        }
+
+        return "en-US";
     }
 }
