@@ -143,7 +143,7 @@ class Installation
                 $geo_guess = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
                 if(is_array($geo_guess)) {
                     $config['timezone'] = $geo_guess['geoplugin_timezone'];
-                    $config['lang'] = country_code_to_locale($geo_guess['geoplugin_countryCode']);
+                    $config['lang'] = Installation::country_code_to_locale($geo_guess['geoplugin_countryCode']);
                     $config['locale'] = str_replace('-', '_', $config['lang']).'.utf-8';
                 }
 
