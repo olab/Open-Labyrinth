@@ -149,7 +149,7 @@ class Controller_Sparql_Rebuild extends Controller_Base
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('SPARQL Endpoint Indexing'))->set_url(URL::base() . 'sparql/rebuild'));
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
         $leftView = View::factory('vocabulary/semanticsMenu');
         $leftView->set('templateData', $this->templateData);

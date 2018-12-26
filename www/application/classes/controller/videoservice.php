@@ -29,7 +29,7 @@ class Controller_VideoService extends Controller_Base {
 
     public function action_index()
     {
-        Request::initial()->redirect('videoservice/video');
+        Controller::redirect('videoservice/video');
     }
 
     public function action_video()

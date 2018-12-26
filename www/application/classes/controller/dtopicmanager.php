@@ -115,9 +115,9 @@ class Controller_DTopicManager extends Controller_DForumManager {
         }
 
         if (Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base() . 'dforumManager/');
+            Controller::redirect(URL::base() . 'dforumManager/');
         }
-        Request::initial()->redirect(URL::base() . 'dforumManager/editForum/'.$forum_id);
+        Controller::redirect(URL::base() . 'dforumManager/editForum/'.$forum_id);
     }
 
     public function action_updateTopic(){
@@ -143,7 +143,7 @@ class Controller_DTopicManager extends Controller_DForumManager {
             self::action_mail('updateForum',$topic_id,$topicNames, '','','fromTopic');
         }
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/editForum/'. $forum_id);
+        Controller::redirect(URL::base() . 'dforumManager/editForum/'. $forum_id);
     }
 
     public function action_viewTopic() {
@@ -189,7 +189,7 @@ class Controller_DTopicManager extends Controller_DForumManager {
 
         $red = is_null($from) ? '' : 'editForum/' . $forumId;
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/' . $red);
+        Controller::redirect(URL::base() . 'dforumManager/' . $red);
     }
 
     public function action_addMessage(){
@@ -202,7 +202,7 @@ class Controller_DTopicManager extends Controller_DForumManager {
 
         self::action_mail('addMsg', $topicId,  $message, $forumName, '', $messageId, 'fromTopic');
 
-        Request::initial()->redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId . '#m-' . $messageId);
+        Controller::redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId . '#m-' . $messageId);
     }
 
     public function action_editMessage(){
@@ -240,7 +240,7 @@ class Controller_DTopicManager extends Controller_DForumManager {
             self::action_mail('updateMsg',$topicId, $message, $forumName,'','','fromTopic');
         }
 
-        Request::initial()->redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId . '#m-' . $message_id);
+        Controller::redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId . '#m-' . $message_id);
     }
 
     public function action_deleteMessage(){
@@ -256,7 +256,7 @@ class Controller_DTopicManager extends Controller_DForumManager {
 
         self::action_mail('deleteMsg',$topicId, $oldMessage, $forumName,'','','fromTopic');
 
-        Request::initial()->redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId);
+        Controller::redirect(URL::base() . 'dtopicManager/viewTopic/' . $topicId);
     }
 
 }

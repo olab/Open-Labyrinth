@@ -45,7 +45,7 @@ class Controller_ExportImportManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -56,9 +56,9 @@ class Controller_ExportImportManager extends Controller_Base {
 
         if ($mapId != NULL) {
             $this->exportVUE($mapId);
-            Request::initial()->redirect(URL::base() . 'export/OLVue-export-' . $mapId . '.vue');
+            Controller::redirect(URL::base() . 'export/OLVue-export-' . $mapId . '.vue');
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -89,7 +89,7 @@ class Controller_ExportImportManager extends Controller_Base {
             }
         }
 
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_exportAdvanced(){
@@ -117,7 +117,7 @@ class Controller_ExportImportManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', 0);
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base().'exportimportmanager/exportMVP');
+        if ( ! $mapId) Controller::redirect(URL::base().'exportimportmanager/exportMVP');
 
         $params['mapId']    = $mapId;
         $params['mapName']  = DB_ORM::model('map', array((int) $mapId))->name;
@@ -443,7 +443,7 @@ class Controller_ExportImportManager extends Controller_Base {
                 DB_ORM::model('map')->deleteMap($lastAddedMapOfCurrentUser);
             }
         }
-        Request::initial()->redirect(URL::base().'exportImportManager/import');
+        Controller::redirect(URL::base().'exportImportManager/import');
     }
 
     public function getIdFromString($string) {

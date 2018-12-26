@@ -42,7 +42,7 @@ class Controller_Resource extends Controller_Base
                 $path = self::getPagePath($type,$id);
                 break;
         }
-        Request::initial()->redirect($path, 303);
+        Controller::redirect($path, 303);
 
     }
 

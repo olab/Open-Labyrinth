@@ -34,7 +34,7 @@ class Controller_ClusterManager extends Controller_Base {
     public function action_index()
     {
         $mapId = $this->request->param('id', NULL);
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
@@ -59,7 +59,7 @@ class Controller_ClusterManager extends Controller_Base {
     public function action_addDam() {
         $mapId = $this->request->param('id', NULL);
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
@@ -76,9 +76,9 @@ class Controller_ClusterManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         if ($_POST and $mapId != NULL) {
             Db_ORM::model('map_dam')->createDam($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'clusterManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'clusterManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -99,9 +99,9 @@ class Controller_ClusterManager extends Controller_Base {
                 $ses->set('warningMessage', 'The claster wasn\'t deleted. The selected claster is used in the following labyrinths:');
             }
             else DB_ORM::model('map_dam', array((int) $damId))->delete();
-            Request::initial()->redirect(URL::base().'clusterManager/index/'.$mapId);
+            Controller::redirect(URL::base().'clusterManager/index/'.$mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_editCluster()
@@ -136,7 +136,7 @@ class Controller_ClusterManager extends Controller_Base {
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Clusters'))->set_url(URL::base() . 'clusterManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['dam']->name)->set_url(URL::base() . 'clusterManager/index/' . $mapId. '/'. $this->templateData['dam']->id));
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_updateDamName() {
@@ -153,9 +153,9 @@ class Controller_ClusterManager extends Controller_Base {
                 $_POST['is_private'] = FALSE;
             }
             DB_ORM::model('map_dam')->updateDamName($damId, $_POST);
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -165,9 +165,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if ($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addElement($damId, $_POST, 'vpd');
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -178,9 +178,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if ($elementId != NULL and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam_element', array((int) $elementId))->delete();
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -191,9 +191,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if ($_POST and $elementId != NULL and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam_element')->updateElement($elementId, $_POST);
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -203,9 +203,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if ($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addFile($damId, $_POST, 'mr');
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -215,9 +215,9 @@ class Controller_ClusterManager extends Controller_Base {
 
         if ($_POST and $mapId != NULL and $damId != NULL) {
             DB_ORM::model('map_dam')->addDam($damId, $_POST, 'dam');
-            Request::initial()->redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
+            Controller::redirect(URL::base() . 'clusterManager/editCluster/' . $mapId . '/' . $damId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

@@ -109,6 +109,6 @@ class Controller_UpdateDatabase extends Controller_Base {
         $post = $this->request->post();
         $toVersion = Arr::get($post, 'toVersion', null);
         $result = Updates::rollback($toVersion);
-        Request::initial()->redirect(URL::base(true).'updatedatabase/rollback/'.$result);
+        Controller::redirect(URL::base(true).'updatedatabase/rollback/'.$result);
     }
 }

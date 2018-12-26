@@ -57,7 +57,7 @@ class Controller_ReportManager extends Controller_Base
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Sessions'))->set_url(URL::base() . 'reportManager/index/' . $mapId));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -117,7 +117,7 @@ class Controller_ReportManager extends Controller_Base
         } else {
             $sessionIdUrl = $sessionId;
         }
-        Request::initial()->redirect(URL::base() . 'reportManager/showReport/' . $sessionIdUrl);
+        Controller::redirect(URL::base() . 'reportManager/showReport/' . $sessionIdUrl);
     }
 
     public function action_exportToExcel()
@@ -137,7 +137,7 @@ class Controller_ReportManager extends Controller_Base
         $reportId = $this->request->param('id', null);
 
         if ($reportId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $session = DB_ORM::model('user_session', array((int)$reportId));
@@ -351,7 +351,7 @@ class Controller_ReportManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -418,7 +418,7 @@ class Controller_ReportManager extends Controller_Base
         $id_session = $this->request->param('id2', null);
 
         if ($id_map == null AND !$this->checkUser()) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         // selected_session needed for build path by javascript
@@ -458,6 +458,6 @@ class Controller_ReportManager extends Controller_Base
 
         $returnUrl = Lti_ToolProvider::sendScore($score);
         Auth::instance()->logout();
-        Request::initial()->redirect(!empty($returnUrl) ? $returnUrl : URL::base());
+        Controller::redirect(!empty($returnUrl) ? $returnUrl : URL::base());
     }
 }

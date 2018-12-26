@@ -38,7 +38,7 @@ class Controller_CounterManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if ($mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -60,7 +60,7 @@ class Controller_CounterManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if ($mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -82,9 +82,9 @@ class Controller_CounterManager extends Controller_Base
         $mapId = $this->request->param('id', null);
         if ($_POST and $mapId != null) {
             DB_ORM::model('map_counter')->addCounter($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'counterManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'counterManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -109,7 +109,7 @@ class Controller_CounterManager extends Controller_Base
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Counters'))->set_url(URL::base() . 'counterManager/index/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['counter']->name)->set_url(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -119,9 +119,9 @@ class Controller_CounterManager extends Controller_Base
         $counterId = $this->request->param('id2', null);
         if ($_POST and $mapId != null and $counterId != null) {
             DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
-            Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
+            Controller::redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -133,11 +133,11 @@ class Controller_CounterManager extends Controller_Base
         $nodeId = $this->request->param('id4', null);
 
         if ($mapId == null OR $counterId == null OR $ruleId == null OR $nodeId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('map_counter_rule', array((int)$ruleId))->delete();
-        Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
+        Controller::redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
     }
 
     public function action_addRule()
@@ -146,11 +146,11 @@ class Controller_CounterManager extends Controller_Base
         $counterId = $this->request->param('id2', null);
 
         if ($mapId == null OR $counterId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('map_counter_rule')->addRule($counterId, $this->request->post());
-        Request::initial()->redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
+        Controller::redirect(URL::base() . 'counterManager/editCounter/' . $mapId . '/' . $counterId);
     }
 
     public function action_deleteCounter()
@@ -163,9 +163,9 @@ class Controller_CounterManager extends Controller_Base
             DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int)$counterId);
             DB_ORM::model('map_popup_counter')->deleteCounters((int)$counterId, 'counter_id');
             DB_ORM::model('map_counter', array((int)$counterId))->delete();
-            Request::initial()->redirect(URL::base() . 'counterManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'counterManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -175,7 +175,7 @@ class Controller_CounterManager extends Controller_Base
         $counterId = $this->request->param('id2', null);
 
         if ($mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -207,18 +207,18 @@ class Controller_CounterManager extends Controller_Base
         $post = $this->request->post();
 
         if (!$post OR $mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         if ($counterId != null) {
             DB_ORM::model('map_node_counter')->updateNodeCounters($post, (int)$counterId, (int)$mapId);
-            Request::initial()->redirect(URL::base() . 'counterManager/grid/' . $mapId . '/' . $counterId);
+            Controller::redirect(URL::base() . 'counterManager/grid/' . $mapId . '/' . $counterId);
         } else {
             DB_ORM::model('map_node_counter')->updateNodeCounters($post, null, (int)$mapId);
             foreach (Arr::get($post, 'pc', array()) as $popupId => $counters) {
                 DB_ORM::model('map_popup_counter')->updatePopupCounters($counters, $popupId);
             }
-            Request::initial()->redirect(URL::base() . 'counterManager/grid/' . $mapId);
+            Controller::redirect(URL::base() . 'counterManager/grid/' . $mapId);
         }
     }
 
@@ -233,7 +233,7 @@ class Controller_CounterManager extends Controller_Base
             $this->template = View::factory('labyrinth/counter/preview');
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -242,7 +242,7 @@ class Controller_CounterManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if ($mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -297,7 +297,7 @@ class Controller_CounterManager extends Controller_Base
                 ? Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Edit Rule'))->set_url(URL::base() . 'counterManager/editCommonRule/' . $mapId))
                 : Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Add Rule'))->set_url(URL::base() . 'counterManager/addCommonRule/' . $mapId));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -391,7 +391,7 @@ class Controller_CounterManager extends Controller_Base
         $lightning = $lightning == 'on' ? 1 : 0;
 
         if (!$mapId) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         if ($ruleId) {
@@ -411,7 +411,7 @@ class Controller_CounterManager extends Controller_Base
             $cron->delete();
         }
 
-        Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
+        Controller::redirect(URL::base() . 'counterManager/rules/' . $mapId);
     }
 
     public function action_deleteCommonRule()
@@ -421,9 +421,9 @@ class Controller_CounterManager extends Controller_Base
         if ($mapId AND $ruleId) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_counter_commonrules', array((int)$ruleId))->delete();
-            Request::initial()->redirect(URL::base() . 'counterManager/rules/' . $mapId);
+            Controller::redirect(URL::base() . 'counterManager/rules/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

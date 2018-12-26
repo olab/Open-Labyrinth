@@ -35,7 +35,7 @@ class Controller_Vocabulary_Manager extends Controller_Base
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage RDF Vocabularies'))->set_url(URL::base() . 'vocabulary/manager'));
     
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         unset($this->templateData['right']);
@@ -48,7 +48,7 @@ class Controller_Vocabulary_Manager extends Controller_Base
 
         $vocab = Model_Leap_Vocabulary::getVocabularyByNamespace($namespace);
         $vocab->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/manager');
+        Controller::redirect(URL::base() . 'vocabulary/manager');
     }
 
     public function action_import(){

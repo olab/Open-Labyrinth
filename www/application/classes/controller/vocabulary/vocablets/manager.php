@@ -44,7 +44,7 @@ class Controller_Vocabulary_Vocablets_Manager extends Controller_Base
         $values = $this->request->query();
 
         Model_Leap_Vocabulary_Vocablet::install($values["vocablet"]);
-        Request::initial()->redirect(URL::base() . 'vocabulary/vocablets/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/vocablets/manager/');
 
     }
 
@@ -54,7 +54,7 @@ class Controller_Vocabulary_Vocablets_Manager extends Controller_Base
         $vocablet = Model_Leap_Vocabulary_Vocablet::getVocabletByGuid($values['guid']);
 
         $vocablet->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/vocablets/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/vocablets/manager/');
     }
 
 

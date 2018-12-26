@@ -93,7 +93,7 @@ class Controller_FileManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if (!$mapId) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -128,9 +128,9 @@ class Controller_FileManager extends Controller_Base
         $mapId = $this->request->param('id', null);
         if ($_FILES AND $mapId) {
             DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -191,9 +191,9 @@ class Controller_FileManager extends Controller_Base
             } else {
                 DB_ORM::model('map_element')->deleteFile($fileId);
             }
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -226,7 +226,7 @@ class Controller_FileManager extends Controller_Base
             }
         }
 
-        Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+        Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
     }
 
     private function getArrayValueByKey($needle, $haystack)
@@ -295,7 +295,7 @@ class Controller_FileManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -314,9 +314,9 @@ class Controller_FileManager extends Controller_Base
                 $_POST['is_private'] = false;
             }
             DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -326,7 +326,7 @@ class Controller_FileManager extends Controller_Base
         $fileId = $this->request->param('id2', null);
 
         if (!($mapId AND $fileId)) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -572,9 +572,9 @@ class Controller_FileManager extends Controller_Base
                 $ses = Session::instance();
                 $ses->set('warningMessage', 'Please, validate "order.xml".');
             }
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -652,9 +652,9 @@ class Controller_FileManager extends Controller_Base
                         'The following files were not removed: ' . $notDeleted . '. Please, check other labyrinths on reference on this files.');
                 }
             }
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -699,7 +699,7 @@ class Controller_FileManager extends Controller_Base
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global files'))->set_url(URL::base() . 'fileManager/index/' . $mapId));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -724,9 +724,9 @@ class Controller_FileManager extends Controller_Base
 
             DB_ORM::model('map_element')->saveElement($mapId, $dataSave);
 
-            Request::initial()->redirect(URL::base() . 'fileManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'fileManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 }

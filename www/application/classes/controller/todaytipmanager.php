@@ -27,7 +27,7 @@ class Controller_TodayTipManager extends Controller_Base {
         parent::before();
 
         if (Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Today\'s tip manager'))->set_url(URL::base() . 'TodayTipManager/index'));
@@ -103,7 +103,7 @@ class Controller_TodayTipManager extends Controller_Base {
             $tipId = $result;
         }
 
-        Request::initial()->redirect(URL::base() . 'TodayTipManager/editTip/' . $tipId);
+        Controller::redirect(URL::base() . 'TodayTipManager/editTip/' . $tipId);
     }
 
     public function action_deleteTip() {
@@ -113,7 +113,7 @@ class Controller_TodayTipManager extends Controller_Base {
             DB_ORM::delete('TodayTip')->where('id', '=', $tipId)->execute();
         }
 
-        Request::initial()->redirect(URL::base() . 'TodayTipManager/index');
+        Controller::redirect(URL::base() . 'TodayTipManager/index');
     }
 
     public function action_deleteArchiveTip() {
@@ -123,7 +123,7 @@ class Controller_TodayTipManager extends Controller_Base {
             DB_ORM::delete('TodayTip')->where('id', '=', $tipId)->execute();
         }
 
-        Request::initial()->redirect(URL::base() . 'TodayTipManager/archived');
+        Controller::redirect(URL::base() . 'TodayTipManager/archived');
     }
 
     public function action_archive() {
@@ -133,7 +133,7 @@ class Controller_TodayTipManager extends Controller_Base {
             DB_ORM::update('TodayTip')->set('is_archived', 1)->where('id', '=', $tipId)->execute();
         }
 
-        Request::initial()->redirect(URL::base() . 'TodayTipManager/index');
+        Controller::redirect(URL::base() . 'TodayTipManager/index');
     }
 
     public function action_unarchive() {
@@ -143,7 +143,7 @@ class Controller_TodayTipManager extends Controller_Base {
             DB_ORM::update('TodayTip')->set('is_archived', 0)->where('id', '=', $tipId)->execute();
         }
 
-        Request::initial()->redirect(URL::base() . 'TodayTipManager/archived');
+        Controller::redirect(URL::base() . 'TodayTipManager/archived');
     }
 }
 

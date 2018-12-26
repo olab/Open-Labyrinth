@@ -53,7 +53,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', null);
         
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         $this->templateData['map']      = DB_ORM::model('map', array((int)$mapId));
         $this->templateData['displays'] = DB_ORM::model('map_visualdisplay')->getMapDisplays($mapId);
@@ -70,7 +70,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
         $mapId      = $this->request->param('id', false);
         $displayId  = $this->request->param('id2', null);
         
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         $this->getAllFonts();
 
@@ -201,7 +201,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
             DB_ORM::model('map_visualdisplay')->deleteImage($displayId, $mapId, $imageName);
         }
         
-        Request::initial()->redirect(URL::base().'visualdisplaymanager/display/'.$mapId.'/'.$displayId.'#imagesTab');
+        Controller::redirect(URL::base().'visualdisplaymanager/display/'.$mapId.'/'.$displayId.'#imagesTab');
     }
     
     public function action_deleteDisplay() {
@@ -214,7 +214,7 @@ class Controller_VisualDisplayManager extends Controller_Base {
                     ->execute();
         }
         
-        Request::initial()->redirect(URL::base(). 'visualdisplaymanager/index/' . $mapId);
+        Controller::redirect(URL::base(). 'visualdisplaymanager/index/' . $mapId);
     }
     
     private function getVisualDisplayImages($mapId) {

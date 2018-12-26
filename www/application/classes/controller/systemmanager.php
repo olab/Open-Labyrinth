@@ -27,7 +27,7 @@ class Controller_SystemManager extends Controller_Base {
     {
         parent::before();
 
-        if (Auth::instance()->get_user()->type->name != 'superuser') Request::initial()->redirect(URL::base());
+        if (Auth::instance()->get_user()->type->name != 'superuser') Controller::redirect(URL::base());
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('System Settings'))->set_url(URL::base() . 'systemmanager'));
 
@@ -90,12 +90,12 @@ class Controller_SystemManager extends Controller_Base {
 
                 file_put_contents(DOCROOT . 'application/config/email.php', $header . $string);
 
-                Request::initial()->redirect(URL::base() . 'systemManager');
+                Controller::redirect(URL::base() . 'systemManager');
             } else {
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -121,12 +121,12 @@ class Controller_SystemManager extends Controller_Base {
 
                 file_put_contents(DOCROOT . 'application/config/media_upload_copyright.php', $header . $string);
 
-                Request::initial()->redirect(URL::base() . 'systemManager#tabs-1');
+                Controller::redirect(URL::base() . 'systemManager#tabs-1');
             } else {
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -147,12 +147,12 @@ class Controller_SystemManager extends Controller_Base {
 
                 file_put_contents(DOCROOT . 'application/config/support.php', $content);
 
-                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+                Controller::redirect(URL::base() . 'systemManager#tabs-4');
             } else {
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -169,7 +169,7 @@ class Controller_SystemManager extends Controller_Base {
             }
         }
 
-        Request::initial()->redirect(URL::base() . 'systemManager');
+        Controller::redirect(URL::base() . 'systemManager');
     }
 
     public function action_updateTodayTip() {
@@ -194,12 +194,12 @@ class Controller_SystemManager extends Controller_Base {
 
                 file_put_contents(DOCROOT . 'application/config/today_tip.php', $header . $string);
 
-                Request::initial()->redirect(URL::base() . 'systemManager#tabs-4');
+                Controller::redirect(URL::base() . 'systemManager#tabs-4');
             } else {
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -220,7 +220,7 @@ class Controller_SystemManager extends Controller_Base {
             Notice::add('Please upload pdf file.', 'error');
         }
 
-        Request::initial()->redirect(URL::base().'systemManager/#tabs-4');
+        Controller::redirect(URL::base().'systemManager/#tabs-4');
     }
 
     public function getExistingReadMe ()
@@ -246,6 +246,6 @@ class Controller_SystemManager extends Controller_Base {
             DB_ORM::model('TwitterCredits')->add($apiKey, $apiSecret, $accessToken, $accessTokenSecret);
         }
 
-        Request::initial()->redirect(URL::base().'systemmanager/#tabs-5');
+        Controller::redirect(URL::base().'systemmanager/#tabs-5');
     }
 }

@@ -31,7 +31,7 @@ class Controller_UserManager extends Controller_Base
         $userType = Auth::instance()->get_user()->type->name;
 
         if ($userType == 'remote service' OR $userType == 'reviewer') {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Manage Users'))->set_url(URL::base() . 'usermanager'));
@@ -144,7 +144,7 @@ class Controller_UserManager extends Controller_Base
                     $error[] = __('Such email address already exists.');
                 }
                 Session::instance()->set('errorMsg', implode('<br />', $error));
-                Request::initial()->redirect(URL::base() . 'usermanager/addUser');
+                Controller::redirect(URL::base() . 'usermanager/addUser');
             }
         }
     }
@@ -167,7 +167,7 @@ class Controller_UserManager extends Controller_Base
         $loggedUserType = $loggedUser->type->name;
 
         if (!($loggedUserType == 'superuser' OR $loggedUserType == 'Director') AND $loggedUser->id != $userId) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $this->templateData['user'] = $user;
@@ -189,7 +189,7 @@ class Controller_UserManager extends Controller_Base
                     $this->templateData);
                 break;
             default:
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
         }
 
         $this->template->set('templateData', $this->templateData);
@@ -222,7 +222,7 @@ class Controller_UserManager extends Controller_Base
                         Arr::get($_POST, 'usertype', $type), Arr::get($_POST, 'langID', null));
                 } else {
                     Session::instance()->set('errorMsg', __('Such email address already exists.'));
-                    Request::initial()->redirect(URL::base() . 'usermanager/editUser/' . $userId);
+                    Controller::redirect(URL::base() . 'usermanager/editUser/' . $userId);
                 }
             } else {
                 DB_ORM::model('user')->updateUser($userId, Arr::get($_POST, 'upw', ''), Arr::get($_POST, 'uname', ''),
@@ -236,13 +236,13 @@ class Controller_UserManager extends Controller_Base
         }
 
         Model_Leap_Metadata_Record::updateMetadata("user", $userId, $_POST);
-        Request::initial()->redirect(URL::base() . 'usermanager');
+        Controller::redirect(URL::base() . 'usermanager');
     }
 
     public function action_deleteUser()
     {
         DB_ORM::model('user', array($this->request->param('id', 0)))->delete();
-        Request::initial()->redirect(URL::base() . 'usermanager');
+        Controller::redirect(URL::base() . 'usermanager');
     }
 
     public function action_addGroup()
@@ -258,7 +258,7 @@ class Controller_UserManager extends Controller_Base
         if (isset($_POST) && !empty($_POST)) {
             DB_ORM::model('group')->createGroup(Arr::get($_POST, 'groupname', 'empty_name'));
         }
-        Request::initial()->redirect(URL::base() . 'usermanager');
+        Controller::redirect(URL::base() . 'usermanager');
     }
 
     public function action_editGroup()
@@ -278,7 +278,7 @@ class Controller_UserManager extends Controller_Base
     public function action_deleteGroup()
     {
         DB_ORM::model('group', array($this->request->param('id', 0)))->delete();
-        Request::initial()->redirect(URL::base() . 'usermanager');
+        Controller::redirect(URL::base() . 'usermanager');
     }
 
     public function action_addMemberToGroup()
@@ -286,7 +286,7 @@ class Controller_UserManager extends Controller_Base
         if (isset($_POST) && !empty($_POST)) {
             DB_ORM::model('user_group')->add($this->request->param('id', 0), Arr::get($_POST, 'userid', null));
         }
-        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
+        Controller::redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
     }
 
     public function action_updateGroup()
@@ -296,7 +296,7 @@ class Controller_UserManager extends Controller_Base
                 Arr::get($_POST, 'groupname', 'empty_name'));
         }
 
-        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
+        Controller::redirect(URL::base() . 'usermanager/editGroup/' . $this->request->param('id', 0));
     }
 
     public function action_removeMember()
@@ -305,7 +305,7 @@ class Controller_UserManager extends Controller_Base
         $groupId = $this->request->param('id2', 0);
 
         DB_ORM::model('user_group')->remove((int)$groupId, (int)$userId);
-        Request::initial()->redirect(URL::base() . 'usermanager/editGroup/' . $groupId);
+        Controller::redirect(URL::base() . 'usermanager/editGroup/' . $groupId);
     }
 
 }

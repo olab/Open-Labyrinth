@@ -56,7 +56,7 @@ class Controller_Options extends Controller_Base
         update_option('curios_video_player_domains', $curios_video_player_domains);
 
         Session::instance()->set('success_message', 'Saved.');
-        Request::initial()->redirect(URL::base() . 'options');
+        Controller::redirect(URL::base() . 'options');
     }
 
     public function action_all()
@@ -74,6 +74,6 @@ class Controller_Options extends Controller_Base
         update_option('google_service_account_credentials', $googleServiceAccountCredentials, false);
 
         Session::instance()->set('success_message', 'Saved.');
-        Request::initial()->redirect(URL::base() . 'options/all');
+        Controller::redirect(URL::base() . 'options/all');
     }
 }

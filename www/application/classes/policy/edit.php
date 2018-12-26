@@ -13,7 +13,7 @@ class Policy_Edit extends Policy {
             : false;
         $editRight   = ($user->type_id == 4 OR $user->id == $map->author_id OR $authorRight);
 
-        if ( ! $editRight) Request::initial()->redirect(URL::base());
+        if ( ! $editRight) Controller::redirect(URL::base());
 
         return TRUE;
     }

@@ -59,7 +59,7 @@ class Controller_LtiManager extends Controller_Base {
         $provider->launch_url = Arr::get($post, 'launch_url', $provider->launch_url);
         $provider->save();
 
-        Request::initial()->redirect(URL::base().'ltimanager/providers');
+        Controller::redirect(URL::base().'ltimanager/providers');
     }
 
     public function action_deleteProvider() {
@@ -67,7 +67,7 @@ class Controller_LtiManager extends Controller_Base {
         $provider = DB_ORM::model('Lti_Provider', $id);
         $provider->delete();
 
-        Request::initial()->redirect(URL::base().'ltimanager/providers');
+        Controller::redirect(URL::base().'ltimanager/providers');
     }
 
     public function action_index()
@@ -96,7 +96,7 @@ class Controller_LtiManager extends Controller_Base {
 
         DB_ORM::model('Lti_Consumer')->saveConsumer($id, $post);
 
-        Request::initial()->redirect(URL::base().'ltimanager');
+        Controller::redirect(URL::base().'ltimanager');
     }
 
     public function action_deleteUser() {
@@ -104,7 +104,7 @@ class Controller_LtiManager extends Controller_Base {
         $user = DB_ORM::model('Lti_Consumer', $id);
         $user->delete();
 
-        Request::initial()->redirect(URL::base().'ltimanager');
+        Controller::redirect(URL::base().'ltimanager');
     }
 
     public function action_getXML(){ //TODO: change xml credentials

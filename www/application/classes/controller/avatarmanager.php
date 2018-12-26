@@ -66,7 +66,7 @@ class Controller_AvatarManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -75,9 +75,9 @@ class Controller_AvatarManager extends Controller_Base
         $mapId = $this->request->param('id', null);
         if ($mapId != null) {
             $avatarId = DB_ORM::model('map_avatar')->addAvatar($mapId);
-            Request::initial()->redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
+            Controller::redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -113,7 +113,7 @@ class Controller_AvatarManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -136,9 +136,9 @@ class Controller_AvatarManager extends Controller_Base
                 }
                 DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
             }
-            Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -170,12 +170,12 @@ class Controller_AvatarManager extends Controller_Base
             }
             DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
             if ($_POST['save_exit_value'] == 0) {
-                Request::initial()->redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
+                Controller::redirect(URL::base() . 'avatarManager/editAvatar/' . $mapId . '/' . $avatarId);
             } else {
-                Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
+                Controller::redirect(URL::base() . 'avatarManager/index/' . $mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -193,9 +193,9 @@ class Controller_AvatarManager extends Controller_Base
                 $file = null;
             }
             DB_ORM::model('map_avatar')->duplicateAvatar($avatarId, $file);
-            Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -221,7 +221,7 @@ class Controller_AvatarManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -251,10 +251,10 @@ class Controller_AvatarManager extends Controller_Base
                 readfile('tmp/' . $rand . '.zip');
                 unlink($zipFile);
             } else {
-                Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
+                Controller::redirect(URL::base() . 'avatarManager/index/' . $mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -330,9 +330,9 @@ class Controller_AvatarManager extends Controller_Base
             $dest = 'avatars/' . $filePNG;
             $src = 'global/avatars/' . $filePNG;
             copy($src, $dest);
-            Request::initial()->redirect(URL::base() . 'avatarManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'avatarManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

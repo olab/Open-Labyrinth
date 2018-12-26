@@ -182,7 +182,7 @@ class Model_Labyrinth extends Model
 
                 if (!empty($c['redirect_url'])) {
                     Session::instance()->set('is_redirected', true);
-                    Request::initial()->redirect($c['redirect_url']);
+                    Controller::redirect($c['redirect_url']);
                 }
 
                 if ($c != null) {

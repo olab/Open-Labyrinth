@@ -34,7 +34,7 @@ class Controller_ElementManager extends Controller_Base {
     public function action_index() {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId == NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == NULL) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
@@ -68,7 +68,7 @@ class Controller_ElementManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         $type = $this->request->param('id2', NULL);
 
-        if ($mapId == NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == NULL) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
@@ -102,9 +102,9 @@ class Controller_ElementManager extends Controller_Base {
                 $_POST['Private'] = 'Off';
             }
             DB_ORM::model('map_vpd')->createNewElement($mapId, $type, $_POST);
-            Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -127,9 +127,9 @@ class Controller_ElementManager extends Controller_Base {
                 $_POST['Private'] = 'Off';
             }
             DB_ORM::model('map_vpd_element')->saveElementValues($vpdId, $_POST);
-            Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -140,7 +140,7 @@ class Controller_ElementManager extends Controller_Base {
 
         if ($mapId != NULL and $vpdId != NULL)
         {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
 
             $references = DB_ORM::model('map_node_reference')->getByElementType($vpdId, 'VPD');
             if($references != NULL){
@@ -150,9 +150,9 @@ class Controller_ElementManager extends Controller_Base {
             } else {
                 DB_ORM::model('map_vpd', array((int) $vpdId))->delete();
             }
-            Request::initial()->redirect(URL::base() . 'elementManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'elementManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -162,7 +162,7 @@ class Controller_ElementManager extends Controller_Base {
 
         if ($mapId != NULL and $vpdId != NULL)
         {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
 
             $map = DB_ORM::model('map', array((int) $mapId));
             $this->templateData['map'] = $map;
@@ -189,7 +189,7 @@ class Controller_ElementManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

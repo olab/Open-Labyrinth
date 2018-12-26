@@ -40,7 +40,7 @@ class Controller_PopupManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', null);
 
-        if ($mapId == null) Request::initial()->redirect(URL::base());
+        if ($mapId == null) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
@@ -57,7 +57,7 @@ class Controller_PopupManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', null);
 
-        if ($mapId == null) Request::initial()->redirect(URL::base());
+        if ($mapId == null) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
@@ -74,7 +74,7 @@ class Controller_PopupManager extends Controller_Base {
     {
         $popupId = $this->request->param('id', null);
 
-        if($popupId == null) Request::initial()->redirect(URL::base());
+        if($popupId == null) Controller::redirect(URL::base());
 
         $popup = DB_ORM::model('map_popup', array((int)$popupId));
         $mapId = $popup->map_id;
@@ -104,7 +104,7 @@ class Controller_PopupManager extends Controller_Base {
             }
         }
 
-        Request::initial()->redirect($redirect);
+        Controller::redirect($redirect);
     }
 
     public function action_deletePopup()
@@ -125,7 +125,7 @@ class Controller_PopupManager extends Controller_Base {
             $redirectURL .= 'popupManager/index/' . $mapId;
         }
 
-        Request::initial()->redirect($redirectURL);
+        Controller::redirect($redirectURL);
     }
 
     private function preparePopupData($mapId) {
