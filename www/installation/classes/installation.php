@@ -822,7 +822,7 @@ class Installation
                         if ($ext == 'sql') {
                             $pathToFile = $dir . $f;
                             if (!isset($skipFiles[$f])) {
-                                Installation::populateDatabase($pathToFile);
+                                Installation::populateDatabase($link, $pathToFile);
                                 $skipFiles[$f] = 1;
                                 $result = 1;
                             }
