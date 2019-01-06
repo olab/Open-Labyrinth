@@ -21,13 +21,13 @@
 <h1><?php echo __('MVP to Labyrinth upload'); ?></h1>
 
 <form class="form-horizontal" action="<?php echo URL::base(); ?>exportImportManager/upload" enctype="multipart/form-data" method="POST"><?php
-    if(count(Notice::get('success'))) { ?>
+    if(count((array) Notice::get('success'))) { ?>
     <div class="alert alert-success">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <?php echo Notice::get('success'); ?>
     </div><?php
     }
-    if(count(Notice::get('error'))) { ?>
+    if(count((array) Notice::get('error'))) { ?>
     <div class="alert alert-error">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <?php echo Notice::get('error'); ?>
