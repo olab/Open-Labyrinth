@@ -66,6 +66,17 @@ class Installation
 
                 Session::set('installationConfiguration', json_encode($olab));
                 if (!$errorFound) {
+                    // write config.json
+                    $baseUrl = URL::base();
+                    $configPath = DOCROOT . 'config.json';
+                    $config = self::getContent($configPath);
+                    $config['base_url'] = $baseUrl;
+                    $config['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
+                    $config['timezone'] = $olab['timezone'];
+                    $config['lang'] = $olab['lang'];
+                    $config['locale'] = $olab['locale'];
+                    self::createFile($configPath, $config, true);
+
                     Session::set('installationStep', '3');
                 }
             }
@@ -135,19 +146,14 @@ class Installation
             }
 
             if (!$errorFound) {
-                $baseUrl = URL::base();
-                $configPath = DOCROOT . 'config.json';
-                $config = self::getContent($configPath);
-                $config['base_url'] = $baseUrl;
-                $config['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
                 $geo_guess = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
                 if(is_array($geo_guess)) {
-                    $config['timezone'] = $geo_guess['geoplugin_timezone'];
-                    $config['lang'] = Installation::country_code_to_locale($geo_guess['geoplugin_countryCode']);
-                    $config['locale'] = str_replace('-', '_', $config['lang']).'.utf-8';
+                    if(!empty($geo_guess['geoplugin_timezone'])) {
+                        $olab['timezone'] = $geo_guess['geoplugin_timezone'];
+                        $olab['lang'] = Installation::country_code_to_locale($geo_guess['geoplugin_countryCode']);
+                        $olab['locale'] = str_replace('-', '_', $config['lang']).'.utf-8';
+                    }
                 }
-
-                self::createFile($configPath, $config, true);
 
                 Session::set('installationStep', '2');
             }
@@ -175,8 +181,6 @@ class Installation
                 $content = json_decode($content, true);
             }
         }
-        // generate random cookie salt
-        $content['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
 
         return $content;
     }
@@ -689,7 +693,7 @@ class Installation
         $databaseConfig = '$config = array();
         $config["default"] = array(
             "type"          => "mysql",
-            "driver"        => "improved",
+            "driver"        => "pdo",
             "connection"    => array(
                 "persistent"    => FALSE,
                 "hostname"      => "'.$olab['db_host'].'",
