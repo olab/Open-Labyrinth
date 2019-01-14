@@ -1,26 +1,31 @@
-OpenLabyrinth
+OpenLabyrinth relaese candidate PHP7
 ==============
 OpenLabyrinth is an open-source (GNU-GPL3 licence) platform for creating and playing virtual patients. 
 
 For more information about OpenLabyrinth generally, see http://openlabyrinth.ca
 
-You do not need any software to play a case. Any modern web browser will work. If you want to try authoring your own cases,
-OpenLabryinth can be installed on a basic web server running Apache, MySQL, and PHP (eg a LAMP, WAMP setup etc.)
-
-The install routines are still a bit glitchy - we apologize for this. Linux experts should have no trouble. The rest of us 
-mortals might have a hiccup or two.
-
-If you want to see some of the latest development features, send us a note via info AT openlabyrinth DOT ca and we can set 
-you up with a test account at http://demo.openlabyrinth.ca/
+Those are notes about installing this release candidate
 
 ## System Requirements
 
-Available [here](https://github.com/olab/Open-Labyrinth/wiki/System-Requirements)
+* Tested ONLY under Ubuntu 18.04 with PHP 7.2
+
+LAMP with PHP 7
+
+composer (if you have sudo privileges, install global: 
+sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer 
+
+Otherwise see Requirements [here](https://github.com/olab/Open-Labyrinth/wiki/System-Requirements)
+
 
 ## Installation instructions
 
-Available [here](https://github.com/olab/Open-Labyrinth/wiki/Installing-Open-Labyrinth)
+almost as in [here](https://github.com/olab/Open-Labyrinth/wiki/Installing-Open-Labyrinth):
 
-## Upgrade Guide
+download and unzip this branch, cd into it
 
-Available [here](https://github.com/olab/Open-Labyrinth/wiki/Updating-Open-Labyrinth)
+run "composer install" (and ust to make sure, run "composer update" too)
+
+point your browser to your Olab instance. run the installer
+
+feel free to report errors and submit patches...
