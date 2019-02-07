@@ -667,6 +667,7 @@ class Model_Leap_User_SessionTrace extends Model_Leap_Base
             ->where('session_id', 'IN', $sessions)
             ->group_by('node_id')
             ->group_by('session_id')
+            ->group_by('id')
             ->order_by('id')
             ->column('id')
             ->column('session_id')
