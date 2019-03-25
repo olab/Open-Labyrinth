@@ -293,7 +293,7 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem
     public function import($tmpFolder)
     {
         $manifest = $this->xml2array($tmpFolder, 'manifest');
-        if (count($manifest['manifest_files'])) {
+        if (is_array($manifest['manifest_files'])) {
             foreach ($manifest['manifest_files'] as $file) {
                 $this->labyrinthArray[$file] = $this->xml2array($tmpFolder, $file);
                 if (count($this->labyrinthArray[$file])) {
@@ -583,22 +583,25 @@ class ImportExport_MVPFormatSystem implements ImportExport_FormatSystem
 
     public function convertValuesInArray($array)
     {
-        if (count($array)) {
+        if (is_array($array) and count($array) > 0) {
             foreach ($array as $key => $value) {
-                if (count($value)) {
-                    if (is_array($value)) {
+                switch($value){
+                    //specials first: value = [0] should convert to ''
+                    case (is_array($value) and count($value) == 1 and 0 === $value[0]):
+                        $value = 0;
+                        break;
+                    case (is_array($value) and count($value) > 0):
                         $value = $this->convertValuesInArray($value);
-                    } elseif (!is_numeric($value)) {
+                        break;
+                    case (is_numeric($value)):
+                        $value = is_float($value) ? floatval($value) : intval($value);
+                        break;
+                    case (is_string($value) and strlen($value) > 0):
                         $value = base64_decode($value);
-                    } else {
-                        if (is_numeric($value[0])) {
-                            $value = is_float($value) ? floatval($value) : intval($value);
-                        }
-                    }
-                } else {
-                    $value = '';
+                        break;
+                    default:
+                        $value = '';
                 }
-
                 $array[$key] = $value;
             }
         }

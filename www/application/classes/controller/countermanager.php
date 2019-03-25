@@ -339,7 +339,7 @@ class Controller_CounterManager extends Controller_Base
         $conditionsAssign = array();
         $mapSections = DB_ORM::select('Map_Node_Section')->where('map_id', '=', $mapId)->query()->as_array();
         $scenarioByReference = DB_ORM::select('Webinar_Map')->where('reference_id', '=', $mapId)->where('which', '=',
-            'labyrinth')->group_by('webinar_id')->query()->as_array();
+            'labyrinth')->group_by('webinar_id')->group_by('id')->query()->as_array();
         foreach ($scenarioByReference as $scenarioObj) {
             $scenario[$scenarioObj->webinar_id] = $scenarioObj;
         }
