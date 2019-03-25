@@ -319,6 +319,17 @@ class Installation
         }
         $array[] = $temp;
 
+        $temp['item'] = 'Intl Extension Loaded';
+        if (extension_loaded('intl')) {
+            $temp['label'] = 'success';
+            $temp['status'] = 'Yes';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'No';
+            $status = false;
+        }
+        $array[] = $temp;
+
         if (extension_loaded('mbstring')) {
             $temp['item'] = 'Mbstring Not Overloaded';
             if (ini_get('mbstring.func_overload') & MB_OVERLOAD_STRING) {
