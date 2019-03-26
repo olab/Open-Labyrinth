@@ -1,0 +1,1 @@
+ALTER TABLE `user_sessions` ALTER `notCumulative` SET DEFAULT 0;
