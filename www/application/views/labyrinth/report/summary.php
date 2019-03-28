@@ -39,7 +39,7 @@ if (isset($templateData['map'])) { ?>
     <h1><?php echo __('Aggregate report for Labyrinth "') . $templateData['map']->name . '"'; ?></h1>
 </div>
 
-<p>number of sessions: <?php if(isset($templateData['sessions'])) echo count($templateData['sessions']); ?> (more than <?php if(isset($templateData['minClicks'])) echo count($templateData['minClicks']); ?> clicks):</p>
+<p>number of sessions: <?php if(is_array($templateData['sessions'])) { echo count($templateData['sessions']); } else { echo '0'; } ?> (more than <?php if(is_numeric($templateData['minClicks'])) {echo $templateData['minClicks'];} else {echo '0';} ?> clicks):</p>
 
     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="565" height="420">
         <param name="FlashVars" value="&amp;dataXML=&lt;graph bgcolor='FFFFFF' canvasbgcolor='FFFFFF' xaxisname='number of nodes in session' yaxisname='frequency' caption='Number of decisions per session'  &gt;
