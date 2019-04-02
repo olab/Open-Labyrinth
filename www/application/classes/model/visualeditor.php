@@ -80,7 +80,7 @@ class Model_VisualEditor extends Model {
         $links    = DB_ORM::model('map_node_link')->getLinksByMap($mapId);
         $sections = DB_ORM::model('map_node_section')->getAllSectionsByMap($mapId);
 
-        if (count($nodes)) {
+        if (is_array($nodes) and count($nodes) > 0) {
             $nodesJSON = '';
             foreach ($nodes as $node) {
                 $title = base64_encode(str_replace('&#43;', '+', $node->title));
@@ -101,12 +101,12 @@ class Model_VisualEditor extends Model {
                     }
                 }
 
-                $nodesJSON .= '{id: ' . $node->id . ', title: "' . $title . '", content: "' . $text . '", support: "' . $info . '", annotation: "' . $annotation . '", isPrivate: "' . $node->is_private . '", showInfo: "' . $node->show_info . '", isExit: "' . ($node->probability ? 'true' : 'false') . '", undo: "' . ($node->undo ? 'true' : 'false') . '", isEnd: "' . ($node->end ? 'true' : 'false') . '", isRoot: "' . (($node->type_id == 1) ? 'true' : 'false') . '", linkStyle: ' . $node->link_style_id . ', nodePriority: ' . $node->priority_id . ', x: ' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . ', y: ' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . ',  color: "' . str_replace('0x', '#', $node->rgb) . '", isNew: "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
+                $nodesJSON .= '{"id":' . $node->id . ', "title": "' . $title . '", "content": "' . $text . '", "support": "' . $info . '", "annotation": "' . $annotation . '", "isPrivate": "' . $node->is_private . '", "showInfo": "' . $node->show_info . '", "isExit": "' . ($node->probability ? 'true' : 'false') . '", "undo": "' . ($node->undo ? 'true' : 'false') . '", "isEnd": "' . ($node->end ? 'true' : 'false') . '", "isRoot": "' . (($node->type_id == 1) ? 'true' : 'false') . '", "linkStyle": ' . $node->link_style_id . ', "nodePriority": ' . $node->priority_id . ', "x": "' . ($node->x != null ? $node->x : (230 + rand(230, 300))) . '", "y": "' . ($node->y != null ? $node->y : (150 + rand(150, 230))) . '",  "color": "' . str_replace('0x', '#', $node->rgb) . '", "isNew": "false"' . (strlen($counters) > 2 ? (', ' . $counters) : '') . '}, ';
             }
 
             if (strlen($nodesJSON) > 2) {
                 $nodesJSON = substr($nodesJSON, 0, strlen($nodesJSON) - 2);
-                $nodesJSON = 'nodes: [' . $nodesJSON . ']';
+                $nodesJSON = '"nodes": [' . $nodesJSON . ']';
                 $result = '{' . $nodesJSON . ', ';
             }
         }
@@ -115,12 +115,12 @@ class Model_VisualEditor extends Model {
         if (count($clearLinks)) {
             $linksJSON = '';
             foreach ($clearLinks as $id => $value) {
-                $linksJSON .= '{id: ' . $value['link']->id . ', nodeA: ' . $value['link']->node_id_1 . ', nodeB: ' . $value['link']->node_id_2 . ', type: "' . $value['type'] . '", label: "' . base64_encode(str_replace('&#43;', '+', $value['link']->text)) . '", imageId: ' . $value['link']->image_id . ', linkHidden: ' . (int)$value['link']->hidden . '}, ';
+                $linksJSON .= '{"id": ' . $value['link']->id . ', "nodeA": ' . $value['link']->node_id_1 . ', "nodeB": ' . $value['link']->node_id_2 . ', "type": "' . $value['type'] . '", "label": "' . base64_encode(str_replace('&#43;', '+', $value['link']->text)) . '", "imageId": ' . $value['link']->image_id . ', "linkHidden": ' . (int)$value['link']->hidden . '}, ';
             }
 
             if (strlen($linksJSON) > 2) {
                 $linksJSON = substr($linksJSON, 0, strlen($linksJSON) - 2);
-                $linksJSON = 'links: [' . $linksJSON . ']';
+                $linksJSON = '"links": [' . $linksJSON . ']';
                 $result .= $linksJSON . ', ';
             }
         }
