@@ -188,7 +188,7 @@ class Model_Leap_DForum extends DB_ORM_Model {
                   LIMIT 1 )
             $where
             GROUP BY
-              forum.id
+              forum.id, lastm.id
             ORDER BY
               $orderBy
         ");
