@@ -1,0 +1,1 @@
+ALTER TABLE `map_questions` MODIFY `prompt` text null;

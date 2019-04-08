@@ -1,0 +1,1 @@
+ALTER TABLE `map_counters` ALTER `status` SET DEFAULT 0;
