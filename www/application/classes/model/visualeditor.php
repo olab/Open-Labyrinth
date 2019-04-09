@@ -149,7 +149,7 @@ class Model_VisualEditor extends Model {
 
         if (strlen($result) > 2) {
             $result = substr($result, 0, strlen($result) - 2);
-            $result .= '};';
+            $result .= '}';
             $result = '\'' . $result . '\'';
         }
 
