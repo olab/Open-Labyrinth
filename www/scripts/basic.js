@@ -68,7 +68,7 @@ $(document).ready(function () {
     });
 
     // ----- patient ----- //
-    if (idPatients.length > 2) {
+    if (typeof idPatients !== 'undefined' && idPatients.length > 2) {
         ajaxPatient();
         setInterval(ajaxPatient, (5000));
     }
