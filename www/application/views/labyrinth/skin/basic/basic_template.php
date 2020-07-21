@@ -93,7 +93,7 @@
             popupsAction        = '<?php echo URL::base().'renderLabyrinth/popupAction/'.$templateData['map']->id; ?>',
             showReport          = '<?php echo URL::base().'reportManager/showReport/'.Session::instance()->get('session_id'); ?>',
             redirectURL         = '<?php echo URL::base().'renderLabyrinth/go/'.$templateData['map']->id; ?>/#node#',
-            timeForNode         = <?php echo Arr::get($templateData, 'timeForNode', 0); ?>,
+            timeForNode         = <?php echo str_replace(',', '.', Arr::get($templateData, 'timeForNode', 0)); ?>,
             nodeId              = <?php echo $templateData['node']->id; ?>,
             popupStart          = <?php echo (isset($templateData['popup_start']) && $templateData['popup_start'] != 0) ? $templateData['popup_start'] : 0; ?>,
             idPatients = '<?php

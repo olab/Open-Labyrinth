@@ -53,8 +53,9 @@ class Model_Leap_Webinar extends DB_ORM_Model
             )),
             'forum_id' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 11,
-                'nullable' => false,
-                'savable' => true
+                'nullable' => true,
+                'savable' => true,
+                'default' => NULL
             )),
             'isForum' => new DB_ORM_Field_Integer($this, array(
                 'max_length' => 1,

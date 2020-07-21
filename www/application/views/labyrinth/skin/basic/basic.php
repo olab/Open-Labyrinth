@@ -498,7 +498,7 @@ foreach (Arr::get($templateData, 'map_popups', array()) as $mapPopup) {
         popupsAction        = '<?php echo URL::base().'renderLabyrinth/popupAction/'.$id_map; ?>',
         showReport          = '<?php echo URL::base().'reportManager/showReport/'.Session::instance()->get('session_id'); ?>',
         redirectURL         = '<?php echo URL::base().'renderLabyrinth/go/'.$id_map; ?>/#node#',
-        timeForNode         = <?php echo isset($templateData['timeForNode']) ? $templateData['timeForNode'] : 0; ?>,
+        timeForNode         = <?php echo isset($templateData['timeForNode']) ? str_replace(',', '.', $templateData['timeForNode']) : 0; ?>,
         nodeId              = <?php echo $id_node; ?>,
         popupStart          = <?php echo (isset($templateData['popup_start']) AND $templateData['popup_start'] != 0) ? $templateData['popup_start'] : 0; ?>,
         sections            = [<?php if(count($templateData['node']->sections) > 0) {

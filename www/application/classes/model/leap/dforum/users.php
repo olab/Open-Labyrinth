@@ -79,7 +79,7 @@ class Model_Leap_DForum_Users extends DB_ORM_Model {
     public function updateUsers($forumId, $users, $sendNotification = -1){
         $usersInForum = $this->getAllUsersInForum($forumId, 'id');
 
-        if (count($usersInForum) <= 0) {
+        if (!is_array($usersInForum) or count($usersInForum) <= 0) {
             $usersInForum = array();
         }
 

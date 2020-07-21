@@ -125,7 +125,7 @@ class Controller_ReportManager extends Controller_Base
         $reportId = $this->request->param('id', null);
 
         if ($reportId != null) {
-            $report = new Report_Session(new Report_Impl_PHPExcel(), $reportId);
+            $report = new Report_Session(new Report_Impl_PHPSpreadsheet(), $reportId);
             $report->generate();
 
             $report->get();

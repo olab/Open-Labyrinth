@@ -97,8 +97,8 @@ class Controller_QuestionManager extends Controller_Base
             $questionObj = DB_ORM::model('map_question', array((int)$questionId));
 
             $this->templateData['question'] = $questionObj;
-            $this->templateData['used'] = count(DB_ORM::model('map_node_reference')->getByElementType($questionId,
-                'QU'));
+            $arr_questions = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
+            $this->templateData['used'] = is_array($arr_questions) ? count($arr_questions) : 0;
 
             if ($questionObj->settings) {
                 $jsonSettings = json_decode($questionObj->settings);
