@@ -255,7 +255,9 @@ class Controller_RenderLabyrinth extends Controller_Template
                         strlen($result['links']['alinknod']) - 2);
                 }
             } else {
-                $data['links'] = $result['links'];
+                if(isset($result['links'])){
+                    $data['links'] = $result['links'];
+                }
             }
         } else {
             $data['links'] = $data['node_links']['linker'];
