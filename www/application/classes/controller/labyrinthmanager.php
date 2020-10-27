@@ -35,7 +35,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
     public function action_index()
     {
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_createLabyrinth()
@@ -110,9 +110,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 DB_ORM::model('map')->updateType($receivedMapId, $labyrinthType);
                 $skipTypes = array(7, 8, 10);
                 if (!in_array($labyrinthType, $skipTypes)) {
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/3/' . $receivedMapId);
                 } else {
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $receivedMapId);
                 }
                 exit;
                 break;
@@ -127,9 +127,9 @@ class Controller_LabyrinthManager extends Controller_Base
                         $map = DB_ORM::model('map')->createMap($_POST, false);
                         $id = $map->id;
                     }
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/2/' . $id);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/2/' . $id);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 exit;
                 break;
@@ -149,12 +149,12 @@ class Controller_LabyrinthManager extends Controller_Base
             case 'createLinear':
                 $mapId = $this->request->param('id3', null);
                 DB_ORM::model('map')->createLinearMap($mapId, $_POST);
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
+                Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
                 break;
             case 'createBranched':
                 $mapId = $this->request->param('id3', null);
                 DB_ORM::model('map')->createBranchedMap($mapId, $_POST);
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
+                Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/4/' . $mapId);
                 break;
             case 'updateNode':
                 $nodeId = $this->request->param('id3', null);
@@ -162,12 +162,12 @@ class Controller_LabyrinthManager extends Controller_Base
                     $node = DB_ORM::model('map_node')->updateNode($nodeId, $post);
                     if ($node != null) {
                         DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editNode/' . $node->map_id . '/' . $node->id);
+                        Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editNode/' . $node->map_id . '/' . $node->id);
                     } else {
-                        Request::initial()->redirect(URL::base());
+                        Controller::redirect(URL::base());
                     }
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 exit;
                 break;
@@ -187,9 +187,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 $mapId = $receivedMapId;
                 if ($_FILES and $mapId != null) {
                     DB_ORM::model('map_element')->uploadFile($mapId, $_FILES);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'deleteFile':
@@ -197,9 +197,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 $fileId = $this->request->param('id4', null);
                 if ($mapId != null and $fileId != null) {
                     DB_ORM::model('map_element')->deleteFile($fileId);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'editFile':
@@ -214,7 +214,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
                     $this->templateData['content'] = $fileView;
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'updateFile':
@@ -222,9 +222,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 $fileId = $this->request->param('id4', null);
                 if ($post AND $mapId != null AND $fileId != null) {
                     DB_ORM::model('map_element')->updateFile($fileId, $_POST);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addFile/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addQuestion':
@@ -239,7 +239,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
                     $this->templateData['content'] = $questionView;
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addNewQuestion':
@@ -258,7 +258,7 @@ class Controller_LabyrinthManager extends Controller_Base
                             $this->templateData);
                     }
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'editQuestion':
@@ -279,7 +279,7 @@ class Controller_LabyrinthManager extends Controller_Base
                             $this->templateData);
                     }
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'updateQuestion':
@@ -294,9 +294,9 @@ class Controller_LabyrinthManager extends Controller_Base
                         DB_ORM::model('map_question')->updateQuestion($questionId, $type, $_POST);
                     }
 
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'saveNewQuestion':
@@ -308,9 +308,9 @@ class Controller_LabyrinthManager extends Controller_Base
                     if ($type) {
                         DB_ORM::model('map_question')->addQuestion($mapId, $type, $post);
                     }
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'deleteQuestion':
@@ -320,9 +320,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 if ($mapId != null AND $questionId != null) {
                     DB_ORM::model('map_question', array((int)$questionId))->delete();
                     DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addQuestion/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addAvatar':
@@ -333,16 +333,16 @@ class Controller_LabyrinthManager extends Controller_Base
                     $this->templateData['content'] = View::factory('labyrinth/casewizard/avatar/view')->set('templateData',
                         $this->templateData);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addNewAvatar':
                 $mapId = $receivedMapId;
                 if ($mapId) {
                     $avatarId = DB_ORM::model('map_avatar')->addAvatar($mapId);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editAvatar/' . $mapId . '/' . $avatarId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editAvatar/' . $mapId . '/' . $avatarId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'editAvatar':
@@ -354,7 +354,7 @@ class Controller_LabyrinthManager extends Controller_Base
                     $this->templateData['content'] = View::factory('labyrinth/casewizard/avatar/edit')->set('templateData',
                         $this->templateData);;
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'deleteAvatar':
@@ -367,9 +367,9 @@ class Controller_LabyrinthManager extends Controller_Base
                         @unlink($upload_dir . $avatarImage);
                     }
                     DB_ORM::model('map_avatar', array((int)$avatarId))->delete();
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'updateAvatar':
@@ -390,12 +390,12 @@ class Controller_LabyrinthManager extends Controller_Base
                     $_POST['image_data'] = $file;
                     DB_ORM::model('map_avatar')->updateAvatar($avatarId, $_POST);
                     if ($_POST['save_exit_value'] == 0) {
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editAvatar/' . $mapId . '/' . $avatarId);
+                        Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editAvatar/' . $mapId . '/' . $avatarId);
                     } else {
-                        Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
+                        Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
                     }
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'duplicateAvatar':
@@ -411,9 +411,9 @@ class Controller_LabyrinthManager extends Controller_Base
                         $file = null;
                     }
                     DB_ORM::model('map_avatar')->duplicateAvatar($avatarId, $file);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addAvatar/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addCounter':
@@ -427,7 +427,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
                     $this->templateData['content'] = $countersView;
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addNewCounter':
@@ -441,16 +441,16 @@ class Controller_LabyrinthManager extends Controller_Base
 
                     $this->templateData['content'] = $addCounterView;
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'saveNewCounter':
                 $mapId = $receivedMapId;
                 if ($post and $mapId != null) {
                     DB_ORM::model('map_counter')->addCounter($mapId, $post);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addCounter/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addCounter/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'editCounter':
@@ -466,7 +466,7 @@ class Controller_LabyrinthManager extends Controller_Base
                     $this->templateData['content'] = View::factory('labyrinth/casewizard/counter/edit')->set('templateData',
                         $this->templateData);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'updateCounter':
@@ -474,9 +474,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 $counterId = $this->request->param('id4', null);
                 if ($post AND $mapId != null AND $counterId != null) {
                     DB_ORM::model('map_counter')->updateCounter($counterId, $_POST);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editCounter/' . $mapId . '/' . $counterId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editCounter/' . $mapId . '/' . $counterId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'deleteRule':
@@ -487,9 +487,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 if ($mapId != null and $counterId != null and $ruleId != null and $nodeId != null) {
                     DB_ORM::model('map_counter_rule', array((int)$ruleId))->delete();
                     DB_ORM::model('map_node_counter')->deleteNodeCounter($nodeId, $counterId);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $mapId . '/' . $counterId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/4/editCounter/' . $mapId . '/' . $counterId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'addRule':
@@ -497,9 +497,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 $counterId = $this->request->param('id4', null);
                 if ($post AND $mapId != null AND $counterId != null) {
                     DB_ORM::model('map_counter_rule')->addRule($counterId, $_POST);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editCounter/' . $mapId . '/' . $counterId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/editCounter/' . $mapId . '/' . $counterId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'deleteCounter':
@@ -508,9 +508,9 @@ class Controller_LabyrinthManager extends Controller_Base
                 if ($mapId != null AND $counterId != null) {
                     DB_ORM::model('map_node_counter')->deleteAllNodeCounterByCounter((int)$counterId);
                     DB_ORM::model('map_counter', array((int)$counterId))->delete();
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addCounter/' . $mapId);
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/' . $stepId . '/addCounter/' . $mapId);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'grid':
@@ -528,7 +528,7 @@ class Controller_LabyrinthManager extends Controller_Base
                     $this->templateData['content'] = View::factory('labyrinth/casewizard/counter/grid')->set('templateData',
                         $this->templateData);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'updateGrid':
@@ -545,7 +545,7 @@ class Controller_LabyrinthManager extends Controller_Base
                         $redirect = 'labyrinthManager/caseWizard/' . $stepId . '/grid/' . $mapId;
                     }
                 }
-                Request::initial()->redirect(URL::base() . $redirect);
+                Controller::redirect(URL::base() . $redirect);
                 break;
             case 'previewCounter':
                 $mapId = $receivedMapId;
@@ -556,7 +556,7 @@ class Controller_LabyrinthManager extends Controller_Base
                     $this->templateData['content'] = View::factory('labyrinth/casewizard/counter/preview')->set('templateData',
                         $this->templateData);
                 } else {
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
                 break;
             case 'uploadSkin':
@@ -583,7 +583,7 @@ class Controller_LabyrinthManager extends Controller_Base
                         DB_ORM::model('map')->updateMapSkin($mapId, $skin->id);
                     }
                 }
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $skin->id);
+                Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $skin->id);
                 break;
 
             case 'listSkins':
@@ -601,7 +601,7 @@ class Controller_LabyrinthManager extends Controller_Base
                 if ($_POST['skinId'] != 0 and $mapId != null) {
                     DB_ORM::model('map')->updateMapSkin($mapId, $_POST['skinId']);
                 }
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $_POST['skinId']);
+                Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/5/listSkins/' . $mapId . '/' . $_POST['skinId']);
                 break;
 
             case 'createNewSkin':
@@ -636,7 +636,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
                     $skin_id = DB_ORM::model('map_skin')->addSkin($skinName, $skinPath);
                     DB_ORM::model('map')->updateMapSkin($receivedMapId, $skin_id->id);
-                    Request::initial()->redirect(URL::base() . 'labyrinthManager/caseWizard/5/createSkin/' . $receivedMapId . '/done');
+                    Controller::redirect(URL::base() . 'labyrinthManager/caseWizard/5/createSkin/' . $receivedMapId . '/done');
                 }
                 break;
         }
@@ -698,9 +698,9 @@ class Controller_LabyrinthManager extends Controller_Base
         if (isset($_POST) AND !empty($_POST)) {
             $_POST['author'] = Auth::instance()->get_user()->id;
             $map = DB_ORM::model('map')->createMap($_POST);
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $map->id);
+            Controller::redirect(URL::base() . 'labyrinthManager/editMap/' . $map->id);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -708,9 +708,9 @@ class Controller_LabyrinthManager extends Controller_Base
     {
         $mapId = (int)$this->request->param('id', 0);
         if ($mapId) {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -720,14 +720,14 @@ class Controller_LabyrinthManager extends Controller_Base
         if ($mapId) {
             DB_ORM::model('map')->disableMap($mapId);
         }
-        Request::initial()->redirect(URL::base() . 'authoredLabyrinth');
+        Controller::redirect(URL::base() . 'authoredLabyrinth');
     }
 
     public function action_global()
     {
         $mapId = (int)$this->request->param('id', 0);
         if (!$mapId) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $selectedLinkStyle = DB_ORM::model('Map_Node')->getMainLinkStyles($mapId);
@@ -777,7 +777,7 @@ class Controller_LabyrinthManager extends Controller_Base
                 $redirectURL .= 'labyrinthManager/global/' . $mapId;
             }
         }
-        Request::initial()->redirect($redirectURL);
+        Controller::redirect($redirectURL);
     }
 
     public function action_unassignForum()
@@ -794,7 +794,7 @@ class Controller_LabyrinthManager extends Controller_Base
             }
         }
 
-        Request::initial()->redirect($redirectURL);
+        Controller::redirect($redirectURL);
     }
 
     public function action_deleteContributor()
@@ -803,9 +803,9 @@ class Controller_LabyrinthManager extends Controller_Base
         $contId = (int)$this->request->param('id2', 0);
         if ($mapId && $contId) {
             DB_ORM::model('map_contributor', array($contId))->delete();
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/global/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -815,7 +815,7 @@ class Controller_LabyrinthManager extends Controller_Base
         $post = $this->request->post();
 
         if (!($post AND $mapId)) {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
 
         $delta_time_seconds = Arr::get($post, 'delta_time_seconds', false);
@@ -883,7 +883,7 @@ class Controller_LabyrinthManager extends Controller_Base
 
         Model_Leap_Metadata_Record::updateMetadata("map", $mapId, $post);
         $controller = $this->request->post('edit_key') ? 'editKeys' : 'global';
-        Request::initial()->redirect(URL::base() . 'labyrinthManager/' . $controller . '/' . $mapId);
+        Controller::redirect(URL::base() . 'labyrinthManager/' . $controller . '/' . $mapId);
     }
 
     public function action_editKeys()
@@ -914,7 +914,7 @@ class Controller_LabyrinthManager extends Controller_Base
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager');
+            Controller::redirect(URL::base() . 'labyrinthManager');
         }
     }
 
@@ -924,12 +924,12 @@ class Controller_LabyrinthManager extends Controller_Base
         $countOfKeys = (int)$this->request->param('id2', 0);
         if ($mapId) {
             if ($countOfKeys) {
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/' . $countOfKeys);
+                Controller::redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/' . $countOfKeys);
             } else {
-                Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/1');
+                Controller::redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId . '/1');
             }
         } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager');
+            Controller::redirect(URL::base() . 'labyrinthManager');
         }
     }
 
@@ -942,9 +942,9 @@ class Controller_LabyrinthManager extends Controller_Base
             if ($countOfAddKeys) {
                 DB_ORM::model('map_key')->createKeys($mapId, $_POST, ($countOfAddKeys - 1));
             }
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/editMap/' . $mapId);
         }
     }
 
@@ -954,9 +954,9 @@ class Controller_LabyrinthManager extends Controller_Base
         $keyId = (int)$this->request->param('id2', 0);
         if ($keyId) {
             DB_ORM::model('map_key', array($keyId))->delete();
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
+            Controller::redirect(URL::base() . 'labyrinthManager/editKeys/' . $mapId);
         }
     }
 
@@ -965,7 +965,7 @@ class Controller_LabyrinthManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if (!$mapId) {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
+            Controller::redirect(URL::base() . 'openLabyrinth');
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));

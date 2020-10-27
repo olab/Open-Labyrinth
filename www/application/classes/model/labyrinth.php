@@ -182,7 +182,7 @@ class Model_Labyrinth extends Model
 
                 if (!empty($c['redirect_url'])) {
                     Session::instance()->set('is_redirected', true);
-                    Request::initial()->redirect($c['redirect_url']);
+                    Controller::redirect($c['redirect_url']);
                 }
 
                 if ($c != null) {
@@ -516,7 +516,7 @@ class Model_Labyrinth extends Model
         }
 
         $counterString = $this->getCounterString($mapID);
-        if (count($questionChoices)) {
+        if (is_array($questionChoices) and count($questionChoices)) {
             foreach ($questionChoices as $qID => $questions) {
                 if (count($questions)) {
                     $created_at = microtime(true);
@@ -649,7 +649,7 @@ class Model_Labyrinth extends Model
         Session::instance()->delete('dropDownQuestionResponses');
 
         $sliderQuestionChoices = Session::instance()->get('sliderQuestionResponses');
-        if (count($sliderQuestionChoices)) {
+        if (is_array($sliderQuestionChoices) and count($sliderQuestionChoices) > 0) {
             $slidersSum = 0;
             $created_at = microtime(true);
             foreach ($sliderQuestionChoices as $qID => $sliderValue) {
@@ -685,7 +685,7 @@ class Model_Labyrinth extends Model
         }
 
         $draggingQuestionResponses = Session::instance()->get('dragQuestionResponses');
-        if (count($draggingQuestionResponses)) {
+        if (is_array($draggingQuestionResponses) and count($draggingQuestionResponses) > 0) {
             $created_at = microtime(true);
             foreach ($draggingQuestionResponses as $responseJSON) {
                 $responseObject = json_decode($responseJSON, true);

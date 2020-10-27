@@ -146,7 +146,7 @@ class Controller_DForumManager extends Controller_Base {
             self::action_mail('updateForum',$forumId,$forumNames);
         }
 
-        Request::initial()->redirect(URL::base() . 'dforumManager');
+        Controller::redirect(URL::base() . 'dforumManager');
     }
 
     public function action_deleteForum() {
@@ -174,7 +174,7 @@ class Controller_DForumManager extends Controller_Base {
 
         self::action_mail('deleteForum',$forumId,'',$forumName);
 
-        Request::initial()->redirect(URL::base() . 'dforumManager');
+        Controller::redirect(URL::base() . 'dforumManager');
     }
 
 
@@ -196,7 +196,7 @@ class Controller_DForumManager extends Controller_Base {
 
         self::action_mail('createForum',$forumId, $firstMessage, $forumName);
 
-        Request::initial()->redirect(URL::base() . 'dforumManager');
+        Controller::redirect(URL::base() . 'dforumManager');
     }
 
     public function action_addMessage(){
@@ -209,7 +209,7 @@ class Controller_DForumManager extends Controller_Base {
 
         self::action_mail('addMsg', $forumId,  $message, $forumName, '', $messageId);
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $messageId);
+        Controller::redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $messageId);
     }
 
     public function action_deleteMessage(){
@@ -225,7 +225,7 @@ class Controller_DForumManager extends Controller_Base {
 
         self::action_mail('deleteMsg',$forumId, $oldMessage, $forumName);
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
+        Controller::redirect(URL::base() . 'dforumManager/viewForum/' . $forumId);
     }
 
     public function action_editMessage(){
@@ -262,7 +262,7 @@ class Controller_DForumManager extends Controller_Base {
             self::action_mail('updateMsg',$forumId, $message, $forumName);
         }
 
-        Request::initial()->redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $message_id);
+        Controller::redirect(URL::base() . 'dforumManager/viewForum/' . $forumId . '#m-' . $message_id);
     }
 
     private static function prepareUsersMail($forumId, $usersEmail = '', $type = '') {

@@ -28,13 +28,13 @@ if (isset($templateData)) { ?>
     </ul><?php
     foreach ($templateData['tabs'] as $key => $tabs) {
         echo '<div id="tabs-'.$key.'">';
-        if(count(Notice::get('success'))) { ?>
+        if(count((array)Notice::get('success'))) { ?>
             <div class="alert alert-success">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <?php echo Notice::get('success'); ?>
             </div><?php
         }
-        if(count(Notice::get('error'))) { ?>
+        if(count((array)Notice::get('error'))) { ?>
             <div class="alert alert-error">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <?php echo Notice::get('error'); ?>

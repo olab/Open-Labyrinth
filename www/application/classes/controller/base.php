@@ -278,7 +278,7 @@ class Controller_Base extends Controller_Template {
             );
 
             if ($user->can('access', $argsForAccess)) {
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
             // ----- end check access ----- //
 
@@ -364,7 +364,7 @@ class Controller_Base extends Controller_Template {
                 $this->templateData['center'] = $centerView->set('templateData', $this->templateData);;
             }
         } else {
-            if ($this->request->controller() == 'home' AND $this->request->action() == 'index') {
+            if (strtolower($this->request->controller()) == 'home' AND strtolower($this->request->action()) == 'index') {
                 $this->templateData['redirectURL'] = Session::instance()->get('redirectURL');
                 $this->templateData['oauthProviders'] = DB_ORM::model('oauthprovider')->getAll();
                 Session::instance()->delete('redirectURL');
@@ -401,7 +401,7 @@ class Controller_Base extends Controller_Template {
                 if ($isRedirect) {
                     Session::instance()->set('redirectURL', $this->request->uri());
                     Notice::add('Please login first.');
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
             }
         }
@@ -444,7 +444,7 @@ class Controller_Base extends Controller_Template {
             ? DB_ORM::model('User', array($userId))
             : Auth::instance()->get_user();
         $user->changeUI($mode);
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 
     protected function jsonResponse($data)

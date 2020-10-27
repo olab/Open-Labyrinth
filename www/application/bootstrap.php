@@ -3,15 +3,16 @@
 defined('SYSPATH') or die('No direct script access.');
 
 // -- Environment setup --------------------------------------------------------
+
 // Load the core Kohana class
-require SYSPATH . 'classes/kohana/core' . EXT;
+require SYSPATH . 'classes/Kohana/Core' . EXT;
 
 if (is_file(APPPATH . 'classes/kohana' . EXT)) {
     // Application extends the core
     require APPPATH . 'classes/kohana' . EXT;
 } else {
     // Load empty core extension
-    require SYSPATH . 'classes/kohana' . EXT;
+    require SYSPATH . 'classes/Kohana' . EXT;
 }
 
 $configPath = DOCROOT . 'config.json';
@@ -48,7 +49,15 @@ setlocale(LC_ALL, $config['locale']);
  * @see  http://kohanaframework.org/guide/using.autoloading
  * @see  http://php.net/spl_autoload_register
  */
-spl_autoload_register(array('Kohana', 'auto_load'));
+spl_autoload_register(['Kohana', 'auto_load']);
+
+/**
+ * Optionally, you can enable a compatibility auto-loader for use with
+ * older modules that have not been updated for PSR-0.
+ *
+ * It is recommended to not enable this unless absolutely necessary.
+ */
+spl_autoload_register(array('Kohana', 'auto_load_lowercase'));
 
 /**
  * Enable the Kohana auto-loader for unserialization.
@@ -57,6 +66,21 @@ spl_autoload_register(array('Kohana', 'auto_load'));
  * @see  http://php.net/manual/var.configuration.php#unserialize-callback-func
  */
 ini_set('unserialize_callback_func', 'spl_autoload_call');
+
+/**
+ * Enable composer autoload libraries
+ */
+if (is_file(DOCROOT.'/vendor/autoload.php'))
+{
+	require DOCROOT.'/vendor/autoload.php';
+}
+
+/**
+ * Set the mb_substitute_character to "none"
+ *
+ * @link http://www.php.net/manual/function.mb-substitute-character.php
+ */
+mb_substitute_character('none');
 
 // -- Configuration and initialization -----------------------------------------
 
@@ -76,6 +100,11 @@ if (isset($_SERVER['KOHANA_ENV'])) {
 }
 
 /**
+ * Koseven requires a cookie salt
+ */
+Cookie::$salt = $config['cookie_salt'];
+
+/**
  * Initialize Kohana, setting the default options.
  *
  * The following options are available:
@@ -84,9 +113,11 @@ if (isset($_SERVER['KOHANA_ENV'])) {
  * - string   index_file  name of your index file, usually "index.php"       index.php
  * - string   charset     internal character set used for input and output   utf-8
  * - string   cache_dir   set the internal cache directory                   APPPATH/cache
+ * - integer  cache_life  lifetime, in seconds, of items cached              60
  * - boolean  errors      enable or disable error handling                   TRUE
  * - boolean  profile     enable or disable internal profiling               TRUE
  * - boolean  caching     enable or disable internal caching                 FALSE
+ * - boolean  expose      set the X-Powered-By header                        FALSE
  */
 Kohana::init(array(
     'base_url' => $config['base_url'],

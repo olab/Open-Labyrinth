@@ -92,7 +92,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $metadata = DB_ORM::model('vocabulary_legacypropertymapping');
         $metadata->load($values);
         $metadata->save();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
     }
 
     public function action_addclass()
@@ -101,7 +101,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $metadata = DB_ORM::model('vocabulary_classmapping');
         $metadata->load($values);
         $metadata->save();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
     }
 
     public function action_addmetadata()
@@ -110,7 +110,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $metadata = DB_ORM::model('vocabulary_mapping');
         $metadata->load($values);
         $metadata->save();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
     }
 
     public function action_deletemetadata()
@@ -120,7 +120,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $mapping = DB_ORM_Model::factory("vocabulary_mapping");
         $mapping->load(array("id" => $values['id']));
         $mapping->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
 
     }
 
@@ -131,7 +131,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $mapping = DB_ORM_Model::factory("vocabulary_classmapping");
         $mapping->load(array("id" => $values['id']));
         $mapping->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
 
     }
 
@@ -142,7 +142,7 @@ class Controller_Vocabulary_Mappings_Manager extends Controller_Base
         $mapping = DB_ORM_Model::factory("vocabulary_legacypropertymapping");
         $mapping->load(array("id" => $values['id']));
         $mapping->delete();
-        Request::initial()->redirect(URL::base() . 'vocabulary/mappings/manager/');
+        Controller::redirect(URL::base() . 'vocabulary/mappings/manager/');
 
     }
 

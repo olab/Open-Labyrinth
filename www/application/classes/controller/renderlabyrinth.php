@@ -79,7 +79,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         if (!($mapId AND $this->checkTypeCompatibility($mapId))) {
             Session::instance()->set('redirectURL', $this->request->uri());
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $this->mapId = $mapId;
@@ -141,7 +141,7 @@ class Controller_RenderLabyrinth extends Controller_Template
             $endTime = $sessionObj->end_time;
             if (empty($sessionId) || !empty($endTime)) {
                 Session::instance()->set('finalSubmit', 'Map has been finished, you can not change your answers');
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
 
             $nodeId = $this->request->param('id2', null);
@@ -152,7 +152,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                 if ($nodeId == null AND $_POST) {
                     $nodeId = Arr::get($_POST, 'id', null);
                     if ($nodeId == null) {
-                        Request::initial()->redirect(URL::base());
+                        Controller::redirect(URL::base());
 
                         return;
                     }
@@ -175,7 +175,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         $current_time = microtime(true);
 
         if ($nodeObj == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         self::$nodeId = $nodeObj->id;
@@ -207,7 +207,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         DB_ORM::delete('User_Bookmark')->where('id', '=', $bookmark)->execute();
 
         if (!$data) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $user_note = $sessionObj->getUserNote();
@@ -222,7 +222,7 @@ class Controller_RenderLabyrinth extends Controller_Template
         if ($gotoNode != null) {
             Session::instance()->set('is_redirected', true);
             Session::instance()->set('goto', null);
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $gotoNode);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $gotoNode);
         }
 
         $undoNodes = array();
@@ -255,7 +255,9 @@ class Controller_RenderLabyrinth extends Controller_Template
                         strlen($result['links']['alinknod']) - 2);
                 }
             } else {
-                $data['links'] = $result['links'];
+                if(isset($result['links'])){
+                    $data['links'] = $result['links'];
+                }
             }
         } else {
             $data['links'] = $data['node_links']['linker'];
@@ -310,7 +312,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         $redirectToNode = $this->request->query('redirectToNode');
         if (!empty($redirectToNode)) {
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $redirectToNode);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $redirectToNode);
         }
 
         $data = CustomAssetManager::loadAssets($data);
@@ -489,7 +491,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         if ($redirect == 'check' AND $path AND !($lastNodeCurrentMap AND $nextMap) AND $same) {
             Session::instance()->set('patient_redirect', 'redirect');
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $this->mapId . '/' . $lastNodeId);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $this->mapId . '/' . $lastNodeId);
         }
 
         $path[] = (int)$id_node;
@@ -587,9 +589,9 @@ class Controller_RenderLabyrinth extends Controller_Template
             } else {
                 Session::instance()->set('keyError', 'Invalid key');
             }
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
+            Controller::redirect(URL::base() . 'renderLabyrinth/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -650,9 +652,9 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         if ($_POST AND $mapId AND $nodeId) {
             DB_ORM::model('map_node')->updateNode($nodeId, $_POST);
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -675,7 +677,7 @@ class Controller_RenderLabyrinth extends Controller_Template
                 $this->templateData);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base() . 'openLabyrinth');
+            Controller::redirect(URL::base() . 'openLabyrinth');
         }
     }
 
@@ -686,9 +688,9 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         if ($mapId AND $nodeId) {
             Model::factory('labyrinth')->review($nodeId);
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -698,9 +700,9 @@ class Controller_RenderLabyrinth extends Controller_Template
         $nodeId = $this->request->param('id2', null);
 
         if ($mapId AND $nodeId) {
-            Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
+            Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $mapId . '/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -989,7 +991,7 @@ class Controller_RenderLabyrinth extends Controller_Template
 
         DB_ORM::model('qCumulative')->setResetByMap($mapId);
 
-        Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $mapId . '?reset=true');
+        Controller::redirect(URL::base() . 'renderLabyrinth/index/' . $mapId . '?reset=true');
     }
 
     public function action_ajaxDraggingQuestionResponse()

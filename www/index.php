@@ -21,7 +21,7 @@ $modules = 'modules';
  *
  * @see  http://kohanaframework.org/guide/about.install#system
  */
-$system = 'system';
+$system = './../vendor/koseven/koseven/system/';
 
 /**
  * The default extension of resource files. If you change this, all resources
@@ -79,9 +79,23 @@ if (!is_dir($system) AND is_dir(DOCROOT . $system)) {
 }
 
 // Define the absolute paths for configured directories
-define('APPPATH', realpath($application) . DIRECTORY_SEPARATOR);
-define('MODPATH', realpath($modules) . DIRECTORY_SEPARATOR);
-define('SYSPATH', realpath($system) . DIRECTORY_SEPARATOR);
+if(realpath($application)) {
+    define('APPPATH', realpath($application) . DIRECTORY_SEPARATOR);
+} else {
+    die("directory $application doesnt exist");
+}
+
+if(realpath($modules)) {
+    define('MODPATH', realpath($modules) . DIRECTORY_SEPARATOR);
+} else {
+    die("directory $modules doesnt exist");
+}
+
+if(realpath($system)) {
+    define('SYSPATH', realpath($system) . DIRECTORY_SEPARATOR);
+} else {
+    die("directory $system doesnt exist");
+}
 
 // Clean up the configuration vars
 unset($application, $modules, $system);

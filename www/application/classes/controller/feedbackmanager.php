@@ -38,7 +38,7 @@ class Controller_FeedbackManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if ($mapId == null) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -80,9 +80,9 @@ class Controller_FeedbackManager extends Controller_Base
         if ($_POST and $mapId != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map')->updateFeedback($mapId, Arr::get($_POST, 'fb', null));
-            Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -93,9 +93,9 @@ class Controller_FeedbackManager extends Controller_Base
         if ($_POST and $mapId != null and $typeName != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_feedback_rule')->addRule($mapId, $typeName, $_POST);
-            Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -106,9 +106,9 @@ class Controller_FeedbackManager extends Controller_Base
         if ($mapId != null and $ruleId != null) {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_feedback_rule', array((int)$ruleId))->delete();
-            Request::initial()->redirect(URL::base() . 'feedbackManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'feedbackManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 }

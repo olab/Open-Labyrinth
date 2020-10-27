@@ -64,7 +64,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -90,7 +90,7 @@ class Controller_NodeManager extends Controller_Base {
             if($topicId != null) { $redirectURL .= 'dtopicManager/viewTopic/' . $topicId; }
         }
 
-        Request::initial()->redirect($redirectURL);
+        Controller::redirect($redirectURL);
     }
 
     public function action_addNode()
@@ -98,7 +98,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId      = (int) $this->request->param('id', 0);
         $editMode   = (int) $this->request->param('id2', 0);
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         $this->templateData['map']          = DB_ORM::model('map', array($mapId));
         $this->templateData['editMode']     = $editMode ? $editMode : 'w';
@@ -119,7 +119,7 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId     = (int) $this->request->param('id', 0);
         $tinyMCEv3  = $this->request->param('id2', 0);
 
-        if ( ! $nodeId) Request::initial()->redirect(URL::base());
+        if ( ! $nodeId) Controller::redirect(URL::base());
 
         $node   = DB_ORM::model('map_node', array($nodeId));
         $mapId  = $node->map_id;
@@ -148,7 +148,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         $post = $this->request->post();
 
-        if ( ! ($post AND $mapId)) Request::initial()->redirect(URL::base());
+        if ( ! ($post AND $mapId)) Controller::redirect(URL::base());
 
         $post['map_id'] = $mapId;
         $node = DB_ORM::model('map_node')->createNode($post);
@@ -164,17 +164,17 @@ class Controller_NodeManager extends Controller_Base {
             DB_ORM::model('map_node')->updateNodeInfo($node->id, $nodetext['info']);
         }
         
-        if ( ! $node) Request::initial()->redirect(URL::base().'nodeManager/index/'.$mapId);
+        if ( ! $node) Controller::redirect(URL::base().'nodeManager/index/'.$mapId);
 
         DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
-        Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
+        Controller::redirect(URL::base().'nodeManager/index/'.$node->map_id);
     }
 
     public function action_updateNode() {
         $nodeId = (int) $this->request->param('id', 0);
         $post = $this->request->post();
         $mapId = $post['map_id'];
-        if ( ! ($post AND $nodeId)) Request::initial()->redirect(URL::base());
+        if ( ! ($post AND $nodeId)) Controller::redirect(URL::base());
 
         $text = Arr::get($post, 'mnodetext', '');
         $info = Arr::get($post, 'mnodeinfo', '');
@@ -198,10 +198,10 @@ class Controller_NodeManager extends Controller_Base {
         $node = DB_ORM::model('map_node')->updateNode($nodeId, $post);
         Model_Leap_Metadata_Record::updateMetadata("map_node",$nodeId,$post);
 
-        if ( ! $node) Request::initial()->redirect(URL::base());
+        if ( ! $node) Controller::redirect(URL::base());
 
         DB_ORM::model('map_node_counter')->updateNodeCounterByNode($node->id, $node->map_id, $post);
-        Request::initial()->redirect(URL::base().'nodeManager/index/'.$node->map_id);
+        Controller::redirect(URL::base().'nodeManager/index/'.$node->map_id);
     }
 
     public function action_deleteNode()
@@ -210,7 +210,7 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = (int) $this->request->param('id2', 0);
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
-        if ( ! $nodeId) Request::initial()->redirect(URL::base());
+        if ( ! $nodeId) Controller::redirect(URL::base());
 
         $references = DB_ORM::model('map_node_reference')->getByElementType($nodeId, 'INFO');
         if($references != NULL){
@@ -222,7 +222,7 @@ class Controller_NodeManager extends Controller_Base {
             DB_ORM::model('map_node')->deleteNode($nodeId);
         }
 
-        Request::initial()->redirect(URL::base() . 'nodeManager/index/' . $mapId);
+        Controller::redirect(URL::base() . 'nodeManager/index/' . $mapId);
     }
 
     public function action_setRootNode() {
@@ -231,9 +231,9 @@ class Controller_NodeManager extends Controller_Base {
 
         if ($mapId && $nodeId) {
             DB_ORM::model('map_node')->setRootNode($mapId, $nodeId);
-            Request::initial()->redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
+            Controller::redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -262,7 +262,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -272,12 +272,12 @@ class Controller_NodeManager extends Controller_Base {
         if ($nodeId) {
             if ($countOfCondidtionFiled) {
                 $countOfCondidtionFiled++;
-                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
+                Controller::redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
+                Controller::redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -287,12 +287,12 @@ class Controller_NodeManager extends Controller_Base {
         if ($nodeId) {
             if ($countOfCondidtionFiled) {
                 $countOfCondidtionFiled--;
-                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
+                Controller::redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/' . $countOfCondidtionFiled);
             } else {
-                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
+                Controller::redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -302,12 +302,12 @@ class Controller_NodeManager extends Controller_Base {
         if (isset($_POST) && !empty($_POST) && $nodeId) {
             if ($countOfCondidtionFiled) {
                 DB_ORM::model('map_node')->addCondtional($nodeId, $_POST, $countOfCondidtionFiled);
-                Request::initial()->redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
+                Controller::redirect(URL::base() . 'nodeManager/editNode/' . $nodeId);
             } else {
-                Request::initial()->redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
+                Controller::redirect(URL::base() . 'nodeManager/editConditional/' . $nodeId . '/1');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -317,7 +317,7 @@ class Controller_NodeManager extends Controller_Base {
         $orderBy    = $this->request->param('id2', null);
         $logicSort  = $this->request->param('id3', 0);
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['orderBy']      = $orderBy;
@@ -344,9 +344,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map_node')->updateAllNode($_POST, $mapId);
-            Request::initial()->redirect(URL::base() . 'nodeManager/grid/' . $mapId . '/' . Arr::get($_POST, 'orderBy', 0) . '/' . Arr::get($_POST, 'logicSort', 0));
+            Controller::redirect(URL::base() . 'nodeManager/grid/' . $mapId . '/' . Arr::get($_POST, 'orderBy', 0) . '/' . Arr::get($_POST, 'logicSort', 0));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -374,7 +374,7 @@ class Controller_NodeManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -382,9 +382,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map')->updateSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
+            Controller::redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -392,9 +392,9 @@ class Controller_NodeManager extends Controller_Base {
         $mapId = (int) $this->request->param('id', 0);
         if (isset($_POST) && !empty($_POST) && $mapId) {
             DB_ORM::model('map_node_section')->createSection($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
+            Controller::redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -403,7 +403,7 @@ class Controller_NodeManager extends Controller_Base {
         $mapId      = (int) $this->request->param('id', 0);
         $sectionId  = (int) $this->request->param('id2', 0);
 
-        if ( ! ($sectionId AND $mapId)) Request::initial()->redirect(URL::base());
+        if ( ! ($sectionId AND $mapId)) Controller::redirect(URL::base());
 
         $this->templateData['map']          = DB_ORM::model('map', array($mapId));
         $this->templateData['section']      = DB_ORM::model('map_node_section', array($sectionId));
@@ -423,7 +423,7 @@ class Controller_NodeManager extends Controller_Base {
         $id_map      = (int) $this->request->param('id', 0);
         $id_section  = (int) $this->request->param('id2', 0);
 
-        if ( ! ($id_section AND $id_map)) Request::initial()->redirect(URL::base());
+        if ( ! ($id_section AND $id_map)) Controller::redirect(URL::base());
 
         $status = $this->request->post('submit');
         $section = DB_ORM::model('map_node_section', array($id_section))->nodes;
@@ -434,7 +434,7 @@ class Controller_NodeManager extends Controller_Base {
             if ($status !== null) $node->undo = $status;
             $node->save();
         }
-        Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$id_map.'/'.$id_section);
+        Controller::redirect(URL::base().'nodeManager/editSection/'.$id_map.'/'.$id_section);
     }
 
     public function action_updateNodeSection() {
@@ -442,9 +442,9 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = (int) $this->request->param('id2', 0);
         if (isset($_POST) && !empty($_POST) && $sectionId && $mapId) {
             DB_ORM::model('map_node_section')->updateSectionRow($sectionId, $_POST);
-            Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+            Controller::redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -453,9 +453,9 @@ class Controller_NodeManager extends Controller_Base {
         $sectionId = (int) $this->request->param('id2', 0);
         if ($sectionId && $mapId) {
             DB_ORM::model('map_node_section')->deleteSection($sectionId);
-            Request::initial()->redirect(URL::base() . 'nodeManager/sections/' . $mapId);
+            Controller::redirect(URL::base() . 'nodeManager/sections/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -467,9 +467,9 @@ class Controller_NodeManager extends Controller_Base {
             if ($nodeId) {
                 DB_ORM::model('map_node_section_node')->addNode($nodeId, $sectionId);
             }
-            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
+            Controller::redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -478,10 +478,10 @@ class Controller_NodeManager extends Controller_Base {
         $mapId      = (int) $this->request->param('id', 0);
         $sectionId  = (int) $this->request->param('id2', 0);
 
-        if ( ! ($sectionId AND $mapId)) Request::initial()->redirect(URL::base());
+        if ( ! ($sectionId AND $mapId)) Controller::redirect(URL::base());
 
         DB_ORM::model('map_node_section_node')->updateSectionNodes($sectionId, $this->request->post());
-        Request::initial()->redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
+        Controller::redirect(URL::base().'nodeManager/editSection/'.$mapId.'/'.$sectionId);
     }
 
     public function action_deleteNodeBySection() {
@@ -490,9 +490,9 @@ class Controller_NodeManager extends Controller_Base {
         $nodeId = (int) $this->request->param('id3', 0);
         if ($sectionId && $mapId && $nodeId) {
             DB_ORM::model('map_node_section_node')->deleteNodeBySection($sectionId, $nodeId);
-            Request::initial()->redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
+            Controller::redirect(URL::base() . 'nodeManager/editSection/' . $mapId . '/' . $sectionId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

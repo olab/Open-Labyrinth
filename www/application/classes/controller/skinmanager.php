@@ -34,7 +34,7 @@ class Controller_SkinManager extends Controller_Base {
     public function action_index()
     {
         $mapId = $this->request->param('id', NULL);
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
@@ -175,11 +175,11 @@ class Controller_SkinManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', NULL);
 
-        if ( ! isset($_POST['save'])) Request::initial()->redirect(URL::base());
+        if ( ! isset($_POST['save'])) Controller::redirect(URL::base());
 
         $skinId = $this->saveSkin($mapId, $this->request->post('skin_name'));
 
-        Request::initial()->redirect(URL::base().'skinManager/editSkins/'.$mapId.'/'.$skinId);
+        Controller::redirect(URL::base().'skinManager/editSkins/'.$mapId.'/'.$skinId);
     }
 
     public function action_skinEditorUpload()
@@ -275,9 +275,9 @@ class Controller_SkinManager extends Controller_Base {
             $content = $_POST['css'];
             $cssFile = DOCROOT . 'css/skin/' . $skinData->path . '/default.css';
             file_put_contents($cssFile, $content);
-            Request::initial()->redirect(URL::base() . 'skinManager/editSkins/' . $mapId . '/' . $id);
+            Controller::redirect(URL::base() . 'skinManager/editSkins/' . $mapId . '/' . $id);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -316,7 +316,7 @@ class Controller_SkinManager extends Controller_Base {
         if ($_POST['skinId'] != 0 and $mapId != NULL) {
             DB_ORM::model('map')->updateMapSkin($mapId, $_POST['skinId']);
         }
-        Request::initial()->redirect(URL::base() . 'skinManager/index/' . $mapId);
+        Controller::redirect(URL::base() . 'skinManager/index/' . $mapId);
     }
 
     public function action_uploadSkin()
@@ -368,7 +368,7 @@ class Controller_SkinManager extends Controller_Base {
                 }
             }
         }
-        Request::initial()->redirect(URL::base().'skinManager/editSkins/'.$mapId);
+        Controller::redirect(URL::base().'skinManager/editSkins/'.$mapId);
     }
 
     public function action_exportSkins()
@@ -420,9 +420,9 @@ class Controller_SkinManager extends Controller_Base {
         $skinId = $this->request->param('id2', 0);
         if ($mapId & $skinId){
             DB_ORM::model('map_skin')->deleteSkin($skinId);
-            Request::initial()->redirect(URL::base() . 'skinManager/editSkins/' . $mapId);
+            Controller::redirect(URL::base() . 'skinManager/editSkins/' . $mapId);
         }
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_ajaxCloneSkinData() {

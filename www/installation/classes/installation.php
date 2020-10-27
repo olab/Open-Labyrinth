@@ -66,6 +66,17 @@ class Installation
 
                 Session::set('installationConfiguration', json_encode($olab));
                 if (!$errorFound) {
+                    // write config.json
+                    $baseUrl = URL::base();
+                    $configPath = DOCROOT . 'config.json';
+                    $config = self::getContent($configPath);
+                    $config['base_url'] = $baseUrl;
+                    $config['cookie_salt'] = substr(base_convert(sha1(uniqid(mt_rand())), 16, 36), 0, 20);
+                    $config['timezone'] = $olab['timezone'];
+                    $config['lang'] = $olab['lang'];
+                    $config['locale'] = $olab['locale'];
+                    self::createFile($configPath, $config, true);
+
                     Session::set('installationStep', '3');
                 }
             }
@@ -102,7 +113,7 @@ class Installation
                         $host = $olab['db_host'];
                     }
 
-                    $link = @mysql_connect($host, $olab['db_user'], $olab['db_pass']);
+                    $link = @mysqli_connect($host, $olab['db_user'], $olab['db_pass']);
 
                     if ($link == false) {
                         Notice::add('An error occurred while trying connect to the database.');
@@ -135,13 +146,15 @@ class Installation
             }
 
             if (!$errorFound) {
-                $baseUrl = URL::base();
-                if ($baseUrl != '/') {
-                    $configPath = DOCROOT . 'config.json';
-                    $config = self::getContent($configPath);
-                    $config['base_url'] = $baseUrl;
-                    self::createFile($configPath, $config, true);
+                $geo_guess = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
+                if(is_array($geo_guess)) {
+                    if(!empty($geo_guess['geoplugin_timezone'])) {
+                        $olab['timezone'] = $geo_guess['geoplugin_timezone'];
+                        $olab['lang'] = Installation::country_code_to_locale($geo_guess['geoplugin_countryCode']);
+                        $olab['locale'] = str_replace('-', '_', $config['lang']).'.utf-8';
+                    }
                 }
+
                 Session::set('installationStep', '2');
             }
         }
@@ -297,6 +310,17 @@ class Installation
 
         $temp['item'] = 'Iconv Extension Loaded';
         if (extension_loaded('iconv')) {
+            $temp['label'] = 'success';
+            $temp['status'] = 'Yes';
+        } else {
+            $temp['label'] = 'important';
+            $temp['status'] = 'No';
+            $status = false;
+        }
+        $array[] = $temp;
+
+        $temp['item'] = 'Intl Extension Loaded';
+        if (extension_loaded('intl')) {
             $temp['label'] = 'success';
             $temp['status'] = 'Yes';
         } else {
@@ -629,27 +653,41 @@ class Installation
         } else {
             $host = $olab['db_host'];
         }
-        //TODO: The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead
-        $link = @mysql_connect($host, $olab['db_user'], $olab['db_pass']);
+        $link = @mysqli_connect($host, $olab['db_user'], $olab['db_pass']);
+        /* check connection */
+        if (mysqli_connect_errno()) {
+            throw new ErrorException("Connect failed in ".__FILE__." : ".__LINE__.": %s\n". mysqli_connect_error());
+        }
 
-        $db_selected = mysql_select_db($olab['db_name']);
+        $db_selected = mysqli_select_db($link, $olab['db_name']);
         if ($db_selected) {
-            if ($olab['db_old'] == 'backup') {
+            if ($olab['db_old'] == 'backup'){
                 $rand = rand();
-                $query = "SELECT concat('RENAME TABLE " . $olab['db_name'] . ".',table_name, ' TO " . $olab['db_name'] . "_" . $rand . ".',table_name, ';') as string_query FROM information_schema.TABLES WHERE table_schema='" . $olab['db_name'] . "';";
-                mysql_query('CREATE DATABASE ' . $olab['db_name'] . "_" . $rand);
-                $responce = mysql_query($query) or die(mysql_error());
-                while ($result = mysql_fetch_array($responce)) {
-                    mysql_query($result['string_query']);
+                $query = "SELECT concat('RENAME TABLE ".$olab['db_name'].".',table_name, ' TO " . $olab['db_name'] . "_" . $rand . ".',table_name, ';') as string_query FROM information_schema.TABLES WHERE table_schema='".$olab['db_name']."';";
+                if (false == mysqli_query($link, 'CREATE DATABASE ' . $olab['db_name'] . "_" . $rand)) {
+                    throw new ErrorException(__FILE__." : ".__LINE__.":".mysqli_error($link));
+                }
+
+                $responce = mysqli_query($link, $query);
+                if(false === $responce) {
+                    throw new ErrorException(mysqli_error($link));
+                }
+                while($result = mysqli_fetch_array($responce)){
+                    if (false == mysqli_query($link, $result['string_query'])) {
+                        throw new ErrorException(__FILE__." : ".__LINE__.":".mysqli_error($link));
+                    }
+                    mysqli_free_result($result);
                 }
             }
         }
-        mysql_query('DROP DATABASE IF EXISTS ' . $olab['db_name']);
-        mysql_query('CREATE DATABASE ' . $olab['db_name']);
-        mysql_select_db($olab['db_name']);
 
-        Installation::populateDatabase(INST_DOCROOT . 'sql/CreateDB.sql');
-        Installation::runUpdates();
+
+        if (false === mysqli_query($link,'DROP DATABASE IF EXISTS '.$olab['db_name'])) { throw new ErrorException(__FILE__." : ".__LINE__.":".mysqli_error($link));}
+        if (false === mysqli_query($link,'CREATE DATABASE '.$olab['db_name'])) { throw new ErrorException(__FILE__." : ".__LINE__.":".mysqli_error($link));}
+        if (false === mysqli_select_db($link, $olab['db_name'])) {throw new ErrorException(__FILE__." : ".__LINE__.":".mysqli_error($link));}
+
+        Installation::populateDatabase($link, INST_DOCROOT.'sql/CreateDB.sql');
+        Installation::runUpdates($link);
 
         $olabUser = json_decode(Session::get('installationConfiguration'), true);
 
@@ -657,27 +695,29 @@ class Installation
 
         $query = "INSERT INTO `users` (`id`, `username`, `password`, `email`, `nickname`, `language_id`, `type_id`) VALUES
 (1, '" . $olabUser['admin_user'] . "', '" . $password . "', '" . $olabUser['admin_email'] . "', 'administrator', 1, 4);";
-        mysql_query($query);
+        mysqli_query($link, $query) or die(mysqli_error($link));
 
+        /**
+         * @TODO: change this to koseven standard (mysqli or pdo allowed)
+         * But beware: leap orm would have to be rewritten too for this to work.
+         */
         $databaseConfig = '$config = array();
         $config["default"] = array(
             "type"          => "mysql",
-            "driver"        => "standard",
+            "driver"        => "pdo",
             "connection"    => array(
                 "persistent"    => FALSE,
-                "hostname"      => "' . $olab['db_host'] . '",
-                "port"          => "' . $olab['db_port'] . '",
-                "database"      => "' . $olab['db_name'] . '",
-                "username"      => "' . $olab['db_user'] . '",
-                "password"      => "' . $olab['db_pass'] . '",
-                "variables"     => [\'sql_mode\' => \'NO_ENGINE_SUBSTITUTION\'],
+                "hostname"      => "'.$olab['db_host'].'",
+                "port"          => "'.$olab['db_port'].'",
+                "database"      => "'.$olab['db_name'].'",
+                "username"      => "'.$olab['db_user'].'",
+                "password"      => "'.$olab['db_pass'].'",
             ),
             "caching"       => FALSE,
             "charset"       => "utf8",
             "profiling"     => FALSE,
             "table_prefix"  => "",
         );
-
         return $config;';
 
         $content = '';
@@ -699,7 +739,7 @@ class Installation
     public static function copyDirectory($src, $dst, $options = [])
     {
         if (!is_dir($dst)) {
-            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : DEFAULT_FOLDER_MODE, true);
+            static::createDirectory($dst, isset($options['dirMode']) ? $options['dirMode'] : 0777, true);
         }
 
         $handle = opendir($src);
@@ -764,8 +804,13 @@ class Installation
         rmdir($dirPath);
     }
 
-    public static function runUpdates()
-    {
+    /**
+     * run sql updates sorted by version, track success in json file
+     *
+     * @param $link
+     * @return int
+     */
+    public static function runUpdates($link){
         $result = 0;
         $dir = DOCROOT . 'updates/';
         if (is_dir($dir)) {
@@ -792,7 +837,7 @@ class Installation
                         if ($ext == 'sql') {
                             $pathToFile = $dir . $f;
                             if (!isset($skipFiles[$f])) {
-                                Installation::populateDatabase($pathToFile);
+                                Installation::populateDatabase($link, $pathToFile);
                                 $skipFiles[$f] = 1;
                                 $result = 1;
                             }
@@ -823,36 +868,10 @@ class Installation
         }
 
 
-        $resultA = self::sortVersionInOrderPregReplace($a);
-        $resultB = self::sortVersionInOrderPregReplace($b);
-
-        if ($resultA == $resultB) {
-            return 0;
-        }
-
-        return ($resultA - $resultB > 0) ? 1 : -1;
+        return version_compare($a, $b);
     }
 
-    public static function sortVersionInOrderPregReplace($str)
-    {
-        $result = '';
-        $regExp = '/(?<=v)(.*?)(?=\.sql)/is';
-        $regExpDot = '/(\.)/e';
-
-        if ($c = preg_match_all($regExp, $str, $matches)) {
-            if (isset($matches[0][0])) {
-                $found = 0;
-                //TODO: replace preg_replace by preg_replace_callback
-                $result = @self::replaceSpecialChar(preg_replace($regExpDot, '$found++ ? \'\' : \'$1\'',
-                    $matches[0][0]));
-            }
-        }
-
-        return $result;
-    }
-
-    public static function replaceSpecialChar($str)
-    {
+    public static function replaceSpecialChar($str) {
         $array = explode('_', $str);
         $resultStr = $array[0];
         if (isset($array[1])) {
@@ -867,7 +886,7 @@ class Installation
         return $resultStr;
     }
 
-    public static function populateDatabase($schema)
+    public static function populateDatabase($link, $schema)
     {
         $return = true;
 
@@ -886,7 +905,7 @@ class Installation
             // If the query isn't empty and is not a MySQL or PostgreSQL comment, execute it.
             if (!empty($query) && ($query{0} != '#') && ($query{0} != '-')) {
                 // Execute the query.
-                $result = mysql_query($query) or die(mysql_error());
+                $result = mysqli_query($link, $query) or die(__FILE__." : ".__LINE__.":".mysqli_error($link).". Schema:".$schema);
 
                 if (!$result) {
                     $return = false;
@@ -952,8 +971,10 @@ class Installation
     public static function terminate()
     {
         if ((is_writable(DOCROOT . 'install.php')) AND (is_dir(DOCROOT . 'installation') AND is_writable(DOCROOT . 'installation'))) {
-            unlink(DOCROOT . 'install.php');
-            Installation::deleteDir(DOCROOT . 'installation');
+            //unlink(DOCROOT . 'install.php');
+            rename(DOCROOT . 'install.php', DOCROOT . '__install.php');
+            rename(DOCROOT . 'installation', DOCROOT . '__installation');
+            //Installation::deleteDir(DOCROOT . 'installation');
             $baseUrl = URL::base();
             session_destroy();
             Installation::redirect($baseUrl);
@@ -962,5 +983,171 @@ class Installation
             Session::set('installationStep', '1');
             Installation::redirect(URL::base() . 'installation/index.php');
         }
+    }
+
+    public static function country_code_to_locale($country_code)
+    {
+        $locales = array('af-ZA',
+            'am-ET',
+            'ar-AE',
+            'ar-BH',
+            'ar-DZ',
+            'ar-EG',
+            'ar-IQ',
+            'ar-JO',
+            'ar-KW',
+            'ar-LB',
+            'ar-LY',
+            'ar-MA',
+            'ar-OM',
+            'ar-QA',
+            'ar-SA',
+            'ar-SY',
+            'ar-TN',
+            'ar-YE',
+            'az-Cyrl-AZ',
+            'az-Latn-AZ',
+            'be-BY',
+            'bg-BG',
+            'bn-BD',
+            'bs-Cyrl-BA',
+            'bs-Latn-BA',
+            'cs-CZ',
+            'da-DK',
+            'de-AT',
+            'de-CH',
+            'de-DE',
+            'de-LI',
+            'de-LU',
+            'dv-MV',
+            'el-GR',
+            'en-AU',
+            'en-BZ',
+            'en-CA',
+            'en-GB',
+            'en-IE',
+            'en-JM',
+            'en-MY',
+            'en-NZ',
+            'en-SG',
+            'en-TT',
+            'en-US',
+            'en-ZA',
+            'en-ZW',
+            'es-AR',
+            'es-BO',
+            'es-CL',
+            'es-CO',
+            'es-CR',
+            'es-DO',
+            'es-EC',
+            'es-ES',
+            'es-GT',
+            'es-HN',
+            'es-MX',
+            'es-NI',
+            'es-PA',
+            'es-PE',
+            'es-PR',
+            'es-PY',
+            'es-SV',
+            'es-US',
+            'es-UY',
+            'es-VE',
+            'et-EE',
+            'fa-IR',
+            'fi-FI',
+            'fil-PH',
+            'fo-FO',
+            'fr-BE',
+            'fr-CA',
+            'fr-CH',
+            'fr-FR',
+            'fr-LU',
+            'fr-MC',
+            'he-IL',
+            'hi-IN',
+            'hr-BA',
+            'hr-HR',
+            'hu-HU',
+            'hy-AM',
+            'id-ID',
+            'ig-NG',
+            'is-IS',
+            'it-CH',
+            'it-IT',
+            'ja-JP',
+            'ka-GE',
+            'kk-KZ',
+            'kl-GL',
+            'km-KH',
+            'ko-KR',
+            'ky-KG',
+            'lb-LU',
+            'lo-LA',
+            'lt-LT',
+            'lv-LV',
+            'mi-NZ',
+            'mk-MK',
+            'mn-MN',
+            'ms-BN',
+            'ms-MY',
+            'mt-MT',
+            'nb-NO',
+            'ne-NP',
+            'nl-BE',
+            'nl-NL',
+            'pl-PL',
+            'prs-AF',
+            'ps-AF',
+            'pt-BR',
+            'pt-PT',
+            'ro-RO',
+            'ru-RU',
+            'rw-RW',
+            'sv-SE',
+            'si-LK',
+            'sk-SK',
+            'sl-SI',
+            'sq-AL',
+            'sr-Cyrl-BA',
+            'sr-Cyrl-CS',
+            'sr-Cyrl-ME',
+            'sr-Cyrl-RS',
+            'sr-Latn-BA',
+            'sr-Latn-CS',
+            'sr-Latn-ME',
+            'sr-Latn-RS',
+            'sw-KE',
+            'tg-Cyrl-TJ',
+            'th-TH',
+            'tk-TM',
+            'tr-TR',
+            'uk-UA',
+            'ur-PK',
+            'uz-Cyrl-UZ',
+            'uz-Latn-UZ',
+            'vi-VN',
+            'wo-SN',
+            'yo-NG',
+            'zh-CN',
+            'zh-HK',
+            'zh-MO',
+            'zh-SG',
+            'zh-TW');
+
+        // randomize the array, such that we get random locales
+        // for countries with multiple languages (CA, CH)
+        shuffle($locales);
+
+        foreach ($locales as $locale) {
+            $locale_region = locale_get_region($locale);
+
+            if (strtoupper($country_code) == $locale_region) {
+                return $locale;
+            }
+        }
+
+        return "en-US";
     }
 }

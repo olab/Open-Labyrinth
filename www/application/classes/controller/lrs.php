@@ -77,7 +77,7 @@ class Controller_LRS extends Controller_Base
         $model->save();
 
         Session::instance()->set('success_message', 'Saved.');
-        Request::initial()->redirect(URL::base() . 'lrs');
+        Controller::redirect(URL::base() . 'lrs');
     }
 
     public function action_delete()
@@ -88,7 +88,7 @@ class Controller_LRS extends Controller_Base
         $model->delete();
 
         Session::instance()->set('success_message', 'Deleted.');
-        Request::initial()->redirect(URL::base() . 'lrs');
+        Controller::redirect(URL::base() . 'lrs');
     }
 
     public function action_deleteLRSStatement()
@@ -99,7 +99,7 @@ class Controller_LRS extends Controller_Base
         $model->delete();
 
         Session::instance()->set('success_message', 'Deleted.');
-        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+        Controller::redirect(URL::base() . 'lrs/failedStatements');
     }
 
     public function action_sendFailedLRSStatements()
@@ -116,7 +116,7 @@ class Controller_LRS extends Controller_Base
         }
 
         Session::instance()->set('info_message', 'Statements sent to LRS');
-        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+        Controller::redirect(URL::base() . 'lrs/failedStatements');
     }
 
     public function action_deleteFailedLRSStatements()
@@ -126,7 +126,7 @@ class Controller_LRS extends Controller_Base
             ->execute();
 
         Session::instance()->set('info_message', 'Statements deleted.');
-        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+        Controller::redirect(URL::base() . 'lrs/failedStatements');
     }
 
     public function action_sendSelectedFailedLRSStatements()
@@ -149,7 +149,7 @@ class Controller_LRS extends Controller_Base
         }
 
         Session::instance()->set('info_message', 'Statements sent to LRS');
-        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+        Controller::redirect(URL::base() . 'lrs/failedStatements');
     }
 
     public function action_deleteSelectedFailedLRSStatements()
@@ -166,7 +166,7 @@ class Controller_LRS extends Controller_Base
             ->execute();
 
         Session::instance()->set('info_message', 'Statements deleted.');
-        Request::initial()->redirect(URL::base() . 'lrs/failedStatements');
+        Controller::redirect(URL::base() . 'lrs/failedStatements');
     }
 
     public function action_failedStatements()

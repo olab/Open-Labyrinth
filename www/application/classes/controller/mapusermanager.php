@@ -40,7 +40,7 @@ class Controller_MapUserManager extends Controller_Base {
         $groupOrder  = $this->request->param('id5', 0);
         $tiedUsers      = array();
 
-        if ($mapId == NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == NULL) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
@@ -97,7 +97,7 @@ class Controller_MapUserManager extends Controller_Base {
         $learnerOrder   = $this->request->param('id3', 0);
         $post           = $this->request->post();
 
-        if (! ($post AND $mapId)) Request::initial()->redirect(URL::base());
+        if (! ($post AND $mapId)) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
         // ---- reviewer ---- //
@@ -158,7 +158,7 @@ class Controller_MapUserManager extends Controller_Base {
         }
         // ---- end groups ---- //
 
-        Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId.'/'.$authorOrder.'/'.$learnerOrder);
+        Controller::redirect(URL::base().'mapUserManager/index/'.$mapId.'/'.$authorOrder.'/'.$learnerOrder);
     }
 
     public function action_removeAllGroups(){
@@ -167,9 +167,9 @@ class Controller_MapUserManager extends Controller_Base {
         $learnerOrder = $this->request->param('id3', 0);
         if(!empty($mapId)) {
             DB_ORM::model('map_group')->removeAllGroups($mapId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         }else{
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -180,9 +180,9 @@ class Controller_MapUserManager extends Controller_Base {
         if(!empty($mapId)) {
             $groupIds = DB_ORM::model('group')->getAllGroupsId();
             DB_ORM::model('map_group')->addNewGroups($mapId, $groupIds);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         }else{
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -193,9 +193,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->deleteByUserId($mapId, $userId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_addAllLearners() {
@@ -206,9 +206,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllLearners($mapId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_removeAllLearners()
@@ -220,9 +220,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllLearners($mapId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId . '/' . $authorOrder . '/' . $learnerOrder);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_addAllAuthors() {
@@ -231,9 +231,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllAuthors($mapId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_removeAllAuthors()
@@ -243,9 +243,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllAuthors($mapId);
-            Request::initial()->redirect(URL::base() . 'mapUserManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'mapUserManager/index/' . $mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_addAllReviewers()
@@ -255,9 +255,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->addAllReviewers($mapId);
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Controller::redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_removeAllReviewers()
@@ -267,9 +267,9 @@ class Controller_MapUserManager extends Controller_Base {
         {
             DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
             DB_ORM::model('map_user')->removeAllReviewers($mapId);
-            Request::initial()->redirect(URL::base().'mapUserManager/index/'.$mapId);
+            Controller::redirect(URL::base().'mapUserManager/index/'.$mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 }
 

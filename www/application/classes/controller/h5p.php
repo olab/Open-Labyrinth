@@ -96,13 +96,13 @@ class Controller_H5P extends Controller_Base
 
         if (!file_exists($temp_dir) || ((time() - filemtime($temp_dir)) < 60 * 60 * 24)) {
             Session::instance()->set('success_message', __('No files to delete.'));
-            Request::initial()->redirect(URL::base() . 'h5p');
+            Controller::redirect(URL::base() . 'h5p');
         }
 
         FileHelper::removeDirectory($temp_dir);
 
         Session::instance()->set('success_message', __('Deleted.'));
-        Request::initial()->redirect(URL::base() . 'h5p');
+        Controller::redirect(URL::base() . 'h5p');
     }
 
     /**
@@ -264,7 +264,7 @@ class Controller_H5P extends Controller_Base
     {
         if (!isset($_FILES['h5p_file'])) {
             Session::instance()->set('error_message', __('File not selected.'));
-            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+            Controller::redirect(URL::base() . 'h5p/libraries');
         }
 
         if ($_FILES['h5p_file']['error'] !== 0) {
@@ -272,7 +272,7 @@ class Controller_H5P extends Controller_Base
 
             $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
             Session::instance()->set('error_message', __($errorMessage));
-            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+            Controller::redirect(URL::base() . 'h5p/libraries');
         }
 
         // No upload errors, try to install package
@@ -288,14 +288,14 @@ class Controller_H5P extends Controller_Base
             Session::instance()->set('success_message', __('Uploaded.'));
         }
 
-        Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        Controller::redirect(URL::base() . 'h5p/libraries');
     }
 
     public function action_libraryDeleteSubmit()
     {
         if ($this->request->method() !== 'POST') {
             Session::instance()->set('error_message', __('Wrong request method.'));
-            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+            Controller::redirect(URL::base() . 'h5p/libraries');
         }
 
         $library_admin = new H5PLibraryAdmin('H5P');
@@ -310,7 +310,7 @@ class Controller_H5P extends Controller_Base
 
         if (!$library) {
             Session::instance()->set('error_message', __('Library not found.'));
-            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+            Controller::redirect(URL::base() . 'h5p/libraries');
         }
 
         $plugin = H5PPlugin::get_instance();
@@ -321,12 +321,12 @@ class Controller_H5P extends Controller_Base
         if ($usage['content'] !== 0 || $usage['libraries'] !== 0) {
             Session::instance()->set('error_message',
                 __('This Library is used by content or other libraries and can therefore not be deleted.'));
-            Request::initial()->redirect(URL::base() . 'h5p/libraries');
+            Controller::redirect(URL::base() . 'h5p/libraries');
         }
 
         $interface->deleteLibrary($library_admin->library);
         Session::instance()->set('success_message', __('Deleted.'));
-        Request::initial()->redirect(URL::base() . 'h5p/libraries');
+        Controller::redirect(URL::base() . 'h5p/libraries');
     }
 
     public function action_libraryDelete()
@@ -877,7 +877,7 @@ class Controller_H5P extends Controller_Base
                 //H5PPluginAdmin::set_error($content_admin->content);
                 Session::instance()->set('error_message', $content_admin->content);
                 $content_admin->content = null;
-                Request::initial()->redirect(URL::base() . 'h5p/addContent');
+                Controller::redirect(URL::base() . 'h5p/addContent');
             }
         }
 
@@ -907,7 +907,7 @@ class Controller_H5P extends Controller_Base
 
                 if (!isset($_FILES['h5p_file'])) {
                     Session::instance()->set('error_message', __('File not selected.'));
-                    Request::initial()->redirect(URL::base() . 'h5p/addContent');
+                    Controller::redirect(URL::base() . 'h5p/addContent');
                 }
 
                 if ($_FILES['h5p_file']['error'] !== 0) {
@@ -915,7 +915,7 @@ class Controller_H5P extends Controller_Base
 
                     $errorMessage = $phpFileUploadErrors[$_FILES['h5p_file']['error']];
                     Session::instance()->set('error_message', __($errorMessage));
-                    Request::initial()->redirect(URL::base() . 'h5p/addContent');
+                    Controller::redirect(URL::base() . 'h5p/addContent');
                 }
 
                 // Create new content if none exists
@@ -945,7 +945,7 @@ class Controller_H5P extends Controller_Base
             $redirect_url .= '/' . $id;
         }
 
-        Request::initial()->redirect($redirect_url);
+        Controller::redirect($redirect_url);
     }
 
     public function action_contentDelete()
@@ -956,7 +956,7 @@ class Controller_H5P extends Controller_Base
 
         if (empty($id)) {
             Session::instance()->set('error_message', 'id cannot be blank.');
-            Request::initial()->redirect(URL::base() . 'h5p/addContent');
+            Controller::redirect(URL::base() . 'h5p/addContent');
         }
 
         $plugin = H5PPlugin::get_instance();
@@ -965,7 +965,7 @@ class Controller_H5P extends Controller_Base
         $content_admin->load_content($id);
         if (is_string($content_admin->content)) {
             Session::instance()->set('error_message', $content_admin->content);
-            Request::initial()->redirect(URL::base() . 'h5p/addContent');
+            Controller::redirect(URL::base() . 'h5p/addContent');
         }
 
         $content_admin->set_content_tags($content_admin->content['id']);
@@ -973,7 +973,7 @@ class Controller_H5P extends Controller_Base
         $storage->deletePackage($content_admin->content);
 
         Session::instance()->set('success_message', 'Deleted.');
-        Request::initial()->redirect(URL::base() . 'h5p/');
+        Controller::redirect(URL::base() . 'h5p/');
     }
 
     /**

@@ -56,7 +56,7 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
     {
         $mapId = (int) $this->request->param('id', 0);
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base().'openLabyrinth');
+        if ( ! $mapId) Controller::redirect(URL::base().'openLabyrinth');
 
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Labyrinth Details'))->set_url(URL::base() . 'authoredLabyrinth/info/' . $mapId));
 
@@ -69,7 +69,7 @@ class Controller_AuthoredLabyrinth extends Controller_Base {
     {
         $mapId = (int) $this->request->param('id', 0);
         if ($mapId) DB_ORM::model('map')->duplicateMap($mapId);
-        Request::initial()->redirect(URL::base().'authoredLabyrinth');
+        Controller::redirect(URL::base().'authoredLabyrinth');
     }
 
 }

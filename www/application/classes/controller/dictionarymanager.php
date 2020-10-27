@@ -45,12 +45,12 @@ class Controller_DictionaryManager extends Controller_Base {
         if ($_FILES) {
             $result = DB_ORM::model('dictionary')->uploadFile($_FILES);
             if ($result) {
-                Request::initial()->redirect(URL::base() . 'dictionaryManager/index/success');
+                Controller::redirect(URL::base() . 'dictionaryManager/index/success');
             } else {
-                Request::initial()->redirect(URL::base() . 'dictionaryManager/index/error');
+                Controller::redirect(URL::base() . 'dictionaryManager/index/error');
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -58,9 +58,9 @@ class Controller_DictionaryManager extends Controller_Base {
         if (isset($_POST['word'])) {
             $term = str_replace("'", "''", htmlspecialchars($_POST['word']));
             DB_ORM::model('dictionary')->addWord($term);
-            Request::initial()->redirect(URL::base() . 'dictionaryManager');
+            Controller::redirect(URL::base() . 'dictionaryManager');
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -77,7 +77,7 @@ class Controller_DictionaryManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -94,9 +94,9 @@ class Controller_DictionaryManager extends Controller_Base {
 
                 DB_ORM::model('dictionary')->updateWord($term);
             }
-            Request::initial()->redirect(URL::base() . 'dictionaryManager');
+            Controller::redirect(URL::base() . 'dictionaryManager');
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

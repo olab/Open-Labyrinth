@@ -36,7 +36,7 @@ class Controller_ChatManager extends Controller_Base {
         $mapId = $this->request->param('id', NULL);
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
-        if ( ! $mapId) Request::initial()->redirect(URL::base());
+        if ( ! $mapId) Controller::redirect(URL::base());
 
         $this->templateData['map'] = DB_ORM::model('map', array((int) $mapId));
         $this->templateData['chats'] = DB_ORM::model('map_chat')->getChatsByMap($mapId);
@@ -62,7 +62,7 @@ class Controller_ChatManager extends Controller_Base {
     {
         $mapId = $this->request->param('id', NULL);
 
-        if ($mapId == NULL) Request::initial()->redirect(URL::base());
+        if ($mapId == NULL) Controller::redirect(URL::base());
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
 
@@ -85,9 +85,9 @@ class Controller_ChatManager extends Controller_Base {
 
         if ($_POST and $mapId != NULL) {
             DB_ORM::model('map_chat')->addChat($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -109,9 +109,9 @@ class Controller_ChatManager extends Controller_Base {
                 DB_ORM::model('map_chat', array((int) $chatId))->delete();
                 DB_ORM::model('map_chat_element')->deleteElementsByChatId($chatId);
             }
-            Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'chatManager/index/' . $mapId);
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_editChat() {
@@ -144,7 +144,7 @@ class Controller_ChatManager extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -162,9 +162,9 @@ class Controller_ChatManager extends Controller_Base {
                 $_POST['is_private'] = FALSE;
             }
                 DB_ORM::model('map_chat')->updateChat($chatId, $_POST);
-            Request::initial()->redirect(URL::base() . 'chatManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'chatManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

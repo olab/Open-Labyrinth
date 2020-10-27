@@ -108,10 +108,10 @@ class Model_Leap_Map_Contributor extends DB_ORM_Model {
 
     public function updateContributors($mapId, $values)
     {
-        $contibutors = $this->getAllContributors($mapId);
-        if(count($contibutors) > 0)
+        $contributors = $this->getAllContributors($mapId);
+        if(is_array($contributors) and count($contributors) > 0)
         {
-            foreach($contibutors as $contributor)
+            foreach($contributors as $contributor)
             {
                 $role           = Arr::get($values, 'role_'.$contributor->id, NULL);
                 $name           = Arr::get($values, 'cname_'.$contributor->id, '');

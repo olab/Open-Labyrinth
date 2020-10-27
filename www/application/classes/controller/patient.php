@@ -94,7 +94,7 @@ class Controller_Patient extends Controller_Base {
             DB_ORM::model('Patient_Scenario')->deleteRecord($id);
         }
 
-        Request::initial()->redirect(URL::base().'patient/index');
+        Controller::redirect(URL::base().'patient/index');
     }
 
     public function action_labyrinth()
@@ -220,6 +220,6 @@ class Controller_Patient extends Controller_Base {
     public function action_deleteCondition()
     {
         DB_ORM::delete('Patient_Condition')->where('id', '=', $this->request->param('id'))->execute();
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 }

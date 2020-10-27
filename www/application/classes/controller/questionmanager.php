@@ -38,7 +38,7 @@ class Controller_QuestionManager extends Controller_Base
         $mapId = $this->request->param('id', null);
 
         if (!$mapId) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -79,7 +79,7 @@ class Controller_QuestionManager extends Controller_Base
         $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
         if (!($map AND $type)) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         DB_ORM::model('User')->can('edit', array('mapId' => $mapId));
@@ -97,8 +97,8 @@ class Controller_QuestionManager extends Controller_Base
             $questionObj = DB_ORM::model('map_question', array((int)$questionId));
 
             $this->templateData['question'] = $questionObj;
-            $this->templateData['used'] = count(DB_ORM::model('map_node_reference')->getByElementType($questionId,
-                'QU'));
+            $arr_questions = DB_ORM::model('map_node_reference')->getByElementType($questionId, 'QU');
+            $this->templateData['used'] = is_array($arr_questions) ? count($arr_questions) : 0;
 
             if ($questionObj->settings) {
                 $jsonSettings = json_decode($questionObj->settings);
@@ -202,7 +202,7 @@ class Controller_QuestionManager extends Controller_Base
                 }
             }
         }
-        Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
     }
 
     public function action_questionPOST()
@@ -219,7 +219,7 @@ class Controller_QuestionManager extends Controller_Base
         $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
         if (!($post AND $map AND $type)) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         $post['settings'] = json_encode(array(Arr::get($post, 'settings', ''), Arr::get($post, 'isCorrect', 0)));
@@ -246,7 +246,7 @@ class Controller_QuestionManager extends Controller_Base
             : DB_ORM::model('Map_Question_Validation')->update($questionId, $validator, $secondParameter,
             $errorMessage);
 
-        Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+        Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
     }
 
     public function action_questionGridPOST()
@@ -270,7 +270,7 @@ class Controller_QuestionManager extends Controller_Base
         $type = DB_ORM::model('map_question_type', array((int)$typeId));
 
         if (!($post AND $map AND $type)) {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         if (!empty($questionId)) {
@@ -416,7 +416,7 @@ class Controller_QuestionManager extends Controller_Base
         if ($goToAttributes) {
             $redirectUrl .= '#goToAttributes';
         }
-        Request::initial()->redirect($redirectUrl);
+        Controller::redirect($redirectUrl);
     }
 
     public function action_deleteQuestion()
@@ -437,9 +437,9 @@ class Controller_QuestionManager extends Controller_Base
                 DB_ORM::model('map_question', array((int)$questionId))->delete();
                 DB_ORM::model('map_question_response')->deleteByQuestion($questionId);
             }
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -450,9 +450,9 @@ class Controller_QuestionManager extends Controller_Base
 
         if ($mapId AND $questionId) {
             DB_ORM::model('map_question')->duplicateQuestion($questionId);
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -462,9 +462,9 @@ class Controller_QuestionManager extends Controller_Base
 
         if ($mapId != null && $_POST != null) {
             DB_ORM::model('map_question')->copyQuestion($mapId, $_POST);
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -472,7 +472,7 @@ class Controller_QuestionManager extends Controller_Base
     {
         $idResponse = $this->request->param('id');
         DB_ORM::delete('Map_Question_Response')->where('id', '=', $idResponse)->execute();
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 
     public function action_globalQuestions()
@@ -507,7 +507,7 @@ class Controller_QuestionManager extends Controller_Base
             Breadcrumbs::add(Breadcrumb::factory()->set_title($this->templateData['map']->name)->set_url(URL::base() . 'labyrinthManager/global/' . $mapId));
             Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Global questions'))->set_url(URL::base() . 'questionManager/index/' . $mapId));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -538,10 +538,10 @@ class Controller_QuestionManager extends Controller_Base
                 readfile('tmp/' . $rand . '.zip');
                 unlink($zipFile);
             } else {
-                Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+                Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -659,9 +659,9 @@ class Controller_QuestionManager extends Controller_Base
                     }
                 }
             }
-            Request::initial()->redirect(URL::base() . 'questionManager/index/' . $mapId);
+            Controller::redirect(URL::base() . 'questionManager/index/' . $mapId);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 

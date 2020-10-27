@@ -482,8 +482,17 @@ var VisualEditor = function() {
     self.Deserialize = function(jsonString) {
         if(jsonString.length <= 0) return;
         
-        var object = evalJson(jsonString);
-        if(object == null) return;
+        // var object = evalJson(jsonString);
+        // if(object == null) return;
+        try
+        {
+            var object = JSON.parse(jsonString);
+        }
+        catch(e)
+        {
+            console.error("Invalid JSON string given: ", jsonString);
+            return;
+        }
         
         self.nodes = [];
         var copyNodes = null;
@@ -706,8 +715,17 @@ var VisualEditor = function() {
     self.DeserializeFromPaste = function(jsonString) {
         if(jsonString.length <= 0) return;
         
-        var object = evalJson(jsonString);
-        if(object == null) return;
+        // var object = evalJson(jsonString);
+        // if(object == null) return;
+        try
+        {
+            var object = JSON.parse(jsonString);
+        }
+        catch(e)
+        {
+            console.error("Invalid JSON string given: ", jsonString);
+            return;
+        }
         
         var pos = viewport.GetPosition();
         var scale = viewport.GetScale();
@@ -2068,9 +2086,14 @@ var VisualEditor = function() {
         input = input.replace(/\0/g,"");
         return  B64.decode($.trim(input));
     }
-    
+
+    /**
+     * eval is evil
+     * replaced by try/catch block in calling code
+     *
     var evalJson = function(jsArray) {
         eval("function parseJSON(){ return "+ jsArray +"; }");
         return parseJSON();
     }
+     */
 }

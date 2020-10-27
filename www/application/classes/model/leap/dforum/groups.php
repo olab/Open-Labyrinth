@@ -59,7 +59,7 @@ class Model_Leap_DForum_Groups extends DB_ORM_Model {
     public function updateGroups($forumId, $groups, $sendNotifications = -1){
         $groupsInForum = $this->getAllGroupsInForum($forumId, 'id');
         $usersInForum  = DB_ORM::model('dforum_users')->getAllUsersInForum($forumId);
-        if (count($groupsInForum) <= 0) {
+        if (!is_array($groupsInForum) or count($groupsInForum) <= 0) {
             $groupsInForum = array();
         }
 

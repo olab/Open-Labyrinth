@@ -70,6 +70,43 @@
             </div>
         </div>
     </div>
+    <h3>Language and time zone</h3>
+    <p>These settings may be helpful in the future, right now their value is low. We will try to guess correct values but this requires an internet connection.<br>
+        Feel free to correct settings below, but make sure to stick to correct formatting as no checks will be made about that and
+        wrong settings may have adverse impact on future releases.
+    </p>
+
+    <div class="row-fluid">
+        <div class="span6">
+            <div class="control-group">
+                <div class="control-label">
+                    <label for="timezone" id="timezone-lbl">Time Zone</label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="text" value="<?php echo (isset($templateData['data']) ? $templateData['data']->timezone : 'America/Denver'); ?>" id="timezone" class="inputbox" name="olab[timezone]" />
+                    <p class="help-block">Enter your Time Zone</p>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <label for="language" id="language-lbl">Language-Code</label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->languagecode : 'en-us'); ?>" id="lang" name="olab[lang]" />
+                    <p class="help-block">Please enter your Language Code.</p>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="control-label">
+                    <label for="locale" id="locale-lbl">Locale</label>
+                </div>
+                <div class="controls">
+                    <input autocomplete="off" type="text" class="inputbox" value="<?php echo (isset($templateData['data']) ? $templateData['data']->locale : 'en_US.utf-8'); ?>" id="locale" name="olab[locale]" />
+                    <p class="help-block">Please enter your locale.</p>
+                </div>
+            </div>        </div>
+    </div>
+
     <input type="hidden" name="token" value="<?php echo $templateData['token']; ?>" />
 </form>
 

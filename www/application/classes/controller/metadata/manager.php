@@ -42,7 +42,7 @@ class Controller_Metadata_Manager extends Controller_Base {
         Breadcrumbs::add(Breadcrumb::factory()->set_title(__('Metadata'))->set_url(URL::base() . 'vocabulary/metadata/manager'));
 
         if(Auth::instance()->get_user()==NULL || Auth::instance()->get_user()->type->name != 'superuser') {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
         unset($this->templateData['right']);
@@ -56,14 +56,14 @@ class Controller_Metadata_Manager extends Controller_Base {
             $metadata->load($values);
             $metadata->save();
         }
-        Request::initial()->redirect(URL::base().'metadata/manager/');
+        Controller::redirect(URL::base().'metadata/manager/');
     }
 
     public function action_delete(){
         $values = $this->request->post();
         $metadata = Model_Leap_Metadata::getMetadataByName($values['name']);
         $metadata->delete();
-        Request::initial()->redirect(URL::base().'metadata/manager/');
+        Controller::redirect(URL::base().'metadata/manager/');
 
     }
 

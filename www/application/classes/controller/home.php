@@ -38,7 +38,7 @@ class Controller_Home extends Controller_Base {
                 $redirectURL = URL::base().Arr::get($_POST, 'redirectURL', '');
             }
             
-            Request::initial()->redirect($redirectURL);
+            Controller::redirect($redirectURL);
         }
     }
 
@@ -50,11 +50,11 @@ class Controller_Home extends Controller_Base {
             if($provider != null)
             {
                 Session::instance()->set('OAuthProviderId', $providerId);
-                Request::initial()->redirect($provider->getAuthorizeURL(URL::base(true, false, true) . 'home/loginOAuthCallback'));
+                Controller::redirect($provider->getAuthorizeURL(URL::base(true, false, true) . 'home/loginOAuthCallback'));
             }
         }
 
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_loginOAuthCallback()
@@ -74,7 +74,7 @@ class Controller_Home extends Controller_Base {
                 }
             }
         }
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_logout() {
@@ -86,7 +86,7 @@ class Controller_Home extends Controller_Base {
 
         Session::instance()->set('redirectURL', $uri);
 
-        Request::initial()->redirect(URL::base());
+        Controller::redirect(URL::base());
     }
 
     public function action_about() {
@@ -108,7 +108,7 @@ class Controller_Home extends Controller_Base {
             $this->templateData['center'] = View::factory('about')->set('templateData', $this->templateData);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -116,7 +116,7 @@ class Controller_Home extends Controller_Base {
     {
         $userGuide = 'documents/UserGuide.pdf';
         if (file_exists($userGuide)) {
-            Request::initial()->redirect(URL::base().$userGuide);
+            Controller::redirect(URL::base().$userGuide);
         } else {
             exit ('User guide not loaded on server.');
         }
@@ -131,7 +131,7 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -152,10 +152,10 @@ class Controller_Home extends Controller_Base {
                 $user->password = Auth::instance()->hash($newPassword);
                 $user->save();
 
-                Request::initial()->redirect(URL::base());
+                Controller::redirect(URL::base());
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -183,7 +183,7 @@ class Controller_Home extends Controller_Base {
                 $this->template->set('templateData', $this->templateData);
             }
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -215,9 +215,9 @@ class Controller_Home extends Controller_Base {
 
                         //send mail end
                         Session::instance()->set('passMessage', __('A unique link to recover your password has been sent to your registered email address. This link will only be active for 30 minutes.'));
-                        Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                        Controller::redirect(URL::base() . 'home/passwordMessage');
                     } else {
-                        Request::initial()->redirect(URL::base());
+                        Controller::redirect(URL::base());
                     }
                 } else {
                     $attempt = Session::instance()->get('passAttempt') + 1;
@@ -230,9 +230,9 @@ class Controller_Home extends Controller_Base {
                     Session::instance()->set('passError', __('The email addresses you entered do not match.'));
 
                     if($isError) {
-                        Request::initial()->redirect(URL::base() . 'home/resetPassword');
+                        Controller::redirect(URL::base() . 'home/resetPassword');
                     } else {
-                        Request::initial()->redirect(URL::base());
+                        Controller::redirect(URL::base());
                     }
                 }
             }
@@ -247,12 +247,12 @@ class Controller_Home extends Controller_Base {
                         $showDiffTime = 'less 1';
                     }
                     Session::instance()->set('passMessage', 'You have exceeded the maximum number of password resets allowed. Please try again in ' . $showDiffTime . ' minutes.');
-                    Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                    Controller::redirect(URL::base() . 'home/passwordMessage');
                 } else {
                     Session::instance()->delete('passAttempt');
                     Session::instance()->delete('passAttemptTimeStamp');
                     Session::instance()->delete('passError');
-                    Request::initial()->redirect(URL::base());
+                    Controller::redirect(URL::base());
                 }
             } else {
                 $this->templateData['passError'] = Session::instance()->get('passError');
@@ -294,12 +294,12 @@ class Controller_Home extends Controller_Base {
                 else
                 {
                     Session::instance()->set('passMessage', 'Working time of the link has expired. Please repeat the password recovery procedure.');
-                    Request::initial()->redirect(URL::base() . 'home/passwordMessage');
+                    Controller::redirect(URL::base() . 'home/passwordMessage');
                 }
             }
-            else Request::initial()->redirect(URL::base());
+            else Controller::redirect(URL::base());
         }
-        else Request::initial()->redirect(URL::base());
+        else Controller::redirect(URL::base());
     }
 
     public function action_updateResetPassword()
@@ -327,18 +327,18 @@ class Controller_Home extends Controller_Base {
                     mail($user->email, $emailConfig['email_password_complete_subject'], $message, $headers);
 
                     Session::instance()->set('passMessage', 'Your new password has been saved. Please return to the login page, and login using your new password.');
-                    Request::initial()->redirect(URL::base().'home/passwordMessage');
+                    Controller::redirect(URL::base().'home/passwordMessage');
                 }
                 else
                 {
                     Session::instance()->set('passError', __('The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field.'));
-                    Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
+                    Controller::redirect(URL::base().'home/confirmLink/'.$hashKey);
                 }
             } else {
                 Session::instance()->set('passError', __('Empty password is not allowed.'));
-                Request::initial()->redirect(URL::base().'home/confirmLink/'.$hashKey);
+                Controller::redirect(URL::base().'home/confirmLink/'.$hashKey);
             }
-        } else Request::initial()->redirect(URL::base());
+        } else Controller::redirect(URL::base());
     }
 
     public function action_passwordMessage() {
@@ -352,7 +352,7 @@ class Controller_Home extends Controller_Base {
             unset($this->templateData['right']);
             $this->template->set('templateData', $this->templateData);
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
     }
 
@@ -377,7 +377,7 @@ class Controller_Home extends Controller_Base {
             if ($uri == 'kick') $result['reloadPage'] = 1;
             exit(json_encode($result));
         } else {
-            Request::initial()->redirect(URL::base());
+            Controller::redirect(URL::base());
         }
 
     }

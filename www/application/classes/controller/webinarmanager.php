@@ -42,7 +42,7 @@ class Controller_WebinarManager extends Controller_Base
 
         if (!empty($webinar)) {
             Session::instance()->set('webinar_id', $webinar->id);
-            Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $webinar->id);
+            Controller::redirect(URL::base() . 'webinarmanager/progress/' . $webinar->id);
         }
         $this->templateData['scenario'] = $webinar;
 
@@ -204,7 +204,7 @@ class Controller_WebinarManager extends Controller_Base
         $dateId = $this->request->param('id3', null);
 
         if ($scenarioId == null || $dateId == null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $scenarioStepMap = array();
@@ -280,7 +280,7 @@ class Controller_WebinarManager extends Controller_Base
         $webinarId = $this->request->param('id', null);
 
         if ($webinarId == null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $wData = array();
@@ -362,7 +362,7 @@ class Controller_WebinarManager extends Controller_Base
 
     public function action_statistic()
     {
-        Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $this->request->param('id', null));
+        Controller::redirect(URL::base() . 'webinarmanager/progress/' . $this->request->param('id', null));
     }
 
     /*public function action_timeBasedReports()
@@ -377,7 +377,7 @@ class Controller_WebinarManager extends Controller_Base
         $webinarId = $this->request->param('id', null);
 
         if ($webinarId == null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         } else {
             $this->templateData['history'] = DB_ORM::model('statistics_user_session')->getDateSaveByWebinarId($webinarId);
 
@@ -415,9 +415,9 @@ class Controller_WebinarManager extends Controller_Base
                 }
             }
 
-            Request::initial()->redirect(URL::base() . 'webinarmanager/showStats/' . $webinarId . '/' . $webinarStep . '/' . $dateId);
+            Controller::redirect(URL::base() . 'webinarmanager/showStats/' . $webinarId . '/' . $webinarStep . '/' . $dateId);
         } else {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
     }
 
@@ -444,13 +444,13 @@ class Controller_WebinarManager extends Controller_Base
     {
         DB_ORM::model('webinar')->deleteWebinar($this->request->param('id', null));
         Session::instance()->delete('webinar_id');
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        Controller::redirect(URL::base() . 'webinarmanager/index');
     }
 
     public function action_save()
     {
         DB_ORM::model('webinar')->saveWebinar($this->request->post());
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        Controller::redirect(URL::base() . 'webinarmanager/index');
     }
 
     public function action_changeStep()
@@ -462,9 +462,9 @@ class Controller_WebinarManager extends Controller_Base
         DB_ORM::model('webinar')->changeWebinarStep($scenarioId, $step);
 
         if ($redirect == null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index/' . $scenarioId);
+            Controller::redirect(URL::base() . 'webinarmanager/index/' . $scenarioId);
         } else {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/progress/' . $scenarioId);
+            Controller::redirect(URL::base() . 'webinarmanager/progress/' . $scenarioId);
         }
     }
 
@@ -482,7 +482,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
@@ -503,7 +503,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect($redirect_url);
+            Controller::redirect($redirect_url);
         }
 
         if ($is_ajax) {
@@ -542,7 +542,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
@@ -562,7 +562,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect($redirect_url);
+            Controller::redirect($redirect_url);
         }
 
         if ($is_ajax) {
@@ -605,7 +605,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $scenario = DB_ORM::model('webinar', array($scenarioId));
@@ -621,7 +621,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect($redirect_url);
+            Controller::redirect($redirect_url);
         }
 
         if ($is_ajax) {
@@ -663,7 +663,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         $webinar = DB_ORM::model('webinar', array((int)$webinarId));
@@ -683,7 +683,7 @@ class Controller_WebinarManager extends Controller_Base
             if ($is_ajax) {
                 $this->jsonResponse(array('reload' => true));
             }
-            Request::initial()->redirect($redirect_url);
+            Controller::redirect($redirect_url);
         }
 
         if ($is_ajax) {
@@ -1082,7 +1082,7 @@ class Controller_WebinarManager extends Controller_Base
         $latest = Session::instance()->get('report_by_latest_session', true);
 
         if ($scenarioId == null AND $mapId == null) {
-            Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+            Controller::redirect(URL::base() . 'webinarmanager/index');
         }
 
         if ($is_ajax) {
@@ -1121,7 +1121,7 @@ class Controller_WebinarManager extends Controller_Base
                 die;
                 break;
             default:
-                Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+                Controller::redirect(URL::base() . 'webinarmanager/index');
         }
     }
 
@@ -1144,17 +1144,17 @@ class Controller_WebinarManager extends Controller_Base
 
                 if (!$sectionNode) {
                     Notice::add('Section must have start node', 'error');
-                    Request::initial()->redirect($this->request->referrer());
+                    Controller::redirect($this->request->referrer());
                 }
 
                 Session::instance()->set('webinarSection', $type);
                 Session::instance()->set('webinarSectionId', $id);
-                Request::initial()->redirect(URL::base() . 'renderLabyrinth/go/' . $section->map->id . '/' . $sectionNode->node_id);
+                Controller::redirect(URL::base() . 'renderLabyrinth/go/' . $section->map->id . '/' . $sectionNode->node_id);
             }
             //------ end redirect to scenario section ------//
         }
 
-        Request::initial()->redirect(URL::base() . 'renderLabyrinth/index/' . $id);
+        Controller::redirect(URL::base() . 'renderLabyrinth/index/' . $id);
     }
 
     public function action_reset()
@@ -1180,7 +1180,7 @@ class Controller_WebinarManager extends Controller_Base
             Model_Leap_User_Note::deleteByWebinarId($scenarioId);
         }
 
-        Request::initial()->redirect(URL::base() . 'webinarmanager/index');
+        Controller::redirect(URL::base() . 'webinarmanager/index');
     }
 
     public function action_updateInclude4R()
@@ -1376,7 +1376,7 @@ class Controller_WebinarManager extends Controller_Base
             $conditionsModel->deleteRecord($id);
         }
 
-        Request::initial()->redirect(URL::base() . 'webinarManager/allConditions');
+        Controller::redirect(URL::base() . 'webinarManager/allConditions');
     }
 
     public function action_editCondition()
@@ -1416,7 +1416,7 @@ class Controller_WebinarManager extends Controller_Base
             $assignModel->deleteRecord($id);
         }
 
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 
     public function action_mapsGrid()
@@ -1477,7 +1477,7 @@ class Controller_WebinarManager extends Controller_Base
             DB_ORM::model('Conditions_Change')->update($id, Arr::get($data, 'value', 0), Arr::get($data, 'appears', 0));
         }
 
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 
     public function action_resetCondition()
@@ -1488,7 +1488,7 @@ class Controller_WebinarManager extends Controller_Base
 
         DB_ORM::model('Conditions_Assign')->resetValue($assignId, $value);
 
-        Request::initial()->redirect($this->request->referrer());
+        Controller::redirect($this->request->referrer());
     }
 
     //save settings\\
